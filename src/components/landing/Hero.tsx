@@ -1,94 +1,87 @@
-import { ArrowRight, Leaf, Truck } from "lucide-react";
 import Link from "next/link";
 
 export default function Hero() {
   return (
-    <section className="torn-edge-bottom relative overflow-hidden bg-cream pt-28 pb-28 sm:pt-36 sm:pb-36">
+    <header className="relative overflow-hidden px-4 pt-32 pb-20">
       {/* Ambient blurs */}
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute top-20 left-[10%] h-80 w-80 rounded-full bg-primary/8 blur-[100px]" />
-        <div className="absolute right-[5%] bottom-20 h-96 w-96 rounded-full bg-amber-200/20 blur-[100px]" />
-      </div>
+      <div className="absolute top-0 right-0 -z-10 h-[600px] w-[600px] -translate-y-1/2 translate-x-1/3 rounded-full bg-orange-200/30 blur-[100px] mix-blend-multiply" />
+      <div className="absolute bottom-0 left-0 -z-10 h-[500px] w-[500px] -translate-x-1/4 translate-y-1/4 rounded-full bg-amber-100/40 blur-[80px] mix-blend-multiply" />
 
-      <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
-          {/* Text */}
-          <div className="max-w-xl">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-badge-border bg-badge-bg px-4 py-1.5 text-sm font-semibold text-secondary">
-              <Leaf className="h-4 w-4" />
-              Papel FSC certificado
-            </div>
-
-            <h1 className="font-display text-5xl font-bold leading-[1.1] tracking-tight text-text-main lg:text-7xl">
-              Menos pantallas,
-              <br />
-              <span className="text-primary">más historias</span>
-              <br />
-              para tocar.
-            </h1>
-
-            <p className="mt-6 text-lg leading-relaxed text-text-soft">
-              Crea un cuento ilustrado único donde tu hijo es el protagonista.
-              Personalizado, impreso con calidad artesanal y enviado a tu
-              puerta.
-            </p>
-
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4">
-              <Link
-                href="/crear"
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-8 py-3.5 text-base font-bold text-white shadow-lg transition-all hover:-translate-y-0.5 hover:bg-orange-700 hover:shadow-xl"
-              >
-                Personalizar libro
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-              <a
-                href="#artesanal"
-                className="inline-flex items-center justify-center gap-2 rounded-lg border border-stone-200 bg-white px-8 py-3.5 text-base font-bold text-text-main transition-all hover:-translate-y-0.5 hover:shadow-md"
-              >
-                Ver calidad del papel
-              </a>
-            </div>
-
-            <div className="mt-8 flex items-center gap-6 text-sm text-text-muted">
-              <span className="flex items-center gap-1.5">
-                <Leaf className="h-4 w-4 text-green-700" />
-                Papel FSC
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Truck className="h-4 w-4 text-primary" />
-                Envío artesanal
-              </span>
-            </div>
+      <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 lg:grid-cols-2">
+        {/* Left — Text */}
+        <div className="relative z-10 flex flex-col gap-6">
+          <div className="inline-flex w-fit -rotate-1 items-center gap-2 rounded-md border border-[#E6C9A8] bg-[#F5E6D3] px-4 py-1.5 shadow-sm">
+            <span className="material-symbols-outlined text-sm text-secondary">spa</span>
+            <span className="font-body text-xs font-bold uppercase tracking-wider text-secondary">
+              100% Desconexión Digital
+            </span>
           </div>
 
-          {/* Polaroid book mockup */}
-          <div className="relative flex items-center justify-center">
-            <div className="relative">
-              <div className="absolute -inset-4 -rotate-2 rounded-lg bg-badge-bg" />
-              <div className="relative rotate-1 rounded-lg bg-white p-4 pb-12 shadow-xl transition-transform hover:rotate-0">
-                <div className="flex h-[340px] w-[280px] items-center justify-center rounded bg-cream sm:h-[400px] sm:w-[340px]">
-                  <div className="text-center">
-                    <div className="mx-auto mb-4 flex h-28 w-28 items-center justify-center rounded-full bg-white shadow-sm sm:h-32 sm:w-32">
-                      <span className="text-5xl sm:text-6xl">📖</span>
-                    </div>
-                    <p className="font-display text-lg font-bold text-text-main">
-                      Tu hijo, el protagonista
-                    </p>
-                    <p className="mt-2 text-sm text-text-muted">
-                      Cada ilustración, cada detalle,
-                      <br />
-                      creado para hacer magia.
-                    </p>
-                  </div>
-                </div>
-                <p className="mt-3 text-center font-display text-sm text-text-soft">
-                  Un cuento hecho solo para ti
+          <h1 className="font-display text-5xl font-bold leading-[1.1] tracking-tight text-secondary lg:text-7xl">
+            Menos pantallas, <br />
+            <span className="italic text-primary">más historias</span> para tocar
+          </h1>
+
+          <p className="font-body max-w-lg text-lg leading-relaxed text-text-soft lg:text-xl">
+            Recupera la magia de pasar las páginas. Cuentos personalizados impresos en papel
+            de alta calidad, diseñados para crear momentos de conexión real, lejos del brillo
+            de las tablets.
+          </p>
+
+          <div className="flex flex-col gap-4 pt-4 sm:flex-row">
+            <Link
+              href="/crear"
+              className="font-body flex h-14 items-center justify-center gap-2 rounded-lg bg-primary px-8 text-lg font-bold text-white shadow-lg shadow-orange-900/10 transition-all hover:-translate-y-1 hover:bg-orange-700"
+            >
+              Personalizar libro físico
+              <span className="material-symbols-outlined">arrow_forward</span>
+            </Link>
+            <a
+              href="#artisanal"
+              className="flex items-center justify-center gap-2 text-lg font-bold text-secondary underline decoration-orange-200 decoration-2 underline-offset-4 transition-all hover:text-primary hover:decoration-primary"
+            >
+              Ver calidad del papel
+            </a>
+          </div>
+
+          <div className="font-body mt-2 flex items-center gap-4 border-t border-stone-200 pt-6 text-sm font-medium text-text-soft">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-xl text-green-700">forest</span>
+              <span>Papel certificado FSC</span>
+            </div>
+            <span className="text-stone-300">|</span>
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-xl text-orange-700">local_shipping</span>
+              <span>Envío artesanal</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Right — Polaroid image */}
+        <div className="group relative">
+          <div className="relative w-full transform rotate-1 bg-white p-3 shadow-xl transition-transform duration-500 aspect-[4/5] group-hover:rotate-0">
+            <div className="pointer-events-none absolute inset-0 z-20 m-2 border-2 border-stone-100" />
+            <div className="relative h-full w-full overflow-hidden bg-stone-100">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                alt="Child reading a physical book in a cozy nook with warm lighting"
+                className="h-full w-full object-cover sepia-[0.1] contrast-[1.1]"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfCPK8JPwKzIIoyvLEF3y03_9KevY3CktOtdAPpyoe4BrjDbeOszy7x8vdCCEbD4ujCalI1xDywwTe1r5ZE9yjQaEJsPRWB4eyH8quKkGxgf23seqlqDcj1sfzX6TR7S05gGCpwjv9TXm14tAWzAC7Iog_-pTkkcVLgzLu5VHNoIkMSfuKoPDqmPmYO0O5uEy0lU-PwlLvv5z5jfiVWwwEGpgy3HMuZOp-irLdzeYJvSloVC-FiFrw-bL9kaC25rb6Q2dh47J6L4DU"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-80" />
+            </div>
+            <div className="absolute right-6 bottom-6 left-6 z-30 text-white">
+              <div className="border-l-4 border-primary bg-black/30 p-4 backdrop-blur-md">
+                <p className="font-display mb-1 text-xl font-bold text-cream">El tacto del papel importa</p>
+                <p className="font-body text-sm text-stone-200">
+                  Una experiencia sensorial que ninguna pantalla puede igualar.
                 </p>
               </div>
             </div>
           </div>
+          <div className="absolute -inset-4 -z-10 rotate-[-2deg] border border-stone-100 bg-[#f8f5f2] shadow-sm" />
         </div>
       </div>
-    </section>
+    </header>
   );
 }

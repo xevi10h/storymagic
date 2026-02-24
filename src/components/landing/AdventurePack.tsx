@@ -1,92 +1,51 @@
-import { Mail, Sticker, Bookmark } from "lucide-react";
 import Link from "next/link";
-
-const PACK_ITEMS = [
-  {
-    icon: Mail,
-    title: "Carta personalizada",
-    description:
-      'Una carta escrita "por el personaje" del cuento, dirigida a tu hijo por su nombre.',
-  },
-  {
-    icon: Sticker,
-    title: "Pegatinas mate",
-    description:
-      "Set de pegatinas con los personajes de la aventura. Acabado mate premium.",
-  },
-  {
-    icon: Bookmark,
-    title: "Marcapáginas de madera",
-    description:
-      "Marcapáginas artesanal grabado con el nombre del niño. Un recuerdo único.",
-  },
-];
 
 export default function AdventurePack() {
   return (
-    <section className="bg-secondary py-24 sm:py-32">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="overflow-hidden rounded-lg bg-[#4E342E] shadow-xl">
-          <div className="grid lg:grid-cols-2">
-            {/* Left — Polaroid product shot */}
-            <div className="flex flex-col items-center justify-center p-8 sm:p-12">
-              <div className="relative">
-                <div className="rotate-2 rounded-lg bg-white p-4 pb-10 shadow-xl transition-transform hover:rotate-0">
-                  <div className="flex h-60 w-50 items-center justify-center rounded bg-cream sm:h-70 sm:w-60">
-                    <span className="text-7xl">🎁</span>
-                  </div>
-                  <p className="mt-2 text-center font-display text-sm text-text-soft">
-                    Pack Aventura Artesanal
-                  </p>
-                </div>
-              </div>
-              <div className="mt-6 text-center">
-                <span className="inline-flex rounded-full bg-[#8D6E63] px-4 py-1.5 font-display text-sm font-bold text-white">
-                  +12,90€
-                </span>
-                <p className="mt-2 text-sm text-[#D7CCC8]">
-                  Añádelo a cualquier libro
-                </p>
-              </div>
-            </div>
+    <section className="relative overflow-hidden bg-[#5D4037] py-24 text-[#FAF3E0]">
+      <div
+        className="absolute inset-0 opacity-10"
+        style={{
+          backgroundImage:
+            "url('https://lh3.googleusercontent.com/aida-public/AB6AXuC7hINU9mwp25NrO_Iq3UCLpiX6Nz0XiawzNamGSrZh0kL8fDqnwIFgpNn_-GLdb1ldzSzlqpQJWQamAikyN8afx0SbRSFTZKd45IQ5zShVrJ6BMYJW1K5NYi-eH8Wq08tm2Crw0ChGQ-KMxUz9PW6b4o_QMCYnx7udmk-sOx_YlaG-NZjOL8fdNZDUIhfhLWFE3NZWRUga1qVlZLMAS0_FU_n9IXNxCAQDN8Vusne4x9wB2bYW4MKaZPscIsRrBapgRX5ccWoNCkVg')",
+        }}
+      />
+      <div className="relative z-10 mx-auto max-w-6xl px-4">
+        <div className="flex flex-col items-center gap-12 rounded-2xl border border-[#6D4C41] bg-[#4E342E] p-8 shadow-2xl md:flex-row md:p-16">
+          {/* Left — Text */}
+          <div className="flex-1 text-center md:text-left">
+            <span className="font-body mb-4 inline-block rounded bg-[#8D6E63] px-3 py-1 text-xs font-bold uppercase tracking-widest text-white">
+              Experiencia Completa
+            </span>
+            <h2 className="mb-6 font-display text-3xl font-bold text-white md:text-5xl">
+              Pack Aventura Artesanal
+            </h2>
+            <p className="font-body mb-8 text-lg leading-relaxed text-[#D7CCC8]">
+              La magia se extiende fuera del libro. Incluye{" "}
+              <strong className="text-white">carta física personalizada</strong> del personaje
+              principal, hoja de pegatinas mate y marcapáginas de madera.
+            </p>
+            <Link
+              href="/crear"
+              className="font-body mx-auto flex items-center gap-2 rounded-lg bg-[#D2691E] px-8 py-4 font-bold text-white shadow-lg transition-transform hover:-translate-y-1 hover:bg-[#A0522D] md:mx-0"
+            >
+              <span className="material-symbols-outlined">card_giftcard</span>
+              Añadir extras físicos (+12.90€)
+            </Link>
+          </div>
 
-            {/* Right — Details */}
-            <div className="p-8 sm:p-12">
-              <span className="text-sm font-bold uppercase tracking-widest text-[#D2691E]">
-                Experiencia completa
-              </span>
-              <h2 className="mt-3 font-display text-2xl font-bold text-white sm:text-3xl">
-                Haz que abrir el paquete sea parte de la magia
-              </h2>
-              <p className="mt-3 text-[#D7CCC8]">
-                Convierte la llegada del libro en un momento inolvidable con
-                extras artesanales diseñados para cada historia.
-              </p>
-
-              <div className="mt-8 space-y-6">
-                {PACK_ITEMS.map((item) => (
-                  <div key={item.title} className="flex gap-4">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#5D4037]">
-                      <item.icon className="h-5 w-5 text-[#D2691E]" />
-                    </div>
-                    <div>
-                      <h3 className="font-display font-semibold text-white">
-                        {item.title}
-                      </h3>
-                      <p className="mt-0.5 text-sm text-[#D7CCC8]">
-                        {item.description}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+          {/* Right — Polaroid image */}
+          <div className="relative flex-1">
+            <div className="rotate-2 bg-white p-3 shadow-xl transition-transform duration-300 hover:rotate-0">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                alt="Gift set with book, stickers and coloring pencils on a table"
+                className="h-auto w-full sepia-[0.2]"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgbajYrzRnL4XE3sG513pFRed1tLDRzw7P8yVbC5sDY73010Q_cVzcHERjGVa6VzLC4Z9qu0I_XX4KvYoRWWWLBnXXkUsEEujruWJSzvjfQRR2ZIkwL2aUwbrGMC3F53ujhJ5PhWwNN3IIQwOv8WWB2U7XNvI3vhM8u1T-f8OHfEElGy9sA0VwMZOgh3eafeYSg5vCL3W2yXYNqFPyjsOs8kjxP4P0DSaY_lmJ2rs-TNU6rOJJHIAiyreOJ_kTK1Z8ndJ_Cg4WpdmS"
+              />
+              <div className="pt-3 pb-1 text-center font-display text-gray-500">
+                El regalo perfecto
               </div>
-
-              <Link
-                href="/crear"
-                className="mt-8 inline-flex items-center gap-2 rounded-lg bg-primary px-8 py-3 text-sm font-bold text-white shadow-lg transition-all hover:-translate-y-0.5 hover:bg-orange-700"
-              >
-                Crear con Pack Aventura
-              </Link>
             </div>
           </div>
         </div>

@@ -1,94 +1,99 @@
-import { BookOpen, Mail } from "lucide-react";
-import Link from "next/link";
-
-const FOOTER_LINKS = {
-  producto: [
-    { label: "Colección", href: "#coleccion" },
-    { label: "Pack Aventura", href: "#" },
-    { label: "Calidad artesanal", href: "#artesanal" },
-    { label: "Precios", href: "#coleccion" },
-  ],
-  soporte: [
-    { label: "Preguntas frecuentes", href: "#" },
-    { label: "Envíos y entregas", href: "#" },
-    { label: "Contacto", href: "#" },
-    { label: "Devoluciones", href: "#" },
-  ],
-  legal: [
-    { label: "Aviso legal", href: "#" },
-    { label: "Política de privacidad", href: "#" },
-    { label: "Términos y condiciones", href: "#" },
-    { label: "Cookies", href: "#" },
-  ],
-};
-
 export default function Footer() {
   return (
-    <footer className="border-t-8 border-accent bg-[#2C1810]">
-      <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-4">
-          <div>
-            <Link href="/" className="flex items-center gap-2">
-              <BookOpen className="h-6 w-6 text-primary" />
-              <span className="font-display text-lg font-bold text-white">
-                Story<span className="text-primary">Magic</span>
+    <footer className="mt-12 border-t-8 border-[#8B4513] bg-[#2C1810] pt-20 pb-10 text-[#E6D4C8]">
+      <div className="mx-auto max-w-6xl px-8">
+        <div className="mb-16 grid grid-cols-1 gap-12 md:grid-cols-4">
+          {/* Brand */}
+          <div className="col-span-1 md:col-span-1">
+            <div className="mb-6 flex items-center gap-2">
+              <span className="material-symbols-outlined text-2xl text-primary">menu_book</span>
+              <span className="font-display text-xl font-bold tracking-tight text-white">
+                StoryMagic
               </span>
-            </Link>
-            <p className="mt-4 text-sm leading-relaxed text-[#A1887F]">
-              Cuentos infantiles personalizados, ilustrados con cariño e
-              impresos con calidad artesanal. Creados en nuestro taller digital.
-            </p>
-
-            <div className="mt-6">
-              <p className="font-display text-sm font-semibold text-[#D7CCC8]">
-                Club de lectura
-              </p>
-              <form className="mt-2 flex gap-2">
-                <div className="relative flex-1">
-                  <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#A1887F]" />
-                  <input
-                    type="email"
-                    placeholder="tu@email.com"
-                    className="w-full rounded-lg border border-[#5D4037] bg-[#3E2723] py-2.5 pl-10 pr-4 text-sm text-white placeholder:text-[#A1887F] focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="shrink-0 rounded-lg bg-primary px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-orange-700"
-                >
-                  Unirme
-                </button>
-              </form>
             </div>
+            <p className="font-body mb-6 text-sm leading-relaxed text-[#A1887F]">
+              Taller de cuentos personalizados. <br />
+              Hechos a mano, con tinta y papel. <br />
+              Sin baterías, solo imaginación.
+            </p>
           </div>
 
-          {Object.entries(FOOTER_LINKS).map(([category, links]) => (
-            <div key={category}>
-              <h3 className="font-display text-sm font-bold uppercase tracking-wider text-[#D7CCC8]">
-                {category}
-              </h3>
-              <ul className="mt-4 space-y-3">
-                {links.map((link) => (
-                  <li key={link.label}>
-                    <a
-                      href={link.href}
-                      className="text-sm text-[#A1887F] transition-colors hover:text-primary"
-                    >
-                      {link.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+          {/* Taller */}
+          <div>
+            <h4 className="mb-6 font-display text-lg font-bold text-white">Taller</h4>
+            <ul className="font-body space-y-3 text-sm text-[#A1887F]">
+              <li>
+                <a className="transition-colors hover:text-primary" href="#">
+                  Nuestros papeles
+                </a>
+              </li>
+              <li>
+                <a className="transition-colors hover:text-primary" href="#">
+                  Proceso artesanal
+                </a>
+              </li>
+              <li>
+                <a className="transition-colors hover:text-primary" href="#">
+                  Envíos y empaquetado
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Atención */}
+          <div>
+            <h4 className="mb-6 font-display text-lg font-bold text-white">Atención</h4>
+            <ul className="font-body space-y-3 text-sm text-[#A1887F]">
+              <li>
+                <a className="transition-colors hover:text-primary" href="#">
+                  Dudas frecuentes
+                </a>
+              </li>
+              <li>
+                <a className="transition-colors hover:text-primary" href="#">
+                  Seguimiento de envío
+                </a>
+              </li>
+              <li>
+                <a className="transition-colors hover:text-primary" href="#">
+                  Garantía de calidad
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Club de Lectura */}
+          <div>
+            <h4 className="mb-6 font-display text-lg font-bold text-white">Club de Lectura</h4>
+            <p className="font-body mb-4 text-sm text-[#A1887F]">
+              Consejos para fomentar la lectura sin pantallas.
+            </p>
+            <div className="flex flex-col gap-3">
+              <input
+                className="font-body rounded border border-[#5D4037] bg-white/5 px-4 py-3 text-sm text-white placeholder-[#5D4037] focus:border-primary focus:outline-none"
+                placeholder="Tu correo electrónico"
+                type="email"
+              />
+              <button className="font-body rounded bg-primary px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-orange-800">
+                Unirme al club
+              </button>
             </div>
-          ))}
+          </div>
         </div>
 
-        <div className="mt-12 border-t border-[#3E2723] pt-8">
-          <p className="text-center text-sm text-[#A1887F]">
-            © {new Date().getFullYear()} StoryMagic. Todos los derechos
-            reservados. Hecho con cariño para las familias que creen en la magia
-            de leer juntos.
-          </p>
+        <div className="font-body flex flex-col items-center justify-between gap-4 border-t border-[#5D4037] pt-8 text-xs text-[#5D4037] md:flex-row">
+          <p>© 2023 StoryMagic Artesanos. Hecho con amor.</p>
+          <div className="flex gap-6">
+            <a className="transition-colors hover:text-white" href="#">
+              Aviso Legal
+            </a>
+            <a className="transition-colors hover:text-white" href="#">
+              Privacidad
+            </a>
+            <a className="transition-colors hover:text-white" href="#">
+              Cookies
+            </a>
+          </div>
         </div>
       </div>
     </footer>

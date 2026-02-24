@@ -1,72 +1,58 @@
-import { Palette, PenTool, Gift } from "lucide-react";
-
-const STEPS = [
-  {
-    icon: Palette,
-    number: "1",
-    title: "Elige una aventura",
-    description:
-      "Explora nuestra colección de historias y escoge la que más brille en los ojos de tu pequeño.",
-    bgColor: "bg-[#FAF3E0]",
-  },
-  {
-    icon: PenTool,
-    number: "2",
-    title: "Personalización artesanal",
-    description:
-      "Nombre, aspecto, ciudad, intereses... Cada detalle hace que el cuento sea únicamente suyo.",
-    bgColor: "bg-[#EBE0D6]",
-  },
-  {
-    icon: Gift,
-    number: "3",
-    title: "Recibe el tesoro",
-    description:
-      "Impreso en papel premium con encuadernación tradicional. Un objeto para guardar toda la vida.",
-    bgColor: "bg-[#E0E9D8]",
-  },
-];
-
 export default function HowItWorks() {
   return (
-    <section id="manifiesto" className="bg-white py-24 sm:py-32">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="mx-auto max-w-2xl text-center">
-          <span className="text-sm font-bold uppercase tracking-widest text-primary">
-            Así de fácil
+    <section className="relative border-y border-stone-200 bg-white py-20" id="manifesto">
+      <div
+        className="absolute inset-0 opacity-40"
+        style={{
+          backgroundImage:
+            "url('https://www.transparenttextures.com/patterns/clean-gray-paper.png')",
+        }}
+      />
+      <div className="relative z-10 mx-auto max-w-6xl px-4">
+        <div className="mb-16 text-center">
+          <span className="font-body text-sm font-bold uppercase tracking-wider text-primary">
+            Vuelta a los orígenes
           </span>
-          <h2 className="mt-3 font-display text-4xl font-bold text-text-main">
-            Crear un cuento mágico es así de sencillo
+          <h2 className="mt-2 font-display text-4xl font-bold text-secondary">
+            Magia real en 3 pasos artesanales
           </h2>
-          <p className="mt-4 text-lg text-text-soft">
-            En tres pasos, tu hijo tendrá entre las manos su propia aventura
-            ilustrada.
-          </p>
         </div>
 
-        <div className="relative mt-20">
+        <div className="relative grid grid-cols-1 gap-12 md:grid-cols-3">
           {/* Dotted connector line */}
-          <div className="absolute top-12 right-[16.67%] left-[16.67%] hidden border-t-2 border-dashed border-stone-300 sm:block" />
+          <div className="absolute top-12 right-[16%] left-[16%] z-0 hidden h-0.5 border-t-2 border-dashed border-stone-300 md:block" />
 
-          <div className="grid gap-12 sm:grid-cols-3 sm:gap-8">
-            {STEPS.map((step) => (
-              <div key={step.number} className="relative text-center">
-                <div
-                  className={`mx-auto flex h-24 w-24 items-center justify-center rounded-full ${step.bgColor} border-4 border-white shadow-md`}
-                >
-                  <step.icon className="h-8 w-8 text-secondary" />
-                </div>
-                <span className="mt-5 block font-display text-sm font-bold text-primary">
-                  Paso {step.number}
-                </span>
-                <h3 className="mt-2 font-display text-xl font-bold text-text-main">
-                  {step.title}
-                </h3>
-                <p className="mx-auto mt-3 max-w-xs text-text-soft leading-relaxed">
-                  {step.description}
-                </p>
-              </div>
-            ))}
+          {/* Step 1 */}
+          <div className="group flex flex-col items-center text-center">
+            <div className="relative z-10 mb-6 flex h-24 w-24 items-center justify-center rounded-full border-4 border-white bg-[#FAF3E0] shadow-md">
+              <span className="material-symbols-outlined text-4xl text-primary">auto_stories</span>
+            </div>
+            <h3 className="mb-3 font-display text-xl font-bold text-secondary">Elige una historia</h3>
+            <p className="font-body max-w-xs text-sm leading-relaxed text-text-soft">
+              Selecciona una trama diseñada para ser leída en voz alta y tocar el corazón.
+            </p>
+          </div>
+
+          {/* Step 2 */}
+          <div className="group flex flex-col items-center text-center">
+            <div className="relative z-10 mb-6 flex h-24 w-24 items-center justify-center rounded-full border-4 border-white bg-[#EBE0D6] shadow-md">
+              <span className="material-symbols-outlined text-4xl text-secondary">brush</span>
+            </div>
+            <h3 className="mb-3 font-display text-xl font-bold text-secondary">Personalización manual</h3>
+            <p className="font-body max-w-xs text-sm leading-relaxed text-text-soft">
+              Adaptamos las ilustraciones con estilo acuarela para que tu hijo se reconozca.
+            </p>
+          </div>
+
+          {/* Step 3 */}
+          <div className="group flex flex-col items-center text-center">
+            <div className="relative z-10 mb-6 flex h-24 w-24 items-center justify-center rounded-full border-4 border-white bg-[#E0E9D8] shadow-md">
+              <span className="material-symbols-outlined text-4xl text-green-700">inventory_2</span>
+            </div>
+            <h3 className="mb-3 font-display text-xl font-bold text-secondary">Recibe un tesoro</h3>
+            <p className="font-body max-w-xs text-sm leading-relaxed text-text-soft">
+              Un libro físico, encuadernado con cariño, llega a tu puerta listo para ser amado.
+            </p>
           </div>
         </div>
       </div>

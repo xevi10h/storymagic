@@ -1,116 +1,99 @@
-import { Star } from "lucide-react";
-import Link from "next/link";
-
 const BOOKS = [
   {
-    id: 1,
     title: "El Bosque Encantado",
-    age: "3-6 años",
-    description:
-      "Secretos entre árboles centenarios y criaturas fantásticas que necesitan ayuda.",
-    emoji: "🌲",
-    color: "bg-[#E8F5E9]",
+    description: "Ilustraciones estilo gouache sobre papel texturizado.",
+    image:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuC6VL_AYqEty2H-GbV81WP_azfa6-IU9kYV335jDZwd4snVh3otFA0MLoHWzYBVRN6D7uO6bEFGhpnzN-NUinjaYGN0HlgT1dOrbips2Im89VsZRyTu-1V11GVPrma6xPMEKRBhlVhLpHl_mt8bkHQwuhNbWsxIeJndFCX9sJiIJtt31XHdiKH6_MBR4lvbIxqMGr915OaUtE8B6HC-E9cFrDodvb0saZB_Arw2STBeUL4o93_O5P1_AKxGrZxtlgICx5yeCsm7Diec",
+    hasBadge: true,
   },
   {
-    id: 2,
     title: "Misión Espacial",
-    age: "4-7 años",
-    description:
-      "Un viaje entre estrellas, planetas desconocidos y amigos de otras galaxias.",
-    emoji: "🚀",
-    color: "bg-[#E8EAF6]",
+    description: "Acuarelas cósmicas y papel de alto gramaje.",
+    image:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuABBA0Cf06fPnqKSfGRm48Pmu6ucN-jUEVB4HEwyp-DBH-xxNU5J_KCoHPCTwqmiwLMRseYBXwbRpHgq9uGNsFjGl5RhN408EvyctgZzWyxWGPtAoOWRBqqLf6HYJ6JHExoCBXpq4UW8ANQYnEa9PuknwvT7CnGVOeOS7yJBU2sEszUjY0x_mXI_Hhc2iI-v8CqAuBFA55xP-nK_bsvWEmgN_L1YmVe5GI5bQD1_m9-emm22sbMoQqYpkXSt7WSjqHd-KmyZYEHrJ8D",
+    hasBadge: false,
   },
   {
-    id: 3,
     title: "El Reino Submarino",
-    age: "3-7 años",
-    description:
-      "Aventuras bajo el mar, entre corales luminosos y criaturas mágicas.",
-    emoji: "🐚",
-    color: "bg-[#E0F7FA]",
+    description: "Tonos oceánicos impresos en calidad archivo.",
+    image:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuBNgOqfWleS4dgz8lpSn13SgKrqUX_lP8f64zkeoepf32guQ7HsMYX45v2De6eISqj4HKCS6vKKvM3ZXXvHgQcfkScKM69Qq8C9c23L3XfJxnYyf-Amm2dWaNV0rMpNApWD-CoAZgVSgpoHsiAdE-SHMcIjcbkNUDOIFXpw_VN5172nLLzKL-pTmyhy6Im4agwWHIb4rcpVepJWGLcQ9krIodcO40-np3zmYRQDyte5QPiC3O5Wg2dlzxX5J03TD8dTpwAXyuXeYFLH",
+    hasBadge: false,
   },
 ];
 
 export default function BookCollection() {
   return (
-    <section id="coleccion" className="bg-cream py-24 sm:py-32">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="mx-auto max-w-2xl text-center">
-          <span className="text-sm font-bold uppercase tracking-widest text-primary">
-            Colección
-          </span>
-          <h2 className="mt-3 font-display text-4xl font-bold text-text-main">
-            Nuestra colección
-          </h2>
-          <p className="mt-4 text-lg text-text-soft">
-            Historias diseñadas para despertar la imaginación. Cada una con su
-            propio universo de aventuras.
-          </p>
+    <section className="bg-[#F9F5F0] px-4 py-24" id="catalog">
+      <div className="mx-auto max-w-6xl">
+        <div className="mb-12 flex flex-col items-end justify-between gap-6 md:flex-row">
+          <div>
+            <h2 className="mb-4 font-display text-4xl font-bold text-secondary">
+              Nuestra Biblioteca Física
+            </h2>
+            <p className="font-body max-w-xl text-lg text-text-soft">
+              Ediciones limitadas en papel premium. Historias que se sienten mejor al tacto.
+            </p>
+          </div>
+          <a
+            className="font-body group flex items-center gap-1 text-sm font-bold uppercase tracking-wide text-primary hover:text-orange-800"
+            href="#"
+          >
+            Ver colección completa
+            <span className="material-symbols-outlined text-lg transition-transform group-hover:translate-x-1">
+              arrow_right_alt
+            </span>
+          </a>
         </div>
 
-        <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3">
           {BOOKS.map((book) => (
             <div
-              key={book.id}
-              className="group overflow-hidden rounded-lg border border-stone-100 bg-white p-4 pb-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
+              key={book.title}
+              className="group cursor-pointer rounded-lg border border-stone-100 bg-white p-4 pb-6 shadow-sm transition-all duration-300 hover:shadow-xl"
             >
-              {/* Book cover with sepia tint */}
-              <div
-                className={`${book.color} flex aspect-3/4 items-center justify-center rounded sepia-[0.1]`}
-              >
-                <span className="text-8xl transition-transform group-hover:scale-110">
-                  {book.emoji}
-                </span>
+              <div className="relative mb-6 aspect-[3/4] overflow-hidden rounded-sm bg-stone-100 shadow-inner">
+                <div
+                  className="absolute inset-0 bg-cover bg-center opacity-90 transition-transform duration-700 group-hover:scale-105"
+                  style={{
+                    backgroundImage: `url('${book.image}')`,
+                    mixBlendMode: "multiply",
+                  }}
+                />
+                <div
+                  className="pointer-events-none absolute inset-0 opacity-30"
+                  style={{
+                    backgroundImage:
+                      "url('https://www.transparenttextures.com/patterns/rough-cloth.png')",
+                  }}
+                />
+                {book.hasBadge && (
+                  <div className="font-body absolute top-0 right-0 rounded-bl-lg bg-primary px-3 py-1 text-xs font-bold text-white shadow-sm">
+                    Tapa Dura
+                  </div>
+                )}
               </div>
 
-              <div className="mt-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold uppercase tracking-wide text-primary">
-                    {book.age}
-                  </span>
-                  <div className="flex gap-0.5">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className="h-3.5 w-3.5 fill-amber-400 text-amber-400"
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                <h3 className="mt-3 font-display text-xl font-bold text-text-main">
+              <div className="space-y-3 px-2">
+                <h3 className="font-display text-2xl font-bold text-secondary transition-colors group-hover:text-primary">
                   {book.title}
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-text-soft">
+                <p className="font-body line-clamp-2 text-sm italic text-text-soft">
                   {book.description}
                 </p>
-
-                <div className="mt-5 flex items-end justify-between">
-                  <div>
-                    <p className="text-xs text-text-muted">Desde</p>
-                    <p className="font-display text-2xl font-bold text-text-main">
-                      34,90€
-                    </p>
+                <div className="mt-2 flex flex-col gap-2 border-t border-stone-100 pt-2">
+                  <div className="font-body flex items-center justify-between text-sm text-stone-600">
+                    <span>Tapa blanda</span>
+                    <span className="font-bold text-secondary">34.90€</span>
                   </div>
-                  <Link
-                    href="/crear"
-                    className="rounded-lg bg-primary px-5 py-2 text-sm font-bold text-white shadow-md transition-all hover:-translate-y-0.5 hover:bg-orange-700"
-                  >
-                    Crear
-                  </Link>
+                  <div className="font-body flex items-center justify-between text-sm text-stone-600">
+                    <span>Tapa dura (Premium)</span>
+                    <span className="font-bold text-primary">44.90€</span>
+                  </div>
                 </div>
               </div>
             </div>
           ))}
-        </div>
-
-        <div className="mt-12 text-center">
-          <p className="text-sm text-text-muted">
-            Tapa blanda{" "}
-            <span className="font-semibold text-text-main">34,90€</span>
-            &nbsp;&nbsp;·&nbsp;&nbsp;Tapa dura premium{" "}
-            <span className="font-semibold text-text-main">49,90€</span>
-          </p>
         </div>
       </div>
     </section>

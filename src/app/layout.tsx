@@ -15,11 +15,11 @@ const fredoka = Fredoka({
 });
 
 export const metadata: Metadata = {
-  title: "StoryMagic — Cuentos Infantiles Personalizados",
+  title: "StoryMagic — Historias Reales para Tocar",
   description:
-    "Convierte a tu hijo en el protagonista de su propia aventura mágica. Libros ilustrados personalizados, impresos con calidad artesanal.",
+    "Recupera la magia de pasar las páginas. Cuentos personalizados impresos en papel de alta calidad, diseñados para crear momentos de conexión real.",
   openGraph: {
-    title: "StoryMagic — Cuentos Infantiles Personalizados",
+    title: "StoryMagic — Historias Reales para Tocar",
     description:
       "Menos pantallas, más historias para tocar. Crea un cuento único donde tu hijo es el héroe.",
     type: "website",
@@ -34,9 +34,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
+      <head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body
-        className={`${plusJakarta.variable} ${fredoka.variable} font-sans antialiased`}
+        className={`${plusJakarta.variable} ${fredoka.variable} font-sans bg-cream overflow-x-hidden relative text-text-main antialiased`}
       >
+        <div className="texture-overlay" />
         {children}
       </body>
     </html>
