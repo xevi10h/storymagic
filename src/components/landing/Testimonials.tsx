@@ -1,4 +1,4 @@
-import { Star, Quote } from "lucide-react";
+import { Star } from "lucide-react";
 
 const TESTIMONIALS = [
   {
@@ -6,30 +6,36 @@ const TESTIMONIALS = [
     location: "Madrid",
     text: "Mi hija no paraba de señalarse en cada página. Se lo lee todas las noches antes de dormir. El mejor regalo que le hemos hecho.",
     rating: 5,
+    borderColor: "border-l-primary",
   },
   {
     name: "Carlos R.",
     location: "Barcelona",
     text: "La calidad del papel y las ilustraciones es increíble. Se nota que no es un libro genérico. Nuestro hijo se siente realmente especial.",
     rating: 5,
+    borderColor: "border-l-accent",
   },
   {
     name: "Ana P.",
     location: "Valencia",
     text: "Compramos la versión de tapa dura con el Pack Aventura. El unboxing fue mágico, mi hijo no se lo creía. Repetiremos seguro.",
     rating: 5,
+    borderColor: "border-l-secondary",
   },
 ];
 
 export default function Testimonials() {
   return (
-    <section id="familias" className="bg-white py-20 sm:py-28">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section id="familias" className="bg-cream py-24 sm:py-32">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
+          <span className="text-sm font-bold uppercase tracking-widest text-primary">
+            Familias
+          </span>
+          <h2 className="mt-3 font-display text-4xl font-bold text-text-main">
             Lo que dicen las familias
           </h2>
-          <p className="mt-4 text-lg text-text-secondary">
+          <p className="mt-4 text-lg text-text-soft">
             Más de cien familias ya han creado su propia aventura.
           </p>
         </div>
@@ -38,10 +44,8 @@ export default function Testimonials() {
           {TESTIMONIALS.map((testimonial) => (
             <div
               key={testimonial.name}
-              className="relative rounded-2xl border border-gray-100 bg-white p-8 shadow-sm"
+              className={`rounded-lg border border-stone-100 border-l-4 ${testimonial.borderColor} bg-white p-8 shadow-sm`}
             >
-              <Quote className="absolute top-6 right-6 h-8 w-8 text-cream-dark" />
-
               <div className="flex gap-0.5">
                 {[...Array(testimonial.rating)].map((_, i) => (
                   <Star
@@ -51,16 +55,16 @@ export default function Testimonials() {
                 ))}
               </div>
 
-              <p className="mt-4 leading-relaxed text-text-secondary">
+              <p className="mt-4 leading-relaxed text-text-soft">
                 &ldquo;{testimonial.text}&rdquo;
               </p>
 
               <div className="mt-6 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-cream font-bold text-brand">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-badge-bg font-display font-bold text-primary">
                   {testimonial.name[0]}
                 </div>
                 <div>
-                  <p className="font-semibold text-text-primary">
+                  <p className="font-display font-semibold text-text-main">
                     {testimonial.name}
                   </p>
                   <p className="text-sm text-text-muted">

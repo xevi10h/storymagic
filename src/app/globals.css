@@ -1,30 +1,37 @@
 @import "tailwindcss";
 
 :root {
-  --brand: #e96b3a;
-  --brand-dark: #d4592c;
-  --brand-light: #f5a882;
-  --cream: #fdf8f4;
-  --cream-dark: #f7ece2;
-  --text-primary: #1a1a2e;
-  --text-secondary: #4a4a68;
-  --text-muted: #8a8aa3;
-  --background: #ffffff;
-  --foreground: #1a1a2e;
+  --primary: #D2691E;
+  --primary-dark: #b85a18;
+  --secondary: #5D4037;
+  --cream: #F9F5F0;
+  --paper: #fcf9f8;
+  --accent: #8B4513;
+  --text-main: #2C1810;
+  --text-soft: #5d4037;
+  --text-muted: #A1887F;
+  --badge-bg: #F5E6D3;
+  --badge-border: #E6C9A8;
+  --background: #F9F5F0;
+  --foreground: #2C1810;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-brand: var(--brand);
-  --color-brand-dark: var(--brand-dark);
-  --color-brand-light: var(--brand-light);
+  --color-primary: var(--primary);
+  --color-primary-dark: var(--primary-dark);
+  --color-secondary: var(--secondary);
   --color-cream: var(--cream);
-  --color-cream-dark: var(--cream-dark);
-  --color-text-primary: var(--text-primary);
-  --color-text-secondary: var(--text-secondary);
+  --color-paper: var(--paper);
+  --color-accent: var(--accent);
+  --color-text-main: var(--text-main);
+  --color-text-soft: var(--text-soft);
   --color-text-muted: var(--text-muted);
+  --color-badge-bg: var(--badge-bg);
+  --color-badge-border: var(--badge-border);
   --font-sans: var(--font-plus-jakarta);
+  --font-display: var(--font-fredoka);
 }
 
 body {
@@ -34,4 +41,41 @@ body {
 
 html {
   scroll-behavior: smooth;
+}
+
+/* Torn paper edge between sections */
+.torn-edge-bottom {
+  position: relative;
+}
+.torn-edge-bottom::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 24px;
+  background: var(--cream);
+  mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 1200 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0 Q30 20 60 8 Q90 0 120 12 Q150 24 180 6 Q210 0 240 14 Q270 24 300 4 Q330 0 360 16 Q390 24 420 2 Q450 0 480 10 Q510 24 540 6 Q570 0 600 12 Q630 24 660 4 Q690 0 720 14 Q750 24 780 8 Q810 0 840 16 Q870 24 900 2 Q930 0 960 10 Q990 24 1020 6 Q1050 0 1080 12 Q1110 24 1140 4 Q1170 0 1200 8 L1200 24 L0 24 Z' fill='white'/%3E%3C/svg%3E");
+  mask-size: 100% 100%;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 1200 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0 Q30 20 60 8 Q90 0 120 12 Q150 24 180 6 Q210 0 240 14 Q270 24 300 4 Q330 0 360 16 Q390 24 420 2 Q450 0 480 10 Q510 24 540 6 Q570 0 600 12 Q630 24 660 4 Q690 0 720 14 Q750 24 780 8 Q810 0 840 16 Q870 24 900 2 Q930 0 960 10 Q990 24 1020 6 Q1050 0 1080 12 Q1110 24 1140 4 Q1170 0 1200 8 L1200 24 L0 24 Z' fill='white'/%3E%3C/svg%3E");
+  -webkit-mask-size: 100% 100%;
+  z-index: 10;
+}
+
+.torn-edge-top {
+  position: relative;
+}
+.torn-edge-top::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 24px;
+  background: var(--cream);
+  mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 1200 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 24 Q30 4 60 16 Q90 24 120 12 Q150 0 180 18 Q210 24 240 10 Q270 0 300 20 Q330 24 360 8 Q390 0 420 22 Q450 24 480 14 Q510 0 540 18 Q570 24 600 12 Q630 0 660 20 Q690 24 720 10 Q750 0 780 16 Q810 24 840 8 Q870 0 900 22 Q930 24 960 14 Q990 0 1020 18 Q1050 24 1080 12 Q1110 0 1140 20 Q1170 24 1200 16 L1200 0 L0 0 Z' fill='white'/%3E%3C/svg%3E");
+  mask-size: 100% 100%;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 1200 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 24 Q30 4 60 16 Q90 24 120 12 Q150 0 180 18 Q210 24 240 10 Q270 0 300 20 Q330 24 360 8 Q390 0 420 22 Q450 24 480 14 Q510 0 540 18 Q570 24 600 12 Q630 0 660 20 Q690 24 720 10 Q750 0 780 16 Q810 24 840 8 Q870 0 900 22 Q930 24 960 14 Q990 0 1020 18 Q1050 24 1080 12 Q1110 0 1140 20 Q1170 24 1200 16 L1200 0 L0 0 Z' fill='white'/%3E%3C/svg%3E");
+  -webkit-mask-size: 100% 100%;
+  z-index: 10;
 }
