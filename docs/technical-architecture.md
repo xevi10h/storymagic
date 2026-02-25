@@ -21,7 +21,7 @@
 - **Project ref:** `rmxjtugoyfaxxkiiayss`
 - **MCP configured:** Yes (in `.mcp.json`)
 
-## Data Model (Draft)
+## Data Model (Implemented)
 
 ```
 users

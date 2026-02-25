@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>StoryMagic - Constructor de Mundos</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Fredoka:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e96b3a",
+                        "primary-light": "#fceee9",
+                        "background-light": "#fcf9f8",
+                        "background-cream": "#f3ebe7",
+                        "background-dark": "#211511",
+                        "text-main": "#1b120e",
+                        "text-secondary": "#97634e",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"],
+                        "handwritten": ["Fredoka", "cursive"],
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(27, 18, 14, 0.1)',
+                        'glow': '0 0 15px rgba(233, 107, 58, 0.5)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .hotspot-ring {
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 0.8; }
+            100% { transform: scale(2.4); opacity: 0; }
+        }
+        .popover-arrow {
+            width: 0; 
+            height: 0; 
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid #ffffff;
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            filter: drop-shadow(0 4px 2px rgba(0,0,0,0.05));
+        }
+        /* Custom scrollbar for clean look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e7d6d0;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d4c0b8;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-main antialiased min-h-screen flex flex-col">
+<!-- Header -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f3ebe7] px-6 lg:px-10 py-3 bg-white/80 backdrop-blur-md sticky top-0 z-50">
+<div class="flex items-center gap-4 text-[#1b120e]">
+<div class="size-8 text-primary">
+<span class="material-symbols-outlined text-[32px]">auto_stories</span>
+</div>
+<h2 class="text-[#1b120e] text-xl font-bold leading-tight tracking-tight font-handwritten">StoryMagic</h2>
+</div>
+<!-- Desktop Nav -->
+<div class="hidden md:flex flex-1 justify-end gap-8 items-center">
+<div class="flex items-center gap-6">
+<a class="text-[#1b120e] text-sm font-medium hover:text-primary transition-colors" href="#">Inicio</a>
+<a class="text-[#1b120e] text-sm font-medium hover:text-primary transition-colors" href="#">Mis Cuentos</a>
+<a class="text-[#1b120e] text-sm font-medium hover:text-primary transition-colors" href="#">Perfil</a>
+</div>
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 ring-2 ring-primary/20" data-alt="User profile picture showing a smiling woman" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAqvGACe8wyFRojrEXZRQeYgi9-aT547i9gvLiRTIwTIUm7sHapYD6JiBKnhipRpIquNT62Py36jMh5gzwSdQuevD7k9LFvVszidGPoYYnIr6TYWhP3YI7P41rMd46TsrLL_YKl-XKo4v9Yy53sA_58FUhCZ7oGsoveqs3i-XyI95cK5Da86OM8PvQnj5PvMx_xvdTT3bKY5Wn87ppO6xJLJ1XDQndUVMILXvjGWpokQ-e8BeLQabthPtIv8Vh0jLF17dYGqQCFgOeK");'></div>
+</div>
+<!-- Mobile Menu Icon -->
+<button class="md:hidden text-text-main p-2">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col max-w-[1200px] w-full mx-auto p-4 md:p-6 lg:p-8">
+<!-- Progress & Title Section -->
+<div class="flex flex-col gap-6 mb-6">
+<!-- Progress Bar -->
+<div class="flex flex-col gap-2 max-w-md">
+<div class="flex justify-between items-end">
+<p class="text-text-secondary text-sm font-bold uppercase tracking-wider">Paso 4 de 7</p>
+<span class="text-xs text-text-secondary font-medium">57% completado</span>
+</div>
+<div class="h-3 rounded-full bg-[#e7d6d0] overflow-hidden">
+<div class="h-full rounded-full bg-primary transition-all duration-500 ease-out" style="width: 57%;"></div>
+</div>
+</div>
+<!-- Page Title -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+<div>
+<h1 class="text-3xl md:text-4xl font-bold text-text-main font-handwritten mb-2">Constructor de Mundos</h1>
+<p class="text-text-secondary max-w-xl">
+                        Toca los <span class="text-primary font-bold inline-flex items-center gap-1"><span class="material-symbols-outlined text-sm">spark</span> destellos mágicos</span> en la ilustración para personalizar el clima, el personaje y el destino.
+                    </p>
+</div>
+<!-- Action Buttons (Desktop) -->
+<div class="hidden md:flex gap-3">
+<button class="px-6 py-3 rounded-full border-2 border-[#e7d6d0] text-text-secondary font-bold hover:bg-[#e7d6d0]/20 transition-colors">
+                        Atrás
+                    </button>
+<button class="px-8 py-3 rounded-full bg-primary text-white font-bold shadow-lg shadow-primary/30 hover:bg-primary/90 transition-transform hover:-translate-y-0.5 active:translate-y-0 flex items-center gap-2">
+<span>Continuar</span>
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Interactive Canvas Container -->
+<div class="relative w-full aspect-[4/3] md:aspect-[16/9] lg:aspect-[21/9] bg-[#f3ebe7] rounded-2xl md:rounded-3xl overflow-hidden shadow-soft border-4 border-white group select-none">
+<!-- Background Image (The "World") -->
+<div class="absolute inset-0 bg-cover bg-center transition-all duration-700 ease-in-out" data-alt="Illustration of a magical landscape with rolling green hills and a bright blue sky" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuChOHilu8B_JDKnu3vYveR_0dPuiv38pikRzKud6lDYhxT8pn3-XC9vM1Sa3uZC_dW6hYotUkDCKNkGhfRmh2Rvo0NEsB7rwCwUDiP4Jboh46CTVByxnRmcb1vL6hjf0fKHa-R-mXy6tDwi3pi5NGKH_pLFo5f8FF_F1Q4AM3hELOkY7Uc55_HO-4Mg191jVxw1GkQiKuLe3zjkWF00ROylhqBwx_OuEDfa7OJd0HbkzfvwgcUqGzDmA2xwlCWjrU2eWAyHiWTWxHtV");'>
+<!-- Overlay gradient for better text visibility if needed -->
+<div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none"></div>
+</div>
+<!-- HOTSPOT 1: Sky / Weather (Top Left) -->
+<div class="absolute top-[15%] left-[20%] z-10">
+<!-- Hotspot Trigger -->
+<button aria-label="Cambiar clima" class="relative group/hotspot cursor-pointer outline-none focus:outline-none">
+<div class="absolute -inset-4 rounded-full bg-white/30 blur-sm group-hover/hotspot:bg-white/50 transition-all"></div>
+<div class="absolute -inset-8 border border-white/40 rounded-full hotspot-ring"></div>
+<div class="relative flex items-center justify-center size-12 md:size-14 bg-white/90 backdrop-blur rounded-full shadow-glow text-primary hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-3xl">sunny</span>
+</div>
+</button>
+<!-- Popover Menu (Visible state simulated for demo) -->
+<div class="hidden group-focus-within/hotspot:block absolute bottom-[140%] left-1/2 -translate-x-1/2 w-64 md:w-72 bg-white rounded-2xl shadow-xl p-4 animate-in fade-in zoom-in-95 duration-200 origin-bottom z-50">
+<h3 class="font-handwritten text-lg text-center text-text-main mb-3">¿Cómo está el clima?</h3>
+<div class="grid grid-cols-3 gap-2">
+<button class="flex flex-col items-center gap-1 p-2 rounded-xl bg-primary/10 border-2 border-primary text-primary transition-all hover:scale-105">
+<span class="material-symbols-outlined text-2xl">sunny</span>
+<span class="text-[10px] font-bold">Soleado</span>
+</button>
+<button class="flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-background-light border-2 border-transparent hover:border-[#e7d6d0] text-text-secondary transition-all">
+<span class="material-symbols-outlined text-2xl">cloud</span>
+<span class="text-[10px] font-bold">Nublado</span>
+</button>
+<button class="flex flex-col items-center gap-1 p-2 rounded-xl hover:bg-background-light border-2 border-transparent hover:border-[#e7d6d0] text-text-secondary transition-all">
+<span class="material-symbols-outlined text-2xl">thunderstorm</span>
+<span class="text-[10px] font-bold">Tormenta</span>
+</button>
+</div>
+<div class="popover-arrow"></div>
+</div>
+</div>
+<!-- HOTSPOT 2: Character (Center Bottom) -->
+<div class="absolute bottom-[20%] left-[50%] -translate-x-1/2 z-20">
+<button aria-label="Personalizar personaje" class="relative group/hotspot cursor-pointer outline-none focus:outline-none">
+<div class="absolute -inset-4 rounded-full bg-white/30 blur-sm group-hover/hotspot:bg-white/50 transition-all"></div>
+<div class="absolute -inset-8 border border-white/40 rounded-full hotspot-ring animation-delay-500"></div>
+<div class="relative flex items-center justify-center size-16 md:size-20 bg-primary text-white rounded-full shadow-glow border-4 border-white hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-4xl md:text-5xl">face</span>
+</div>
+</button>
+<!-- Popover Menu (Visible for demo) -->
+<div class="block absolute bottom-[130%] left-1/2 -translate-x-1/2 w-72 bg-white rounded-2xl shadow-xl p-4 animate-in fade-in slide-in-from-bottom-4 duration-300 z-50">
+<div class="flex justify-between items-center mb-3">
+<h3 class="font-handwritten text-lg text-text-main">Elige un traje</h3>
+<button class="text-text-secondary hover:text-primary"><span class="material-symbols-outlined text-sm">close</span></button>
+</div>
+<div class="grid grid-cols-3 gap-3">
+<button class="group flex flex-col items-center gap-2">
+<div class="size-16 rounded-full bg-[#f3ebe7] flex items-center justify-center border-2 border-transparent group-hover:border-primary group-hover:bg-primary/5 transition-all">
+<span class="material-symbols-outlined text-3xl text-text-secondary group-hover:text-primary">steps</span>
+</div>
+<span class="text-xs font-bold text-text-secondary group-hover:text-primary">Explorador</span>
+</button>
+<button class="group flex flex-col items-center gap-2">
+<div class="size-16 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary transition-all relative">
+<span class="absolute -top-1 -right-1 bg-primary text-white text-[10px] px-1.5 py-0.5 rounded-full">✓</span>
+<span class="material-symbols-outlined text-3xl text-primary">auto_fix_high</span>
+</div>
+<span class="text-xs font-bold text-primary">Mago</span>
+</button>
+<button class="group flex flex-col items-center gap-2">
+<div class="size-16 rounded-full bg-[#f3ebe7] flex items-center justify-center border-2 border-transparent group-hover:border-primary group-hover:bg-primary/5 transition-all">
+<span class="material-symbols-outlined text-3xl text-text-secondary group-hover:text-primary">shield</span>
+</div>
+<span class="text-xs font-bold text-text-secondary group-hover:text-primary">Caballero</span>
+</button>
+</div>
+<div class="popover-arrow"></div>
+</div>
+</div>
+<!-- HOTSPOT 3: Ground / Destination (Bottom Right) -->
+<div class="absolute bottom-[25%] right-[15%] z-10">
+<button aria-label="Elegir camino" class="relative group/hotspot cursor-pointer outline-none focus:outline-none">
+<div class="absolute -inset-4 rounded-full bg-white/30 blur-sm group-hover/hotspot:bg-white/50 transition-all"></div>
+<div class="absolute -inset-8 border border-white/40 rounded-full hotspot-ring animation-delay-1000"></div>
+<div class="relative flex items-center justify-center size-12 md:size-14 bg-white/90 backdrop-blur rounded-full shadow-glow text-primary hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-3xl">map</span>
+</div>
+</button>
+<!-- Popover Menu (Hidden by default) -->
+<div class="hidden group-focus-within/hotspot:block absolute bottom-[140%] left-1/2 -translate-x-1/2 w-64 bg-white rounded-2xl shadow-xl p-4 animate-in fade-in zoom-in-95 duration-200 origin-bottom z-50">
+<h3 class="font-handwritten text-lg text-center text-text-main mb-3">¿A dónde vamos?</h3>
+<div class="flex flex-col gap-2">
+<button class="flex items-center gap-3 p-2 rounded-xl hover:bg-primary/5 border border-transparent hover:border-primary/30 text-left transition-all">
+<div class="size-10 rounded-lg bg-[#e7d6d0] flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-text-secondary">forest</span>
+</div>
+<div>
+<span class="block text-sm font-bold text-text-main">Bosque Encantado</span>
+<span class="block text-xs text-text-secondary">Lleno de misterios</span>
+</div>
+</button>
+<button class="flex items-center gap-3 p-2 rounded-xl bg-primary/5 border border-primary text-left transition-all">
+<div class="size-10 rounded-lg bg-primary text-white flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined">castle</span>
+</div>
+<div>
+<span class="block text-sm font-bold text-text-main">Castillo Real</span>
+<span class="block text-xs text-text-secondary">Donde vive el rey</span>
+</div>
+</button>
+<button class="flex items-center gap-3 p-2 rounded-xl hover:bg-primary/5 border border-transparent hover:border-primary/30 text-left transition-all">
+<div class="size-10 rounded-lg bg-[#e7d6d0] flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-text-secondary">rocket_launch</span>
+</div>
+<div>
+<span class="block text-sm font-bold text-text-main">Montaña Espacial</span>
+<span class="block text-xs text-text-secondary">Un viaje a las estrellas</span>
+</div>
+</button>
+</div>
+<div class="popover-arrow"></div>
+</div>
+</div>
+<!-- Instructional Tooltip (Optional but helpful) -->
+<div class="absolute top-4 right-4 bg-white/90 backdrop-blur px-4 py-2 rounded-xl shadow-sm border border-white/50 animate-in fade-in slide-in-from-top-4 delay-700">
+<p class="text-sm font-medium text-text-secondary flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-lg">touch_app</span>
+                    Modo interactivo activo
+                </p>
+</div>
+</div>
+<!-- Mobile Action Bar (Sticky Bottom) -->
+<div class="md:hidden sticky bottom-4 mt-6 z-40">
+<div class="flex gap-3 bg-white/90 backdrop-blur p-2 rounded-full shadow-lg border border-[#f3ebe7]">
+<button class="flex-1 px-4 py-3 rounded-full border border-[#e7d6d0] text-text-secondary font-bold text-sm">
+                    Atrás
+                </button>
+<button class="flex-[2] px-4 py-3 rounded-full bg-primary text-white font-bold text-sm shadow-md flex items-center justify-center gap-2">
+                    Continuar
+                    <span class="material-symbols-outlined text-lg">arrow_forward</span>
+</button>
+</div>
+</div>
+</main>
+</body></html>

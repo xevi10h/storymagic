@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Paso 1: Fusión Maestra Estructural</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&amp;family=Fredoka:wght@300..700&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#E86C3A",
+                        "primary-light": "#fdf1ec",
+                        "background-cream": "#FFF8F0",
+                        "text-main": "#4a3b32",
+                        "text-sub": "#8c7b75",
+                    },
+                    fontFamily: {
+                        "body": ["Nunito", "sans-serif"],
+                        "magic": ["Fredoka", "sans-serif"],
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem", 
+                        "lg": "1.5rem", 
+                        "xl": "2rem", 
+                        "2xl": "3rem", 
+                        "card": "24px",
+                        "full": "9999px"
+                    },
+                    backgroundImage: {
+                        'paper-texture': "url('data:image/svg+xml,%3Csvg width=\\'100\\' height=\\'100\\' viewBox=\\'0 0 100 100\\' xmlns=\\'http://www.w3.org/2000/svg\\'%3E%3Cfilter id=\\'noise\\'%3E%3CfeTurbulence type=\\'fractalNoise\\' baseFrequency=\\'0.8\\' numOctaves=\\'4\\' stitchTiles=\\'stitch\\'/%3E%3C/filter%3E%3Crect width=\\'100\\' height=\\'100\\' filter=\\'url(%23noise)\\' opacity=\\'0.08\\'/%3E%3C/svg%3E')",
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .card-shadow {
+            box-shadow: 0 10px 40px -10px rgba(232, 108, 58, 0.1);
+        }
+        .card-selected {
+            border-color: #E86C3A;
+            background-color: #fffbf9;
+            box-shadow: 0 10px 40px -10px rgba(232, 108, 58, 0.25);
+        }.font-nunito {
+            font-family: 'Nunito', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-background-cream font-body text-text-main overflow-x-hidden min-h-screen relative">
+<div class="fixed inset-0 pointer-events-none opacity-40 bg-paper-texture mix-blend-multiply z-0"></div>
+<div class="fixed top-24 left-10 text-primary/20 pointer-events-none animate-pulse z-0">
+<span class="material-symbols-outlined text-6xl">star</span>
+</div>
+<div class="fixed bottom-20 right-20 text-primary/10 pointer-events-none z-0">
+<span class="material-symbols-outlined text-8xl">auto_awesome</span>
+</div>
+<div class="fixed top-1/3 right-10 text-primary/20 pointer-events-none z-0">
+<span class="material-symbols-outlined text-4xl">star_rate</span>
+</div>
+<div class="relative flex h-full min-h-screen w-full flex-col z-10">
+<header class="flex items-center justify-between px-8 py-6 w-full max-w-7xl mx-auto relative z-30">
+<div class="flex items-center gap-3 text-text-main w-1/4">
+<div class="size-10 bg-primary/10 rounded-full flex items-center justify-center text-primary">
+<span class="material-symbols-outlined filled">auto_stories</span>
+</div>
+<h2 class="text-text-main text-2xl font-magic font-bold tracking-tight hidden sm:block">StoryMagic</h2>
+</div>
+<div class="hidden md:flex flex-col items-center w-2/4 max-w-md gap-2">
+<div class="flex justify-between w-full text-xs font-bold text-primary uppercase tracking-wider px-1">
+<span>Paso 1 de 7</span>
+</div>
+<div class="h-2.5 w-full bg-gray-200 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full w-[14%] shadow-sm transition-all duration-500 ease-out"></div>
+</div>
+</div>
+<div class="w-1/4 flex justify-end">
+<button aria-label="Cerrar" class="flex items-center justify-center size-10 rounded-full bg-gray-100 hover:bg-gray-200 text-text-sub transition-colors duration-200">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+</header>
+<div class="md:hidden px-6 pb-4 w-full">
+<div class="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full w-[14%]"></div>
+</div>
+</div>
+<main class="flex-1 flex flex-col items-center w-full max-w-6xl mx-auto px-6 pb-32 pt-8">
+<div class="text-center mb-12 space-y-3 max-w-3xl">
+<h1 class="text-text-main font-magic text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+            ¿Cómo quieres crear esta aventura?
+        </h1>
+<p class="text-text-sub font-body text-lg md:text-xl font-medium leading-relaxed max-w-2xl mx-auto">
+            Elige la experiencia perfecta para hoy. Puedes personalizar cada detalle o dejar que la magia te sorprenda.
+        </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl">
+<div class="group relative cursor-pointer flex flex-col bg-white rounded-card border-2 border-transparent hover:border-primary/40 transition-all duration-300 card-shadow hover:-translate-y-1 p-6 md:p-8 h-full">
+<div class="absolute top-6 right-6 z-20">
+<div class="size-8 rounded-full border-2 border-white bg-white/80 backdrop-blur-sm shadow-sm group-hover:border-primary flex items-center justify-center transition-all indicator-ring">
+<div class="size-4 rounded-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
+</div>
+</div>
+<div class="w-full aspect-[4/3] rounded-2xl bg-gray-100 mb-6 overflow-hidden relative shadow-inner">
+<img alt="Niño leyendo un libro concentrado" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjd-aoOpygR8MrGzzCHcxxp3Z8Rz-wnvSFvizt10jeqpldSJ8J0jxtwMCfrHVcWiHc3_M6uTXMYpJnI4VX2_Eqe2XpXxgY6nccF9N-d9z-fImO8Xi3olYO2rltoK3KaEENYNad5EHpvrdITzMLOYBB7pLUgNHRPQylguMnsYx1Slw1zQ49CxSl4U_yTFz8kjQIBbMSl15TFtLnYWvDqZ0QfkaXrDM493VGIy-8BgGRxuv5MPM6gglzmFX35Aowr24jLIbYpZN0-1m-"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-60"></div>
+</div>
+<div class="flex flex-col gap-2 flex-grow">
+<h3 class="text-text-main font-magic text-2xl font-bold">Creo yo solo/a</h3>
+<p class="text-primary font-bold text-sm tracking-wide uppercase font-body">Sorpresa Mágica</p>
+<p class="text-text-sub text-base leading-relaxed mt-2 font-body">
+                    Diseña el cuento en secreto para dárselo como un regalo sorpresa inolvidable. Tú tienes el control total de la historia y los detalles.
+                </p>
+</div>
+</div>
+<div class="group relative cursor-pointer flex flex-col rounded-card border-2 transition-all duration-300 card-shadow hover:-translate-y-1 p-6 md:p-8 card-selected ring-4 ring-primary/10 h-full">
+<div class="absolute top-6 right-6 z-20">
+<div class="size-8 rounded-full border-2 border-primary bg-primary shadow-sm flex items-center justify-center transition-all indicator-ring">
+<span class="material-symbols-outlined text-white text-lg font-bold">check</span>
+</div>
+</div>
+<div class="w-full aspect-[4/3] rounded-2xl bg-gray-100 mb-6 overflow-hidden relative shadow-inner">
+<img alt="Padre e hijo leyendo juntos un libro" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHrn-Dhfxi3HjHNJY2G48oMf5eBhsdfcXkg8zCN4ckdnY3HRII7lMcfJdaU-aLDDZdmaluSdXeSljJQbMJXErn9hwUM-qFJnRVSkiPX3ZYBtk5iTeKlZirM4QnVe7whOn-PxUTuCm2tHsrSLiUWu5VUsMRd3tebWWBDzS6e8aewctvhtoe0OyQzwZegNxoM-DFqSBZR1JrBXMeJVmF6prhzYpfEohTtyaewr7TLoHoTo17uBZDt7dHLg7o1BYXfeENGooHC_4VfxhV"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/20 to-transparent opacity-60"></div>
+</div>
+<div class="flex flex-col gap-2 flex-grow">
+<h3 class="text-text-main font-magic text-2xl font-bold text-primary">Creamos juntos</h3>
+<p class="text-primary font-bold text-sm tracking-wide uppercase font-body">Aventura Compartida</p>
+<p class="text-text-sub text-base leading-relaxed mt-2 font-body">
+                    Una experiencia interactiva diseñada para disfrutar en familia. Elige personajes, colores y giros de la trama junto a tu peque.
+                </p>
+</div>
+</div>
+</div>
+</main>
+<div class="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-background-cream via-background-cream/95 to-transparent flex justify-center z-40">
+<button class="shadow-xl shadow-primary/30 bg-primary hover:bg-orange-600 text-white font-bold text-lg px-12 py-4 rounded-full transition-all hover:scale-105 active:scale-95 flex items-center gap-3 min-w-[240px] justify-center font-body">
+<span>Siguiente</span>
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+<script>
+    // Interaction Logic for Card Selection
+    const cards = document.querySelectorAll('.group.relative.cursor-pointer');
+    cards.forEach(card => {
+        card.addEventListener('click', () => {
+            // Remove selected class from all
+            cards.forEach(c => {
+                c.classList.remove('card-selected', 'ring-4', 'ring-primary/10');
+                c.style.borderColor = 'transparent';
+                // Reset title color
+                const title = c.querySelector('h3');
+                title.classList.remove('text-primary');
+                // Reset radio
+                const indicatorContainer = c.querySelector('.indicator-ring');
+                indicatorContainer.className = 'size-8 rounded-full border-2 border-white bg-white/80 backdrop-blur-sm shadow-sm group-hover:border-primary flex items-center justify-center transition-all indicator-ring';
+                indicatorContainer.innerHTML = '<div class="size-4 rounded-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>';
+            });
+            // Add selected class to clicked
+            card.classList.add('card-selected', 'ring-4', 'ring-primary/10');
+            // Highlight title
+            const title = card.querySelector('h3');
+            title.classList.add('text-primary');
+            // Set radio active
+            const indicatorContainer = card.querySelector('.indicator-ring');
+            indicatorContainer.className = 'size-8 rounded-full border-2 border-primary bg-primary shadow-sm flex items-center justify-center transition-all indicator-ring';
+            indicatorContainer.innerHTML = '<span class="material-symbols-outlined text-white text-lg font-bold">check</span>';
+        });
+    });
+</script>
+
+</body></html>

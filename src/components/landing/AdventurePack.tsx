@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function AdventurePack() {
   return (
-    <section className="relative overflow-hidden bg-[#5D4037] py-24 text-[#FAF3E0]">
+    <section className="relative overflow-hidden bg-pack-bg py-24 text-pack-text">
       <div
         className="absolute inset-0 opacity-10"
         style={{
@@ -11,23 +11,23 @@ export default function AdventurePack() {
         }}
       />
       <div className="relative z-10 mx-auto max-w-6xl px-4">
-        <div className="flex flex-col items-center gap-12 rounded-2xl border border-[#6D4C41] bg-[#4E342E] p-8 shadow-2xl md:flex-row md:p-16">
+        <div className="flex flex-col items-center gap-12 rounded-2xl border border-border-warm bg-pack-inner p-8 shadow-2xl md:flex-row md:p-16">
           {/* Left — Text */}
           <div className="flex-1 text-center md:text-left">
-            <span className="font-body mb-4 inline-block rounded bg-[#8D6E63] px-3 py-1 text-xs font-bold uppercase tracking-widest text-white">
+            <span className="mb-4 inline-block rounded bg-pack-badge px-3 py-1 text-xs font-bold uppercase tracking-widest text-white">
               Experiencia Completa
             </span>
             <h2 className="mb-6 font-display text-3xl font-bold text-white md:text-5xl">
               Pack Aventura Artesanal
             </h2>
-            <p className="font-body mb-8 text-lg leading-relaxed text-[#D7CCC8]">
+            <p className="mb-8 text-lg leading-relaxed text-pack-muted">
               La magia se extiende fuera del libro. Incluye{" "}
               <strong className="text-white">carta física personalizada</strong> del personaje
               principal, hoja de pegatinas mate y marcapáginas de madera.
             </p>
             <Link
               href="/crear"
-              className="font-body mx-auto flex items-center gap-2 rounded-lg bg-[#D2691E] px-8 py-4 font-bold text-white shadow-lg transition-transform hover:-translate-y-1 hover:bg-[#A0522D] md:mx-0"
+              className="mx-auto flex items-center gap-2 rounded-lg bg-primary px-8 py-4 font-bold text-white shadow-lg transition-transform hover:-translate-y-1 hover:bg-primary-hover md:mx-0"
             >
               <span className="material-symbols-outlined">card_giftcard</span>
               Añadir extras físicos (+12.90€)

@@ -22,14 +22,14 @@ The roadmap is divided into 6 phases, from foundation to scale. Each phase has c
 ---
 
 ## Phase 1: Project Setup & Landing Page
-> **Status: NOT STARTED**
+> **Status: COMPLETE**
 
 **Deliverables:**
-- [ ] Initialize Next.js project with TypeScript
-- [ ] Configure Supabase (database, auth)
-- [ ] Deploy base project to Vercel
+- [x] Initialize Next.js project with TypeScript
+- [x] Configure Supabase (database, auth)
+- [x] Deploy base project to Vercel
 - [ ] Register domain (storymagic.es or alternative)
-- [ ] Implement landing page from Stitch design
+- [x] Implement landing page from Stitch design
 - [ ] Set up basic SEO (meta tags, Open Graph, structured data)
 - [ ] Email capture form (waitlist)
 - [ ] Configure analytics (Vercel Analytics or Plausible)
@@ -44,20 +44,20 @@ The roadmap is divided into 6 phases, from foundation to scale. Each phase has c
 ---
 
 ## Phase 2: Story Builder Flow
-> **Status: NOT STARTED**
+> **Status: IN PROGRESS** (frontend complete, backend wiring pending)
 
 **Deliverables:**
-- [ ] Step 1: Mode selection (solo / together)
-- [ ] Step 2: Character creation form (with saved profiles)
-- [ ] Step 3: Adventure/template selection
-- [ ] Step 4 Solo Mode: Narrative configuration with live preview
-- [ ] Step 4 Together Mode: Interactive illustrated choices
-- [ ] Step 5: Dedication message + ending selection
+- [x] Step 1: Mode selection (solo / together)
+- [x] Step 2: Character creation form (with saved profiles)
+- [x] Step 3: Adventure/template selection
+- [x] Step 4 Solo Mode: Narrative configuration with live preview
+- [x] Step 4 Together Mode: Interactive illustrated choices
+- [x] Step 5: Dedication message + ending selection
 - [ ] Step 6: Generation animation (magic loading screen)
 - [ ] Step 7: Book preview (page flipper)
-- [ ] User authentication (required before Step 5 or checkout)
-- [ ] Save/resume draft functionality
-- [ ] Supabase schema: users, characters, stories tables
+- [x] User authentication (Supabase Auth: email + Google OAuth)
+- [x] Save story draft to Supabase (character + story + decisions via API route)
+- [x] Supabase schema: profiles, characters, stories, story_illustrations, orders, sagas tables
 
 **Key decisions:**
 - Step 4: confirm which variants to implement (recommendation: A + C)
@@ -69,21 +69,24 @@ The roadmap is divided into 6 phases, from foundation to scale. Each phase has c
 ---
 
 ## Phase 3: AI Generation Engine
-> **Status: NOT STARTED**
+> **Status: IN PROGRESS** (text generation done, images mocked)
 
 **Deliverables:**
-- [ ] Claude API integration for story text generation
-- [ ] Prompt engineering: master prompt per template (5 templates)
-- [ ] Story output format: 10 scenes × (title + text + image prompt)
-- [ ] Image generation integration (Flux or DALL-E 3)
+- [x] Gemini 3 Flash integration for story text generation (free tier, plain fetch)
+- [x] Prompt engineering: master prompt with template themes and narrative arc
+- [x] Story output format: 8 scenes × (title + text + image prompt)
+- [x] Generation pipeline: text → mock images → save to Supabase
+- [x] Step 6 animated generation page with whimsical messages
+- [x] Illustration library table (caches images by description hash)
+- [ ] Image generation integration (Flux Schnell ~$0.002/img)
 - [ ] Character consistency strategy (reference sheets, seed locking)
 - [ ] Style guide enforcement in image prompts
 - [ ] Quality review: test 20+ full book generations
-- [ ] Generation pipeline: text → images → combine into story object
 - [ ] Error handling: retry logic, fallback images, timeout management
 
 **Key decisions:**
-- Image provider: Flux vs DALL-E 3 vs Midjourney API
+- **DECIDED** — Story AI: Gemini 3 Flash (free tier)
+- **DECIDED** — Image AI: Flux Schnell (cheapest at ~$0.002/img, mocked for now)
 - Character consistency approach for MVP
 - Acceptable generation time (target: < 5 min)
 
@@ -161,7 +164,7 @@ These decisions need to be made before or during implementation:
 |---|----------|--------|-------------|--------|
 | 1 | Domain name | Branding | Phase 1 | PENDING — decide later, not a blocker |
 | 2 | Step 4 variants | Dev scope | Phase 2 | **DECIDED** — Variant A (interactive illustrated choices) for "Juntos" mode + Variant C (narrative config with live preview) for "Solo" mode |
-| 3 | Auth method (email + social) | UX flow | Phase 2 | PENDING |
+| 3 | Auth method (email + social) | UX flow | Phase 2 | **DECIDED** — Supabase Auth (email + Google OAuth) |
 | 4 | Image AI provider | Quality + cost | Phase 3 | **DECIDED** — DALL-E |
 | 5 | Character consistency approach | Quality | Phase 3 | PENDING |
 | 6 | PDF engine | Architecture | Phase 4 | **DECIDED** — Node.js (keeps full stack in one language) |
@@ -172,4 +175,4 @@ These decisions need to be made before or during implementation:
 
 ## Current Focus
 
-**Next action:** Phase 1 — Initialize the project and build the landing page.
+**Next action:** Phase 2 — Implement auth, connect creation flow to Supabase, build Steps 6-7.

@@ -44,7 +44,9 @@ export default function RootLayout({
         className={`${plusJakarta.variable} ${fredoka.variable} font-sans bg-cream overflow-x-hidden relative text-text-main antialiased`}
       >
         <div className="texture-overlay" />
-        {children}
+        <div className="relative z-[1]">
+          {children}
+        </div>
       </body>
     </html>
   );

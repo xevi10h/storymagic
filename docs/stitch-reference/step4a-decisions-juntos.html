@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>StoryMagic - Paso 4: Aventura Compartida</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#e96b3a",
+              "primary-light": "#fbdcd1", 
+              "background-light": "#FFFDF5", // Creamy background as requested
+              "background-dark": "#211511",
+              "paper": "#fcf9f8",
+              "gold": "#FCD34D",
+            },
+            fontFamily: {
+              "display": ["Plus Jakarta Sans", "sans-serif"]
+            },
+            borderRadius: {
+              "DEFAULT": "1rem", 
+              "lg": "2rem", 
+              "xl": "3rem", 
+              "full": "9999px"
+            },
+            backgroundImage: {
+              'star-pattern': "radial-gradient(#FCD34D 1.5px, transparent 1.5px), radial-gradient(#FCD34D 1.5px, transparent 1.5px)",
+            },
+            backgroundSize: {
+              'star-pattern': '40px 40px',
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      /* Custom styles for book effect */
+      .book-shadow {
+        box-shadow: 
+          0 4px 6px -1px rgba(0, 0, 0, 0.1), 
+          0 2px 4px -1px rgba(0, 0, 0, 0.06),
+          inset 20px 0 50px rgba(0,0,0,0.05),
+          inset -20px 0 50px rgba(0,0,0,0.05);
+      }
+      .page-texture {
+        background-image: linear-gradient(to right, #f8f1ef 0%, #fffdfc 10%, #fffdfc 90%, #f8f1ef 100%);
+      }
+      .spine-shadow {
+        background: linear-gradient(to right, transparent, rgba(0,0,0,0.1) 45%, rgba(0,0,0,0.1) 55%, transparent);
+      }
+      
+      /* Floating animation for spheres */
+      @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
+      }
+      .animate-float {
+        animation: float 4s ease-in-out infinite;
+      }
+      .animate-float-delay-1 {
+        animation: float 4.5s ease-in-out infinite;
+        animation-delay: 0.5s;
+      }
+      .animate-float-delay-2 {
+        animation: float 5s ease-in-out infinite;
+        animation-delay: 1s;
+      }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display min-h-screen flex flex-col overflow-x-hidden selection:bg-primary selection:text-white">
+<!-- Decorative Background Elements -->
+<div class="fixed inset-0 pointer-events-none opacity-40 bg-star-pattern z-0" style="background-position: 0 0, 20px 20px;"></div>
+<!-- Top Navigation (Simplified for Focus) -->
+<header class="relative z-20 flex items-center justify-between px-6 py-4 lg:px-12 bg-white/80 dark:bg-background-dark/80 backdrop-blur-sm border-b border-[#f3ebe7]">
+<div class="flex items-center gap-3 text-background-dark dark:text-white">
+<div class="size-8 text-primary">
+<svg fill="currentColor" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M39.475 21.6262C40.358 21.4363 40.6863 21.5589 40.7581 21.5934C40.7876 21.655 40.8547 21.857 40.8082 22.3336C40.7408 23.0255 40.4502 24.0046 39.8572 25.2301C38.6799 27.6631 36.5085 30.6631 33.5858 33.5858C30.6631 36.5085 27.6632 38.6799 25.2301 39.8572C24.0046 40.4502 23.0255 40.7407 22.3336 40.8082C21.8571 40.8547 21.6551 40.7875 21.5934 40.7581C21.5589 40.6863 21.4363 40.358 21.6262 39.475C21.8562 38.4054 22.4689 36.9657 23.5038 35.2817C24.7575 33.2417 26.5497 30.9744 28.7621 28.762C30.9744 26.5497 33.2417 24.7574 35.2817 23.5037C36.9657 22.4689 38.4054 21.8562 39.475 21.6262ZM4.41189 29.2403L18.7597 43.5881C19.8813 44.7097 21.4027 44.9179 22.7217 44.7893C24.0585 44.659 25.5148 44.1631 26.9723 43.4579C29.9052 42.0387 33.2618 39.5667 36.4142 36.4142C39.5667 33.2618 42.0387 29.9052 43.4579 26.9723C44.1631 25.5148 44.659 24.0585 44.7893 22.7217C44.9179 21.4027 44.7097 19.8813 43.5881 18.7597L29.2403 4.41187C27.8527 3.02428 25.8765 3.02573 24.2861 3.36776C22.6081 3.72863 20.7334 4.58419 18.8396 5.74801C16.4978 7.18716 13.9881 9.18353 11.5858 11.5858C9.18354 13.988 7.18717 16.4978 5.74802 18.8396C4.58421 20.7334 3.72865 22.6081 3.36778 24.2861C3.02574 25.8765 3.02429 27.8527 4.41189 29.2403Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-tight">StoryMagic</h2>
+</div>
+<!-- Playful Progress Tracker - Version B -->
+<div class="hidden md:flex items-center gap-3 bg-white dark:bg-zinc-800 rounded-full px-4 py-2 border border-primary/20 shadow-sm">
+<span class="material-symbols-outlined text-primary text-xl">auto_stories</span>
+<div class="flex items-center gap-1">
+<span class="text-sm font-bold text-background-dark dark:text-white">Paso 4</span>
+<span class="text-sm text-gray-500">de 7</span>
+</div>
+<div class="flex gap-1 ml-2">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<div class="w-2 h-2 rounded-full bg-primary ring-2 ring-primary/30"></div>
+<div class="w-2 h-2 rounded-full bg-gray-200 dark:bg-gray-600"></div>
+<div class="w-2 h-2 rounded-full bg-gray-200 dark:bg-gray-600"></div>
+<div class="w-2 h-2 rounded-full bg-gray-200 dark:bg-gray-600"></div>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center justify-center p-2 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined">volume_up</span>
+</button>
+<div class="w-10 h-10 rounded-full border-2 border-primary overflow-hidden" data-alt="User avatar">
+<img alt="User Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJoZBkjBtfa7NW9LunJJ8fyMAp-etaqZHxdZ-eqttzlNHHvzazf3qeDZAOHFI9K20kSpq-BUH8hHPaODPtm6GqS0X6sgrRhDqkXTvoC8ye301G35MJdd7mOUJjnWVzFXSBpSxxBfpQ6rJgGiqQCVe2hLldBv-fX0AaPHReIB1xNa-3sO2Lc6nt2U6FMN_5PkecwmKh9aMYY075zxY8tD3-w37196ivnV8Ky8rneQtnVWfd1teQGSyaX_ahg-3YLxD7b51bEBdR10RD"/>
+</div>
+</div>
+</header>
+<!-- Main Content Area: The Magic Book -->
+<main class="relative z-10 flex-1 flex flex-col items-center justify-center p-4 md:p-8 lg:p-12">
+<!-- Floating Prompt / Thought Bubble -->
+<div class="relative z-30 mb-8 max-w-2xl w-full text-center animate-float">
+<div class="relative bg-white dark:bg-zinc-800 rounded-[3rem] px-8 py-6 shadow-xl border-4 border-primary/20 inline-block">
+<div class="absolute -bottom-4 left-1/2 -translate-x-1/2 w-8 h-8 bg-white dark:bg-zinc-800 border-b-4 border-r-4 border-primary/20 transform rotate-45"></div>
+<h1 class="text-2xl md:text-4xl font-black text-background-dark dark:text-white mb-2 tracking-tight">
+                    ¿Qué encuentra el héroe en el bosque?
+                </h1>
+<p class="text-primary font-medium text-lg">
+                    ¡Elige el siguiente paso de nuestra historia!
+                </p>
+</div>
+</div>
+<!-- The Open Book Container -->
+<div class="relative w-full max-w-6xl aspect-[16/10] md:aspect-[16/9] lg:aspect-[2/1] bg-[#fffdfc] dark:bg-neutral-100 rounded-[3rem] book-shadow overflow-hidden flex page-texture border-8 border-[#8B5E3C] dark:border-[#5D4037]">
+<!-- Left Page -->
+<div class="flex-1 relative p-6 md:p-12 flex flex-col items-center justify-center border-r border-gray-200/50">
+<!-- Page Number decoration -->
+<span class="absolute bottom-6 left-8 text-gray-400 font-serif italic text-lg">12</span>
+<!-- Background decorative element for page -->
+<div class="absolute inset-0 opacity-5 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/notebook.png')]"></div>
+</div>
+<!-- Spine -->
+<div class="absolute left-1/2 top-0 bottom-0 w-16 -ml-8 z-10 spine-shadow pointer-events-none"></div>
+<!-- Right Page -->
+<div class="flex-1 relative p-6 md:p-12 flex flex-col items-center justify-center">
+<!-- Page Number decoration -->
+<span class="absolute bottom-6 right-8 text-gray-400 font-serif italic text-lg">13</span>
+<!-- Background decorative element for page -->
+<div class="absolute inset-0 opacity-5 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/notebook.png')]"></div>
+</div>
+<!-- Floating Interactive Spheres (Spanning across pages) -->
+<div class="absolute inset-0 z-20 flex flex-col md:flex-row items-center justify-center gap-6 md:gap-12 p-8">
+<!-- Option 1: Dragon -->
+<div class="group relative cursor-pointer flex flex-col items-center w-full max-w-[240px] animate-float-delay-1">
+<div class="relative w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden border-8 border-white dark:border-zinc-200 shadow-xl group-hover:scale-110 group-hover:shadow-2xl group-hover:border-primary transition-all duration-300 ease-out bg-white">
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity z-10"></div>
+<img alt="Watercolor illustration of a green dragon sleeping under a tree" class="w-full h-full object-cover" data-alt="Watercolor dragon illustration" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA58FrKZurkdFsZ3FsnHT7vnuTlWJel4hmVzsaNdePhP5tZO64R0fQzs4r5iUR9NHQXezzVKO9qvncS5q7Rlt1G8Vk_Ss4_z_UyMJu256Ls4G9plLT5DqlYQHVZ_23-9BxcVTaKbRDTsnSpSR98cZaSdEPx9AdEGDXItI3-RiD9vVxGGVZ7Dnjn3-_GkULLFjue28jt1azcWf5vNnRMWTB3MfQ_GEhpUGXGkIN8lXgA6uLO7nzIFcGFXq4ZJ_QYxJco5BgDLxoskzuH"/>
+<!-- Selected Indicator (Hidden by default) -->
+<div class="absolute top-4 right-4 bg-primary text-white p-1 rounded-full opacity-0 group-hover:opacity-100 scale-0 group-hover:scale-100 transition-all z-20">
+<span class="material-symbols-outlined text-2xl">check</span>
+</div>
+</div>
+<div class="mt-6 text-center bg-white/90 dark:bg-white/90 backdrop-blur rounded-2xl p-3 shadow-lg transform group-hover:-translate-y-2 transition-transform">
+<div class="flex items-center justify-center gap-2 text-background-dark mb-1">
+<span class="material-symbols-outlined text-primary">eco</span>
+<h3 class="text-xl font-bold">Dragón Dormido</h3>
+</div>
+<p class="text-sm text-gray-600 font-medium">Zzz... bajo el árbol antiguo</p>
+</div>
+</div>
+<!-- Option 2: Treasure Chest (Pre-selected visual state for demo) -->
+<div class="group relative cursor-pointer flex flex-col items-center w-full max-w-[240px] animate-float">
+<div class="relative w-44 h-44 md:w-64 md:h-64 rounded-full overflow-hidden border-8 border-primary shadow-[0_0_40px_rgba(233,107,58,0.4)] scale-105 bg-white z-10">
+<div class="absolute inset-0 bg-primary/10 z-10"></div>
+<img alt="Glowing magical treasure chest with fairy dust" class="w-full h-full object-cover" data-alt="Magical treasure chest illustration" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVZDYVrpjSihutlCQkmyABHDGj-xzt8UHQiivlZ34eVMRlFNlq0O07z2SzBQxu6NTTuVabSoPqVQoejhfTvn3NLTv0xN_n3r-YUYgbAlmz30fcNMBLLWGt9QCMJwIpoaKeeScCA-e8s1EWkg18ETNMo-NPxNZDEnXy_flZnaHvkbh2lMBY8aT9xO8a6DqN8fxedOLWC-LUa2Mkw9HzDrYB2Gjc-lf90U96c-AMPn6vSnLTqPw1FAg_IT-_PHoOYazn4Fe10TOwlcNU"/>
+<!-- Selected Indicator -->
+<div class="absolute top-6 right-6 bg-primary text-white p-2 rounded-full shadow-lg z-20 animate-bounce">
+<span class="material-symbols-outlined text-3xl">check</span>
+</div>
+</div>
+<div class="mt-6 text-center bg-primary text-white rounded-2xl p-4 shadow-lg transform -translate-y-2 relative z-20">
+<div class="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-primary transform rotate-45"></div>
+<div class="flex items-center justify-center gap-2 mb-1">
+<span class="material-symbols-outlined text-yellow-200">diamond</span>
+<h3 class="text-2xl font-bold">Cofre Mágico</h3>
+</div>
+<p class="text-sm text-white/90 font-medium">¡Lleno de polvo de hadas!</p>
+</div>
+</div>
+<!-- Option 3: Magic Door -->
+<div class="group relative cursor-pointer flex flex-col items-center w-full max-w-[240px] animate-float-delay-2">
+<div class="relative w-40 h-40 md:w-56 md:h-56 rounded-full overflow-hidden border-8 border-white dark:border-zinc-200 shadow-xl group-hover:scale-110 group-hover:shadow-2xl group-hover:border-primary transition-all duration-300 ease-out bg-white">
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity z-10"></div>
+<img alt="Mysterious wooden door with glowing runes in a forest" class="w-full h-full object-cover" data-alt="Mysterious magic door illustration" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD2yKOR3WJQniBLX4NmSWA6mv22oELmWjhc5NxEIR2dKHxFSTLoKH6x5Ir1ArBZ1jxoX1KOpedEyyNdzpP2QcicZrDWE2XYnAh993nt2TKUEnmH1X661VaqWV1hoL35bV7JrOyvi_SYxy6NrPHo0OuDTdJR2TRSDUmERN-OnN5uMghQV-7iCcH6PhPfGW_BfSVB_yAMYkK-FXH30ZX0YK9f-PfOhB0RtaY_4kwyAM7SC09WiwXXDDeCnAkHTXL7k-AIowksq96JM84o"/>
+<!-- Selected Indicator (Hidden by default) -->
+<div class="absolute top-4 right-4 bg-primary text-white p-1 rounded-full opacity-0 group-hover:opacity-100 scale-0 group-hover:scale-100 transition-all z-20">
+<span class="material-symbols-outlined text-2xl">check</span>
+</div>
+</div>
+<div class="mt-6 text-center bg-white/90 dark:bg-white/90 backdrop-blur rounded-2xl p-3 shadow-lg transform group-hover:-translate-y-2 transition-transform">
+<div class="flex items-center justify-center gap-2 text-background-dark mb-1">
+<span class="material-symbols-outlined text-primary">door_front</span>
+<h3 class="text-xl font-bold">Puerta Secreta</h3>
+</div>
+<p class="text-sm text-gray-600 font-medium">¿A dónde llevará?</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Action Area -->
+<div class="relative z-30 mt-8 md:-mt-8 flex flex-col items-center">
+<button class="group relative flex items-center gap-3 bg-primary hover:bg-[#d65a2b] text-white text-xl md:text-2xl font-bold py-4 px-12 rounded-full shadow-[0_10px_20px_rgba(233,107,58,0.3)] hover:shadow-[0_15px_25px_rgba(233,107,58,0.4)] transition-all transform hover:scale-105 active:scale-95">
+<span class="material-symbols-outlined text-3xl animate-pulse">auto_awesome</span>
+<span>¡Siguiente Página!</span>
+<span class="material-symbols-outlined text-3xl group-hover:translate-x-1 transition-transform">arrow_forward</span>
+<!-- Sparkle decorations on button -->
+<span class="absolute -top-2 -right-2 text-yellow-300 material-symbols-outlined text-xl animate-bounce" style="animation-delay: 0.2s">star</span>
+<span class="absolute -bottom-1 -left-1 text-yellow-300 material-symbols-outlined text-lg animate-bounce" style="animation-delay: 0.5s">star</span>
+</button>
+<p class="mt-4 text-background-dark/60 dark:text-white/60 font-medium text-sm">
+                Haz clic en una imagen para elegir
+            </p>
+</div>
+</main>
+</body></html>

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>StoryMagic - Paso 4: Crónicas Personalizadas</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200..800&amp;family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#e96b3a",
+              "primary-light": "#fdeae3",
+              "background-light": "#fcf9f8",
+              "background-dark": "#211511",
+              "book-page": "#fffbf6",
+            },
+            fontFamily: {
+              "display": ["Plus Jakarta Sans", "sans-serif"],
+              "serif": ["Merriweather", "serif"],
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+            boxShadow: {
+                'book': '0 20px 40px -10px rgba(0,0,0,0.1), 0 0 20px -5px rgba(0,0,0,0.05)',
+                'card-hover': '0 10px 25px -5px rgba(233, 107, 58, 0.15), 0 8px 10px -6px rgba(233, 107, 58, 0.1)',
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        /* Custom scrollbar for the book content if needed */
+        .book-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .book-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .book-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #e7d6d0;
+            border-radius: 20px;
+        }
+        
+        /* Book spine effect */
+        .book-spine {
+            background: linear-gradient(to right, rgba(0,0,0,0.05), rgba(0,0,0,0.01) 20%, transparent 100%);
+        }
+        
+        /* Selected card ring animation */
+        .selection-card:has(input:checked) {
+            border-color: #e96b3a;
+            background-color: #fff8f5;
+        }
+        .selection-card:has(input:checked) .icon-box {
+            background-color: #e96b3a;
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-background-light text-[#1b120e] font-display min-h-screen flex flex-col overflow-x-hidden antialiased selection:bg-primary selection:text-white">
+<!-- Header -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[#f3ebe7] px-6 lg:px-10 py-3 bg-[#fcf9f8] sticky top-0 z-50">
+<div class="flex items-center gap-4 text-[#1b120e]">
+<div class="size-8 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">auto_stories</span>
+</div>
+<h2 class="text-[#1b120e] text-xl font-bold leading-tight tracking-[-0.015em]">StoryMagic</h2>
+</div>
+<!-- Desktop Nav -->
+<div class="hidden md:flex flex-1 justify-end gap-8 items-center">
+<div class="flex items-center gap-6">
+<a class="text-[#6b4f44] hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Inicio</a>
+<a class="text-[#1b120e] font-bold text-sm leading-normal" href="#">Crear Cuento</a>
+<a class="text-[#6b4f44] hover:text-primary transition-colors text-sm font-medium leading-normal" href="#">Mis Cuentos</a>
+</div>
+<div class="h-8 w-px bg-[#f3ebe7]"></div>
+<div class="flex items-center gap-3">
+<div class="flex flex-col items-end">
+<span class="text-xs font-bold text-[#1b120e]">Ana García</span>
+<span class="text-[10px] text-[#97634e] font-medium">Plan Premium</span>
+</div>
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border-2 border-primary/20" data-alt="User profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAACsN_ZRsubpx8Oz9wbgFr5_0Llp4YjvAC7c60bVLTLSwNBC9HuECiH1COrkEcNjyCPQNqiOVQjBz4uyFiSvd9r7RLahnicfnde7smjcwC28TKiyxjAA_gk-n8ywi_Z3u1z8VmSuPsLmRp0vZKjSB605fynVToZQuXtUeNOysRz3IUMyJQcFxEk-5JxBQ8U-MjzUPoq6M_cjxYuRZDOeOV_go_uJePxcj7lLKWgDnqKC8wK-KMTEke5ds08yr0dPYw8OyT-T6gBNnF");'></div>
+</div>
+</div>
+<!-- Mobile Menu Icon -->
+<button class="md:hidden text-[#1b120e]">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col lg:flex-row h-[calc(100vh-65px)] overflow-hidden">
+<!-- LEFT PANEL: The Book (Preview) -->
+<section class="relative w-full lg:w-1/2 bg-[#fcf9f8] p-4 lg:p-8 flex flex-col items-center justify-center border-b lg:border-b-0 lg:border-r border-[#f3ebe7]">
+<div class="w-full max-w-xl mx-auto flex flex-col h-full max-h-[800px]">
+<!-- Progress visualization specific to this panel -->
+<div class="mb-6 flex items-center gap-2 text-sm text-[#97634e]">
+<span class="material-symbols-outlined text-lg">visibility</span>
+<span class="font-medium">Vista Previa en Tiempo Real</span>
+</div>
+<!-- Book Container -->
+<div class="bg-book-page rounded-r-2xl rounded-l-md shadow-book border border-[#eaddd7] flex-1 flex flex-col relative overflow-hidden">
+<!-- Binding/Spine visual -->
+<div class="absolute left-0 top-0 bottom-0 w-8 book-spine z-10 border-r border-[#f3ebe7]"></div>
+<div class="pl-12 pr-8 py-10 h-full overflow-y-auto book-scrollbar relative">
+<!-- Book Header -->
+<div class="flex items-center justify-between mb-8 border-b-2 border-primary/20 pb-4">
+<span class="font-serif italic text-[#97634e]">Capítulo 1</span>
+<span class="font-serif font-bold text-[#1b120e]">El Comienzo del Viaje</span>
+</div>
+<!-- Dynamic Content Area -->
+<div class="space-y-6">
+<!-- Image Placeholder in Book -->
+<div class="w-full aspect-[16/9] rounded-lg bg-[#fcf9f8] border-4 border-double border-[#e7d6d0] overflow-hidden relative group">
+<img alt="Vintage style illustration of a magical forest path" class="w-full h-full object-cover opacity-90 sepia-[.3]" data-alt="Vintage style illustration of a magical forest path" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNAkkmBodyFadJbZSO5YglpcMHgVmiCM00J42ulPGKrdlO6UdcIAnshYNM7Lh9cTSh2qYef21FuYW_6QAGArmFkIM2IcFp3VfnfTcOkf0lAoDnHbGq2iVRPyr42LYDARiBqNFrrAcI1w1qYEWArLsUFgMyWiS2JeMq9EShtZKz5K3QM7GmmLWyYpidUbs4oIRiZ0iaezuKvT3oiAibhpZONQLZgRv2MNd3yR4CMpwjAGfuDmMQasveBRENasMFI9XnwzBBJzFBepFj"/>
+<div class="absolute inset-0 bg-gradient-to-t from-[#3e2b24]/40 to-transparent flex items-end p-4">
+<p class="text-white font-serif text-sm italic opacity-90">Ilustración generada: Bosque de los Susurros</p>
+</div>
+</div>
+<!-- Narrative Text -->
+<div class="font-serif text-[#3e2b24] leading-loose text-lg space-y-4">
+<p>
+<span class="text-5xl float-left mr-3 mt-[-10px] text-primary font-display font-bold">H</span>abía una vez un pequeño explorador llamado Leo, quien se encontraba al borde del Gran Bosque. El viento susurraba secretos antiguos entre las hojas, prometiendo aventuras que pocos se atrevían a imaginar.
+                                </p>
+<p>
+                                    No estaba solo en esta travesía. A su lado flotaba <span class="bg-primary/10 text-primary px-1 rounded font-bold">Bip-Bop, el Robot</span>, zumbando alegremente mientras procesaba los sonidos del entorno.
+                                </p>
+<p>
+                                    Leo metió la mano en su mochila y sus dedos rozaron el frío metal de su <span class="bg-primary/10 text-primary px-1 rounded font-bold">Brújula Antigua</span>. La aguja giraba locamente, no señalando el norte, sino hacia el destino de su corazón.
+                                </p>
+<p>
+                                    Frente a ellos, el camino se dividía. Un cartel de madera vieja, cubierto de musgo, presentaba su primer desafío: <span class="bg-primary/10 text-primary px-1 rounded font-bold font-italic">"Solo aquellos que resuelvan el Acertijo del Búho podrán cruzar el puente de plata."</span>
+</p>
+</div>
+</div>
+<!-- Page Number -->
+<div class="absolute bottom-4 right-8 text-[#97634e] font-serif text-sm">
+                            4
+                        </div>
+</div>
+</div>
+</div>
+</section>
+<!-- RIGHT PANEL: Configuration (Controls) -->
+<section class="w-full lg:w-1/2 bg-white flex flex-col h-full overflow-y-auto">
+<!-- Step Header -->
+<div class="sticky top-0 bg-white/95 backdrop-blur-sm z-20 px-6 py-6 border-b border-[#f3ebe7]">
+<div class="flex flex-col gap-3">
+<div class="flex gap-4 justify-between items-center">
+<p class="text-[#1b120e] text-sm font-bold uppercase tracking-wider text-primary">Paso 4 de 7</p>
+<div class="text-right">
+<span class="text-xs text-[#97634e] font-medium">Siguiente: Clímax</span>
+</div>
+</div>
+<!-- Progress Bar -->
+<div class="w-full bg-[#f3ebe7] rounded-full h-2">
+<div class="bg-primary h-2 rounded-full transition-all duration-500 ease-out" style="width: 57%"></div>
+</div>
+<h1 class="text-[#1b120e] text-3xl font-bold leading-tight pt-2">Construye tu capítulo</h1>
+<p class="text-[#6b4f44] text-base font-medium">Tus elecciones transforman la historia al instante. Configura los elementos narrativos.</p>
+</div>
+</div>
+<!-- Scrollable Content -->
+<div class="p-6 lg:p-10 space-y-10 pb-32">
+<!-- Section 1: Companion -->
+<div class="space-y-4">
+<h3 class="text-lg font-bold text-[#1b120e] flex items-center gap-2">
+<span class="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-xs">1</span>
+                        Elige tu compañero
+                    </h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<!-- Option 1 -->
+<label class="selection-card cursor-pointer group relative flex flex-col items-center gap-3 p-4 rounded-xl border-2 border-[#f3ebe7] hover:border-primary/50 transition-all duration-200">
+<input checked="" class="absolute opacity-0" name="companion" type="radio" value="robot"/>
+<div class="icon-box w-12 h-12 rounded-full bg-[#f3ebe7] text-[#6b4f44] flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-2xl">smart_toy</span>
+</div>
+<span class="font-bold text-[#1b120e] text-sm">Robot</span>
+</label>
+<!-- Option 2 -->
+<label class="selection-card cursor-pointer group relative flex flex-col items-center gap-3 p-4 rounded-xl border-2 border-[#f3ebe7] hover:border-primary/50 transition-all duration-200">
+<input class="absolute opacity-0" name="companion" type="radio" value="alien"/>
+<div class="icon-box w-12 h-12 rounded-full bg-[#f3ebe7] text-[#6b4f44] flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-2xl">rocket_launch</span>
+</div>
+<span class="font-bold text-[#1b120e] text-sm">Alien</span>
+</label>
+<!-- Option 3 -->
+<label class="selection-card cursor-pointer group relative flex flex-col items-center gap-3 p-4 rounded-xl border-2 border-[#f3ebe7] hover:border-primary/50 transition-all duration-200">
+<input class="absolute opacity-0" name="companion" type="radio" value="animal"/>
+<div class="icon-box w-12 h-12 rounded-full bg-[#f3ebe7] text-[#6b4f44] flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-2xl">pets</span>
+</div>
+<span class="font-bold text-[#1b120e] text-sm">Mascota</span>
+</label>
+</div>
+</div>
+<!-- Section 2: Magic Tool -->
+<div class="space-y-4">
+<h3 class="text-lg font-bold text-[#1b120e] flex items-center gap-2">
+<span class="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-xs">2</span>
+                        Herramienta mágica
+                    </h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<!-- Option 1 -->
+<label class="selection-card cursor-pointer group relative flex flex-col items-center gap-3 p-4 rounded-xl border-2 border-[#f3ebe7] hover:border-primary/50 transition-all duration-200">
+<input class="absolute opacity-0" name="tool" type="radio" value="map"/>
+<div class="icon-box w-12 h-12 rounded-full bg-[#f3ebe7] text-[#6b4f44] flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-2xl">map</span>
+</div>
+<span class="font-bold text-[#1b120e] text-sm">Mapa</span>
+</label>
+<!-- Option 2 -->
+<label class="selection-card cursor-pointer group relative flex flex-col items-center gap-3 p-4 rounded-xl border-2 border-[#f3ebe7] hover:border-primary/50 transition-all duration-200">
+<input checked="" class="absolute opacity-0" name="tool" type="radio" value="compass"/>
+<div class="icon-box w-12 h-12 rounded-full bg-[#f3ebe7] text-[#6b4f44] flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-2xl">explore</span>
+</div>
+<span class="font-bold text-[#1b120e] text-sm">Brújula</span>
+</label>
+<!-- Option 3 -->
+<label class="selection-card cursor-pointer group relative flex flex-col items-center gap-3 p-4 rounded-xl border-2 border-[#f3ebe7] hover:border-primary/50 transition-all duration-200">
+<input class="absolute opacity-0" name="tool" type="radio" value="flashlight"/>
+<div class="icon-box w-12 h-12 rounded-full bg-[#f3ebe7] text-[#6b4f44] flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-2xl">flashlight_on</span>
+</div>
+<span class="font-bold text-[#1b120e] text-sm">Linterna</span>
+</label>
+</div>
+</div>
+<!-- Section 3: Challenge -->
+<div class="space-y-4">
+<h3 class="text-lg font-bold text-[#1b120e] flex items-center gap-2">
+<span class="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-xs">3</span>
+                        Primer desafío
+                    </h3>
+<div class="flex flex-col gap-3">
+<label class="selection-card cursor-pointer group relative flex items-center gap-4 p-4 rounded-xl border-2 border-[#f3ebe7] hover:border-primary/50 transition-all duration-200">
+<input checked="" class="absolute opacity-0" name="challenge" type="radio" value="riddle"/>
+<div class="icon-box w-10 h-10 rounded-full bg-[#f3ebe7] text-[#6b4f44] shrink-0 flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-xl">psychology_alt</span>
+</div>
+<div class="flex flex-col">
+<span class="font-bold text-[#1b120e] text-sm">Un Acertijo del Búho</span>
+<span class="text-xs text-[#6b4f44]">Requiere ingenio y paciencia para resolver.</span>
+</div>
+<div class="ml-auto opacity-0 group-hover:opacity-100 transition-opacity text-primary">
+<span class="material-symbols-outlined">check_circle</span>
+</div>
+</label>
+<label class="selection-card cursor-pointer group relative flex items-center gap-4 p-4 rounded-xl border-2 border-[#f3ebe7] hover:border-primary/50 transition-all duration-200">
+<input class="absolute opacity-0" name="challenge" type="radio" value="race"/>
+<div class="icon-box w-10 h-10 rounded-full bg-[#f3ebe7] text-[#6b4f44] shrink-0 flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-xl">sprint</span>
+</div>
+<div class="flex flex-col">
+<span class="font-bold text-[#1b120e] text-sm">Una Carrera contra el Tiempo</span>
+<span class="text-xs text-[#6b4f44]">Acción rápida y reflejos veloces.</span>
+</div>
+<div class="ml-auto opacity-0 group-hover:opacity-100 transition-opacity text-primary">
+<span class="material-symbols-outlined">check_circle</span>
+</div>
+</label>
+<label class="selection-card cursor-pointer group relative flex items-center gap-4 p-4 rounded-xl border-2 border-[#f3ebe7] hover:border-primary/50 transition-all duration-200">
+<input class="absolute opacity-0" name="challenge" type="radio" value="maze"/>
+<div class="icon-box w-10 h-10 rounded-full bg-[#f3ebe7] text-[#6b4f44] shrink-0 flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-xl">extension</span>
+</div>
+<div class="flex flex-col">
+<span class="font-bold text-[#1b120e] text-sm">El Laberinto de Espejos</span>
+<span class="text-xs text-[#6b4f44]">Un desafío de orientación y valor.</span>
+</div>
+<div class="ml-auto opacity-0 group-hover:opacity-100 transition-opacity text-primary">
+<span class="material-symbols-outlined">check_circle</span>
+</div>
+</label>
+</div>
+</div>
+</div>
+<!-- Footer / CTA -->
+<div class="sticky bottom-0 bg-white border-t border-[#f3ebe7] p-6 lg:px-10 flex justify-between items-center z-30">
+<button class="text-[#6b4f44] font-bold text-sm hover:text-[#1b120e] transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-lg">arrow_back</span>
+                    Atrás
+                </button>
+<button class="flex min-w-[160px] cursor-pointer items-center justify-center rounded-full h-12 px-6 bg-primary text-white text-base font-bold shadow-lg shadow-primary/30 hover:bg-[#d85a2b] hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200">
+<span class="truncate">Confirmar Capítulo</span>
+<span class="material-symbols-outlined ml-2 text-lg">arrow_forward</span>
+</button>
+</div>
+</section>
+</main>
+</body></html>

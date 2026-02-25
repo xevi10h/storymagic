@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>StoryMagic - Character Creation</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&amp;family=Nunito:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#E86C3A",
+                        "primary-hover": "#d15a2b",
+                        "cream": "#FFF8F0",
+                        "text-main": "#4A4A4A",
+                        "text-muted": "#8A8A8A",
+                        "border-color": "#E5E5E5",
+                    },
+                    fontFamily: {
+                        "heading": ["Fredoka One", "cursive"],
+                        "body": ["Nunito", "sans-serif"]
+                    },
+                    backgroundImage: {
+                        'paper-texture': "url('https://www.transparenttextures.com/patterns/cream-paper.png')",
+                    },
+                    borderRadius: {
+                        'input': '16px',
+                        'button': '9999px',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: "Nunito", sans-serif;
+            background-color: #FFF8F0;
+        }
+        h1, h2, h3, .font-heading {
+            font-family: "Fredoka One", cursive;
+        }input[type=range] {
+            -webkit-appearance: none; 
+            background: transparent; 
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+        }
+        input[type=range]:focus {
+            outline: none; 
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-cream bg-paper-texture text-text-main flex flex-col min-h-screen">
+<header class="flex items-center justify-between px-6 py-6 lg:px-12 bg-transparent relative z-50">
+<div class="flex items-center gap-4">
+<a class="flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-sm text-text-main hover:bg-gray-50 transition-colors" href="#">
+<span class="material-symbols-outlined">arrow_back</span>
+</a>
+<div class="flex flex-col gap-1 w-32 md:w-48">
+<div class="flex justify-between text-xs font-bold text-text-muted uppercase tracking-wider">
+<span>Paso 2 de 7</span>
+</div>
+<div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-2/7 rounded-full"></div>
+</div>
+</div>
+</div>
+<a class="text-text-muted font-bold text-sm hover:text-primary transition-colors underline decoration-2 underline-offset-4 decoration-gray-300 hover:decoration-primary" href="#">
+        Guardar y Salir
+    </a>
+</header>
+<main class="flex-1 flex flex-col lg:flex-row h-full max-w-7xl mx-auto w-full">
+<section class="flex-1 flex flex-col w-full lg:w-[55%] px-6 lg:px-12 py-4 lg:py-8 overflow-y-auto no-scrollbar">
+<div class="mb-8 text-center lg:text-left">
+<h1 class="text-3xl lg:text-5xl text-text-main mb-4 leading-tight">Crea a tu pequeño héroe</h1>
+<p class="text-text-muted text-lg font-medium">Personaliza los detalles mágicos para que el cuento sea único.</p>
+</div>
+<div class="flex flex-col gap-6 max-w-xl mx-auto lg:mx-0">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+<div class="flex flex-col gap-2">
+<label class="text-text-main font-bold text-base ml-1">Nombre del niño/a</label>
+<div class="relative group">
+<input class="w-full h-14 px-5 rounded-input border-2 border-transparent bg-white shadow-sm group-hover:shadow-md focus:border-primary focus:ring-0 transition-all outline-none placeholder:text-gray-300 text-lg font-bold text-text-main" placeholder="Ej: Leo" type="text"/>
+<span class="material-symbols-outlined absolute right-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-primary transition-colors">edit</span>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-text-main font-bold text-base ml-1">Vive en</label>
+<div class="relative group">
+<input class="w-full h-14 px-5 rounded-input border-2 border-transparent bg-white shadow-sm group-hover:shadow-md focus:border-primary focus:ring-0 transition-all outline-none placeholder:text-gray-300 text-lg font-bold text-text-main" placeholder="Ej: Madrid" type="text"/>
+<span class="material-symbols-outlined absolute right-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-primary transition-colors">location_on</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-4 p-6 bg-white rounded-[24px] shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-center mb-2">
+<label class="text-text-main font-bold text-base">Edad</label>
+<span class="text-primary font-heading text-xl">5 años</span>
+</div>
+<div class="relative w-full h-8 flex items-center">
+<div class="absolute w-full h-3 bg-gray-100 rounded-full"></div>
+<div class="absolute h-3 bg-primary rounded-full" style="width: 40%"></div>
+<div class="absolute left-[40%] -translate-x-1/2 w-8 h-8 bg-white border-4 border-primary rounded-full shadow-lg cursor-pointer hover:scale-110 active:scale-95 transition-transform flex items-center justify-center">
+<div class="w-2 h-2 bg-primary rounded-full"></div>
+</div>
+</div>
+<div class="flex justify-between text-xs text-text-muted font-bold mt-1 px-1">
+<span>1 año</span>
+<span>12 años</span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="flex flex-col gap-3">
+<label class="text-text-main font-bold text-base ml-1">Color de pelo</label>
+<div class="flex flex-wrap gap-3">
+<button aria-label="Black Hair" class="w-12 h-12 rounded-full bg-[#2a2a2a] ring-4 ring-transparent hover:scale-110 hover:shadow-lg transition-all"></button>
+<button class="w-12 h-12 rounded-full bg-[#5d4037] ring-4 ring-primary ring-offset-2 transition-all shadow-md relative scale-110">
+<span class="material-symbols-outlined text-white text-lg absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-bold">check</span>
+</button>
+<button aria-label="Brown Hair" class="w-12 h-12 rounded-full bg-[#8d6e63] ring-4 ring-transparent hover:scale-110 hover:shadow-lg transition-all"></button>
+<button aria-label="Blonde Hair" class="w-12 h-12 rounded-full bg-[#e6c07b] ring-4 ring-transparent hover:scale-110 hover:shadow-lg transition-all"></button>
+<button aria-label="Red Hair" class="w-12 h-12 rounded-full bg-[#d84315] ring-4 ring-transparent hover:scale-110 hover:shadow-lg transition-all"></button>
+</div>
+</div>
+<div class="flex flex-col gap-3">
+<label class="text-text-main font-bold text-base ml-1">Tono de piel</label>
+<div class="flex flex-wrap gap-3">
+<button class="w-12 h-12 rounded-full bg-[#fce4d6] ring-4 ring-primary ring-offset-2 transition-all shadow-md relative scale-110">
+<span class="material-symbols-outlined text-black text-lg absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-bold">check</span>
+</button>
+<button aria-label="Medium Light Skin" class="w-12 h-12 rounded-full bg-[#eebb99] ring-4 ring-transparent hover:scale-110 hover:shadow-lg transition-all"></button>
+<button aria-label="Medium Dark Skin" class="w-12 h-12 rounded-full bg-[#c68642] ring-4 ring-transparent hover:scale-110 hover:shadow-lg transition-all"></button>
+<button aria-label="Dark Skin" class="w-12 h-12 rounded-full bg-[#8d5524] ring-4 ring-transparent hover:scale-110 hover:shadow-lg transition-all"></button>
+<button aria-label="Very Dark Skin" class="w-12 h-12 rounded-full bg-[#523218] ring-4 ring-transparent hover:scale-110 hover:shadow-lg transition-all"></button>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-3">
+<label class="text-text-main font-bold text-base ml-1">Género</label>
+<div class="flex gap-4 p-1 bg-white rounded-full shadow-sm w-fit">
+<button class="py-3 px-6 rounded-full bg-primary text-white font-bold shadow-md flex items-center justify-center gap-2 transition-all transform scale-105">
+<span class="material-symbols-outlined text-[20px]">boy</span> Niño
+                        </button>
+<button class="py-3 px-6 rounded-full text-text-muted hover:bg-gray-50 hover:text-primary font-bold flex items-center justify-center gap-2 transition-all">
+<span class="material-symbols-outlined text-[20px]">girl</span> Niña
+                        </button>
+<button class="py-3 px-6 rounded-full text-text-muted hover:bg-gray-50 hover:text-primary font-bold flex items-center justify-center gap-2 transition-all">
+<span class="material-symbols-outlined text-[20px]">sentiment_satisfied</span> Neutro
+                        </button>
+</div>
+</div>
+<div class="flex flex-col gap-3 mb-10">
+<label class="text-text-main font-bold text-base ml-1">Le encanta...</label>
+<div class="flex flex-wrap gap-3">
+<button class="px-5 py-3 rounded-xl bg-primary text-white text-sm font-bold shadow-md transition-all flex items-center gap-2 transform hover:-translate-y-1">
+<span class="material-symbols-outlined text-lg">rocket_launch</span> Espacio
+                        </button>
+<button class="px-5 py-3 rounded-xl bg-white text-text-main text-sm font-bold border-2 border-transparent hover:border-primary/30 hover:bg-orange-50 transition-all shadow-sm flex items-center gap-2 transform hover:-translate-y-1">
+<span class="material-symbols-outlined text-lg text-text-muted">pets</span> Animales
+                        </button>
+<button class="px-5 py-3 rounded-xl bg-white text-text-main text-sm font-bold border-2 border-transparent hover:border-primary/30 hover:bg-orange-50 transition-all shadow-sm flex items-center gap-2 transform hover:-translate-y-1">
+<span class="material-symbols-outlined text-lg text-text-muted">sports_soccer</span> Deportes
+                        </button>
+<button class="px-5 py-3 rounded-xl bg-white text-text-main text-sm font-bold border-2 border-transparent hover:border-primary/30 hover:bg-orange-50 transition-all shadow-sm flex items-center gap-2 transform hover:-translate-y-1">
+<span class="material-symbols-outlined text-lg text-text-muted">castle</span> Castillos
+                        </button>
+<button class="px-5 py-3 rounded-xl bg-primary text-white text-sm font-bold shadow-md transition-all flex items-center gap-2 transform hover:-translate-y-1">
+<span class="material-symbols-outlined text-lg">cruelty_free</span> Dinosaurios
+                        </button>
+<button class="px-5 py-3 rounded-xl bg-white text-text-main text-sm font-bold border-2 border-transparent hover:border-primary/30 hover:bg-orange-50 transition-all shadow-sm flex items-center gap-2 transform hover:-translate-y-1">
+<span class="material-symbols-outlined text-lg text-text-muted">music_note</span> Música
+                        </button>
+</div>
+</div>
+<div class="flex items-center justify-end pt-4 pb-12 mt-4">
+<button class="bg-primary hover:bg-primary-hover text-white font-bold text-lg py-4 px-10 rounded-full shadow-lg shadow-primary/30 transition-all hover:scale-105 active:scale-95 flex items-center gap-3 w-full md:w-auto justify-center">
+                        Siguiente
+                        <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+</section>
+<section class="hidden lg:flex flex-col items-center justify-center w-[45%] bg-transparent relative overflow-hidden">
+<div class="relative z-10 flex flex-col items-center gap-8">
+<div class="relative group cursor-pointer">
+<div class="relative w-80 h-80 rounded-full bg-white p-3 shadow-2xl shadow-orange-900/10">
+<div class="w-full h-full rounded-full overflow-hidden relative bg-blue-50">
+<img alt="Watercolor illustration of a happy child playing in space" class="w-full h-full object-cover opacity-90 hover:scale-110 transition-transform duration-700 ease-in-out" data-alt="Watercolor style illustration of a young child character dressed as an astronaut" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4abI54sI_wsYQRAnWNhYY0DfaXyEw4Wz5DWnSH6iCGXQ0WQfcO8ro82WAEWPS18GPXpOCll3w5CTlGKGLMhItPSrXTWhQCy5b0LJM08e4sQpKCvEZ3cI9LsTNE4Ydkdc4akO3bydtKde0V4FSytRHLSCKv0l34kuyKB_ABIwJ9TAIefzzIjVtfRHNbSkEK8bCQ8zNebmsXCj7NywYqJMQvCIFAYn5YsjAlLWTqhOXcgF9524NI3f8dcEaW4wF3rlAe6FVFAI4_v2C"/>
+<div class="absolute inset-0 bg-gradient-to-t from-orange-100/20 to-transparent mix-blend-overlay"></div>
+</div>
+</div>
+<div class="absolute -bottom-2 -right-4 bg-white py-2 px-5 rounded-full shadow-lg border-2 border-orange-100 flex items-center gap-2 animate-bounce" style="animation-duration: 3s;">
+<span class="material-symbols-outlined text-primary">auto_awesome</span>
+<span class="text-sm font-bold text-text-main">¡Es mágico!</span>
+</div>
+</div>
+<div class="text-center space-y-3 max-w-sm px-6 py-6 bg-white/60 backdrop-blur-sm rounded-3xl border border-white/50 shadow-sm">
+<h3 class="text-3xl font-heading text-text-main">¡Hola, Leo!</h3>
+<p class="text-text-muted font-medium text-base leading-relaxed">Tu héroe está listo para vivir aventuras entre dinosaurios y estrellas.</p>
+</div>
+</div>
+</section>
+</main>
+
+</body></html>

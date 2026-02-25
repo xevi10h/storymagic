@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>StoryMagic - Elige tu Aventura</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e96b3a",
+                        "background-light": "#FFF8F0", /* Cream background as requested */
+                        "background-dark": "#211511",
+                        "paper": "#ffffff",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "1rem", "lg": "1.5rem", "xl": "2rem", "2xl": "3rem", "full": "9999px" },
+                    backgroundImage: {
+                        'paper-texture': "url('https://www.transparenttextures.com/patterns/cream-paper.png')",
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e7d6d0;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d4c0b8;
+        }
+        
+        .card-shadow {
+            box-shadow: 0 4px 20px -2px rgba(233, 107, 58, 0.1);
+        }
+        .card-shadow-hover:hover {
+            box-shadow: 0 10px 30px -4px rgba(233, 107, 58, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-background-light text-[#1b120e] font-display min-h-screen flex flex-col relative overflow-x-hidden selection:bg-primary/20 selection:text-primary">
+<!-- Background Texture Overlay -->
+<div class="fixed inset-0 pointer-events-none opacity-40 mix-blend-multiply bg-paper-texture z-0"></div>
+<!-- Main Container -->
+<div class="relative z-10 flex flex-col min-h-screen w-full max-w-[1440px] mx-auto">
+<!-- Header -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-primary/10 px-6 lg:px-10 py-4 bg-background-light/90 backdrop-blur-sm sticky top-0 z-50">
+<div class="flex items-center gap-3 text-primary">
+<div class="size-8 flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">auto_stories</span>
+</div>
+<h2 class="text-[#1b120e] text-xl font-bold tracking-tight">StoryMagic</h2>
+</div>
+<!-- Desktop Progress Steps (Visual only for larger screens) -->
+<div class="hidden md:flex items-center gap-2">
+<div class="flex flex-col items-center gap-1">
+<div class="size-2.5 rounded-full bg-primary/30"></div>
+</div>
+<div class="w-8 h-0.5 bg-primary/20 rounded-full"></div>
+<div class="flex flex-col items-center gap-1">
+<div class="size-2.5 rounded-full bg-primary/30"></div>
+</div>
+<div class="w-8 h-0.5 bg-primary/20 rounded-full"></div>
+<div class="flex flex-col items-center gap-1">
+<div class="flex items-center justify-center size-6 rounded-full bg-primary text-white text-xs font-bold ring-4 ring-primary/20">3</div>
+</div>
+<div class="w-8 h-0.5 bg-primary/20 rounded-full"></div>
+<div class="flex flex-col items-center gap-1">
+<div class="size-2.5 rounded-full bg-gray-200"></div>
+</div>
+<div class="w-8 h-0.5 bg-gray-200 rounded-full"></div>
+<div class="flex flex-col items-center gap-1">
+<div class="size-2.5 rounded-full bg-gray-200"></div>
+</div>
+<div class="w-8 h-0.5 bg-gray-200 rounded-full"></div>
+<div class="flex flex-col items-center gap-1">
+<div class="size-2.5 rounded-full bg-gray-200"></div>
+</div>
+<div class="w-8 h-0.5 bg-gray-200 rounded-full"></div>
+<div class="flex flex-col items-center gap-1">
+<div class="size-2.5 rounded-full bg-gray-200"></div>
+</div>
+</div>
+<button class="flex items-center justify-center gap-2 px-4 py-2 rounded-full hover:bg-primary/10 transition-colors text-sm font-bold text-primary">
+<span class="hidden sm:inline">Guardar y salir</span>
+<span class="material-symbols-outlined text-lg">close</span>
+</button>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 px-4 md:px-10 py-8 flex justify-center w-full">
+<div class="w-full max-w-6xl flex flex-col gap-8">
+<!-- Mobile Progress Bar -->
+<div class="md:hidden flex flex-col gap-2">
+<div class="flex justify-between text-xs font-semibold text-primary">
+<span>Paso 3 de 7</span>
+<span>42% completado</span>
+</div>
+<div class="h-2 w-full bg-primary/10 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 42%"></div>
+</div>
+</div>
+<!-- Text Header -->
+<div class="text-center space-y-3 max-w-2xl mx-auto">
+<h1 class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-[#1b120e] leading-tight tracking-tight">
+                        ¿Qué aventura vivirá <span class="text-primary bg-primary/10 px-2 rounded-lg decoration-wavy underline decoration-primary/30 decoration-2">[Leo]</span>?
+                    </h1>
+<p class="text-lg text-[#6b5850] font-medium">
+                        Selecciona una historia mágica para comenzar el viaje. Cada cuento está diseñado para despertar su imaginación.
+                    </p>
+</div>
+<!-- Adventure Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mt-4">
+<!-- Card 1: La Gran Aventura Espacial -->
+<div class="group relative flex flex-col bg-white rounded-xl overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-2 card-shadow hover:shadow-xl border-2 border-transparent hover:border-primary/30">
+<div class="aspect-[3/4] w-full relative overflow-hidden bg-slate-100">
+<!-- Image -->
+<img alt="Starry galaxy space background with nebulae" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Watercolor illustration of deep space with stars and planets" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5og5A51uVb2WCU32gqb0-QQRw4qOJg3agmHlIIujlVx2vxrXBEjjlIgefGj6P0LYSCmLnDjoBtF_u4-QoQZBAEyTcrI39YBshH_Y8vB3WuHzbcrfVfzipgw4xYabOoYoOJ2nXgdvV_dLLoWSh4IJ4KeUnXU7G8ozW1ZkC9LZbGvEGTLohongxVnZBhcy0wkxJ-yumwLjbrdYmH2B-v8awizqEkEUNc4nnltypwVAG6zsGn-JVu9HvnYtR5Vh6OZoZ_Tfvfxwvekwv"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+<!-- Age Badge -->
+<div class="absolute top-3 right-3 bg-white/90 backdrop-blur text-primary text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+                                4-7 años
+                            </div>
+</div>
+<div class="p-5 flex flex-col gap-2 flex-1">
+<h3 class="text-lg font-bold leading-tight text-[#1b120e]">La Gran Aventura Espacial</h3>
+<p class="text-sm text-[#6b5850] line-clamp-3">Un viaje a las estrellas donde descubrirán planetas desconocidos y harán amigos alienígenas.</p>
+</div>
+</div>
+<!-- Card 2: El Bosque Mágico (Selected) -->
+<div class="group relative flex flex-col bg-white rounded-xl overflow-hidden cursor-pointer transition-all duration-300 -translate-y-2 shadow-xl border-4 border-primary ring-4 ring-primary/20">
+<!-- Checkmark for selection -->
+<div class="absolute top-3 left-3 z-10 bg-primary text-white size-8 rounded-full flex items-center justify-center shadow-lg animate-bounce">
+<span class="material-symbols-outlined text-xl font-bold">check</span>
+</div>
+<div class="aspect-[3/4] w-full relative overflow-hidden bg-green-50">
+<img alt="Mysterious green forest with sunbeams" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Magical forest illustration with glowing mushrooms and tall trees" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdax-IuRAdYXnYVewgRQrK3BmBdVmrOU-p5wCYae2GXim0fNskv2IKQpjDeOP_L_6uzJrzFRdBO2I03riRwK7Jj6HK4W_Se91e-RWFJk384A3tKftRkJEuNLZKgx-SCt_U55HBbEPJafk5wwZ4a-ndShIbJKaX1MMq2faTQv1r9tIQVzpPF66Pk5Q047h5J-FBQAXbVhlM4r-MQepNvC7JFwFr9XSWNtxS9Nszg81hgxanfcvJzAIhK9hFMn_Oo92bTJsn-dlUQkyQ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+<div class="absolute top-3 right-3 bg-white/90 backdrop-blur text-primary text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+                                3-6 años
+                            </div>
+</div>
+<div class="p-5 flex flex-col gap-2 flex-1 bg-primary/5">
+<h3 class="text-lg font-bold leading-tight text-primary">El Bosque Mágico</h3>
+<p class="text-sm text-[#6b5850]">Secretos entre los árboles antiguos y criaturas fantásticas que necesitan ayuda.</p>
+</div>
+</div>
+<!-- Card 3: Superhéroe por un Día -->
+<div class="group relative flex flex-col bg-white rounded-xl overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-2 card-shadow hover:shadow-xl border-2 border-transparent hover:border-primary/30">
+<div class="aspect-[3/4] w-full relative overflow-hidden bg-blue-50">
+<img alt="City skyline silhouette at sunset with hero cape" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Comic book style illustration of a superhero flying over a city" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFSuezAiiPjTc_TWd9v6i3b0xpo2Cp4hc7sjGTkKKGyM8WAq-EPBAyFiCpq4Ie64H8zBuf7foFmbmFNQ4kZzdrkYOrudcb9Yd5Iah_5zxC1ivp3z57imepQbomjZoaMh0klH_7D--OEPYNixD-dbdrJ1gg9aS_bnIQP49sOmhEClTqKnsLDufeRCTTzr7QY3iKiKerBF2DOzmWd71TyGhDbYIndTZpzBKbWvqBpdVm97aHT9A5JJs8xZUm50S2zmvmpiaDZkrfMDSc"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+<div class="absolute top-3 right-3 bg-white/90 backdrop-blur text-primary text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+                                5-8 años
+                            </div>
+</div>
+<div class="p-5 flex flex-col gap-2 flex-1">
+<h3 class="text-lg font-bold leading-tight text-[#1b120e]">Superhéroe por un Día</h3>
+<p class="text-sm text-[#6b5850]">¡A salvar la ciudad! Descubre superpoderes ocultos y aprende el valor de la valentía.</p>
+</div>
+</div>
+<!-- Card 4: Piratas del Mar -->
+<div class="group relative flex flex-col bg-white rounded-xl overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-2 card-shadow hover:shadow-xl border-2 border-transparent hover:border-primary/30">
+<div class="aspect-[3/4] w-full relative overflow-hidden bg-cyan-50">
+<img alt="Wooden ship sailing on blue ocean waves" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Watercolor illustration of a pirate ship and a treasure map" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGqNTVDqIxlIgmXNsHpXMuGZhSsVAR9uXWoLI_Kq3pX6e5QWL2NepQGuRcZMOh8TqjoLHxOmWQctO4P5FaKKC_5fJW3sOiEkkia-YnL6obfPyQtTiOWibQ2FpnXJzANYpoCu3acj-VHtwDS4nBFcVueGAzd75E1vUsVSAuhxBROomp_9UiXDm7soPLCdvOHujUBKhHleDEGxTrhzUyf0oMEWEDfGNL6AAmVfUERt7RwI8JKrzg37SJ1QU9LWHd7kKm38hNj4RP7NRO"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+<div class="absolute top-3 right-3 bg-white/90 backdrop-blur text-primary text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+                                4-8 años
+                            </div>
+</div>
+<div class="p-5 flex flex-col gap-2 flex-1">
+<h3 class="text-lg font-bold leading-tight text-[#1b120e]">Piratas del Mar</h3>
+<p class="text-sm text-[#6b5850]">En busca del tesoro perdido navegando los siete mares con una tripulación muy divertida.</p>
+</div>
+</div>
+<!-- Card 5: El Chef Más Pequeño -->
+<div class="group relative flex flex-col bg-white rounded-xl overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-2 card-shadow hover:shadow-xl border-2 border-transparent hover:border-primary/30">
+<div class="aspect-[3/4] w-full relative overflow-hidden bg-orange-50">
+<img alt="Colorful vegetables and cooking utensils on table" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Illustration of a messy kitchen with flying flour and happy ingredients" src="https://lh3.googleusercontent.com/aida-public/AB6AXuChN1pFS5YZuf_VTjg1XbPmCxdu2kZoSKDJIxEqILulM32om9BWu_sV_YLo2ujiO9btUqouVxD_qlxSHxVAvFotYYihg4lbmMAmx0ykh0g1tg9kCF11Tfk9hpXqoXkMrQFFmCNiZNfJSPvseAB2kwA1h8BxwzpgOV5kAg7yWUokTrIgVgA2cC0obvyYUUSfHBuSExq5Jee1K0ZqFUb9kJxX7NfHEiFu09xNzlp_J33flFm8szCVWE8OPK45kfKKZ18N1jED89U_OKrX"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+<div class="absolute top-3 right-3 bg-white/90 backdrop-blur text-primary text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+                                2-5 años
+                            </div>
+</div>
+<div class="p-5 flex flex-col gap-2 flex-1">
+<h3 class="text-lg font-bold leading-tight text-[#1b120e]">El Chef Más Pequeño</h3>
+<p class="text-sm text-[#6b5850]">Una cocina llena de magia donde los ingredientes cobran vida y bailan en la olla.</p>
+</div>
+</div>
+</div>
+<!-- Bottom Navigation -->
+<div class="sticky bottom-0 bg-background-light/80 backdrop-blur-md p-4 -mx-4 md:-mx-10 border-t border-primary/10 mt-auto">
+<div class="max-w-6xl mx-auto flex items-center justify-between">
+<button class="group flex items-center justify-center gap-2 px-8 py-3 rounded-full border-2 border-primary/20 hover:border-primary text-primary font-bold transition-all bg-white hover:bg-primary/5">
+<span class="material-symbols-outlined transition-transform group-hover:-translate-x-1">arrow_back</span>
+                            Anterior
+                        </button>
+<button class="group flex items-center justify-center gap-2 px-10 py-3 rounded-full bg-primary hover:bg-[#d65a2b] text-white font-bold shadow-lg shadow-primary/30 transition-all hover:shadow-xl hover:shadow-primary/40 transform active:scale-95">
+                            Siguiente
+                            <span class="material-symbols-outlined transition-transform group-hover:translate-x-1">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

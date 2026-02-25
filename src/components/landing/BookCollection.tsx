@@ -24,19 +24,19 @@ const BOOKS = [
 
 export default function BookCollection() {
   return (
-    <section className="bg-[#F9F5F0] px-4 py-24" id="catalog">
+    <section className="bg-cream px-4 py-24" id="catalog">
       <div className="mx-auto max-w-6xl">
         <div className="mb-12 flex flex-col items-end justify-between gap-6 md:flex-row">
           <div>
             <h2 className="mb-4 font-display text-4xl font-bold text-secondary">
               Nuestra Biblioteca Física
             </h2>
-            <p className="font-body max-w-xl text-lg text-text-soft">
+            <p className="max-w-xl text-lg text-text-soft">
               Ediciones limitadas en papel premium. Historias que se sienten mejor al tacto.
             </p>
           </div>
           <a
-            className="font-body group flex items-center gap-1 text-sm font-bold uppercase tracking-wide text-primary hover:text-orange-800"
+            className="group flex items-center gap-1 text-sm font-bold uppercase tracking-wide text-primary hover:text-primary-hover"
             href="#"
           >
             Ver colección completa
@@ -50,14 +50,13 @@ export default function BookCollection() {
           {BOOKS.map((book) => (
             <div
               key={book.title}
-              className="group cursor-pointer rounded-lg border border-stone-100 bg-white p-4 pb-6 shadow-sm transition-all duration-300 hover:shadow-xl"
+              className="group cursor-pointer rounded-lg border border-border-light/50 bg-white p-4 pb-6 shadow-sm transition-all duration-300 hover:shadow-xl"
             >
-              <div className="relative mb-6 aspect-[3/4] overflow-hidden rounded-sm bg-stone-100 shadow-inner">
+              <div className="relative mb-6 aspect-[3/4] overflow-hidden rounded-sm bg-cream shadow-inner">
                 <div
                   className="absolute inset-0 bg-cover bg-center opacity-90 transition-transform duration-700 group-hover:scale-105"
                   style={{
                     backgroundImage: `url('${book.image}')`,
-                    mixBlendMode: "multiply",
                   }}
                 />
                 <div
@@ -68,7 +67,7 @@ export default function BookCollection() {
                   }}
                 />
                 {book.hasBadge && (
-                  <div className="font-body absolute top-0 right-0 rounded-bl-lg bg-primary px-3 py-1 text-xs font-bold text-white shadow-sm">
+                  <div className="absolute top-0 right-0 rounded-bl-lg bg-primary px-3 py-1 text-xs font-bold text-white shadow-sm">
                     Tapa Dura
                   </div>
                 )}
@@ -78,15 +77,15 @@ export default function BookCollection() {
                 <h3 className="font-display text-2xl font-bold text-secondary transition-colors group-hover:text-primary">
                   {book.title}
                 </h3>
-                <p className="font-body line-clamp-2 text-sm italic text-text-soft">
+                <p className="line-clamp-2 text-sm italic text-text-soft">
                   {book.description}
                 </p>
-                <div className="mt-2 flex flex-col gap-2 border-t border-stone-100 pt-2">
-                  <div className="font-body flex items-center justify-between text-sm text-stone-600">
+                <div className="mt-2 flex flex-col gap-2 border-t border-border-light/50 pt-2">
+                  <div className="flex items-center justify-between text-sm text-text-muted">
                     <span>Tapa blanda</span>
                     <span className="font-bold text-secondary">34.90€</span>
                   </div>
-                  <div className="font-body flex items-center justify-between text-sm text-stone-600">
+                  <div className="flex items-center justify-between text-sm text-text-muted">
                     <span>Tapa dura (Premium)</span>
                     <span className="font-bold text-primary">44.90€</span>
                   </div>

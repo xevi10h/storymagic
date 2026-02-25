@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>StoryMagic - Paso 4: Configuración Narrativa</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e96b3a",
+                        "primary-dark": "#d15626",
+                        "background-light": "#fcf9f8",
+                        "background-dark": "#211511",
+                        "surface": "#ffffff",
+                        "surface-dark": "#2d1f1a",
+                        "neutral-light": "#f3ebe7",
+                        "text-main": "#1b120e",
+                        "text-secondary": "#97634e",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                    boxShadow: {
+                        'book': '0 20px 40px -5px rgba(27, 18, 14, 0.1), 0 10px 20px -5px rgba(27, 18, 14, 0.05)',
+                        'inner-spine': 'inset 20px 0 30px -10px rgba(0,0,0,0.05)',
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-main dark:text-neutral-200 overflow-x-hidden min-h-screen flex flex-col">
+<!-- Top Navigation -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-neutral-light dark:border-white/10 px-6 lg:px-10 py-3 bg-surface dark:bg-surface-dark relative z-20">
+<div class="flex items-center gap-4 text-text-main dark:text-white">
+<div class="size-8 text-primary">
+<span class="material-symbols-outlined text-3xl">auto_stories</span>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">StoryMagic</h2>
+</div>
+<div class="hidden md:flex flex-1 justify-end gap-8 items-center">
+<div class="flex items-center gap-9">
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Inicio</a>
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Mis Cuentos</a>
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Precios</a>
+<a class="text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Ayuda</a>
+</div>
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-6 bg-primary hover:bg-primary-dark transition-colors text-white text-sm font-bold leading-normal tracking-[0.015em]">
+<span class="truncate">Perfil</span>
+</button>
+</div>
+<button class="md:hidden text-text-main dark:text-white">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</header>
+<!-- Main Content Container -->
+<main class="flex-grow flex flex-col items-center w-full px-4 sm:px-6 py-6 lg:py-8">
+<div class="w-full max-w-[1024px] flex flex-col gap-6">
+<!-- Progress & Title -->
+<div class="flex flex-col gap-4">
+<div class="flex flex-col gap-2">
+<div class="flex gap-6 justify-between items-end">
+<p class="text-base font-bold text-primary">Paso 4 de 7</p>
+<span class="text-text-secondary dark:text-neutral-400 text-sm">Configuración Narrativa</span>
+</div>
+<div class="h-2 w-full rounded-full bg-neutral-light dark:bg-white/10 overflow-hidden">
+<div class="h-full rounded-full bg-primary transition-all duration-500 ease-out" style="width: 57%;"></div>
+</div>
+</div>
+<h1 class="text-3xl md:text-4xl font-extrabold text-center text-text-main dark:text-white mt-2">
+                    El Libro de las Mil Decisiones
+                </h1>
+<p class="text-text-secondary dark:text-neutral-400 text-center max-w-lg mx-auto">
+                    Personaliza los detalles de tu historia y observa cómo cambia la magia en tiempo real.
+                </p>
+</div>
+<!-- Interactive Book Area -->
+<div class="relative w-full perspective-1000 mt-6 mb-8">
+<!-- Book Container -->
+<div class="relative w-full aspect-[4/3] md:aspect-[2/1] bg-surface dark:bg-surface-dark rounded-xl md:rounded-3xl shadow-book border border-neutral-light dark:border-white/5 flex overflow-hidden">
+<!-- Left Page (Text Preview) -->
+<div class="hidden md:flex flex-1 p-8 md:p-12 flex-col justify-center items-start bg-[#fdfbf9] dark:bg-[#2a221f] relative">
+<!-- Spine Shadow Effect -->
+<div class="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-black/5 to-transparent z-10 pointer-events-none"></div>
+<div class="font-serif italic text-text-secondary/60 mb-4">Capítulo 1</div>
+<h3 class="text-2xl font-bold text-text-main dark:text-white mb-6 font-display">El Bosque de los Susurros</h3>
+<div class="space-y-4 text-text-secondary dark:text-neutral-300 leading-relaxed font-serif text-lg">
+<p>
+                                Había una vez un pequeño explorador llamado <span class="bg-primary/10 text-primary px-1 rounded font-bold">Leo</span> que vivía al borde de lo desconocido.
+                            </p>
+<p>
+                                Una tarde, mientras el sol teñía el cielo de <span class="bg-primary/10 text-primary px-1 rounded font-bold">naranja atardecer</span>, decidió adentrarse en el bosque. No iba solo, su fiel <span class="bg-primary/10 text-primary px-1 rounded font-bold">dragón Pepe</span> lo seguía de cerca.
+                            </p>
+<p class="opacity-50">
+                                Lo que no sabían era que hoy... <span class="italic">algo inesperado sucedería.</span>
+</p>
+</div>
+<div class="mt-auto text-xs text-text-secondary/40 text-center w-full">Página 4</div>
+</div>
+<!-- Right Page (Dynamic Visual) -->
+<div class="flex-1 relative bg-neutral-100 dark:bg-black/20 overflow-hidden group">
+<!-- Spine Highlight Effect -->
+<div class="hidden md:block absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-black/5 to-transparent z-10 pointer-events-none"></div>
+<!-- Main Illustration -->
+<img alt="Magical forest illustration at sunset with warm orange lighting" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Magical forest illustration at sunset with warm orange lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6sHs-cjno2J1JgS7Emj1wqM28Gr25e1I9HAL4NmUypmbI9AXebv5PZDw17MiQbrEZ-lzJ25Xg8sNSR3EF2d3lf8Idav28UoHlOKZByHIUoGhXJg2pHQGAekZS9TYN49D_2pllK-htV7jw4ieclImp5FSuKoHI8se8U1OG52Iuj8mkC0LRYoirkISEQMKnGmlV8qlbilr09DB51z_hgsnamx0XsWpNpU3OW8knn1pSB5HkRtrgnV_o4RnemztodEkVH4-k0E6hHmSt"/>
+<!-- Overlay Elements (Simulated dynamic changes) -->
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+<!-- Interactive Tags on Image -->
+<div class="absolute bottom-6 left-6 right-6 flex justify-between items-end">
+<div class="bg-surface/90 dark:bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm">
+<span class="text-primary">Atmósfera:</span> Atardecer
+                            </div>
+<button class="bg-white/20 hover:bg-white/40 backdrop-blur-md p-2 rounded-full text-white transition-colors">
+<span class="material-symbols-outlined text-xl">refresh</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Configuration Panel -->
+<div class="bg-surface dark:bg-surface-dark rounded-2xl border border-neutral-light dark:border-white/5 shadow-sm p-2 md:p-4">
+<!-- Tabs Header -->
+<div class="flex border-b border-neutral-light dark:border-white/10 mb-6 px-2 overflow-x-auto">
+<button class="flex items-center gap-2 pb-3 pt-2 px-6 border-b-[3px] border-transparent text-text-secondary hover:text-primary transition-colors whitespace-nowrap">
+<span class="material-symbols-outlined text-[20px]">face</span>
+<span class="font-bold text-sm tracking-wide">Protagonistas</span>
+</button>
+<button class="flex items-center gap-2 pb-3 pt-2 px-6 border-b-[3px] border-primary text-primary transition-colors whitespace-nowrap">
+<span class="material-symbols-outlined text-[20px] fill-current">landscape</span>
+<span class="font-bold text-sm tracking-wide">Atmósfera</span>
+</button>
+<button class="flex items-center gap-2 pb-3 pt-2 px-6 border-b-[3px] border-transparent text-text-secondary hover:text-primary transition-colors whitespace-nowrap">
+<span class="material-symbols-outlined text-[20px]">alt_route</span>
+<span class="font-bold text-sm tracking-wide">El Giro</span>
+</button>
+</div>
+<!-- Tab Content: Atmósfera (Active) -->
+<div class="px-2 md:px-4 pb-4 animate-fadeIn">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- Time of Day Selection -->
+<div class="flex flex-col gap-4">
+<label class="text-sm font-bold text-text-main dark:text-neutral-200 uppercase tracking-wider opacity-80">Momento del día</label>
+<div class="flex flex-wrap gap-3">
+<button class="group flex items-center gap-2 px-4 py-2 rounded-full border border-neutral-light dark:border-white/10 bg-neutral-light/30 hover:bg-primary/10 hover:border-primary/30 transition-all">
+<span class="material-symbols-outlined text-yellow-500 group-hover:scale-110 transition-transform">sunny</span>
+<span class="text-sm font-medium text-text-main dark:text-neutral-200">Día</span>
+</button>
+<button class="group flex items-center gap-2 px-4 py-2 rounded-full border border-primary bg-primary text-white shadow-md shadow-primary/20 transition-all transform scale-105">
+<span class="material-symbols-outlined text-white group-hover:rotate-12 transition-transform">wb_twilight</span>
+<span class="text-sm font-bold">Atardecer</span>
+</button>
+<button class="group flex items-center gap-2 px-4 py-2 rounded-full border border-neutral-light dark:border-white/10 bg-neutral-light/30 hover:bg-primary/10 hover:border-primary/30 transition-all">
+<span class="material-symbols-outlined text-indigo-400 group-hover:scale-110 transition-transform">bedtime</span>
+<span class="text-sm font-medium text-text-main dark:text-neutral-200">Noche</span>
+</button>
+</div>
+</div>
+<!-- Weather / Mood Selection -->
+<div class="flex flex-col gap-4">
+<label class="text-sm font-bold text-text-main dark:text-neutral-200 uppercase tracking-wider opacity-80">Clima Mágico</label>
+<div class="grid grid-cols-2 gap-3">
+<label class="cursor-pointer relative">
+<input class="peer sr-only" name="weather" type="radio"/>
+<div class="flex items-center gap-3 p-3 rounded-xl border border-neutral-light dark:border-white/10 bg-white dark:bg-white/5 hover:border-primary/50 peer-checked:border-primary peer-checked:bg-primary/5 transition-all">
+<div class="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-lg text-blue-500">
+<span class="material-symbols-outlined text-xl block">rainy</span>
+</div>
+<span class="text-sm font-medium">Lluvia Suave</span>
+</div>
+<div class="absolute top-3 right-3 opacity-0 peer-checked:opacity-100 text-primary transition-opacity">
+<span class="material-symbols-outlined text-lg">check_circle</span>
+</div>
+</label>
+<label class="cursor-pointer relative">
+<input checked="" class="peer sr-only" name="weather" type="radio"/>
+<div class="flex items-center gap-3 p-3 rounded-xl border border-neutral-light dark:border-white/10 bg-white dark:bg-white/5 hover:border-primary/50 peer-checked:border-primary peer-checked:bg-primary/5 transition-all">
+<div class="bg-orange-100 dark:bg-orange-900/30 p-2 rounded-lg text-primary">
+<span class="material-symbols-outlined text-xl block">air</span>
+</div>
+<span class="text-sm font-medium">Viento Cálido</span>
+</div>
+<div class="absolute top-3 right-3 opacity-0 peer-checked:opacity-100 text-primary transition-opacity">
+<span class="material-symbols-outlined text-lg">check_circle</span>
+</div>
+</label>
+<label class="cursor-pointer relative">
+<input class="peer sr-only" name="weather" type="radio"/>
+<div class="flex items-center gap-3 p-3 rounded-xl border border-neutral-light dark:border-white/10 bg-white dark:bg-white/5 hover:border-primary/50 peer-checked:border-primary peer-checked:bg-primary/5 transition-all">
+<div class="bg-purple-100 dark:bg-purple-900/30 p-2 rounded-lg text-purple-500">
+<span class="material-symbols-outlined text-xl block">foggy</span>
+</div>
+<span class="text-sm font-medium">Niebla Misteriosa</span>
+</div>
+<div class="absolute top-3 right-3 opacity-0 peer-checked:opacity-100 text-primary transition-opacity">
+<span class="material-symbols-outlined text-lg">check_circle</span>
+</div>
+</label>
+<label class="cursor-pointer relative">
+<input class="peer sr-only" name="weather" type="radio"/>
+<div class="flex items-center gap-3 p-3 rounded-xl border border-neutral-light dark:border-white/10 bg-white dark:bg-white/5 hover:border-primary/50 peer-checked:border-primary peer-checked:bg-primary/5 transition-all">
+<div class="bg-yellow-100 dark:bg-yellow-900/30 p-2 rounded-lg text-yellow-600">
+<span class="material-symbols-outlined text-xl block">auto_awesome</span>
+</div>
+<span class="text-sm font-medium">Chispas Mágicas</span>
+</div>
+<div class="absolute top-3 right-3 opacity-0 peer-checked:opacity-100 text-primary transition-opacity">
+<span class="material-symbols-outlined text-lg">check_circle</span>
+</div>
+</label>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Navigation -->
+<div class="flex justify-between items-center w-full mt-4 pt-4 border-t border-neutral-light dark:border-white/5">
+<button class="px-6 py-3 text-text-secondary hover:text-text-main font-bold text-sm transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-lg">arrow_back</span>
+                    Atrás
+                </button>
+<div class="flex gap-4">
+<button class="hidden sm:flex px-6 py-3 text-text-secondary hover:text-primary font-bold text-sm transition-colors items-center gap-2">
+<span class="material-symbols-outlined text-lg">save</span>
+                        Guardar borrador
+                    </button>
+<button class="flex items-center justify-center gap-2 px-8 py-3 bg-primary hover:bg-primary-dark text-white rounded-full font-bold text-sm shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all transform hover:-translate-y-0.5">
+                        Siguiente
+                        <span class="material-symbols-outlined text-lg">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</body></html>

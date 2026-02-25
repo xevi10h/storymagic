@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>StoryMagic - Historias Reales para Tocar</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Fredoka:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#D2691E", // More earthy terracotta orange
+                        "secondary": "#5D4037", // Warm brown instead of purple
+                        "cream": "#F9F5F0", // Slightly more textured feel background
+                        "paper": "#fcf9f8",
+                        "text-main": "#2C1810",
+                        "text-soft": "#5d4037",
+                        "accent": "#8B4513"
+                    },
+                    fontFamily: {
+                        "display": ["Fredoka", "sans-serif"],
+                        "body": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "1.5rem", "xl": "2.5rem", "2xl": "3rem", "full": "9999px"},
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                        'paper-texture': "url('https://www.transparenttextures.com/patterns/cream-paper.png')",
+                    }
+                },
+            },
+        }
+    </script>
+<style>body {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    background-color: #F9F5F0;
+    color: #2C1810
+    }
+h1, h2, h3, h4 {
+    font-family: "Fredoka", sans-serif
+    }
+.texture-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.8;
+    pointer-events: none;
+    z-index: 0;
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuDSqigxrQEajucAri8DRx76xn_HiLmJoLI5NkhzaH9fAWLZ7NBsdAVA3VbJUzC7o3cKefYT0rhWnbOLuzh7-I8KUQlVGDtiClSF6JUb8OyWTH2MLq0PwxH_Wfyu0VNCPV-gdhfXmPYg_F0KmpWoeYuByciDq_DCQs0DciRxdmZZu2_fO00bmq0W0BQJ5Rv3nI37tXOR1OmeUA1X-BPldnFSZZtaYl8hNqI5BH3wck5fd8k-yOCgqqgktA5T4U9XMOLFE88kG8C5ouVY)
+    }
+.watercolor-blob {
+    mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23F00' d='M44.7,-76.4C58.9,-69.2,71.8,-59.1,79.6,-46.3C87.4,-33.4,90.1,-17.9,89.3,-2.4C88.5,13,84.2,28.5,75.4,41.2C66.6,53.9,53.3,63.9,39.6,70.3C25.9,76.7,11.8,79.6,-1.8,82.8C-15.5,85.9,-29.3,89.3,-41.2,84.1C-53,78.9,-63,65.2,-71.3,50.7C-79.6,36.2,-86.2,20.9,-85.4,6.2C-84.7,-8.6,-76.6,-22.7,-66.5,-34.8C-56.3,-46.9,-44.1,-57,-31.2,-64.7C-18.3,-72.4,-4.7,-77.7,6.8,-88.5L18.4,-99.3' transform='translate(100 100)' /%3E%3C/svg%3E");
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23F00' d='M44.7,-76.4C58.9,-69.2,71.8,-59.1,79.6,-46.3C87.4,-33.4,90.1,-17.9,89.3,-2.4C88.5,13,84.2,28.5,75.4,41.2C66.6,53.9,53.3,63.9,39.6,70.3C25.9,76.7,11.8,79.6,-1.8,82.8C-15.5,85.9,-29.3,89.3,-41.2,84.1C-53,78.9,-63,65.2,-71.3,50.7C-79.6,36.2,-86.2,20.9,-85.4,6.2C-84.7,-8.6,-76.6,-22.7,-66.5,-34.8C-56.3,-46.9,-44.1,-57,-31.2,-64.7C-18.3,-72.4,-4.7,-77.7,6.8,-88.5L18.4,-99.3' transform='translate(100 100)' /%3E%3C/svg%3E");
+    mask-size: contain;
+    -webkit-mask-size: contain;
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-position: center
+    }
+.book-shadow {
+    box-shadow: -5px 5px 15px rgba(60, 40, 30, 0.2), -1px 1px 3px rgba(60, 40, 30, 0.1)
+    }
+.torn-paper-top {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 40' preserveAspectRatio='none'%3E%3Cpath d='M0,20 Q25,40 50,20 T100,20 T150,20 T200,20 T250,20 T300,20 T350,20 T400,20 T450,20 T500,20 T550,20 T600,20 T650,20 T700,20 T750,20 T800,20 T850,20 T900,20 T950,20 T1000,20 V40 H0 Z' fill='%23F9F5F0'/%3E%3C/svg%3E");
+    background-repeat: repeat-x;
+    background-size: 50px 20px;
+    height: 20px;
+    width: 100%;
+    position: absolute;
+    top: -19px;
+    left: 0;
+    transform: rotate(180deg)
+    }
+.torn-paper-bottom {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 40' preserveAspectRatio='none'%3E%3Cpath d='M0,20 Q25,40 50,20 T100,20 T150,20 T200,20 T250,20 T300,20 T350,20 T400,20 T450,20 T500,20 T550,20 T600,20 T650,20 T700,20 T750,20 T800,20 T850,20 T900,20 T950,20 T1000,20 V40 H0 Z' fill='%23F9F5F0'/%3E%3C/svg%3E");
+    background-repeat: repeat-x;
+    background-size: 50px 20px;
+    height: 20px;
+    width: 100%;
+    position: absolute;
+    bottom: -19px;
+    left: 0
+    }</style>
+</head>
+<body class="bg-cream overflow-x-hidden relative text-text-main">
+<div class="texture-overlay"></div>
+<nav class="fixed top-0 w-full z-50 px-4 py-4 transition-all duration-300">
+<div class="max-w-6xl mx-auto bg-white/95 backdrop-blur-sm border border-stone-200 shadow-sm rounded-lg px-6 py-3 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="text-primary">
+<span class="material-symbols-outlined text-3xl">menu_book</span>
+</div>
+<span class="text-2xl font-bold text-secondary tracking-tight font-display">StoryMagic</span>
+</div>
+<div class="hidden md:flex items-center gap-8 font-body">
+<a class="text-text-soft hover:text-primary font-medium text-sm transition-colors" href="#manifesto">Manifiesto</a>
+<a class="text-text-soft hover:text-primary font-medium text-sm transition-colors" href="#catalog">Colección</a>
+<a class="text-text-soft hover:text-primary font-medium text-sm transition-colors" href="#artisanal">Artesanal</a>
+<a class="text-text-soft hover:text-primary font-medium text-sm transition-colors" href="#reviews">Familias</a>
+</div>
+<button class="bg-primary hover:bg-orange-700 text-white px-6 py-2.5 rounded-lg font-bold text-sm shadow-md transition-all hover:scale-105 active:scale-95 flex items-center gap-2">
+<span class="material-symbols-outlined text-lg">edit</span>
+                Crear mi cuento
+            </button>
+</div>
+</nav>
+<header class="relative pt-32 pb-20 px-4 overflow-hidden">
+<div class="absolute top-0 right-0 w-[600px] h-[600px] bg-orange-200/30 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3 -z-10 mix-blend-multiply"></div>
+<div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-amber-100/40 rounded-full blur-[80px] translate-y-1/4 -translate-x-1/4 -z-10 mix-blend-multiply"></div>
+<div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+<div class="flex flex-col gap-6 relative z-10">
+<div class="inline-flex items-center gap-2 bg-[#F5E6D3] border border-[#E6C9A8] px-4 py-1.5 rounded-md w-fit shadow-sm transform -rotate-1">
+<span class="material-symbols-outlined text-secondary text-sm">spa</span>
+<span class="text-secondary text-xs font-bold uppercase tracking-wider font-body">100% Desconexión Digital</span>
+</div>
+<h1 class="text-5xl lg:text-7xl font-bold text-secondary leading-[1.1] tracking-tight font-display">
+                    Menos pantallas, <br/>
+<span class="text-primary italic">más historias</span> para tocar
+                </h1>
+<p class="text-lg lg:text-xl text-text-soft leading-relaxed max-w-lg font-body">
+                    Recupera la magia de pasar las páginas. Cuentos personalizados impresos en papel de alta calidad, diseñados para crear momentos de conexión real, lejos del brillo de las tablets.
+                </p>
+<div class="flex flex-col sm:flex-row gap-4 pt-4">
+<button class="bg-primary hover:bg-orange-700 text-white h-14 px-8 rounded-lg font-bold text-lg shadow-lg shadow-orange-900/10 transition-all hover:-translate-y-1 flex items-center justify-center gap-2 font-body">
+                        Personalizar libro físico
+                        <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+<button class="text-secondary hover:text-primary font-bold text-lg transition-all flex items-center justify-center gap-2 underline decoration-2 underline-offset-4 decoration-orange-200 hover:decoration-primary">
+                        Ver calidad del papel
+                    </button>
+</div>
+<div class="flex items-center gap-4 text-sm text-text-soft pt-6 font-medium font-body border-t border-stone-200 mt-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-green-700 text-xl">forest</span>
+<span>Papel certificado FSC</span>
+</div>
+<span class="text-stone-300">|</span>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-orange-700 text-xl">local_shipping</span>
+<span>Envío artesanal</span>
+</div>
+</div>
+</div>
+<div class="relative group perspective-1000">
+<div class="relative w-full aspect-[4/5] p-3 bg-white shadow-xl rotate-1 transform transition-transform duration-500 group-hover:rotate-0">
+<div class="absolute inset-0 border-2 border-stone-100 m-2 pointer-events-none z-20"></div>
+<div class="w-full h-full overflow-hidden bg-stone-100 relative">
+<img alt="Child reading a physical book in a cozy nook with warm lighting" class="object-cover w-full h-full sepia-[0.1] contrast-[1.1]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfCPK8JPwKzIIoyvLEF3y03_9KevY3CktOtdAPpyoe4BrjDbeOszy7x8vdCCEbD4ujCalI1xDywwTe1r5ZE9yjQaEJsPRWB4eyH8quKkGxgf23seqlqDcj1sfzX6TR7S05gGCpwjv9TXm14tAWzAC7Iog_-pTkkcVLgzLu5VHNoIkMSfuKoPDqmPmYO0O5uEy0lU-PwlLvv5z5jfiVWwwEGpgy3HMuZOp-irLdzeYJvSloVC-FiFrw-bL9kaC25rb6Q2dh47J6L4DU"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-80"></div>
+</div>
+<div class="absolute bottom-6 left-6 right-6 text-white z-30">
+<div class="bg-black/30 backdrop-blur-md p-4 border-l-4 border-primary">
+<p class="font-display font-bold text-xl mb-1 text-cream">El tacto del papel importa</p>
+<p class="text-sm font-body text-stone-200">Una experiencia sensorial que ninguna pantalla puede igualar.</p>
+</div>
+</div>
+</div>
+<div class="absolute -inset-4 bg-[#f8f5f2] -z-10 rotate-[-2deg] shadow-sm border border-stone-100"></div>
+</div>
+</div>
+</header>
+<section class="py-20 bg-white relative border-y border-stone-200" id="manifesto">
+<div class="absolute inset-0 opacity-40 bg-[url('https://www.transparenttextures.com/patterns/clean-gray-paper.png')]"></div>
+<div class="max-w-6xl mx-auto px-4 relative z-10">
+<div class="text-center mb-16">
+<span class="text-primary font-bold tracking-wider uppercase text-sm font-body">Vuelta a los orígenes</span>
+<h2 class="text-4xl font-bold text-secondary mt-2 font-display">Magia real en 3 pasos artesanales</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
+<div class="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 border-t-2 border-dotted border-stone-300 -z-0"></div>
+<div class="flex flex-col items-center text-center group">
+<div class="w-24 h-24 bg-[#FAF3E0] rounded-full flex items-center justify-center mb-6 relative z-10 border-4 border-white shadow-md">
+<span class="material-symbols-outlined text-4xl text-primary">auto_stories</span>
+</div>
+<h3 class="text-xl font-bold mb-3 text-secondary font-display">Elige una historia</h3>
+<p class="text-text-soft text-sm leading-relaxed max-w-xs font-body">Selecciona una trama diseñada para ser leída en voz alta y tocar el corazón.</p>
+</div>
+<div class="flex flex-col items-center text-center group">
+<div class="w-24 h-24 bg-[#EBE0D6] rounded-full flex items-center justify-center mb-6 relative z-10 border-4 border-white shadow-md">
+<span class="material-symbols-outlined text-4xl text-secondary">brush</span>
+</div>
+<h3 class="text-xl font-bold mb-3 text-secondary font-display">Personalización manual</h3>
+<p class="text-text-soft text-sm leading-relaxed max-w-xs font-body">Adaptamos las ilustraciones con estilo acuarela para que tu hijo se reconozca.</p>
+</div>
+<div class="flex flex-col items-center text-center group">
+<div class="w-24 h-24 bg-[#E0E9D8] rounded-full flex items-center justify-center mb-6 relative z-10 border-4 border-white shadow-md">
+<span class="material-symbols-outlined text-4xl text-green-700">inventory_2</span>
+</div>
+<h3 class="text-xl font-bold mb-3 text-secondary font-display">Recibe un tesoro</h3>
+<p class="text-text-soft text-sm leading-relaxed max-w-xs font-body">Un libro físico, encuadernado con cariño, llega a tu puerta listo para ser amado.</p>
+</div>
+</div>
+</div>
+</section>
+<section class="py-24 px-4 bg-[#F9F5F0]" id="catalog">
+<div class="max-w-6xl mx-auto">
+<div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+<div>
+<h2 class="text-4xl font-bold text-secondary mb-4 font-display">Nuestra Biblioteca Física</h2>
+<p class="text-text-soft text-lg max-w-xl font-body">Ediciones limitadas en papel premium. Historias que se sienten mejor al tacto.</p>
+</div>
+<a class="text-primary font-bold hover:text-orange-800 flex items-center gap-1 group font-body uppercase text-sm tracking-wide" href="#">
+                    Ver colección completa 
+                    <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform text-lg">arrow_right_alt</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+<div class="group cursor-pointer bg-white p-4 pb-6 rounded-lg shadow-sm border border-stone-100 hover:shadow-xl transition-all duration-300">
+<div class="relative aspect-[3/4] mb-6 overflow-hidden rounded-sm shadow-inner bg-stone-100">
+<div class="absolute inset-0 bg-cover bg-center opacity-90 group-hover:scale-105 transition-transform duration-700" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC6VL_AYqEty2H-GbV81WP_azfa6-IU9kYV335jDZwd4snVh3otFA0MLoHWzYBVRN6D7uO6bEFGhpnzN-NUinjaYGN0HlgT1dOrbips2Im89VsZRyTu-1V11GVPrma6xPMEKRBhlVhLpHl_mt8bkHQwuhNbWsxIeJndFCX9sJiIJtt31XHdiKH6_MBR4lvbIxqMGr915OaUtE8B6HC-E9cFrDodvb0saZB_Arw2STBeUL4o93_O5P1_AKxGrZxtlgICx5yeCsm7Diec'); mix-blend-multiply;"></div>
+<div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/rough-cloth.png')] opacity-30 pointer-events-none"></div>
+<div class="absolute top-0 right-0 bg-primary text-white px-3 py-1 text-xs font-bold shadow-sm rounded-bl-lg font-body">
+                            Tapa Dura
+                        </div>
+</div>
+<div class="space-y-3 px-2">
+<h3 class="text-2xl font-bold text-secondary group-hover:text-primary transition-colors font-display">El Bosque Encantado</h3>
+<p class="text-text-soft text-sm line-clamp-2 font-body italic">Ilustraciones estilo gouache sobre papel texturizado.</p>
+<div class="flex flex-col gap-2 pt-2 border-t border-stone-100 mt-2">
+<div class="flex justify-between items-center text-sm text-stone-600 font-body">
+<span>Tapa blanda</span>
+<span class="font-bold text-secondary">34.90€</span>
+</div>
+<div class="flex justify-between items-center text-sm text-stone-600 font-body">
+<span>Tapa dura (Premium)</span>
+<span class="font-bold text-primary">44.90€</span>
+</div>
+</div>
+</div>
+</div>
+<div class="group cursor-pointer bg-white p-4 pb-6 rounded-lg shadow-sm border border-stone-100 hover:shadow-xl transition-all duration-300">
+<div class="relative aspect-[3/4] mb-6 overflow-hidden rounded-sm shadow-inner bg-stone-100">
+<div class="absolute inset-0 bg-cover bg-center opacity-90 group-hover:scale-105 transition-transform duration-700" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuABBA0Cf06fPnqKSfGRm48Pmu6ucN-jUEVB4HEwyp-DBH-xxNU5J_KCoHPCTwqmiwLMRseYBXwbRpHgq9uGNsFjGl5RhN408EvyctgZzWyxWGPtAoOWRBqqLf6HYJ6JHExoCBXpq4UW8ANQYnEa9PuknwvT7CnGVOeOS7yJBU2sEszUjY0x_mXI_Hhc2iI-v8CqAuBFA55xP-nK_bsvWEmgN_L1YmVe5GI5bQD1_m9-emm22sbMoQqYpkXSt7WSjqHd-KmyZYEHrJ8D'); mix-blend-multiply;"></div>
+<div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/rough-cloth.png')] opacity-30 pointer-events-none"></div>
+</div>
+<div class="space-y-3 px-2">
+<h3 class="text-2xl font-bold text-secondary group-hover:text-primary transition-colors font-display">Misión Espacial</h3>
+<p class="text-text-soft text-sm line-clamp-2 font-body italic">Acuarelas cósmicas y papel de alto gramaje.</p>
+<div class="flex flex-col gap-2 pt-2 border-t border-stone-100 mt-2">
+<div class="flex justify-between items-center text-sm text-stone-600 font-body">
+<span>Tapa blanda</span>
+<span class="font-bold text-secondary">34.90€</span>
+</div>
+<div class="flex justify-between items-center text-sm text-stone-600 font-body">
+<span>Tapa dura (Premium)</span>
+<span class="font-bold text-primary">44.90€</span>
+</div>
+</div>
+</div>
+</div>
+<div class="group cursor-pointer bg-white p-4 pb-6 rounded-lg shadow-sm border border-stone-100 hover:shadow-xl transition-all duration-300">
+<div class="relative aspect-[3/4] mb-6 overflow-hidden rounded-sm shadow-inner bg-stone-100">
+<div class="absolute inset-0 bg-cover bg-center opacity-90 group-hover:scale-105 transition-transform duration-700" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBNgOqfWleS4dgz8lpSn13SgKrqUX_lP8f64zkeoepf32guQ7HsMYX45v2De6eISqj4HKCS6vKKvM3ZXXvHgQcfkScKM69Qq8C9c23L3XfJxnYyf-Amm2dWaNV0rMpNApWD-CoAZgVSgpoHsiAdE-SHMcIjcbkNUDOIFXpw_VN5172nLLzKL-pTmyhy6Im4agwWHIb4rcpVepJWGLcQ9krIodcO40-np3zmYRQDyte5QPiC3O5Wg2dlzxX5J03TD8dTpwAXyuXeYFLH'); mix-blend-multiply;"></div>
+<div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/rough-cloth.png')] opacity-30 pointer-events-none"></div>
+</div>
+<div class="space-y-3 px-2">
+<h3 class="text-2xl font-bold text-secondary group-hover:text-primary transition-colors font-display">El Reino Submarino</h3>
+<p class="text-text-soft text-sm line-clamp-2 font-body italic">Tonos oceánicos impresos en calidad archivo.</p>
+<div class="flex flex-col gap-2 pt-2 border-t border-stone-100 mt-2">
+<div class="flex justify-between items-center text-sm text-stone-600 font-body">
+<span>Tapa blanda</span>
+<span class="font-bold text-secondary">34.90€</span>
+</div>
+<div class="flex justify-between items-center text-sm text-stone-600 font-body">
+<span>Tapa dura (Premium)</span>
+<span class="font-bold text-primary">44.90€</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-24 bg-white overflow-hidden relative" id="artisanal">
+<div class="torn-paper-top"></div>
+<div class="max-w-6xl mx-auto px-4">
+<div class="flex flex-col lg:flex-row items-center gap-16">
+<div class="lg:w-1/2 relative">
+<div class="absolute -top-6 -left-6 w-full h-full bg-[#E8DCC4] rounded-lg -z-10 transform -rotate-2 border border-[#D6C4A0]"></div>
+<img alt="Close up of high quality book binding and thick paper pages" class="rounded-lg shadow-2xl w-full object-cover h-[500px] sepia-[0.15]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkkQQPk7OzCfnx7WJj8dX7WuRKk5U-0GgJph8-YJux6aF7G0ex0WWvtSFid1o75OS-uWXltC3oQOxgBVgTLcEiih2DIj0MbEixxGOL5TGqFq6SiveRUIbeeZej-kUGQS3NK0uQtU7cF1PEjH60T8p1XEIySV7vfa-tlEst4gInjUUefKTNGIj8NfdwgDYs3uY24tSK3ghbaJ0JVS6ScLTbtySclznSEKryioJEJAGKyZABYYoxY84jI24SQQwHmfHUy8D7BKDCgHNb"/>
+<div class="absolute -bottom-10 -right-6 bg-white border border-stone-200 p-6 shadow-xl w-48 rotate-3 transform">
+<div class="flex flex-col items-center text-center">
+<span class="material-symbols-outlined text-4xl text-green-700 mb-2">eco</span>
+<span class="font-bold text-secondary text-sm font-body">Impresión local &amp; sostenible</span>
+</div>
+</div>
+</div>
+<div class="lg:w-1/2 flex flex-col gap-8">
+<span class="text-primary font-bold uppercase tracking-widest text-sm font-body">Calidad de Librería</span>
+<h2 class="text-4xl font-bold text-secondary leading-tight font-display">Objetos hechos para perdurar en el tiempo</h2>
+<p class="text-lg text-text-soft font-body">No es solo un cuento, es un recuerdo tangible. Huimos de lo efímero digital para crear libros robustos.</p>
+<div class="space-y-8 mt-4">
+<div class="flex items-start gap-5">
+<div class="w-12 h-12 flex items-center justify-center flex-shrink-0 text-secondary border-2 border-secondary rounded-full">
+<span class="material-symbols-outlined">book</span>
+</div>
+<div>
+<h3 class="text-xl font-bold mb-1 text-secondary font-display">Encuadernación Tradicional</h3>
+<p class="text-text-soft font-body text-sm">Cosido al hilo y tapas reforzadas. Resiste el paso de los años y de las manos pequeñas.</p>
+</div>
+</div>
+<div class="flex items-start gap-5">
+<div class="w-12 h-12 flex items-center justify-center flex-shrink-0 text-secondary border-2 border-secondary rounded-full">
+<span class="material-symbols-outlined">texture</span>
+</div>
+<div>
+<h3 class="text-xl font-bold mb-1 text-secondary font-display">Textura del Papel</h3>
+<p class="text-text-soft font-body text-sm">Papel Munken de 170g con un ligero tono crema para no cansar la vista. Rugosidad natural al tacto.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="torn-paper-bottom"></div>
+</section>
+<section class="py-24 bg-[#5D4037] text-[#FAF3E0] relative overflow-hidden">
+<div class="absolute inset-0 opacity-10" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC7hINU9mwp25NrO_Iq3UCLpiX6Nz0XiawzNamGSrZh0kL8fDqnwIFgpNn_-GLdb1ldzSzlqpQJWQamAikyN8afx0SbRSFTZKd45IQ5zShVrJ6BMYJW1K5NYi-eH8Wq08tm2Crw0ChGQ-KMxUz9PW6b4o_QMCYnx7udmk-sOx_YlaG-NZjOL8fdNZDUIhfhLWFE3NZWRUga1qVlZLMAS0_FU_n9IXNxCAQDN8Vusne4x9wB2bYW4MKaZPscIsRrBapgRX5ccWoNCkVg');"></div>
+<div class="max-w-6xl mx-auto px-4 relative z-10">
+<div class="bg-[#4E342E] shadow-2xl border border-[#6D4C41] rounded-2xl p-8 md:p-16 flex flex-col md:flex-row items-center gap-12">
+<div class="flex-1 text-center md:text-left">
+<span class="bg-[#8D6E63] text-white px-3 py-1 rounded text-xs font-bold uppercase tracking-widest mb-4 inline-block font-body">Experiencia Completa</span>
+<h2 class="text-3xl md:text-5xl font-bold mb-6 font-display text-white">Pack Aventura Artesanal</h2>
+<p class="text-lg text-[#D7CCC8] mb-8 leading-relaxed font-body">
+                        La magia se extiende fuera del libro. Incluye <strong class="text-white">carta física personalizada</strong> del personaje principal, hoja de pegatinas mate y marcapáginas de madera.
+                    </p>
+<button class="bg-[#D2691E] text-white hover:bg-[#A0522D] px-8 py-4 rounded-lg font-bold shadow-lg transition-transform hover:-translate-y-1 flex items-center gap-2 mx-auto md:mx-0 font-body">
+<span class="material-symbols-outlined">card_giftcard</span>
+                        Añadir extras físicos (+12.90€)
+                    </button>
+</div>
+<div class="flex-1 relative">
+<div class="bg-white p-3 shadow-xl rotate-2 transform hover:rotate-0 transition-duration-300">
+<img alt="Gift set with book, stickers and coloring pencils on a table" class="w-full h-auto sepia-[0.2]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgbajYrzRnL4XE3sG513pFRed1tLDRzw7P8yVbC5sDY73010Q_cVzcHERjGVa6VzLC4Z9qu0I_XX4KvYoRWWWLBnXXkUsEEujruWJSzvjfQRR2ZIkwL2aUwbrGMC3F53ujhJ5PhWwNN3IIQwOv8WWB2U7XNvI3vhM8u1T-f8OHfEElGy9sA0VwMZOgh3eafeYSg5vCL3W2yXYNqFPyjsOs8kjxP4P0DSaY_lmJ2rs-TNU6rOJJHIAiyreOJ_kTK1Z8ndJ_Cg4WpdmS"/>
+<div class="pt-3 pb-1 text-center font-handwriting text-gray-500 font-display">El regalo perfecto</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-24 bg-[#F9F5F0] relative" id="reviews">
+<div class="max-w-4xl mx-auto px-4 text-center">
+<h2 class="text-4xl font-bold text-secondary mb-4 font-display">Familias Desconectadas</h2>
+<p class="text-text-soft mb-16 font-body">Lo que dicen los padres que han elegido papel sobre píxeles.</p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+<div class="bg-white p-8 rounded-lg shadow-sm border-l-4 border-primary relative">
+<div class="flex text-yellow-500 mb-4 text-xs tracking-widest">
+                        ★★★★★
+                    </div>
+<p class="text-text-main text-lg italic font-serif mb-6 relative z-10">"Por fin algo que no necesita cargador. La calidad del libro es impresionante, parece sacado de una librería antigua pero con mi hijo dentro."</p>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-stone-200 rounded-full flex items-center justify-center font-bold text-secondary font-display">LM</div>
+<div>
+<p class="font-bold text-sm text-secondary font-display">Laura M.</p>
+<p class="text-xs text-stone-500 font-body">Compró "El Bosque Encantado"</p>
+</div>
+</div>
+</div>
+<div class="bg-white p-8 rounded-lg shadow-sm border-l-4 border-secondary relative">
+<div class="flex text-yellow-500 mb-4 text-xs tracking-widest">
+                        ★★★★★
+                    </div>
+<p class="text-text-main text-lg italic font-serif mb-6 relative z-10">"El olor a libro nuevo cuando abrimos la caja fue increíble. Los detalles físicos como la carta extra le dieron un toque mágico real."</p>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-stone-200 rounded-full flex items-center justify-center font-bold text-secondary font-display">CR</div>
+<div>
+<p class="font-bold text-sm text-secondary font-display">Carlos R.</p>
+<p class="text-xs text-stone-500 font-body">Compró Pack Premium</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-20 px-4">
+<div class="max-w-5xl mx-auto bg-white border-2 border-stone-200 p-2 shadow-2xl relative rotate-1">
+<div class="border border-stone-300 p-8 md:p-16 text-center relative overflow-hidden bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')]">
+<div class="relative z-10 max-w-2xl mx-auto">
+<span class="text-primary font-bold uppercase tracking-widest mb-2 block font-body text-sm">Biblioteca Personal</span>
+<h2 class="text-4xl md:text-5xl font-bold mb-6 text-secondary font-display">Construye su legado de lectura</h2>
+<p class="text-xl text-text-soft mb-8 font-serif italic">3 libros físicos = 20% de descuento. <br/> Historias que guardarán para sus propios hijos.</p>
+<button class="bg-secondary text-white hover:bg-stone-800 px-10 py-4 rounded font-bold text-lg shadow-lg transition-all hover:scale-105 flex items-center gap-2 mx-auto font-body">
+                        Comenzar la colección
+                        <span class="material-symbols-outlined">auto_stories</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<footer class="bg-[#2C1810] text-[#E6D4C8] pt-20 pb-10 mt-12 border-t-8 border-[#8B4513]">
+<div class="max-w-6xl mx-auto px-8">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+<div class="col-span-1 md:col-span-1">
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-2xl text-primary">menu_book</span>
+<span class="text-xl font-bold tracking-tight text-white font-display">StoryMagic</span>
+</div>
+<p class="text-[#A1887F] text-sm leading-relaxed mb-6 font-body">
+                        Taller de cuentos personalizados. <br/>
+                        Hechos a mano, con tinta y papel. <br/>
+                        Sin baterías, solo imaginación.
+                    </p>
+</div>
+<div>
+<h4 class="font-bold text-lg mb-6 text-white font-display">Taller</h4>
+<ul class="space-y-3 text-sm text-[#A1887F] font-body">
+<li><a class="hover:text-primary transition-colors" href="#">Nuestros papeles</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Proceso artesanal</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Envíos y empaquetado</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-lg mb-6 text-white font-display">Atención</h4>
+<ul class="space-y-3 text-sm text-[#A1887F] font-body">
+<li><a class="hover:text-primary transition-colors" href="#">Dudas frecuentes</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Seguimiento de envío</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Garantía de calidad</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-lg mb-6 text-white font-display">Club de Lectura</h4>
+<p class="text-[#A1887F] text-sm mb-4 font-body">Consejos para fomentar la lectura sin pantallas.</p>
+<div class="flex flex-col gap-3">
+<input class="bg-white/5 border border-[#5D4037] rounded px-4 py-3 text-sm text-white placeholder-[#5D4037] focus:outline-none focus:border-primary font-body" placeholder="Tu correo electrónico" type="email"/>
+<button class="bg-primary hover:bg-orange-800 text-white px-4 py-3 rounded text-sm font-bold transition-colors font-body">
+                            Unirme al club
+                        </button>
+</div>
+</div>
+</div>
+<div class="border-t border-[#5D4037] pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-[#5D4037] font-body">
+<p>© 2023 StoryMagic Artesanos. Hecho con amor.</p>
+<div class="flex gap-6">
+<a class="hover:text-white transition-colors" href="#">Aviso Legal</a>
+<a class="hover:text-white transition-colors" href="#">Privacidad</a>
+<a class="hover:text-white transition-colors" href="#">Cookies</a>
+</div>
+</div>
+</div>
+</footer>
+
+</body></html>

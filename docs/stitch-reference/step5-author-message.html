@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>StoryMagic - Paso 5: El Mensaje del Autor</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#e96b3a",
+              "background-light": "#fcf9f8",
+              "background-dark": "#211511",
+              "cream": "#f8f3f0",
+              "gold-accent": "#d4af37",
+            },
+            fontFamily: {
+              "display": ["Plus Jakarta Sans", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+            backgroundImage: {
+                'star-pattern': "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23d4af37' fill-opacity='0.15' fill-rule='evenodd'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E\")",
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .book-shadow {
+            box-shadow: 
+                0 20px 25px -5px rgba(0, 0, 0, 0.1), 
+                0 10px 10px -5px rgba(0, 0, 0, 0.04),
+                inset 10px 0 20px rgba(0,0,0,0.05),
+                inset -2px 0 5px rgba(0,0,0,0.1);
+        }
+        .tape-effect {
+            background-color: rgba(255,255,255,0.4);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transform: rotate(-2deg);
+            backdrop-filter: blur(2px);
+        }
+        .handwritten-input::placeholder {
+            color: #9ca3af;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#1b120e] min-h-screen flex flex-col overflow-x-hidden">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f3ebe7] px-10 py-3 bg-white relative z-20">
+<div class="flex items-center gap-4 text-[#1b120e]">
+<div class="size-8 text-primary">
+<span class="material-symbols-outlined text-3xl">auto_stories</span>
+</div>
+<h2 class="text-[#1b120e] text-lg font-bold leading-tight tracking-[-0.015em]">StoryMagic</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8 items-center">
+<div class="hidden md:flex items-center gap-9">
+<a class="text-[#1b120e] text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Inicio</a>
+<a class="text-[#1b120e] text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Mis Cuentos</a>
+<a class="text-[#1b120e] text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Precios</a>
+<a class="text-[#1b120e] text-sm font-medium leading-normal hover:text-primary transition-colors" href="#">Ayuda</a>
+</div>
+<button class="flex items-center justify-center overflow-hidden rounded-full h-10 px-6 bg-primary/10 text-primary hover:bg-primary/20 transition-colors text-sm font-bold leading-normal tracking-[0.015em]">
+<span class="mr-2 material-symbols-outlined text-[18px]">save</span>
+<span class="truncate">Guardar borrador</span>
+</button>
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 border-2 border-[#f3ebe7]" data-alt="User profile picture showing a smiling woman" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBWTqIQEhWdEiCNtTKZuPVILIycwoCrkIC5jr92-Axh6mtaL2InbFLLqqqTSWIW03yTwkvU-2cFMzanX1rNXSgk9PLI9VpVofYuikxrr77kMKQJvWweTnOkKGYmIfj2lhBSyYX9zh1Lkhp2Oe5n325K6dCP3rJJnURBmE2pnLI_Vrq5IoN1i_Rn8nDW_vUsGg9-VL4uHP4McZZNh7cgWzp5BGzDIf1IqY9aA_ag06KFMZYaqCHdcRRQD5PgAAo7fShpRd2oLtwA-4sX");'></div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col relative">
+<!-- Background Pattern -->
+<div class="absolute inset-0 bg-cream bg-star-pattern opacity-60 pointer-events-none z-0"></div>
+<div class="relative z-10 w-full max-w-[1200px] mx-auto px-4 py-8 flex flex-col gap-6">
+<!-- Progress Bar Section -->
+<div class="flex flex-col gap-3 px-4 max-w-3xl mx-auto w-full">
+<div class="flex gap-6 justify-between items-end">
+<p class="text-[#1b120e] text-base font-bold leading-normal">Paso 5 de 6: Tu Mensaje Mágico</p>
+<p class="text-[#97634e] text-sm font-normal leading-normal">¡Casi terminamos tu obra maestra!</p>
+</div>
+<div class="rounded-full bg-[#e7d6d0] h-2 w-full overflow-hidden">
+<div class="h-full rounded-full bg-primary transition-all duration-500 ease-out" style="width: 83%;"></div>
+</div>
+</div>
+<!-- Content Grid: Book Mockup & Sidebar -->
+<div class="grid lg:grid-cols-12 gap-8 mt-4 items-start">
+<!-- Left Column: Book Back Cover Simulation -->
+<div class="lg:col-span-7 flex flex-col items-center">
+<div class="relative w-full max-w-[500px] aspect-[3.5/5] bg-[#3A506B] rounded-r-[20px] rounded-l-[5px] book-shadow p-8 flex flex-col items-center justify-between transition-transform hover:scale-[1.01] duration-300">
+<!-- Book Texture/Spine Hint -->
+<div class="absolute left-0 top-0 bottom-0 w-[10px] bg-gradient-to-r from-white/10 to-transparent"></div>
+<!-- Top Decorative Element -->
+<div class="w-24 h-24 rounded-full bg-white/10 flex items-center justify-center mb-4 backdrop-blur-sm border border-white/20">
+<span class="material-symbols-outlined text-white text-5xl">auto_awesome</span>
+</div>
+<!-- Dedication Card Area -->
+<div class="relative w-full bg-[#faf9f6] p-6 rounded-sm shadow-md rotate-[1deg] max-w-[380px]">
+<!-- Tape Effect -->
+<div class="tape-effect absolute -top-3 left-1/2 -translate-x-1/2 w-32 h-8 z-10"></div>
+<label class="block text-center text-primary font-bold text-sm mb-3 uppercase tracking-wider" for="dedication">Dedicatoria Especial</label>
+<textarea class="w-full border-none bg-transparent p-0 text-center text-lg text-gray-700 focus:ring-0 resize-none handwritten-input leading-relaxed" id="dedication" placeholder="Querido Leo,
+Escribí este cuento para recordarte que siempre puedes alcanzar las estrellas.
+Con amor, Mamá." rows="6"></textarea>
+<div class="mt-4 pt-4 border-t border-gray-200 flex justify-between items-center text-xs text-gray-400 font-medium">
+<span>StoryMagic Press</span>
+<span>2024 Edition</span>
+</div>
+</div>
+<!-- Bottom Branding -->
+<div class="mt-8 text-center">
+<h3 class="text-white/90 font-display font-bold text-xl tracking-wide">EL SECRETO DEL BOSQUE</h3>
+<p class="text-white/60 text-sm mt-1 font-medium">Una aventura personalizada</p>
+<!-- Small ISBN Barcode Simulation -->
+<div class="mt-4 bg-white p-1 px-2 rounded-sm inline-block">
+<div class="h-6 w-24 bg-[url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAAABCAYAAABu76kwAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABhJREFUeNpi/P//PwOxgHFkZCSj5o8gwAA+lQPwWu0f1wAAAABJRU5ErkJggg==')] bg-repeat-x bg-contain opacity-80" data-alt="Simulated barcode graphic"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Narrative Controls -->
+<div class="lg:col-span-5 flex flex-col gap-6 pt-4">
+<div class="text-center lg:text-left">
+<h1 class="text-[#1b120e] tracking-tight text-[32px] font-bold leading-tight mb-2">El Gran Final</h1>
+<p class="text-gray-600 text-base font-normal leading-relaxed">
+                            ¿Cómo quieres que termine esta increíble aventura? Tú tienes la última palabra.
+                        </p>
+</div>
+<!-- Ending Options Selection -->
+<div class="flex flex-col gap-4">
+<!-- Option 1: Banquet -->
+<label class="group relative flex items-center gap-4 p-4 rounded-xl border-2 border-transparent bg-white shadow-sm hover:shadow-md hover:border-primary/30 cursor-pointer transition-all has-[:checked]:border-primary has-[:checked]:bg-orange-50/50">
+<input checked="" class="peer sr-only" name="ending" type="radio"/>
+<div class="size-16 rounded-full bg-orange-100 flex items-center justify-center text-primary shrink-0 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl">cake</span>
+</div>
+<div class="flex-1">
+<h3 class="text-lg font-bold text-gray-900 group-has-[:checked]:text-primary">Un Banquete de Celebración</h3>
+<p class="text-sm text-gray-500 leading-snug">Todos los personajes se reúnen para comer, bailar y celebrar el éxito de la misión.</p>
+</div>
+<div class="size-6 rounded-full border-2 border-gray-300 peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-white text-sm opacity-0 peer-checked:opacity-100">check</span>
+</div>
+</label>
+<!-- Option 2: Stars -->
+<label class="group relative flex items-center gap-4 p-4 rounded-xl border-2 border-transparent bg-white shadow-sm hover:shadow-md hover:border-primary/30 cursor-pointer transition-all has-[:checked]:border-primary has-[:checked]:bg-orange-50/50">
+<input class="peer sr-only" name="ending" type="radio"/>
+<div class="size-16 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 shrink-0 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl">bedtime</span>
+</div>
+<div class="flex-1">
+<h3 class="text-lg font-bold text-gray-900 group-has-[:checked]:text-primary">Descanso bajo las Estrellas</h3>
+<p class="text-sm text-gray-500 leading-snug">Un final tranquilo donde miran el cielo estrellado y reflexionan sobre lo aprendido.</p>
+</div>
+<div class="size-6 rounded-full border-2 border-gray-300 peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-white text-sm opacity-0 peer-checked:opacity-100">check</span>
+</div>
+</label>
+</div>
+<!-- Action Button Area -->
+<div class="mt-auto pt-6 flex justify-end lg:justify-start">
+<button class="w-full lg:w-auto flex items-center justify-center gap-3 bg-primary hover:bg-[#d55a2b] text-white font-bold text-lg py-4 px-10 rounded-full shadow-lg shadow-orange-200 hover:shadow-orange-300 transform hover:-translate-y-1 transition-all duration-300 group">
+<span>Continuar al Resumen</span>
+<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Simple Footer -->
+<footer class="mt-12 py-8 bg-white border-t border-gray-100">
+<div class="max-w-[1200px] mx-auto px-10 flex justify-between items-center text-gray-400 text-sm">
+<p>© 2024 StoryMagic. Todos los derechos reservados.</p>
+<div class="flex gap-4">
+<a class="hover:text-primary" href="#">Términos</a>
+<a class="hover:text-primary" href="#">Privacidad</a>
+</div>
+</div>
+</footer>
+</body></html>

@@ -36,6 +36,10 @@ yarn-error.log*
 # mcp config (contains project references)
 .mcp.json
 
+# screenshots & playwright
+*.png
+.playwright-mcp/
+
 # vercel
 .vercel
 
