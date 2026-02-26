@@ -1,54 +1,54 @@
 "use client";
 
 import { Suspense, useState } from "react";
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { Link, useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 
-export default function SignupPage() {
+export default function LoginPage() {
   return (
     <Suspense>
-      <SignupPageContent />
+      <LoginPageContent />
     </Suspense>
   );
 }
 
-function SignupPageContent() {
-  const [name, setName] = useState("");
+function LoginPageContent() {
+  const t = useTranslations("auth.login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createClient();
 
+  // Read the redirect destination from URL (e.g. /crear?step=finish)
   const nextUrl = searchParams.get("next") || "/crear";
 
-  async function handleEmailSignup(e: React.FormEvent) {
+  async function handleEmailLogin(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
-    const { error } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
-      options: {
-        data: {
-          full_name: name,
-        },
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextUrl)}`,
-      },
     });
 
     if (error) {
-      setError(error.message);
+      setError(
+        error.message === "Invalid login credentials"
+          ? t("invalidCredentials")
+          : error.message
+      );
       setLoading(false);
       return;
     }
 
-    setSuccess(true);
-    setLoading(false);
+    router.push(nextUrl);
+    router.refresh();
   }
 
   async function handleGoogleLogin() {
@@ -65,34 +65,6 @@ function SignupPageContent() {
     }
   }
 
-  if (success) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-create-bg px-4">
-        <div className="w-full max-w-md text-center">
-          <div className="rounded-2xl border border-border-light bg-white p-8 shadow-sm">
-            <span className="material-symbols-outlined mb-4 text-5xl text-success">
-              mark_email_read
-            </span>
-            <h2 className="font-display text-2xl font-bold text-secondary">
-              Revisa tu email
-            </h2>
-            <p className="mt-3 text-sm leading-relaxed text-text-muted">
-              Te hemos enviado un enlace de confirmación a{" "}
-              <strong className="text-text-main">{email}</strong>. Haz clic en
-              el enlace para activar tu cuenta.
-            </p>
-            <Link
-              href={`/auth/login${nextUrl !== "/crear" ? `?next=${encodeURIComponent(nextUrl)}` : ""}`}
-              className="mt-6 inline-block text-sm font-semibold text-primary hover:underline"
-            >
-              Ir a iniciar sesión
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-create-bg px-4">
       <div className="w-full max-w-md">
@@ -107,7 +79,7 @@ function SignupPageContent() {
             </span>
           </Link>
           <p className="mt-3 text-sm text-create-text-sub">
-            Crea una cuenta para empezar tu aventura
+            {t("subtitle")}
           </p>
         </div>
 
@@ -137,41 +109,24 @@ function SignupPageContent() {
                 fill="#EA4335"
               />
             </svg>
-            Registrarse con Google
+            {t("googleButton")}
           </button>
 
           {/* Divider */}
           <div className="my-6 flex items-center gap-4">
             <div className="h-px flex-1 bg-border-light" />
-            <span className="text-xs font-medium text-text-muted">o</span>
+            <span className="text-xs font-medium text-text-muted">{t("or")}</span>
             <div className="h-px flex-1 bg-border-light" />
           </div>
 
           {/* Email form */}
-          <form onSubmit={handleEmailSignup} className="space-y-4">
-            <div>
-              <label
-                htmlFor="name"
-                className="mb-1.5 block text-sm font-medium text-create-text"
-              >
-                Nombre
-              </label>
-              <input
-                id="name"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                placeholder="Tu nombre"
-                className="w-full rounded-xl border border-border-light bg-white px-4 py-3 text-sm text-text-main placeholder:text-text-muted outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20"
-              />
-            </div>
+          <form onSubmit={handleEmailLogin} className="space-y-4">
             <div>
               <label
                 htmlFor="email"
                 className="mb-1.5 block text-sm font-medium text-create-text"
               >
-                Email
+                {t("emailLabel")}
               </label>
               <input
                 id="email"
@@ -179,7 +134,7 @@ function SignupPageContent() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                placeholder="tu@email.com"
+                placeholder={t("emailPlaceholder")}
                 className="w-full rounded-xl border border-border-light bg-white px-4 py-3 text-sm text-text-main placeholder:text-text-muted outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20"
               />
             </div>
@@ -188,7 +143,7 @@ function SignupPageContent() {
                 htmlFor="password"
                 className="mb-1.5 block text-sm font-medium text-create-text"
               >
-                Contraseña
+                {t("passwordLabel")}
               </label>
               <input
                 id="password"
@@ -196,7 +151,7 @@ function SignupPageContent() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                placeholder="Mínimo 6 caracteres"
+                placeholder={t("passwordPlaceholder")}
                 minLength={6}
                 className="w-full rounded-xl border border-border-light bg-white px-4 py-3 text-sm text-text-main placeholder:text-text-muted outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20"
               />
@@ -213,19 +168,28 @@ function SignupPageContent() {
               disabled={loading}
               className="w-full rounded-xl bg-primary px-4 py-3 text-sm font-bold text-white transition-all hover:bg-primary-hover active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {loading ? "Creando cuenta..." : "Crear cuenta"}
+              {loading ? t("loading") : t("submit")}
             </button>
+
+            <div className="text-right">
+              <Link
+                href="/auth/reset-password"
+                className="text-xs font-medium text-text-muted hover:text-primary transition-colors"
+              >
+                {t("forgotPassword")}
+              </Link>
+            </div>
           </form>
         </div>
 
-        {/* Login link */}
+        {/* Sign up link */}
         <p className="mt-6 text-center text-sm text-text-muted">
-          ¿Ya tienes cuenta?{" "}
+          {t("noAccount")}{" "}
           <Link
-            href="/auth/login"
+            href={`/auth/signup${nextUrl !== "/crear" ? `?next=${encodeURIComponent(nextUrl)}` : ""}`}
             className="font-semibold text-primary hover:underline"
           >
-            Inicia sesión
+            {t("createFree")}
           </Link>
         </p>
 
@@ -235,7 +199,7 @@ function SignupPageContent() {
             href="/"
             className="text-sm text-text-muted hover:text-text-soft"
           >
-            ← Volver al inicio
+            {t("backHome")}
           </Link>
         </p>
       </div>

@@ -46,6 +46,8 @@ export async function POST(request: Request) {
         hairstyle: character.hairstyle || "short",
         interests: character.interests,
         city: character.city || null,
+        special_trait: character.specialTrait || null,
+        favorite_companion: character.favoriteCompanion || null,
       })
       .eq("id", existingCharacter.id);
 
@@ -70,6 +72,8 @@ export async function POST(request: Request) {
         hairstyle: character.hairstyle || "short",
         interests: character.interests,
         city: character.city || null,
+        special_trait: character.specialTrait || null,
+        favorite_companion: character.favoriteCompanion || null,
       })
       .select("id")
       .single();

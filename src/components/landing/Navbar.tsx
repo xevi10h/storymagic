@@ -1,15 +1,10 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { useAuth } from "@/hooks/useAuth";
-
-const NAV_LINKS = [
-  { label: "Manifiesto", href: "#manifesto" },
-  { label: "Colección", href: "#catalog" },
-  { label: "Artesanal", href: "#artisanal" },
-  { label: "Familias", href: "#reviews" },
-];
+import LocaleSwitcher from "@/components/LocaleSwitcher";
 
 function UserMenu({
   user,
@@ -18,6 +13,7 @@ function UserMenu({
   user: { email?: string; user_metadata?: { full_name?: string; avatar_url?: string } };
   onSignOut: () => void;
 }) {
+  const t = useTranslations("nav");
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -34,7 +30,7 @@ function UserMenu({
   const name =
     user.user_metadata?.full_name ||
     user.email?.split("@")[0] ||
-    "Usuario";
+    t("user");
   const avatarUrl = user.user_metadata?.avatar_url;
   const initials = name.charAt(0).toUpperCase();
 
@@ -70,13 +66,30 @@ function UserMenu({
             <p className="text-xs text-text-muted">{user.email}</p>
           </div>
           <Link
+            href="/dashboard"
+            className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-text-soft transition-colors hover:bg-cream hover:text-text-main"
+            onClick={() => setOpen(false)}
+          >
+            <span className="material-symbols-outlined text-lg">auto_stories</span>
+            {t("myBooks")}
+          </Link>
+          <Link
             href="/crear"
             className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-text-soft transition-colors hover:bg-cream hover:text-text-main"
             onClick={() => setOpen(false)}
           >
             <span className="material-symbols-outlined text-lg">edit</span>
-            Crear cuento
+            {t("createStory")}
           </Link>
+          <Link
+            href="/perfil"
+            className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-text-soft transition-colors hover:bg-cream hover:text-text-main"
+            onClick={() => setOpen(false)}
+          >
+            <span className="material-symbols-outlined text-lg">settings</span>
+            {t("myProfile")}
+          </Link>
+          <div className="mx-3 my-1 h-px bg-border-light/50" />
           <button
             type="button"
             onClick={() => {
@@ -86,7 +99,7 @@ function UserMenu({
             className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-text-soft transition-colors hover:bg-cream hover:text-text-main"
           >
             <span className="material-symbols-outlined text-lg">logout</span>
-            Cerrar sesión
+            {t("signOut")}
           </button>
         </div>
       )}
@@ -95,8 +108,16 @@ function UserMenu({
 }
 
 export default function Navbar() {
+  const t = useTranslations("nav");
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, loading, signOut } = useAuth();
+
+  const navLinks = [
+    { label: t("manifesto"), href: "#manifesto" },
+    { label: t("collection"), href: "#catalog" },
+    { label: t("artisanal"), href: "#artisanal" },
+    { label: t("families"), href: "#reviews" },
+  ];
 
   return (
     <nav className="fixed top-0 z-50 w-full px-4 py-4 transition-all duration-300">
@@ -111,7 +132,7 @@ export default function Navbar() {
         </div>
 
         <div className="hidden items-center gap-8 md:flex">
-          {NAV_LINKS.map((link) => (
+          {navLinks.map((link) => (
             <a
               key={link.href}
               href={link.href}
@@ -123,6 +144,7 @@ export default function Navbar() {
         </div>
 
         <div className="hidden items-center gap-3 md:flex">
+          <LocaleSwitcher />
           {loading ? (
             <div className="h-9 w-24 animate-pulse rounded-lg bg-cream" />
           ) : user ? (
@@ -132,7 +154,7 @@ export default function Navbar() {
                 className="flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-bold text-white shadow-md transition-all hover:scale-105 hover:bg-primary-hover active:scale-95"
               >
                 <span className="material-symbols-outlined text-lg">edit</span>
-                Crear mi cuento
+                {t("createMyStory")}
               </Link>
               <UserMenu user={user} onSignOut={signOut} />
             </>
@@ -142,14 +164,14 @@ export default function Navbar() {
                 href="/auth/login"
                 className="rounded-lg px-4 py-2.5 text-sm font-medium text-text-soft transition-colors hover:text-text-main"
               >
-                Iniciar sesión
+                {t("signIn")}
               </Link>
               <Link
                 href="/crear"
                 className="flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-bold text-white shadow-md transition-all hover:scale-105 hover:bg-primary-hover active:scale-95"
               >
                 <span className="material-symbols-outlined text-lg">edit</span>
-                Crear mi cuento
+                {t("createMyStory")}
               </Link>
             </>
           )}
@@ -159,7 +181,7 @@ export default function Navbar() {
           type="button"
           className="md:hidden"
           onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label={mobileOpen ? "Cerrar menú" : "Abrir menú"}
+          aria-label={mobileOpen ? t("closeMenu") : t("openMenu")}
         >
           <span className="material-symbols-outlined text-2xl text-text-main">
             {mobileOpen ? "close" : "menu"}
@@ -169,7 +191,7 @@ export default function Navbar() {
 
       {mobileOpen && (
         <div className="mx-auto mt-2 max-w-6xl rounded-lg border border-border-light bg-white p-4 shadow-lg md:hidden">
-          {NAV_LINKS.map((link) => (
+          {navLinks.map((link) => (
             <a
               key={link.href}
               href={link.href}
@@ -181,9 +203,10 @@ export default function Navbar() {
           ))}
 
           <div className="mt-3 border-t border-border-light/50 pt-3">
+            <LocaleSwitcher />
             {loading ? null : user ? (
               <>
-                <div className="flex items-center gap-3 py-2">
+                <div className="flex items-center gap-3 py-2 mt-3">
                   {user.user_metadata?.avatar_url ? (
                     <img
                       src={user.user_metadata.avatar_url}
@@ -204,12 +227,28 @@ export default function Navbar() {
                   </div>
                 </div>
                 <Link
+                  href="/dashboard"
+                  className="mt-2 flex items-center justify-center gap-2 rounded-lg border border-border-light px-5 py-3 text-sm font-medium text-text-soft transition-colors hover:bg-cream"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <span className="material-symbols-outlined text-lg">auto_stories</span>
+                  {t("myBooks")}
+                </Link>
+                <Link
                   href="/crear"
                   className="mt-2 flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3 text-center text-sm font-bold text-white transition-colors hover:bg-primary-hover"
                   onClick={() => setMobileOpen(false)}
                 >
                   <span className="material-symbols-outlined text-lg">edit</span>
-                  Crear mi cuento
+                  {t("createMyStory")}
+                </Link>
+                <Link
+                  href="/perfil"
+                  className="mt-2 flex items-center justify-center gap-2 rounded-lg border border-border-light px-5 py-3 text-sm font-medium text-text-soft transition-colors hover:bg-cream"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  <span className="material-symbols-outlined text-lg">settings</span>
+                  {t("myProfile")}
                 </Link>
                 <button
                   type="button"
@@ -220,25 +259,25 @@ export default function Navbar() {
                   className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg border border-border-light px-5 py-3 text-sm font-medium text-text-soft transition-colors hover:bg-cream"
                 >
                   <span className="material-symbols-outlined text-lg">logout</span>
-                  Cerrar sesión
+                  {t("signOut")}
                 </button>
               </>
             ) : (
               <>
                 <Link
                   href="/crear"
-                  className="flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3 text-center text-sm font-bold text-white transition-colors hover:bg-primary-hover"
+                  className="mt-3 flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3 text-center text-sm font-bold text-white transition-colors hover:bg-primary-hover"
                   onClick={() => setMobileOpen(false)}
                 >
                   <span className="material-symbols-outlined text-lg">edit</span>
-                  Crear mi cuento
+                  {t("createMyStory")}
                 </Link>
                 <Link
                   href="/auth/login"
                   className="mt-2 block rounded-lg border border-border-light px-5 py-3 text-center text-sm font-medium text-text-soft transition-colors hover:bg-cream"
                   onClick={() => setMobileOpen(false)}
                 >
-                  Iniciar sesión
+                  {t("signIn")}
                 </Link>
               </>
             )}

@@ -1,4 +1,8 @@
+import { useTranslations } from "next-intl";
+
 export default function HowItWorks() {
+  const t = useTranslations("howItWorks");
+
   return (
     <section className="relative border-y border-border-light bg-white py-20" id="manifesto">
       <div
@@ -11,10 +15,10 @@ export default function HowItWorks() {
       <div className="relative z-10 mx-auto max-w-6xl px-4">
         <div className="mb-16 text-center">
           <span className="text-sm font-bold uppercase tracking-wider text-primary">
-            Vuelta a los orígenes
+            {t("badge")}
           </span>
           <h2 className="mt-2 font-display text-4xl font-bold text-secondary">
-            Magia real en 3 pasos artesanales
+            {t("title")}
           </h2>
         </div>
 
@@ -27,9 +31,9 @@ export default function HowItWorks() {
             <div className="relative z-10 mb-6 flex h-24 w-24 items-center justify-center rounded-full border-4 border-white bg-sand shadow-md">
               <span className="material-symbols-outlined text-4xl text-primary">auto_stories</span>
             </div>
-            <h3 className="mb-3 font-display text-xl font-bold text-secondary">Elige una historia</h3>
+            <h3 className="mb-3 font-display text-xl font-bold text-secondary">{t("step1Title")}</h3>
             <p className="max-w-xs text-sm leading-relaxed text-text-soft">
-              Selecciona una trama diseñada para ser leída en voz alta y tocar el corazón.
+              {t("step1Description")}
             </p>
           </div>
 
@@ -38,9 +42,9 @@ export default function HowItWorks() {
             <div className="relative z-10 mb-6 flex h-24 w-24 items-center justify-center rounded-full border-4 border-white bg-earth shadow-md">
               <span className="material-symbols-outlined text-4xl text-secondary">brush</span>
             </div>
-            <h3 className="mb-3 font-display text-xl font-bold text-secondary">Personalización manual</h3>
+            <h3 className="mb-3 font-display text-xl font-bold text-secondary">{t("step2Title")}</h3>
             <p className="max-w-xs text-sm leading-relaxed text-text-soft">
-              Adaptamos las ilustraciones con estilo acuarela para que tu hijo se reconozca.
+              {t("step2Description")}
             </p>
           </div>
 
@@ -49,9 +53,9 @@ export default function HowItWorks() {
             <div className="relative z-10 mb-6 flex h-24 w-24 items-center justify-center rounded-full border-4 border-white bg-sage shadow-md">
               <span className="material-symbols-outlined text-4xl text-success">inventory_2</span>
             </div>
-            <h3 className="mb-3 font-display text-xl font-bold text-secondary">Recibe un tesoro</h3>
+            <h3 className="mb-3 font-display text-xl font-bold text-secondary">{t("step3Title")}</h3>
             <p className="max-w-xs text-sm leading-relaxed text-text-soft">
-              Un libro físico, encuadernado con cariño, llega a tu puerta listo para ser amado.
+              {t("step3Description")}
             </p>
           </div>
         </div>

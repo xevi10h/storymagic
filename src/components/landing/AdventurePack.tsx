@@ -1,6 +1,9 @@
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
 export default function AdventurePack() {
+  const t = useTranslations("adventurePack");
+
   return (
     <section className="relative overflow-hidden bg-pack-bg py-24 text-pack-text">
       <div
@@ -15,22 +18,21 @@ export default function AdventurePack() {
           {/* Left — Text */}
           <div className="flex-1 text-center md:text-left">
             <span className="mb-4 inline-block rounded bg-pack-badge px-3 py-1 text-xs font-bold uppercase tracking-widest text-white">
-              Experiencia Completa
+              {t("badge")}
             </span>
             <h2 className="mb-6 font-display text-3xl font-bold text-white md:text-5xl">
-              Pack Aventura Artesanal
+              {t("title")}
             </h2>
             <p className="mb-8 text-lg leading-relaxed text-pack-muted">
-              La magia se extiende fuera del libro. Incluye{" "}
-              <strong className="text-white">carta física personalizada</strong> del personaje
-              principal, hoja de pegatinas mate y marcapáginas de madera.
+              {t("description")}{" "}
+              <strong className="text-white">{t("letter")}</strong> {t("descriptionEnd")}
             </p>
             <Link
               href="/crear"
               className="mx-auto flex items-center gap-2 rounded-lg bg-primary px-8 py-4 font-bold text-white shadow-lg transition-transform hover:-translate-y-1 hover:bg-primary-hover md:mx-0"
             >
               <span className="material-symbols-outlined">card_giftcard</span>
-              Añadir extras físicos (+12.90€)
+              {t("cta")}
             </Link>
           </div>
 
@@ -44,7 +46,7 @@ export default function AdventurePack() {
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgbajYrzRnL4XE3sG513pFRed1tLDRzw7P8yVbC5sDY73010Q_cVzcHERjGVa6VzLC4Z9qu0I_XX4KvYoRWWWLBnXXkUsEEujruWJSzvjfQRR2ZIkwL2aUwbrGMC3F53ujhJ5PhWwNN3IIQwOv8WWB2U7XNvI3vhM8u1T-f8OHfEElGy9sA0VwMZOgh3eafeYSg5vCL3W2yXYNqFPyjsOs8kjxP4P0DSaY_lmJ2rs-TNU6rOJJHIAiyreOJ_kTK1Z8ndJ_Cg4WpdmS"
               />
               <div className="pt-3 pb-1 text-center font-display text-gray-500">
-                El regalo perfecto
+                {t("imageCaption")}
               </div>
             </div>
           </div>

@@ -1,4 +1,8 @@
+import { useTranslations } from "next-intl";
+
 export default function Footer() {
+  const t = useTranslations("footer");
+
   return (
     <footer className="mt-12 border-t-8 border-footer-accent bg-footer-bg pt-20 pb-10 text-footer-text">
       <div className="mx-auto max-w-6xl px-8">
@@ -11,30 +15,28 @@ export default function Footer() {
                 StoryMagic
               </span>
             </div>
-            <p className="mb-6 text-sm leading-relaxed text-footer-muted">
-              Taller de cuentos personalizados. <br />
-              Hechos a mano, con tinta y papel. <br />
-              Sin baterías, solo imaginación.
+            <p className="mb-6 text-sm leading-relaxed text-footer-muted whitespace-pre-line">
+              {t("tagline")}
             </p>
           </div>
 
           {/* Taller */}
           <div>
-            <h4 className="mb-6 font-display text-lg font-bold text-white">Taller</h4>
+            <h4 className="mb-6 font-display text-lg font-bold text-white">{t("workshop")}</h4>
             <ul className="space-y-3 text-sm text-footer-muted">
               <li>
                 <a className="transition-colors hover:text-primary" href="#">
-                  Nuestros papeles
+                  {t("ourPapers")}
                 </a>
               </li>
               <li>
                 <a className="transition-colors hover:text-primary" href="#">
-                  Proceso artesanal
+                  {t("artisanalProcess")}
                 </a>
               </li>
               <li>
                 <a className="transition-colors hover:text-primary" href="#">
-                  Envíos y empaquetado
+                  {t("shippingPackaging")}
                 </a>
               </li>
             </ul>
@@ -42,21 +44,21 @@ export default function Footer() {
 
           {/* Atención */}
           <div>
-            <h4 className="mb-6 font-display text-lg font-bold text-white">Atención</h4>
+            <h4 className="mb-6 font-display text-lg font-bold text-white">{t("support")}</h4>
             <ul className="space-y-3 text-sm text-footer-muted">
               <li>
                 <a className="transition-colors hover:text-primary" href="#">
-                  Dudas frecuentes
+                  {t("faq")}
                 </a>
               </li>
               <li>
                 <a className="transition-colors hover:text-primary" href="#">
-                  Seguimiento de envío
+                  {t("trackOrder")}
                 </a>
               </li>
               <li>
                 <a className="transition-colors hover:text-primary" href="#">
-                  Garantía de calidad
+                  {t("qualityGuarantee")}
                 </a>
               </li>
             </ul>
@@ -64,34 +66,34 @@ export default function Footer() {
 
           {/* Club de Lectura */}
           <div>
-            <h4 className="mb-6 font-display text-lg font-bold text-white">Club de Lectura</h4>
+            <h4 className="mb-6 font-display text-lg font-bold text-white">{t("readingClub")}</h4>
             <p className="mb-4 text-sm text-footer-muted">
-              Consejos para fomentar la lectura sin pantallas.
+              {t("readingClubDescription")}
             </p>
             <div className="flex flex-col gap-3">
               <input
                 className="rounded border border-footer-border bg-white/5 px-4 py-3 text-sm text-white placeholder-footer-border focus:border-primary focus:outline-none"
-                placeholder="Tu correo electrónico"
+                placeholder={t("emailPlaceholder")}
                 type="email"
               />
               <button className="rounded bg-primary px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-primary-hover">
-                Unirme al club
+                {t("joinClub")}
               </button>
             </div>
           </div>
         </div>
 
         <div className="flex flex-col items-center justify-between gap-4 border-t border-footer-border pt-8 text-xs text-footer-border md:flex-row">
-          <p>&copy; 2025 StoryMagic Artesanos. Hecho con amor.</p>
+          <p>{t("copyright")}</p>
           <div className="flex gap-6">
             <a className="transition-colors hover:text-white" href="#">
-              Aviso Legal
+              {t("legalNotice")}
             </a>
             <a className="transition-colors hover:text-white" href="#">
-              Privacidad
+              {t("privacy")}
             </a>
             <a className="transition-colors hover:text-white" href="#">
-              Cookies
+              {t("cookies")}
             </a>
           </div>
         </div>

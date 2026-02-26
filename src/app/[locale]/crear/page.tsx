@@ -1,13 +1,16 @@
 "use client";
 
 import { Suspense, useState, useCallback, useEffect, useRef } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
+import { useSearchParams } from "next/navigation";
 import {
   CreateBookState,
   INITIAL_STATE,
   type CreationMode,
   type EndingChoice,
   type StoryDecisions,
+  getTemplateConfig,
 } from "@/lib/create-store";
 import { usePersistedState, STORAGE_KEY } from "@/hooks/usePersistedState";
 import { useAuth } from "@/hooks/useAuth";
@@ -29,11 +32,13 @@ export default function CrearPage() {
 }
 
 function CrearPageContent() {
+  const t = useTranslations("crear");
   const [state, setState, clearState] = usePersistedState<CreateBookState>(
     STORAGE_KEY,
     INITIAL_STATE
   );
   const [saving, setSaving] = useState(false);
+  const [navigating, setNavigating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showGuestGate, setShowGuestGate] = useState(false);
   const { user, loading: authLoading } = useAuth();
@@ -76,7 +81,16 @@ function CrearPageContent() {
 
   const setTemplate = useCallback(
     (templateId: string) => {
-      setState((prev) => ({ ...prev, selectedTemplate: templateId }));
+      setState((prev) => {
+        // Reset decisions when template changes to avoid stale choices
+        const needsReset = prev.selectedTemplate !== null && prev.selectedTemplate !== templateId;
+        return {
+          ...prev,
+          selectedTemplate: templateId,
+          decisions: needsReset ? {} : prev.decisions,
+          ending: needsReset ? null : prev.ending,
+        };
+      });
     },
     [setState]
   );
@@ -139,9 +153,13 @@ function CrearPageContent() {
       }
 
       const { storyId } = await res.json();
+      // Freeze UI before navigating so step 1 doesn't flash
+      setNavigating(true);
       router.push(`/crear/${storyId}/generar`);
-      // Clear state after navigation starts to avoid flashing back to step 1
-      setTimeout(clearState, 500);
+      // Clear persisted localStorage only — React state is frozen by navigating flag
+      setTimeout(() => {
+        try { localStorage.removeItem(STORAGE_KEY); } catch {}
+      }, 1000);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error inesperado");
       setSaving(false);
@@ -203,6 +221,27 @@ function CrearPageContent() {
     }
   }, [searchParams, user, authLoading, state.selectedTemplate, setState, saveAndGenerate]);
 
+  // Resolve template config (needed by Steps 4 & 5)
+  const templateConfig = state.selectedTemplate
+    ? getTemplateConfig(state.selectedTemplate)
+    : undefined;
+
+  // While navigating to generation page, freeze the UI
+  if (navigating) {
+    return (
+      <div className="min-h-screen bg-create-bg flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <span className="material-symbols-outlined text-5xl text-create-primary animate-spin">
+            progress_activity
+          </span>
+          <p className="text-create-text-sub font-medium text-lg">
+            {t("preparing")}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-create-bg font-sans text-create-text relative">
       {/* Paper texture overlay */}
@@ -228,27 +267,32 @@ function CrearPageContent() {
           <Step3AdventureSelection
             selectedTemplate={state.selectedTemplate}
             characterName={state.character.name}
+            characterAge={state.character.age}
+            characterInterests={state.character.interests}
             onSelectTemplate={setTemplate}
             onNext={goNext}
             onBack={goBack}
           />
         )}
-        {state.currentStep === 4 && (
+        {state.currentStep === 4 && templateConfig && (
           <Step4Decisions
             mode={state.mode}
             decisions={state.decisions}
             characterName={state.character.name}
+            template={templateConfig}
             onUpdateDecisions={updateDecisions}
             onNext={goNext}
             onBack={goBack}
           />
         )}
-        {state.currentStep === 5 && (
+        {state.currentStep === 5 && templateConfig && (
           <Step5AuthorMessage
             dedication={state.dedication}
             senderName={state.senderName}
             ending={state.ending}
             saving={saving}
+            template={templateConfig}
+            characterName={state.character.name}
             onSetDedication={setDedication}
             onSetSenderName={setSenderName}
             onSetEnding={setEnding}

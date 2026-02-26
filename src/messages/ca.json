@@ -1,0 +1,587 @@
+{
+  "metadata": {
+    "title": "StoryMagic — Històries Reals per Tocar",
+    "description": "Recupera la màgia de passar les pàgines. Contes personalitzats impresos en paper d'alta qualitat, dissenyats per crear moments de connexió real."
+  },
+  "nav": {
+    "manifesto": "Manifest",
+    "collection": "Col·lecció",
+    "artisanal": "Artesanal",
+    "families": "Famílies",
+    "myBooks": "Els meus llibres",
+    "createStory": "Crear conte",
+    "createMyStory": "Crear el meu conte",
+    "myProfile": "El meu perfil",
+    "signOut": "Tancar sessió",
+    "signIn": "Iniciar sessió",
+    "openMenu": "Obrir menú",
+    "closeMenu": "Tancar menú",
+    "user": "Usuari",
+    "language": "Idioma"
+  },
+  "hero": {
+    "badge": "100% Desconnexió Digital",
+    "titleStart": "Menys pantalles,",
+    "titleHighlight": "més històries",
+    "titleEnd": "per tocar",
+    "description": "Recupera la màgia de passar les pàgines. Contes personalitzats impresos en paper d'alta qualitat, dissenyats per crear moments de connexió real, lluny de la lluentor de les tablets.",
+    "cta": "Personalitzar llibre físic",
+    "secondaryCta": "Veure qualitat del paper",
+    "fscPaper": "Paper certificat FSC",
+    "artisanalShipping": "Enviament artesanal",
+    "imageCaption": "El tacte del paper importa",
+    "imageSubcaption": "Una experiència sensorial que cap pantalla pot igualar."
+  },
+  "howItWorks": {
+    "badge": "Tornada als orígens",
+    "title": "Màgia real en 3 passos artesanals",
+    "step1Title": "Tria una història",
+    "step1Description": "Selecciona una trama dissenyada per ser llegida en veu alta i tocar el cor.",
+    "step2Title": "Personalització manual",
+    "step2Description": "Adaptem les il·lustracions amb estil aquarel·la perquè el teu fill s'hi reconegui.",
+    "step3Title": "Rep un tresor",
+    "step3Description": "Un llibre físic, enquadernat amb estima, arriba a casa teva a punt per ser estimat."
+  },
+  "bookCollection": {
+    "title": "La Nostra Biblioteca Física",
+    "subtitle": "Edicions limitades en paper premium. Històries que es senten millor al tacte.",
+    "subtitleShowcase": "Exemples reals creats a la nostra plataforma. Fes clic per veure el llibre complet.",
+    "viewAll": "Veure col·lecció completa",
+    "viewSample": "Veure exemple",
+    "madeFor": "Creat per a {name}",
+    "hardcover": "Tapa Dura",
+    "softcover": "Tapa tova",
+    "hardcoverPremium": "Tapa dura (Premium)",
+    "books": {
+      "enchantedForest": {
+        "title": "El Bosc Encantat",
+        "description": "Il·lustracions estil gouache sobre paper texturitzat."
+      },
+      "spaceMission": {
+        "title": "Missió Espacial",
+        "description": "Aquarel·les còsmiques i paper d'alt gramatge."
+      },
+      "underwaterKingdom": {
+        "title": "El Regne Submarí",
+        "description": "Tons oceànics impresos en qualitat arxiu."
+      }
+    }
+  },
+  "quality": {
+    "badge": "Qualitat de Llibreria",
+    "title": "Objectes fets per perdurar en el temps",
+    "description": "No és només un conte, és un record tangible. Fugim de l'efímer digital per crear llibres robustos.",
+    "ecoLabel": "Impressió local i sostenible",
+    "bindingTitle": "Enquadernació Tradicional",
+    "bindingDescription": "Cosit al fil i tapes reforçades. Resisteix el pas dels anys i de les mans petites.",
+    "paperTitle": "Textura del Paper",
+    "paperDescription": "Paper Munken de 170g amb un lleuger to crema per no cansar la vista. Rugositat natural al tacte."
+  },
+  "adventurePack": {
+    "badge": "Experiència Completa",
+    "title": "Pack Aventura Artesanal",
+    "description": "La màgia s'estén fora del llibre. Inclou",
+    "letter": "carta física personalitzada",
+    "descriptionEnd": "del personatge principal, full d'adhesius mat i punt de llibre de fusta.",
+    "cta": "Afegir extres físics (+12.90€)",
+    "imageCaption": "El regal perfecte"
+  },
+  "testimonials": {
+    "title": "Famílies Desconnectades",
+    "subtitle": "El que diuen els pares que han triat paper per sobre de píxels.",
+    "reviews": {
+      "laura": {
+        "name": "Laura M.",
+        "subtitle": "Va comprar \"El Bosc Encantat\"",
+        "text": "Per fi alguna cosa que no necessita carregador. La qualitat del llibre és impressionant, sembla tret d'una llibreria antiga però amb el meu fill a dins."
+      },
+      "carlos": {
+        "name": "Carlos R.",
+        "subtitle": "Va comprar Pack Premium",
+        "text": "L'olor a llibre nou quan vam obrir la caixa va ser increïble. Els detalls físics com la carta extra li van donar un toc màgic real."
+      }
+    }
+  },
+  "collectionOffer": {
+    "badge": "Biblioteca Personal",
+    "title": "Construeix el seu llegat de lectura",
+    "description": "3 llibres físics = 20% de descompte.\nHistòries que guardaran per als seus propis fills.",
+    "cta": "Començar la col·lecció"
+  },
+  "footer": {
+    "tagline": "Taller de contes personalitzats.\nFets a mà, amb tinta i paper.\nSense bateries, només imaginació.",
+    "workshop": "Taller",
+    "ourPapers": "Els nostres papers",
+    "artisanalProcess": "Procés artesanal",
+    "shippingPackaging": "Enviaments i embalatge",
+    "support": "Atenció",
+    "faq": "Dubtes freqüents",
+    "trackOrder": "Seguiment de l'enviament",
+    "qualityGuarantee": "Garantia de qualitat",
+    "readingClub": "Club de Lectura",
+    "readingClubDescription": "Consells per fomentar la lectura sense pantalles.",
+    "emailPlaceholder": "El teu correu electrònic",
+    "joinClub": "Unir-me al club",
+    "copyright": "© 2025 StoryMagic Artesans. Fet amb amor.",
+    "legalNotice": "Avís Legal",
+    "privacy": "Privacitat",
+    "cookies": "Cookies"
+  },
+  "notFound": {
+    "title": "Pàgina no trobada",
+    "description": "Sembla que aquesta pàgina s'ha perdut en una aventura. Tornem a l'inici per trobar el camí.",
+    "backHome": "Tornar a l'inici",
+    "createStory": "o crea un conte nou"
+  },
+  "auth": {
+    "login": {
+      "subtitle": "Inicia sessió per crear el teu conte",
+      "googleButton": "Continuar amb Google",
+      "or": "o",
+      "emailLabel": "Email",
+      "passwordLabel": "Contrasenya",
+      "emailPlaceholder": "tu@email.com",
+      "passwordPlaceholder": "La teva contrasenya",
+      "submit": "Iniciar sessió",
+      "loading": "Entrant...",
+      "forgotPassword": "Has oblidat la contrasenya?",
+      "noAccount": "No tens compte?",
+      "createFree": "Crea'n un de gratuït",
+      "backHome": "← Tornar a l'inici",
+      "invalidCredentials": "Email o contrasenya incorrectes"
+    },
+    "signup": {
+      "subtitle": "Crea un compte per començar la teva aventura",
+      "googleButton": "Registrar-se amb Google",
+      "or": "o",
+      "nameLabel": "Nom",
+      "namePlaceholder": "El teu nom",
+      "emailLabel": "Email",
+      "emailPlaceholder": "tu@email.com",
+      "passwordLabel": "Contrasenya",
+      "passwordPlaceholder": "Mínim 6 caràcters",
+      "submit": "Crear compte",
+      "loading": "Creant compte...",
+      "hasAccount": "Ja tens compte?",
+      "signIn": "Inicia sessió",
+      "backHome": "← Tornar a l'inici",
+      "checkEmail": "Revisa el teu email",
+      "confirmationSent": "T'hem enviat un enllaç de confirmació a",
+      "confirmationAction": "Fes clic a l'enllaç per activar el teu compte.",
+      "goToLogin": "Anar a iniciar sessió",
+      "upgradeSubtitle": "Crea un compte per guardar els teus contes",
+      "upgradeSuccess": "Compte creat!",
+      "upgradeSuccessDesc": "El teu compte s'ha creat correctament. Tots els teus contes estan guardats a la teva biblioteca.",
+      "goToLibrary": "Anar a la biblioteca"
+    },
+    "resetPassword": {
+      "subtitle": "Recupera l'accés al teu compte",
+      "title": "Has oblidat la contrasenya?",
+      "description": "Introdueix el teu email i t'enviarem un enllaç per crear una nova contrasenya.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "tu@email.com",
+      "submit": "Enviar enllaç de recuperació",
+      "loading": "Enviant...",
+      "backToLogin": "← Tornar a iniciar sessió",
+      "checkEmail": "Revisa el teu email",
+      "linkSent": "T'hem enviat un enllaç a",
+      "linkSentEnd": "per restablir la teva contrasenya.",
+      "checkSpam": "Si no veus l'email, revisa la carpeta de correu brossa.",
+      "goToLogin": "Tornar a iniciar sessió",
+      "sendError": "Error en enviar l'email"
+    },
+    "updatePassword": {
+      "subtitle": "Tria la teva nova contrasenya",
+      "title": "Nova contrasenya",
+      "description": "Introdueix la teva nova contrasenya a continuació.",
+      "newPasswordLabel": "Nova contrasenya",
+      "confirmPasswordLabel": "Confirmar contrasenya",
+      "passwordPlaceholder": "Mínim 6 caràcters",
+      "confirmPlaceholder": "Repeteix la contrasenya",
+      "submit": "Actualitzar contrasenya",
+      "loading": "Actualitzant...",
+      "verifyingLink": "Verificant enllaç...",
+      "successTitle": "Contrasenya actualitzada",
+      "successMessage": "La teva contrasenya s'ha canviat correctament. Redirigint a l'inici de sessió...",
+      "goToLogin": "Anar a iniciar sessió",
+      "linkExpired": "L'enllaç ha caducat o no és vàlid. Sol·licita'n un de nou.",
+      "linkError": "Error en verificar l'enllaç. Sol·licita'n un de nou.",
+      "passwordTooShort": "La contrasenya ha de tenir almenys 6 caràcters",
+      "passwordMismatch": "Les contrasenyes no coincideixen",
+      "updateError": "Error en actualitzar la contrasenya",
+      "requestNewLink": "Sol·licitar nou enllaç"
+    }
+  },
+  "crear": {
+    "preparing": "Preparant el teu conte...",
+    "header": {
+      "backHome": "Tornar a l'inici",
+      "exit": "Sortir",
+      "saveAndExit": "Desar i sortir",
+      "step": "Pas {current} de {total}"
+    },
+    "footer": {
+      "back": "Enrere",
+      "next": "Següent",
+      "saving": "Desant..."
+    },
+    "step1": {
+      "title": "Com vols crear aquesta aventura?",
+      "subtitle": "Tria l'experiència perfecta per avui. Pots personalitzar cada detall o deixar que la màgia et sorprengui.",
+      "solo": {
+        "title": "Creo jo sol/a",
+        "subtitle": "Sorpresa Màgica",
+        "description": "Dissenya el conte en secret per donar-li com un regal sorpresa inoblidable. Tu tens el control total de la història i els detalls."
+      },
+      "juntos": {
+        "title": "Creem junts",
+        "subtitle": "Aventura Compartida",
+        "description": "Una experiència interactiva dissenyada per gaudir en família. Tria personatges, colors i girs de la trama amb el teu petit."
+      }
+    },
+    "step2": {
+      "title": "Crea el teu petit heroi",
+      "subtitle": "Personalitza els detalls màgics perquè el conte sigui únic.",
+      "nameLabel": "Nom del nen/a",
+      "namePlaceholder": "Ex: Pau",
+      "cityLabel": "Viu a",
+      "cityPlaceholder": "Ex: Barcelona",
+      "ageLabel": "Edat",
+      "year": "any",
+      "years": "anys",
+      "hairColorLabel": "Color de cabell",
+      "skinToneLabel": "To de pell",
+      "genderLabel": "Gènere",
+      "boy": "Nen",
+      "girl": "Nena",
+      "neutral": "Neutre",
+      "hairstyleLabel": "Pentinat",
+      "interestsLabel": "Li encanta...",
+      "specialTraitLabel": "Alguna cosa especial sobre {name}",
+      "specialTraitLabelDefault": "Alguna cosa especial sobre el teu fill/a",
+      "optional": "(opcional)",
+      "specialTraitPlaceholder": "Ex: Acaba de perdre una dent, comença l'escola aquest any...",
+      "specialTraitHint": "Aquest detall farà que el conte sigui veritablement únic i personal.",
+      "companionLabel": "Té mascota o amic especial?",
+      "companionPlaceholder": "Ex: El seu gat Miki, la seva germana Llúcia, el seu peluix Ós...",
+      "companionHint": "Pot aparèixer com a personatge sorpresa a la història.",
+      "greeting": "Hola, {name}!",
+      "greetingDefault": "Hola, heroi!",
+      "previewReady": "El teu heroi està a punt per viure aventures entre {interests}.",
+      "previewDefault": "Personalitza els detalls màgics perquè el conte sigui únic.",
+      "interestsPrompt": "Tria els seus interessos per personalitzar l'aventura...",
+      "skinToneTitle": "To de pell",
+      "hairColorTitle": "Color de cabell",
+      "andConnector": " i "
+    },
+    "step3": {
+      "title": "Quina aventura viurà {name}?",
+      "subtitle": "Selecciona una història màgica per començar el viatge. Cada conte està dissenyat per despertar la seva imaginació.",
+      "recommendedFor": "Per a {name}",
+      "defaultName": "el teu heroi"
+    },
+    "step4": {
+      "solo": {
+        "title": "El Llibre de les Mil Decisions",
+        "subtitle": "Personalitza els detalls de la història de <highlight>{name}</highlight> i observa com canvia la màgia.",
+        "companionTab": "Company",
+        "atmosphereTab": "Atmosfera",
+        "twistTab": "El Gir",
+        "timeOfDay": "Moment del dia",
+        "setting": "Escenari",
+        "chapter": "Capítol 1",
+        "storyStart": "Hi havia una vegada un petit explorador anomenat",
+        "storyLived": "que vivia al límit del desconegut.",
+        "skyShowed": "El cel mostrava un",
+        "notAlone": "o anava sol, el seu fidel",
+        "followedClose": "el seguia de prop.",
+        "unknownAfternoon": "Una tarda, va decidir endinsar-se en el desconegut...",
+        "wouldFace": "El que no sabien era que aviat s'enfrontarien a",
+        "settingLabel": "Escenari:",
+        "page": "Pàgina",
+        "specialMomentLabel": "Hi ha algun moment especial que vulguis incloure?",
+        "specialMomentPlaceholder": "Ex: Que superi la por a la foscor, que comparteixi amb la seva germana, que aprengui a ser valent...",
+        "specialMomentHint": "La IA inclourà aquest moment a la història de forma natural."
+      },
+      "juntos": {
+        "chooseNext": "Tria el següent pas de la història!",
+        "decision": "Decisió {current} de {total}",
+        "nextDecision": "Següent decisió"
+      }
+    },
+    "step5": {
+      "title": "El Gran Final",
+      "subtitle": "Com vols que acabi l'aventura de <highlight>{name}</highlight>? Tu tens l'última paraula.",
+      "dedicationLabel": "Dedicatòria Especial",
+      "dedicationPlaceholder": "Estimat {name},\nHe escrit aquest conte per recordar-te que sempre pots arribar a les estrelles.\nAmb amor, Mama.",
+      "senderPlaceholder": "El teu nom (ex: Mama, Papa, Àvia...)",
+      "adventureOf": "L'aventura de {name}",
+      "createMyStory": "Crear el meu conte"
+    },
+    "guestGate": {
+      "title": "El teu conte està gairebé a punt",
+      "description": "Inicia sessió per desar el conte a la teva biblioteca i accedir-hi des de qualsevol dispositiu, o continua com a convidat per comprar-lo directament.",
+      "loginAndSave": "Iniciar sessió i desar a la meva biblioteca",
+      "continueAsGuest": "Continuar com a convidat",
+      "preparingStory": "Preparant el teu conte...",
+      "guestNote": "Com a convidat podràs comprar el teu llibre, però no es desarà en una biblioteca personal."
+    },
+    "generar": {
+      "creatingStory": "Creant la teva història...",
+      "completed": "completat",
+      "waitMessage": "Això pot trigar uns segons. Estem escrivint cada escena amb estima.",
+      "readyTitle": "El teu conte està a punt",
+      "readyDescription": "Hem creat una història única amb 8 escenes personalitzades. Hora de veure-la!",
+      "viewStory": "Veure el meu conte",
+      "createAnother": "Crear un altre conte",
+      "errorTitle": "Alguna cosa no ha anat bé",
+      "errorDefault": "S'ha produït un error durant la generació.",
+      "retry": "Reintentar",
+      "startOver": "← Tornar a començar",
+      "messages": {
+        "backpack": "El teu heroi està preparant la motxilla...",
+        "palette": "Triant els colors perfectes...",
+        "autoStories": "Les pàgines estan cobrant vida...",
+        "groups": "Els personatges s'estan coneixent...",
+        "star": "Pintant un cel ple d'estrelles...",
+        "forest": "Els arbres del bosc estan creixent...",
+        "brush": "Les il·lustracions s'estan assecant...",
+        "inkPen": "Preparant la tinta màgica...",
+        "menuBook": "Enquadernant la teva aventura...",
+        "autoAwesome": "Afegint un toc de màgia final..."
+      }
+    },
+    "preview": {
+      "loadingStory": "Carregant el teu conte...",
+      "backToCreate": "Tornar a crear",
+      "previous": "Anterior",
+      "next": "Següent",
+      "personalizedStory": "Una història personalitzada per a",
+      "createdFor": "Una història creada especialment per a",
+      "end": "Fi",
+      "downloadPdf": "Descarregar PDF de vista prèvia",
+      "generatingPdf": "Generant PDF...",
+      "downloadHint": "Descarrega una vista prèvia del conte en format PDF",
+      "checkoutTitle": "Fes realitat aquest conte",
+      "checkoutSubtitle": "Tria el format i els extres per al teu llibre personalitzat",
+      "optionalExtras": "Extres opcionals",
+      "total": "Total",
+      "processing": "Processant...",
+      "buyNow": "Comprar ara — {price} €",
+      "paymentSecure": "Pagament segur amb Stripe. Enviament a tota Espanya i Europa.",
+      "checkoutError": "Error en processar el pagament",
+      "orSaveForLater": "o guarda'l per més endavant",
+      "saveForLater": "Guardar i crear compte",
+      "savedGoToLibrary": "Guardat — anar a la meva biblioteca",
+      "saveForLaterHintAnonymous": "Crea un compte gratuït per guardar aquest conte i comprar-lo quan vulguis.",
+      "saveForLaterHintLoggedIn": "El teu conte ja està guardat a la teva biblioteca."
+    }
+  },
+  "checkout": {
+    "success": {
+      "title": "Comanda confirmada!",
+      "descriptionWithOrder": "El teu conte \"{title}\" per a {name} és en camí.",
+      "descriptionGeneric": "El teu conte personalitzat és en camí.",
+      "nextStepsTitle": "Pròxims passos",
+      "nextStepsDescription": "Rebràs un email de confirmació amb el seguiment de l'enviament.",
+      "deliveryTitle": "Temps de lliurament",
+      "deliveryDescription": "Espanya: 5-7 dies laborables. Europa: 7-12 dies laborables.",
+      "formatLabel": "Format: {format}",
+      "formatHardcover": "Tapa dura",
+      "formatSoftcover": "Tapa tova",
+      "premiumPrint": "Impressió premium en paper Munken 170g",
+      "createAnother": "Crear un altre conte",
+      "viewOrders": "Veure les meves comandes"
+    }
+  },
+  "dashboard": {
+    "newStory": "Nou conte",
+    "greeting": "Hola, {name}",
+    "greetingDefault": "explorador",
+    "subtitle": "Aquí pots veure els teus contes, comandes i personatges desats.",
+    "tabs": {
+      "stories": "Els meus contes",
+      "orders": "Les meves comandes",
+      "characters": "Els meus personatges"
+    },
+    "backHome": "Tornar a l'inici",
+    "storyStatus": {
+      "draft": "Esborrany",
+      "generating": "Generant...",
+      "ready": "A punt",
+      "ordered": "Demanat"
+    },
+    "storyActions": {
+      "viewStory": "Veure conte",
+      "viewProgress": "Veure progrés",
+      "continue": "Continuar"
+    },
+    "orderStatus": {
+      "pending": "Pendent",
+      "paid": "Pagat",
+      "producing": "En producció",
+      "shipped": "Enviat",
+      "delivered": "Lliurat",
+      "cancelled": "Cancel·lat"
+    },
+    "orderFormat": {
+      "hardcover": "Tapa dura",
+      "softcover": "Tapa tova"
+    },
+    "trackingNumber": "Número de seguiment",
+    "shippingTo": "Enviament a: {name}",
+    "untitledStory": "Conte sense títol",
+    "character": "Personatge",
+    "gender": {
+      "boy": "Nen",
+      "girl": "Nena",
+      "neutral": "Neutre"
+    },
+    "yearsOld": "anys",
+    "emptyStories": {
+      "title": "Encara no has creat cap conte",
+      "description": "Crea el teu primer conte personalitzat i veuràs aquí el resultat.",
+      "cta": "Crear el meu primer conte"
+    },
+    "emptyOrders": {
+      "title": "No tens comandes encara",
+      "description": "Quan compris el teu primer llibre, apareixerà aquí amb el seu estat d'enviament.",
+      "cta": "Crear un conte"
+    },
+    "emptyCharacters": {
+      "title": "No tens personatges desats",
+      "description": "Quan creis un conte, el teu personatge es desarà aquí per reutilitzar-lo.",
+      "cta": "Crear un conte"
+    },
+    "editTitle": "Editar títol",
+    "downloadPdf": "Descarregar PDF"
+  },
+  "profile": {
+    "title": "El meu perfil",
+    "back": "Tornar",
+    "noName": "Sense nom",
+    "memberSince": "Membre des de {date}",
+    "nameSection": {
+      "label": "Nom",
+      "hint": "Aquest nom apareixerà al teu perfil i comandes",
+      "edit": "Editar",
+      "placeholder": "El teu nom",
+      "save": "Desar",
+      "cancel": "Cancel·lar",
+      "notSet": "No configurat",
+      "saveError": "Error en desar el nom"
+    },
+    "emailSection": {
+      "label": "Email",
+      "googleLinked": "Vinculat amb Google",
+      "emailRegistration": "Email de registre"
+    },
+    "passwordSection": {
+      "label": "Contrasenya",
+      "hint": "Canvia la teva contrasenya d'accés",
+      "change": "Canviar",
+      "newPasswordLabel": "Nova contrasenya",
+      "confirmPasswordLabel": "Confirmar contrasenya",
+      "newPasswordPlaceholder": "Mínim 6 caràcters",
+      "confirmPlaceholder": "Repeteix la contrasenya",
+      "submit": "Actualitzar contrasenya",
+      "cancel": "Cancel·lar",
+      "saving": "Desant...",
+      "success": "Contrasenya actualitzada correctament",
+      "tooShort": "La contrasenya ha de tenir almenys 6 caràcters",
+      "mismatch": "Les contrasenyes no coincideixen",
+      "error": "Error en canviar la contrasenya"
+    },
+    "guestNotice": {
+      "title": "Compte de convidat",
+      "description": "Estàs fent servir un compte temporal. Si tanques sessió, perdràs l'accés als teus contes. Crea un compte per desar el teu progrés.",
+      "createAccount": "Crear compte"
+    },
+    "signOut": "Tancar sessió"
+  },
+  "pricing": {
+    "softcover": {
+      "label": "Tapa tova",
+      "description": "Impressió premium en paper Munken 170g"
+    },
+    "hardcover": {
+      "label": "Tapa dura",
+      "description": "Enquadernació premium amb coberta rígida"
+    },
+    "addons": {
+      "adventurePack": {
+        "label": "Pack Aventura Artesanal",
+        "description": "Converteix el regal en tota una experiència",
+        "badge": "Més popular",
+        "details": [
+          "Carta manuscrita del personatge dirigida al nen",
+          "6 adhesius mat il·lustrats del conte",
+          "Punt de llibre de fusta gravat amb el seu nom"
+        ]
+      },
+      "digitalPdf": {
+        "label": "PDF Digital (instantani)",
+        "description": "Rep-lo al moment, llegeix-lo en qualsevol pantalla",
+        "details": [
+          "Descàrrega immediata després de la compra",
+          "Format PDF en alta qualitat (300 DPI)",
+          "Perfecte per llegir en tablet, ordinador o mòbil"
+        ]
+      },
+      "extraCopy": {
+        "label": "Còpia extra (tapa tova)",
+        "description": "Una còpia addicional per regalar o tenir a casa dels avis",
+        "details": [
+          "Mateix llibre, mateixa qualitat d'impressió",
+          "Enviament conjunt (sense despeses d'enviament addicionals)",
+          "Ideal per a avis, padrins o separats"
+        ]
+      }
+    }
+  },
+  "data": {
+    "interests": {
+      "animals": "Animals",
+      "sports": "Esports",
+      "music": "Música",
+      "art": "Art",
+      "science": "Ciència",
+      "nature": "Natura",
+      "space": "Espai",
+      "cooking": "Cuina",
+      "reading": "Lectura",
+      "superheroes": "Superherois"
+    },
+    "hairstyles": {
+      "short": "Curt",
+      "curly": "Arrissat",
+      "long": "Llarg",
+      "ponytail": "Cua",
+      "braids": "Trenes",
+      "bun": "Monyo",
+      "mohawk": "Cresta",
+      "afro": "Afro",
+      "bob": "Mitja melena",
+      "pigtails": "Cuetes"
+    }
+  },
+  "showcase": {
+    "loading": "Carregant exemple...",
+    "backToHome": "Tornar a l'inici",
+    "library": "Biblioteca",
+    "sampleBadge": "Exemple real",
+    "personalizedFor": "Història personalitzada per a {name}",
+    "softcover": "Tapa tova",
+    "hardcover": "Tapa dura (Premium)",
+    "pageCount": "{count} pàgines",
+    "downloadPdf": "Descarregar PDF de mostra",
+    "generatingPdf": "Generant PDF...",
+    "createYourOwn": "Crear el meu propi conte",
+    "createHint": "Personalitza un llibre únic per al teu fill o filla",
+    "previous": "Anterior",
+    "next": "Següent",
+    "personalizedStory": "Una història personalitzada per a",
+    "createdFor": "Una història creada especialment per a",
+    "end": "Fi"
+  }
+}

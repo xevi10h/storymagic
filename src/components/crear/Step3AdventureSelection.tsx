@@ -1,12 +1,15 @@
 "use client";
 
-import { STORY_TEMPLATES } from "@/lib/create-store";
+import { useTranslations } from "next-intl";
+import { getRecommendedTemplates } from "@/lib/create-store";
 import CreationHeader from "./CreationHeader";
 import CreationFooterNav from "./CreationFooterNav";
 
 interface Step3Props {
   selectedTemplate: string | null;
   characterName: string;
+  characterAge: number;
+  characterInterests: string[];
   onSelectTemplate: (id: string) => void;
   onNext: () => void;
   onBack: () => void;
@@ -15,38 +18,37 @@ interface Step3Props {
 export default function Step3AdventureSelection({
   selectedTemplate,
   characterName,
+  characterAge,
+  characterInterests,
   onSelectTemplate,
   onNext,
   onBack,
 }: Step3Props) {
-  const displayName = characterName || "tu héroe";
+  const t = useTranslations("crear.step3");
+  const displayName = characterName || t("defaultName");
+  const sortedTemplates = getRecommendedTemplates(characterAge, characterInterests);
 
   return (
     <div className="flex flex-col min-h-screen w-full bg-create-bg">
       <CreationHeader currentStep={3} rightAction="save" />
 
       {/* Main */}
-      <main className="flex-1 px-4 md:px-10 py-8 flex justify-center w-full">
-        <div className="w-full max-w-6xl flex flex-col gap-8">
+      <main className="flex-1 px-4 md:px-10 py-4 flex justify-center w-full">
+        <div className="w-full max-w-6xl flex flex-col gap-4">
 
           {/* Title */}
-          <div className="text-center space-y-3 max-w-2xl mx-auto">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-create-text leading-tight">
-              ¿Qué aventura vivirá{" "}
-              <span className="text-create-primary bg-create-primary/10 px-2 rounded-lg decoration-wavy underline decoration-create-primary/30 decoration-2">
-                {displayName}
-              </span>
-              ?
+          <div className="text-center space-y-2 max-w-2xl mx-auto">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-display font-bold text-create-text leading-tight">
+              {t("title", { name: displayName })}
             </h1>
-            <p className="text-lg text-create-text-sub font-medium">
-              Selecciona una historia mágica para comenzar el viaje. Cada cuento
-              está diseñado para despertar su imaginación.
+            <p className="text-base text-create-text-sub font-medium">
+              {t("subtitle")}
             </p>
           </div>
 
           {/* Adventure Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mt-4">
-            {STORY_TEMPLATES.map((template) => {
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+            {sortedTemplates.map((template) => {
               const isSelected = selectedTemplate === template.id;
               return (
                 <div
@@ -58,6 +60,16 @@ export default function Step3AdventureSelection({
                       : "hover:-translate-y-2 create-card-shadow hover:shadow-xl border-2 border-transparent hover:border-create-primary/30 bg-white"
                   }`}
                 >
+                  {/* Recommended badge */}
+                  {template.isRecommended && !isSelected && (
+                    <div className="absolute top-3 left-3 z-10 bg-create-primary text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow-lg flex items-center gap-1">
+                      <span className="material-symbols-outlined text-sm">
+                        thumb_up
+                      </span>
+                      {t("recommendedFor", { name: displayName })}
+                    </div>
+                  )}
+
                   {/* Selection checkmark */}
                   {isSelected && (
                     <div className="absolute top-3 left-3 z-10 bg-create-primary text-white size-8 rounded-full flex items-center justify-center shadow-lg animate-bounce">
@@ -68,7 +80,7 @@ export default function Step3AdventureSelection({
                   )}
 
                   {/* Image */}
-                  <div className="aspect-[3/4] w-full relative overflow-hidden bg-slate-100">
+                  <div className="aspect-4/5 w-full relative overflow-hidden bg-slate-100">
                     <img
                       alt={template.title}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
@@ -82,7 +94,7 @@ export default function Step3AdventureSelection({
 
                   {/* Text */}
                   <div
-                    className={`p-5 flex flex-col gap-2 flex-1 ${isSelected ? "bg-create-primary/5" : ""}`}
+                    className={`p-3 flex flex-col gap-1.5 flex-1 ${isSelected ? "bg-create-primary/5" : ""}`}
                   >
                     <h3
                       className={`text-lg font-bold leading-tight ${isSelected ? "text-create-primary" : "text-create-text"}`}

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 interface CreationFooterNavProps {
   onBack?: () => void;
   onNext: () => void;
@@ -11,13 +13,16 @@ interface CreationFooterNavProps {
 export default function CreationFooterNav({
   onBack,
   onNext,
-  nextLabel = "Siguiente",
+  nextLabel,
   nextDisabled = false,
   nextLoading = false,
 }: CreationFooterNavProps) {
+  const t = useTranslations("crear.footer");
+  const resolvedNextLabel = nextLabel ?? t("next");
+
   return (
     <div className="sticky bottom-0 z-20 border-t border-create-primary/10 bg-create-bg/80 backdrop-blur-md">
-      <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-4 sm:px-8">
+      <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-3 sm:px-8">
         {/* Back */}
         {onBack ? (
           <button
@@ -27,7 +32,7 @@ export default function CreationFooterNav({
             <span className="material-symbols-outlined text-lg transition-transform group-hover:-translate-x-1">
               arrow_back
             </span>
-            Atrás
+            {t("back")}
           </button>
         ) : (
           <div />
@@ -44,11 +49,11 @@ export default function CreationFooterNav({
               <span className="material-symbols-outlined animate-spin text-lg">
                 progress_activity
               </span>
-              <span>Guardando...</span>
+              <span>{t("saving")}</span>
             </>
           ) : (
             <>
-              <span>{nextLabel}</span>
+              <span>{resolvedNextLabel}</span>
               <span className="material-symbols-outlined text-lg transition-transform group-hover:translate-x-1">
                 arrow_forward
               </span>

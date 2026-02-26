@@ -36,7 +36,7 @@ export async function updateSession(request: NextRequest) {
 
   // Protected routes: redirect to login if not authenticated
   // Note: /crear is intentionally NOT protected — guests can use the creation flow
-  const protectedPaths: string[] = [];
+  const protectedPaths = ["/dashboard", "/perfil"];
   const isProtected = protectedPaths.some((path) =>
     request.nextUrl.pathname.startsWith(path)
   );
@@ -49,7 +49,13 @@ export async function updateSession(request: NextRequest) {
   }
 
   // Auth pages: redirect to destination if already logged in
-  if (request.nextUrl.pathname.startsWith("/auth/") && user) {
+  // Exception: /auth/update-password must always be accessible during recovery
+  const pathname = request.nextUrl.pathname;
+  const isAuthPage = pathname.startsWith("/auth/");
+  const isRecoveryPage = pathname === "/auth/update-password";
+  const isResetPage = pathname === "/auth/reset-password";
+
+  if (isAuthPage && user && !isRecoveryPage && !isResetPage) {
     const next = request.nextUrl.searchParams.get("next") || "/crear";
     // next may contain query params (e.g. /crear?step=finish)
     const nextParsed = new URL(next, request.nextUrl.origin);

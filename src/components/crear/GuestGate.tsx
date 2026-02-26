@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 interface GuestGateProps {
   onContinueAsGuest: () => void;
   onLogin: () => void;
@@ -13,6 +15,8 @@ export default function GuestGate({
   onClose,
   saving,
 }: GuestGateProps) {
+  const t = useTranslations("crear.guestGate");
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
       <div className="relative w-full max-w-md rounded-2xl border border-create-neutral bg-white p-8 shadow-xl">
@@ -36,12 +40,10 @@ export default function GuestGate({
 
         {/* Title */}
         <h2 className="text-center font-display text-2xl font-bold text-secondary">
-          Tu cuento está casi listo
+          {t("title")}
         </h2>
         <p className="mt-3 text-center text-sm leading-relaxed text-text-muted">
-          Inicia sesión para guardar el cuento en tu biblioteca y acceder
-          desde cualquier dispositivo, o continúa como invitado para
-          comprarlo directamente.
+          {t("description")}
         </p>
 
         {/* Actions */}
@@ -52,7 +54,7 @@ export default function GuestGate({
             className="flex w-full items-center justify-center gap-2 rounded-xl bg-create-primary px-4 py-3.5 text-sm font-bold text-white transition-all hover:bg-create-primary-hover active:scale-[0.98]"
           >
             <span className="material-symbols-outlined text-lg">bookmark</span>
-            Iniciar sesión y guardar en mi biblioteca
+            {t("loginAndSave")}
           </button>
           <button
             type="button"
@@ -61,12 +63,12 @@ export default function GuestGate({
             className="flex w-full items-center justify-center gap-2 rounded-xl border border-create-neutral px-4 py-3.5 text-sm font-medium text-text-soft transition-all hover:bg-create-neutral active:scale-[0.98] disabled:opacity-60"
           >
             <span className="material-symbols-outlined text-lg">shopping_bag</span>
-            {saving ? "Preparando tu cuento..." : "Continuar como invitado"}
+            {saving ? t("preparingStory") : t("continueAsGuest")}
           </button>
         </div>
 
         <p className="mt-4 text-center text-xs text-text-muted">
-          Como invitado podrás comprar tu libro, pero no se guardará en una biblioteca personal.
+          {t("guestNote")}
         </p>
       </div>
     </div>

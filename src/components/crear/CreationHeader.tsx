@@ -1,6 +1,7 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 
 interface CreationHeaderProps {
   currentStep?: number;
@@ -13,19 +14,20 @@ export default function CreationHeader({
   totalSteps = 5,
   rightAction = "close",
 }: CreationHeaderProps) {
+  const t = useTranslations("crear.header");
   const progress =
     currentStep && totalSteps ? (currentStep / totalSteps) * 100 : 0;
 
   return (
     <>
       {/* Header — 3-column layout so center stays perfectly centered */}
-      <header className="sticky top-0 z-50 flex items-center border-b border-create-primary/10 bg-create-bg/90 px-5 py-3.5 backdrop-blur-md sm:px-8">
+      <header className="sticky top-0 z-50 flex items-center border-b border-create-primary/10 bg-create-bg/90 px-5 py-2.5 backdrop-blur-md sm:px-8">
         {/* Left: Home + Logo — flex-1 so it mirrors right column width */}
         <div className="flex flex-1 items-center gap-3 min-w-0">
           <Link
             href="/"
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-create-text-sub transition-colors hover:bg-create-neutral hover:text-create-text"
-            aria-label="Volver al inicio"
+            aria-label={t("backHome")}
           >
             <span className="material-symbols-outlined text-xl">
               arrow_back
@@ -86,7 +88,7 @@ export default function CreationHeader({
             <Link
               href="/"
               className="flex h-9 w-9 items-center justify-center rounded-full text-create-text-sub transition-colors hover:bg-create-neutral hover:text-create-text"
-              aria-label="Salir"
+              aria-label={t("exit")}
             >
               <span className="material-symbols-outlined text-xl">close</span>
             </Link>
@@ -97,7 +99,7 @@ export default function CreationHeader({
               className="flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold text-create-text-sub transition-colors hover:bg-create-neutral hover:text-create-text"
             >
               <span className="material-symbols-outlined text-base">save</span>
-              <span className="hidden sm:inline">Guardar y salir</span>
+              <span className="hidden sm:inline">{t("saveAndExit")}</span>
             </Link>
           )}
         </div>
@@ -108,7 +110,7 @@ export default function CreationHeader({
         <div className="px-5 pb-3 pt-3 sm:px-8 md:hidden">
           <div className="flex items-center justify-between text-xs font-semibold text-create-text-sub">
             <span>
-              Paso {currentStep} de {totalSteps}
+              {t("step", { current: currentStep, total: totalSteps })}
             </span>
             <span className="tabular-nums text-create-primary">
               {Math.round(progress)}%

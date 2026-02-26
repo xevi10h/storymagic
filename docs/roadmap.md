@@ -120,10 +120,14 @@ The roadmap is divided into 6 phases, from foundation to scale. Each phase has c
 ---
 
 ## Phase 5: Launch
-> **Status: NOT STARTED**
+> **Status: IN PROGRESS**
 
 **Deliverables:**
-- [ ] User dashboard: My Books, My Heroes, Order Tracking
+- [x] User dashboard: My Books, My Heroes, Order Tracking (`/dashboard`)
+- [x] User profile page (`/perfil`) — name editing, password change
+- [x] Password recovery flow (`/auth/reset-password` + `/auth/update-password`)
+- [x] Route protection for authenticated pages
+- [x] Custom 404 page
 - [ ] Final QA on the complete flow (20+ test runs)
 - [ ] Professional photography of printed books (for landing page and ads)
 - [ ] Instagram account setup + 10 initial posts

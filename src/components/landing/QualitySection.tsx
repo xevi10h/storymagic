@@ -1,4 +1,8 @@
+import { useTranslations } from "next-intl";
+
 export default function QualitySection() {
+  const t = useTranslations("quality");
+
   return (
     <section className="relative overflow-hidden bg-white py-24" id="artisanal">
       <div className="torn-paper-top" />
@@ -19,7 +23,7 @@ export default function QualitySection() {
               <div className="flex flex-col items-center text-center">
                 <span className="material-symbols-outlined mb-2 text-4xl text-success">eco</span>
                 <span className="text-sm font-bold text-secondary">
-                  Impresión local &amp; sostenible
+                  {t("ecoLabel")}
                 </span>
               </div>
             </div>
@@ -28,14 +32,13 @@ export default function QualitySection() {
           {/* Right — Text content */}
           <div className="flex flex-col gap-8 lg:w-1/2">
             <span className="text-sm font-bold uppercase tracking-widest text-primary">
-              Calidad de Librería
+              {t("badge")}
             </span>
             <h2 className="font-display text-4xl font-bold leading-tight text-secondary">
-              Objetos hechos para perdurar en el tiempo
+              {t("title")}
             </h2>
             <p className="text-lg text-text-soft">
-              No es solo un cuento, es un recuerdo tangible. Huimos de lo efímero digital para
-              crear libros robustos.
+              {t("description")}
             </p>
 
             <div className="mt-4 space-y-8">
@@ -45,11 +48,10 @@ export default function QualitySection() {
                 </div>
                 <div>
                   <h3 className="mb-1 font-display text-xl font-bold text-secondary">
-                    Encuadernación Tradicional
+                    {t("bindingTitle")}
                   </h3>
                   <p className="text-sm text-text-soft">
-                    Cosido al hilo y tapas reforzadas. Resiste el paso de los años y de las manos
-                    pequeñas.
+                    {t("bindingDescription")}
                   </p>
                 </div>
               </div>
@@ -60,11 +62,10 @@ export default function QualitySection() {
                 </div>
                 <div>
                   <h3 className="mb-1 font-display text-xl font-bold text-secondary">
-                    Textura del Papel
+                    {t("paperTitle")}
                   </h3>
                   <p className="text-sm text-text-soft">
-                    Papel Munken de 170g con un ligero tono crema para no cansar la vista. Rugosidad
-                    natural al tacto.
+                    {t("paperDescription")}
                   </p>
                 </div>
               </div>

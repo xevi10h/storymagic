@@ -2,7 +2,8 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import CreationHeader from "@/components/crear/CreationHeader";
 
 interface OrderDetails {
@@ -13,6 +14,7 @@ interface OrderDetails {
 }
 
 function SuccessContent() {
+  const t = useTranslations("checkout.success");
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
 
@@ -69,13 +71,13 @@ function SuccessContent() {
         </div>
 
         <h1 className="font-display text-3xl font-bold text-secondary">
-          ¡Pedido confirmado!
+          {t("title")}
         </h1>
 
         <p className="mt-4 text-base leading-relaxed text-text-muted">
           {order
-            ? `Tu cuento "${order.bookTitle}" para ${order.characterName} está en camino.`
-            : "Tu cuento personalizado está en camino."}
+            ? t("descriptionWithOrder", { title: order.bookTitle, name: order.characterName })
+            : t("descriptionGeneric")}
         </p>
 
         {/* Order info card */}
@@ -86,10 +88,10 @@ function SuccessContent() {
             </span>
             <div>
               <p className="text-sm font-medium text-text-main">
-                Próximos pasos
+                {t("nextStepsTitle")}
               </p>
               <p className="mt-0.5 text-xs text-text-muted">
-                Recibirás un email de confirmación con el seguimiento del envío.
+                {t("nextStepsDescription")}
               </p>
             </div>
           </div>
@@ -100,10 +102,10 @@ function SuccessContent() {
             </span>
             <div>
               <p className="text-sm font-medium text-text-main">
-                Tiempo de entrega
+                {t("deliveryTitle")}
               </p>
               <p className="mt-0.5 text-xs text-text-muted">
-                España: 5-7 días laborables. Europa: 7-12 días laborables.
+                {t("deliveryDescription")}
               </p>
             </div>
           </div>
@@ -115,10 +117,14 @@ function SuccessContent() {
               </span>
               <div>
                 <p className="text-sm font-medium text-text-main">
-                  Formato: {order.format === "hardcover" ? "Tapa dura" : "Tapa blanda"}
+                  {t("formatLabel", {
+                    format: order.format === "hardcover"
+                      ? t("formatHardcover")
+                      : t("formatSoftcover"),
+                  })}
                 </p>
                 <p className="mt-0.5 text-xs text-text-muted">
-                  Impresión premium en papel Munken 170g
+                  {t("premiumPrint")}
                 </p>
               </div>
             </div>
@@ -134,13 +140,16 @@ function SuccessContent() {
             <span className="material-symbols-outlined text-lg">
               add_circle
             </span>
-            Crear otro cuento
+            {t("createAnother")}
           </Link>
           <Link
-            href="/"
-            className="text-sm text-text-muted hover:text-text-soft transition-colors"
+            href="/dashboard"
+            className="flex w-full items-center justify-center gap-2 rounded-xl border border-border-light px-6 py-3 text-sm font-medium text-text-soft transition-colors hover:bg-cream hover:text-text-main"
           >
-            Volver al inicio
+            <span className="material-symbols-outlined text-lg">
+              auto_stories
+            </span>
+            {t("viewOrders")}
           </Link>
         </div>
       </div>

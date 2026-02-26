@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import type { CharacterData, Gender } from "@/lib/create-store";
 import CreationHeader from "./CreationHeader";
 import CreationFooterNav from "./CreationFooterNav";
@@ -23,6 +24,9 @@ export default function Step2CharacterCreation({
   onNext,
   onBack,
 }: Step2Props) {
+  const t = useTranslations("crear.step2");
+  const td = useTranslations("data");
+
   const toggleInterest = (id: string) => {
     const current = character.interests;
     if (current.includes(id)) {
@@ -42,17 +46,17 @@ export default function Step2CharacterCreation({
   const hairstyleOptions = HAIRSTYLES[character.gender];
 
   const greetingText = character.name
-    ? `¡Hola, ${character.name}!`
-    : "¡Hola, héroe!";
+    ? t("greeting", { name: character.name })
+    : t("greetingDefault");
 
   const interestLabels = character.interests
-    .map((id) => INTERESTS.find((i) => i.id === id)?.label)
+    .map((id) => td(`interests.${id}`))
     .filter(Boolean);
 
   const previewText =
     interestLabels.length > 0
-      ? `Tu héroe está listo para vivir aventuras entre ${interestLabels.join(" y ").toLowerCase()}.`
-      : "Personaliza los detalles mágicos para que el cuento sea único.";
+      ? t("previewReady", { interests: interestLabels.join(t("andConnector")).toLowerCase() })
+      : t("previewDefault");
 
   return (
     <div className="flex flex-col min-h-screen bg-create-bg">
@@ -61,22 +65,22 @@ export default function Step2CharacterCreation({
       {/* Main */}
       <main className="flex-1 flex flex-col lg:flex-row h-full max-w-7xl mx-auto w-full">
         {/* Left: Form */}
-        <section className="flex-1 flex flex-col w-full lg:w-[55%] px-6 lg:px-12 py-4 lg:py-8 overflow-y-auto no-scrollbar">
-          <div className="mb-8 text-center lg:text-left">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-create-text mb-4 leading-tight">
-              Crea a tu pequeño héroe
+        <section className="flex-1 flex flex-col w-full lg:w-[55%] px-6 lg:px-12 py-3 lg:py-4 overflow-y-auto no-scrollbar">
+          <div className="mb-4 text-center lg:text-left">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-display font-bold text-create-text mb-2 leading-tight">
+              {t("title")}
             </h1>
             <p className="text-create-text-sub text-lg font-medium">
-              Personaliza los detalles mágicos para que el cuento sea único.
+              {t("subtitle")}
             </p>
           </div>
 
-          <div className="flex flex-col gap-6 max-w-xl mx-auto lg:mx-0">
+          <div className="flex flex-col gap-4 max-w-xl mx-auto lg:mx-0">
             {/* Name & City */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="flex flex-col gap-2">
                 <label className="text-create-text font-bold text-base ml-1">
-                  Nombre del niño/a
+                  {t("nameLabel")}
                 </label>
                 <div className="relative group">
                   <input
@@ -85,8 +89,8 @@ export default function Step2CharacterCreation({
                     onChange={(e) =>
                       onUpdateCharacter({ name: e.target.value })
                     }
-                    placeholder="Ej: Leo"
-                    className="w-full h-14 px-5 rounded-[16px] border-2 border-transparent bg-white shadow-sm group-hover:shadow-md focus:border-create-primary focus:ring-0 transition-all outline-none placeholder:text-gray-300 text-lg font-bold text-create-text"
+                    placeholder={t("namePlaceholder")}
+                    className="w-full h-12 px-5 rounded-[16px] border-2 border-transparent bg-white shadow-sm group-hover:shadow-md focus:border-create-primary focus:ring-0 transition-all outline-none placeholder:text-gray-300 text-lg font-bold text-create-text"
                   />
                   <span className="material-symbols-outlined absolute right-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-create-primary transition-colors">
                     edit
@@ -95,7 +99,7 @@ export default function Step2CharacterCreation({
               </div>
               <div className="flex flex-col gap-2">
                 <label className="text-create-text font-bold text-base ml-1">
-                  Vive en
+                  {t("cityLabel")}
                 </label>
                 <div className="relative group">
                   <input
@@ -104,8 +108,8 @@ export default function Step2CharacterCreation({
                     onChange={(e) =>
                       onUpdateCharacter({ city: e.target.value })
                     }
-                    placeholder="Ej: Madrid"
-                    className="w-full h-14 px-5 rounded-[16px] border-2 border-transparent bg-white shadow-sm group-hover:shadow-md focus:border-create-primary focus:ring-0 transition-all outline-none placeholder:text-gray-300 text-lg font-bold text-create-text"
+                    placeholder={t("cityPlaceholder")}
+                    className="w-full h-12 px-5 rounded-[16px] border-2 border-transparent bg-white shadow-sm group-hover:shadow-md focus:border-create-primary focus:ring-0 transition-all outline-none placeholder:text-gray-300 text-lg font-bold text-create-text"
                   />
                   <span className="material-symbols-outlined absolute right-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-create-primary transition-colors">
                     location_on
@@ -115,13 +119,13 @@ export default function Step2CharacterCreation({
             </div>
 
             {/* Age slider */}
-            <div className="flex flex-col gap-4 p-6 bg-white rounded-[24px] shadow-sm hover:shadow-md transition-shadow">
-              <div className="flex justify-between items-center mb-2">
+            <div className="flex flex-col gap-3 p-4 bg-white rounded-[24px] shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex justify-between items-center">
                 <label className="text-create-text font-bold text-base">
-                  Edad
+                  {t("ageLabel")}
                 </label>
                 <span className="text-create-primary font-display text-xl">
-                  {character.age} {character.age === 1 ? "año" : "años"}
+                  {character.age} {character.age === 1 ? t("year") : t("years")}
                 </span>
               </div>
               <div className="relative w-full h-8 flex items-center">
@@ -136,17 +140,17 @@ export default function Step2CharacterCreation({
                   className="create-slider w-full relative z-10"
                 />
               </div>
-              <div className="flex justify-between text-xs text-create-text-sub font-bold mt-1 px-1">
+              <div className="flex justify-between text-xs text-create-text-sub font-bold px-1">
                 <span>1</span>
                 <span>12</span>
               </div>
             </div>
 
             {/* Hair & Skin */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col gap-3">
                 <label className="text-create-text font-bold text-base ml-1">
-                  Color de pelo
+                  {t("hairColorLabel")}
                 </label>
                 <div className="flex flex-wrap gap-3">
                   {HAIR_COLORS.map((h) => {
@@ -179,7 +183,7 @@ export default function Step2CharacterCreation({
 
               <div className="flex flex-col gap-3">
                 <label className="text-create-text font-bold text-base ml-1">
-                  Tono de piel
+                  {t("skinToneLabel")}
                 </label>
                 <div className="flex flex-wrap gap-3">
                   {SKIN_TONES.map((s) => {
@@ -214,18 +218,14 @@ export default function Step2CharacterCreation({
             {/* Gender */}
             <div className="flex flex-col gap-3">
               <label className="text-create-text font-bold text-base ml-1">
-                Género
+                {t("genderLabel")}
               </label>
               <div className="flex gap-4 p-1 bg-white rounded-full shadow-sm w-fit">
                 {(
                   [
-                    { id: "boy", label: "Niño", icon: "boy" },
-                    { id: "girl", label: "Niña", icon: "girl" },
-                    {
-                      id: "neutral",
-                      label: "Neutro",
-                      icon: "sentiment_satisfied",
-                    },
+                    { id: "boy", icon: "boy" },
+                    { id: "girl", icon: "girl" },
+                    { id: "neutral", icon: "sentiment_satisfied" },
                   ] as const
                 ).map((g) => (
                   <button
@@ -240,7 +240,7 @@ export default function Step2CharacterCreation({
                     <span className="material-symbols-outlined text-[20px]">
                       {g.icon}
                     </span>
-                    {g.label}
+                    {t(g.id)}
                   </button>
                 ))}
               </div>
@@ -249,7 +249,7 @@ export default function Step2CharacterCreation({
             {/* Hairstyle */}
             <div className="flex flex-col gap-3">
               <label className="text-create-text font-bold text-base ml-1">
-                Peinado
+                {t("hairstyleLabel")}
               </label>
               <div className="flex flex-wrap gap-3">
                 {hairstyleOptions.map((hs) => {
@@ -271,7 +271,7 @@ export default function Step2CharacterCreation({
                       >
                         {hs.icon}
                       </span>
-                      {hs.label}
+                      {td(`hairstyles.${hs.id}`)}
                     </button>
                   );
                 })}
@@ -279,9 +279,9 @@ export default function Step2CharacterCreation({
             </div>
 
             {/* Interests */}
-            <div className="flex flex-col gap-3 mb-10">
+            <div className="flex flex-col gap-3">
               <label className="text-create-text font-bold text-base ml-1">
-                Le encanta...
+                {t("interestsLabel")}
               </label>
               <div className="flex flex-wrap gap-3">
                 {INTERESTS.map((interest) => {
@@ -301,15 +301,65 @@ export default function Step2CharacterCreation({
                       >
                         {interest.icon}
                       </span>
-                      {interest.label}
+                      {td(`interests.${interest.id}`)}
                     </button>
                   );
                 })}
               </div>
             </div>
 
+            {/* Special trait — open text */}
+            <div className="flex flex-col gap-2">
+              <label className="text-create-text font-bold text-base ml-1">
+                {character.name ? t("specialTraitLabel", { name: character.name }) : t("specialTraitLabelDefault")}
+                <span className="text-create-text-sub font-medium text-sm ml-2">{t("optional")}</span>
+              </label>
+              <div className="relative group">
+                <input
+                  type="text"
+                  value={character.specialTrait}
+                  onChange={(e) =>
+                    onUpdateCharacter({ specialTrait: e.target.value })
+                  }
+                  placeholder={t("specialTraitPlaceholder")}
+                  className="w-full h-12 px-5 rounded-[16px] border-2 border-transparent bg-white shadow-sm group-hover:shadow-md focus:border-create-primary focus:ring-0 transition-all outline-none placeholder:text-gray-300 text-base font-medium text-create-text"
+                />
+                <span className="material-symbols-outlined absolute right-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-create-primary transition-colors">
+                  auto_awesome
+                </span>
+              </div>
+              <p className="text-xs text-create-text-sub ml-1">
+                {t("specialTraitHint")}
+              </p>
+            </div>
+
+            {/* Favorite companion — open text */}
+            <div className="flex flex-col gap-2 mb-4">
+              <label className="text-create-text font-bold text-base ml-1">
+                {t("companionLabel")}
+                <span className="text-create-text-sub font-medium text-sm ml-2">{t("optional")}</span>
+              </label>
+              <div className="relative group">
+                <input
+                  type="text"
+                  value={character.favoriteCompanion}
+                  onChange={(e) =>
+                    onUpdateCharacter({ favoriteCompanion: e.target.value })
+                  }
+                  placeholder={t("companionPlaceholder")}
+                  className="w-full h-12 px-5 rounded-[16px] border-2 border-transparent bg-white shadow-sm group-hover:shadow-md focus:border-create-primary focus:ring-0 transition-all outline-none placeholder:text-gray-300 text-base font-medium text-create-text"
+                />
+                <span className="material-symbols-outlined absolute right-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-create-primary transition-colors">
+                  favorite
+                </span>
+              </div>
+              <p className="text-xs text-create-text-sub ml-1">
+                {t("companionHint")}
+              </p>
+            </div>
+
             {/* Spacer for footer nav */}
-            <div className="pb-4" />
+            <div className="pb-2" />
           </div>
         </section>
 
@@ -324,7 +374,7 @@ export default function Step2CharacterCreation({
           {/* Character card */}
           <div className="relative z-10 w-[320px] flex flex-col items-center">
             {/* Avatar frame with floating interest icons */}
-            <div className="relative mb-6">
+            <div className="relative mb-4">
               {/* Floating interest icons orbiting the avatar */}
               {character.interests.slice(0, 4).map((id, i) => {
                 const interest = INTERESTS.find((int) => int.id === id);
@@ -380,7 +430,7 @@ export default function Step2CharacterCreation({
                   {character.age}
                 </span>
                 <span className="text-[9px] font-bold text-create-text-sub leading-none mt-0.5">
-                  {character.age === 1 ? "año" : "años"}
+                  {character.age === 1 ? t("year") : t("years")}
                 </span>
               </div>
 
@@ -389,12 +439,12 @@ export default function Step2CharacterCreation({
                 <div
                   className="w-5 h-5 rounded-full ring-2 ring-white shadow-sm transition-colors duration-300"
                   style={{ backgroundColor: character.skinTone }}
-                  title="Tono de piel"
+                  title={t("skinToneTitle")}
                 />
                 <div
                   className="w-5 h-5 rounded-full ring-2 ring-white shadow-sm transition-colors duration-300"
                   style={{ backgroundColor: character.hairColor }}
-                  title="Color de pelo"
+                  title={t("hairColorTitle")}
                 />
               </div>
             </div>
@@ -414,11 +464,11 @@ export default function Step2CharacterCreation({
                   {character.gender === "boy" ? "boy" : character.gender === "girl" ? "girl" : "sentiment_satisfied"}
                 </span>
                 <span className="font-bold text-create-text">
-                  {character.gender === "boy" ? "Niño" : character.gender === "girl" ? "Niña" : "Neutro"}
+                  {t(character.gender)}
                 </span>
                 <span className="text-create-text-sub">·</span>
                 <span className="text-create-text-sub font-medium">
-                  {hairstyleOptions.find((h) => h.id === character.hairstyle)?.label || ""}
+                  {td(`hairstyles.${character.hairstyle}`)}
                 </span>
               </div>
 
@@ -436,14 +486,14 @@ export default function Step2CharacterCreation({
                         <span className="material-symbols-outlined text-sm">
                           {interest.icon}
                         </span>
-                        {interest.label}
+                        {td(`interests.${interest.id}`)}
                       </span>
                     );
                   })}
                 </div>
               ) : (
                 <p className="text-create-text-sub text-sm font-medium italic">
-                  Elige sus intereses para personalizar la aventura...
+                  {t("interestsPrompt")}
                 </p>
               )}
 

@@ -1,26 +1,28 @@
 "use client";
 
 import { useEffect, useState, useRef, useCallback } from "react";
-import { useParams, useRouter } from "next/navigation";
-import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { Link, useRouter } from "@/i18n/navigation";
 import CreationHeader from "@/components/crear/CreationHeader";
 
-const WHIMSICAL_MESSAGES = [
-  { text: "Tu héroe está preparando la mochila...", icon: "backpack" },
-  { text: "Eligiendo los colores perfectos...", icon: "palette" },
-  { text: "Las páginas están cobrando vida...", icon: "auto_stories" },
-  { text: "Los personajes se están conociendo...", icon: "groups" },
-  { text: "Pintando un cielo lleno de estrellas...", icon: "star" },
-  { text: "Los árboles del bosque están creciendo...", icon: "forest" },
-  { text: "Las ilustraciones se están secando...", icon: "brush" },
-  { text: "Preparando la tinta mágica...", icon: "ink_pen" },
-  { text: "Encuadernando tu aventura...", icon: "menu_book" },
-  { text: "Añadiendo un toque de magia final...", icon: "auto_awesome" },
+const WHIMSICAL_MESSAGE_KEYS = [
+  { key: "backpack", icon: "backpack" },
+  { key: "palette", icon: "palette" },
+  { key: "autoStories", icon: "auto_stories" },
+  { key: "groups", icon: "groups" },
+  { key: "star", icon: "star" },
+  { key: "forest", icon: "forest" },
+  { key: "brush", icon: "brush" },
+  { key: "inkPen", icon: "ink_pen" },
+  { key: "menuBook", icon: "menu_book" },
+  { key: "autoAwesome", icon: "auto_awesome" },
 ];
 
 type GenerationStatus = "starting" | "generating" | "ready" | "error";
 
 export default function GenerarPage() {
+  const t = useTranslations("crear.generar");
   const { storyId } = useParams<{ storyId: string }>();
   const router = useRouter();
   const [status, setStatus] = useState<GenerationStatus>("starting");
@@ -34,7 +36,7 @@ export default function GenerarPage() {
     if (status !== "generating" && status !== "starting") return;
 
     const interval = setInterval(() => {
-      setMessageIndex((prev) => (prev + 1) % WHIMSICAL_MESSAGES.length);
+      setMessageIndex((prev) => (prev + 1) % WHIMSICAL_MESSAGE_KEYS.length);
     }, 3500);
 
     return () => clearInterval(interval);
@@ -70,7 +72,7 @@ export default function GenerarPage() {
       setProgress(100);
       setStatus("ready");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error inesperado");
+      setError(err instanceof Error ? err.message : t("errorDefault"));
       setStatus("error");
     }
   }, [storyId]);
@@ -82,7 +84,7 @@ export default function GenerarPage() {
     startGeneration();
   }, [startGeneration]);
 
-  const currentMessage = WHIMSICAL_MESSAGES[messageIndex];
+  const currentMessage = WHIMSICAL_MESSAGE_KEYS[messageIndex];
 
   // Ready state
   if (status === "ready") {
@@ -97,24 +99,23 @@ export default function GenerarPage() {
             </span>
           </div>
           <h1 className="font-display text-3xl font-bold text-secondary">
-            Tu cuento está listo
+            {t("readyTitle")}
           </h1>
           <p className="mt-4 text-base leading-relaxed text-text-muted">
-            Hemos creado una historia única con 8 escenas personalizadas.
-            ¡Hora de verla!
+            {t("readyDescription")}
           </p>
           <div className="mt-8 flex flex-col gap-3">
             <button
               onClick={() => router.push(`/crear/${storyId}/preview`)}
               className="rounded-full bg-create-primary px-8 py-4 text-base font-bold text-white transition-all hover:bg-create-primary-hover hover:-translate-y-0.5 shadow-lg shadow-create-primary/20"
             >
-              Ver mi cuento
+              {t("viewStory")}
             </button>
             <Link
               href="/crear"
               className="text-sm text-text-muted hover:text-text-soft"
             >
-              Crear otro cuento
+              {t("createAnother")}
             </Link>
           </div>
         </div>
@@ -136,10 +137,10 @@ export default function GenerarPage() {
             </span>
           </div>
           <h1 className="font-display text-2xl font-bold text-secondary">
-            Algo no ha ido bien
+            {t("errorTitle")}
           </h1>
           <p className="mt-4 text-sm leading-relaxed text-text-muted">
-            {error || "Ha ocurrido un error durante la generación."}
+            {error || t("errorDefault")}
           </p>
           <div className="mt-8 flex flex-col gap-3">
             <button
@@ -152,13 +153,13 @@ export default function GenerarPage() {
               }}
               className="rounded-full bg-create-primary px-8 py-3 text-sm font-bold text-white transition-all hover:bg-create-primary-hover"
             >
-              Reintentar
+              {t("retry")}
             </button>
             <Link
               href="/crear"
               className="text-sm text-text-muted hover:text-text-soft"
             >
-              ← Volver a empezar
+              {t("startOver")}
             </Link>
           </div>
         </div>
@@ -203,7 +204,7 @@ export default function GenerarPage() {
 
         {/* Title */}
         <h1 className="font-display text-3xl font-bold text-secondary">
-          Creando tu historia...
+          {t("creatingStory")}
         </h1>
 
         {/* Rotating message */}
@@ -212,7 +213,7 @@ export default function GenerarPage() {
             key={messageIndex}
             className="text-base text-text-muted animate-fade-in"
           >
-            {currentMessage.text}
+            {t(`messages.${currentMessage.key}`)}
           </p>
         </div>
 
@@ -225,14 +226,13 @@ export default function GenerarPage() {
             />
           </div>
           <p className="mt-2 text-xs text-text-muted">
-            {Math.round(Math.min(progress, 100))}% completado
+            {Math.round(Math.min(progress, 100))}% {t("completed")}
           </p>
         </div>
 
         {/* Info text */}
         <p className="mt-8 text-sm text-text-muted leading-relaxed max-w-xs mx-auto">
-          Esto puede tardar unos segundos. Estamos escribiendo cada escena con
-          cariño.
+          {t("waitMessage")}
         </p>
       </div>
       </div>

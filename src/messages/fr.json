@@ -1,0 +1,587 @@
+{
+  "metadata": {
+    "title": "StoryMagic — De Vraies Histoires à Toucher",
+    "description": "Retrouvez la magie de tourner les pages. Des contes personnalisés imprimés sur du papier de haute qualité, conçus pour créer des moments de connexion authentique."
+  },
+  "nav": {
+    "manifesto": "Manifeste",
+    "collection": "Collection",
+    "artisanal": "Artisanal",
+    "families": "Familles",
+    "myBooks": "Mes livres",
+    "createStory": "Créer un conte",
+    "createMyStory": "Créer mon conte",
+    "myProfile": "Mon profil",
+    "signOut": "Se déconnecter",
+    "signIn": "Se connecter",
+    "openMenu": "Ouvrir le menu",
+    "closeMenu": "Fermer le menu",
+    "user": "Utilisateur",
+    "language": "Langue"
+  },
+  "hero": {
+    "badge": "100% Déconnexion Numérique",
+    "titleStart": "Moins d'écrans,",
+    "titleHighlight": "plus d'histoires",
+    "titleEnd": "à toucher",
+    "description": "Retrouvez la magie de tourner les pages. Des contes personnalisés imprimés sur du papier de haute qualité, conçus pour créer des moments de connexion authentique, loin de la lumière des tablettes.",
+    "cta": "Personnaliser un livre physique",
+    "secondaryCta": "Voir la qualité du papier",
+    "fscPaper": "Papier certifié FSC",
+    "artisanalShipping": "Livraison artisanale",
+    "imageCaption": "Le toucher du papier compte",
+    "imageSubcaption": "Une expérience sensorielle qu'aucun écran ne peut égaler."
+  },
+  "howItWorks": {
+    "badge": "Retour aux sources",
+    "title": "De la vraie magie en 3 étapes artisanales",
+    "step1Title": "Choisissez une histoire",
+    "step1Description": "Sélectionnez une intrigue conçue pour être lue à voix haute et toucher le cœur.",
+    "step2Title": "Personnalisation manuelle",
+    "step2Description": "Nous adaptons les illustrations au style aquarelle pour que votre enfant se reconnaisse.",
+    "step3Title": "Recevez un trésor",
+    "step3Description": "Un livre physique, relié avec amour, arrive à votre porte prêt à être chéri."
+  },
+  "bookCollection": {
+    "title": "Notre Bibliothèque Physique",
+    "subtitle": "Éditions limitées sur papier premium. Des histoires qui sont meilleures au toucher.",
+    "subtitleShowcase": "Exemples réels créés sur notre plateforme. Cliquez pour voir le livre complet.",
+    "viewAll": "Voir la collection complète",
+    "viewSample": "Voir l'exemple",
+    "madeFor": "Créé pour {name}",
+    "hardcover": "Couverture Rigide",
+    "softcover": "Couverture souple",
+    "hardcoverPremium": "Couverture rigide (Premium)",
+    "books": {
+      "enchantedForest": {
+        "title": "La Forêt Enchantée",
+        "description": "Illustrations style gouache sur papier texturé."
+      },
+      "spaceMission": {
+        "title": "Mission Spatiale",
+        "description": "Aquarelles cosmiques et papier de grammage élevé."
+      },
+      "underwaterKingdom": {
+        "title": "Le Royaume Sous-Marin",
+        "description": "Tons océaniques imprimés en qualité archive."
+      }
+    }
+  },
+  "quality": {
+    "badge": "Qualité de Librairie",
+    "title": "Des objets faits pour durer dans le temps",
+    "description": "Ce n'est pas qu'un conte, c'est un souvenir tangible. Nous fuyons l'éphémère numérique pour créer des livres robustes.",
+    "ecoLabel": "Impression locale & durable",
+    "bindingTitle": "Reliure Traditionnelle",
+    "bindingDescription": "Cousu au fil et couvertures renforcées. Résiste au passage des années et des petites mains.",
+    "paperTitle": "Texture du Papier",
+    "paperDescription": "Papier Munken de 170g avec une légère teinte crème pour ne pas fatiguer les yeux. Rugosité naturelle au toucher."
+  },
+  "adventurePack": {
+    "badge": "Expérience Complète",
+    "title": "Pack Aventure Artisanal",
+    "description": "La magie s'étend au-delà du livre. Inclut",
+    "letter": "une lettre physique personnalisée",
+    "descriptionEnd": "du personnage principal, une feuille d'autocollants mats et un marque-page en bois.",
+    "cta": "Ajouter des extras physiques (+12.90€)",
+    "imageCaption": "Le cadeau parfait"
+  },
+  "testimonials": {
+    "title": "Familles Déconnectées",
+    "subtitle": "Ce que disent les parents qui ont choisi le papier plutôt que les pixels.",
+    "reviews": {
+      "laura": {
+        "name": "Laura M.",
+        "subtitle": "A acheté \"La Forêt Enchantée\"",
+        "text": "Enfin quelque chose qui n'a pas besoin de chargeur. La qualité du livre est impressionnante, on dirait qu'il sort d'une librairie ancienne mais avec mon fils dedans."
+      },
+      "carlos": {
+        "name": "Carlos R.",
+        "subtitle": "A acheté le Pack Premium",
+        "text": "L'odeur du livre neuf en ouvrant le colis était incroyable. Les détails physiques comme la lettre supplémentaire ont apporté une touche véritablement magique."
+      }
+    }
+  },
+  "collectionOffer": {
+    "badge": "Bibliothèque Personnelle",
+    "title": "Construisez son héritage de lecture",
+    "description": "3 livres physiques = 20% de réduction.\nDes histoires qu'ils garderont pour leurs propres enfants.",
+    "cta": "Commencer la collection"
+  },
+  "footer": {
+    "tagline": "Atelier de contes personnalisés.\nFaits à la main, avec encre et papier.\nSans piles, juste de l'imagination.",
+    "workshop": "Atelier",
+    "ourPapers": "Nos papiers",
+    "artisanalProcess": "Processus artisanal",
+    "shippingPackaging": "Livraison et emballage",
+    "support": "Assistance",
+    "faq": "Questions fréquentes",
+    "trackOrder": "Suivi de livraison",
+    "qualityGuarantee": "Garantie de qualité",
+    "readingClub": "Club de Lecture",
+    "readingClubDescription": "Conseils pour encourager la lecture sans écrans.",
+    "emailPlaceholder": "Votre adresse email",
+    "joinClub": "Rejoindre le club",
+    "copyright": "© 2025 StoryMagic Artisans. Fait avec amour.",
+    "legalNotice": "Mentions Légales",
+    "privacy": "Confidentialité",
+    "cookies": "Cookies"
+  },
+  "notFound": {
+    "title": "Page introuvable",
+    "description": "Il semble que cette page se soit perdue dans une aventure. Retournons à l'accueil pour retrouver le chemin.",
+    "backHome": "Retour à l'accueil",
+    "createStory": "ou créez un nouveau conte"
+  },
+  "auth": {
+    "login": {
+      "subtitle": "Connectez-vous pour créer votre conte",
+      "googleButton": "Continuer avec Google",
+      "or": "ou",
+      "emailLabel": "Email",
+      "passwordLabel": "Mot de passe",
+      "emailPlaceholder": "votre@email.com",
+      "passwordPlaceholder": "Votre mot de passe",
+      "submit": "Se connecter",
+      "loading": "Connexion...",
+      "forgotPassword": "Mot de passe oublié ?",
+      "noAccount": "Vous n'avez pas de compte ?",
+      "createFree": "Créez-en un gratuitement",
+      "backHome": "← Retour à l'accueil",
+      "invalidCredentials": "Email ou mot de passe incorrect"
+    },
+    "signup": {
+      "subtitle": "Créez un compte pour commencer votre aventure",
+      "googleButton": "S'inscrire avec Google",
+      "or": "ou",
+      "nameLabel": "Nom",
+      "namePlaceholder": "Votre nom",
+      "emailLabel": "Email",
+      "emailPlaceholder": "votre@email.com",
+      "passwordLabel": "Mot de passe",
+      "passwordPlaceholder": "Minimum 6 caractères",
+      "submit": "Créer un compte",
+      "loading": "Création du compte...",
+      "hasAccount": "Vous avez déjà un compte ?",
+      "signIn": "Connectez-vous",
+      "backHome": "← Retour à l'accueil",
+      "checkEmail": "Vérifiez votre email",
+      "confirmationSent": "Nous vous avons envoyé un lien de confirmation à",
+      "confirmationAction": "Cliquez sur le lien pour activer votre compte.",
+      "goToLogin": "Aller à la connexion",
+      "upgradeSubtitle": "Créez un compte pour sauvegarder vos contes",
+      "upgradeSuccess": "Compte créé !",
+      "upgradeSuccessDesc": "Votre compte a été créé avec succès. Tous vos contes sont sauvegardés dans votre bibliothèque.",
+      "goToLibrary": "Aller à la bibliothèque"
+    },
+    "resetPassword": {
+      "subtitle": "Récupérez l'accès à votre compte",
+      "title": "Mot de passe oublié ?",
+      "description": "Entrez votre email et nous vous enverrons un lien pour créer un nouveau mot de passe.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "votre@email.com",
+      "submit": "Envoyer le lien de récupération",
+      "loading": "Envoi...",
+      "backToLogin": "← Retour à la connexion",
+      "checkEmail": "Vérifiez votre email",
+      "linkSent": "Nous vous avons envoyé un lien à",
+      "linkSentEnd": "pour réinitialiser votre mot de passe.",
+      "checkSpam": "Si vous ne voyez pas l'email, vérifiez votre dossier spam.",
+      "goToLogin": "Retour à la connexion",
+      "sendError": "Erreur lors de l'envoi de l'email"
+    },
+    "updatePassword": {
+      "subtitle": "Choisissez votre nouveau mot de passe",
+      "title": "Nouveau mot de passe",
+      "description": "Entrez votre nouveau mot de passe ci-dessous.",
+      "newPasswordLabel": "Nouveau mot de passe",
+      "confirmPasswordLabel": "Confirmer le mot de passe",
+      "passwordPlaceholder": "Minimum 6 caractères",
+      "confirmPlaceholder": "Répétez le mot de passe",
+      "submit": "Mettre à jour le mot de passe",
+      "loading": "Mise à jour...",
+      "verifyingLink": "Vérification du lien...",
+      "successTitle": "Mot de passe mis à jour",
+      "successMessage": "Votre mot de passe a été modifié avec succès. Redirection vers la connexion...",
+      "goToLogin": "Aller à la connexion",
+      "linkExpired": "Le lien a expiré ou n'est pas valide. Demandez-en un nouveau.",
+      "linkError": "Erreur lors de la vérification du lien. Demandez-en un nouveau.",
+      "passwordTooShort": "Le mot de passe doit contenir au moins 6 caractères",
+      "passwordMismatch": "Les mots de passe ne correspondent pas",
+      "updateError": "Erreur lors de la mise à jour du mot de passe",
+      "requestNewLink": "Demander un nouveau lien"
+    }
+  },
+  "crear": {
+    "preparing": "Préparation de votre conte...",
+    "header": {
+      "backHome": "Retour à l'accueil",
+      "exit": "Quitter",
+      "saveAndExit": "Enregistrer et quitter",
+      "step": "Étape {current} sur {total}"
+    },
+    "footer": {
+      "back": "Retour",
+      "next": "Suivant",
+      "saving": "Enregistrement..."
+    },
+    "step1": {
+      "title": "Comment souhaitez-vous créer cette aventure ?",
+      "subtitle": "Choisissez l'expérience parfaite pour aujourd'hui. Vous pouvez personnaliser chaque détail ou laisser la magie vous surprendre.",
+      "solo": {
+        "title": "Je crée seul(e)",
+        "subtitle": "Surprise Magique",
+        "description": "Concevez le conte en secret pour l'offrir comme un cadeau surprise inoubliable. Vous avez le contrôle total de l'histoire et des détails."
+      },
+      "juntos": {
+        "title": "Nous créons ensemble",
+        "subtitle": "Aventure Partagée",
+        "description": "Une expérience interactive conçue pour être partagée en famille. Choisissez les personnages, les couleurs et les rebondissements de l'intrigue avec votre enfant."
+      }
+    },
+    "step2": {
+      "title": "Créez votre petit héros",
+      "subtitle": "Personnalisez les détails magiques pour rendre le conte unique.",
+      "nameLabel": "Prénom de l'enfant",
+      "namePlaceholder": "Ex : Léo",
+      "cityLabel": "Vit à",
+      "cityPlaceholder": "Ex : Paris",
+      "ageLabel": "Âge",
+      "year": "an",
+      "years": "ans",
+      "hairColorLabel": "Couleur de cheveux",
+      "skinToneLabel": "Teint de peau",
+      "genderLabel": "Genre",
+      "boy": "Garçon",
+      "girl": "Fille",
+      "neutral": "Neutre",
+      "hairstyleLabel": "Coiffure",
+      "interestsLabel": "Adore...",
+      "specialTraitLabel": "Quelque chose de spécial sur {name}",
+      "specialTraitLabelDefault": "Quelque chose de spécial sur votre enfant",
+      "optional": "(facultatif)",
+      "specialTraitPlaceholder": "Ex : Vient de perdre une dent, commence l'école cette année...",
+      "specialTraitHint": "Ce détail rendra le conte véritablement unique et personnel.",
+      "companionLabel": "A-t-il un animal de compagnie ou un ami spécial ?",
+      "companionPlaceholder": "Ex : Son chat Minou, sa sœur Lucía, sa peluche Nounours...",
+      "companionHint": "Il pourra apparaître comme personnage surprise dans l'histoire.",
+      "greeting": "Bonjour, {name} !",
+      "greetingDefault": "Bonjour, héros !",
+      "previewReady": "Votre héros est prêt à vivre des aventures entre {interests}.",
+      "previewDefault": "Personnalisez les détails magiques pour rendre le conte unique.",
+      "interestsPrompt": "Choisissez ses centres d'intérêt pour personnaliser l'aventure...",
+      "skinToneTitle": "Teint de peau",
+      "hairColorTitle": "Couleur de cheveux",
+      "andConnector": " et "
+    },
+    "step3": {
+      "title": "Quelle aventure vivra {name} ?",
+      "subtitle": "Sélectionnez une histoire magique pour commencer le voyage. Chaque conte est conçu pour éveiller son imagination.",
+      "recommendedFor": "Pour {name}",
+      "defaultName": "votre héros"
+    },
+    "step4": {
+      "solo": {
+        "title": "Le Livre aux Mille Décisions",
+        "subtitle": "Personnalisez les détails de l'histoire de <highlight>{name}</highlight> et observez la magie se transformer.",
+        "companionTab": "Compagnon",
+        "atmosphereTab": "Atmosphère",
+        "twistTab": "Le Rebondissement",
+        "timeOfDay": "Moment de la journée",
+        "setting": "Décor",
+        "chapter": "Chapitre 1",
+        "storyStart": "Il était une fois un petit explorateur nommé",
+        "storyLived": "qui vivait au bord de l'inconnu.",
+        "skyShowed": "Le ciel montrait un",
+        "notAlone": "il n'était pas seul, son fidèle",
+        "followedClose": "le suivait de près.",
+        "unknownAfternoon": "Un après-midi, il décida de s'aventurer dans l'inconnu...",
+        "wouldFace": "Ce qu'ils ne savaient pas, c'est qu'ils allaient bientôt affronter",
+        "settingLabel": "Décor :",
+        "page": "Page",
+        "specialMomentLabel": "Y a-t-il un moment spécial que vous souhaitez inclure ?",
+        "specialMomentPlaceholder": "Ex : Qu'il surmonte sa peur du noir, qu'il partage avec sa sœur, qu'il apprenne à être courageux...",
+        "specialMomentHint": "L'IA intégrera ce moment dans l'histoire de manière naturelle."
+      },
+      "juntos": {
+        "chooseNext": "Choisissez la prochaine étape de l'histoire !",
+        "decision": "Décision {current} sur {total}",
+        "nextDecision": "Décision suivante"
+      }
+    },
+    "step5": {
+      "title": "Le Grand Final",
+      "subtitle": "Comment souhaitez-vous que l'aventure de <highlight>{name}</highlight> se termine ? Vous avez le dernier mot.",
+      "dedicationLabel": "Dédicace Spéciale",
+      "dedicationPlaceholder": "Cher {name},\nJ'ai écrit ce conte pour te rappeler que tu peux toujours atteindre les étoiles.\nAvec amour, Maman.",
+      "senderPlaceholder": "Votre nom (ex : Maman, Papa, Mamie...)",
+      "adventureOf": "L'aventure de {name}",
+      "createMyStory": "Créer mon conte"
+    },
+    "guestGate": {
+      "title": "Votre conte est presque prêt",
+      "description": "Connectez-vous pour enregistrer le conte dans votre bibliothèque et y accéder depuis n'importe quel appareil, ou continuez en tant qu'invité pour l'acheter directement.",
+      "loginAndSave": "Se connecter et enregistrer dans ma bibliothèque",
+      "continueAsGuest": "Continuer en tant qu'invité",
+      "preparingStory": "Préparation de votre conte...",
+      "guestNote": "En tant qu'invité, vous pourrez acheter votre livre, mais il ne sera pas sauvegardé dans une bibliothèque personnelle."
+    },
+    "generar": {
+      "creatingStory": "Création de votre histoire...",
+      "completed": "terminé",
+      "waitMessage": "Cela peut prendre quelques secondes. Nous écrivons chaque scène avec soin.",
+      "readyTitle": "Votre conte est prêt",
+      "readyDescription": "Nous avons créé une histoire unique avec 8 scènes personnalisées. C'est le moment de la découvrir !",
+      "viewStory": "Voir mon conte",
+      "createAnother": "Créer un autre conte",
+      "errorTitle": "Quelque chose s'est mal passé",
+      "errorDefault": "Une erreur est survenue pendant la génération.",
+      "retry": "Réessayer",
+      "startOver": "← Recommencer",
+      "messages": {
+        "backpack": "Votre héros prépare son sac à dos...",
+        "palette": "Choix des couleurs parfaites...",
+        "autoStories": "Les pages prennent vie...",
+        "groups": "Les personnages font connaissance...",
+        "star": "Peinture d'un ciel rempli d'étoiles...",
+        "forest": "Les arbres de la forêt poussent...",
+        "brush": "Les illustrations sèchent...",
+        "inkPen": "Préparation de l'encre magique...",
+        "menuBook": "Reliure de votre aventure...",
+        "autoAwesome": "Ajout d'une touche de magie finale..."
+      }
+    },
+    "preview": {
+      "loadingStory": "Chargement de votre conte...",
+      "backToCreate": "Retour à la création",
+      "previous": "Précédent",
+      "next": "Suivant",
+      "personalizedStory": "Une histoire personnalisée pour",
+      "createdFor": "Une histoire créée spécialement pour",
+      "end": "Fin",
+      "downloadPdf": "Télécharger le PDF d'aperçu",
+      "generatingPdf": "Génération du PDF...",
+      "downloadHint": "Téléchargez un aperçu du conte au format PDF",
+      "checkoutTitle": "Donnez vie à ce conte",
+      "checkoutSubtitle": "Choisissez le format et les extras pour votre livre personnalisé",
+      "optionalExtras": "Extras facultatifs",
+      "total": "Total",
+      "processing": "Traitement...",
+      "buyNow": "Acheter maintenant — {price} €",
+      "paymentSecure": "Paiement sécurisé avec Stripe. Livraison dans toute la France et l'Europe.",
+      "checkoutError": "Erreur lors du traitement du paiement",
+      "orSaveForLater": "ou sauvegardez-le pour plus tard",
+      "saveForLater": "Sauvegarder et créer un compte",
+      "savedGoToLibrary": "Sauvegardé — aller à ma bibliothèque",
+      "saveForLaterHintAnonymous": "Créez un compte gratuit pour sauvegarder ce conte et l'acheter quand vous le souhaitez.",
+      "saveForLaterHintLoggedIn": "Votre conte est déjà sauvegardé dans votre bibliothèque."
+    }
+  },
+  "checkout": {
+    "success": {
+      "title": "Commande confirmée !",
+      "descriptionWithOrder": "Votre conte \"{title}\" pour {name} est en route.",
+      "descriptionGeneric": "Votre conte personnalisé est en route.",
+      "nextStepsTitle": "Prochaines étapes",
+      "nextStepsDescription": "Vous recevrez un email de confirmation avec le suivi de livraison.",
+      "deliveryTitle": "Délai de livraison",
+      "deliveryDescription": "France : 5-7 jours ouvrables. Europe : 7-12 jours ouvrables.",
+      "formatLabel": "Format : {format}",
+      "formatHardcover": "Couverture rigide",
+      "formatSoftcover": "Couverture souple",
+      "premiumPrint": "Impression premium sur papier Munken 170g",
+      "createAnother": "Créer un autre conte",
+      "viewOrders": "Voir mes commandes"
+    }
+  },
+  "dashboard": {
+    "newStory": "Nouveau conte",
+    "greeting": "Bonjour, {name}",
+    "greetingDefault": "explorateur",
+    "subtitle": "Retrouvez ici vos contes, commandes et personnages enregistrés.",
+    "tabs": {
+      "stories": "Mes contes",
+      "orders": "Mes commandes",
+      "characters": "Mes personnages"
+    },
+    "backHome": "Retour à l'accueil",
+    "storyStatus": {
+      "draft": "Brouillon",
+      "generating": "Génération...",
+      "ready": "Prêt",
+      "ordered": "Commandé"
+    },
+    "storyActions": {
+      "viewStory": "Voir le conte",
+      "viewProgress": "Voir la progression",
+      "continue": "Continuer"
+    },
+    "orderStatus": {
+      "pending": "En attente",
+      "paid": "Payé",
+      "producing": "En production",
+      "shipped": "Expédié",
+      "delivered": "Livré",
+      "cancelled": "Annulé"
+    },
+    "orderFormat": {
+      "hardcover": "Couverture rigide",
+      "softcover": "Couverture souple"
+    },
+    "trackingNumber": "Numéro de suivi",
+    "shippingTo": "Livraison à : {name}",
+    "untitledStory": "Conte sans titre",
+    "character": "Personnage",
+    "gender": {
+      "boy": "Garçon",
+      "girl": "Fille",
+      "neutral": "Neutre"
+    },
+    "yearsOld": "ans",
+    "emptyStories": {
+      "title": "Vous n'avez pas encore créé de conte",
+      "description": "Créez votre premier conte personnalisé et retrouvez le résultat ici.",
+      "cta": "Créer mon premier conte"
+    },
+    "emptyOrders": {
+      "title": "Vous n'avez pas encore de commandes",
+      "description": "Lorsque vous achèterez votre premier livre, il apparaîtra ici avec son état de livraison.",
+      "cta": "Créer un conte"
+    },
+    "emptyCharacters": {
+      "title": "Vous n'avez pas de personnages enregistrés",
+      "description": "Lorsque vous créerez un conte, votre personnage sera enregistré ici pour le réutiliser.",
+      "cta": "Créer un conte"
+    },
+    "editTitle": "Modifier le titre",
+    "downloadPdf": "Télécharger PDF"
+  },
+  "profile": {
+    "title": "Mon profil",
+    "back": "Retour",
+    "noName": "Sans nom",
+    "memberSince": "Membre depuis {date}",
+    "nameSection": {
+      "label": "Nom",
+      "hint": "Ce nom apparaîtra sur votre profil et vos commandes",
+      "edit": "Modifier",
+      "placeholder": "Votre nom",
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "notSet": "Non défini",
+      "saveError": "Erreur lors de l'enregistrement du nom"
+    },
+    "emailSection": {
+      "label": "Email",
+      "googleLinked": "Lié à Google",
+      "emailRegistration": "Email d'inscription"
+    },
+    "passwordSection": {
+      "label": "Mot de passe",
+      "hint": "Modifiez votre mot de passe d'accès",
+      "change": "Modifier",
+      "newPasswordLabel": "Nouveau mot de passe",
+      "confirmPasswordLabel": "Confirmer le mot de passe",
+      "newPasswordPlaceholder": "Minimum 6 caractères",
+      "confirmPlaceholder": "Répétez le mot de passe",
+      "submit": "Mettre à jour le mot de passe",
+      "cancel": "Annuler",
+      "saving": "Enregistrement...",
+      "success": "Mot de passe mis à jour avec succès",
+      "tooShort": "Le mot de passe doit contenir au moins 6 caractères",
+      "mismatch": "Les mots de passe ne correspondent pas",
+      "error": "Erreur lors du changement de mot de passe"
+    },
+    "guestNotice": {
+      "title": "Compte invité",
+      "description": "Vous utilisez un compte temporaire. Si vous vous déconnectez, vous perdrez l'accès à vos contes. Créez un compte pour sauvegarder votre progression.",
+      "createAccount": "Créer un compte"
+    },
+    "signOut": "Se déconnecter"
+  },
+  "pricing": {
+    "softcover": {
+      "label": "Couverture souple",
+      "description": "Impression premium sur papier Munken 170g"
+    },
+    "hardcover": {
+      "label": "Couverture rigide",
+      "description": "Reliure premium avec couverture rigide"
+    },
+    "addons": {
+      "adventurePack": {
+        "label": "Pack Aventure Artisanal",
+        "description": "Transformez le cadeau en une véritable expérience",
+        "badge": "Le plus populaire",
+        "details": [
+          "Lettre manuscrite du personnage adressée à l'enfant",
+          "6 autocollants mats illustrés du conte",
+          "Marque-page en bois gravé avec son prénom"
+        ]
+      },
+      "digitalPdf": {
+        "label": "PDF Numérique (instantané)",
+        "description": "Recevez-le immédiatement, lisez-le sur n'importe quel écran",
+        "details": [
+          "Téléchargement immédiat après l'achat",
+          "Format PDF en haute qualité (300 DPI)",
+          "Parfait pour lire sur tablette, ordinateur ou mobile"
+        ]
+      },
+      "extraCopy": {
+        "label": "Exemplaire supplémentaire (couverture souple)",
+        "description": "Un exemplaire en plus à offrir ou à garder chez les grands-parents",
+        "details": [
+          "Même livre, même qualité d'impression",
+          "Envoi groupé (sans frais de livraison supplémentaires)",
+          "Idéal pour les grands-parents, parrains ou parents séparés"
+        ]
+      }
+    }
+  },
+  "data": {
+    "interests": {
+      "animals": "Animaux",
+      "sports": "Sports",
+      "music": "Musique",
+      "art": "Art",
+      "science": "Science",
+      "nature": "Nature",
+      "space": "Espace",
+      "cooking": "Cuisine",
+      "reading": "Lecture",
+      "superheroes": "Super-héros"
+    },
+    "hairstyles": {
+      "short": "Court",
+      "curly": "Bouclé",
+      "long": "Long",
+      "ponytail": "Queue de cheval",
+      "braids": "Tresses",
+      "bun": "Chignon",
+      "mohawk": "Crête",
+      "afro": "Afro",
+      "bob": "Carré",
+      "pigtails": "Couettes"
+    }
+  },
+  "showcase": {
+    "loading": "Chargement de l'exemple...",
+    "backToHome": "Retour à l'accueil",
+    "library": "Bibliothèque",
+    "sampleBadge": "Exemple réel",
+    "personalizedFor": "Histoire personnalisée pour {name}",
+    "softcover": "Couverture souple",
+    "hardcover": "Couverture rigide (Premium)",
+    "pageCount": "{count} pages",
+    "downloadPdf": "Télécharger le PDF d'exemple",
+    "generatingPdf": "Génération du PDF...",
+    "createYourOwn": "Créer mon propre conte",
+    "createHint": "Personnalisez un livre unique pour votre enfant",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "personalizedStory": "Une histoire personnalisée pour",
+    "createdFor": "Une histoire créée spécialement pour",
+    "end": "Fin"
+  }
+}

@@ -21,6 +21,7 @@ export type Database = {
           city: string | null
           created_at: string
           eye_color: string | null
+          favorite_companion: string | null
           gender: string
           hair_color: string
           hairstyle: string | null
@@ -28,6 +29,7 @@ export type Database = {
           interests: string[]
           name: string
           skin_tone: string
+          special_trait: string | null
           updated_at: string
           user_id: string
         }
@@ -37,6 +39,7 @@ export type Database = {
           city?: string | null
           created_at?: string
           eye_color?: string | null
+          favorite_companion?: string | null
           gender: string
           hair_color: string
           hairstyle?: string | null
@@ -44,6 +47,7 @@ export type Database = {
           interests?: string[]
           name: string
           skin_tone: string
+          special_trait?: string | null
           updated_at?: string
           user_id: string
         }
@@ -53,6 +57,7 @@ export type Database = {
           city?: string | null
           created_at?: string
           eye_color?: string | null
+          favorite_companion?: string | null
           gender?: string
           hair_color?: string
           hairstyle?: string | null
@@ -60,6 +65,7 @@ export type Database = {
           interests?: string[]
           name?: string
           skin_tone?: string
+          special_trait?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -72,6 +78,57 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      illustration_library: {
+        Row: {
+          created_at: string
+          description: string
+          description_hash: string
+          generation_params: Json | null
+          id: string
+          image_url: string | null
+          provider: string
+          provider_model: string | null
+          scene_type: string | null
+          status: string
+          tags: string[]
+          template_id: string | null
+          updated_at: string
+          usage_count: number
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          description_hash: string
+          generation_params?: Json | null
+          id?: string
+          image_url?: string | null
+          provider?: string
+          provider_model?: string | null
+          scene_type?: string | null
+          status?: string
+          tags?: string[]
+          template_id?: string | null
+          updated_at?: string
+          usage_count?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          description_hash?: string
+          generation_params?: Json | null
+          id?: string
+          image_url?: string | null
+          provider?: string
+          provider_model?: string | null
+          scene_type?: string | null
+          status?: string
+          tags?: string[]
+          template_id?: string | null
+          updated_at?: string
+          usage_count?: number
+        }
+        Relationships: []
       }
       orders: {
         Row: {
@@ -155,7 +212,7 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string
-          email: string
+          email: string | null
           id: string
           name: string | null
           updated_at: string
@@ -163,7 +220,7 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           created_at?: string
-          email: string
+          email?: string | null
           id: string
           name?: string | null
           updated_at?: string
@@ -171,7 +228,7 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           created_at?: string
-          email?: string
+          email?: string | null
           id?: string
           name?: string | null
           updated_at?: string
@@ -232,12 +289,15 @@ export type Database = {
           ending_choice: string | null
           generated_text: Json | null
           id: string
+          is_showcase: boolean
+          pdf_url: string | null
           saga_id: string | null
           saga_order: number | null
           sender_name: string | null
           status: string
           story_decisions: Json
           template_id: string
+          title: string | null
           updated_at: string
           user_id: string
         }
@@ -249,12 +309,15 @@ export type Database = {
           ending_choice?: string | null
           generated_text?: Json | null
           id?: string
+          is_showcase?: boolean
+          pdf_url?: string | null
           saga_id?: string | null
           saga_order?: number | null
           sender_name?: string | null
           status?: string
           story_decisions?: Json
           template_id: string
+          title?: string | null
           updated_at?: string
           user_id: string
         }
@@ -266,12 +329,15 @@ export type Database = {
           ending_choice?: string | null
           generated_text?: Json | null
           id?: string
+          is_showcase?: boolean
+          pdf_url?: string | null
           saga_id?: string | null
           saga_order?: number | null
           sender_name?: string | null
           status?: string
           story_decisions?: Json
           template_id?: string
+          title?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -472,3 +538,9 @@ export type CompositeTypes<
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
+
+export const Constants = {
+  public: {
+    Enums: {},
+  },
+} as const

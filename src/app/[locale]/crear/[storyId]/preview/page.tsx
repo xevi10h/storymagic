@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { useParams, useRouter } from "next/navigation";
-import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { Link, useRouter } from "@/i18n/navigation";
 import { PRICING, ADDONS, type BookFormat, type AddonId } from "@/lib/pricing";
 import { STORY_TEMPLATES } from "@/lib/create-store";
+import { useAuth } from "@/hooks/useAuth";
 import CreationHeader from "@/components/crear/CreationHeader";
-import type { GeneratedScene, GeneratedStory } from "@/lib/ai/gemini";
+import type { GeneratedScene, GeneratedStory } from "@/lib/ai/story-generator";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -82,6 +84,12 @@ function buildPages(story: StoryData): BookPage[] {
   return pages;
 }
 
+const ADDON_I18N_KEY: Record<AddonId, string> = {
+  adventure_pack: "adventurePack",
+  digital_pdf: "digitalPdf",
+  extra_copy: "extraCopy",
+};
+
 function getTemplateGradient(templateId: string): string {
   const gradients: Record<string, string> = {
     space: "from-indigo-900 to-slate-900",
@@ -96,13 +104,21 @@ function getTemplateGradient(templateId: string): string {
 // ── Page Component ─────────────────────────────────────────────────────────
 
 export default function PreviewPage() {
+  const t = useTranslations("crear.preview");
+  const tPricing = useTranslations("pricing");
   const { storyId } = useParams<{ storyId: string }>();
   const router = useRouter();
+  const { user } = useAuth();
+  // User needs an account if they're anonymous OR not logged in at all
+  const needsAccount = !user || user.is_anonymous === true;
 
   const [story, setStory] = useState<StoryData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
+
+  // PDF download state
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
 
   // Checkout state
   const [format, setFormat] = useState<BookFormat>("softcover");
@@ -168,6 +184,32 @@ export default function PreviewPage() {
     PRICING[format].price +
     Array.from(addons).reduce((sum, id) => sum + ADDONS[id].price, 0);
 
+  const handleDownloadPdf = useCallback(async () => {
+    setDownloadingPdf(true);
+    try {
+      const res = await fetch(`/api/stories/${storyId}/pdf`);
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "PDF generation failed");
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download =
+        res.headers.get("Content-Disposition")?.match(/filename="(.+)"/)?.[1] ??
+        "storymagic-book.pdf";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("PDF download error:", err);
+    } finally {
+      setDownloadingPdf(false);
+    }
+  }, [storyId]);
+
   const handleCheckout = useCallback(async () => {
     setCheckingOut(true);
     setCheckoutError(null);
@@ -192,7 +234,7 @@ export default function PreviewPage() {
       window.location.href = url;
     } catch (err) {
       setCheckoutError(
-        err instanceof Error ? err.message : "Error al procesar el pago"
+        err instanceof Error ? err.message : t("checkoutError")
       );
       setCheckingOut(false);
     }
@@ -208,7 +250,7 @@ export default function PreviewPage() {
           <span className="material-symbols-outlined animate-spin text-4xl text-create-primary">
             progress_activity
           </span>
-          <p className="mt-4 text-sm text-text-muted">Cargando tu cuento...</p>
+          <p className="mt-4 text-sm text-text-muted">{t("loadingStory")}</p>
         </div>
       </div>
     );
@@ -227,7 +269,7 @@ export default function PreviewPage() {
             href="/crear"
             className="mt-6 text-sm text-create-primary hover:underline"
           >
-            Volver a crear
+            {t("backToCreate")}
           </Link>
         </div>
       </div>
@@ -307,14 +349,14 @@ export default function PreviewPage() {
               <span className="material-symbols-outlined text-base">
                 chevron_left
               </span>
-              Anterior
+              {t("previous")}
             </button>
             <button
               onClick={goToNextPage}
               disabled={currentPage === totalPages - 1}
               className="flex items-center gap-1 rounded-full border border-border-light px-4 py-2 text-sm text-text-soft transition-colors hover:bg-cream disabled:opacity-30"
             >
-              Siguiente
+              {t("next")}
               <span className="material-symbols-outlined text-base">
                 chevron_right
               </span>
@@ -323,14 +365,42 @@ export default function PreviewPage() {
         </div>
       </section>
 
+      {/* PDF Download */}
+      <div className="mx-auto max-w-3xl px-4 pb-6">
+        <button
+          onClick={handleDownloadPdf}
+          disabled={downloadingPdf}
+          className="group mx-auto flex items-center gap-2.5 rounded-xl border-2 border-border-light bg-white px-6 py-3.5 text-sm font-bold text-secondary transition-all hover:border-create-primary hover:bg-create-primary/5 hover:text-create-primary active:scale-[0.98] disabled:opacity-60 shadow-sm"
+        >
+          {downloadingPdf ? (
+            <>
+              <span className="material-symbols-outlined animate-spin text-lg">
+                progress_activity
+              </span>
+              {t("generatingPdf")}
+            </>
+          ) : (
+            <>
+              <span className="material-symbols-outlined text-lg">
+                picture_as_pdf
+              </span>
+              {t("downloadPdf")}
+            </>
+          )}
+        </button>
+        <p className="mt-2 text-center text-xs text-text-muted">
+          {t("downloadHint")}
+        </p>
+      </div>
+
       {/* Checkout section */}
       <section className="border-t border-border-light bg-white">
         <div className="mx-auto max-w-3xl px-4 py-10">
           <h2 className="text-center font-display text-2xl font-bold text-secondary">
-            Haz realidad este cuento
+            {t("checkoutTitle")}
           </h2>
           <p className="mt-2 text-center text-sm text-text-muted">
-            Elige el formato y los extras para tu libro personalizado
+            {t("checkoutSubtitle")}
           </p>
 
           {/* Format selection */}
@@ -359,14 +429,14 @@ export default function PreviewPage() {
                       {key === "softcover" ? "menu_book" : "book"}
                     </span>
                     <span className="font-display text-base font-bold text-text-main">
-                      {val.label}
+                      {tPricing(`${key}.label`)}
                     </span>
                     <span className="ml-auto text-lg font-bold text-secondary tabular-nums whitespace-nowrap pr-6">
                       {(val.price / 100).toFixed(2)} €
                     </span>
                   </div>
                   <p className="mt-1 text-xs text-text-muted">
-                    {val.description}
+                    {tPricing(`${key}.description`)}
                   </p>
                 </button>
               )
@@ -376,12 +446,13 @@ export default function PreviewPage() {
           {/* Add-ons */}
           <div className="mt-8">
             <h3 className="font-display text-sm font-bold text-text-main uppercase tracking-wider">
-              Extras opcionales
+              {t("optionalExtras")}
             </h3>
             <div className="mt-4 space-y-4">
               {(Object.entries(ADDONS) as [AddonId, typeof ADDONS[AddonId]][]).map(
                 ([key, val]) => {
                   const selected = addons.has(key);
+                  const i18nKey = ADDON_I18N_KEY[key];
                   return (
                     <button
                       key={key}
@@ -395,7 +466,7 @@ export default function PreviewPage() {
                       {/* Badge */}
                       {val.badge && (
                         <span className="absolute -top-2.5 left-4 rounded-full bg-create-gold px-2.5 py-0.5 text-[10px] font-bold text-white uppercase tracking-wide">
-                          {val.badge}
+                          {tPricing(`addons.${i18nKey}.badge`)}
                         </span>
                       )}
 
@@ -416,10 +487,10 @@ export default function PreviewPage() {
                           </div>
                           <div>
                             <span className="text-sm font-bold text-text-main">
-                              {val.label}
+                              {tPricing(`addons.${i18nKey}.label`)}
                             </span>
                             <p className="mt-0.5 text-xs text-text-muted">
-                              {val.description}
+                              {tPricing(`addons.${i18nKey}.description`)}
                             </p>
                           </div>
                         </div>
@@ -453,7 +524,7 @@ export default function PreviewPage() {
                             <span className="material-symbols-outlined text-sm mt-px text-create-primary shrink-0">
                               check_circle
                             </span>
-                            {detail.text}
+                            {tPricing(`addons.${i18nKey}.details.${i}`)}
                           </li>
                         ))}
                       </ul>
@@ -468,7 +539,7 @@ export default function PreviewPage() {
           <div className="mt-8 rounded-xl border border-border-light bg-cream p-6">
             <div className="flex items-center justify-between">
               <span className="text-sm text-text-muted">
-                {PRICING[format].label}
+                {tPricing(`${format}.label`)}
               </span>
               <span className="text-sm tabular-nums">
                 {(PRICING[format].price / 100).toFixed(2)} €
@@ -477,7 +548,7 @@ export default function PreviewPage() {
             {Array.from(addons).map((id) => (
               <div key={id} className="mt-2 flex items-center justify-between">
                 <span className="text-sm text-text-muted">
-                  {ADDONS[id].label}
+                  {tPricing(`addons.${ADDON_I18N_KEY[id]}.label`)}
                 </span>
                 <span className="text-sm tabular-nums">
                   {(ADDONS[id].price / 100).toFixed(2)} €
@@ -486,7 +557,7 @@ export default function PreviewPage() {
             ))}
             <div className="mt-4 border-t border-border-medium pt-4 flex items-center justify-between">
               <span className="font-display text-base font-bold text-text-main">
-                Total
+                {t("total")}
               </span>
               <span className="font-display text-xl font-bold text-secondary tabular-nums">
                 {(subtotal / 100).toFixed(2)} €
@@ -503,14 +574,14 @@ export default function PreviewPage() {
                   <span className="material-symbols-outlined animate-spin text-lg">
                     progress_activity
                   </span>
-                  Procesando...
+                  {t("processing")}
                 </span>
               ) : (
                 <span className="flex items-center justify-center gap-2">
                   <span className="material-symbols-outlined text-lg">
                     shopping_bag
                   </span>
-                  Comprar ahora — {(subtotal / 100).toFixed(2)} €
+                  {t("buyNow", { price: (subtotal / 100).toFixed(2) })}
                 </span>
               )}
             </button>
@@ -522,7 +593,36 @@ export default function PreviewPage() {
             )}
 
             <p className="mt-4 text-center text-xs text-text-muted">
-              Pago seguro con Stripe. Envío a toda España y Europa.
+              {t("paymentSecure")}
+            </p>
+
+            {/* Save for later divider */}
+            <div className="mt-6 flex items-center gap-3">
+              <div className="h-px flex-1 bg-border-light" />
+              <span className="text-xs text-text-muted">{t("orSaveForLater")}</span>
+              <div className="h-px flex-1 bg-border-light" />
+            </div>
+
+            {/* Save for later action */}
+            {needsAccount ? (
+              <Link
+                href={`/auth/signup?next=/crear/${storyId}/preview`}
+                className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-border-light px-6 py-3.5 text-sm font-bold text-secondary transition-all hover:border-create-primary hover:bg-create-primary/5 hover:text-create-primary active:scale-[0.98]"
+              >
+                <span className="material-symbols-outlined text-lg">bookmark_add</span>
+                {t("saveForLater")}
+              </Link>
+            ) : (
+              <Link
+                href="/dashboard"
+                className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-border-light px-6 py-3.5 text-sm font-bold text-secondary transition-all hover:border-create-primary hover:bg-create-primary/5 hover:text-create-primary active:scale-[0.98]"
+              >
+                <span className="material-symbols-outlined text-lg">bookmark_added</span>
+                {t("savedGoToLibrary")}
+              </Link>
+            )}
+            <p className="mt-2 text-center text-xs text-text-muted">
+              {needsAccount ? t("saveForLaterHintAnonymous") : t("saveForLaterHintLoggedIn")}
             </p>
           </div>
         </div>
@@ -540,6 +640,7 @@ function PageContent({
   page: BookPage;
   templateId: string;
 }) {
+  const t = useTranslations("crear.preview");
   const gradient = getTemplateGradient(templateId);
 
   switch (page.type) {
@@ -557,7 +658,7 @@ function PageContent({
             {page.title}
           </h2>
           <p className="mt-3 text-sm text-white/70">
-            Una historia personalizada para{" "}
+            {t("personalizedStory")}{" "}
             <span className="font-bold text-white">{page.characterName}</span>
           </p>
           <div className="mt-6 h-px w-16 bg-white/30" />
@@ -632,7 +733,7 @@ function PageContent({
             {page.message}
           </p>
           <div className="mt-6 h-px w-16 bg-border-light" />
-          <p className="mt-3 text-xs text-text-muted">Fin</p>
+          <p className="mt-3 text-xs text-text-muted">{t("end")}</p>
         </div>
       );
 
@@ -642,7 +743,7 @@ function PageContent({
           className={`flex h-full flex-col items-center justify-center bg-gradient-to-br ${gradient} p-8 text-center`}
         >
           <p className="text-sm text-white/70">
-            Una historia creada especialmente para
+            {t("createdFor")}
           </p>
           <p className="mt-2 font-display text-2xl font-bold text-white">
             {page.characterName}

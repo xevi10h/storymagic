@@ -1,6 +1,9 @@
-import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 
 export default function Hero() {
+  const t = useTranslations("hero");
+
   return (
     <header className="relative overflow-hidden px-4 pt-32 pb-20">
       {/* Ambient blurs */}
@@ -13,19 +16,17 @@ export default function Hero() {
           <div className="inline-flex w-fit -rotate-1 items-center gap-2 rounded-md border border-badge-border bg-badge-bg px-4 py-1.5 shadow-sm">
             <span className="material-symbols-outlined text-sm text-secondary">spa</span>
             <span className="text-xs font-bold uppercase tracking-wider text-secondary">
-              100% Desconexión Digital
+              {t("badge")}
             </span>
           </div>
 
           <h1 className="font-display text-5xl font-bold leading-[1.1] tracking-tight text-secondary lg:text-7xl">
-            Menos pantallas, <br />
-            <span className="italic text-primary">más historias</span> para tocar
+            {t("titleStart")} <br />
+            <span className="italic text-primary">{t("titleHighlight")}</span> {t("titleEnd")}
           </h1>
 
           <p className="max-w-lg text-lg leading-relaxed text-text-soft lg:text-xl">
-            Recupera la magia de pasar las páginas. Cuentos personalizados impresos en papel
-            de alta calidad, diseñados para crear momentos de conexión real, lejos del brillo
-            de las tablets.
+            {t("description")}
           </p>
 
           <div className="flex flex-col gap-4 pt-4 sm:flex-row">
@@ -33,26 +34,26 @@ export default function Hero() {
               href="/crear"
               className="flex h-14 items-center justify-center gap-2 rounded-lg bg-primary px-8 text-lg font-bold text-white shadow-lg shadow-primary/10 transition-all hover:-translate-y-1 hover:bg-primary-hover"
             >
-              Personalizar libro físico
+              {t("cta")}
               <span className="material-symbols-outlined">arrow_forward</span>
             </Link>
             <a
               href="#artisanal"
               className="flex items-center justify-center gap-2 text-lg font-bold text-secondary underline decoration-border-light decoration-2 underline-offset-4 transition-all hover:text-primary hover:decoration-primary"
             >
-              Ver calidad del papel
+              {t("secondaryCta")}
             </a>
           </div>
 
           <div className="mt-2 flex items-center gap-4 border-t border-border-light pt-6 text-sm font-medium text-text-soft">
             <div className="flex items-center gap-2">
               <span className="material-symbols-outlined text-xl text-success">forest</span>
-              <span>Papel certificado FSC</span>
+              <span>{t("fscPaper")}</span>
             </div>
             <span className="text-text-muted">|</span>
             <div className="flex items-center gap-2">
               <span className="material-symbols-outlined text-xl text-primary-hover">local_shipping</span>
-              <span>Envío artesanal</span>
+              <span>{t("artisanalShipping")}</span>
             </div>
           </div>
         </div>
@@ -72,9 +73,9 @@ export default function Hero() {
             </div>
             <div className="absolute right-6 bottom-6 left-6 z-30 text-white">
               <div className="border-l-4 border-primary bg-black/30 p-4 backdrop-blur-md">
-                <p className="font-display mb-1 text-xl font-bold text-cream">El tacto del papel importa</p>
+                <p className="font-display mb-1 text-xl font-bold text-cream">{t("imageCaption")}</p>
                 <p className="text-sm text-text-light">
-                  Una experiencia sensorial que ninguna pantalla puede igualar.
+                  {t("imageSubcaption")}
                 </p>
               </div>
             </div>
