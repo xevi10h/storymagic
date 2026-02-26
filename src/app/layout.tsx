@@ -1,4 +1,5 @@
 import { Plus_Jakarta_Sans, Fredoka } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -33,6 +34,7 @@ export default function RootLayout({
         <div className="relative z-[1]">
           {children}
         </div>
+        <Analytics />
       </body>
     </html>
   );
