@@ -148,7 +148,8 @@
       "noAccount": "No tens compte?",
       "createFree": "Crea'n un de gratuït",
       "backHome": "← Tornar a l'inici",
-      "invalidCredentials": "Email o contrasenya incorrectes"
+      "invalidCredentials": "Email o contrasenya incorrectes",
+      "authFailed": "No s'ha pogut completar l'autenticació. Torna-ho a provar."
     },
     "signup": {
       "subtitle": "Crea un compte per començar la teva aventura",
@@ -284,6 +285,7 @@
       "solo": {
         "title": "El Llibre de les Mil Decisions",
         "subtitle": "Personalitza els detalls de la història de <highlight>{name}</highlight> i observa com canvia la màgia.",
+        "defaultName": "el teu heroi",
         "companionTab": "Company",
         "atmosphereTab": "Atmosfera",
         "twistTab": "El Gir",
@@ -312,6 +314,7 @@
     "step5": {
       "title": "El Gran Final",
       "subtitle": "Com vols que acabi l'aventura de <highlight>{name}</highlight>? Tu tens l'última paraula.",
+      "defaultName": "el teu heroi",
       "dedicationLabel": "Dedicatòria Especial",
       "dedicationPlaceholder": "Estimat {name},\nHe escrit aquest conte per recordar-te que sempre pots arribar a les estrelles.\nAmb amor, Mama.",
       "senderPlaceholder": "El teu nom (ex: Mama, Papa, Àvia...)",
@@ -330,9 +333,9 @@
       "creatingStory": "Creant la teva història...",
       "completed": "completat",
       "waitMessage": "Això pot trigar uns segons. Estem escrivint cada escena amb estima.",
-      "readyTitle": "El teu conte està a punt",
-      "readyDescription": "Hem creat una història única amb 8 escenes personalitzades. Hora de veure-la!",
-      "viewStory": "Veure el meu conte",
+      "readyTitle": "El teu preview està llest!",
+      "readyDescription": "Hem preparat un avançament del teu conte. Descobreix-lo ara!",
+      "viewStory": "Veure preview del meu conte",
       "createAnother": "Crear un altre conte",
       "errorTitle": "Alguna cosa no ha anat bé",
       "errorDefault": "S'ha produït un error durant la generació.",
@@ -349,7 +352,8 @@
         "inkPen": "Preparant la tinta màgica...",
         "menuBook": "Enquadernant la teva aventura...",
         "autoAwesome": "Afegint un toc de màgia final..."
-      }
+      },
+      "goBack": "Tornar enrere"
     },
     "preview": {
       "loadingStory": "Carregant el teu conte...",
@@ -359,16 +363,27 @@
       "personalizedStory": "Una història personalitzada per a",
       "createdFor": "Una història creada especialment per a",
       "end": "Fi",
-      "downloadPdf": "Descarregar PDF de vista prèvia",
+      "previewBadge": "Preview",
+      "lockedTitle": "L'aventura continua...",
+      "lockedDescription": "Desbloqueja el conte complet per descobrir com segueix la història.",
+      "lockedCta": "Desbloquejar conte",
+      "downloadPdf": "Descarregar PDF complet",
       "generatingPdf": "Generant PDF...",
-      "downloadHint": "Descarrega una vista prèvia del conte en format PDF",
+      "downloadHint": "Descarrega el conte complet en format PDF",
+      "keyboardHint": "Usa les fletxes ← → del teclat per navegar",
+      "swipeHint": "Llisca per passar de pàgina",
+      "clickToFlip": "Fes clic a les pàgines per passar o arrossega per girar la vista",
+      "pdfError": "Error en generar el PDF. Torna-ho a provar.",
       "checkoutTitle": "Fes realitat aquest conte",
       "checkoutSubtitle": "Tria el format i els extres per al teu llibre personalitzat",
+      "paywallTitle": "Vols descobrir com segueix?",
+      "paywallDescription": "L'aventura de {name} acaba de començar. Desbloqueja el conte complet amb les 12 escenes il·lustrades.",
+      "instantDelivery": "Instantani",
       "optionalExtras": "Extres opcionals",
       "total": "Total",
       "processing": "Processant...",
-      "buyNow": "Comprar ara — {price} €",
-      "paymentSecure": "Pagament segur amb Stripe. Enviament a tota Espanya i Europa.",
+      "buyNow": "Desbloquejar conte — {price} €",
+      "paymentSecure": "Pagament segur amb Stripe. PDF instantani inclòs en tots els formats.",
       "checkoutError": "Error en processar el pagament",
       "orSaveForLater": "o guarda'l per més endavant",
       "saveForLater": "Guardar i crear compte",
@@ -379,16 +394,39 @@
   },
   "checkout": {
     "success": {
-      "title": "Comanda confirmada!",
-      "descriptionWithOrder": "El teu conte \"{title}\" per a {name} és en camí.",
-      "descriptionGeneric": "El teu conte personalitzat és en camí.",
-      "nextStepsTitle": "Pròxims passos",
+      "title": "El teu conte està llest!",
+      "descriptionWithOrder": "El conte \"{title}\" per a {name} ja és teu.",
+      "descriptionGeneric": "El teu conte personalitzat està llest.",
+      "verifyingPayment": "Verificant el teu pagament...",
+      "verifyingDescription": "Estem confirmant la teva compra. Només un moment.",
+      "completingBook": "Completant el teu llibre...",
+      "completingHint": "Generant les il·lustracions restants del teu conte",
+      "completionMessages": {
+        "palette": "Triant els colors perfectes...",
+        "brush": "Les il·lustracions prenen vida...",
+        "autoStories": "Les pàgines s'omplen de màgia...",
+        "forest": "Pintant els escenaris...",
+        "star": "Afegint detalls màgics...",
+        "inkPen": "El tinter màgic treballa...",
+        "menuBook": "Enquadernant la teva aventura...",
+        "autoAwesome": "Últims retocs de màgia..."
+      },
+      "completionErrorTitle": "No s'ha pogut completar el llibre",
+      "completionErrorDescription": "El teu pagament s'ha processat correctament, però hi ha hagut un problema generant les il·lustracions. Pots reintentar o contactar-nos.",
+      "retryCompletion": "Reintentar",
+      "goToDashboard": "Anar a la meva biblioteca",
+      "pdfReady": "El teu PDF està llest",
+      "pdfReadyDescription": "Descarrega el conte complet en alta qualitat.",
+      "viewBook": "Veure llibre",
+      "nextStepsTitle": "Llibre físic en camí",
       "nextStepsDescription": "Rebràs un email de confirmació amb el seguiment de l'enviament.",
       "deliveryTitle": "Temps de lliurament",
       "deliveryDescription": "Espanya: 5-7 dies laborables. Europa: 7-12 dies laborables.",
       "formatLabel": "Format: {format}",
+      "formatDigital": "PDF Digital",
       "formatHardcover": "Tapa dura",
       "formatSoftcover": "Tapa tova",
+      "instantDownload": "Descàrrega instantània disponible",
       "premiumPrint": "Impressió premium en paper Munken 170g",
       "createAnother": "Crear un altre conte",
       "viewOrders": "Veure les meves comandes"
@@ -408,23 +446,28 @@
     "storyStatus": {
       "draft": "Esborrany",
       "generating": "Generant...",
-      "ready": "A punt",
-      "ordered": "Demanat"
+      "preview": "Preview llest",
+      "completing": "Completant...",
+      "ready": "Llest",
+      "ordered": "Comanda"
     },
     "storyActions": {
       "viewStory": "Veure conte",
+      "viewPreview": "Veure preview",
       "viewProgress": "Veure progrés",
       "continue": "Continuar"
     },
     "orderStatus": {
       "pending": "Pendent",
       "paid": "Pagat",
+      "completed": "Completat",
       "producing": "En producció",
       "shipped": "Enviat",
       "delivered": "Lliurat",
       "cancelled": "Cancel·lat"
     },
     "orderFormat": {
+      "digital_pdf": "PDF Digital",
       "hardcover": "Tapa dura",
       "softcover": "Tapa tova"
     },
@@ -500,16 +543,20 @@
     "signOut": "Tancar sessió"
   },
   "pricing": {
+    "digital_pdf": {
+      "label": "PDF Digital",
+      "description": "Descàrrega instantània en alta qualitat"
+    },
     "softcover": {
       "label": "Tapa tova",
-      "description": "Impressió premium en paper Munken 170g"
+      "description": "Impressió premium en paper Munken 170g. Inclou PDF digital"
     },
     "hardcover": {
       "label": "Tapa dura",
-      "description": "Enquadernació premium amb coberta rígida"
+      "description": "Enquadernació premium amb coberta rígida. Inclou PDF digital"
     },
     "addons": {
-      "adventurePack": {
+      "adventure_pack": {
         "label": "Pack Aventura Artesanal",
         "description": "Converteix el regal en tota una experiència",
         "badge": "Més popular",
@@ -519,16 +566,7 @@
           "Punt de llibre de fusta gravat amb el seu nom"
         ]
       },
-      "digitalPdf": {
-        "label": "PDF Digital (instantani)",
-        "description": "Rep-lo al moment, llegeix-lo en qualsevol pantalla",
-        "details": [
-          "Descàrrega immediata després de la compra",
-          "Format PDF en alta qualitat (300 DPI)",
-          "Perfecte per llegir en tablet, ordinador o mòbil"
-        ]
-      },
-      "extraCopy": {
+      "extra_copy": {
         "label": "Còpia extra (tapa tova)",
         "description": "Una còpia addicional per regalar o tenir a casa dels avis",
         "details": [
@@ -550,7 +588,9 @@
       "space": "Espai",
       "cooking": "Cuina",
       "reading": "Lectura",
-      "superheroes": "Superherois"
+      "superheroes": "Superherois",
+      "castles": "Castells",
+      "dinosaurs": "Dinosaures"
     },
     "hairstyles": {
       "short": "Curt",
@@ -562,7 +602,10 @@
       "mohawk": "Cresta",
       "afro": "Afro",
       "bob": "Mitja melena",
-      "pigtails": "Cuetes"
+      "pigtails": "Cuetes",
+      "spiky": "De punta",
+      "buzz": "Rapat",
+      "medium": "Mitjà"
     }
   },
   "showcase": {

@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import LocaleSwitcher from "@/components/LocaleSwitcher";
+import LogoIcon from "@/components/LogoIcon";
 
 function UserMenu({
   user,
@@ -122,14 +123,12 @@ export default function Navbar() {
   return (
     <nav className="fixed top-0 z-50 w-full px-4 py-4 transition-all duration-300">
       <div className="mx-auto flex max-w-6xl items-center justify-between rounded-lg border border-border-light bg-white/95 px-6 py-3 shadow-sm backdrop-blur-sm">
-        <div className="flex items-center gap-3">
-          <div className="text-primary">
-            <span className="material-symbols-outlined text-3xl">menu_book</span>
-          </div>
+        <Link href="/" className="flex items-center gap-3">
+          <LogoIcon className="h-8 w-8 text-primary" />
           <span className="font-display text-2xl font-bold tracking-tight text-secondary">
             StoryMagic
           </span>
-        </div>
+        </Link>
 
         <div className="hidden items-center gap-8 md:flex">
           {navLinks.map((link) => (

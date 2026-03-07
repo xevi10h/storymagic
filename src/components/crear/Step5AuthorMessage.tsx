@@ -33,7 +33,7 @@ export default function Step5AuthorMessage({
   onBack,
 }: Step5Props) {
   const t = useTranslations("crear.step5");
-  const displayName = characterName || "Leo";
+  const displayName = characterName || t("defaultName");
   const endingOptions = template.endings;
 
   return (
@@ -85,6 +85,7 @@ export default function Step5AuthorMessage({
                     onChange={(e) => onSetDedication(e.target.value)}
                     placeholder={t("dedicationPlaceholder", { name: displayName })}
                     rows={4}
+                    maxLength={500}
                     className="w-full border-none bg-transparent p-0 text-center text-lg text-gray-700 focus:ring-0 resize-none leading-relaxed placeholder:text-gray-400 placeholder:italic"
                   />
                   <div className="mt-3">
@@ -93,12 +94,13 @@ export default function Step5AuthorMessage({
                       value={senderName}
                       onChange={(e) => onSetSenderName(e.target.value)}
                       placeholder={t("senderPlaceholder")}
+                      maxLength={100}
                       className="w-full border-none bg-transparent p-0 text-center text-sm text-gray-500 focus:ring-0 placeholder:text-gray-300 placeholder:italic"
                     />
                   </div>
                   <div className="mt-4 pt-4 border-t border-gray-200 flex justify-between items-center text-xs text-gray-400 font-medium">
                     <span>StoryMagic Press</span>
-                    <span>2025 Edition</span>
+                    <span>{new Date().getFullYear()} Edition</span>
                   </div>
                 </div>
 

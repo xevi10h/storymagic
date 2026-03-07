@@ -13,13 +13,19 @@ const fredoka = Fredoka({
   display: "swap",
 });
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
+  params,
 }: Readonly<{
   children: React.ReactNode;
+  params?: Promise<{ locale?: string }>;
 }>) {
+  // Extract locale from the URL segment for the lang attribute
+  const resolvedParams = params ? await params : undefined;
+  const lang = resolvedParams?.locale || "es";
+
   return (
-    <html suppressHydrationWarning>
+    <html lang={lang} suppressHydrationWarning>
       <head>
         <link
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"

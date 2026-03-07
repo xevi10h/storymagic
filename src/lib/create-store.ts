@@ -155,38 +155,39 @@ export const SKIN_TONES = [
   { id: "very-dark", color: "#523218" },
 ];
 
+// Labels are translated via i18n: td('interests.${id}')
 export const INTERESTS = [
-  { id: "space", label: "Espacio", icon: "rocket_launch" },
-  { id: "animals", label: "Animales", icon: "pets" },
-  { id: "sports", label: "Deportes", icon: "sports_soccer" },
-  { id: "castles", label: "Castillos", icon: "castle" },
-  { id: "dinosaurs", label: "Dinosaurios", icon: "cruelty_free" },
-  { id: "music", label: "Música", icon: "music_note" },
+  { id: "space", icon: "rocket_launch" },
+  { id: "animals", icon: "pets" },
+  { id: "sports", icon: "sports_soccer" },
+  { id: "castles", icon: "castle" },
+  { id: "dinosaurs", icon: "cruelty_free" },
+  { id: "music", icon: "music_note" },
 ];
 
+// Labels are translated via i18n: td('hairstyles.${id}')
 export interface HairstyleOption {
   id: string;
-  label: string;
   icon: string;
 }
 
 export const HAIRSTYLES: Record<Gender, HairstyleOption[]> = {
   boy: [
-    { id: "short", label: "Corto", icon: "content_cut" },
-    { id: "curly", label: "Rizado", icon: "waves" },
-    { id: "spiky", label: "De punta", icon: "north" },
-    { id: "buzz", label: "Rapado", icon: "circle" },
+    { id: "short", icon: "content_cut" },
+    { id: "curly", icon: "waves" },
+    { id: "spiky", icon: "north" },
+    { id: "buzz", icon: "circle" },
   ],
   girl: [
-    { id: "long", label: "Largo liso", icon: "straighten" },
-    { id: "curly", label: "Rizado", icon: "waves" },
-    { id: "pigtails", label: "Coletas", icon: "diversity_1" },
-    { id: "bob", label: "Melena", icon: "content_cut" },
+    { id: "long", icon: "straighten" },
+    { id: "curly", icon: "waves" },
+    { id: "pigtails", icon: "diversity_1" },
+    { id: "bob", icon: "content_cut" },
   ],
   neutral: [
-    { id: "medium", label: "Medio", icon: "straighten" },
-    { id: "curly", label: "Rizado", icon: "waves" },
-    { id: "short", label: "Corto", icon: "content_cut" },
+    { id: "medium", icon: "straighten" },
+    { id: "curly", icon: "waves" },
+    { id: "short", icon: "content_cut" },
   ],
 };
 

@@ -31,7 +31,7 @@ export default function Step2CharacterCreation({
     const current = character.interests;
     if (current.includes(id)) {
       onUpdateCharacter({ interests: current.filter((i) => i !== id) });
-    } else if (current.length < 5) {
+    } else {
       onUpdateCharacter({ interests: [...current, id] });
     }
   };
@@ -90,6 +90,7 @@ export default function Step2CharacterCreation({
                       onUpdateCharacter({ name: e.target.value })
                     }
                     placeholder={t("namePlaceholder")}
+                    maxLength={50}
                     className="w-full h-12 px-5 rounded-[16px] border-2 border-transparent bg-white shadow-sm group-hover:shadow-md focus:border-create-primary focus:ring-0 transition-all outline-none placeholder:text-gray-300 text-lg font-bold text-create-text"
                   />
                   <span className="material-symbols-outlined absolute right-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-create-primary transition-colors">
@@ -109,6 +110,7 @@ export default function Step2CharacterCreation({
                       onUpdateCharacter({ city: e.target.value })
                     }
                     placeholder={t("cityPlaceholder")}
+                    maxLength={100}
                     className="w-full h-12 px-5 rounded-[16px] border-2 border-transparent bg-white shadow-sm group-hover:shadow-md focus:border-create-primary focus:ring-0 transition-all outline-none placeholder:text-gray-300 text-lg font-bold text-create-text"
                   />
                   <span className="material-symbols-outlined absolute right-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-create-primary transition-colors">
@@ -322,6 +324,7 @@ export default function Step2CharacterCreation({
                     onUpdateCharacter({ specialTrait: e.target.value })
                   }
                   placeholder={t("specialTraitPlaceholder")}
+                  maxLength={200}
                   className="w-full h-12 px-5 rounded-[16px] border-2 border-transparent bg-white shadow-sm group-hover:shadow-md focus:border-create-primary focus:ring-0 transition-all outline-none placeholder:text-gray-300 text-base font-medium text-create-text"
                 />
                 <span className="material-symbols-outlined absolute right-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-create-primary transition-colors">
@@ -347,6 +350,7 @@ export default function Step2CharacterCreation({
                     onUpdateCharacter({ favoriteCompanion: e.target.value })
                   }
                   placeholder={t("companionPlaceholder")}
+                  maxLength={100}
                   className="w-full h-12 px-5 rounded-[16px] border-2 border-transparent bg-white shadow-sm group-hover:shadow-md focus:border-create-primary focus:ring-0 transition-all outline-none placeholder:text-gray-300 text-base font-medium text-create-text"
                 />
                 <span className="material-symbols-outlined absolute right-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-create-primary transition-colors">
@@ -376,18 +380,19 @@ export default function Step2CharacterCreation({
             {/* Avatar frame with floating interest icons */}
             <div className="relative mb-4">
               {/* Floating interest icons orbiting the avatar */}
-              {character.interests.slice(0, 4).map((id, i) => {
+              {character.interests.map((id, i) => {
                 const interest = INTERESTS.find((int) => int.id === id);
                 if (!interest) return null;
-                // Position around the circle: top-left, mid-right, bottom-right, bottom-left
-                // Avoid top-right corner where the age badge sits
-                const positions = [
+                // 6 positions around the circle, avoiding top-right where age badge sits
+                const positions: Record<string, string>[] = [
                   { top: "-8px", left: "10px" },
-                  { top: "40%", right: "-18px" },
+                  { top: "15%", right: "-18px" },
+                  { top: "55%", right: "-18px" },
                   { bottom: "8px", right: "2px" },
                   { bottom: "8px", left: "2px" },
+                  { top: "55%", left: "-18px" },
                 ];
-                const pos = positions[i];
+                const pos = positions[i % positions.length];
                 return (
                   <div
                     key={id}
@@ -405,13 +410,16 @@ export default function Step2CharacterCreation({
                 );
               })}
 
-              {/* Outer gradient ring — changes color with interests */}
+              {/* Outer gradient ring — changes color with last selected interest */}
               <div
                 className={`w-64 h-64 rounded-full p-1.5 bg-linear-to-br shadow-xl transition-all duration-500 ${
-                  character.interests.length > 0 &&
-                  INTEREST_RING_COLORS[character.interests[0]]
-                    ? `${INTEREST_RING_COLORS[character.interests[0]].from} ${INTEREST_RING_COLORS[character.interests[0]].via} ${INTEREST_RING_COLORS[character.interests[0]].to} shadow-current/15`
-                    : `${DEFAULT_RING.from} ${DEFAULT_RING.via} ${DEFAULT_RING.to} shadow-create-primary/15`
+                  (() => {
+                    const lastInterest = character.interests[character.interests.length - 1];
+                    const ring = lastInterest ? INTEREST_RING_COLORS[lastInterest] : null;
+                    return ring
+                      ? `${ring.from} ${ring.via} ${ring.to} shadow-current/15`
+                      : `${DEFAULT_RING.from} ${DEFAULT_RING.via} ${DEFAULT_RING.to} shadow-create-primary/15`;
+                  })()
                 }`}
               >
                 <div className="w-full h-full rounded-full overflow-hidden relative">

@@ -5,7 +5,6 @@ import { getStripe, PRICING, ADDONS, type BookFormat, type AddonId } from "@/lib
 export async function POST(request: Request) {
   const supabase = await createClient();
 
-  // Verify authenticated user
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -29,7 +28,7 @@ export async function POST(request: Request) {
   // Validate story exists and belongs to user
   const { data: story, error: storyError } = await supabase
     .from("stories")
-    .select("id, generated_text, characters(name)")
+    .select("id, status, generated_text, characters(name)")
     .eq("id", storyId)
     .eq("user_id", user.id)
     .single();
@@ -44,6 +43,18 @@ export async function POST(request: Request) {
       { status: 400 }
     );
   }
+
+  // Accept both preview and ready stories for purchase
+  if (story.status !== "preview" && story.status !== "ready") {
+    return NextResponse.json(
+      { error: "Story is not ready for purchase" },
+      { status: 400 }
+    );
+  }
+
+  // Determine if format requires shipping
+  const formatConfig = PRICING[format];
+  const requiresShipping = formatConfig.requiresShipping;
 
   // Build line items for Stripe
   const generatedText = story.generated_text as { bookTitle?: string };
@@ -62,45 +73,52 @@ export async function POST(request: Request) {
       price_data: {
         currency: "eur",
         product_data: {
-          name: `${bookTitle} (${PRICING[format].label})`,
-          description: `Libro personalizado para ${characterName}. ${PRICING[format].description}`,
+          name: `${bookTitle} (${formatConfig.label})`,
+          description: `Libro personalizado para ${characterName}. ${formatConfig.description}`,
         },
-        unit_amount: PRICING[format].price,
+        unit_amount: formatConfig.price,
       },
       quantity: 1,
     },
   ];
 
-  // Add selected add-ons
+  // Filter addons: only allow physical-only addons when format requires shipping
+  // Deduplicate to prevent double-charging
   const validAddons: AddonId[] = [];
-  for (const addonId of addonIds) {
-    if (ADDONS[addonId as AddonId]) {
-      const addon = ADDONS[addonId as AddonId];
-      validAddons.push(addonId as AddonId);
-      lineItems.push({
-        price_data: {
-          currency: "eur",
-          product_data: {
-            name: addon.label,
-            description: addon.description,
+  const seenAddons = new Set<string>();
+  if (requiresShipping) {
+    for (const addonId of addonIds) {
+      if (seenAddons.has(addonId)) continue;
+      seenAddons.add(addonId);
+
+      if (ADDONS[addonId as AddonId]) {
+        const addon = ADDONS[addonId as AddonId];
+        validAddons.push(addonId as AddonId);
+        lineItems.push({
+          price_data: {
+            currency: "eur",
+            product_data: {
+              name: addon.label,
+              description: addon.description,
+            },
+            unit_amount: addon.price,
           },
-          unit_amount: addon.price,
-        },
-        quantity: 1,
-      });
+          quantity: 1,
+        });
+      }
     }
   }
 
-  // Calculate totals for DB
   const subtotal =
-    PRICING[format].price +
+    formatConfig.price +
     validAddons.reduce((sum, id) => sum + ADDONS[id].price, 0);
 
   try {
-    // Create Stripe Checkout Session
     const origin = new URL(request.url).origin;
 
-    const session = await getStripe().checkout.sessions.create({
+    // Build Stripe session options — shipping only for physical formats
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const sessionOptions: Record<string, any> = {
       mode: "payment",
       payment_method_types: ["card"],
       line_items: lineItems,
@@ -111,18 +129,23 @@ export async function POST(request: Request) {
         format,
         addons: JSON.stringify(validAddons),
       },
-      shipping_address_collection: {
+      success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}/crear/${storyId}/preview`,
+    };
+
+    if (requiresShipping) {
+      sessionOptions.shipping_address_collection = {
         allowed_countries: [
           "ES", "FR", "DE", "IT", "PT", "GB", "NL", "BE", "AT", "CH",
           "IE", "SE", "DK", "NO", "FI", "PL", "CZ", "GR",
         ],
-      },
-      success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/crear/${storyId}/preview`,
-    });
+      };
+    }
+
+    const session = await getStripe().checkout.sessions.create(sessionOptions);
 
     // Create pending order in DB
-    await supabase.from("orders").insert({
+    const { error: orderError } = await supabase.from("orders").insert({
       user_id: user.id,
       story_id: storyId,
       stripe_checkout_session_id: session.id,
@@ -132,6 +155,19 @@ export async function POST(request: Request) {
       total: subtotal / 100,
       status: "pending",
     });
+
+    if (orderError) {
+      try {
+        await getStripe().checkout.sessions.expire(session.id);
+      } catch {
+        console.error("Failed to expire Stripe session after order insert failure:", session.id);
+      }
+      console.error("Failed to create order:", orderError);
+      return NextResponse.json(
+        { error: "Failed to create order" },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({ url: session.url });
   } catch (err) {

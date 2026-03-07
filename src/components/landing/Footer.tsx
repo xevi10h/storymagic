@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import LogoIcon from "@/components/LogoIcon";
 
 export default function Footer() {
   const t = useTranslations("footer");
@@ -10,7 +11,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="col-span-1 md:col-span-1">
             <div className="mb-6 flex items-center gap-2">
-              <span className="material-symbols-outlined text-2xl text-primary">menu_book</span>
+              <LogoIcon className="h-6 w-6 text-primary" />
               <span className="font-display text-xl font-bold tracking-tight text-white">
                 StoryMagic
               </span>

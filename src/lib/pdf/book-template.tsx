@@ -1,7 +1,8 @@
 /**
  * PDF Book Template — Editorial children's book layout
  *
- * 23-page structure with 12 scenes across 5 layout types:
+ * 24-page structure with 12 scenes across 5 layout types:
+ * (24 pages = multiple of 4, required for print binding)
  *
  * Page  Type              Content
  * ────  ────────────────  ────────────────────────────────
@@ -25,9 +26,10 @@
  * 18    SPLIT             Scene 11 — Breakthrough (triumph)
  * 19    VIGNETTE          Scene 12 — Homecoming (intimate resolution)
  * 20    FINAL             Final message + "Fin"
- * 21    COLOPHON          Credits
- * 22    ENDPAPER          Back endpapers
- * 23    BACK_COVER        Back cover
+ * 21    ABOUT_READER      "About the protagonist" keepsake page
+ * 22    COLOPHON          Credits
+ * 23    ENDPAPER          Back endpapers
+ * 24    BACK_COVER        Back cover
  *
  * IMPORTANT @react-pdf constraints:
  * - SVGs with full-page dimensions cause page overflow → use View-based borders
@@ -334,8 +336,10 @@ export function BookPdf({ input }: { input: BookPdfInput }) {
       <DedicationPage theme={theme} text={story.dedication} senderName={input.senderName} />
       {/* 5-20. Scenes */}
       {scenePages}
-      {/* 21. Final message */}
+      {/* 20. Final message */}
       <FinalPage theme={theme} message={story.finalMessage} characterName={input.characterName} />
+      {/* 21. About the reader — keepsake page */}
+      <AboutReaderPage theme={theme} characterName={input.characterName} characterAge={input.characterAge} />
       {/* 22. Colophon */}
       <ColophonPage theme={theme} characterName={input.characterName} />
       {/* 23. Endpapers */}
@@ -825,6 +829,70 @@ function FinalPage({ theme, message, characterName }: { theme: TemplateTheme; me
           </Text>
 
           <Text style={{ fontFamily: FONTS.display, fontSize: 16, fontWeight: 600, color: theme.accent, marginTop: 8 }}>Fin</Text>
+        </View>
+      </View>
+    </Page>
+  );
+}
+
+// ── About the Reader (keepsake) ──────────────────────────────────────────
+// A personal page where the child's name and age are highlighted.
+// Fills the 24th page slot required for print binding (multiple of 4).
+
+function AboutReaderPage({ theme, characterName, characterAge }: {
+  theme: TemplateTheme; characterName: string; characterAge: number;
+}) {
+  return (
+    <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: COLORS.paper }]}>
+      <FrameBorder color={theme.ornamentColor} inset={BOOK.contentMargin - 5} />
+
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: BOOK.contentMargin + 20 }}>
+        <View style={{ alignItems: "center", maxWidth: BOOK.trimWidth * 0.7 }}>
+          <Text style={{ fontFamily: FONTS.display, fontSize: 9, color: COLORS.textMuted, letterSpacing: 2, marginBottom: 16 }}>
+            SOBRE EL PROTAGONISTA
+          </Text>
+
+          <OrnamentalDivider color={theme.ornamentColor} width={80} />
+
+          <Text style={{ fontFamily: FONTS.display, fontSize: 24, fontWeight: 600, color: theme.accent, marginTop: 20, textAlign: "center" }}>
+            {characterName}
+          </Text>
+
+          <Text style={{ fontFamily: FONTS.body, fontSize: 11, color: COLORS.textMedium, marginTop: 8, textAlign: "center" }}>
+            {characterAge} a{"\u00F1"}os
+          </Text>
+
+          <View style={{ marginTop: 24, marginBottom: 24 }}>
+            <WavyLine color={theme.ornamentColor} width={60} />
+          </View>
+
+          <Text style={{ fontFamily: FONTS.body, fontStyle: "italic", fontSize: 11, color: COLORS.textMedium, textAlign: "center", lineHeight: 1.8 }}>
+            Este libro fue creado especialmente para ti.{"\n"}
+            Recuerda siempre que eres capaz de vivir{"\n"}
+            las aventuras m{"\u00E1"}s incre{"\u00ED"}bles.
+          </Text>
+
+          <View style={{ marginTop: 28 }}>
+            <StarCluster color={COLORS.gold} size={30} />
+          </View>
+
+          {/* Space for the child to draw or write */}
+          <View style={{
+            marginTop: 20,
+            width: BOOK.trimWidth * 0.5,
+            height: 60,
+            borderWidth: 0.5,
+            borderColor: theme.ornamentColor,
+            borderStyle: "dashed",
+            borderRadius: 8,
+            justifyContent: "center",
+            alignItems: "center",
+            opacity: 0.5,
+          }}>
+            <Text style={{ fontFamily: FONTS.body, fontSize: 7, color: COLORS.textLight }}>
+              Dibuja aqu{"\u00ED"} tu momento favorito
+            </Text>
+          </View>
         </View>
       </View>
     </Page>

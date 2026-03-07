@@ -2,6 +2,7 @@
 
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
+import LogoIcon from "@/components/LogoIcon";
 
 interface CreationHeaderProps {
   currentStep?: number;
@@ -35,9 +36,7 @@ export default function CreationHeader({
           </Link>
 
           <Link href="/" className="flex items-center gap-2.5">
-            <span className="material-symbols-outlined text-[28px] text-create-primary">
-              auto_stories
-            </span>
+            <LogoIcon className="h-7 w-7 text-create-primary" />
             <span className="font-display text-lg font-bold tracking-tight text-create-text-dark">
               StoryMagic
             </span>
@@ -98,8 +97,8 @@ export default function CreationHeader({
               href="/"
               className="flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold text-create-text-sub transition-colors hover:bg-create-neutral hover:text-create-text"
             >
-              <span className="material-symbols-outlined text-base">save</span>
-              <span className="hidden sm:inline">{t("saveAndExit")}</span>
+              <span className="material-symbols-outlined text-base">logout</span>
+              <span className="hidden sm:inline">{t("exit")}</span>
             </Link>
           )}
         </div>

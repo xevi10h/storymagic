@@ -1,5 +1,32 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { z } from "zod";
+import type { Json } from "@/lib/database.types";
+
+const VALID_TEMPLATE_IDS = ["space", "forest", "superhero", "pirates", "chef"] as const;
+const VALID_MODES = ["solo", "juntos"] as const;
+const VALID_GENDERS = ["boy", "girl", "neutral"] as const;
+
+const storyInputSchema = z.object({
+  character: z.object({
+    name: z.string().min(1).max(100),
+    gender: z.enum(VALID_GENDERS),
+    age: z.number().int().min(1).max(12),
+    hairColor: z.string().max(20).optional(),
+    skinTone: z.string().max(20).optional(),
+    hairstyle: z.string().max(30).optional(),
+    interests: z.array(z.string().max(50)).max(10).optional(),
+    city: z.string().max(100).optional(),
+    specialTrait: z.string().max(300).optional(),
+    favoriteCompanion: z.string().max(200).optional(),
+  }),
+  templateId: z.enum(VALID_TEMPLATE_IDS),
+  creationMode: z.enum(VALID_MODES),
+  decisions: z.record(z.string(), z.unknown()).optional().default({}),
+  dedication: z.string().max(500).optional(),
+  senderName: z.string().max(100).optional(),
+  ending: z.string().max(100).optional(),
+});
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -13,16 +40,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const body = await request.json();
-  const { character, templateId, creationMode, decisions, dedication, senderName, ending } = body;
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
 
-  // Validate required fields
-  if (!character?.name || !templateId || !creationMode) {
+  const parsed = storyInputSchema.safeParse(body);
+  if (!parsed.success) {
     return NextResponse.json(
-      { error: "Missing required fields" },
+      { error: "Invalid input", details: parsed.error.flatten().fieldErrors },
       { status: 400 }
     );
   }
+
+  const { character, templateId, creationMode, decisions, dedication, senderName, ending } = parsed.data;
 
   // 1. Upsert character (reuse if same name + user)
   const { data: existingCharacter } = await supabase
@@ -34,20 +67,25 @@ export async function POST(request: Request) {
 
   let characterId: string;
 
+  // Shared optional fields (undefined = skip on update, null = clear on insert)
+  const optionalFields = {
+    hairstyle: character.hairstyle || "short",
+    interests: character.interests ?? [],
+    city: character.city || null,
+    special_trait: character.specialTrait || null,
+    favorite_companion: character.favoriteCompanion || null,
+  };
+
   if (existingCharacter) {
-    // Update existing character
+    // Update existing character — all fields optional in update type
     const { error: updateError } = await supabase
       .from("characters")
       .update({
-        gender: character.gender,
+        gender: character.gender as string,
         age: character.age,
-        hair_color: character.hairColor,
-        skin_tone: character.skinTone,
-        hairstyle: character.hairstyle || "short",
-        interests: character.interests,
-        city: character.city || null,
-        special_trait: character.specialTrait || null,
-        favorite_companion: character.favoriteCompanion || null,
+        hair_color: character.hairColor || undefined,
+        skin_tone: character.skinTone || undefined,
+        ...optionalFields,
       })
       .eq("id", existingCharacter.id);
 
@@ -59,21 +97,17 @@ export async function POST(request: Request) {
     }
     characterId = existingCharacter.id;
   } else {
-    // Create new character
+    // Create new character — hair_color & skin_tone are required strings
     const { data: newCharacter, error: insertError } = await supabase
       .from("characters")
       .insert({
         user_id: user.id,
         name: character.name,
-        gender: character.gender,
+        gender: character.gender as string,
         age: character.age,
-        hair_color: character.hairColor,
-        skin_tone: character.skinTone,
-        hairstyle: character.hairstyle || "short",
-        interests: character.interests,
-        city: character.city || null,
-        special_trait: character.specialTrait || null,
-        favorite_companion: character.favoriteCompanion || null,
+        hair_color: character.hairColor || "brown",
+        skin_tone: character.skinTone || "medium",
+        ...optionalFields,
       })
       .select("id")
       .single();
@@ -95,7 +129,7 @@ export async function POST(request: Request) {
       character_id: characterId,
       template_id: templateId,
       creation_mode: creationMode,
-      story_decisions: decisions || {},
+      story_decisions: (decisions || {}) as Json,
       dedication_text: dedication || null,
       sender_name: senderName || null,
       ending_choice: ending || null,

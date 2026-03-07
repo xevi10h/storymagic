@@ -12,6 +12,7 @@ import {
   getEndingNarrative,
   getAtmosphereNarrative,
 } from "@/lib/create-store";
+import { generateMockStory } from "./mock-story";
 
 export interface GeneratedScene {
   sceneNumber: number;
@@ -69,7 +70,7 @@ const PROVIDERS: Record<string, ProviderConfig> = {
         },
         body: JSON.stringify({
           model: "claude-sonnet-4-20250514",
-          max_tokens: 8192,
+          max_tokens: 16000,
           messages: [{ role: "user", content: prompt }],
         }),
       },
@@ -152,6 +153,13 @@ const PROVIDER_ENV_KEYS = [
   { envKey: "CEREBRAS_API_KEY", providerId: "cerebras" },
   { envKey: "GEMINI_API_KEY", providerId: "gemini" },
 ] as const;
+
+function hasAnyProvider(): boolean {
+  return PROVIDER_ENV_KEYS.some(({ envKey }) => {
+    const key = process.env[envKey];
+    return key && !key.includes("your_") && !key.includes("_here");
+  });
+}
 
 function getProvider(): { config: ProviderConfig; apiKey: string } {
   for (const { envKey, providerId } of PROVIDER_ENV_KEYS) {
@@ -247,6 +255,16 @@ export function buildCharacterVisualDescription(input: StoryInput): string {
 // --- Story generation ---
 
 export async function generateStory(input: StoryInput): Promise<GeneratedStory> {
+  const mockMode = process.env.MOCK_MODE === "true";
+
+  if (mockMode || !hasAnyProvider()) {
+    const reason = mockMode ? "MOCK_MODE=true" : "no LLM API key configured";
+    console.log(`[StoryGen] MOCK MODE — ${reason}`);
+    console.log(`[StoryGen] Returning mock story for "${input.childName}" (${input.templateId})`);
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    return generateMockStory(input);
+  }
+
   const { config: provider, apiKey } = getProvider();
 
   const template = getTemplateConfig(input.templateId);
@@ -351,7 +369,11 @@ Respond ONLY with the JSON object, no markdown formatting, no code blocks.`;
 
   console.log(`[StoryGen] Using provider: ${provider.name}`);
 
-  const response = await fetch(url, init);
+  // 60s timeout — LLM calls should not hang forever
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 60_000);
+
+  const response = await fetch(url, { ...init, signal: controller.signal }).finally(() => clearTimeout(timeout));
 
   if (!response.ok) {
     const errorBody = await response.text();
@@ -372,10 +394,32 @@ Respond ONLY with the JSON object, no markdown formatting, no code blocks.`;
     .replace(/\s*```$/i, "")
     .trim();
 
-  const parsed: GeneratedStory = JSON.parse(cleaned);
+  let parsed: GeneratedStory;
+  try {
+    parsed = JSON.parse(cleaned);
+  } catch (jsonError) {
+    console.error(`[StoryGen] JSON parse failed from ${provider.name}. Raw content (first 500 chars):`, cleaned.slice(0, 500));
+    throw new Error(`Invalid JSON response from ${provider.name}: ${jsonError instanceof Error ? jsonError.message : "parse error"}`);
+  }
 
-  if (!parsed.bookTitle || !parsed.scenes || parsed.scenes.length < 12) {
-    throw new Error(`Invalid story structure from ${provider.name}`);
+  if (!parsed.bookTitle || !parsed.scenes || !Array.isArray(parsed.scenes)) {
+    throw new Error(`Invalid story structure from ${provider.name}: missing bookTitle or scenes`);
+  }
+
+  if (parsed.scenes.length < 12) {
+    throw new Error(`${provider.name} returned only ${parsed.scenes.length} scenes (expected 12)`);
+  }
+
+  // Truncate to exactly 12 scenes if LLM returned more
+  if (parsed.scenes.length > 12) {
+    parsed.scenes = parsed.scenes.slice(0, 12);
+  }
+
+  // Validate scene numbers are sequential 1-12
+  for (let i = 0; i < 12; i++) {
+    if (parsed.scenes[i].sceneNumber !== i + 1) {
+      parsed.scenes[i].sceneNumber = i + 1;
+    }
   }
 
   return parsed;

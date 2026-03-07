@@ -249,26 +249,28 @@ export default function ShowcasePage() {
               <PageContent page={page} templateId={story.template_id} />
 
               {/* Navigation overlays */}
-              <button
-                onClick={goToPrevPage}
-                disabled={currentPage === 0}
-                className="absolute left-0 top-0 bottom-0 flex w-1/5 items-center justify-start pl-3 opacity-0 transition-opacity hover:opacity-100 disabled:hidden"
-                aria-label="Previous page"
-              >
-                <span className="material-symbols-outlined rounded-full bg-white/90 p-2 text-xl text-text-muted shadow-md">
-                  chevron_left
-                </span>
-              </button>
-              <button
-                onClick={goToNextPage}
-                disabled={currentPage === totalPages - 1}
-                className="absolute right-0 top-0 bottom-0 flex w-1/5 items-center justify-end pr-3 opacity-0 transition-opacity hover:opacity-100 disabled:hidden"
-                aria-label="Next page"
-              >
-                <span className="material-symbols-outlined rounded-full bg-white/90 p-2 text-xl text-text-muted shadow-md">
-                  chevron_right
-                </span>
-              </button>
+              {currentPage > 0 && (
+                <button
+                  onClick={goToPrevPage}
+                  className="absolute left-0 top-0 bottom-0 flex w-1/5 items-center justify-start pl-3 opacity-50 transition-opacity hover:opacity-100"
+                  aria-label={t("previous")}
+                >
+                  <span className="material-symbols-outlined rounded-full bg-white/90 p-2 text-xl text-text-muted shadow-md">
+                    chevron_left
+                  </span>
+                </button>
+              )}
+              {currentPage < totalPages - 1 && (
+                <button
+                  onClick={goToNextPage}
+                  className="absolute right-0 top-0 bottom-0 flex w-1/5 items-center justify-end pr-3 opacity-50 transition-opacity hover:opacity-100"
+                  aria-label={t("next")}
+                >
+                  <span className="material-symbols-outlined rounded-full bg-white/90 p-2 text-xl text-text-muted shadow-md">
+                    chevron_right
+                  </span>
+                </button>
+              )}
             </div>
 
             {/* Page dots */}

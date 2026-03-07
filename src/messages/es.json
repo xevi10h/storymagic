@@ -148,7 +148,8 @@
       "noAccount": "¿No tienes cuenta?",
       "createFree": "Crea una gratis",
       "backHome": "← Volver al inicio",
-      "invalidCredentials": "Email o contraseña incorrectos"
+      "invalidCredentials": "Email o contraseña incorrectos",
+      "authFailed": "No se pudo completar la autenticación. Inténtalo de nuevo."
     },
     "signup": {
       "subtitle": "Crea una cuenta para empezar tu aventura",
@@ -231,12 +232,14 @@
       "solo": {
         "title": "Creo yo solo/a",
         "subtitle": "Sorpresa Mágica",
-        "description": "Diseña el cuento en secreto para dárselo como un regalo sorpresa inolvidable. Tú tienes el control total de la historia y los detalles."
+        "description": "Diseña el cuento en secreto para dárselo como un regalo sorpresa inolvidable. Tú tienes el control total de la historia y los detalles.",
+        "imageAlt": "Niño leyendo un libro concentrado"
       },
       "juntos": {
         "title": "Creamos juntos",
         "subtitle": "Aventura Compartida",
-        "description": "Una experiencia interactiva diseñada para disfrutar en familia. Elige personajes, colores y giros de la trama junto a tu peque."
+        "description": "Una experiencia interactiva diseñada para disfrutar en familia. Elige personajes, colores y giros de la trama junto a tu peque.",
+        "imageAlt": "Padre e hijo leyendo juntos un libro"
       }
     },
     "step2": {
@@ -284,6 +287,7 @@
       "solo": {
         "title": "El Libro de las Mil Decisiones",
         "subtitle": "Personaliza los detalles de la historia de <highlight>{name}</highlight> y observa cómo cambia la magia.",
+        "defaultName": "tu héroe",
         "companionTab": "Compañero",
         "atmosphereTab": "Atmósfera",
         "twistTab": "El Giro",
@@ -312,6 +316,7 @@
     "step5": {
       "title": "El Gran Final",
       "subtitle": "¿Cómo quieres que termine la aventura de <highlight>{name}</highlight>? Tú tienes la última palabra.",
+      "defaultName": "tu héroe",
       "dedicationLabel": "Dedicatoria Especial",
       "dedicationPlaceholder": "Querido {name},\nEscribí este cuento para recordarte que siempre puedes alcanzar las estrellas.\nCon amor, Mamá.",
       "senderPlaceholder": "Tu nombre (ej: Mamá, Papá, Abuela...)",
@@ -330,9 +335,9 @@
       "creatingStory": "Creando tu historia...",
       "completed": "completado",
       "waitMessage": "Esto puede tardar unos segundos. Estamos escribiendo cada escena con cariño.",
-      "readyTitle": "Tu cuento está listo",
-      "readyDescription": "Hemos creado una historia única con 8 escenas personalizadas. ¡Hora de verla!",
-      "viewStory": "Ver mi cuento",
+      "readyTitle": "¡Tu preview está listo!",
+      "readyDescription": "Hemos preparado un adelanto de tu cuento. ¡Descúbrelo ahora!",
+      "viewStory": "Ver preview de mi cuento",
       "createAnother": "Crear otro cuento",
       "errorTitle": "Algo no ha ido bien",
       "errorDefault": "Ha ocurrido un error durante la generación.",
@@ -349,7 +354,8 @@
         "inkPen": "Preparando la tinta mágica...",
         "menuBook": "Encuadernando tu aventura...",
         "autoAwesome": "Añadiendo un toque de magia final..."
-      }
+      },
+      "goBack": "Volver atrás"
     },
     "preview": {
       "loadingStory": "Cargando tu cuento...",
@@ -359,16 +365,25 @@
       "personalizedStory": "Una historia personalizada para",
       "createdFor": "Una historia creada especialmente para",
       "end": "Fin",
-      "downloadPdf": "Descargar PDF de vista previa",
+      "previewBadge": "Preview",
+      "lockedTitle": "La aventura continúa...",
+      "lockedDescription": "Desbloquea el cuento completo para descubrir cómo sigue la historia.",
+      "lockedCta": "Desbloquear cuento",
+      "downloadPdf": "Descargar PDF completo",
       "generatingPdf": "Generando PDF...",
-      "downloadHint": "Descarga una vista previa del cuento en formato PDF",
-      "checkoutTitle": "Haz realidad este cuento",
-      "checkoutSubtitle": "Elige el formato y los extras para tu libro personalizado",
+      "downloadHint": "Descarga el cuento completo en formato PDF",
+      "keyboardHint": "Usa las flechas ← → del teclado para navegar",
+      "swipeHint": "Desliza para pasar de página",
+      "clickToFlip": "Haz clic en las páginas para pasar o arrastra para girar la vista",
+      "pdfError": "Error al generar el PDF. Inténtalo de nuevo.",
+      "paywallTitle": "¿Quieres descubrir cómo sigue?",
+      "paywallDescription": "La aventura de {name} acaba de empezar. Desbloquea el cuento completo con las 12 escenas ilustradas.",
+      "instantDelivery": "Instantáneo",
       "optionalExtras": "Extras opcionales",
       "total": "Total",
       "processing": "Procesando...",
-      "buyNow": "Comprar ahora — {price} €",
-      "paymentSecure": "Pago seguro con Stripe. Envío a toda España y Europa.",
+      "buyNow": "Desbloquear cuento — {price} €",
+      "paymentSecure": "Pago seguro con Stripe. PDF instantáneo incluido en todos los formatos.",
       "checkoutError": "Error al procesar el pago",
       "orSaveForLater": "o guárdalo para más adelante",
       "saveForLater": "Guardar y crear cuenta",
@@ -379,16 +394,39 @@
   },
   "checkout": {
     "success": {
-      "title": "¡Pedido confirmado!",
-      "descriptionWithOrder": "Tu cuento \"{title}\" para {name} está en camino.",
-      "descriptionGeneric": "Tu cuento personalizado está en camino.",
-      "nextStepsTitle": "Próximos pasos",
+      "title": "¡Tu cuento está listo!",
+      "descriptionWithOrder": "El cuento \"{title}\" para {name} ya es tuyo.",
+      "descriptionGeneric": "Tu cuento personalizado está listo.",
+      "verifyingPayment": "Verificando tu pago...",
+      "verifyingDescription": "Estamos confirmando tu compra. Solo un momento.",
+      "completingBook": "Completando tu libro...",
+      "completingHint": "Generando las ilustraciones restantes de tu cuento",
+      "completionMessages": {
+        "palette": "Eligiendo los colores perfectos...",
+        "brush": "Las ilustraciones cobran vida...",
+        "autoStories": "Las páginas se llenan de magia...",
+        "forest": "Pintando los escenarios...",
+        "star": "Añadiendo detalles mágicos...",
+        "inkPen": "El tintero mágico trabaja...",
+        "menuBook": "Encuadernando tu aventura...",
+        "autoAwesome": "Últimos retoques de magia..."
+      },
+      "completionErrorTitle": "No se ha podido completar el libro",
+      "completionErrorDescription": "Tu pago se ha procesado correctamente, pero hubo un problema generando las ilustraciones. Puedes reintentar o contactarnos.",
+      "retryCompletion": "Reintentar",
+      "goToDashboard": "Ir a mi biblioteca",
+      "pdfReady": "Tu PDF está listo",
+      "pdfReadyDescription": "Descarga el cuento completo en alta calidad.",
+      "viewBook": "Ver libro",
+      "nextStepsTitle": "Libro físico en camino",
       "nextStepsDescription": "Recibirás un email de confirmación con el seguimiento del envío.",
       "deliveryTitle": "Tiempo de entrega",
       "deliveryDescription": "España: 5-7 días laborables. Europa: 7-12 días laborables.",
       "formatLabel": "Formato: {format}",
+      "formatDigital": "PDF Digital",
       "formatHardcover": "Tapa dura",
       "formatSoftcover": "Tapa blanda",
+      "instantDownload": "Descarga instantánea disponible",
       "premiumPrint": "Impresión premium en papel Munken 170g",
       "createAnother": "Crear otro cuento",
       "viewOrders": "Ver mis pedidos"
@@ -408,23 +446,28 @@
     "storyStatus": {
       "draft": "Borrador",
       "generating": "Generando...",
+      "preview": "Preview listo",
+      "completing": "Completando...",
       "ready": "Listo",
       "ordered": "Pedido"
     },
     "storyActions": {
       "viewStory": "Ver cuento",
+      "viewPreview": "Ver preview",
       "viewProgress": "Ver progreso",
       "continue": "Continuar"
     },
     "orderStatus": {
       "pending": "Pendiente",
       "paid": "Pagado",
+      "completed": "Completado",
       "producing": "En producción",
       "shipped": "Enviado",
       "delivered": "Entregado",
       "cancelled": "Cancelado"
     },
     "orderFormat": {
+      "digital_pdf": "PDF Digital",
       "hardcover": "Tapa dura",
       "softcover": "Tapa blanda"
     },
@@ -500,16 +543,20 @@
     "signOut": "Cerrar sesión"
   },
   "pricing": {
+    "digital_pdf": {
+      "label": "PDF Digital",
+      "description": "Descarga instantánea en alta calidad"
+    },
     "softcover": {
       "label": "Tapa blanda",
-      "description": "Impresión premium en papel Munken 170g"
+      "description": "Impresión premium en papel Munken 170g. Incluye PDF digital"
     },
     "hardcover": {
       "label": "Tapa dura",
-      "description": "Encuadernación premium con cubierta rígida"
+      "description": "Encuadernación premium con cubierta rígida. Incluye PDF digital"
     },
     "addons": {
-      "adventurePack": {
+      "adventure_pack": {
         "label": "Pack Aventura Artesanal",
         "description": "Convierte el regalo en toda una experiencia",
         "badge": "Más popular",
@@ -519,16 +566,7 @@
           "Marcapáginas de madera grabado con su nombre"
         ]
       },
-      "digitalPdf": {
-        "label": "PDF Digital (instantáneo)",
-        "description": "Recíbelo al momento, léelo en cualquier pantalla",
-        "details": [
-          "Descarga inmediata tras la compra",
-          "Formato PDF en alta calidad (300 DPI)",
-          "Perfecto para leer en tablet, ordenador o móvil"
-        ]
-      },
-      "extraCopy": {
+      "extra_copy": {
         "label": "Copia extra (tapa blanda)",
         "description": "Una copia adicional para regalar o tener en casa de los abuelos",
         "details": [
@@ -550,7 +588,9 @@
       "space": "Espacio",
       "cooking": "Cocina",
       "reading": "Lectura",
-      "superheroes": "Superhéroes"
+      "superheroes": "Superhéroes",
+      "castles": "Castillos",
+      "dinosaurs": "Dinosaurios"
     },
     "hairstyles": {
       "short": "Corto",
@@ -562,7 +602,227 @@
       "mohawk": "Cresta",
       "afro": "Afro",
       "bob": "Media melena",
-      "pigtails": "Coletas"
+      "pigtails": "Coletas",
+      "spiky": "De punta",
+      "buzz": "Rapado",
+      "medium": "Medio"
+    },
+    "templates": {
+      "space": {
+        "title": "La Gran Aventura Espacial",
+        "description": "Un viaje a las estrellas donde descubrirán planetas desconocidos y harán amigos alienígenas.",
+        "ageRange": "4-7 años",
+        "previewChapterTitle": "La Nave de los Sueños",
+        "decisions": {
+          "encounter": {
+            "question": "¿Qué descubre {name} en el planeta desconocido?",
+            "robot": { "title": "Robot Amigable", "subtitle": "Beep boop, ¿quieres ser mi amigo?" },
+            "crystal": { "title": "Cristal Luminoso", "subtitle": "Brilla con los colores del arcoíris" },
+            "ship": { "title": "Nave Abandonada", "subtitle": "¿Quién la dejó aquí?" }
+          },
+          "companion": {
+            "question": "¿Quién acompaña a {name} en esta misión espacial?",
+            "alien": { "title": "Alien Simpático", "subtitle": "Tiene tres ojos y una sonrisa enorme" },
+            "copilot-robot": { "title": "Robot Copiloto", "subtitle": "El mejor navegante de la galaxia" },
+            "star": { "title": "Estrella Guía", "subtitle": "Una estrellita que habla y señala el camino" }
+          },
+          "challenge": {
+            "question": "¿Qué peligro aparece en la misión de {name}?",
+            "asteroids": { "title": "Tormenta de Asteroides", "subtitle": "¡Esquiva y vuela!" },
+            "shrinking-planet": { "title": "Planeta que se Encoge", "subtitle": "¡Hay que salvar a los habitantes!" },
+            "black-hole": { "title": "Agujero Negro Travieso", "subtitle": "¡Absorbe todo lo divertido!" }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "stellar-dawn": "Amanecer Estelar",
+            "eclipse": "Eclipse Solar",
+            "infinite-night": "Noche Infinita"
+          },
+          "setting": {
+            "nebula": "Nebulosa Colorida",
+            "asteroid-belt": "Cinturón de Asteroides",
+            "unknown-moon": "Luna Desconocida"
+          }
+        },
+        "endings": {
+          "triumphant-return": { "title": "Regreso Triunfal", "description": "Vuelve a la Tierra con un regalo del espacio y una historia increíble que contar." },
+          "galactic-party": { "title": "Fiesta Intergaláctica", "description": "Todos los amigos alienígenas celebran con música cósmica y comida de estrellas." },
+          "stargazing": { "title": "Acampada Estelar", "description": "Se tumba en un planeta suave a mirar las constelaciones y recordar la aventura." }
+        }
+      },
+      "forest": {
+        "title": "El Bosque Mágico",
+        "description": "Secretos entre los árboles antiguos y criaturas fantásticas que necesitan ayuda.",
+        "ageRange": "3-6 años",
+        "previewChapterTitle": "El Bosque de los Susurros",
+        "decisions": {
+          "encounter": {
+            "question": "¿Qué encuentra {name} entre los árboles?",
+            "dragon": { "title": "Dragón Dormido", "subtitle": "Zzz... bajo el árbol antiguo" },
+            "treasure": { "title": "Cofre Mágico", "subtitle": "¡Lleno de polvo de hadas!" },
+            "door": { "title": "Puerta Secreta", "subtitle": "¿A dónde llevará?" }
+          },
+          "companion": {
+            "question": "¿Quién acompaña a {name} en el bosque?",
+            "fox": { "title": "Zorro Sabio", "subtitle": "Conoce todos los secretos del bosque" },
+            "fairy": { "title": "Hada Traviesa", "subtitle": "Pequeñita pero llena de magia" },
+            "owl": { "title": "Búho Anciano", "subtitle": "Ha visto pasar mil lunas" }
+          },
+          "challenge": {
+            "question": "¿Qué obstáculo aparece en el camino de {name}?",
+            "river": { "title": "Río Crecido", "subtitle": "El agua sube y no hay puente" },
+            "fog": { "title": "Niebla Encantada", "subtitle": "No se ve nada... ¿o sí?" },
+            "talking-tree": { "title": "Árbol Parlante", "subtitle": "Pide algo a cambio de dejar pasar" }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "golden-dawn": "Amanecer Dorado",
+            "pink-sunset": "Atardecer Rosado",
+            "full-moon": "Noche de Luna Llena"
+          },
+          "setting": {
+            "enchanted-clearing": "Claro Encantado",
+            "crystal-cave": "Cueva de Cristales",
+            "hidden-waterfall": "Cascada Escondida"
+          }
+        },
+        "endings": {
+          "clearing-celebration": { "title": "Fiesta en el Claro", "description": "Todas las criaturas del bosque celebran con música y baile entre luciérnagas." },
+          "magic-seed": { "title": "La Semilla Mágica", "description": "El bosque regala una semilla especial para plantar en casa y recordar la aventura." },
+          "moss-rest": { "title": "Descanso en el Musgo", "description": "Se tumba en un lecho de musgo a escuchar los susurros del bosque bajo las estrellas." }
+        }
+      },
+      "superhero": {
+        "title": "Superhéroe por un Día",
+        "description": "¡A salvar la ciudad! Descubre superpoderes ocultos y aprende el valor de la valentía.",
+        "ageRange": "5-8 años",
+        "previewChapterTitle": "El Despertar del Héroe",
+        "decisions": {
+          "encounter": {
+            "question": "¿Qué despierta los superpoderes de {name}?",
+            "mask": { "title": "Máscara Misteriosa", "subtitle": "Aparece de la nada con un brillo especial" },
+            "help-call": { "title": "Llamada de Auxilio", "subtitle": "¡Alguien necesita ayuda urgente!" },
+            "power-ray": { "title": "Rayo de Poder", "subtitle": "Un destello que cambia todo" }
+          },
+          "companion": {
+            "question": "¿Quién es el compañero de equipo de {name}?",
+            "hero-dog": { "title": "Perro Superhéroe", "subtitle": "¡Con capa y todo!" },
+            "best-friend": { "title": "Mejor Amigo/a", "subtitle": "Juntos son un equipo imparable" },
+            "helper-robot": { "title": "Robot Ayudante", "subtitle": "Tiene herramientas para todo" }
+          },
+          "challenge": {
+            "question": "¿Qué villano amenaza la ciudad de {name}?",
+            "shadow": { "title": "El Villano Sombra", "subtitle": "Quiere apagar todas las luces de la ciudad" },
+            "storm": { "title": "Tormenta Caótica", "subtitle": "El clima se ha vuelto loco" },
+            "laugh-thief": { "title": "El Ladrón de Risas", "subtitle": "¡Nadie puede reír!" }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "heroic-dawn": "Amanecer Heroico",
+            "epic-noon": "Mediodía Épico",
+            "watch-night": "Noche de Vigilancia"
+          },
+          "setting": {
+            "city-center": "Centro de la Ciudad",
+            "secret-lair": "Guarida Secreta",
+            "rooftops": "Tejados bajo la Luna"
+          }
+        },
+        "endings": {
+          "hero-parade": { "title": "Desfile Heroico", "description": "La ciudad celebra con un gran desfile y todos gritan el nombre del héroe." },
+          "secret-identity": { "title": "Identidad Secreta", "description": "Se quita la capa, sonríe, y vuelve a ser simplemente {name}." },
+          "hero-feast": { "title": "Banquete de Héroes", "description": "Todos los personajes salvados preparan una fiesta sorpresa de agradecimiento." }
+        }
+      },
+      "pirates": {
+        "title": "Piratas del Mar",
+        "description": "En busca del tesoro perdido navegando los siete mares con una tripulación muy divertida.",
+        "ageRange": "4-8 años",
+        "previewChapterTitle": "La Isla del Capitán",
+        "decisions": {
+          "encounter": {
+            "question": "¿Qué descubre {name} en la isla misteriosa?",
+            "treasure-map": { "title": "Mapa del Tesoro", "subtitle": "¡X marca el lugar!" },
+            "talking-parrot": { "title": "Loro Parlanchín", "subtitle": "Cuenta historias de aventuras pasadas" },
+            "mystery-island": { "title": "Cueva Submarina", "subtitle": "Escondida bajo las olas" }
+          },
+          "companion": {
+            "question": "¿Quién forma parte de la tripulación de {name}?",
+            "monkey": { "title": "Mono Travieso", "subtitle": "Siempre roba los plátanos del capitán" },
+            "mermaid": { "title": "Sirena Amistosa", "subtitle": "Conoce todos los secretos del mar" },
+            "veteran-pirate": { "title": "Pirata Veterano", "subtitle": "Con parche, pata de palo y corazón de oro" }
+          },
+          "challenge": {
+            "question": "¿Qué peligro acecha a la tripulación de {name}?",
+            "kraken": { "title": "Kraken Gigante", "subtitle": "¡Tentáculos por todas partes!" },
+            "sea-storm": { "title": "Tormenta Marina", "subtitle": "Olas enormes y viento feroz" },
+            "sinking-island": { "title": "Isla que se Hunde", "subtitle": "¡Se hunde poco a poco!" }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "sea-dawn": "Amanecer en Alta Mar",
+            "tropical-sunset": "Atardecer Tropical",
+            "storm-night": "Noche de Tormenta"
+          },
+          "setting": {
+            "open-sea": "Mar Abierto",
+            "desert-island": "Isla Desierta",
+            "underwater-cave": "Cueva Submarina"
+          }
+        },
+        "endings": {
+          "true-treasure": { "title": "El Verdadero Tesoro", "description": "Descubren que el verdadero tesoro son los amigos que hicieron en el viaje." },
+          "paradise-island": { "title": "Isla Paradisíaca", "description": "Anclan en una playa de arena dorada para descansar y disfrutar." },
+          "pirate-party": { "title": "Fiesta Pirata", "description": "Gran celebración en el barco con música, baile y pastel de coco." }
+        }
+      },
+      "chef": {
+        "title": "El Chef Más Pequeño",
+        "description": "Una cocina llena de magia donde los ingredientes cobran vida y bailan en la olla.",
+        "ageRange": "2-5 años",
+        "previewChapterTitle": "La Cocina Encantada",
+        "decisions": {
+          "encounter": {
+            "question": "¿Qué descubre {name} en la cocina mágica?",
+            "secret-recipe": { "title": "Receta Secreta", "subtitle": "Un libro viejo con una página que brilla" },
+            "living-ingredient": { "title": "Ingrediente Vivo", "subtitle": "¡La zanahoria puede hablar!" },
+            "enchanted-kitchen": { "title": "Cocina Encantada", "subtitle": "Los utensilios se mueven solos" }
+          },
+          "companion": {
+            "question": "¿Quién ayuda a {name} en la cocina?",
+            "singing-spoon": { "title": "Cuchara Cantarina", "subtitle": "Canta mientras remueve la sopa" },
+            "chef-mouse": { "title": "Ratón Chef", "subtitle": "Pequeño pero con un paladar increíble" },
+            "magic-grandma": { "title": "Abuela Mágica", "subtitle": "Sus recetas tienen un ingrediente secreto: amor" }
+          },
+          "challenge": {
+            "question": "¿Qué problema surge en la cocina de {name}?",
+            "rebel-ingredients": { "title": "Ingredientes Rebeldes", "subtitle": "¡No quieren entrar en la olla!" },
+            "growing-cake": { "title": "Pastel Gigante", "subtitle": "¡No para de crecer!" },
+            "tiny-kitchen": { "title": "Cocina Diminuta", "subtitle": "¡Todo se hace pequeñito!" }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "magic-breakfast": "Desayuno Mágico",
+            "special-snack": "Merienda Especial",
+            "gala-dinner": "Cena de Gala"
+          },
+          "setting": {
+            "home-kitchen": "Cocina de Casa",
+            "enchanted-restaurant": "Restaurante Encantado",
+            "cloud-bakery": "Pastelería de las Nubes"
+          }
+        },
+        "endings": {
+          "grand-feast": { "title": "Gran Banquete", "description": "Todos prueban la receta mágica y es la más deliciosa del mundo." },
+          "secret-recipe-kept": { "title": "La Receta Secreta", "description": "Guarda la receta en un libro especial para cocinar siempre que quiera." },
+          "cooking-together": { "title": "Todos a Cocinar", "description": "Todos los personajes cocinan juntos la receta más grande del mundo." }
+        }
+      }
     }
   },
   "showcase": {

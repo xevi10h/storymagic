@@ -21,16 +21,20 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // Fetch order by checkout session ID
+  // Fetch order by checkout session ID — only return paid orders
   const { data: order, error } = await supabase
     .from("orders")
-    .select("format, story_id, stories(generated_text, characters(name))")
+    .select("format, status, story_id, stories(generated_text, characters(name))")
     .eq("stripe_checkout_session_id", sessionId)
     .eq("user_id", user.id)
     .single();
 
   if (error || !order) {
     return NextResponse.json({ error: "Order not found" }, { status: 404 });
+  }
+
+  if (order.status !== "paid") {
+    return NextResponse.json({ error: "Order not yet paid" }, { status: 402 });
   }
 
   const stories = order.stories as {

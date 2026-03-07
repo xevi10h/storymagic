@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
+import LogoIcon from "@/components/LogoIcon";
 
 export default function ResetPasswordPage() {
   const t = useTranslations("auth.resetPassword");
@@ -71,9 +72,7 @@ export default function ResetPasswordPage() {
         {/* Logo */}
         <div className="mb-8 text-center">
           <Link href="/" className="inline-flex items-center gap-2">
-            <span className="material-symbols-outlined text-4xl text-primary">
-              menu_book
-            </span>
+            <LogoIcon className="h-10 w-10 text-primary" />
             <span className="font-display text-3xl font-bold text-secondary">
               StoryMagic
             </span>

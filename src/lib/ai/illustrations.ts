@@ -9,6 +9,7 @@
 //   2. Identical character description prepended to every prompt (text reference)
 
 import crypto from "crypto";
+import { getMockIllustrationUrl } from "./mock-story";
 
 const RECRAFT_BASE = "https://external.api.recraft.ai/v1";
 const RECRAFT_GENERATE_URL = `${RECRAFT_BASE}/images/generations`;
@@ -73,14 +74,16 @@ async function generateWithRetry(
   prompt: string,
   apiToken: string,
   styleId?: string,
-  maxRetries = 1,
+  maxRetries = 2,
 ): Promise<string> {
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
       return await generateWithRecraft(prompt, apiToken, styleId);
     } catch (error) {
       if (attempt === maxRetries) throw error;
-      console.warn(`[Illustrations] Retry ${attempt + 1} for prompt: ${prompt.slice(0, 60)}...`);
+      const delay = 1000 * Math.pow(2, attempt); // 1s, 2s, 4s
+      console.warn(`[Illustrations] Retry ${attempt + 1} after ${delay}ms for prompt: ${prompt.slice(0, 60)}...`);
+      await new Promise((resolve) => setTimeout(resolve, delay));
     }
   }
   throw new Error("Unreachable");
@@ -236,12 +239,15 @@ export async function generateIllustrationsForStory(
   characterRef: string,
   avatarUrl?: string,
 ): Promise<IllustrationResult[]> {
+  const mockMode = process.env.MOCK_MODE === "true";
   const apiToken = process.env.RECRAFT_API_TOKEN;
+  const hasToken = apiToken && !apiToken.includes("your_") && !apiToken.includes("_here");
 
-  if (!apiToken || apiToken.includes("your_") || apiToken.includes("_here")) {
-    console.log("[Illustrations] No RECRAFT_API_TOKEN — using mock placeholders");
+  if (mockMode || !hasToken) {
+    const reason = mockMode ? "MOCK_MODE=true" : "no RECRAFT_API_TOKEN";
+    console.log(`[Illustrations] MOCK MODE — ${reason}, using pre-generated Supabase images`);
     return imagePrompts.map((prompt, index) => ({
-      imageUrl: getMockIllustration(index),
+      imageUrl: getMockIllustrationUrl(index),
       descriptionHash: hashDescription(prompt),
       provider: "mock" as const,
     }));
@@ -281,31 +287,9 @@ export async function generateIllustrationsForStory(
 
     console.error(`[Illustrations] Scene ${index + 1} failed:`, result.reason);
     return {
-      imageUrl: getMockIllustration(index),
+      imageUrl: getMockIllustrationUrl(index),
       descriptionHash: hashDescription(imagePrompts[index]),
       provider: "mock" as const,
     };
   });
-}
-
-// --- Mock illustrations ---
-
-const MOCK_COLORS = [
-  { bg: "5d4037", fg: "fff3e0" },
-  { bg: "6d4c41", fg: "fff3e0" },
-  { bg: "795548", fg: "fff3e0" },
-  { bg: "8d6e63", fg: "fff3e0" },
-  { bg: "a1887f", fg: "fff3e0" },
-  { bg: "5d4037", fg: "fff3e0" },
-  { bg: "6d4c41", fg: "ffd700" },
-  { bg: "795548", fg: "90ee90" },
-  { bg: "4e342e", fg: "fff3e0" },
-  { bg: "3e2723", fg: "fff3e0" },
-  { bg: "5d4037", fg: "bbdefb" },
-  { bg: "6d4c41", fg: "c8e6c9" },
-];
-
-function getMockIllustration(sceneIndex: number): string {
-  const color = MOCK_COLORS[sceneIndex % MOCK_COLORS.length];
-  return `https://placehold.co/1024x1024/${color.bg}/${color.fg}?text=Scene+${sceneIndex + 1}`;
 }

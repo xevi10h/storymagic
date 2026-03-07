@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
+import LogoIcon from "@/components/LogoIcon";
 
 export default function SignupPage() {
   return (
@@ -57,13 +58,13 @@ function SignupPageContent() {
         return;
       }
 
-      // Update profile name
+      // Only update profile name — email will be confirmed via verification link.
+      // The auth callback or onAuthStateChange will sync the verified email.
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         await supabase.from("profiles").upsert({
           id: user.id,
           name,
-          email,
         }, { onConflict: "id" });
       }
 
@@ -185,9 +186,7 @@ function SignupPageContent() {
         {/* Logo */}
         <div className="mb-8 text-center">
           <Link href="/" className="inline-flex items-center gap-2">
-            <span className="material-symbols-outlined text-4xl text-primary">
-              menu_book
-            </span>
+            <LogoIcon className="h-10 w-10 text-primary" />
             <span className="font-display text-3xl font-bold text-secondary">
               StoryMagic
             </span>

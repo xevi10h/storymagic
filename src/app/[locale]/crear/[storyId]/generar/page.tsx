@@ -42,14 +42,16 @@ export default function GenerarPage() {
     return () => clearInterval(interval);
   }, [status]);
 
-  // Simulate progress bar
+  // Smooth progress bar — slows down asymptotically toward 85%
   useEffect(() => {
     if (status !== "generating" && status !== "starting") return;
 
     const interval = setInterval(() => {
       setProgress((prev) => {
-        if (prev >= 90) return prev; // Cap at 90 until actually done
-        return prev + Math.random() * 3;
+        if (prev >= 85) return prev;
+        // Slow down as we approach 85% — feels natural
+        const remaining = 85 - prev;
+        return prev + remaining * 0.03;
       });
     }, 500);
 
@@ -60,6 +62,22 @@ export default function GenerarPage() {
     setStatus("generating");
 
     try {
+      // Check story status before attempting generation
+      const storyRes = await fetch(`/api/stories/${storyId}`);
+      if (storyRes.ok) {
+        const storyData = await storyRes.json();
+        if (storyData.status === "preview" || storyData.status === "ready" || storyData.status === "ordered") {
+          // Already generated — skip to preview
+          router.replace(`/crear/${storyId}/preview`);
+          return;
+        }
+        if (storyData.status === "generating") {
+          // Another tab/request is generating — wait and redirect
+          setStatus("generating");
+          return;
+        }
+      }
+
       const res = await fetch(`/api/stories/${storyId}/generate`, {
         method: "POST",
       });
@@ -75,7 +93,7 @@ export default function GenerarPage() {
       setError(err instanceof Error ? err.message : t("errorDefault"));
       setStatus("error");
     }
-  }, [storyId]);
+  }, [storyId, router]);
 
   // Start generation on mount
   useEffect(() => {
@@ -156,10 +174,10 @@ export default function GenerarPage() {
               {t("retry")}
             </button>
             <Link
-              href="/crear"
+              href="/dashboard"
               className="text-sm text-text-muted hover:text-text-soft"
             >
-              {t("startOver")}
+              {t("goBack")}
             </Link>
           </div>
         </div>
@@ -226,7 +244,7 @@ export default function GenerarPage() {
             />
           </div>
           <p className="mt-2 text-xs text-text-muted">
-            {Math.round(Math.min(progress, 100))}% {t("completed")}
+            {t("completed")}
           </p>
         </div>
 

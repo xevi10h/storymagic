@@ -5,15 +5,17 @@ import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { PRICING, ADDONS, type BookFormat, type AddonId } from "@/lib/pricing";
-import { STORY_TEMPLATES } from "@/lib/create-store";
 import { useAuth } from "@/hooks/useAuth";
 import CreationHeader from "@/components/crear/CreationHeader";
-import type { GeneratedScene, GeneratedStory } from "@/lib/ai/story-generator";
+import BookViewerSwitch from "@/components/book-viewer/BookViewerSwitch";
+import type { BookPage } from "@/components/book-viewer/types";
+import type { GeneratedStory } from "@/lib/ai/story-generator";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
 interface StoryData {
   id: string;
+  status: string;
   template_id: string;
   generated_text: GeneratedStory;
   dedication_text: string | null;
@@ -27,15 +29,9 @@ interface StoryData {
   story_illustrations: {
     scene_number: number;
     image_url: string | null;
+    status: string;
   }[];
 }
-
-type BookPage =
-  | { type: "cover"; title: string; characterName: string; templateId: string }
-  | { type: "dedication"; text: string; senderName: string | null }
-  | { type: "scene"; scene: GeneratedScene; imageUrl: string | null }
-  | { type: "final"; message: string; characterName: string }
-  | { type: "back"; characterName: string };
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -44,6 +40,7 @@ function buildPages(story: StoryData): BookPage[] {
   const illustrations = story.story_illustrations.sort(
     (a, b) => a.scene_number - b.scene_number
   );
+  const isPreview = story.status === "preview";
 
   const pages: BookPage[] = [
     {
@@ -63,10 +60,13 @@ function buildPages(story: StoryData): BookPage[] {
     const illustration = illustrations.find(
       (i) => i.scene_number === scene.sceneNumber
     );
+    const hasIllustration = illustration?.status === "ready" && !!illustration?.image_url;
+
     pages.push({
       type: "scene",
       scene,
       imageUrl: illustration?.image_url ?? null,
+      locked: isPreview && !hasIllustration,
     });
   }
 
@@ -84,22 +84,10 @@ function buildPages(story: StoryData): BookPage[] {
   return pages;
 }
 
-const ADDON_I18N_KEY: Record<AddonId, string> = {
-  adventure_pack: "adventurePack",
-  digital_pdf: "digitalPdf",
-  extra_copy: "extraCopy",
-};
-
-function getTemplateGradient(templateId: string): string {
-  const gradients: Record<string, string> = {
-    space: "from-indigo-900 to-slate-900",
-    forest: "from-emerald-800 to-green-900",
-    superhero: "from-red-700 to-rose-900",
-    pirates: "from-blue-800 to-cyan-900",
-    chef: "from-orange-600 to-amber-800",
-  };
-  return gradients[templateId] ?? "from-secondary to-secondary-hover";
-}
+// Number of clear scene pages visible in preview (scenes with illustrations)
+const PREVIEW_CLEAR_SCENES = 3;
+// Additional blurred scene pages to show after clear ones
+const PREVIEW_BLURRED_SCENES = 2;
 
 // ── Page Component ─────────────────────────────────────────────────────────
 
@@ -109,7 +97,6 @@ export default function PreviewPage() {
   const { storyId } = useParams<{ storyId: string }>();
   const router = useRouter();
   const { user } = useAuth();
-  // User needs an account if they're anonymous OR not logged in at all
   const needsAccount = !user || user.is_anonymous === true;
 
   const [story, setStory] = useState<StoryData | null>(null);
@@ -117,14 +104,18 @@ export default function PreviewPage() {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
 
-  // PDF download state
-  const [downloadingPdf, setDownloadingPdf] = useState(false);
-
   // Checkout state
-  const [format, setFormat] = useState<BookFormat>("softcover");
+  const [format, setFormat] = useState<BookFormat>("digital_pdf");
   const [addons, setAddons] = useState<Set<AddonId>>(new Set());
   const [checkingOut, setCheckingOut] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
+
+  // PDF download state (only for completed stories)
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
+  const [pdfError, setPdfError] = useState<string | null>(null);
+
+  const isPreviewMode = story?.status === "preview";
+  const isFullyReady = story?.status === "ready" || story?.status === "ordered";
 
   // Fetch story data
   useEffect(() => {
@@ -136,7 +127,8 @@ export default function PreviewPage() {
           throw new Error(data.error || "Story not found");
         }
         const data = await res.json();
-        if (data.status !== "ready") {
+        // Redirect to generation page if not yet generated
+        if (data.status === "draft" || data.status === "generating") {
           router.replace(`/crear/${storyId}/generar`);
           return;
         }
@@ -151,25 +143,26 @@ export default function PreviewPage() {
   }, [storyId, router]);
 
   const pages = story ? buildPages(story) : [];
-  const totalPages = pages.length;
 
-  const goToPrevPage = useCallback(() => {
-    setCurrentPage((p) => Math.max(0, p - 1));
-  }, []);
-
-  const goToNextPage = useCallback(() => {
-    setCurrentPage((p) => Math.min(totalPages - 1, p + 1));
-  }, [totalPages]);
+  // In preview mode, limit visible pages: cover + dedication + clear scenes + blurred scenes
+  const maxVisiblePages = isPreviewMode
+    ? 2 + PREVIEW_CLEAR_SCENES + PREVIEW_BLURRED_SCENES // cover + dedication + 3 clear + 2 blurred
+    : pages.length;
+  const visiblePages = pages.slice(0, maxVisiblePages);
+  const totalPages = visiblePages.length;
 
   // Keyboard navigation
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === "ArrowLeft") goToPrevPage();
-      if (e.key === "ArrowRight") goToNextPage();
+      if (e.key === "ArrowLeft") setCurrentPage((p) => Math.max(0, p - 1));
+      if (e.key === "ArrowRight") setCurrentPage((p) => Math.min(totalPages - 1, p + 1));
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [goToPrevPage, goToNextPage]);
+  }, [totalPages]);
+
+  // Filter addons: only show physical-only addons when format requires shipping
+  const selectedFormatRequiresShipping = PRICING[format].requiresShipping;
 
   const toggleAddon = useCallback((id: AddonId) => {
     setAddons((prev) => {
@@ -180,17 +173,25 @@ export default function PreviewPage() {
     });
   }, []);
 
+  // Clear physical addons when switching to digital format
+  useEffect(() => {
+    if (!selectedFormatRequiresShipping) {
+      setAddons(new Set());
+    }
+  }, [selectedFormatRequiresShipping]);
+
   const subtotal =
     PRICING[format].price +
     Array.from(addons).reduce((sum, id) => sum + ADDONS[id].price, 0);
 
   const handleDownloadPdf = useCallback(async () => {
     setDownloadingPdf(true);
+    setPdfError(null);
     try {
       const res = await fetch(`/api/stories/${storyId}/pdf`);
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "PDF generation failed");
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || t("pdfError"));
       }
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
@@ -204,11 +205,11 @@ export default function PreviewPage() {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     } catch (err) {
-      console.error("PDF download error:", err);
+      setPdfError(err instanceof Error ? err.message : t("pdfError"));
     } finally {
       setDownloadingPdf(false);
     }
-  }, [storyId]);
+  }, [storyId, t]);
 
   const handleCheckout = useCallback(async () => {
     setCheckingOut(true);
@@ -238,7 +239,7 @@ export default function PreviewPage() {
       );
       setCheckingOut(false);
     }
-  }, [storyId, format, addons]);
+  }, [storyId, format, addons, t]);
 
   // ── Loading / Error states ───────────────────────────────────────────────
 
@@ -276,9 +277,6 @@ export default function PreviewPage() {
     );
   }
 
-  const page = pages[currentPage];
-  const template = STORY_TEMPLATES.find((t) => t.id === story.template_id);
-
   return (
     <div className="min-h-screen bg-create-bg">
       <CreationHeader rightAction="close" />
@@ -288,471 +286,328 @@ export default function PreviewPage() {
         <h2 className="font-display text-sm font-bold text-secondary truncate max-w-50 sm:max-w-none">
           {story.generated_text.bookTitle}
         </h2>
-        <span className="text-xs text-text-muted tabular-nums">
-          {currentPage + 1} / {totalPages}
-        </span>
+        <div className="flex items-center gap-2">
+          {isPreviewMode && (
+            <span className="rounded-full bg-create-primary/10 px-2.5 py-0.5 text-[10px] font-bold text-create-primary uppercase tracking-wide">
+              {t("previewBadge")}
+            </span>
+          )}
+          <span className="text-xs text-text-muted tabular-nums">
+            {currentPage + 1} / {totalPages}
+          </span>
+        </div>
       </div>
 
       {/* Book viewer */}
-      <section className="mx-auto max-w-3xl px-4 py-8">
-        <div className="relative">
-          {/* Book page */}
-          <div className="relative aspect-square w-full max-w-lg mx-auto overflow-hidden rounded-2xl shadow-xl border border-border-light bg-white">
-            <PageContent page={page} templateId={story.template_id} />
-
-            {/* Page navigation overlays */}
-            <button
-              onClick={goToPrevPage}
-              disabled={currentPage === 0}
-              className="absolute left-0 top-0 bottom-0 w-1/5 flex items-center justify-start pl-3 opacity-0 hover:opacity-100 transition-opacity disabled:hidden"
-              aria-label="Previous page"
-            >
-              <span className="material-symbols-outlined rounded-full bg-white/90 p-2 text-xl text-text-muted shadow-md">
-                chevron_left
-              </span>
-            </button>
-            <button
-              onClick={goToNextPage}
-              disabled={currentPage === totalPages - 1}
-              className="absolute right-0 top-0 bottom-0 w-1/5 flex items-center justify-end pr-3 opacity-0 hover:opacity-100 transition-opacity disabled:hidden"
-              aria-label="Next page"
-            >
-              <span className="material-symbols-outlined rounded-full bg-white/90 p-2 text-xl text-text-muted shadow-md">
-                chevron_right
-              </span>
-            </button>
-          </div>
-
-          {/* Page dots */}
-          <div className="mt-6 flex items-center justify-center gap-1.5 flex-wrap">
-            {pages.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setCurrentPage(i)}
-                className={`h-2 rounded-full transition-all ${
-                  i === currentPage
-                    ? "w-6 bg-create-primary"
-                    : "w-2 bg-border-light hover:bg-text-muted"
-                }`}
-                aria-label={`Go to page ${i + 1}`}
-              />
-            ))}
-          </div>
-
-          {/* Navigation buttons (mobile-friendly) */}
-          <div className="mt-4 flex items-center justify-center gap-4 sm:hidden">
-            <button
-              onClick={goToPrevPage}
-              disabled={currentPage === 0}
-              className="flex items-center gap-1 rounded-full border border-border-light px-4 py-2 text-sm text-text-soft transition-colors hover:bg-cream disabled:opacity-30"
-            >
-              <span className="material-symbols-outlined text-base">
-                chevron_left
-              </span>
-              {t("previous")}
-            </button>
-            <button
-              onClick={goToNextPage}
-              disabled={currentPage === totalPages - 1}
-              className="flex items-center gap-1 rounded-full border border-border-light px-4 py-2 text-sm text-text-soft transition-colors hover:bg-cream disabled:opacity-30"
-            >
-              {t("next")}
-              <span className="material-symbols-outlined text-base">
-                chevron_right
-              </span>
-            </button>
-          </div>
-        </div>
+      <section className="mx-auto max-w-4xl px-4 py-6 sm:py-8">
+        <BookViewerSwitch
+          pages={visiblePages}
+          templateId={story.template_id}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+        />
       </section>
 
-      {/* PDF Download */}
-      <div className="mx-auto max-w-3xl px-4 pb-6">
-        <button
-          onClick={handleDownloadPdf}
-          disabled={downloadingPdf}
-          className="group mx-auto flex items-center gap-2.5 rounded-xl border-2 border-border-light bg-white px-6 py-3.5 text-sm font-bold text-secondary transition-all hover:border-create-primary hover:bg-create-primary/5 hover:text-create-primary active:scale-[0.98] disabled:opacity-60 shadow-sm"
-        >
-          {downloadingPdf ? (
-            <>
-              <span className="material-symbols-outlined animate-spin text-lg">
-                progress_activity
-              </span>
-              {t("generatingPdf")}
-            </>
-          ) : (
-            <>
-              <span className="material-symbols-outlined text-lg">
-                picture_as_pdf
-              </span>
-              {t("downloadPdf")}
-            </>
-          )}
-        </button>
-        <p className="mt-2 text-center text-xs text-text-muted">
-          {t("downloadHint")}
-        </p>
-      </div>
-
-      {/* Checkout section */}
-      <section className="border-t border-border-light bg-white">
-        <div className="mx-auto max-w-3xl px-4 py-10">
-          <h2 className="text-center font-display text-2xl font-bold text-secondary">
-            {t("checkoutTitle")}
-          </h2>
-          <p className="mt-2 text-center text-sm text-text-muted">
-            {t("checkoutSubtitle")}
-          </p>
-
-          {/* Format selection */}
-          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {(Object.entries(PRICING) as [BookFormat, typeof PRICING[BookFormat]][]).map(
-              ([key, val]) => (
-                <button
-                  key={key}
-                  onClick={() => setFormat(key)}
-                  className={`relative rounded-xl border-2 p-5 text-left transition-all ${
-                    format === key
-                      ? "border-create-primary bg-create-primary/5 shadow-md shadow-create-primary/10"
-                      : "border-border-light hover:border-border-medium"
-                  }`}
-                >
-                  {/* Check inside top-right */}
-                  {format === key && (
-                    <div className="absolute top-3 right-3 flex h-5 w-5 items-center justify-center rounded-full bg-create-primary">
-                      <span className="material-symbols-outlined text-xs text-white">
-                        check
-                      </span>
-                    </div>
-                  )}
-                  <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-xl text-create-primary">
-                      {key === "softcover" ? "menu_book" : "book"}
-                    </span>
-                    <span className="font-display text-base font-bold text-text-main">
-                      {tPricing(`${key}.label`)}
-                    </span>
-                    <span className="ml-auto text-lg font-bold text-secondary tabular-nums whitespace-nowrap pr-6">
-                      {(val.price / 100).toFixed(2)} €
-                    </span>
-                  </div>
-                  <p className="mt-1 text-xs text-text-muted">
-                    {tPricing(`${key}.description`)}
-                  </p>
-                </button>
-              )
+      {/* PDF Download — only for fully ready stories */}
+      {isFullyReady && (
+        <div className="mx-auto max-w-3xl px-4 pb-6">
+          <button
+            onClick={handleDownloadPdf}
+            disabled={downloadingPdf}
+            className="group mx-auto flex items-center gap-2.5 rounded-xl border-2 border-border-light bg-white px-6 py-3.5 text-sm font-bold text-secondary transition-all hover:border-create-primary hover:bg-create-primary/5 hover:text-create-primary active:scale-[0.98] disabled:opacity-60 shadow-sm"
+          >
+            {downloadingPdf ? (
+              <>
+                <span className="material-symbols-outlined animate-spin text-lg">
+                  progress_activity
+                </span>
+                {t("generatingPdf")}
+              </>
+            ) : (
+              <>
+                <span className="material-symbols-outlined text-lg">
+                  picture_as_pdf
+                </span>
+                {t("downloadPdf")}
+              </>
             )}
-          </div>
+          </button>
+          <p className="mt-2 text-center text-xs text-text-muted">
+            {t("downloadHint")}
+          </p>
+          {pdfError && (
+            <p className="mt-2 text-center text-xs text-red-600">{pdfError}</p>
+          )}
+        </div>
+      )}
 
-          {/* Add-ons */}
-          <div className="mt-8">
-            <h3 className="font-display text-sm font-bold text-text-main uppercase tracking-wider">
-              {t("optionalExtras")}
-            </h3>
-            <div className="mt-4 space-y-4">
-              {(Object.entries(ADDONS) as [AddonId, typeof ADDONS[AddonId]][]).map(
+      {/* ── Paywall / Checkout Section ────────────────────────────────────── */}
+      {isPreviewMode && (
+        <section id="checkout-section" className="border-t border-border-light bg-white">
+          <div className="mx-auto max-w-3xl px-4 py-10">
+            {/* Paywall hook message */}
+            <div className="text-center mb-8">
+              <span className="material-symbols-outlined text-4xl text-create-primary mb-3">
+                auto_stories
+              </span>
+              <h2 className="font-display text-2xl font-bold text-secondary">
+                {t("paywallTitle")}
+              </h2>
+              <p className="mt-2 text-sm text-text-muted max-w-md mx-auto">
+                {t("paywallDescription", { name: story.characters.name })}
+              </p>
+            </div>
+
+            {/* Format selection — 3 options */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {(Object.entries(PRICING) as [BookFormat, typeof PRICING[BookFormat]][]).map(
                 ([key, val]) => {
-                  const selected = addons.has(key);
-                  const i18nKey = ADDON_I18N_KEY[key];
+                  const isSelected = format === key;
+                  const isDigital = key === "digital_pdf";
                   return (
                     <button
                       key={key}
-                      onClick={() => toggleAddon(key)}
-                      className={`group relative w-full rounded-xl border-2 p-5 text-left transition-all ${
-                        selected
+                      onClick={() => setFormat(key)}
+                      className={`relative rounded-xl border-2 p-5 text-left transition-all ${
+                        isSelected
                           ? "border-create-primary bg-create-primary/5 shadow-md shadow-create-primary/10"
-                          : "border-border-light hover:border-border-medium hover:shadow-sm"
+                          : "border-border-light hover:border-border-medium"
                       }`}
                     >
-                      {/* Badge */}
-                      {val.badge && (
-                        <span className="absolute -top-2.5 left-4 rounded-full bg-create-gold px-2.5 py-0.5 text-[10px] font-bold text-white uppercase tracking-wide">
-                          {tPricing(`addons.${i18nKey}.badge`)}
+                      {/* Best value badge for digital */}
+                      {isDigital && (
+                        <span className="absolute -top-2.5 left-4 rounded-full bg-create-primary px-2.5 py-0.5 text-[10px] font-bold text-white uppercase tracking-wide">
+                          {t("instantDelivery")}
                         </span>
                       )}
 
-                      {/* Header row: icon + title + price */}
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex items-start gap-3">
-                          {/* Addon icon */}
-                          <div
-                            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors ${
-                              selected
-                                ? "bg-create-primary text-white"
-                                : "bg-cream text-create-primary"
-                            }`}
-                          >
-                            <span className="material-symbols-outlined text-xl">
-                              {val.icon}
-                            </span>
-                          </div>
-                          <div>
-                            <span className="text-sm font-bold text-text-main">
-                              {tPricing(`addons.${i18nKey}.label`)}
-                            </span>
-                            <p className="mt-0.5 text-xs text-text-muted">
-                              {tPricing(`addons.${i18nKey}.description`)}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 shrink-0">
-                          <span className="text-base font-bold text-secondary tabular-nums">
-                            +{(val.price / 100).toFixed(2)} €
+                      {/* Check indicator */}
+                      {isSelected && (
+                        <div className="absolute top-3 right-3 flex h-5 w-5 items-center justify-center rounded-full bg-create-primary">
+                          <span className="material-symbols-outlined text-xs text-white">
+                            check
                           </span>
-                          <div
-                            className={`flex h-5 w-5 items-center justify-center rounded border-2 transition-colors ${
-                              selected
-                                ? "border-create-primary bg-create-primary"
-                                : "border-border-medium group-hover:border-text-muted"
-                            }`}
-                          >
-                            {selected && (
-                              <span className="material-symbols-outlined text-xs text-white">
-                                check
-                              </span>
-                            )}
-                          </div>
                         </div>
+                      )}
+
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="material-symbols-outlined text-xl text-create-primary">
+                          {val.icon}
+                        </span>
+                        <span className="font-display text-base font-bold text-text-main pr-6">
+                          {tPricing(`${key}.label`)}
+                        </span>
                       </div>
 
-                      {/* Details with check icons */}
-                      <ul className="mt-3 ml-13 space-y-1.5">
-                        {val.details.map((detail, i) => (
-                          <li
-                            key={i}
-                            className="flex items-start gap-1.5 text-xs text-text-soft"
-                          >
-                            <span className="material-symbols-outlined text-sm mt-px text-create-primary shrink-0">
-                              check_circle
-                            </span>
-                            {tPricing(`addons.${i18nKey}.details.${i}`)}
-                          </li>
-                        ))}
-                      </ul>
+                      <p className="text-xl font-bold text-secondary tabular-nums">
+                        {(val.price / 100).toFixed(2)} €
+                      </p>
+
+                      <p className="mt-1 text-xs text-text-muted">
+                        {tPricing(`${key}.description`)}
+                      </p>
                     </button>
                   );
                 }
               )}
             </div>
-          </div>
 
-          {/* Order summary + CTA */}
-          <div className="mt-8 rounded-xl border border-border-light bg-cream p-6">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-text-muted">
-                {tPricing(`${format}.label`)}
-              </span>
-              <span className="text-sm tabular-nums">
-                {(PRICING[format].price / 100).toFixed(2)} €
-              </span>
-            </div>
-            {Array.from(addons).map((id) => (
-              <div key={id} className="mt-2 flex items-center justify-between">
+            {/* Add-ons — only for physical formats */}
+            {selectedFormatRequiresShipping && (
+              <div className="mt-8">
+                <h3 className="font-display text-sm font-bold text-text-main uppercase tracking-wider">
+                  {t("optionalExtras")}
+                </h3>
+                <div className="mt-4 space-y-4">
+                  {(Object.entries(ADDONS) as [AddonId, typeof ADDONS[AddonId]][]).map(
+                    ([key, val]) => {
+                      const selected = addons.has(key);
+                      return (
+                        <button
+                          key={key}
+                          onClick={() => toggleAddon(key)}
+                          className={`group relative w-full rounded-xl border-2 p-5 text-left transition-all ${
+                            selected
+                              ? "border-create-primary bg-create-primary/5 shadow-md shadow-create-primary/10"
+                              : "border-border-light hover:border-border-medium hover:shadow-sm"
+                          }`}
+                        >
+                          {val.badge && (
+                            <span className="absolute -top-2.5 left-4 rounded-full bg-create-gold px-2.5 py-0.5 text-[10px] font-bold text-white uppercase tracking-wide">
+                              {tPricing(`addons.${key}.badge`)}
+                            </span>
+                          )}
+
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex items-start gap-3">
+                              <div
+                                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors ${
+                                  selected
+                                    ? "bg-create-primary text-white"
+                                    : "bg-cream text-create-primary"
+                                }`}
+                              >
+                                <span className="material-symbols-outlined text-xl">
+                                  {val.icon}
+                                </span>
+                              </div>
+                              <div>
+                                <span className="text-sm font-bold text-text-main">
+                                  {tPricing(`addons.${key}.label`)}
+                                </span>
+                                <p className="mt-0.5 text-xs text-text-muted">
+                                  {tPricing(`addons.${key}.description`)}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2 shrink-0">
+                              <span className="text-base font-bold text-secondary tabular-nums">
+                                +{(val.price / 100).toFixed(2)} €
+                              </span>
+                              <div
+                                className={`flex h-5 w-5 items-center justify-center rounded border-2 transition-colors ${
+                                  selected
+                                    ? "border-create-primary bg-create-primary"
+                                    : "border-border-medium group-hover:border-text-muted"
+                                }`}
+                              >
+                                {selected && (
+                                  <span className="material-symbols-outlined text-xs text-white">
+                                    check
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+
+                          <ul className="mt-3 ml-13 space-y-1.5">
+                            {val.details.map((detail, i) => (
+                              <li
+                                key={i}
+                                className="flex items-start gap-1.5 text-xs text-text-soft"
+                              >
+                                <span className="material-symbols-outlined text-sm mt-px text-create-primary shrink-0">
+                                  check_circle
+                                </span>
+                                {tPricing(`addons.${key}.details.${i}`)}
+                              </li>
+                            ))}
+                          </ul>
+                        </button>
+                      );
+                    }
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Order summary + CTA */}
+            <div className="mt-8 rounded-xl border border-border-light bg-cream p-6">
+              <div className="flex items-center justify-between">
                 <span className="text-sm text-text-muted">
-                  {tPricing(`addons.${ADDON_I18N_KEY[id]}.label`)}
+                  {tPricing(`${format}.label`)}
                 </span>
                 <span className="text-sm tabular-nums">
-                  {(ADDONS[id].price / 100).toFixed(2)} €
+                  {(PRICING[format].price / 100).toFixed(2)} €
                 </span>
               </div>
-            ))}
-            <div className="mt-4 border-t border-border-medium pt-4 flex items-center justify-between">
-              <span className="font-display text-base font-bold text-text-main">
-                {t("total")}
-              </span>
-              <span className="font-display text-xl font-bold text-secondary tabular-nums">
-                {(subtotal / 100).toFixed(2)} €
-              </span>
-            </div>
+              {Array.from(addons).map((id) => (
+                <div key={id} className="mt-2 flex items-center justify-between">
+                  <span className="text-sm text-text-muted">
+                    {tPricing(`addons.${id}.label`)}
+                  </span>
+                  <span className="text-sm tabular-nums">
+                    {(ADDONS[id].price / 100).toFixed(2)} €
+                  </span>
+                </div>
+              ))}
+              <div className="mt-4 border-t border-border-medium pt-4 flex items-center justify-between">
+                <span className="font-display text-base font-bold text-text-main">
+                  {t("total")}
+                </span>
+                <span className="font-display text-xl font-bold text-secondary tabular-nums">
+                  {(subtotal / 100).toFixed(2)} €
+                </span>
+              </div>
 
-            <button
-              onClick={handleCheckout}
-              disabled={checkingOut}
-              className="mt-6 w-full rounded-xl bg-create-primary px-6 py-4 text-base font-bold text-white transition-all hover:bg-create-primary-hover active:scale-[0.98] disabled:opacity-60 shadow-lg shadow-create-primary/20"
-            >
-              {checkingOut ? (
-                <span className="flex items-center justify-center gap-2">
-                  <span className="material-symbols-outlined animate-spin text-lg">
-                    progress_activity
+              <button
+                onClick={handleCheckout}
+                disabled={checkingOut}
+                className="mt-6 w-full rounded-xl bg-create-primary px-6 py-4 text-base font-bold text-white transition-all hover:bg-create-primary-hover active:scale-[0.98] disabled:opacity-60 shadow-lg shadow-create-primary/20"
+              >
+                {checkingOut ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <span className="material-symbols-outlined animate-spin text-lg">
+                      progress_activity
+                    </span>
+                    {t("processing")}
                   </span>
-                  {t("processing")}
-                </span>
-              ) : (
-                <span className="flex items-center justify-center gap-2">
-                  <span className="material-symbols-outlined text-lg">
-                    shopping_bag
+                ) : (
+                  <span className="flex items-center justify-center gap-2">
+                    <span className="material-symbols-outlined text-lg">
+                      shopping_bag
+                    </span>
+                    {t("buyNow", { price: (subtotal / 100).toFixed(2) })}
                   </span>
-                  {t("buyNow", { price: (subtotal / 100).toFixed(2) })}
-                </span>
+                )}
+              </button>
+
+              {checkoutError && (
+                <p className="mt-3 text-center text-xs text-red-600">
+                  {checkoutError}
+                </p>
               )}
-            </button>
 
-            {checkoutError && (
-              <p className="mt-3 text-center text-xs text-red-600">
-                {checkoutError}
+              <p className="mt-4 text-center text-xs text-text-muted">
+                {t("paymentSecure")}
               </p>
-            )}
 
-            <p className="mt-4 text-center text-xs text-text-muted">
-              {t("paymentSecure")}
-            </p>
+              {/* Save for later */}
+              <div className="mt-6 flex items-center gap-3">
+                <div className="h-px flex-1 bg-border-light" />
+                <span className="text-xs text-text-muted">{t("orSaveForLater")}</span>
+                <div className="h-px flex-1 bg-border-light" />
+              </div>
 
-            {/* Save for later divider */}
-            <div className="mt-6 flex items-center gap-3">
-              <div className="h-px flex-1 bg-border-light" />
-              <span className="text-xs text-text-muted">{t("orSaveForLater")}</span>
-              <div className="h-px flex-1 bg-border-light" />
+              {needsAccount ? (
+                <Link
+                  href={`/auth/signup?next=/crear/${storyId}/preview`}
+                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-border-light px-6 py-3.5 text-sm font-bold text-secondary transition-all hover:border-create-primary hover:bg-create-primary/5 hover:text-create-primary active:scale-[0.98]"
+                >
+                  <span className="material-symbols-outlined text-lg">bookmark_add</span>
+                  {t("saveForLater")}
+                </Link>
+              ) : (
+                <Link
+                  href="/dashboard"
+                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-border-light px-6 py-3.5 text-sm font-bold text-secondary transition-all hover:border-create-primary hover:bg-create-primary/5 hover:text-create-primary active:scale-[0.98]"
+                >
+                  <span className="material-symbols-outlined text-lg">bookmark_added</span>
+                  {t("savedGoToLibrary")}
+                </Link>
+              )}
+              <p className="mt-2 text-center text-xs text-text-muted">
+                {needsAccount ? t("saveForLaterHintAnonymous") : t("saveForLaterHintLoggedIn")}
+              </p>
             </div>
-
-            {/* Save for later action */}
-            {needsAccount ? (
-              <Link
-                href={`/auth/signup?next=/crear/${storyId}/preview`}
-                className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-border-light px-6 py-3.5 text-sm font-bold text-secondary transition-all hover:border-create-primary hover:bg-create-primary/5 hover:text-create-primary active:scale-[0.98]"
-              >
-                <span className="material-symbols-outlined text-lg">bookmark_add</span>
-                {t("saveForLater")}
-              </Link>
-            ) : (
-              <Link
-                href="/dashboard"
-                className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-border-light px-6 py-3.5 text-sm font-bold text-secondary transition-all hover:border-create-primary hover:bg-create-primary/5 hover:text-create-primary active:scale-[0.98]"
-              >
-                <span className="material-symbols-outlined text-lg">bookmark_added</span>
-                {t("savedGoToLibrary")}
-              </Link>
-            )}
-            <p className="mt-2 text-center text-xs text-text-muted">
-              {needsAccount ? t("saveForLaterHintAnonymous") : t("saveForLaterHintLoggedIn")}
-            </p>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
+
+      {/* Checkout for fully ready stories (already paid, viewing complete book) */}
+      {isFullyReady && (
+        <section className="border-t border-border-light bg-white">
+          <div className="mx-auto max-w-3xl px-4 py-8 text-center">
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center gap-2 rounded-xl border-2 border-border-light px-6 py-3.5 text-sm font-bold text-secondary transition-all hover:border-create-primary hover:bg-create-primary/5 hover:text-create-primary active:scale-[0.98]"
+            >
+              <span className="material-symbols-outlined text-lg">library_books</span>
+              {t("savedGoToLibrary")}
+            </Link>
+          </div>
+        </section>
+      )}
     </div>
   );
-}
-
-// ── Page Content Renderer ──────────────────────────────────────────────────
-
-function PageContent({
-  page,
-  templateId,
-}: {
-  page: BookPage;
-  templateId: string;
-}) {
-  const t = useTranslations("crear.preview");
-  const gradient = getTemplateGradient(templateId);
-
-  switch (page.type) {
-    case "cover":
-      return (
-        <div
-          className={`flex h-full flex-col items-center justify-center bg-gradient-to-br ${gradient} p-8 text-center`}
-        >
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white/20">
-            <span className="material-symbols-outlined text-3xl text-white">
-              auto_stories
-            </span>
-          </div>
-          <h2 className="font-display text-2xl font-bold text-white leading-tight">
-            {page.title}
-          </h2>
-          <p className="mt-3 text-sm text-white/70">
-            {t("personalizedStory")}{" "}
-            <span className="font-bold text-white">{page.characterName}</span>
-          </p>
-          <div className="mt-6 h-px w-16 bg-white/30" />
-          <p className="mt-3 text-xs text-white/50 tracking-wider uppercase">
-            StoryMagic
-          </p>
-        </div>
-      );
-
-    case "dedication":
-      return (
-        <div className="flex h-full flex-col items-center justify-center bg-cream p-8 text-center">
-          <span className="material-symbols-outlined text-3xl text-create-gold mb-4">
-            favorite
-          </span>
-          <p className="font-display text-base italic leading-relaxed text-secondary max-w-xs">
-            &ldquo;{page.text}&rdquo;
-          </p>
-          {page.senderName && (
-            <p className="mt-4 text-sm text-text-muted">
-              — {page.senderName}
-            </p>
-          )}
-        </div>
-      );
-
-    case "scene":
-      return (
-        <div className="flex h-full flex-col">
-          {/* Illustration area */}
-          <div className="relative flex-1 bg-cream">
-            {page.imageUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={page.imageUrl}
-                alt={page.scene.title}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <div className="flex h-full items-center justify-center">
-                <span className="material-symbols-outlined text-4xl text-text-light">
-                  image
-                </span>
-              </div>
-            )}
-            {/* Scene number badge */}
-            <div className="absolute top-3 left-3 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 shadow-sm">
-              <span className="text-xs font-bold text-secondary">
-                {page.scene.sceneNumber}
-              </span>
-            </div>
-          </div>
-          {/* Text area */}
-          <div className="p-5">
-            <h3 className="font-display text-sm font-bold text-secondary">
-              {page.scene.title}
-            </h3>
-            <p className="mt-1.5 text-sm leading-relaxed text-text-soft">
-              {page.scene.text}
-            </p>
-          </div>
-        </div>
-      );
-
-    case "final":
-      return (
-        <div className="flex h-full flex-col items-center justify-center bg-cream p-8 text-center">
-          <span className="material-symbols-outlined text-4xl text-create-gold mb-4">
-            auto_awesome
-          </span>
-          <p className="font-display text-lg font-bold leading-relaxed text-secondary max-w-xs">
-            {page.message}
-          </p>
-          <div className="mt-6 h-px w-16 bg-border-light" />
-          <p className="mt-3 text-xs text-text-muted">{t("end")}</p>
-        </div>
-      );
-
-    case "back":
-      return (
-        <div
-          className={`flex h-full flex-col items-center justify-center bg-gradient-to-br ${gradient} p-8 text-center`}
-        >
-          <p className="text-sm text-white/70">
-            {t("createdFor")}
-          </p>
-          <p className="mt-2 font-display text-2xl font-bold text-white">
-            {page.characterName}
-          </p>
-          <div className="mt-6 h-px w-16 bg-white/30" />
-          <p className="mt-4 text-xs text-white/40 tracking-wider uppercase">
-            StoryMagic
-          </p>
-        </div>
-      );
-  }
 }

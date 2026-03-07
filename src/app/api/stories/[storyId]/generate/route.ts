@@ -5,12 +5,23 @@ import { generateIllustrationsForStory, buildCharacterReference } from "@/lib/ai
 import { uploadIllustrationFromUrl } from "@/lib/supabase/storage";
 import { getAvatarUrl } from "@/lib/avatar-library";
 import { STORY_TEMPLATES } from "@/lib/create-store";
+import { PREVIEW_ILLUSTRATION_COUNT } from "@/lib/pricing";
+
+// Preview mode: text (12 scenes) + 4 illustrations — much faster than full generation
+export const maxDuration = 120;
 
 export async function POST(
   _request: Request,
   { params }: { params: Promise<{ storyId: string }> }
 ) {
   const { storyId } = await params;
+
+  // Validate storyId is a valid UUID to prevent path traversal in Storage
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!UUID_RE.test(storyId)) {
+    return NextResponse.json({ error: "Invalid story ID" }, { status: 400 });
+  }
+
   const supabase = await createClient();
 
   const {
@@ -21,28 +32,24 @@ export async function POST(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { data: story, error: storyError } = await supabase
+  // Atomic claim: only transition draft → generating in a single query
+  // This prevents race conditions from double-clicks or concurrent requests
+  const { data: claimedStories, error: claimError } = await supabase
     .from("stories")
-    .select("*, characters(*)")
+    .update({ status: "generating" })
     .eq("id", storyId)
     .eq("user_id", user.id)
-    .single();
+    .eq("status", "draft")
+    .select("*, characters(*)");
 
-  if (storyError || !story) {
-    return NextResponse.json({ error: "Story not found" }, { status: 404 });
-  }
-
-  if (story.status !== "draft") {
+  if (claimError || !claimedStories || claimedStories.length === 0) {
     return NextResponse.json(
-      { error: "Story already generated or in progress" },
+      { error: "Story not found or already generated" },
       { status: 400 }
     );
   }
 
-  await supabase
-    .from("stories")
-    .update({ status: "generating" })
-    .eq("id", storyId);
+  const story = claimedStories[0];
 
   try {
     const character = story.characters;
@@ -54,6 +61,8 @@ export async function POST(
       age: character.age,
       city: character.city || "",
       interests: character.interests || [],
+      specialTrait: character.special_trait || undefined,
+      favoriteCompanion: character.favorite_companion || undefined,
       hairColor: character.hair_color,
       skinTone: character.skin_tone,
       hairstyle: character.hairstyle || undefined,
@@ -90,20 +99,27 @@ export async function POST(
       favoriteCompanion: character.favorite_companion || "",
     });
 
-    // 1. Generate story text (12 scenes)
+    // 1. Generate ALL story text (12 scenes) — text is cheap (~$0.05)
     const generatedStory = await generateStory(input);
 
-    // 2. Generate illustrations with avatar style reference
-    const illustrations = await generateIllustrationsForStory(
-      generatedStory.scenes.map((s) => s.imagePrompt),
+    // 2. Generate only PREVIEW illustrations (first N scenes)
+    // This saves ~60% on illustration costs for non-converting users
+    const previewPrompts = generatedStory.scenes
+      .slice(0, PREVIEW_ILLUSTRATION_COUNT)
+      .map((s) => s.imagePrompt);
+
+    const previewIllustrations = await generateIllustrationsForStory(
+      previewPrompts,
       characterRef,
       avatarUrl,
     );
 
-    // 3. Persist Recraft images to Supabase Storage for permanent URLs
-    const persistedIllustrations = await Promise.allSettled(
-      illustrations.map(async (ill, index) => {
-        if (ill.provider === "recraft") {
+    // 3. Persist preview images to Supabase Storage (retry once before falling back)
+    const finalPreviewIllustrations = await Promise.all(
+      previewIllustrations.map(async (ill, index) => {
+        if (ill.provider !== "recraft") return ill;
+
+        for (let attempt = 0; attempt < 2; attempt++) {
           try {
             const permanentUrl = await uploadIllustrationFromUrl(
               supabase,
@@ -113,49 +129,67 @@ export async function POST(
             );
             return { ...ill, imageUrl: permanentUrl };
           } catch (uploadError) {
-            console.warn(`[Storage] Failed to persist scene ${index + 1}, using Recraft CDN:`, uploadError);
-            return ill;
+            if (attempt === 0) {
+              console.warn(`[Storage] Upload attempt 1 failed for scene ${index + 1}, retrying...`);
+              await new Promise((r) => setTimeout(r, 1000));
+            } else {
+              console.error(`[Storage] Failed to persist scene ${index + 1} after 2 attempts:`, uploadError);
+              // CDN URLs expire — this is a degraded state but we continue to avoid blocking the user
+              return ill;
+            }
           }
         }
         return ill;
       }),
     );
 
-    const finalIllustrations = persistedIllustrations.map((result, index) =>
-      result.status === "fulfilled" ? result.value : illustrations[index],
-    );
-
-    // 4. Save generated text + title + clear any stale PDF cache
-    await supabase
+    // 4. Save generated text + title, mark as preview (not ready)
+    const { error: updateError } = await supabase
       .from("stories")
       .update({
         generated_text: JSON.parse(JSON.stringify(generatedStory)),
         title: generatedStory.bookTitle,
-        status: "ready",
+        status: "preview",
         pdf_url: null,
       })
       .eq("id", storyId);
 
-    // 5. Save illustrations to story_illustrations table
-    const illustrationRows = generatedStory.scenes.map((scene, index) => ({
-      story_id: storyId,
-      scene_number: scene.sceneNumber,
-      prompt_used: scene.imagePrompt,
-      image_url: finalIllustrations[index].imageUrl,
-      status: "ready" as const,
-    }));
+    if (updateError) {
+      throw new Error(`Failed to save story: ${updateError.message}`);
+    }
 
-    await supabase.from("story_illustrations").insert(illustrationRows);
+    // 5. Insert ALL 12 illustration rows — 4 ready + 8 pending
+    const { error: deleteError } = await supabase.from("story_illustrations").delete().eq("story_id", storyId);
+    if (deleteError) {
+      throw new Error(`Failed to delete old illustrations: ${deleteError.message}`);
+    }
 
-    const recraftCount = finalIllustrations.filter((i) => i.provider === "recraft").length;
-    const mockCount = finalIllustrations.filter((i) => i.provider === "mock").length;
+    const illustrationRows = generatedStory.scenes.map((scene, index) => {
+      const isPreview = index < PREVIEW_ILLUSTRATION_COUNT;
+      return {
+        story_id: storyId,
+        scene_number: scene.sceneNumber,
+        prompt_used: scene.imagePrompt,
+        image_url: isPreview ? finalPreviewIllustrations[index].imageUrl : null,
+        status: isPreview ? ("ready" as const) : ("pending" as const),
+      };
+    });
+
+    const { error: insertError } = await supabase.from("story_illustrations").insert(illustrationRows);
+    if (insertError) {
+      throw new Error(`Failed to insert illustrations: ${insertError.message}`);
+    }
+
+    const recraftCount = finalPreviewIllustrations.filter((i) => i.provider === "recraft").length;
+    const mockCount = finalPreviewIllustrations.filter((i) => i.provider === "mock").length;
 
     return NextResponse.json({
-      status: "ready",
+      status: "preview",
       bookTitle: generatedStory.bookTitle,
       scenesCount: generatedStory.scenes.length,
+      previewIllustrations: PREVIEW_ILLUSTRATION_COUNT,
       illustrations: {
-        total: finalIllustrations.length,
+        total: finalPreviewIllustrations.length,
         recraft: recraftCount,
         mock: mockCount,
       },

@@ -1,7 +1,18 @@
 import { NextResponse } from "next/server";
 import { getStripe } from "@/lib/stripe";
-import { createClient } from "@/lib/supabase/server";
+import { createClient as createSupabaseAdmin } from "@supabase/supabase-js";
 import type Stripe from "stripe";
+import type { Database } from "@/lib/database.types";
+
+// Service-role client for webhook context (no user session/cookies available)
+function createServiceClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !serviceKey) {
+    throw new Error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY for webhook");
+  }
+  return createSupabaseAdmin<Database>(url, serviceKey);
+}
 
 // Stripe sends raw body — we need to disable body parsing
 export const runtime = "nodejs";
@@ -38,34 +49,53 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
-  // Handle the event
-  switch (event.type) {
-    case "checkout.session.completed": {
-      const session = event.data.object as Stripe.Checkout.Session;
-      await handleCheckoutCompleted(session);
-      break;
+  // Handle the event — throw on errors so Stripe retries the webhook
+  try {
+    switch (event.type) {
+      case "checkout.session.completed": {
+        const session = event.data.object as Stripe.Checkout.Session;
+        await handleCheckoutCompleted(session);
+        break;
+      }
+      case "checkout.session.expired": {
+        const session = event.data.object as Stripe.Checkout.Session;
+        await handleCheckoutExpired(session);
+        break;
+      }
+      default:
+        // Ignore other event types
+        break;
     }
-    case "checkout.session.expired": {
-      const session = event.data.object as Stripe.Checkout.Session;
-      await handleCheckoutExpired(session);
-      break;
-    }
-    default:
-      // Ignore other event types
-      break;
-  }
 
-  return NextResponse.json({ received: true });
+    return NextResponse.json({ received: true });
+  } catch (err) {
+    console.error("Webhook handler error:", err);
+    return NextResponse.json(
+      { error: "Webhook processing failed" },
+      { status: 500 }
+    );
+  }
 }
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
-  const supabase = await createClient();
+  const supabase = createServiceClient();
 
   const storyId = session.metadata?.story_id;
   const userId = session.metadata?.user_id;
 
   if (!storyId || !userId) {
-    console.error("Missing metadata in Stripe session:", session.id);
+    throw new Error(`Missing metadata in Stripe session: ${session.id}`);
+  }
+
+  // Idempotency guard — skip if already processed (Stripe guarantees at-least-once delivery)
+  const { data: existingOrder } = await supabase
+    .from("orders")
+    .select("status")
+    .eq("stripe_checkout_session_id", session.id)
+    .single();
+
+  if (existingOrder?.status === "paid" || existingOrder?.status === "completed") {
+    console.log(`Order already processed for session ${session.id}, skipping`);
     return;
   }
 
@@ -113,27 +143,40 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     .eq("stripe_checkout_session_id", session.id);
 
   if (error) {
-    console.error("Failed to update order:", error);
-    return;
+    throw new Error(`Failed to update order for session ${session.id}: ${error.message}`);
   }
 
-  // Update story status to "ordered"
-  await supabase
+  // Check story status — only transition to "ordered" if story is already fully ready.
+  // If story is in "preview" status, leave it — the success page will trigger
+  // completion of remaining illustrations via /api/stories/[storyId]/complete
+  const { data: story } = await supabase
     .from("stories")
-    .update({ status: "ordered" })
-    .eq("id", storyId);
+    .select("status")
+    .eq("id", storyId)
+    .single();
 
-  console.log(`Order completed for story ${storyId}, session ${session.id}`);
+  if (story?.status === "ready") {
+    await supabase
+      .from("stories")
+      .update({ status: "ordered" })
+      .eq("id", storyId);
+  }
+
+  console.log(`Order paid for story ${storyId}, session ${session.id}, story status: ${story?.status}`);
 }
 
 async function handleCheckoutExpired(session: Stripe.Checkout.Session) {
-  const supabase = await createClient();
+  const supabase = createServiceClient();
 
   // Mark the order as cancelled
-  await supabase
+  const { error } = await supabase
     .from("orders")
     .update({ status: "cancelled" })
     .eq("stripe_checkout_session_id", session.id);
+
+  if (error) {
+    throw new Error(`Failed to cancel order for session ${session.id}: ${error.message}`);
+  }
 
   console.log(`Checkout expired for session ${session.id}`);
 }

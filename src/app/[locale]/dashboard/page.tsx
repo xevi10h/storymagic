@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { createClient } from "@/lib/supabase/client";
 import { STORY_TEMPLATES } from "@/lib/create-store";
 import { useTranslations, useLocale } from "next-intl";
+import LogoIcon from "@/components/LogoIcon";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -62,6 +63,8 @@ type TabId = "stories" | "orders" | "characters";
 const STORY_STATUS_STYLES: Record<string, { color: string; icon: string }> = {
   draft: { color: "bg-amber-100 text-amber-700", icon: "edit_note" },
   generating: { color: "bg-blue-100 text-blue-700", icon: "hourglass_top" },
+  preview: { color: "bg-cyan-100 text-cyan-700", icon: "visibility" },
+  completing: { color: "bg-blue-100 text-blue-700", icon: "hourglass_top" },
   ready: { color: "bg-emerald-100 text-emerald-700", icon: "check_circle" },
   ordered: { color: "bg-purple-100 text-purple-700", icon: "shopping_bag" },
 };
@@ -69,6 +72,7 @@ const STORY_STATUS_STYLES: Record<string, { color: string; icon: string }> = {
 const ORDER_STATUS_STYLES: Record<string, { color: string; icon: string }> = {
   pending: { color: "bg-amber-100 text-amber-700", icon: "schedule" },
   paid: { color: "bg-emerald-100 text-emerald-700", icon: "paid" },
+  completed: { color: "bg-emerald-100 text-emerald-700", icon: "check_circle" },
   producing: { color: "bg-blue-100 text-blue-700", icon: "precision_manufacturing" },
   shipped: { color: "bg-indigo-100 text-indigo-700", icon: "local_shipping" },
   delivered: { color: "bg-emerald-100 text-emerald-700", icon: "inventory" },
@@ -165,9 +169,7 @@ export default function DashboardPage() {
       <header className="sticky top-0 z-50 border-b border-border-light bg-white/95 backdrop-blur-sm">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 sm:px-6">
           <Link href="/" className="flex items-center gap-2.5">
-            <span className="material-symbols-outlined text-[28px] text-primary">
-              menu_book
-            </span>
+            <LogoIcon className="h-7 w-7 text-primary" />
             <span className="font-display text-lg font-bold tracking-tight text-secondary">
               StoryMagic
             </span>
@@ -321,19 +323,22 @@ function StoryCard({
   const hasReadyPdf = (story.status === "ready" || story.status === "ordered") && story.pdf_url;
 
   const actionHref =
-    story.status === "ready" || story.status === "ordered"
+    story.status === "preview"
       ? `/crear/${story.id}/preview`
-      : story.status === "generating"
-        ? `/crear/${story.id}/generar`
-        : `/crear`;
+      : story.status === "ready" || story.status === "ordered"
+        ? `/crear/${story.id}/preview`
+        : story.status === "generating" || story.status === "completing"
+          ? `/crear/${story.id}/generar`
+          : `/crear/${story.id}/generar`;
 
   const actionLabel =
+    story.status === "preview" ? t("storyActions.viewPreview") :
     story.status === "ready" ? t("storyActions.viewStory") :
     story.status === "ordered" ? t("storyActions.viewStory") :
-    story.status === "generating" ? t("storyActions.viewProgress") :
+    story.status === "generating" || story.status === "completing" ? t("storyActions.viewProgress") :
     t("storyActions.continue");
 
-  const statusLabel = t(`storyStatus.${story.status}` as "storyStatus.draft" | "storyStatus.generating" | "storyStatus.ready" | "storyStatus.ordered");
+  const statusLabel = t(`storyStatus.${story.status}` as "storyStatus.draft" | "storyStatus.generating" | "storyStatus.preview" | "storyStatus.completing" | "storyStatus.ready" | "storyStatus.ordered");
 
   function startEditing() {
     setTitleDraft(title);
@@ -421,7 +426,7 @@ function StoryCard({
               <h3 className="truncate text-sm font-bold text-text-main">{title}</h3>
               <button
                 onClick={startEditing}
-                className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
+                className="shrink-0 opacity-60 sm:opacity-0 transition-opacity group-hover:opacity-100"
                 aria-label={t("editTitle")}
               >
                 <span className="material-symbols-outlined text-base text-text-muted hover:text-primary">
@@ -444,7 +449,7 @@ function StoryCard({
             <button
               onClick={handleDownloadPdf}
               disabled={downloading}
-              className="hidden items-center gap-1.5 rounded-lg border border-border-light px-3 py-1.5 text-xs font-medium text-text-soft transition-colors hover:bg-cream hover:text-text-main disabled:opacity-50 sm:flex"
+              className="flex items-center gap-1.5 rounded-lg border border-border-light px-3 py-1.5 text-xs font-medium text-text-soft transition-colors hover:bg-cream hover:text-text-main disabled:opacity-50"
               aria-label={t("downloadPdf")}
             >
               {downloading ? (
@@ -452,15 +457,18 @@ function StoryCard({
               ) : (
                 <span className="material-symbols-outlined text-sm">download</span>
               )}
-              PDF
+              <span className="hidden sm:inline">PDF</span>
             </button>
           )}
 
           <Link
             href={actionHref}
-            className="hidden rounded-lg border border-border-light px-3 py-1.5 text-xs font-medium text-text-soft transition-colors hover:bg-cream hover:text-text-main sm:block"
+            className="rounded-lg border border-border-light px-3 py-1.5 text-xs font-medium text-text-soft transition-colors hover:bg-cream hover:text-text-main"
           >
-            {actionLabel}
+            <span className="hidden sm:inline">{actionLabel}</span>
+            <span className="material-symbols-outlined text-sm sm:hidden">
+              {story.status === "draft" ? "edit" : "visibility"}
+            </span>
           </Link>
         </div>
       </div>

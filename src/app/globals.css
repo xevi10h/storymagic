@@ -304,6 +304,64 @@ input[type=range].create-slider:focus {
 }
 
 /* ============================
+   Book Flip Viewer — Open Book (spread)
+   ============================ */
+
+/* Perspective scene */
+.book-scene {
+  perspective: 2000px;
+  perspective-origin: 50% 45%;
+  display: flex;
+  justify-content: center;
+}
+
+/* Book body — wraps the flip area, provides shadow + spine */
+.book-body {
+  position: relative;
+  transform: rotateX(2deg);
+  transition: transform 0.3s ease;
+  /* Realistic table shadow */
+  filter: drop-shadow(0 16px 32px rgba(44, 24, 16, 0.18))
+          drop-shadow(0 4px 8px rgba(44, 24, 16, 0.08));
+}
+
+/* Center spine — pseudo-element anchored to the actual rendered book */
+.book-body::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 4px;
+  transform: translateX(-50%);
+  z-index: 10;
+  pointer-events: none;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.15),
+    rgba(0, 0, 0, 0.03) 40%,
+    rgba(0, 0, 0, 0.03) 60%,
+    rgba(0, 0, 0, 0.15)
+  );
+}
+
+/* Page paper texture */
+.book-page {
+  background-color: #faf8f5;
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+}
+
+/* Hard cover pages (cover + back) */
+.book-flip .--hardCover {
+  box-shadow: inset -3px 0 10px rgba(0, 0, 0, 0.12);
+}
+
+/* Soft page edge during flip */
+.book-flip .--soft {
+  box-shadow: inset -2px 0 6px rgba(0, 0, 0, 0.05);
+}
+
+/* ============================
    Animations
    ============================ */
 

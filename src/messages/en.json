@@ -148,7 +148,8 @@
       "noAccount": "Don't have an account?",
       "createFree": "Create one for free",
       "backHome": "← Back to home",
-      "invalidCredentials": "Invalid email or password"
+      "invalidCredentials": "Invalid email or password",
+      "authFailed": "Authentication could not be completed. Please try again."
     },
     "signup": {
       "subtitle": "Create an account to start your adventure",
@@ -284,6 +285,7 @@
       "solo": {
         "title": "The Book of a Thousand Choices",
         "subtitle": "Customize the details of <highlight>{name}</highlight>'s story and watch the magic change.",
+        "defaultName": "your hero",
         "companionTab": "Companion",
         "atmosphereTab": "Atmosphere",
         "twistTab": "The Twist",
@@ -312,6 +314,7 @@
     "step5": {
       "title": "The Grand Finale",
       "subtitle": "How do you want <highlight>{name}</highlight>'s adventure to end? You have the final word.",
+      "defaultName": "your hero",
       "dedicationLabel": "Special Dedication",
       "dedicationPlaceholder": "Dear {name},\nI wrote this story to remind you that you can always reach the stars.\nWith love, Mom.",
       "senderPlaceholder": "Your name (e.g.: Mom, Dad, Grandma...)",
@@ -330,9 +333,9 @@
       "creatingStory": "Creating your story...",
       "completed": "completed",
       "waitMessage": "This may take a few seconds. We're writing each scene with care.",
-      "readyTitle": "Your story is ready",
-      "readyDescription": "We've created a unique story with 8 personalized scenes. Time to see it!",
-      "viewStory": "View my story",
+      "readyTitle": "Your preview is ready!",
+      "readyDescription": "We've prepared a sneak peek of your story. Discover it now!",
+      "viewStory": "View my story preview",
       "createAnother": "Create another story",
       "errorTitle": "Something went wrong",
       "errorDefault": "An error occurred during generation.",
@@ -349,7 +352,8 @@
         "inkPen": "Preparing the magic ink...",
         "menuBook": "Binding your adventure...",
         "autoAwesome": "Adding a final touch of magic..."
-      }
+      },
+      "goBack": "Go back"
     },
     "preview": {
       "loadingStory": "Loading your story...",
@@ -359,16 +363,27 @@
       "personalizedStory": "A personalized story for",
       "createdFor": "A story created especially for",
       "end": "The End",
-      "downloadPdf": "Download preview PDF",
+      "previewBadge": "Preview",
+      "lockedTitle": "The adventure continues...",
+      "lockedDescription": "Unlock the complete story to discover what happens next.",
+      "lockedCta": "Unlock story",
+      "downloadPdf": "Download full PDF",
       "generatingPdf": "Generating PDF...",
-      "downloadHint": "Download a preview of the story in PDF format",
+      "downloadHint": "Download the complete story in PDF format",
+      "keyboardHint": "Use ← → arrow keys to navigate",
+      "swipeHint": "Swipe to turn pages",
+      "clickToFlip": "Click on pages to turn or drag to rotate the view",
+      "pdfError": "Failed to generate PDF. Please try again.",
       "checkoutTitle": "Make this story real",
       "checkoutSubtitle": "Choose the format and extras for your personalized book",
+      "paywallTitle": "Want to find out what happens next?",
+      "paywallDescription": "{name}'s adventure has just begun. Unlock the complete story with all 12 illustrated scenes.",
+      "instantDelivery": "Instant",
       "optionalExtras": "Optional extras",
       "total": "Total",
       "processing": "Processing...",
-      "buyNow": "Buy now — {price} €",
-      "paymentSecure": "Secure payment with Stripe. Shipping to all of Spain and Europe.",
+      "buyNow": "Unlock story — {price} €",
+      "paymentSecure": "Secure payment with Stripe. Instant PDF included with all formats.",
       "checkoutError": "Error processing payment",
       "orSaveForLater": "or save it for later",
       "saveForLater": "Save & create account",
@@ -379,16 +394,39 @@
   },
   "checkout": {
     "success": {
-      "title": "Order confirmed!",
-      "descriptionWithOrder": "Your story \"{title}\" for {name} is on its way.",
-      "descriptionGeneric": "Your personalized story is on its way.",
-      "nextStepsTitle": "Next steps",
-      "nextStepsDescription": "You'll receive a confirmation email with shipping tracking information.",
+      "title": "Your story is ready!",
+      "descriptionWithOrder": "The story \"{title}\" for {name} is now yours.",
+      "descriptionGeneric": "Your personalized story is ready.",
+      "verifyingPayment": "Verifying your payment...",
+      "verifyingDescription": "We're confirming your purchase. Just a moment.",
+      "completingBook": "Completing your book...",
+      "completingHint": "Generating the remaining illustrations for your story",
+      "completionMessages": {
+        "palette": "Choosing the perfect colors...",
+        "brush": "The illustrations come to life...",
+        "autoStories": "The pages fill with magic...",
+        "forest": "Painting the scenes...",
+        "star": "Adding magical details...",
+        "inkPen": "The magical inkwell is working...",
+        "menuBook": "Binding your adventure...",
+        "autoAwesome": "Final touches of magic..."
+      },
+      "completionErrorTitle": "Couldn't complete the book",
+      "completionErrorDescription": "Your payment was processed successfully, but there was a problem generating the illustrations. You can retry or contact us.",
+      "retryCompletion": "Retry",
+      "goToDashboard": "Go to my library",
+      "pdfReady": "Your PDF is ready",
+      "pdfReadyDescription": "Download the complete story in high quality.",
+      "viewBook": "View book",
+      "nextStepsTitle": "Physical book on its way",
+      "nextStepsDescription": "You'll receive a confirmation email with shipping tracking.",
       "deliveryTitle": "Delivery time",
       "deliveryDescription": "Spain: 5-7 business days. Europe: 7-12 business days.",
       "formatLabel": "Format: {format}",
+      "formatDigital": "Digital PDF",
       "formatHardcover": "Hardcover",
       "formatSoftcover": "Softcover",
+      "instantDownload": "Instant download available",
       "premiumPrint": "Premium print on Munken 170g paper",
       "createAnother": "Create another story",
       "viewOrders": "View my orders"
@@ -408,23 +446,28 @@
     "storyStatus": {
       "draft": "Draft",
       "generating": "Generating...",
+      "preview": "Preview ready",
+      "completing": "Completing...",
       "ready": "Ready",
       "ordered": "Ordered"
     },
     "storyActions": {
       "viewStory": "View story",
+      "viewPreview": "View preview",
       "viewProgress": "View progress",
       "continue": "Continue"
     },
     "orderStatus": {
       "pending": "Pending",
       "paid": "Paid",
+      "completed": "Completed",
       "producing": "In production",
       "shipped": "Shipped",
       "delivered": "Delivered",
       "cancelled": "Cancelled"
     },
     "orderFormat": {
+      "digital_pdf": "Digital PDF",
       "hardcover": "Hardcover",
       "softcover": "Softcover"
     },
@@ -500,41 +543,36 @@
     "signOut": "Sign out"
   },
   "pricing": {
+    "digital_pdf": {
+      "label": "Digital PDF",
+      "description": "Instant download in high quality"
+    },
     "softcover": {
       "label": "Softcover",
-      "description": "Premium print on Munken 170g paper"
+      "description": "Premium print on Munken 170g paper. Includes digital PDF"
     },
     "hardcover": {
       "label": "Hardcover",
-      "description": "Premium binding with rigid cover"
+      "description": "Premium binding with rigid cover. Includes digital PDF"
     },
     "addons": {
-      "adventurePack": {
-        "label": "Artisanal Adventure Pack",
+      "adventure_pack": {
+        "label": "Artisan Adventure Pack",
         "description": "Turn the gift into a full experience",
         "badge": "Most popular",
         "details": [
-          "Handwritten letter from the character addressed to the child",
+          "Handwritten letter from the character to the child",
           "6 matte illustrated stickers from the story",
           "Wooden bookmark engraved with their name"
         ]
       },
-      "digitalPdf": {
-        "label": "Digital PDF (instant)",
-        "description": "Get it right away, read it on any screen",
-        "details": [
-          "Instant download after purchase",
-          "High-quality PDF format (300 DPI)",
-          "Perfect for reading on a tablet, computer, or phone"
-        ]
-      },
-      "extraCopy": {
+      "extra_copy": {
         "label": "Extra copy (softcover)",
-        "description": "An additional copy to gift or keep at the grandparents' house",
+        "description": "An additional copy to gift or keep at grandparents' house",
         "details": [
           "Same book, same print quality",
-          "Combined shipping (no extra shipping costs)",
-          "Ideal for grandparents, godparents, or co-parents"
+          "Combined shipping (no additional shipping costs)",
+          "Perfect for grandparents, godparents, or separated households"
         ]
       }
     }
@@ -550,7 +588,9 @@
       "space": "Space",
       "cooking": "Cooking",
       "reading": "Reading",
-      "superheroes": "Superheroes"
+      "superheroes": "Superheroes",
+      "castles": "Castles",
+      "dinosaurs": "Dinosaurs"
     },
     "hairstyles": {
       "short": "Short",
@@ -562,7 +602,10 @@
       "mohawk": "Mohawk",
       "afro": "Afro",
       "bob": "Bob",
-      "pigtails": "Pigtails"
+      "pigtails": "Pigtails",
+      "spiky": "Spiky",
+      "buzz": "Buzz cut",
+      "medium": "Medium"
     }
   },
   "showcase": {

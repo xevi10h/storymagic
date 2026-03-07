@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
+import LogoIcon from "@/components/LogoIcon";
 
 export default function LoginPage() {
   return (
@@ -26,6 +27,7 @@ function LoginPageContent() {
 
   // Read the redirect destination from URL (e.g. /crear?step=finish)
   const nextUrl = searchParams.get("next") || "/crear";
+  const authError = searchParams.get("error");
 
   async function handleEmailLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -48,7 +50,6 @@ function LoginPageContent() {
     }
 
     router.push(nextUrl);
-    router.refresh();
   }
 
   async function handleGoogleLogin() {
@@ -71,9 +72,7 @@ function LoginPageContent() {
         {/* Logo */}
         <div className="mb-8 text-center">
           <Link href="/" className="inline-flex items-center gap-2">
-            <span className="material-symbols-outlined text-4xl text-primary">
-              menu_book
-            </span>
+            <LogoIcon className="h-10 w-10 text-primary" />
             <span className="font-display text-3xl font-bold text-secondary">
               StoryMagic
             </span>
@@ -86,10 +85,18 @@ function LoginPageContent() {
         {/* Card */}
         <div className="rounded-2xl border border-border-light bg-white p-8 shadow-sm">
           {/* Google button */}
+          {/* Show OAuth error if redirected from callback */}
+          {authError && (
+            <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {t("authFailed")}
+            </div>
+          )}
+
           <button
             type="button"
             onClick={handleGoogleLogin}
-            className="flex w-full items-center justify-center gap-3 rounded-xl border border-border-light bg-white px-4 py-3 text-sm font-semibold text-text-main transition-all hover:border-border-medium hover:bg-cream active:scale-[0.98]"
+            disabled={loading}
+            className="flex w-full items-center justify-center gap-3 rounded-xl border border-border-light bg-white px-4 py-3 text-sm font-semibold text-text-main transition-all hover:border-border-medium hover:bg-cream active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24">
               <path

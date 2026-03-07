@@ -148,7 +148,8 @@
       "noAccount": "Vous n'avez pas de compte ?",
       "createFree": "Créez-en un gratuitement",
       "backHome": "← Retour à l'accueil",
-      "invalidCredentials": "Email ou mot de passe incorrect"
+      "invalidCredentials": "Email ou mot de passe incorrect",
+      "authFailed": "L'authentification n'a pas pu être complétée. Veuillez réessayer."
     },
     "signup": {
       "subtitle": "Créez un compte pour commencer votre aventure",
@@ -284,6 +285,7 @@
       "solo": {
         "title": "Le Livre aux Mille Décisions",
         "subtitle": "Personnalisez les détails de l'histoire de <highlight>{name}</highlight> et observez la magie se transformer.",
+        "defaultName": "votre héros",
         "companionTab": "Compagnon",
         "atmosphereTab": "Atmosphère",
         "twistTab": "Le Rebondissement",
@@ -312,6 +314,7 @@
     "step5": {
       "title": "Le Grand Final",
       "subtitle": "Comment souhaitez-vous que l'aventure de <highlight>{name}</highlight> se termine ? Vous avez le dernier mot.",
+      "defaultName": "votre héros",
       "dedicationLabel": "Dédicace Spéciale",
       "dedicationPlaceholder": "Cher {name},\nJ'ai écrit ce conte pour te rappeler que tu peux toujours atteindre les étoiles.\nAvec amour, Maman.",
       "senderPlaceholder": "Votre nom (ex : Maman, Papa, Mamie...)",
@@ -330,9 +333,9 @@
       "creatingStory": "Création de votre histoire...",
       "completed": "terminé",
       "waitMessage": "Cela peut prendre quelques secondes. Nous écrivons chaque scène avec soin.",
-      "readyTitle": "Votre conte est prêt",
-      "readyDescription": "Nous avons créé une histoire unique avec 8 scènes personnalisées. C'est le moment de la découvrir !",
-      "viewStory": "Voir mon conte",
+      "readyTitle": "Votre aperçu est prêt !",
+      "readyDescription": "Nous avons préparé un avant-goût de votre histoire. Découvrez-le maintenant !",
+      "viewStory": "Voir l'aperçu de mon histoire",
       "createAnother": "Créer un autre conte",
       "errorTitle": "Quelque chose s'est mal passé",
       "errorDefault": "Une erreur est survenue pendant la génération.",
@@ -349,7 +352,8 @@
         "inkPen": "Préparation de l'encre magique...",
         "menuBook": "Reliure de votre aventure...",
         "autoAwesome": "Ajout d'une touche de magie finale..."
-      }
+      },
+      "goBack": "Retour"
     },
     "preview": {
       "loadingStory": "Chargement de votre conte...",
@@ -359,16 +363,27 @@
       "personalizedStory": "Une histoire personnalisée pour",
       "createdFor": "Une histoire créée spécialement pour",
       "end": "Fin",
-      "downloadPdf": "Télécharger le PDF d'aperçu",
+      "previewBadge": "Aperçu",
+      "lockedTitle": "L'aventure continue...",
+      "lockedDescription": "Débloquez l'histoire complète pour découvrir la suite.",
+      "lockedCta": "Débloquer l'histoire",
+      "downloadPdf": "Télécharger le PDF complet",
       "generatingPdf": "Génération du PDF...",
-      "downloadHint": "Téléchargez un aperçu du conte au format PDF",
+      "downloadHint": "Téléchargez l'histoire complète au format PDF",
+      "keyboardHint": "Utilisez les flèches ← → pour naviguer",
+      "swipeHint": "Glissez pour tourner les pages",
+      "clickToFlip": "Cliquez sur les pages pour tourner ou faites glisser pour pivoter la vue",
+      "pdfError": "Erreur lors de la génération du PDF. Veuillez réessayer.",
       "checkoutTitle": "Donnez vie à ce conte",
       "checkoutSubtitle": "Choisissez le format et les extras pour votre livre personnalisé",
       "optionalExtras": "Extras facultatifs",
       "total": "Total",
       "processing": "Traitement...",
-      "buyNow": "Acheter maintenant — {price} €",
-      "paymentSecure": "Paiement sécurisé avec Stripe. Livraison dans toute la France et l'Europe.",
+      "paywallTitle": "Vous voulez découvrir la suite ?",
+      "paywallDescription": "L'aventure de {name} vient de commencer. Débloquez l'histoire complète avec les 12 scènes illustrées.",
+      "instantDelivery": "Instantané",
+      "buyNow": "Débloquer l'histoire — {price} €",
+      "paymentSecure": "Paiement sécurisé avec Stripe. PDF instantané inclus avec tous les formats.",
       "checkoutError": "Erreur lors du traitement du paiement",
       "orSaveForLater": "ou sauvegardez-le pour plus tard",
       "saveForLater": "Sauvegarder et créer un compte",
@@ -379,18 +394,41 @@
   },
   "checkout": {
     "success": {
-      "title": "Commande confirmée !",
-      "descriptionWithOrder": "Votre conte \"{title}\" pour {name} est en route.",
-      "descriptionGeneric": "Votre conte personnalisé est en route.",
-      "nextStepsTitle": "Prochaines étapes",
-      "nextStepsDescription": "Vous recevrez un email de confirmation avec le suivi de livraison.",
+      "title": "Votre histoire est prête !",
+      "descriptionWithOrder": "L'histoire \"{title}\" pour {name} est désormais à vous.",
+      "descriptionGeneric": "Votre histoire personnalisée est prête.",
+      "verifyingPayment": "Vérification de votre paiement...",
+      "verifyingDescription": "Nous confirmons votre achat. Un instant.",
+      "completingBook": "Finalisation de votre livre...",
+      "completingHint": "Génération des illustrations restantes de votre histoire",
+      "completionMessages": {
+        "palette": "Choix des couleurs parfaites...",
+        "brush": "Les illustrations prennent vie...",
+        "autoStories": "Les pages se remplissent de magie...",
+        "forest": "Peinture des décors...",
+        "star": "Ajout de détails magiques...",
+        "inkPen": "L'encrier magique travaille...",
+        "menuBook": "Reliure de votre aventure...",
+        "autoAwesome": "Dernières touches de magie..."
+      },
+      "completionErrorTitle": "Impossible de terminer le livre",
+      "completionErrorDescription": "Votre paiement a été traité avec succès, mais un problème est survenu lors de la génération des illustrations. Vous pouvez réessayer ou nous contacter.",
+      "retryCompletion": "Réessayer",
+      "goToDashboard": "Aller à ma bibliothèque",
+      "pdfReady": "Votre PDF est prêt",
+      "pdfReadyDescription": "Téléchargez l'histoire complète en haute qualité.",
+      "viewBook": "Voir le livre",
+      "nextStepsTitle": "Livre physique en route",
+      "nextStepsDescription": "Vous recevrez un email de confirmation avec le suivi de l'expédition.",
       "deliveryTitle": "Délai de livraison",
-      "deliveryDescription": "France : 5-7 jours ouvrables. Europe : 7-12 jours ouvrables.",
+      "deliveryDescription": "Espagne : 5-7 jours ouvrables. Europe : 7-12 jours ouvrables.",
       "formatLabel": "Format : {format}",
+      "formatDigital": "PDF Numérique",
       "formatHardcover": "Couverture rigide",
       "formatSoftcover": "Couverture souple",
+      "instantDownload": "Téléchargement instantané disponible",
       "premiumPrint": "Impression premium sur papier Munken 170g",
-      "createAnother": "Créer un autre conte",
+      "createAnother": "Créer une autre histoire",
       "viewOrders": "Voir mes commandes"
     }
   },
@@ -408,23 +446,28 @@
     "storyStatus": {
       "draft": "Brouillon",
       "generating": "Génération...",
+      "preview": "Aperçu prêt",
+      "completing": "Finalisation...",
       "ready": "Prêt",
       "ordered": "Commandé"
     },
     "storyActions": {
-      "viewStory": "Voir le conte",
-      "viewProgress": "Voir la progression",
+      "viewStory": "Voir l'histoire",
+      "viewPreview": "Voir l'aperçu",
+      "viewProgress": "Voir le progrès",
       "continue": "Continuer"
     },
     "orderStatus": {
       "pending": "En attente",
       "paid": "Payé",
+      "completed": "Terminé",
       "producing": "En production",
       "shipped": "Expédié",
       "delivered": "Livré",
       "cancelled": "Annulé"
     },
     "orderFormat": {
+      "digital_pdf": "PDF Numérique",
       "hardcover": "Couverture rigide",
       "softcover": "Couverture souple"
     },
@@ -500,41 +543,36 @@
     "signOut": "Se déconnecter"
   },
   "pricing": {
+    "digital_pdf": {
+      "label": "PDF Numérique",
+      "description": "Téléchargement instantané en haute qualité"
+    },
     "softcover": {
       "label": "Couverture souple",
-      "description": "Impression premium sur papier Munken 170g"
+      "description": "Impression premium sur papier Munken 170g. PDF numérique inclus"
     },
     "hardcover": {
       "label": "Couverture rigide",
-      "description": "Reliure premium avec couverture rigide"
+      "description": "Reliure premium avec couverture rigide. PDF numérique inclus"
     },
     "addons": {
-      "adventurePack": {
+      "adventure_pack": {
         "label": "Pack Aventure Artisanal",
         "description": "Transformez le cadeau en une véritable expérience",
         "badge": "Le plus populaire",
         "details": [
           "Lettre manuscrite du personnage adressée à l'enfant",
-          "6 autocollants mats illustrés du conte",
+          "6 autocollants mat illustrés de l'histoire",
           "Marque-page en bois gravé avec son prénom"
         ]
       },
-      "digitalPdf": {
-        "label": "PDF Numérique (instantané)",
-        "description": "Recevez-le immédiatement, lisez-le sur n'importe quel écran",
-        "details": [
-          "Téléchargement immédiat après l'achat",
-          "Format PDF en haute qualité (300 DPI)",
-          "Parfait pour lire sur tablette, ordinateur ou mobile"
-        ]
-      },
-      "extraCopy": {
-        "label": "Exemplaire supplémentaire (couverture souple)",
-        "description": "Un exemplaire en plus à offrir ou à garder chez les grands-parents",
+      "extra_copy": {
+        "label": "Copie supplémentaire (couverture souple)",
+        "description": "Une copie additionnelle à offrir ou garder chez les grands-parents",
         "details": [
           "Même livre, même qualité d'impression",
-          "Envoi groupé (sans frais de livraison supplémentaires)",
-          "Idéal pour les grands-parents, parrains ou parents séparés"
+          "Expédition groupée (pas de frais de port supplémentaires)",
+          "Idéal pour les grands-parents, parrains ou familles séparées"
         ]
       }
     }
@@ -550,7 +588,9 @@
       "space": "Espace",
       "cooking": "Cuisine",
       "reading": "Lecture",
-      "superheroes": "Super-héros"
+      "superheroes": "Super-héros",
+      "castles": "Châteaux",
+      "dinosaurs": "Dinosaures"
     },
     "hairstyles": {
       "short": "Court",
@@ -562,7 +602,10 @@
       "mohawk": "Crête",
       "afro": "Afro",
       "bob": "Carré",
-      "pigtails": "Couettes"
+      "pigtails": "Couettes",
+      "spiky": "En pointe",
+      "buzz": "Rasé",
+      "medium": "Mi-long"
     }
   },
   "showcase": {

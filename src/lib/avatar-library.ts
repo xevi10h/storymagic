@@ -65,10 +65,22 @@ const DICEBEAR_HAIR: Record<string, Record<string, string>> = {
   },
 };
 
+// ---- Mouth driven by AGE ----
+// Most visible facial parameter — produces clear, dramatic changes per age range.
+
+function getMouthForAge(age: number): string {
+  if (age <= 3) return "kawaii";       // tiny cute closed smile
+  if (age <= 6) return "openedSmile";  // big happy laugh
+  if (age <= 9) return "gapSmile";     // missing tooth — charming for this age
+  return "braces";                     // preteen
+}
+
 // ---- Interest system ----
-// Interests change background color and add an accessory from the pool.
-// DiceBear picks ONE accessory based on the seed — different name/age
-// combos will surface different accessories from the pool.
+// Interests affect: background (all blended), accessory (last selected), ring, floating icons.
+//
+// DiceBear limitation: only 1 accessory renders at a time.
+// Strategy: show the accessory of the LAST selected interest so each toggle = visible swap.
+// Background blends ALL selected interest colors for cumulative color shift.
 
 const INTEREST_ACCENT_COLORS: Record<string, string> = {
   space: "e8eaf6",
@@ -79,11 +91,17 @@ const INTEREST_ACCENT_COLORS: Record<string, string> = {
   music: "fff8e1",
 };
 
+// Only kid-appropriate accessories (tested against DiceBear big-smile):
+// - sleepMask: BROKEN (renders nothing)
+// - faceMask: medical mask, hides mouth
+// - mustache: adult-looking
 const INTEREST_ACCESSORY_MAP: Record<string, string> = {
   animals: "catEars",
   castles: "sailormoonCrown",
   space: "glasses",
   music: "sunglasses",
+  dinosaurs: "clownNose",
+  // sports: no good accessory available — relies on background + floating icon
 };
 
 // For UI: gradient ring colors based on primary interest
@@ -125,15 +143,35 @@ export const DEFAULT_RING = {
   to: "to-create-primary",
 };
 
-function getBackgroundColor(interests: string[]): string {
-  if (interests.length === 0) return "fff3e8";
-  return INTEREST_ACCENT_COLORS[interests[0]] || "fff3e8";
+function blendHexColors(hexColors: string[]): string {
+  if (hexColors.length === 0) return "fff3e8";
+  if (hexColors.length === 1) return hexColors[0];
+
+  let r = 0, g = 0, b = 0;
+  for (const hex of hexColors) {
+    r += parseInt(hex.slice(0, 2), 16);
+    g += parseInt(hex.slice(2, 4), 16);
+    b += parseInt(hex.slice(4, 6), 16);
+  }
+  const n = hexColors.length;
+  const toHex = (v: number) => Math.round(v / n).toString(16).padStart(2, "0");
+  return toHex(r) + toHex(g) + toHex(b);
 }
 
-function getInterestAccessories(interests: string[]): string[] {
-  return interests
-    .map((id) => INTEREST_ACCESSORY_MAP[id])
+function getBackgroundColor(interests: string[]): string {
+  const colors = interests
+    .map((id) => INTEREST_ACCENT_COLORS[id])
     .filter(Boolean);
+  return blendHexColors(colors);
+}
+
+// Get the accessory for the LAST selected interest (most recent toggle).
+function getLastInterestAccessory(interests: string[]): string | null {
+  for (let i = interests.length - 1; i >= 0; i--) {
+    const acc = INTEREST_ACCESSORY_MAP[interests[i]];
+    if (acc) return acc;
+  }
+  return null;
 }
 
 // ---- URL builder ----
@@ -145,11 +183,12 @@ function buildDiceBearUrl(character: CharacterData): string {
   const hairMap = DICEBEAR_HAIR[gender] || DICEBEAR_HAIR.boy;
   const hair = hairMap[hairstyle] || Object.values(hairMap)[0];
 
-  // Age in seed for whatever face variation big-smile can produce
-  const seed = `storymagic-${name || "hero"}-${gender}-${age}`;
+  // Seed includes everything so any change produces a subtly different face
+  const interestKey = interests.length > 0 ? interests.join("-") : "none";
+  const seed = `storymagic-${name || "hero"}-${gender}-${age}-${hairstyle}-${interestKey}`;
 
   const bgColor = getBackgroundColor(interests);
-  const accessoryPool = getInterestAccessories(interests);
+  const accessory = getLastInterestAccessory(interests);
 
   const paramObj: Record<string, string> = {
     seed,
@@ -157,15 +196,15 @@ function buildDiceBearUrl(character: CharacterData): string {
     hairColor: cleanHex(hairColor),
     hair,
     eyes: "cheery",
-    mouth: "openedSmile",
+    mouth: getMouthForAge(age),
     accessoriesProbability: "0",
     size: "512",
     backgroundColor: bgColor,
     radius: "50",
   };
 
-  if (accessoryPool.length > 0) {
-    paramObj.accessories = accessoryPool.join(",");
+  if (accessory) {
+    paramObj.accessories = accessory;
     paramObj.accessoriesProbability = "100";
   }
 

@@ -16,13 +16,11 @@ const MODE_IDS = [
     id: "solo" as const,
     image:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuDjd-aoOpygR8MrGzzCHcxxp3Z8Rz-wnvSFvizt10jeqpldSJ8J0jxtwMCfrHVcWiHc3_M6uTXMYpJnI4VX2_Eqe2XpXxgY6nccF9N-d9z-fImO8Xi3olYO2rltoK3KaEENYNad5EHpvrdITzMLOYBB7pLUgNHRPQylguMnsYx1Slw1zQ49CxSl4U_yTFz8kjQIBbMSl15TFtLnYWvDqZ0QfkaXrDM493VGIy-8BgGRxuv5MPM6gglzmFX35Aowr24jLIbYpZN0-1m-",
-    imageAlt: "Niño leyendo un libro concentrado",
   },
   {
     id: "juntos" as const,
     image:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuAHrn-Dhfxi3HjHNJY2G48oMf5eBhsdfcXkg8zCN4ckdnY3HRII7lMcfJdaU-aLDDZdmaluSdXeSljJQbMJXErn9hwUM-qFJnRVSkiPX3ZYBtk5iTeKlZirM4QnVe7whOn-PxUTuCm2tHsrSLiUWu5VUsMRd3tebWWBDzS6e8aewctvhtoe0OyQzwZegNxoM-DFqSBZR1JrBXMeJVmF6prhzYpfEohTtyaewr7TLoHoTo17uBZDt7dHLg7o1BYXfeENGooHC_4VfxhV",
-    imageAlt: "Padre e hijo leyendo juntos un libro",
   },
 ];
 
@@ -38,6 +36,7 @@ export default function Step1ModeSelection({
     title: t(`${m.id}.title`),
     subtitle: t(`${m.id}.subtitle`),
     description: t(`${m.id}.description`),
+    imageAlt: t(`${m.id}.imageAlt`),
   }));
 
   return (

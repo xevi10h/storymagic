@@ -28,7 +28,7 @@ export default function Step4Solo({
   const t = useTranslations("crear.step4.solo");
   const tStep2 = useTranslations("crear.step2");
   const [activeTab, setActiveTab] = useState<TabId>("companion");
-  const displayName = characterName || "Leo";
+  const displayName = characterName || t("defaultName");
 
   const companionDecision = template.decisions.find((d) => d.key === "companion");
   const challengeDecision = template.decisions.find((d) => d.key === "challenge");
@@ -375,6 +375,7 @@ export default function Step4Solo({
                       }
                       placeholder={t("specialMomentPlaceholder")}
                       rows={2}
+                      maxLength={300}
                       className="w-full px-4 py-3 rounded-xl border-2 border-create-neutral bg-white focus:border-create-primary focus:ring-0 transition-all outline-none placeholder:text-gray-300 text-sm font-medium text-create-text resize-none"
                     />
                     <p className="text-xs text-create-text-sub">
@@ -388,7 +389,11 @@ export default function Step4Solo({
         </div>
       </main>
 
-      <CreationFooterNav onBack={onBack} onNext={onNext} />
+      <CreationFooterNav
+        onBack={onBack}
+        onNext={onNext}
+        nextDisabled={!decisions.companion}
+      />
     </div>
   );
 }

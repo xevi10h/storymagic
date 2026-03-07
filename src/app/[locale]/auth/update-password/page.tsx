@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
+import LogoIcon from "@/components/LogoIcon";
 
 function UpdatePasswordContent() {
   const t = useTranslations("auth.updatePassword");
@@ -130,9 +131,7 @@ function UpdatePasswordContent() {
         {/* Logo */}
         <div className="mb-8 text-center">
           <Link href="/" className="inline-flex items-center gap-2">
-            <span className="material-symbols-outlined text-4xl text-primary">
-              menu_book
-            </span>
+            <LogoIcon className="h-10 w-10 text-primary" />
             <span className="font-display text-3xl font-bold text-secondary">
               StoryMagic
             </span>
