@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "title": "StoryMagic — Historias Reales para Tocar",
+    "title": "meapica — Historias Reales para Tocar",
     "description": "Recupera la magia de pasar las páginas. Cuentos personalizados impresos en papel de alta calidad, diseñados para crear momentos de conexión real."
   },
   "nav": {
@@ -122,7 +122,7 @@
     "readingClubDescription": "Consejos para fomentar la lectura sin pantallas.",
     "emailPlaceholder": "Tu correo electrónico",
     "joinClub": "Unirme al club",
-    "copyright": "© 2025 StoryMagic Artesanos. Hecho con amor.",
+    "copyright": "© 2025 meapica. Hecho con amor.",
     "legalNotice": "Aviso Legal",
     "privacy": "Privacidad",
     "cookies": "Cookies"
@@ -308,6 +308,7 @@
         "specialMomentHint": "La IA incluirá este momento en la historia de forma natural."
       },
       "juntos": {
+        "defaultName": "el héroe",
         "chooseNext": "¡Elige el siguiente paso de la historia!",
         "decision": "Decisión {current} de {total}",
         "nextDecision": "Siguiente decisión"
@@ -369,6 +370,7 @@
       "lockedTitle": "La aventura continúa...",
       "lockedDescription": "Desbloquea el cuento completo para descubrir cómo sigue la historia.",
       "lockedCta": "Desbloquear cuento",
+      "expandPage": "Ver a pantalla completa",
       "downloadPdf": "Descargar PDF completo",
       "generatingPdf": "Generando PDF...",
       "downloadHint": "Descarga el cuento completo en formato PDF",

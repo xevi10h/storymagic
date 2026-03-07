@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "title": "StoryMagic — De Vraies Histoires à Toucher",
+    "title": "meapica — De Vraies Histoires à Toucher",
     "description": "Retrouvez la magie de tourner les pages. Des contes personnalisés imprimés sur du papier de haute qualité, conçus pour créer des moments de connexion authentique."
   },
   "nav": {
@@ -122,7 +122,7 @@
     "readingClubDescription": "Conseils pour encourager la lecture sans écrans.",
     "emailPlaceholder": "Votre adresse email",
     "joinClub": "Rejoindre le club",
-    "copyright": "© 2025 StoryMagic Artisans. Fait avec amour.",
+    "copyright": "© 2025 meapica. Fait avec amour.",
     "legalNotice": "Mentions Légales",
     "privacy": "Confidentialité",
     "cookies": "Cookies"
@@ -232,12 +232,14 @@
       "solo": {
         "title": "Je crée seul(e)",
         "subtitle": "Surprise Magique",
-        "description": "Concevez le conte en secret pour l'offrir comme un cadeau surprise inoubliable. Vous avez le contrôle total de l'histoire et des détails."
+        "description": "Concevez le conte en secret pour l'offrir comme un cadeau surprise inoubliable. Vous avez le contrôle total de l'histoire et des détails.",
+        "imageAlt": "Enfant lisant un livre avec concentration"
       },
       "juntos": {
         "title": "Nous créons ensemble",
         "subtitle": "Aventure Partagée",
-        "description": "Une expérience interactive conçue pour être partagée en famille. Choisissez les personnages, les couleurs et les rebondissements de l'intrigue avec votre enfant."
+        "description": "Une expérience interactive conçue pour être partagée en famille. Choisissez les personnages, les couleurs et les rebondissements de l'intrigue avec votre enfant.",
+        "imageAlt": "Parent et enfant lisant un livre ensemble"
       }
     },
     "step2": {
@@ -306,6 +308,7 @@
         "specialMomentHint": "L'IA intégrera ce moment dans l'histoire de manière naturelle."
       },
       "juntos": {
+        "defaultName": "le héros",
         "chooseNext": "Choisissez la prochaine étape de l'histoire !",
         "decision": "Décision {current} sur {total}",
         "nextDecision": "Décision suivante"
@@ -367,6 +370,7 @@
       "lockedTitle": "L'aventure continue...",
       "lockedDescription": "Débloquez l'histoire complète pour découvrir la suite.",
       "lockedCta": "Débloquer l'histoire",
+      "expandPage": "Voir en plein écran",
       "downloadPdf": "Télécharger le PDF complet",
       "generatingPdf": "Génération du PDF...",
       "downloadHint": "Téléchargez l'histoire complète au format PDF",
@@ -606,6 +610,223 @@
       "spiky": "En pointe",
       "buzz": "Rasé",
       "medium": "Mi-long"
+    },
+    "templates": {
+      "space": {
+        "title": "La Grande Aventure Spatiale",
+        "description": "Un voyage vers les étoiles où ils découvriront des planètes inconnues et se feront des amis extraterrestres.",
+        "ageRange": "4-7 ans",
+        "previewChapterTitle": "Le Vaisseau des Rêves",
+        "decisions": {
+          "encounter": {
+            "question": "Que découvre {name} sur la planète inconnue ?",
+            "robot": { "title": "Robot Amical", "subtitle": "Bip boup, tu veux être mon ami ?" },
+            "crystal": { "title": "Cristal Lumineux", "subtitle": "Il brille de toutes les couleurs de l'arc-en-ciel" },
+            "ship": { "title": "Vaisseau Abandonné", "subtitle": "Qui l'a laissé ici ?" }
+          },
+          "companion": {
+            "question": "Qui accompagne {name} dans cette mission spatiale ?",
+            "alien": { "title": "Alien Sympathique", "subtitle": "Il a trois yeux et un immense sourire" },
+            "copilot-robot": { "title": "Robot Copilote", "subtitle": "Le meilleur navigateur de la galaxie" },
+            "star": { "title": "Étoile Guide", "subtitle": "Une petite étoile qui parle et montre le chemin" }
+          },
+          "challenge": {
+            "question": "Quel danger apparaît dans la mission de {name} ?",
+            "asteroids": { "title": "Tempête d'Astéroïdes", "subtitle": "Esquive et vole !" },
+            "shrinking-planet": { "title": "Planète qui Rétrécit", "subtitle": "Il faut sauver les habitants !" },
+            "black-hole": { "title": "Trou Noir Farceur", "subtitle": "Il aspire tout ce qui est amusant !" }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "stellar-dawn": "Aube Stellaire",
+            "eclipse": "Éclipse Solaire",
+            "infinite-night": "Nuit Infinie"
+          },
+          "setting": {
+            "nebula": "Nébuleuse Colorée",
+            "asteroid-belt": "Ceinture d'Astéroïdes",
+            "unknown-moon": "Lune Inconnue"
+          }
+        },
+        "endings": {
+          "triumphant-return": { "title": "Retour Triomphal", "description": "Revient sur Terre avec un cadeau de l'espace et une histoire incroyable à raconter." },
+          "galactic-party": { "title": "Fête Intergalactique", "description": "Tous les amis extraterrestres fêtent avec de la musique cosmique et des gourmandises d'étoiles." },
+          "stargazing": { "title": "Bivouac Stellaire", "description": "S'allonge sur une planète douce pour contempler les constellations et se souvenir de l'aventure." }
+        }
+      },
+      "forest": {
+        "title": "La Forêt Magique",
+        "description": "Des secrets parmi les arbres anciens et des créatures fantastiques qui ont besoin d'aide.",
+        "ageRange": "3-6 ans",
+        "previewChapterTitle": "La Forêt des Murmures",
+        "decisions": {
+          "encounter": {
+            "question": "Que trouve {name} parmi les arbres ?",
+            "dragon": { "title": "Dragon Endormi", "subtitle": "Zzz... sous l'arbre ancien" },
+            "treasure": { "title": "Coffre Magique", "subtitle": "Rempli de poussière de fées !" },
+            "door": { "title": "Porte Secrète", "subtitle": "Où mène-t-elle ?" }
+          },
+          "companion": {
+            "question": "Qui accompagne {name} dans la forêt ?",
+            "fox": { "title": "Renard Sage", "subtitle": "Connaît tous les secrets de la forêt" },
+            "fairy": { "title": "Fée Espiègle", "subtitle": "Toute petite mais pleine de magie" },
+            "owl": { "title": "Hibou Ancien", "subtitle": "A vu passer mille lunes" }
+          },
+          "challenge": {
+            "question": "Quel obstacle apparaît sur le chemin de {name} ?",
+            "river": { "title": "Rivière en Crue", "subtitle": "L'eau monte et il n'y a pas de pont" },
+            "fog": { "title": "Brouillard Enchanté", "subtitle": "On ne voit rien... ou si ?" },
+            "talking-tree": { "title": "Arbre Parlant", "subtitle": "Demande quelque chose en échange pour laisser passer" }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "golden-dawn": "Aube Dorée",
+            "pink-sunset": "Coucher de Soleil Rosé",
+            "full-moon": "Nuit de Pleine Lune"
+          },
+          "setting": {
+            "enchanted-clearing": "Clairière Enchantée",
+            "crystal-cave": "Grotte de Cristaux",
+            "hidden-waterfall": "Cascade Cachée"
+          }
+        },
+        "endings": {
+          "clearing-celebration": { "title": "Fête dans la Clairière", "description": "Toutes les créatures de la forêt fêtent avec musique et danse parmi les lucioles." },
+          "magic-seed": { "title": "La Graine Magique", "description": "La forêt offre une graine spéciale à planter chez soi pour se souvenir de l'aventure." },
+          "moss-rest": { "title": "Repos sur la Mousse", "description": "S'allonge sur un lit de mousse pour écouter les murmures de la forêt sous les étoiles." }
+        }
+      },
+      "superhero": {
+        "title": "Super-Héros pour un Jour",
+        "description": "Sauvons la ville ! Découvre des super-pouvoirs cachés et apprends la valeur du courage.",
+        "ageRange": "5-8 ans",
+        "previewChapterTitle": "L'Éveil du Héros",
+        "decisions": {
+          "encounter": {
+            "question": "Qu'est-ce qui éveille les super-pouvoirs de {name} ?",
+            "mask": { "title": "Masque Mystérieux", "subtitle": "Apparaît de nulle part avec un éclat spécial" },
+            "help-call": { "title": "Appel à l'Aide", "subtitle": "Quelqu'un a besoin d'aide urgente !" },
+            "power-ray": { "title": "Rayon de Pouvoir", "subtitle": "Un éclair qui change tout" }
+          },
+          "companion": {
+            "question": "Qui est le coéquipier de {name} ?",
+            "hero-dog": { "title": "Chien Super-Héros", "subtitle": "Avec cape et tout !" },
+            "best-friend": { "title": "Meilleur(e) Ami(e)", "subtitle": "Ensemble, ils forment une équipe imbattable" },
+            "helper-robot": { "title": "Robot Assistant", "subtitle": "A des outils pour tout" }
+          },
+          "challenge": {
+            "question": "Quel vilain menace la ville de {name} ?",
+            "shadow": { "title": "Le Vilain de l'Ombre", "subtitle": "Veut éteindre toutes les lumières de la ville" },
+            "storm": { "title": "Tempête Chaotique", "subtitle": "Le temps est devenu fou" },
+            "laugh-thief": { "title": "Le Voleur de Rires", "subtitle": "Personne ne peut rire !" }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "heroic-dawn": "Aube Héroïque",
+            "epic-noon": "Midi Épique",
+            "watch-night": "Nuit de Garde"
+          },
+          "setting": {
+            "city-center": "Centre-Ville",
+            "secret-lair": "Repaire Secret",
+            "rooftops": "Toits sous la Lune"
+          }
+        },
+        "endings": {
+          "hero-parade": { "title": "Défilé Héroïque", "description": "La ville fête avec un grand défilé et tout le monde scande le nom du héros." },
+          "secret-identity": { "title": "Identité Secrète", "description": "Retire la cape, sourit, et redevient simplement {name}." },
+          "hero-feast": { "title": "Banquet des Héros", "description": "Tous les personnages sauvés préparent une fête surprise de remerciement." }
+        }
+      },
+      "pirates": {
+        "title": "Pirates des Mers",
+        "description": "À la recherche du trésor perdu en naviguant sur les sept mers avec un équipage très amusant.",
+        "ageRange": "4-8 ans",
+        "previewChapterTitle": "L'Île du Capitaine",
+        "decisions": {
+          "encounter": {
+            "question": "Que découvre {name} sur l'île mystérieuse ?",
+            "treasure-map": { "title": "Carte au Trésor", "subtitle": "X marque l'endroit !" },
+            "talking-parrot": { "title": "Perroquet Bavard", "subtitle": "Raconte des histoires d'aventures passées" },
+            "mystery-island": { "title": "Grotte Sous-Marine", "subtitle": "Cachée sous les vagues" }
+          },
+          "companion": {
+            "question": "Qui fait partie de l'équipage de {name} ?",
+            "monkey": { "title": "Singe Farceur", "subtitle": "Vole toujours les bananes du capitaine" },
+            "mermaid": { "title": "Sirène Amicale", "subtitle": "Connaît tous les secrets de la mer" },
+            "veteran-pirate": { "title": "Pirate Vétéran", "subtitle": "Avec cache-œil, jambe de bois et cœur d'or" }
+          },
+          "challenge": {
+            "question": "Quel danger guette l'équipage de {name} ?",
+            "kraken": { "title": "Kraken Géant", "subtitle": "Des tentacules partout !" },
+            "sea-storm": { "title": "Tempête en Mer", "subtitle": "Vagues énormes et vent féroce" },
+            "sinking-island": { "title": "Île qui Coule", "subtitle": "Elle s'enfonce petit à petit !" }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "sea-dawn": "Aube en Haute Mer",
+            "tropical-sunset": "Coucher de Soleil Tropical",
+            "storm-night": "Nuit de Tempête"
+          },
+          "setting": {
+            "open-sea": "Pleine Mer",
+            "desert-island": "Île Déserte",
+            "underwater-cave": "Grotte Sous-Marine"
+          }
+        },
+        "endings": {
+          "true-treasure": { "title": "Le Vrai Trésor", "description": "Ils découvrent que le vrai trésor, ce sont les amis qu'ils se sont faits en chemin." },
+          "paradise-island": { "title": "Île Paradisiaque", "description": "Ils jettent l'ancre sur une plage de sable doré pour se reposer et profiter." },
+          "pirate-party": { "title": "Fête Pirate", "description": "Grande célébration sur le navire avec musique, danse et gâteau à la noix de coco." }
+        }
+      },
+      "chef": {
+        "title": "Le Plus Petit Chef",
+        "description": "Une cuisine pleine de magie où les ingrédients prennent vie et dansent dans la marmite.",
+        "ageRange": "2-5 ans",
+        "previewChapterTitle": "La Cuisine Enchantée",
+        "decisions": {
+          "encounter": {
+            "question": "Que découvre {name} dans la cuisine magique ?",
+            "secret-recipe": { "title": "Recette Secrète", "subtitle": "Un vieux livre avec une page qui brille" },
+            "living-ingredient": { "title": "Ingrédient Vivant", "subtitle": "La carotte peut parler !" },
+            "enchanted-kitchen": { "title": "Cuisine Enchantée", "subtitle": "Les ustensiles bougent tout seuls" }
+          },
+          "companion": {
+            "question": "Qui aide {name} dans la cuisine ?",
+            "singing-spoon": { "title": "Cuillère Chanteuse", "subtitle": "Chante en remuant la soupe" },
+            "chef-mouse": { "title": "Souris Chef", "subtitle": "Petite mais avec un palais incroyable" },
+            "magic-grandma": { "title": "Grand-Mère Magique", "subtitle": "Ses recettes ont un ingrédient secret : l'amour" }
+          },
+          "challenge": {
+            "question": "Quel problème surgit dans la cuisine de {name} ?",
+            "rebel-ingredients": { "title": "Ingrédients Rebelles", "subtitle": "Ils ne veulent pas aller dans la marmite !" },
+            "growing-cake": { "title": "Gâteau Géant", "subtitle": "Il n'arrête pas de grandir !" },
+            "tiny-kitchen": { "title": "Cuisine Minuscule", "subtitle": "Tout devient tout petit !" }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "magic-breakfast": "Petit-Déjeuner Magique",
+            "special-snack": "Goûter Spécial",
+            "gala-dinner": "Dîner de Gala"
+          },
+          "setting": {
+            "home-kitchen": "Cuisine de la Maison",
+            "enchanted-restaurant": "Restaurant Enchanté",
+            "cloud-bakery": "Pâtisserie des Nuages"
+          }
+        },
+        "endings": {
+          "grand-feast": { "title": "Grand Festin", "description": "Tout le monde goûte la recette magique et c'est la plus délicieuse du monde." },
+          "secret-recipe-kept": { "title": "La Recette Secrète", "description": "Garde la recette dans un livre spécial pour cuisiner quand il le souhaite." },
+          "cooking-together": { "title": "Tous aux Fourneaux", "description": "Tous les personnages cuisinent ensemble la plus grande recette du monde." }
+        }
+      }
     }
   },
   "showcase": {

@@ -1,11 +1,24 @@
 "use client";
 
-import { useRef, useCallback, useEffect } from "react";
+import { useRef, useCallback, useEffect, useState } from "react";
 import HTMLFlipBook from "react-pageflip";
 import { useTranslations } from "next-intl";
 import MobileBookPage from "./MobileBookPage";
+import FullscreenPageViewer from "./FullscreenPageViewer";
 import type { BookViewerProps } from "./types";
 import { playPageTurnSound } from "./page-turn-sound";
+
+function useIsNarrow(breakpoint = 768) {
+  const [narrow, setNarrow] = useState(false);
+  useEffect(() => {
+    const mql = window.matchMedia(`(max-width: ${breakpoint - 1}px)`);
+    setNarrow(mql.matches);
+    const handler = (e: MediaQueryListEvent) => setNarrow(e.matches);
+    mql.addEventListener("change", handler);
+    return () => mql.removeEventListener("change", handler);
+  }, [breakpoint]);
+  return narrow;
+}
 
 export default function MobileBookViewer({
   pages,
@@ -17,6 +30,9 @@ export default function MobileBookViewer({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const flipBookRef = useRef<any>(null);
   const lastReportedPage = useRef(currentPage);
+  const isNarrow = useIsNarrow();
+  const [fullscreenPage, setFullscreenPage] = useState<number | null>(null);
+
   // Sync external page changes to the flip book
   useEffect(() => {
     if (
@@ -52,17 +68,17 @@ export default function MobileBookViewer({
         <div className="book-body w-full">
           <HTMLFlipBook
             ref={flipBookRef}
-            width={420}
-            height={560}
+            width={isNarrow ? 350 : 420}
+            height={isNarrow ? 500 : 560}
             size="stretch"
             minWidth={150}
-            maxWidth={520}
+            maxWidth={isNarrow ? 400 : 520}
             minHeight={200}
-            maxHeight={700}
+            maxHeight={isNarrow ? 570 : 700}
             showCover={true}
             drawShadow={true}
             flippingTime={700}
-            usePortrait={false}
+            usePortrait={isNarrow}
             mobileScrollSupport={true}
             swipeDistance={30}
             showPageCorners={true}
@@ -88,8 +104,19 @@ export default function MobileBookViewer({
         </div>
       </div>
 
+      {/* Fullscreen expand button (mobile only) */}
+      {isNarrow && (
+        <button
+          onClick={() => setFullscreenPage(currentPage)}
+          className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-border-light bg-white px-4 py-1.5 text-xs text-text-muted transition-colors hover:border-create-primary hover:text-create-primary"
+        >
+          <span className="material-symbols-outlined text-sm">fullscreen</span>
+          {t("expandPage")}
+        </button>
+      )}
+
       {/* Navigation arrows + dots */}
-      <div className="mt-5 flex items-center justify-center gap-3">
+      <div className={`${isNarrow ? "mt-3" : "mt-5"} flex items-center justify-center gap-3`}>
         <button
           onClick={() => {
             const pf = flipBookRef.current?.pageFlip();
@@ -145,6 +172,22 @@ export default function MobileBookViewer({
       <p className="mt-2 text-center text-xs text-text-muted">
         {t("swipeHint")}
       </p>
+
+      {/* Fullscreen page viewer modal */}
+      {fullscreenPage !== null && (
+        <FullscreenPageViewer
+          pages={pages}
+          templateId={templateId}
+          initialPage={fullscreenPage}
+          onClose={() => setFullscreenPage(null)}
+          onPageChange={(idx) => {
+            // Sync flip book when user swipes in fullscreen
+            const pf = flipBookRef.current?.pageFlip();
+            if (pf) pf.flip(idx);
+            onPageChange(idx);
+          }}
+        />
+      )}
     </div>
   );
 }

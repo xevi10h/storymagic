@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "title": "StoryMagic — Històries Reals per Tocar",
+    "title": "meapica — Històries Reals per Tocar",
     "description": "Recupera la màgia de passar les pàgines. Contes personalitzats impresos en paper d'alta qualitat, dissenyats per crear moments de connexió real."
   },
   "nav": {
@@ -122,7 +122,7 @@
     "readingClubDescription": "Consells per fomentar la lectura sense pantalles.",
     "emailPlaceholder": "El teu correu electrònic",
     "joinClub": "Unir-me al club",
-    "copyright": "© 2025 StoryMagic Artesans. Fet amb amor.",
+    "copyright": "© 2025 meapica. Fet amb amor.",
     "legalNotice": "Avís Legal",
     "privacy": "Privacitat",
     "cookies": "Cookies"
@@ -232,12 +232,14 @@
       "solo": {
         "title": "Creo jo sol/a",
         "subtitle": "Sorpresa Màgica",
-        "description": "Dissenya el conte en secret per donar-li com un regal sorpresa inoblidable. Tu tens el control total de la història i els detalls."
+        "description": "Dissenya el conte en secret per donar-li com un regal sorpresa inoblidable. Tu tens el control total de la història i els detalls.",
+        "imageAlt": "Nen llegint un llibre concentrat"
       },
       "juntos": {
         "title": "Creem junts",
         "subtitle": "Aventura Compartida",
-        "description": "Una experiència interactiva dissenyada per gaudir en família. Tria personatges, colors i girs de la trama amb el teu petit."
+        "description": "Una experiència interactiva dissenyada per gaudir en família. Tria personatges, colors i girs de la trama amb el teu petit.",
+        "imageAlt": "Pare i fill llegint junts un llibre"
       }
     },
     "step2": {
@@ -306,6 +308,7 @@
         "specialMomentHint": "La IA inclourà aquest moment a la història de forma natural."
       },
       "juntos": {
+        "defaultName": "l'heroi",
         "chooseNext": "Tria el següent pas de la història!",
         "decision": "Decisió {current} de {total}",
         "nextDecision": "Següent decisió"
@@ -367,6 +370,7 @@
       "lockedTitle": "L'aventura continua...",
       "lockedDescription": "Desbloqueja el conte complet per descobrir com segueix la història.",
       "lockedCta": "Desbloquejar conte",
+      "expandPage": "Veure a pantalla completa",
       "downloadPdf": "Descarregar PDF complet",
       "generatingPdf": "Generant PDF...",
       "downloadHint": "Descarrega el conte complet en format PDF",
@@ -606,6 +610,223 @@
       "spiky": "De punta",
       "buzz": "Rapat",
       "medium": "Mitjà"
+    },
+    "templates": {
+      "space": {
+        "title": "La Gran Aventura Espacial",
+        "description": "Un viatge a les estrelles on descobriran planetes desconeguts i faran amics alienígenes.",
+        "ageRange": "4-7 anys",
+        "previewChapterTitle": "La Nau dels Somnis",
+        "decisions": {
+          "encounter": {
+            "question": "Què descobreix {name} al planeta desconegut?",
+            "robot": { "title": "Robot Amigable", "subtitle": "Bip bup, vols ser el meu amic?" },
+            "crystal": { "title": "Cristall Lluminós", "subtitle": "Brilla amb els colors de l'arc de Sant Martí" },
+            "ship": { "title": "Nau Abandonada", "subtitle": "Qui la va deixar aquí?" }
+          },
+          "companion": {
+            "question": "Qui acompanya {name} en aquesta missió espacial?",
+            "alien": { "title": "Alien Simpàtic", "subtitle": "Té tres ulls i un somriure enorme" },
+            "copilot-robot": { "title": "Robot Copilot", "subtitle": "El millor navegant de la galàxia" },
+            "star": { "title": "Estrella Guia", "subtitle": "Una estrelleta que parla i assenyala el camí" }
+          },
+          "challenge": {
+            "question": "Quin perill apareix a la missió de {name}?",
+            "asteroids": { "title": "Tempesta d'Asteroides", "subtitle": "Esquiva i vola!" },
+            "shrinking-planet": { "title": "Planeta que s'Encongeix", "subtitle": "Cal salvar els habitants!" },
+            "black-hole": { "title": "Forat Negre Entremaliat", "subtitle": "Absorbeix tot el que és divertit!" }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "stellar-dawn": "Alba Estel·lar",
+            "eclipse": "Eclipsi Solar",
+            "infinite-night": "Nit Infinita"
+          },
+          "setting": {
+            "nebula": "Nebulosa Acolorida",
+            "asteroid-belt": "Cinturó d'Asteroides",
+            "unknown-moon": "Lluna Desconeguda"
+          }
+        },
+        "endings": {
+          "triumphant-return": { "title": "Retorn Triomfal", "description": "Torna a la Terra amb un regal de l'espai i una història increïble per explicar." },
+          "galactic-party": { "title": "Festa Intergalàctica", "description": "Tots els amics alienígenes celebren amb música còsmica i menjar d'estrelles." },
+          "stargazing": { "title": "Acampada Estel·lar", "description": "S'estira en un planeta suau a mirar les constel·lacions i recordar l'aventura." }
+        }
+      },
+      "forest": {
+        "title": "El Bosc Màgic",
+        "description": "Secrets entre els arbres antics i criatures fantàstiques que necessiten ajuda.",
+        "ageRange": "3-6 anys",
+        "previewChapterTitle": "El Bosc dels Xiuxiueigs",
+        "decisions": {
+          "encounter": {
+            "question": "Què troba {name} entre els arbres?",
+            "dragon": { "title": "Drac Adormit", "subtitle": "Zzz... sota l'arbre antic" },
+            "treasure": { "title": "Cofre Màgic", "subtitle": "Ple de pols de fades!" },
+            "door": { "title": "Porta Secreta", "subtitle": "On portarà?" }
+          },
+          "companion": {
+            "question": "Qui acompanya {name} al bosc?",
+            "fox": { "title": "Guineu Sàvia", "subtitle": "Coneix tots els secrets del bosc" },
+            "fairy": { "title": "Fada Entremaliada", "subtitle": "Petitona però plena de màgia" },
+            "owl": { "title": "Mussol Ancià", "subtitle": "Ha vist passar mil llunes" }
+          },
+          "challenge": {
+            "question": "Quin obstacle apareix al camí de {name}?",
+            "river": { "title": "Riu Crescut", "subtitle": "L'aigua puja i no hi ha pont" },
+            "fog": { "title": "Boira Encantada", "subtitle": "No s'hi veu res... o sí?" },
+            "talking-tree": { "title": "Arbre Parlant", "subtitle": "Demana alguna cosa a canvi de deixar passar" }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "golden-dawn": "Alba Daurada",
+            "pink-sunset": "Capvespre Rosat",
+            "full-moon": "Nit de Lluna Plena"
+          },
+          "setting": {
+            "enchanted-clearing": "Clariana Encantada",
+            "crystal-cave": "Cova de Cristalls",
+            "hidden-waterfall": "Cascada Amagada"
+          }
+        },
+        "endings": {
+          "clearing-celebration": { "title": "Festa a la Clariana", "description": "Totes les criatures del bosc celebren amb música i ball entre cuca de llum." },
+          "magic-seed": { "title": "La Llavor Màgica", "description": "El bosc regala una llavor especial per plantar a casa i recordar l'aventura." },
+          "moss-rest": { "title": "Descans a la Molsa", "description": "S'estira en un llit de molsa a escoltar els xiuxiueigs del bosc sota les estrelles." }
+        }
+      },
+      "superhero": {
+        "title": "Superheroi per un Dia",
+        "description": "A salvar la ciutat! Descobreix superpoders ocults i aprèn el valor de la valentia.",
+        "ageRange": "5-8 anys",
+        "previewChapterTitle": "El Despertar de l'Heroi",
+        "decisions": {
+          "encounter": {
+            "question": "Què desperta els superpoders de {name}?",
+            "mask": { "title": "Màscara Misteriosa", "subtitle": "Apareix del no-res amb una lluentor especial" },
+            "help-call": { "title": "Crida d'Auxili", "subtitle": "Algú necessita ajuda urgent!" },
+            "power-ray": { "title": "Raig de Poder", "subtitle": "Un llampec que ho canvia tot" }
+          },
+          "companion": {
+            "question": "Qui és el company d'equip de {name}?",
+            "hero-dog": { "title": "Gos Superheroi", "subtitle": "Amb capa i tot!" },
+            "best-friend": { "title": "Millor Amic/a", "subtitle": "Junts són un equip imparable" },
+            "helper-robot": { "title": "Robot Ajudant", "subtitle": "Té eines per a tot" }
+          },
+          "challenge": {
+            "question": "Quin vilà amenaça la ciutat de {name}?",
+            "shadow": { "title": "El Vilà Ombra", "subtitle": "Vol apagar tots els llums de la ciutat" },
+            "storm": { "title": "Tempesta Caòtica", "subtitle": "El clima s'ha tornat boig" },
+            "laugh-thief": { "title": "El Lladre de Riures", "subtitle": "Ningú pot riure!" }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "heroic-dawn": "Alba Heroica",
+            "epic-noon": "Migdia Èpic",
+            "watch-night": "Nit de Vigilància"
+          },
+          "setting": {
+            "city-center": "Centre de la Ciutat",
+            "secret-lair": "Amagatall Secret",
+            "rooftops": "Terrats sota la Lluna"
+          }
+        },
+        "endings": {
+          "hero-parade": { "title": "Desfilada Heroica", "description": "La ciutat celebra amb una gran desfilada i tothom crida el nom de l'heroi." },
+          "secret-identity": { "title": "Identitat Secreta", "description": "Es treu la capa, somriu, i torna a ser simplement {name}." },
+          "hero-feast": { "title": "Banquet d'Herois", "description": "Tots els personatges salvats preparen una festa sorpresa d'agraïment." }
+        }
+      },
+      "pirates": {
+        "title": "Pirates del Mar",
+        "description": "A la recerca del tresor perdut navegant els set mars amb una tripulació molt divertida.",
+        "ageRange": "4-8 anys",
+        "previewChapterTitle": "L'Illa del Capità",
+        "decisions": {
+          "encounter": {
+            "question": "Què descobreix {name} a l'illa misteriosa?",
+            "treasure-map": { "title": "Mapa del Tresor", "subtitle": "X marca el lloc!" },
+            "talking-parrot": { "title": "Lloro Xerraire", "subtitle": "Explica històries d'aventures passades" },
+            "mystery-island": { "title": "Cova Submarina", "subtitle": "Amagada sota les ones" }
+          },
+          "companion": {
+            "question": "Qui forma part de la tripulació de {name}?",
+            "monkey": { "title": "Mico Entremaliat", "subtitle": "Sempre roba els plàtans del capità" },
+            "mermaid": { "title": "Sirena Amistosa", "subtitle": "Coneix tots els secrets del mar" },
+            "veteran-pirate": { "title": "Pirata Veterà", "subtitle": "Amb pedaç, cama de fusta i cor d'or" }
+          },
+          "challenge": {
+            "question": "Quin perill aguaita la tripulació de {name}?",
+            "kraken": { "title": "Kraken Gegant", "subtitle": "Tentacles per tot arreu!" },
+            "sea-storm": { "title": "Tempesta Marina", "subtitle": "Onades enormes i vent ferotge" },
+            "sinking-island": { "title": "Illa que s'Enfonsa", "subtitle": "S'enfonsa a poc a poc!" }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "sea-dawn": "Alba en Alta Mar",
+            "tropical-sunset": "Capvespre Tropical",
+            "storm-night": "Nit de Tempesta"
+          },
+          "setting": {
+            "open-sea": "Mar Obert",
+            "desert-island": "Illa Deserta",
+            "underwater-cave": "Cova Submarina"
+          }
+        },
+        "endings": {
+          "true-treasure": { "title": "El Veritable Tresor", "description": "Descobreixen que el veritable tresor són els amics que van fer pel camí." },
+          "paradise-island": { "title": "Illa Paradisíaca", "description": "Ancoren en una platja de sorra daurada per descansar i gaudir." },
+          "pirate-party": { "title": "Festa Pirata", "description": "Gran celebració al vaixell amb música, ball i pastís de coco." }
+        }
+      },
+      "chef": {
+        "title": "El Xef Més Petit",
+        "description": "Una cuina plena de màgia on els ingredients prenen vida i ballen a l'olla.",
+        "ageRange": "2-5 anys",
+        "previewChapterTitle": "La Cuina Encantada",
+        "decisions": {
+          "encounter": {
+            "question": "Què descobreix {name} a la cuina màgica?",
+            "secret-recipe": { "title": "Recepta Secreta", "subtitle": "Un llibre vell amb una pàgina que brilla" },
+            "living-ingredient": { "title": "Ingredient Viu", "subtitle": "La pastanaga pot parlar!" },
+            "enchanted-kitchen": { "title": "Cuina Encantada", "subtitle": "Els estris es mouen sols" }
+          },
+          "companion": {
+            "question": "Qui ajuda {name} a la cuina?",
+            "singing-spoon": { "title": "Cullera Cantaire", "subtitle": "Canta mentre remena la sopa" },
+            "chef-mouse": { "title": "Ratolí Xef", "subtitle": "Petit però amb un paladar increïble" },
+            "magic-grandma": { "title": "Àvia Màgica", "subtitle": "Les seves receptes tenen un ingredient secret: amor" }
+          },
+          "challenge": {
+            "question": "Quin problema sorgeix a la cuina de {name}?",
+            "rebel-ingredients": { "title": "Ingredients Rebels", "subtitle": "No volen entrar a l'olla!" },
+            "growing-cake": { "title": "Pastís Gegant", "subtitle": "No para de créixer!" },
+            "tiny-kitchen": { "title": "Cuina Diminuta", "subtitle": "Tot es fa petitet!" }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "magic-breakfast": "Esmorzar Màgic",
+            "special-snack": "Berenar Especial",
+            "gala-dinner": "Sopar de Gala"
+          },
+          "setting": {
+            "home-kitchen": "Cuina de Casa",
+            "enchanted-restaurant": "Restaurant Encantat",
+            "cloud-bakery": "Pastisseria dels Núvols"
+          }
+        },
+        "endings": {
+          "grand-feast": { "title": "Gran Banquet", "description": "Tothom tasta la recepta màgica i és la més deliciosa del món." },
+          "secret-recipe-kept": { "title": "La Recepta Secreta", "description": "Guarda la recepta en un llibre especial per cuinar sempre que vulgui." },
+          "cooking-together": { "title": "Tots a Cuinar", "description": "Tots els personatges cuinen junts la recepta més gran del món." }
+        }
+      }
     }
   },
   "showcase": {
