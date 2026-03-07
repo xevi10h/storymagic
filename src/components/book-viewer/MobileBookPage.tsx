@@ -29,7 +29,7 @@ interface MobileBookPageProps {
 const MobileBookPage = React.forwardRef<HTMLDivElement, MobileBookPageProps>(
   function MobileBookPage({ page, templateId }, ref) {
     return (
-      <div ref={ref} className="book-page h-full w-full bg-white overflow-hidden relative">
+      <div ref={ref} className="book-page h-full w-full bg-white overflow-hidden relative @container">
         <PageContent page={page} templateId={templateId} />
         {/* Locked overlay — clickable CTA to checkout */}
         {page.type === "scene" && page.locked && (
@@ -41,7 +41,7 @@ const MobileBookPage = React.forwardRef<HTMLDivElement, MobileBookPageProps>(
             }}
             className="absolute inset-0 flex flex-col items-center justify-center bg-white/60 backdrop-blur-md z-10 cursor-pointer transition-colors hover:bg-white/50 group"
           >
-            <span className="material-symbols-outlined text-4xl text-create-primary/60 mb-3 group-hover:text-create-primary transition-colors">
+            <span className="material-symbols-outlined text-[clamp(1.5rem,8cqi,2.5rem)] text-create-primary/60 mb-1 group-hover:text-create-primary transition-colors">
               lock
             </span>
             <LockedText />
@@ -55,21 +55,22 @@ const MobileBookPage = React.forwardRef<HTMLDivElement, MobileBookPageProps>(
 export default MobileBookPage;
 
 // Separate component for locked text (needs translations hook)
+// Uses container query-friendly sizes so it looks good at any page size
 function LockedText() {
   const t = useTranslations("crear.preview");
   return (
-    <>
-      <p className="font-display text-base font-bold text-secondary text-center px-6">
+    <div className="flex flex-col items-center gap-2 px-4 max-w-[90%]">
+      <p className="font-display text-[clamp(0.75rem,3cqi,1.1rem)] font-bold text-secondary text-center leading-tight">
         {t("lockedTitle")}
       </p>
-      <p className="mt-1.5 text-sm text-text-muted text-center px-8 max-w-xs">
+      <p className="text-[clamp(0.6rem,2.5cqi,0.875rem)] text-text-muted text-center leading-snug">
         {t("lockedDescription")}
       </p>
-      <span className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-create-primary px-5 py-2 text-xs font-bold text-white shadow-md shadow-create-primary/20 group-hover:bg-create-primary-hover transition-colors">
-        <span className="material-symbols-outlined text-sm">shopping_bag</span>
+      <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-create-primary px-3 py-1.5 text-[clamp(0.6rem,2.2cqi,0.75rem)] font-bold text-white shadow-md shadow-create-primary/20 group-hover:bg-create-primary-hover transition-colors">
+        <span className="material-symbols-outlined text-[clamp(0.7rem,2.5cqi,0.875rem)]">shopping_bag</span>
         {t("lockedCta")}
       </span>
-    </>
+    </div>
   );
 }
 
@@ -104,7 +105,7 @@ function PageContent({
           </p>
           <div className="mt-6 h-px w-16 bg-white/30" />
           <p className="mt-3 text-xs text-white/50 tracking-wider uppercase">
-            StoryMagic
+            meapica
           </p>
         </div>
       );
@@ -204,7 +205,7 @@ function PageContent({
           </p>
           <div className="mt-6 h-px w-16 bg-white/30" />
           <p className="mt-4 text-xs text-white/40 tracking-wider uppercase">
-            StoryMagic
+            meapica
           </p>
         </div>
       );

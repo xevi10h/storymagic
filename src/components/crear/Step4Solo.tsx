@@ -26,9 +26,11 @@ export default function Step4Solo({
   onBack,
 }: Step4SoloProps) {
   const t = useTranslations("crear.step4.solo");
+  const td = useTranslations("data");
   const tStep2 = useTranslations("crear.step2");
   const [activeTab, setActiveTab] = useState<TabId>("companion");
   const displayName = characterName || t("defaultName");
+  const tpl = `templates.${template.id}` as const;
 
   const companionDecision = template.decisions.find((d) => d.key === "companion");
   const challengeDecision = template.decisions.find((d) => d.key === "challenge");
@@ -85,7 +87,7 @@ export default function Step4Solo({
                   {t("chapter")}
                 </div>
                 <h3 className="text-2xl font-bold text-create-text mb-6">
-                  {template.previewChapterTitle}
+                  {td(`${tpl}.previewChapterTitle`)}
                 </h3>
                 <div className="space-y-4 text-create-text-secondary leading-relaxed font-serif text-lg">
                   <p>
@@ -100,7 +102,7 @@ export default function Step4Solo({
                       <>
                         {t("skyShowed")}{" "}
                         <span className="bg-create-primary/10 text-create-primary px-1 rounded font-bold">
-                          {selectedTime.label.toLowerCase()}
+                          {td(`${tpl}.atmosphere.time.${selectedTime.id}`).toLowerCase()}
                         </span>
                       </>
                     )}
@@ -108,7 +110,7 @@ export default function Step4Solo({
                       <>
                         {selectedTime ? ". N" : " N"}{t("notAlone")}{" "}
                         <span className="bg-create-primary/10 text-create-primary px-1 rounded font-bold">
-                          {selectedCompanion.title}
+                          {td(`${tpl}.decisions.companion.${selectedCompanion.id}.title`)}
                         </span>{" "}
                         {t("followedClose")}
                       </>
@@ -121,7 +123,7 @@ export default function Step4Solo({
                     <p className="opacity-50">
                       {t("wouldFace")}{" "}
                       <span className="italic">
-                        {selectedChallenge.title.toLowerCase()}...
+                        {td(`${tpl}.decisions.challenge.${selectedChallenge.id}.title`).toLowerCase()}...
                       </span>
                     </p>
                   )}
@@ -135,7 +137,7 @@ export default function Step4Solo({
               <div className="flex-1 relative bg-neutral-100 overflow-hidden group">
                 <div className="hidden md:block absolute left-0 top-0 bottom-0 w-4 bg-linear-to-r from-black/5 to-transparent z-10 pointer-events-none" />
                 <img
-                  alt={template.previewChapterTitle}
+                  alt={td(`${tpl}.previewChapterTitle`)}
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   src={template.image}
                 />
@@ -144,7 +146,7 @@ export default function Step4Solo({
                   {selectedSetting && (
                     <div className="bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm">
                       <span className="text-create-primary">{t("settingLabel")}</span>{" "}
-                      {selectedSetting.label}
+                      {td(`${tpl}.atmosphere.setting.${selectedSetting.id}`)}
                     </div>
                   )}
                 </div>
@@ -192,7 +194,7 @@ export default function Step4Solo({
               {activeTab === "companion" && companionDecision && (
                 <div className="flex flex-col gap-3">
                   <label className="text-sm font-bold text-create-text uppercase tracking-wider opacity-80">
-                    {companionDecision.question.replace("{name}", displayName)}
+                    {td(`${tpl}.decisions.companion.question`, { name: displayName })}
                   </label>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     {companionDecision.options.map((option) => {
@@ -218,10 +220,10 @@ export default function Step4Solo({
                           </div>
                           <div>
                             <h4 className={`font-bold text-sm ${isActive ? "text-create-primary" : "text-create-text"}`}>
-                              {option.title}
+                              {td(`${tpl}.decisions.companion.${option.id}.title`)}
                             </h4>
                             <p className="text-xs text-create-text-sub mt-0.5">
-                              {option.subtitle}
+                              {td(`${tpl}.decisions.companion.${option.id}.subtitle`)}
                             </p>
                           </div>
                           {isActive && (
@@ -267,7 +269,7 @@ export default function Step4Solo({
                             <span
                               className={`text-sm ${isActive ? "font-bold" : "font-medium text-create-text"}`}
                             >
-                              {time.label}
+                              {td(`${tpl}.atmosphere.time.${time.id}`)}
                             </span>
                           </button>
                         );
@@ -303,7 +305,7 @@ export default function Step4Solo({
                               </span>
                             </div>
                             <span className="text-sm font-medium">
-                              {s.label}
+                              {td(`${tpl}.atmosphere.setting.${s.id}`)}
                             </span>
                             {isActive && (
                               <span className="material-symbols-outlined text-lg text-create-primary ml-auto">
@@ -322,7 +324,7 @@ export default function Step4Solo({
               {activeTab === "twist" && challengeDecision && (
                 <div className="flex flex-col gap-3">
                   <label className="text-sm font-bold text-create-text uppercase tracking-wider opacity-80">
-                    {challengeDecision.question.replace("{name}", displayName)}
+                    {td(`${tpl}.decisions.challenge.question`, { name: displayName })}
                   </label>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     {challengeDecision.options.map((option) => {
@@ -346,10 +348,10 @@ export default function Step4Solo({
                           </div>
                           <div>
                             <h4 className={`font-bold text-sm ${isActive ? "text-create-primary" : "text-create-text"}`}>
-                              {option.title}
+                              {td(`${tpl}.decisions.challenge.${option.id}.title`)}
                             </h4>
                             <p className="text-xs text-create-text-sub mt-0.5">
-                              {option.subtitle}
+                              {td(`${tpl}.decisions.challenge.${option.id}.subtitle`)}
                             </p>
                           </div>
                           {isActive && (

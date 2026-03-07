@@ -185,7 +185,7 @@ function buildDiceBearUrl(character: CharacterData): string {
 
   // Seed includes everything so any change produces a subtly different face
   const interestKey = interests.length > 0 ? interests.join("-") : "none";
-  const seed = `storymagic-${name || "hero"}-${gender}-${age}-${hairstyle}-${interestKey}`;
+  const seed = `meapica-${name || "hero"}-${gender}-${age}-${hairstyle}-${interestKey}`;
 
   const bgColor = getBackgroundColor(interests);
   const accessory = getLastInterestAccessory(interests);

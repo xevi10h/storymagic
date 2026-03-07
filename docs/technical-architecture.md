@@ -14,7 +14,7 @@
 | Book Layout | Node.js (pdf-lib / pdfkit) | PDF composition from text + images |
 | Printing | Gelato API | Print-on-demand, global fulfillment |
 | Automation | Make.com | Orchestration of the generation pipeline |
-| Domain | TBD | storymagic.es or similar |
+| Domain | TBD | meapica.com or similar |
 
 ## Supabase Project
 

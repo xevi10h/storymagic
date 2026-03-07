@@ -25,6 +25,7 @@ export default function Step3AdventureSelection({
   onBack,
 }: Step3Props) {
   const t = useTranslations("crear.step3");
+  const td = useTranslations("data");
   const displayName = characterName || t("defaultName");
   const sortedTemplates = getRecommendedTemplates(characterAge, characterInterests);
 
@@ -82,13 +83,13 @@ export default function Step3AdventureSelection({
                   {/* Image */}
                   <div className="aspect-4/5 w-full relative overflow-hidden bg-slate-100">
                     <img
-                      alt={template.title}
+                      alt={td(`templates.${template.id}.title`)}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       src={template.image}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                     <div className="absolute top-3 right-3 bg-white/90 backdrop-blur text-create-primary text-xs font-bold px-3 py-1 rounded-full shadow-sm">
-                      {template.ageRange}
+                      {td(`templates.${template.id}.ageRange`)}
                     </div>
                   </div>
 
@@ -99,10 +100,10 @@ export default function Step3AdventureSelection({
                     <h3
                       className={`text-lg font-bold leading-tight ${isSelected ? "text-create-primary" : "text-create-text"}`}
                     >
-                      {template.title}
+                      {td(`templates.${template.id}.title`)}
                     </h3>
                     <p className="text-sm text-create-text-body line-clamp-3">
-                      {template.description}
+                      {td(`templates.${template.id}.description`)}
                     </p>
                   </div>
                 </div>

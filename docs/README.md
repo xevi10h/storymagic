@@ -1,6 +1,6 @@
-# StoryMagic — Documentation Index
+# meapica — Documentation Index
 
-> Living documentation for the StoryMagic project.
+> Living documentation for the meapica project.
 > Last updated: 2026-02-24
 
 ## Documents
@@ -17,7 +17,7 @@
 
 ## Quick Context
 
-**StoryMagic** is a platform where parents create personalized, illustrated children's books with AI + print-on-demand. The child becomes the protagonist of their own adventure. Positioned as "artesanal digital" — handcrafted feel, not AI-generated aesthetic.
+**meapica** is a platform where parents create personalized, illustrated children's books with AI + print-on-demand. The child becomes the protagonist of their own adventure. Positioned as "artesanal digital" — handcrafted feel, not AI-generated aesthetic.
 
 **Stack:** Next.js + Supabase + Vercel + Stripe + Claude API + Flux/DALL-E + Gelato API
 

@@ -126,7 +126,7 @@ export default function Navbar() {
         <Link href="/" className="flex items-center gap-3">
           <LogoIcon className="h-8 w-8 text-primary" />
           <span className="font-display text-2xl font-bold tracking-tight text-secondary">
-            StoryMagic
+            meapica
           </span>
         </Link>
 

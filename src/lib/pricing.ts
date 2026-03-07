@@ -1,27 +1,26 @@
 // Pricing in cents (EUR)
 // Shared between client and server — no server-only imports here
 
+// Display labels are in i18n files (src/messages/{locale}.json → "pricing" section).
+// Labels here are only used as Stripe line-item names (language-neutral English).
 export const PRICING = {
   digital_pdf: {
     price: 990,
-    label: "PDF Digital",
-    description: "Descarga instantánea en alta calidad",
+    label: "Digital PDF",
     icon: "download",
     includesDigital: true,
     requiresShipping: false,
   },
   softcover: {
     price: 3490,
-    label: "Tapa blanda",
-    description: "Impresión premium en papel Munken 170g. Incluye PDF digital",
+    label: "Softcover",
     icon: "menu_book",
     includesDigital: true,
     requiresShipping: true,
   },
   hardcover: {
     price: 4990,
-    label: "Tapa dura",
-    description: "Encuadernación premium con cubierta rígida. Incluye PDF digital",
+    label: "Hardcover",
     icon: "book",
     includesDigital: true,
     requiresShipping: true,
@@ -31,29 +30,21 @@ export const PRICING = {
 export const ADDONS = {
   adventure_pack: {
     price: 1290,
-    label: "Pack Aventura Artesanal",
-    description: "Convierte el regalo en toda una experiencia",
+    label: "Adventure Pack",
     icon: "redeem",
-    badge: "Más popular",
+    badge: true,
     physicalOnly: true,
-    details: [
-      { icon: "mail", text: "Carta manuscrita del personaje dirigida al niño" },
-      { icon: "stars", text: "6 pegatinas mate ilustradas del cuento" },
-      { icon: "bookmark", text: "Marcapáginas de madera grabado con su nombre" },
-    ],
+    detailCount: 3,
+    detailIcons: ["mail", "stars", "bookmark"],
   },
   extra_copy: {
     price: 1500,
-    label: "Copia extra (tapa blanda)",
-    description: "Una copia adicional para regalar o tener en casa de los abuelos",
+    label: "Extra Copy (Softcover)",
     icon: "content_copy",
-    badge: null,
+    badge: false,
     physicalOnly: true,
-    details: [
-      { icon: "verified", text: "Mismo libro, misma calidad de impresión" },
-      { icon: "local_shipping", text: "Envío conjunto (sin gastos de envío adicionales)" },
-      { icon: "favorite", text: "Ideal para abuelos, padrinos o separados" },
-    ],
+    detailCount: 3,
+    detailIcons: ["verified", "local_shipping", "favorite"],
   },
 } as const;
 

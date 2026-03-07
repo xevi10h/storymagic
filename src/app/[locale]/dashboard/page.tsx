@@ -171,7 +171,7 @@ export default function DashboardPage() {
           <Link href="/" className="flex items-center gap-2.5">
             <LogoIcon className="h-7 w-7 text-primary" />
             <span className="font-display text-lg font-bold tracking-tight text-secondary">
-              StoryMagic
+              meapica
             </span>
           </Link>
 
@@ -317,8 +317,10 @@ function StoryCard({
   const inputRef = useRef<HTMLInputElement>(null);
   const supabase = createClient();
 
+  const td = useTranslations("data");
   const template = STORY_TEMPLATES.find((tpl) => tpl.id === story.template_id);
-  const title = story.title ?? story.generated_text?.bookTitle ?? template?.title ?? t("untitledStory");
+  const templateTitle = template ? td(`templates.${template.id}.title`) : undefined;
+  const title = story.title ?? story.generated_text?.bookTitle ?? templateTitle ?? t("untitledStory");
   const characterName = story.characters?.name ?? t("character");
   const hasReadyPdf = (story.status === "ready" || story.status === "ordered") && story.pdf_url;
 
@@ -392,7 +394,7 @@ function StoryCard({
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={template.image}
-              alt={template.title}
+              alt={templateTitle ?? ""}
               className="h-full w-full object-cover"
             />
           ) : (

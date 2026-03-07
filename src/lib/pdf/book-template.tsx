@@ -8,7 +8,7 @@
  * ────  ────────────────  ────────────────────────────────
  *  1    COVER             Front cover (themed gradient + title)
  *  2    ENDPAPER          Decorative pattern
- *  3    TITLE             "StoryMagic presents..." + book title
+ *  3    TITLE             "meapica presents..." + book title
  *  4    DEDICATION        Dedication text in ornamental frame
  *  5    FULL_BLEED        Scene 1 — Opening (dramatic first impression)
  *  6    TEXT_PAGE          Scene 1 text
@@ -322,9 +322,9 @@ export function BookPdf({ input }: { input: BookPdfInput }) {
   return (
     <Document
       title={story.bookTitle}
-      author="StoryMagic"
+      author="meapica"
       subject={`Cuento personalizado para ${input.characterName}`}
-      creator="StoryMagic — storymagic.es"
+      creator="meapica — meapica.com"
     >
       {/* 1. Cover */}
       <CoverPage theme={theme} title={story.bookTitle} characterName={input.characterName} />
@@ -379,7 +379,7 @@ function CoverPage({ theme, title, characterName }: { theme: TemplateTheme; titl
 
       <View style={s.coverContent}>
         <Text style={{ fontFamily: FONTS.display, fontSize: 10, color: "#ffffff88", letterSpacing: 3 }}>
-          STORYMAGIC
+          MEAPICA
         </Text>
 
         <View style={{ width: 50, height: 1, backgroundColor: "#ffffff44", marginVertical: 20 }} />
@@ -455,7 +455,7 @@ function TitlePage({ theme, title, characterName }: { theme: TemplateTheme; titl
 
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: BOOK.contentMargin + 20 }}>
         <Text style={{ fontFamily: FONTS.display, fontSize: 9, color: COLORS.textMuted, letterSpacing: 2, marginBottom: 30 }}>
-          STORYMAGIC PRESENTA
+          MEAPICA PRESENTA
         </Text>
 
         <OrnamentalDivider color={theme.ornamentColor} width={80} />
@@ -540,7 +540,7 @@ function FullBleedPage({ theme, scene, imageUrl, pageNumber }: {
       ) : (
         <View style={{ width: BOOK.pageWidth, height: BOOK.pageHeight, backgroundColor: COLORS.cream, justifyContent: "center", alignItems: "center" }}>
           <Text style={{ fontFamily: FONTS.body, fontSize: 11, color: COLORS.textMuted }}>
-            Ilustraci{"\u00F3"}n {"\u2014"} Escena {scene.sceneNumber}
+            Scene {scene.sceneNumber}
           </Text>
         </View>
       )}
@@ -630,7 +630,7 @@ function ClassicPage({ theme, scene, imageUrl, pageNumber }: {
         ) : (
           <View style={{ width: "100%", height: "100%", backgroundColor: COLORS.cream, justifyContent: "center", alignItems: "center" }}>
             <Text style={{ fontFamily: FONTS.body, fontSize: 11, color: COLORS.textMuted }}>
-              Ilustraci{"\u00F3"}n {"\u2014"} Escena {scene.sceneNumber}
+              Scene {scene.sceneNumber}
             </Text>
           </View>
         )}
@@ -686,7 +686,7 @@ function SplitPage({ theme, scene, imageUrl, pageNumber }: {
           ) : (
             <View style={{ width: "100%", height: "100%", backgroundColor: COLORS.cream, justifyContent: "center", alignItems: "center" }}>
               <Text style={{ fontFamily: FONTS.body, fontSize: 11, color: COLORS.textMuted }}>
-                Escena {scene.sceneNumber}
+                Scene {scene.sceneNumber}
               </Text>
             </View>
           )}
@@ -781,7 +781,7 @@ function VignettePage({ theme, scene, imageUrl, pageNumber }: {
         ) : (
           <View style={{ width: "100%", height: "100%", backgroundColor: COLORS.cream, justifyContent: "center", alignItems: "center", borderRadius: 12 }}>
             <Text style={{ fontFamily: FONTS.body, fontSize: 10, color: COLORS.textMuted }}>
-              Escena {scene.sceneNumber}
+              Scene {scene.sceneNumber}
             </Text>
           </View>
         )}
@@ -911,12 +911,12 @@ function ColophonPage({ theme, characterName }: { theme: TemplateTheme; characte
           Este libro fue creado especialmente para {characterName}.{"\n"}
           Texto generado por inteligencia artificial.{"\n"}
           Ilustraciones generadas por Recraft V3.{"\n"}
-          Dise{"\u00F1"}o editorial por StoryMagic.
+          Dise{"\u00F1"}o editorial por meapica.
         </Text>
 
         <View style={{ marginTop: 16 }}>
           <Text style={{ fontFamily: FONTS.display, fontSize: 9, color: COLORS.textLight, letterSpacing: 2 }}>
-            STORYMAGIC
+            MEAPICA
           </Text>
         </View>
         <Text style={{ fontFamily: FONTS.body, fontSize: 6, color: COLORS.textLight, marginTop: 4, letterSpacing: 1 }}>
@@ -947,7 +947,7 @@ function BackCoverPage({ theme, characterName }: { theme: TemplateTheme; charact
         <OrnamentalDivider color="#ffffff55" width={80} />
 
         <View style={{ marginTop: 40, alignItems: "center" }}>
-          <Text style={TYPE.coverBrand}>STORYMAGIC</Text>
+          <Text style={TYPE.coverBrand}>MEAPICA</Text>
           <Text style={{ fontFamily: FONTS.body, fontSize: 7, color: "#ffffff55", marginTop: 4, letterSpacing: 1 }}>
             Historias reales para tocar
           </Text>

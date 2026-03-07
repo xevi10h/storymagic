@@ -33,8 +33,10 @@ export default function Step5AuthorMessage({
   onBack,
 }: Step5Props) {
   const t = useTranslations("crear.step5");
+  const td = useTranslations("data");
   const displayName = characterName || t("defaultName");
   const endingOptions = template.endings;
+  const tpl = `templates.${template.id}` as const;
 
   return (
     <div className="min-h-screen flex flex-col bg-create-bg text-create-text">
@@ -99,7 +101,7 @@ export default function Step5AuthorMessage({
                     />
                   </div>
                   <div className="mt-4 pt-4 border-t border-gray-200 flex justify-between items-center text-xs text-gray-400 font-medium">
-                    <span>StoryMagic Press</span>
+                    <span>meapica press</span>
                     <span>{new Date().getFullYear()} Edition</span>
                   </div>
                 </div>
@@ -107,7 +109,7 @@ export default function Step5AuthorMessage({
                 {/* Bottom branding — dynamic title */}
                 <div className="mt-4 text-center">
                   <h3 className="text-white/90 font-bold text-xl tracking-wide uppercase">
-                    {template.title}
+                    {td(`${tpl}.title`)}
                   </h3>
                   <p className="text-white/60 text-sm mt-1 font-medium">
                     {t("adventureOf", { name: displayName })}
@@ -139,9 +141,8 @@ export default function Step5AuthorMessage({
               <div className="flex flex-col gap-3">
                 {endingOptions.map((option) => {
                   const isSelected = ending === option.id;
-                  // Replace {name} in descriptions
-                  const description = option.description.replace("{name}", displayName);
-                  const title = option.title.replace("{name}", displayName);
+                  const description = td(`${tpl}.endings.${option.id}.description`, { name: displayName });
+                  const title = td(`${tpl}.endings.${option.id}.title`, { name: displayName });
 
                   return (
                     <label

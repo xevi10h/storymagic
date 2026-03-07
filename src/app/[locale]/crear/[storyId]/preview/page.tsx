@@ -199,7 +199,7 @@ export default function PreviewPage() {
       a.href = url;
       a.download =
         res.headers.get("Content-Disposition")?.match(/filename="(.+)"/)?.[1] ??
-        "storymagic-book.pdf";
+        "meapica-book.pdf";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -481,7 +481,7 @@ export default function PreviewPage() {
                           </div>
 
                           <ul className="mt-3 ml-13 space-y-1.5">
-                            {val.details.map((detail, i) => (
+                            {val.detailIcons.map((icon, i) => (
                               <li
                                 key={i}
                                 className="flex items-start gap-1.5 text-xs text-text-soft"

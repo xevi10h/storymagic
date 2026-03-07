@@ -188,7 +188,7 @@ function SignupPageContent() {
           <Link href="/" className="inline-flex items-center gap-2">
             <LogoIcon className="h-10 w-10 text-primary" />
             <span className="font-display text-3xl font-bold text-secondary">
-              StoryMagic
+              meapica
             </span>
           </Link>
           <p className="mt-3 text-sm text-create-text-sub">

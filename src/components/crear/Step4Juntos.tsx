@@ -24,8 +24,10 @@ export default function Step4Juntos({
   onBack,
 }: Step4JuntosProps) {
   const t = useTranslations("crear.step4.juntos");
+  const td = useTranslations("data");
   const [subStep, setSubStep] = useState(0);
-  const displayName = characterName || "el héroe";
+  const displayName = characterName || t("defaultName");
+  const tpl = `templates.${template.id}` as const;
 
   const decisionPoints = template.decisions;
   const currentDecision: DecisionPoint = decisionPoints[subStep];
@@ -34,7 +36,7 @@ export default function Step4Juntos({
   const currentKey = currentDecision.key;
   const selectedId = decisions[currentKey] as string | undefined;
 
-  const question = currentDecision.question.replace("{name}", displayName);
+  const question = td(`${tpl}.decisions.${currentKey}.question`, { name: displayName });
 
   const handleSelect = (optionId: string) => {
     onUpdateDecisions({ [currentKey]: optionId });
@@ -221,14 +223,14 @@ export default function Step4Juntos({
                         !isSelected ? "text-create-text" : ""
                       }`}
                     >
-                      {option.title}
+                      {td(`${tpl}.decisions.${currentKey}.${option.id}.title`)}
                     </h3>
                     <p
                       className={`text-sm font-medium mt-0.5 ${
                         isSelected ? "text-white/90" : "text-create-text-sub"
                       }`}
                     >
-                      {option.subtitle}
+                      {td(`${tpl}.decisions.${currentKey}.${option.id}.subtitle`)}
                     </p>
                   </div>
                 </div>

@@ -58,8 +58,8 @@ export async function POST(request: Request) {
 
   // Build line items for Stripe
   const generatedText = story.generated_text as { bookTitle?: string };
-  const bookTitle = generatedText.bookTitle ?? "Cuento personalizado";
-  const characterName = (story.characters as { name: string } | null)?.name ?? "tu hijo/a";
+  const bookTitle = generatedText.bookTitle ?? "Personalized Story";
+  const characterName = (story.characters as { name: string } | null)?.name ?? "";
 
   const lineItems: {
     price_data: {
@@ -74,7 +74,7 @@ export async function POST(request: Request) {
         currency: "eur",
         product_data: {
           name: `${bookTitle} (${formatConfig.label})`,
-          description: `Libro personalizado para ${characterName}. ${formatConfig.description}`,
+          description: characterName ? `Personalized book for ${characterName}` : "Personalized children's book",
         },
         unit_amount: formatConfig.price,
       },
@@ -99,7 +99,6 @@ export async function POST(request: Request) {
             currency: "eur",
             product_data: {
               name: addon.label,
-              description: addon.description,
             },
             unit_amount: addon.price,
           },

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 
-const STORAGE_KEY = "storymagic_create_state";
+const STORAGE_KEY = "meapica_create_state";
 
 /**
  * Like useState but persists to localStorage.

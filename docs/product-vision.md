@@ -1,6 +1,6 @@
 # Product Vision
 
-## What is StoryMagic
+## What is meapica
 
 A platform where parents introduce their child's details (name, appearance, interests, city) and receive a fully personalized, illustrated children's book where their child is the protagonist. Printed and shipped via print-on-demand without touching inventory.
 
@@ -12,7 +12,7 @@ Convert your child into the protagonist of their own magical adventure. A physic
 
 ## Positioning: "Artesanal Digital"
 
-StoryMagic is NOT "AI-generated content." It's digitally crafted storytelling with an artisanal soul:
+meapica is NOT "AI-generated content." It's digitally crafted storytelling with an artisanal soul:
 
 - Watercolor-style illustrations (not photorealistic AI renders)
 - Sewn spine, reinforced covers, Munken 170g cream-tone paper

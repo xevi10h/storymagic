@@ -13,7 +13,7 @@ export default function Footer() {
             <div className="mb-6 flex items-center gap-2">
               <LogoIcon className="h-6 w-6 text-primary" />
               <span className="font-display text-xl font-bold tracking-tight text-white">
-                StoryMagic
+                meapica
               </span>
             </div>
             <p className="mb-6 text-sm leading-relaxed text-footer-muted whitespace-pre-line">

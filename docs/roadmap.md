@@ -28,7 +28,7 @@ The roadmap is divided into 6 phases, from foundation to scale. Each phase has c
 - [x] Initialize Next.js project with TypeScript
 - [x] Configure Supabase (database, auth)
 - [x] Deploy base project to Vercel
-- [ ] Register domain (storymagic.es or alternative)
+- [ ] Register domain (meapica.com or alternative)
 - [x] Implement landing page from Stitch design
 - [ ] Set up basic SEO (meta tags, Open Graph, structured data)
 - [ ] Email capture form (waitlist)

@@ -155,7 +155,7 @@ export default function ShowcasePage() {
       a.href = url;
       a.download =
         res.headers.get("Content-Disposition")?.match(/filename="(.+)"/)?.[1] ??
-        "storymagic-sample.pdf";
+        "meapica-sample.pdf";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -413,7 +413,7 @@ function PageContent({
           </p>
           <div className="mt-6 h-px w-16 bg-white/30" />
           <p className="mt-3 text-xs uppercase tracking-wider text-white/50">
-            StoryMagic
+            meapica
           </p>
         </div>
       );
@@ -495,7 +495,7 @@ function PageContent({
           </p>
           <div className="mt-6 h-px w-16 bg-white/30" />
           <p className="mt-4 text-xs uppercase tracking-wider text-white/40">
-            StoryMagic
+            meapica
           </p>
         </div>
       );

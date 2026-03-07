@@ -38,7 +38,7 @@ export default function CreationHeader({
           <Link href="/" className="flex items-center gap-2.5">
             <LogoIcon className="h-7 w-7 text-create-primary" />
             <span className="font-display text-lg font-bold tracking-tight text-create-text-dark">
-              StoryMagic
+              meapica
             </span>
           </Link>
         </div>

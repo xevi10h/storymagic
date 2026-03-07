@@ -79,7 +79,7 @@ export async function GET(
       .toLowerCase()
       .slice(0, 60);
 
-    const filename = `${safeTitle}-storymagic-sample.pdf`;
+    const filename = `${safeTitle}-meapica-sample.pdf`;
     const bytes = new Uint8Array(buffer);
 
     return new Response(bytes, {

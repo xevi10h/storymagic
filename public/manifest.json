@@ -1,6 +1,6 @@
 {
-  "name": "StoryMagic",
-  "short_name": "StoryMagic",
+  "name": "meapica",
+  "short_name": "meapica",
   "description": "Personalized illustrated children's books",
   "start_url": "/",
   "display": "standalone",
