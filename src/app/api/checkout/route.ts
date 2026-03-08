@@ -4,127 +4,127 @@ import { getStripe, PRICING, ADDONS, type BookFormat, type AddonId } from "@/lib
 import { getStripePriceId } from "@/lib/pricing";
 
 export async function POST(request: Request) {
-  const supabase = await createClient();
+  try {
+    const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-  const body = await request.json();
-  const { storyId, format, addons: addonIds = [] } = body as {
-    storyId: string;
-    format: BookFormat;
-    addons: AddonId[];
-  };
+    const body = await request.json();
+    const { storyId, format, addons: addonIds = [] } = body as {
+      storyId: string;
+      format: BookFormat;
+      addons: AddonId[];
+    };
 
-  // Validate format
-  if (!PRICING[format]) {
-    return NextResponse.json({ error: "Invalid format" }, { status: 400 });
-  }
+    // Validate format
+    if (!PRICING[format]) {
+      return NextResponse.json({ error: "Invalid format" }, { status: 400 });
+    }
 
-  // Validate story exists and belongs to user
-  const { data: story, error: storyError } = await supabase
-    .from("stories")
-    .select("id, status, generated_text, characters(name)")
-    .eq("id", storyId)
-    .eq("user_id", user.id)
-    .single();
+    // Validate story exists and belongs to user
+    const { data: story, error: storyError } = await supabase
+      .from("stories")
+      .select("id, status, generated_text, characters(name)")
+      .eq("id", storyId)
+      .eq("user_id", user.id)
+      .single();
 
-  if (storyError || !story) {
-    return NextResponse.json({ error: "Story not found" }, { status: 404 });
-  }
+    if (storyError || !story) {
+      return NextResponse.json({ error: "Story not found" }, { status: 404 });
+    }
 
-  if (!story.generated_text) {
-    return NextResponse.json(
-      { error: "Story not yet generated" },
-      { status: 400 }
-    );
-  }
+    if (!story.generated_text) {
+      return NextResponse.json(
+        { error: "Story not yet generated" },
+        { status: 400 }
+      );
+    }
 
-  // Accept both preview and ready stories for purchase
-  if (story.status !== "preview" && story.status !== "ready") {
-    return NextResponse.json(
-      { error: "Story is not ready for purchase" },
-      { status: 400 }
-    );
-  }
+    // Accept both preview and ready stories for purchase
+    if (story.status !== "preview" && story.status !== "ready") {
+      return NextResponse.json(
+        { error: "Story is not ready for purchase" },
+        { status: 400 }
+      );
+    }
 
-  // Determine if format requires shipping
-  const formatConfig = PRICING[format];
-  const requiresShipping = formatConfig.requiresShipping;
+    // Determine if format requires shipping
+    const formatConfig = PRICING[format];
+    const requiresShipping = formatConfig.requiresShipping;
 
-  // Build line items for Stripe
-  const lineItems: (
-    | { price: string; quantity: number }
-    | { price_data: { currency: string; product_data: { name: string }; unit_amount: number }; quantity: number }
-  )[] = [
-    {
-      // Use registered Stripe price ID — switches automatically between test/live
-      price: getStripePriceId(format),
-      quantity: 1,
-    },
-  ];
+    // Build line items for Stripe
+    const lineItems: (
+      | { price: string; quantity: number }
+      | { price_data: { currency: string; product_data: { name: string }; unit_amount: number }; quantity: number }
+    )[] = [
+      {
+        // Use registered Stripe price ID — switches automatically between test/live
+        price: getStripePriceId(format),
+        quantity: 1,
+      },
+    ];
 
-  // Filter addons: only allow physical-only addons when format requires shipping
-  // Deduplicate to prevent double-charging
-  const validAddons: AddonId[] = [];
-  const seenAddons = new Set<string>();
-  if (requiresShipping) {
-    for (const addonId of addonIds) {
-      if (seenAddons.has(addonId)) continue;
-      seenAddons.add(addonId);
+    // Filter addons: only allow physical-only addons when format requires shipping
+    // Deduplicate to prevent double-charging
+    const validAddons: AddonId[] = [];
+    const seenAddons = new Set<string>();
+    if (requiresShipping) {
+      for (const addonId of addonIds) {
+        if (seenAddons.has(addonId)) continue;
+        seenAddons.add(addonId);
 
-      if (ADDONS[addonId as AddonId]) {
-        const addon = ADDONS[addonId as AddonId];
-        validAddons.push(addonId as AddonId);
-        lineItems.push({
-          price_data: {
-            currency: "eur",
-            product_data: {
-              name: addon.label,
+        if (ADDONS[addonId as AddonId]) {
+          const addon = ADDONS[addonId as AddonId];
+          validAddons.push(addonId as AddonId);
+          lineItems.push({
+            price_data: {
+              currency: "eur",
+              product_data: {
+                name: addon.label,
+              },
+              unit_amount: addon.price,
             },
-            unit_amount: addon.price,
-          },
-          quantity: 1,
-        });
+            quantity: 1,
+          });
+        }
       }
     }
-  }
 
-  const subtotal =
-    formatConfig.price +
-    validAddons.reduce((sum, id) => sum + ADDONS[id].price, 0);
+    const subtotal =
+      formatConfig.price +
+      validAddons.reduce((sum, id) => sum + ADDONS[id].price, 0);
 
-  // MOCK_MODE: bypass Stripe entirely — create a paid order directly so the
-  // full unlock flow (complete route → all illustrations) works without webhooks.
-  // Safety: NEVER allow mock mode when Stripe is in live mode (production safeguard)
-  if (process.env.MOCK_MODE === "true" && process.env.STRIPE_ENVIRONMENT !== "live") {
-    const mockSessionId = `mock_${Date.now()}_${storyId.slice(0, 8)}`;
-    const { error: orderError } = await supabase.from("orders").insert({
-      user_id: user.id,
-      story_id: storyId,
-      stripe_checkout_session_id: mockSessionId,
-      format,
-      addons: JSON.parse(JSON.stringify(validAddons)),
-      subtotal: subtotal / 100,
-      total: subtotal / 100,
-      status: "paid",
-    });
+    // MOCK_MODE: bypass Stripe entirely — create a paid order directly so the
+    // full unlock flow (complete route → all illustrations) works without webhooks.
+    // Safety: NEVER allow mock mode when Stripe is in live mode (production safeguard)
+    if (process.env.MOCK_MODE === "true" && process.env.STRIPE_ENVIRONMENT !== "live") {
+      const mockSessionId = `mock_${Date.now()}_${storyId.slice(0, 8)}`;
+      const { error: orderError } = await supabase.from("orders").insert({
+        user_id: user.id,
+        story_id: storyId,
+        stripe_checkout_session_id: mockSessionId,
+        format,
+        addons: JSON.parse(JSON.stringify(validAddons)),
+        subtotal: subtotal / 100,
+        total: subtotal / 100,
+        status: "paid",
+      });
 
-    if (orderError) {
-      console.error("Mock checkout error:", orderError);
-      return NextResponse.json({ error: "Failed to create mock order" }, { status: 500 });
+      if (orderError) {
+        console.error("Mock checkout error:", orderError);
+        return NextResponse.json({ error: "Failed to create mock order" }, { status: 500 });
+      }
+
+      const origin = new URL(request.url).origin;
+      return NextResponse.json({ url: `${origin}/checkout/success?session_id=${mockSessionId}` });
     }
 
-    const origin = new URL(request.url).origin;
-    return NextResponse.json({ url: `${origin}/checkout/success?session_id=${mockSessionId}` });
-  }
-
-  try {
     const origin = new URL(request.url).origin;
 
     // Build Stripe session options — shipping only for physical formats
@@ -182,9 +182,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ url: session.url });
   } catch (err) {
-    console.error("Stripe checkout error:", err instanceof Error ? { message: err.message, stack: err.stack } : err);
+    console.error("Checkout error:", err instanceof Error ? { message: err.message, stack: err.stack } : err);
     return NextResponse.json(
-      { error: "Failed to create checkout session", details: err instanceof Error ? err.message : String(err) },
+      { error: "Checkout failed", details: err instanceof Error ? err.message : String(err) },
       { status: 500 }
     );
   }
