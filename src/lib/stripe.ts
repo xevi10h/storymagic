@@ -14,8 +14,8 @@ export function getStripeSecretKey(): string {
   const env = getActiveEnvironment();
   const key =
     env === "test"
-      ? process.env.STRIPE_SECRET_KEY_TEST
-      : process.env.STRIPE_SECRET_KEY_LIVE;
+      ? process.env.STRIPE_SECRET_KEY_TEST?.trim()
+      : process.env.STRIPE_SECRET_KEY_LIVE?.trim();
 
   if (!key || key.startsWith("sk_test_...") || key.startsWith("sk_live_...")) {
     throw new Error(`STRIPE_SECRET_KEY_${env.toUpperCase()} is not configured`);
