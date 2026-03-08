@@ -102,7 +102,7 @@ export async function POST(
     });
 
     const mockMode = process.env.MOCK_MODE === "true";
-    const recraftApiToken = process.env.RECRAFT_API_TOKEN;
+    const recraftApiToken = process.env.RECRAFT_API_TOKEN?.trim();
     const hasRecraft = !mockMode && recraftApiToken && !recraftApiToken.includes("your_");
 
     // ── Phase 1: Story text + style resolution IN PARALLEL ───────────────────
