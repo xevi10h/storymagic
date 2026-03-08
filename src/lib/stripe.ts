@@ -3,7 +3,7 @@ import Stripe from "stripe";
 type StripeEnvironment = "test" | "live";
 
 function getActiveEnvironment(): StripeEnvironment {
-  const env = process.env.STRIPE_ENVIRONMENT ?? "test";
+  const env = process.env.STRIPE_ENVIRONMENT?.trim() ?? "test";
   if (env !== "test" && env !== "live") {
     throw new Error(`Invalid STRIPE_ENVIRONMENT "${env}". Must be "test" or "live".`);
   }

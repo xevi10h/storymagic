@@ -21,7 +21,7 @@ export const STRIPE_PRICE_IDS = {
 } as const;
 
 export function getStripePriceId(format: keyof typeof STRIPE_PRICE_IDS.live): string {
-  const env = (process.env.STRIPE_ENVIRONMENT ?? "test") as "test" | "live";
+  const env = (process.env.STRIPE_ENVIRONMENT?.trim() ?? "test") as "test" | "live";
   const priceId = STRIPE_PRICE_IDS[env][format];
   if (!priceId || priceId.endsWith("_...")) {
     throw new Error(`Stripe price ID for "${format}" not configured in ${env} mode`);
