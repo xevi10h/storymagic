@@ -218,7 +218,7 @@ const ARCHITECT_MODEL = process.env.OPENAI_ARCHITECT_MODEL || "gpt-5.4";
 const EXPANSION_MODEL = process.env.OPENAI_EXPANSION_MODEL || "gpt-5-mini";
 
 function getApiKey(): string {
-  const key = process.env.OPENAI_API_KEY;
+  const key = process.env.OPENAI_API_KEY?.trim();
   if (key && !key.includes("your_") && !key.includes("_here")) return key;
   throw new Error("OPENAI_API_KEY not configured in .env.local");
 }

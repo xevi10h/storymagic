@@ -246,7 +246,7 @@ export async function generateIllustrationsForStory(
   },
 ): Promise<IllustrationResult[]> {
   const mockMode = process.env.MOCK_MODE === "true";
-  const apiToken = process.env.RECRAFT_API_TOKEN;
+  const apiToken = process.env.RECRAFT_API_TOKEN?.trim();
   const hasToken = apiToken && !apiToken.includes("your_") && !apiToken.includes("_here");
 
   if (mockMode || !hasToken) {

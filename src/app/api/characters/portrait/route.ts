@@ -55,7 +55,7 @@ export async function POST(request: Request) {
 
     // Skip rate limiting in mock/dev mode — only enforce with real Recraft API
     const mockMode = process.env.MOCK_MODE === "true";
-    const recraftApiToken = process.env.RECRAFT_API_TOKEN;
+    const recraftApiToken = process.env.RECRAFT_API_TOKEN?.trim();
     const hasRecraft = !mockMode && recraftApiToken && !recraftApiToken.includes("your_");
 
     if (hasRecraft) {
