@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import { useTranslations } from "next-intl";
+import { getBookPageNumber } from "./types";
 import type { BookPage } from "./types";
 import MobileBookPage from "./MobileBookPage";
 
@@ -71,8 +72,9 @@ export default function FullscreenPageViewer({
     touchDeltaX.current = 0;
   };
 
+  const currentPageData = pages[current];
   const isLocked =
-    pages[current]?.type === "scene" && pages[current]?.locked;
+    currentPageData?.type === "scene" && currentPageData?.locked;
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-black/95 animate-in fade-in duration-200">
@@ -98,10 +100,11 @@ export default function FullscreenPageViewer({
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        <div className="relative w-full max-w-md aspect-[3/4] rounded-xl overflow-hidden shadow-2xl">
+        <div className="relative w-full max-w-md aspect-square rounded-xl overflow-hidden shadow-2xl">
           <MobileBookPage
             page={pages[current]}
             templateId={templateId}
+            pageNumber={pages[current].type === "scene" ? getBookPageNumber(pages, current) : undefined}
           />
         </div>
       </div>

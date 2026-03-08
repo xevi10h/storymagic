@@ -5,6 +5,7 @@ import HTMLFlipBook from "react-pageflip";
 import { useTranslations } from "next-intl";
 import MobileBookPage from "./MobileBookPage";
 import FullscreenPageViewer from "./FullscreenPageViewer";
+import { getBookPageNumber } from "./types";
 import type { BookViewerProps } from "./types";
 import { playPageTurnSound } from "./page-turn-sound";
 
@@ -69,12 +70,12 @@ export default function MobileBookViewer({
           <HTMLFlipBook
             ref={flipBookRef}
             width={isNarrow ? 350 : 420}
-            height={isNarrow ? 500 : 560}
+            height={isNarrow ? 350 : 420}
             size="stretch"
             minWidth={150}
             maxWidth={isNarrow ? 400 : 520}
-            minHeight={200}
-            maxHeight={isNarrow ? 570 : 700}
+            minHeight={150}
+            maxHeight={isNarrow ? 400 : 520}
             showCover={true}
             drawShadow={true}
             flippingTime={700}
@@ -98,6 +99,7 @@ export default function MobileBookViewer({
                 key={i}
                 page={page}
                 templateId={templateId}
+                pageNumber={page.type === "scene" ? getBookPageNumber(pages, i) : undefined}
               />
             ))}
           </HTMLFlipBook>
@@ -115,44 +117,31 @@ export default function MobileBookViewer({
         </button>
       )}
 
-      {/* Navigation arrows + dots */}
-      <div className={`${isNarrow ? "mt-3" : "mt-5"} flex items-center justify-center gap-3`}>
+      {/* Navigation arrows + progress */}
+      <div className={`${isNarrow ? "mt-3" : "mt-5"} flex items-center justify-center gap-3 w-full max-w-sm mx-auto px-4`}>
         <button
           onClick={() => {
             const pf = flipBookRef.current?.pageFlip();
             if (pf) pf.flipPrev();
           }}
           disabled={isOnCover}
-          className="flex h-8 w-8 items-center justify-center rounded-full border border-border-light bg-white text-text-muted transition-all hover:border-create-primary hover:text-create-primary disabled:opacity-30 disabled:hover:border-border-light disabled:hover:text-text-muted"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border-light bg-white text-text-muted transition-all hover:border-create-primary hover:text-create-primary disabled:opacity-30 disabled:hover:border-border-light disabled:hover:text-text-muted"
           aria-label="Previous page"
         >
           <span className="material-symbols-outlined text-lg">chevron_left</span>
         </button>
 
-        <div className="flex items-center gap-1.5 flex-wrap">
-          {pages.map((p, i) => {
-            const isLocked = p.type === "scene" && p.locked;
-            const isCurrent = i === currentPage;
-            return (
-              <button
-                key={i}
-                onClick={() => {
-                  const pf = flipBookRef.current?.pageFlip();
-                  if (pf) pf.flip(i);
-                }}
-                className={`h-1.5 rounded-full transition-all duration-300 ${
-                  isCurrent
-                    ? isLocked
-                      ? "w-5 bg-text-muted"
-                      : "w-5 bg-create-primary"
-                    : isLocked
-                      ? "w-1.5 bg-border-light/50"
-                      : "w-1.5 bg-border-light hover:bg-text-muted"
-                }`}
-                aria-label={`Go to page ${i + 1}`}
-              />
-            );
-          })}
+        {/* Progress bar + page number */}
+        <div className="flex-1 flex flex-col items-center gap-1">
+          <div className="w-full h-1.5 bg-border-light rounded-full overflow-hidden">
+            <div
+              className="h-full bg-create-primary rounded-full transition-all duration-300"
+              style={{ width: `${((currentPage) / Math.max(pages.length - 1, 1)) * 100}%` }}
+            />
+          </div>
+          <span className="text-[10px] font-bold text-text-muted tabular-nums">
+            {currentPage + 1} / {pages.length}
+          </span>
         </div>
 
         <button
@@ -161,7 +150,7 @@ export default function MobileBookViewer({
             if (pf) pf.flipNext();
           }}
           disabled={isOnBack}
-          className="flex h-8 w-8 items-center justify-center rounded-full border border-border-light bg-white text-text-muted transition-all hover:border-create-primary hover:text-create-primary disabled:opacity-30 disabled:hover:border-border-light disabled:hover:text-text-muted"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border-light bg-white text-text-muted transition-all hover:border-create-primary hover:text-create-primary disabled:opacity-30 disabled:hover:border-border-light disabled:hover:text-text-muted"
           aria-label="Next page"
         >
           <span className="material-symbols-outlined text-lg">chevron_right</span>

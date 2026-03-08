@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { PRICING } from "@/lib/pricing";
+import { STORY_TEMPLATES } from "@/lib/create-store";
 
 interface ShowcaseBook {
   id: string;
@@ -15,35 +16,34 @@ interface ShowcaseBook {
   totalPages: number;
 }
 
-// Fallback static books when no showcase stories exist in the DB
-const STATIC_BOOKS = [
-  {
-    key: "enchantedForest" as const,
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuC6VL_AYqEty2H-GbV81WP_azfa6-IU9kYV335jDZwd4snVh3otFA0MLoHWzYBVRN6D7uO6bEFGhpnzN-NUinjaYGN0HlgT1dOrbips2Im89VsZRyTu-1V11GVPrma6xPMEKRBhlVhLpHl_mt8bkHQwuhNbWsxIeJndFCX9sJiIJtt31XHdiKH6_MBR4lvbIxqMGr915OaUtE8B6HC-E9cFrDodvb0saZB_Arw2STBeUL4o93_O5P1_AKxGrZxtlgICx5yeCsm7Diec",
-    hasBadge: true,
-  },
-  {
-    key: "spaceMission" as const,
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuABBA0Cf06fPnqKSfGRm48Pmu6ucN-jUEVB4HEwyp-DBH-xxNU5J_KCoHPCTwqmiwLMRseYBXwbRpHgq9uGNsFjGl5RhN408EvyctgZzWyxWGPtAoOWRBqqLf6HYJ6JHExoCBXpq4UW8ANQYnEa9PuknwvT7CnGVOeOS7yJBU2sEszUjY0x_mXI_Hhc2iI-v8CqAuBFA55xP-nK_bsvWEmgN_L1YmVe5GI5bQD1_m9-emm22sbMoQqYpkXSt7WSjqHd-KmyZYEHrJ8D",
-    hasBadge: false,
-  },
-  {
-    key: "underwaterKingdom" as const,
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuBNgOqfWleS4dgz8lpSn13SgKrqUX_lP8f64zkeoepf32guQ7HsMYX45v2De6eISqj4HKCS6vKKvM3ZXXvHgQcfkScKM69Qq8C9c23L3XfJxnYyf-Amm2dWaNV0rMpNApWD-CoAZgVSgpoHsiAdE-SHMcIjcbkNUDOIFXpw_VN5172nLLzKL-pTmyhy6Im4agwWHIb4rcpVepJWGLcQ9krIodcO40-np3zmYRQDyte5QPiC3O5Wg2dlzxX5J03TD8dTpwAXyuXeYFLH",
-    hasBadge: false,
-  },
-];
+type AgeFilter = "all" | "2-4" | "5-7" | "8-12";
 
 const softcoverPrice = (PRICING.softcover.price / 100).toFixed(2);
 const hardcoverPrice = (PRICING.hardcover.price / 100).toFixed(2);
 
+function getAgeFilter(age: number): AgeFilter {
+  if (age <= 4) return "2-4";
+  if (age <= 7) return "5-7";
+  return "8-12";
+}
+
+function templateMatchesFilter(templateId: string, filter: AgeFilter): boolean {
+  if (filter === "all") return true;
+  const template = STORY_TEMPLATES.find((t) => t.id === templateId);
+  if (!template) return true;
+  const [min, max] = filter.split("-").map(Number);
+  // Use midpoint of template's age range to assign it to a single filter bucket
+  const midpoint = (template.ageMin + template.ageMax) / 2;
+  return midpoint >= min && midpoint <= max;
+}
+
 export default function BookCollection() {
   const t = useTranslations("bookCollection");
+  const td = useTranslations("data");
   const [showcaseBooks, setShowcaseBooks] = useState<ShowcaseBook[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<AgeFilter>("all");
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     async function fetchShowcase() {
@@ -54,7 +54,7 @@ export default function BookCollection() {
           if (data.length > 0) setShowcaseBooks(data);
         }
       } catch {
-        // Silently fall back to static books
+        // Silently fall back to template cards
       } finally {
         setLoaded(true);
       }
@@ -64,166 +64,238 @@ export default function BookCollection() {
 
   const hasShowcase = showcaseBooks.length > 0;
 
+  // When we have showcase books, filter them; otherwise show template cards
+  const filteredShowcase = showcaseBooks.filter((b) =>
+    templateMatchesFilter(b.templateId, activeFilter),
+  );
+  const filteredTemplates = STORY_TEMPLATES.filter((t) =>
+    templateMatchesFilter(t.id, activeFilter),
+  );
+
+  const filters: { id: AgeFilter; label: string }[] = [
+    { id: "all", label: t("filterAll") },
+    { id: "2-4", label: t("filter2to4") },
+    { id: "5-7", label: t("filter5to7") },
+    { id: "8-12", label: t("filter8to12") },
+  ];
+
+  const scroll = (direction: "left" | "right") => {
+    scrollRef.current?.scrollBy({
+      left: direction === "left" ? -320 : 320,
+      behavior: "smooth",
+    });
+  };
+
   return (
     <section className="bg-cream px-4 py-24" id="catalog">
-      <div className="mx-auto max-w-6xl">
-        <div className="mb-12 flex flex-col items-end justify-between gap-6 md:flex-row">
+      <div className="mx-auto max-w-7xl">
+        {/* Header */}
+        <div className="mb-8 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
-            <h2 className="mb-4 font-display text-4xl font-bold text-secondary">
+            <h2 className="mb-3 font-display text-3xl font-bold text-secondary md:text-4xl">
               {t("title")}
             </h2>
-            <p className="max-w-xl text-lg text-text-soft">
+            <p className="max-w-xl text-base text-text-soft md:text-lg">
               {hasShowcase ? t("subtitleShowcase") : t("subtitle")}
             </p>
           </div>
-          {!hasShowcase && (
-            <a
-              className="group flex items-center gap-1 text-sm font-bold uppercase tracking-wide text-primary hover:text-primary-hover"
-              href="#"
-            >
-              {t("viewAll")}
-              <span className="material-symbols-outlined text-lg transition-transform group-hover:translate-x-1">
-                arrow_right_alt
-              </span>
-            </a>
-          )}
+
+          {/* Age filters */}
+          <div className="flex gap-2">
+            {filters.map((f) => (
+              <button
+                key={f.id}
+                onClick={() => setActiveFilter(f.id)}
+                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
+                  activeFilter === f.id
+                    ? "bg-primary text-white shadow-md"
+                    : "bg-white text-text-muted hover:bg-primary/10 hover:text-primary"
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Showcase books from the database */}
-        {hasShowcase && (
-          <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3">
-            {showcaseBooks.slice(0, 3).map((book) => (
-              <Link
-                key={book.id}
-                href={`/ejemplo/${book.id}`}
-                className="group cursor-pointer rounded-lg border border-border-light/50 bg-white p-4 pb-6 shadow-sm transition-all duration-300 hover:shadow-xl"
-              >
-                {/* Cover image */}
-                <div className="relative mb-6 aspect-[3/4] overflow-hidden rounded-sm bg-cream shadow-inner">
-                  {book.coverImage ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={book.coverImage}
-                      alt={book.title}
-                      className="h-full w-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-105"
-                    />
-                  ) : (
-                    <div className="flex h-full items-center justify-center">
-                      <span className="material-symbols-outlined text-6xl text-text-light">
-                        auto_stories
+        {/* Carousel with navigation arrows */}
+        <div className="relative">
+          {/* Left arrow */}
+          <button
+            onClick={() => scroll("left")}
+            className="absolute -left-2 top-1/2 z-10 hidden -translate-y-1/2 items-center justify-center rounded-full bg-white/90 shadow-lg backdrop-blur transition-all hover:bg-white hover:shadow-xl md:flex size-10"
+          >
+            <span className="material-symbols-outlined text-secondary">
+              chevron_left
+            </span>
+          </button>
+
+          {/* Scrollable row */}
+          <div
+            ref={scrollRef}
+            className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory scroll-smooth px-1"
+            style={{ scrollbarWidth: "none" }}
+          >
+            {/* Showcase books from DB */}
+            {hasShowcase &&
+              filteredShowcase.map((book) => (
+                <div
+                  key={book.id}
+                  className="group relative flex shrink-0 snap-start flex-col rounded-xl border border-border-light/50 bg-white shadow-sm transition-all duration-300 hover:shadow-xl w-70"
+                >
+                  {/* Cover */}
+                  <Link
+                    href={`/ejemplo/${book.id}`}
+                    className="relative aspect-3/4 overflow-hidden rounded-t-xl bg-cream"
+                  >
+                    {book.coverImage ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={book.coverImage}
+                        alt={book.title}
+                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center">
+                        <span className="material-symbols-outlined text-6xl text-text-light">
+                          auto_stories
+                        </span>
+                      </div>
+                    )}
+                    {/* Hover overlay */}
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-all duration-300 group-hover:bg-black/30">
+                      <span className="flex items-center gap-2 rounded-full bg-white/90 px-4 py-2 text-sm font-bold text-secondary opacity-0 shadow-lg transition-all duration-300 group-hover:opacity-100">
+                        <span className="material-symbols-outlined text-base">
+                          auto_stories
+                        </span>
+                        {t("viewSample")}
                       </span>
                     </div>
-                  )}
-                  <div
-                    className="pointer-events-none absolute inset-0 opacity-30"
-                    style={{
-                      backgroundImage:
-                        "url('https://www.transparenttextures.com/patterns/rough-cloth.png')",
-                    }}
-                  />
-                  {/* "See sample" overlay on hover */}
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-all duration-300 group-hover:bg-black/30">
-                    <span className="flex items-center gap-2 rounded-full bg-white/90 px-4 py-2 text-sm font-bold text-secondary opacity-0 shadow-lg transition-all duration-300 group-hover:opacity-100">
-                      <span className="material-symbols-outlined text-base">visibility</span>
-                      {t("viewSample")}
-                    </span>
-                  </div>
-                </div>
+                    {/* Age badge */}
+                    <div className="absolute right-2 top-2 rounded-full bg-white/90 px-2.5 py-0.5 text-xs font-bold text-primary backdrop-blur">
+                      {getAgeFilter(book.characterAge) === "2-4"
+                        ? "2-4"
+                        : getAgeFilter(book.characterAge) === "5-7"
+                          ? "5-7"
+                          : "8-12"}{" "}
+                      {t("years")}
+                    </div>
+                  </Link>
 
-                <div className="space-y-3 px-2">
-                  <h3 className="font-display text-2xl font-bold text-secondary transition-colors group-hover:text-primary">
-                    {book.title}
-                  </h3>
-                  <p className="line-clamp-1 text-sm text-text-muted">
-                    {t("madeFor", { name: book.characterName })}
-                  </p>
-                  <div className="mt-2 flex flex-col gap-2 border-t border-border-light/50 pt-2">
-                    <div className="flex items-center justify-between text-sm text-text-muted">
+                  {/* Info */}
+                  <div className="flex flex-1 flex-col gap-2 p-4">
+                    <h3 className="font-display text-lg font-bold text-secondary leading-tight">
+                      {book.title}
+                    </h3>
+                    <div className="flex items-center gap-2 text-xs text-text-muted">
                       <span>{t("softcover")}</span>
-                      <span className="font-bold text-secondary">{softcoverPrice}&euro;</span>
+                      <span className="font-bold text-secondary">
+                        {softcoverPrice}&euro;
+                      </span>
+                      <span className="text-border-light">|</span>
+                      <span>{t("hardcoverShort")}</span>
+                      <span className="font-bold text-primary">
+                        {hardcoverPrice}&euro;
+                      </span>
                     </div>
-                    <div className="flex items-center justify-between text-sm text-text-muted">
-                      <span>{t("hardcoverPremium")}</span>
-                      <span className="font-bold text-primary">{hardcoverPrice}&euro;</span>
-                    </div>
+
+                    {/* CTA */}
+                    <Link
+                      href={`/crear?template=${book.templateId}&from=catalog`}
+                      className="mt-auto flex items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-xs font-bold text-white whitespace-nowrap shadow-sm transition-all hover:bg-primary-hover hover:shadow-md"
+                    >
+                      <span className="material-symbols-outlined text-sm">
+                        child_care
+                      </span>
+                      {t("personalize")}
+                    </Link>
                   </div>
                 </div>
-              </Link>
-            ))}
-          </div>
-        )}
+              ))}
 
-        {/* Static fallback books (when no showcase stories exist) */}
-        {!hasShowcase && loaded && (
-          <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3">
-            {STATIC_BOOKS.map((book) => (
-              <div
-                key={book.key}
-                className="group cursor-pointer rounded-lg border border-border-light/50 bg-white p-4 pb-6 shadow-sm transition-all duration-300 hover:shadow-xl"
-              >
-                <div className="relative mb-6 aspect-[3/4] overflow-hidden rounded-sm bg-cream shadow-inner">
-                  <div
-                    className="absolute inset-0 bg-cover bg-center opacity-90 transition-transform duration-700 group-hover:scale-105"
-                    style={{ backgroundImage: `url('${book.image}')` }}
-                  />
-                  <div
-                    className="pointer-events-none absolute inset-0 opacity-30"
-                    style={{
-                      backgroundImage:
-                        "url('https://www.transparenttextures.com/patterns/rough-cloth.png')",
-                    }}
-                  />
-                  {book.hasBadge && (
-                    <div className="absolute right-0 top-0 rounded-bl-lg bg-primary px-3 py-1 text-xs font-bold text-white shadow-sm">
-                      {t("hardcover")}
+            {/* Template cards (when no showcase books OR as fallback) */}
+            {!hasShowcase &&
+              loaded &&
+              filteredTemplates.map((template) => (
+                <div
+                  key={template.id}
+                  className="group relative flex shrink-0 snap-start flex-col rounded-xl border border-border-light/50 bg-white shadow-sm transition-all duration-300 hover:shadow-xl w-70"
+                >
+                  {/* Cover */}
+                  <div className="relative aspect-3/4 overflow-hidden rounded-t-xl bg-cream">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={template.image}
+                      alt={td(`templates.${template.id}.title`)}
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                    {/* Age badge */}
+                    <div className="absolute right-2 top-2 rounded-full bg-white/90 px-2.5 py-0.5 text-xs font-bold text-primary backdrop-blur">
+                      {td(`templates.${template.id}.ageRange`)}
                     </div>
-                  )}
-                </div>
+                  </div>
 
-                <div className="space-y-3 px-2">
-                  <h3 className="font-display text-2xl font-bold text-secondary transition-colors group-hover:text-primary">
-                    {t(`books.${book.key}.title`)}
-                  </h3>
-                  <p className="line-clamp-2 text-sm italic text-text-soft">
-                    {t(`books.${book.key}.description`)}
-                  </p>
-                  <div className="mt-2 flex flex-col gap-2 border-t border-border-light/50 pt-2">
-                    <div className="flex items-center justify-between text-sm text-text-muted">
+                  {/* Info */}
+                  <div className="flex flex-1 flex-col gap-2 p-4">
+                    <h3 className="font-display text-lg font-bold text-secondary leading-tight">
+                      {td(`templates.${template.id}.title`)}
+                    </h3>
+                    <p className="text-xs text-text-muted line-clamp-2">
+                      {td(`templates.${template.id}.description`)}
+                    </p>
+                    <div className="flex items-center gap-2 text-xs text-text-muted">
                       <span>{t("softcover")}</span>
-                      <span className="font-bold text-secondary">{softcoverPrice}&euro;</span>
+                      <span className="font-bold text-secondary">
+                        {softcoverPrice}&euro;
+                      </span>
+                      <span className="text-border-light">|</span>
+                      <span>{t("hardcoverShort")}</span>
+                      <span className="font-bold text-primary">
+                        {hardcoverPrice}&euro;
+                      </span>
                     </div>
-                    <div className="flex items-center justify-between text-sm text-text-muted">
-                      <span>{t("hardcoverPremium")}</span>
-                      <span className="font-bold text-primary">{hardcoverPrice}&euro;</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
 
-        {/* Skeleton while loading */}
-        {!loaded && (
-          <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3">
-            {[0, 1, 2].map((i) => (
-              <div
-                key={i}
-                className="animate-pulse rounded-lg border border-border-light/50 bg-white p-4 pb-6 shadow-sm"
-              >
-                <div className="mb-6 aspect-[3/4] rounded-sm bg-border-light/50" />
-                <div className="space-y-3 px-2">
-                  <div className="h-7 w-3/4 rounded bg-border-light/50" />
-                  <div className="h-4 w-full rounded bg-border-light/30" />
-                  <div className="mt-2 border-t border-border-light/50 pt-2">
-                    <div className="h-4 w-full rounded bg-border-light/30" />
-                    <div className="mt-2 h-4 w-full rounded bg-border-light/30" />
+                    {/* CTA */}
+                    <Link
+                      href={`/crear?template=${template.id}&from=catalog`}
+                      className="mt-auto flex items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-xs font-bold text-white whitespace-nowrap shadow-sm transition-all hover:bg-primary-hover hover:shadow-md"
+                    >
+                      <span className="material-symbols-outlined text-sm">
+                        child_care
+                      </span>
+                      {t("personalize")}
+                    </Link>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+
+            {/* Skeleton */}
+            {!loaded &&
+              Array.from({ length: 5 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="animate-pulse shrink-0 snap-start rounded-xl border border-border-light/50 bg-white shadow-sm w-70"
+                >
+                  <div className="aspect-3/4 rounded-t-xl bg-border-light/30" />
+                  <div className="space-y-3 p-4">
+                    <div className="h-5 w-3/4 rounded bg-border-light/30" />
+                    <div className="h-3 w-full rounded bg-border-light/20" />
+                    <div className="h-10 w-full rounded-lg bg-border-light/20" />
+                  </div>
+                </div>
+              ))}
           </div>
-        )}
+
+          {/* Right arrow */}
+          <button
+            onClick={() => scroll("right")}
+            className="absolute -right-2 top-1/2 z-10 hidden -translate-y-1/2 items-center justify-center rounded-full bg-white/90 shadow-lg backdrop-blur transition-all hover:bg-white hover:shadow-xl md:flex size-10"
+          >
+            <span className="material-symbols-outlined text-secondary">
+              chevron_right
+            </span>
+          </button>
+        </div>
       </div>
     </section>
   );

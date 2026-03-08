@@ -1,7 +1,7 @@
 # meapica — Documentation Index
 
 > Living documentation for the meapica project.
-> Last updated: 2026-02-24
+> Last updated: 2026-03-08
 
 ## Documents
 
@@ -19,6 +19,6 @@
 
 **meapica** is a platform where parents create personalized, illustrated children's books with AI + print-on-demand. The child becomes the protagonist of their own adventure. Positioned as "artesanal digital" — handcrafted feel, not AI-generated aesthetic.
 
-**Stack:** Next.js + Supabase + Vercel + Stripe + Claude API + Flux/DALL-E + Gelato API
+**Stack:** Next.js 16 + Supabase + Vercel + Stripe + Claude Sonnet 4 (prod) / Groq / Cerebras / Gemini (dev) + Recraft V3 + Gelato API
 
-**Status:** Design phase complete (Stitch). Implementation not started.
+**Status:** Phases 0–3 complete. Phase 4 (checkout/Gelato) in progress. Phase 5 (launch) unstarted.

@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "title": "meapica — De Vraies Histoires à Toucher",
+    "title": "Meapica — De Vraies Histoires à Toucher",
     "description": "Retrouvez la magie de tourner les pages. Des contes personnalisés imprimés sur du papier de haute qualité, conçus pour créer des moments de connexion authentique."
   },
   "nav": {
@@ -43,15 +43,22 @@
     "step3Description": "Un livre physique, relié avec amour, arrive à votre porte prêt à être chéri."
   },
   "bookCollection": {
-    "title": "Notre Bibliothèque Physique",
-    "subtitle": "Éditions limitées sur papier premium. Des histoires qui sont meilleures au toucher.",
-    "subtitleShowcase": "Exemples réels créés sur notre plateforme. Cliquez pour voir le livre complet.",
+    "title": "Choisissez une histoire, ajoutez votre enfant",
+    "subtitle": "Des histoires illustrées prêtes à personnaliser. Choisissez votre préférée et faites de votre enfant le héros.",
+    "subtitleShowcase": "De vraies histoires créées sur notre plateforme. Cliquez pour feuilleter le livre complet.",
     "viewAll": "Voir la collection complète",
-    "viewSample": "Voir l'exemple",
+    "viewSample": "Feuilleter le livre",
     "madeFor": "Créé pour {name}",
     "hardcover": "Couverture Rigide",
+    "hardcoverShort": "Couverture rigide",
     "softcover": "Couverture souple",
     "hardcoverPremium": "Couverture rigide (Premium)",
+    "personalize": "Faire de mon enfant le héros",
+    "filterAll": "Tous les âges",
+    "filter2to4": "2-4 ans",
+    "filter5to7": "5-7 ans",
+    "filter8to12": "8-12 ans",
+    "years": "ans",
     "books": {
       "enchantedForest": {
         "title": "La Forêt Enchantée",
@@ -122,10 +129,60 @@
     "readingClubDescription": "Conseils pour encourager la lecture sans écrans.",
     "emailPlaceholder": "Votre adresse email",
     "joinClub": "Rejoindre le club",
-    "copyright": "© 2025 meapica. Fait avec amour.",
+    "copyright": "© 2025 Meapica. Fait avec amour.",
     "legalNotice": "Mentions Légales",
     "privacy": "Confidentialité",
     "cookies": "Cookies"
+  },
+  "legal": {
+    "backHome": "Retour à l'accueil",
+    "lastUpdated": "Dernière mise à jour : {date}",
+    "privacy": {
+      "title": "Politique de confidentialité",
+      "intro": "Chez Meapica, la confidentialité de nos utilisateurs — en particulier concernant les données des enfants — est notre priorité absolue.",
+      "section1Title": "1. Responsable du traitement",
+      "section1Text": "Meapica est responsable du traitement des données personnelles collectées via meapica.com.",
+      "section2Title": "2. Données collectées",
+      "section2Text": "Nous collectons les données nécessaires à la création de votre livre personnalisé : prénom de l'enfant, âge, ville, centres d'intérêt et caractéristiques physiques pour l'illustration. Nous collectons également l'email et l'adresse de livraison pour traiter les commandes.",
+      "section3Title": "3. Finalité du traitement",
+      "section3Text": "Nous utilisons vos données exclusivement pour : générer l'histoire personnalisée, traiter le paiement et la livraison, et communiquer avec vous concernant votre commande. Nous ne vendons jamais de données à des tiers.",
+      "section4Title": "4. Base légale",
+      "section4Text": "Le traitement est fondé sur l'exécution du contrat (votre commande) et votre consentement explicite lors de la création d'un compte.",
+      "section5Title": "5. Services tiers",
+      "section5Text": "Nous utilisons Supabase (stockage), Stripe (paiements) et Gelato (impression) comme services tiers. Chaque service possède sa propre politique de confidentialité.",
+      "section6Title": "6. Vos droits",
+      "section6Text": "Vous pouvez exercer vos droits d'accès, de rectification, de suppression, de limitation et de portabilité en nous contactant à hola@meapica.com.",
+      "section7Title": "7. Protection des données des mineurs",
+      "section7Text": "Nous ne collectons pas de données directement auprès des mineurs. Les données de l'enfant sont fournies par le parent ou tuteur légal qui crée le livre."
+    },
+    "terms": {
+      "title": "Mentions légales et conditions d'utilisation",
+      "intro": "En utilisant meapica.com, vous acceptez les conditions suivantes.",
+      "section1Title": "1. Identification",
+      "section1Text": "Meapica est une plateforme de création de livres pour enfants personnalisés opérée depuis l'Espagne.",
+      "section2Title": "2. Service",
+      "section2Text": "Meapica propose la création d'histoires pour enfants personnalisées avec des illustrations uniques, imprimées à la demande.",
+      "section3Title": "3. Propriété intellectuelle",
+      "section3Text": "Les illustrations sont créées spécifiquement pour chaque livre. L'acheteur reçoit une licence d'utilisation personnelle non commerciale du livre acheté.",
+      "section4Title": "4. Prix et paiements",
+      "section4Text": "Les prix incluent la TVA et sont affichés en euros. Le paiement est traité de manière sécurisée via Stripe.",
+      "section5Title": "5. Livraison et retours",
+      "section5Text": "Les livres sont imprimés à la demande. Le délai de livraison est de 7 à 14 jours ouvrés. En tant que produits personnalisés, les retours ne sont pas acceptés sauf défauts de fabrication.",
+      "section6Title": "6. Limitation de responsabilité",
+      "section6Text": "Meapica ne garantit pas la disponibilité ininterrompue du service. Les illustrations peuvent varier et un résultat spécifique n'est pas garanti."
+    },
+    "cookies": {
+      "title": "Politique de cookies",
+      "intro": "Meapica utilise des cookies strictement nécessaires au fonctionnement du service.",
+      "section1Title": "1. Que sont les cookies ?",
+      "section1Text": "Les cookies sont de petits fichiers texte stockés dans votre navigateur lors de la visite d'un site web.",
+      "section2Title": "2. Cookies utilisés",
+      "section2Text": "Nous utilisons uniquement des cookies techniques nécessaires pour : maintenir votre session utilisateur active, mémoriser la langue sélectionnée et gérer le processus d'achat. Nous n'utilisons pas de cookies marketing ni de suivi tiers.",
+      "section3Title": "3. Cookies tiers",
+      "section3Text": "Stripe (processeur de paiement) peut définir ses propres cookies pendant le processus de paiement. Consultez la politique de cookies de Stripe pour plus d'informations.",
+      "section4Title": "4. Gestion des cookies",
+      "section4Text": "Vous pouvez configurer votre navigateur pour refuser les cookies, bien que cela puisse affecter le fonctionnement du service."
+    }
   },
   "notFound": {
     "title": "Page introuvable",
@@ -215,11 +272,19 @@
   },
   "crear": {
     "preparing": "Préparation de votre conte...",
+    "regenerateConfirm": {
+      "title": "Le personnage a changé",
+      "description": "Tu as modifié les données du personnage depuis la création du portrait. Veux-tu en générer un nouveau ?",
+      "regenerate": "Nouveau portrait",
+      "keep": "Garder l'actuel"
+    },
     "header": {
       "backHome": "Retour à l'accueil",
       "exit": "Quitter",
       "saveAndExit": "Enregistrer et quitter",
-      "step": "Étape {current} sur {total}"
+      "step": "Étape {current} sur {total}",
+      "regenerateTooltip": "Changer le portrait",
+      "years": "ans"
     },
     "footer": {
       "back": "Retour",
@@ -228,22 +293,23 @@
     },
     "step1": {
       "title": "Comment souhaitez-vous créer cette aventure ?",
-      "subtitle": "Choisissez l'expérience parfaite pour aujourd'hui. Vous pouvez personnaliser chaque détail ou laisser la magie vous surprendre.",
+      "subtitle": "À vous de choisir : préparez-le en surprise ou vivez l'expérience ensemble en famille.",
       "solo": {
-        "title": "Je crée seul(e)",
-        "subtitle": "Surprise Magique",
-        "description": "Concevez le conte en secret pour l'offrir comme un cadeau surprise inoubliable. Vous avez le contrôle total de l'histoire et des détails.",
-        "imageAlt": "Enfant lisant un livre avec concentration"
+        "title": "Je le prépare en surprise",
+        "subtitle": "Cadeau Secret",
+        "description": "Concevez le conte en secret pendant que votre enfant dort. Vous contrôlez chaque détail : l'histoire, les illustrations et le message spécial qui sera imprimé à l'intérieur.",
+        "imageAlt": "Parent préparant un livre surprise sur un ordinateur"
       },
       "juntos": {
-        "title": "Nous créons ensemble",
-        "subtitle": "Aventure Partagée",
-        "description": "Une expérience interactive conçue pour être partagée en famille. Choisissez les personnages, les couleurs et les rebondissements de l'intrigue avec votre enfant.",
-        "imageAlt": "Parent et enfant lisant un livre ensemble"
+        "title": "Nous le créons ensemble",
+        "subtitle": "Expérience Familiale",
+        "description": "Une expérience à partager en famille. Asseyez-vous avec votre enfant et prenez les décisions ensemble : quelle aventure vivre, quels personnages inclure et comment se termine l'histoire.",
+        "imageAlt": "Père, mère et enfant créant ensemble sur une tablette"
       }
     },
     "step2": {
       "title": "Créez votre petit héros",
+      "titleJuntos": "Qui es-tu, petit héros ?",
       "subtitle": "Personnalisez les détails magiques pour rendre le conte unique.",
       "nameLabel": "Prénom de l'enfant",
       "namePlaceholder": "Ex : Léo",
@@ -253,6 +319,7 @@
       "year": "an",
       "years": "ans",
       "hairColorLabel": "Couleur de cheveux",
+      "eyeColorLabel": "Couleur des yeux",
       "skinToneLabel": "Teint de peau",
       "genderLabel": "Genre",
       "boy": "Garçon",
@@ -268,6 +335,10 @@
       "companionLabel": "A-t-il un animal de compagnie ou un ami spécial ?",
       "companionPlaceholder": "Ex : Son chat Minou, sa sœur Lucía, sa peluche Nounours...",
       "companionHint": "Il pourra apparaître comme personnage surprise dans l'histoire.",
+      "favoriteFoodLabel": "Son plat préféré",
+      "favoriteFoodPlaceholder": "Ex : Pizza, pâtes au fromage, glace à la fraise...",
+      "futureDreamLabel": "Que veut-il être quand il sera grand ?",
+      "futureDreamPlaceholder": "Ex : Astronaute, vétérinaire, chef cuisinier, footballeur...",
       "greeting": "Bonjour, {name} !",
       "greetingDefault": "Bonjour, héros !",
       "previewReady": "Votre héros est prêt à vivre des aventures entre {interests}.",
@@ -275,12 +346,32 @@
       "interestsPrompt": "Choisissez ses centres d'intérêt pour personnaliser l'aventure...",
       "skinToneTitle": "Teint de peau",
       "hairColorTitle": "Couleur de cheveux",
-      "andConnector": " et "
+      "eyeColorTitle": "Couleur des yeux",
+      "andConnector": " et ",
+      "nebulaHint": "Remplissez les détails et nous donnerons vie à votre personnage",
+      "nebulaHintReady": "Quand vous continuerez, nous créerons {name} tel que vous le décrivez"
+    },
+    "portraitReveal": {
+      "generating": "Création de {name}...",
+      "generatingSubtitle": "Nous donnons vie à ton personnage tel que tu l'as décrit",
+      "revealTitle": "Voici {name}",
+      "revealSubtitle": "Tel que tu l'as décrit. Maintenant, choisis son aventure.",
+      "continueButton": "Choisir l'aventure",
+      "errorTitle": "Nous n'avons pas pu créer le personnage",
+      "errorSubtitle": "Un problème est survenu lors de la génération. Réessaye.",
+      "backButton": "Retour",
+      "retryButton": "Réessayer",
+      "regenerateButton": "En générer un autre",
+      "regenerateTooltip": "Générer un nouveau portrait",
+      "rateLimitError": "Tu as généré trop de portraits. Réessaye dans une heure."
     },
     "step3": {
       "title": "Quelle aventure vivra {name} ?",
+      "titleJuntos": "Quelle aventure veux-tu vivre, {name} ?",
       "subtitle": "Sélectionnez une histoire magique pour commencer le voyage. Chaque conte est conçu pour éveiller son imagination.",
+      "subtitleJuntos": "Choisis ton aventure préférée. C'est toi qui décides quelle histoire racontera ce livre !",
       "recommendedFor": "Pour {name}",
+      "recommended": "Top",
       "defaultName": "votre héros"
     },
     "step4": {
@@ -305,7 +396,14 @@
         "page": "Page",
         "specialMomentLabel": "Y a-t-il un moment spécial que vous souhaitez inclure ?",
         "specialMomentPlaceholder": "Ex : Qu'il surmonte sa peur du noir, qu'il partage avec sa sœur, qu'il apprenne à être courageux...",
-        "specialMomentHint": "L'IA intégrera ce moment dans l'histoire de manière naturelle."
+        "specialMomentHint": "Nous intégrerons ce moment dans l'histoire de manière naturelle.",
+        "storyPreview": "Aperçu",
+        "yourStory": "Votre histoire jusqu'ici",
+        "notChosen": "Pas encore choisi",
+        "companionContext": "Qui accompagnera {name} dans son aventure ? Ce personnage apparaîtra dans les moments clés du conte et dans les illustrations.",
+        "atmosphereContext": "Choisissez le moment de la journée et le décor. Cela façonne le ton émotionnel et le style visuel de chaque illustration.",
+        "twistContext": "Toute grande histoire a un défi. Cela définit l'arc émotionnel et la leçon que {name} apprendra au fil de l'histoire.",
+        "nextTooltipPrefix": "Manque encore"
       },
       "juntos": {
         "defaultName": "le héros",
@@ -317,12 +415,21 @@
     "step5": {
       "title": "Le Grand Final",
       "subtitle": "Comment souhaitez-vous que l'aventure de <highlight>{name}</highlight> se termine ? Vous avez le dernier mot.",
+      "titleSolo": "La touche finale",
+      "subtitleSolo": "Choisissez comment se termine l'histoire et écrivez un message secret à <highlight>{name}</highlight> qui sera imprimé pour toujours.",
       "defaultName": "votre héros",
-      "dedicationLabel": "Dédicace Spéciale",
+      "dedicationLabel": "Dédicace",
+      "dedicationLabelSolo": "Votre message secret",
       "dedicationPlaceholder": "Cher {name},\nJ'ai écrit ce conte pour te rappeler que tu peux toujours atteindre les étoiles.\nAvec amour, Maman.",
+      "dedicationPlaceholderSolo": "Cher {name},\nJ'ai créé ce livre en pensant à toi, à ta curiosité et à ce sourire qui illumine tout.\nAvec tout mon amour.",
       "senderPlaceholder": "Votre nom (ex : Maman, Papa, Mamie...)",
       "adventureOf": "L'aventure de {name}",
-      "createMyStory": "Créer mon conte"
+      "createMyStory": "Créer mon conte",
+      "chooseEndingFirst": "Choisissez d'abord comment se termine l'histoire",
+      "endingNoteLabel": "Voulez-vous ajouter quelque chose de spécial à la fin ?",
+      "endingNoteOptional": "(optionnel)",
+      "endingNotePlaceholder": "Ex : Que {name} apprenne à surmonter ses peurs, à se réconcilier avec son frère...",
+      "endingNoteHint": "Nous intégrerons ce détail dans le dénouement de manière naturelle."
     },
     "guestGate": {
       "title": "Votre conte est presque prêt",
@@ -356,7 +463,16 @@
         "menuBook": "Reliure de votre aventure...",
         "autoAwesome": "Ajout d'une touche de magie finale..."
       },
-      "goBack": "Retour"
+      "goBack": "Retour",
+      "errorStuck": "La génération prend plus de temps que prévu. Veuillez réessayer.",
+      "titlePickerHeading": "Votre histoire est prête !",
+      "titlePickerSubheading": "Choisissez le titre de votre livre",
+      "titlePickerCustomPlaceholder": "Écrivez votre propre titre...",
+      "titlePickerConfirm": "Confirmer le titre",
+      "titlePickerSaving": "Enregistrement...",
+      "titlePickerAutoConfirmHint": "Sera confirmé automatiquement dans {seconds}s",
+      "illustrationsGenerating": "Création des illustrations...",
+      "viewStoryButton": "Voir mon histoire"
     },
     "preview": {
       "loadingStory": "Chargement de votre conte...",
@@ -393,7 +509,14 @@
       "saveForLater": "Sauvegarder et créer un compte",
       "savedGoToLibrary": "Sauvegardé — aller à ma bibliothèque",
       "saveForLaterHintAnonymous": "Créez un compte gratuit pour sauvegarder ce conte et l'acheter quand vous le souhaitez.",
-      "saveForLaterHintLoggedIn": "Votre conte est déjà sauvegardé dans votre bibliothèque."
+      "saveForLaterHintLoggedIn": "Votre conte est déjà sauvegardé dans votre bibliothèque.",
+      "hero": "Le héros",
+      "heroine": "L'héroïne",
+      "years": "ans",
+      "superpower": "Superpouvoir",
+      "companion": "Compagnon",
+      "interests": "Il/Elle adore",
+      "colophonText": "Ce livre a été créé avec amour par Meapica. Chaque histoire est unique, écrite et illustrée spécialement pour son protagoniste. Parce que chaque enfant mérite d'être le héros de sa propre aventure."
     }
   },
   "checkout": {
@@ -453,7 +576,9 @@
       "preview": "Aperçu prêt",
       "completing": "Finalisation...",
       "ready": "Prêt",
-      "ordered": "Commandé"
+      "ordered": "Commandé",
+      "shipped": "Expédié",
+      "delivered": "Livré"
     },
     "storyActions": {
       "viewStory": "Voir l'histoire",
@@ -500,8 +625,21 @@
       "description": "Lorsque vous créerez un conte, votre personnage sera enregistré ici pour le réutiliser.",
       "cta": "Créer un conte"
     },
+    "bookCount": "{count, plural, one {1 livre} other {{count} livres}}",
+    "moreBooks": "+{count} de plus",
+    "noBooksYet": "Pas encore de livres",
     "editTitle": "Modifier le titre",
-    "downloadPdf": "Télécharger PDF"
+    "viewDetail": "Voir le détail",
+    "createBook": "Créer un nouveau livre",
+    "createdOn": "Créé le",
+    "interests": "Intérêts",
+    "downloadPdf": "Télécharger PDF",
+    "storiesLived": "Aventures vécues",
+    "noStoriesYet": "Pas encore de livres",
+    "newAdventuresFor": "Nouvelle aventure pour {name}",
+    "newAdventuresHint": "En fonction de son âge et de ses intérêts, ces histoires vont l'enchanter.",
+    "recommendedFor": "Parfaite pour {name}",
+    "allAdventuresDone": "{name} a déjà vécu toutes les aventures disponibles ! Vous pouvez créer un nouveau livre en reprenant une qu'il a adorée."
   },
   "profile": {
     "title": "Mon profil",
@@ -615,26 +753,53 @@
       "space": {
         "title": "La Grande Aventure Spatiale",
         "description": "Un voyage vers les étoiles où ils découvriront des planètes inconnues et se feront des amis extraterrestres.",
-        "ageRange": "4-7 ans",
+        "ageRange": "5-8 ans",
         "previewChapterTitle": "Le Vaisseau des Rêves",
         "decisions": {
           "encounter": {
             "question": "Que découvre {name} sur la planète inconnue ?",
-            "robot": { "title": "Robot Amical", "subtitle": "Bip boup, tu veux être mon ami ?" },
-            "crystal": { "title": "Cristal Lumineux", "subtitle": "Il brille de toutes les couleurs de l'arc-en-ciel" },
-            "ship": { "title": "Vaisseau Abandonné", "subtitle": "Qui l'a laissé ici ?" }
+            "robot": {
+              "title": "Robot Amical",
+              "subtitle": "Bip boup, tu veux être mon ami ?"
+            },
+            "crystal": {
+              "title": "Cristal Lumineux",
+              "subtitle": "Il brille de toutes les couleurs de l'arc-en-ciel"
+            },
+            "ship": {
+              "title": "Vaisseau Abandonné",
+              "subtitle": "Qui l'a laissé ici ?"
+            }
           },
           "companion": {
             "question": "Qui accompagne {name} dans cette mission spatiale ?",
-            "alien": { "title": "Alien Sympathique", "subtitle": "Il a trois yeux et un immense sourire" },
-            "copilot-robot": { "title": "Robot Copilote", "subtitle": "Le meilleur navigateur de la galaxie" },
-            "star": { "title": "Étoile Guide", "subtitle": "Une petite étoile qui parle et montre le chemin" }
+            "alien": {
+              "title": "Alien Sympathique",
+              "subtitle": "Il a trois yeux et un immense sourire"
+            },
+            "copilot-robot": {
+              "title": "Robot Copilote",
+              "subtitle": "Le meilleur navigateur de la galaxie"
+            },
+            "star": {
+              "title": "Étoile Guide",
+              "subtitle": "Une petite étoile qui parle et montre le chemin"
+            }
           },
           "challenge": {
             "question": "Quel danger apparaît dans la mission de {name} ?",
-            "asteroids": { "title": "Tempête d'Astéroïdes", "subtitle": "Esquive et vole !" },
-            "shrinking-planet": { "title": "Planète qui Rétrécit", "subtitle": "Il faut sauver les habitants !" },
-            "black-hole": { "title": "Trou Noir Farceur", "subtitle": "Il aspire tout ce qui est amusant !" }
+            "asteroids": {
+              "title": "Tempête d'Astéroïdes",
+              "subtitle": "Esquive et vole !"
+            },
+            "shrinking-planet": {
+              "title": "Planète qui Rétrécit",
+              "subtitle": "Il faut sauver les habitants !"
+            },
+            "black-hole": {
+              "title": "Trou Noir Farceur",
+              "subtitle": "Il aspire tout ce qui est amusant !"
+            }
           }
         },
         "atmosphere": {
@@ -650,34 +815,70 @@
           }
         },
         "endings": {
-          "triumphant-return": { "title": "Retour Triomphal", "description": "Revient sur Terre avec un cadeau de l'espace et une histoire incroyable à raconter." },
-          "galactic-party": { "title": "Fête Intergalactique", "description": "Tous les amis extraterrestres fêtent avec de la musique cosmique et des gourmandises d'étoiles." },
-          "stargazing": { "title": "Bivouac Stellaire", "description": "S'allonge sur une planète douce pour contempler les constellations et se souvenir de l'aventure." }
+          "triumphant-return": {
+            "title": "Retour Triomphal",
+            "description": "Revient sur Terre avec un cadeau de l'espace et une histoire incroyable à raconter."
+          },
+          "galactic-party": {
+            "title": "Fête Intergalactique",
+            "description": "Tous les amis extraterrestres fêtent avec de la musique cosmique et des gourmandises d'étoiles."
+          },
+          "stargazing": {
+            "title": "Bivouac Stellaire",
+            "description": "S'allonge sur une planète douce pour contempler les constellations et se souvenir de l'aventure."
+          }
         }
       },
       "forest": {
         "title": "La Forêt Magique",
         "description": "Des secrets parmi les arbres anciens et des créatures fantastiques qui ont besoin d'aide.",
-        "ageRange": "3-6 ans",
+        "ageRange": "2-5 ans",
         "previewChapterTitle": "La Forêt des Murmures",
         "decisions": {
           "encounter": {
             "question": "Que trouve {name} parmi les arbres ?",
-            "dragon": { "title": "Dragon Endormi", "subtitle": "Zzz... sous l'arbre ancien" },
-            "treasure": { "title": "Coffre Magique", "subtitle": "Rempli de poussière de fées !" },
-            "door": { "title": "Porte Secrète", "subtitle": "Où mène-t-elle ?" }
+            "dragon": {
+              "title": "Dragon Endormi",
+              "subtitle": "Zzz... sous l'arbre ancien"
+            },
+            "treasure": {
+              "title": "Coffre Magique",
+              "subtitle": "Rempli de poussière de fées !"
+            },
+            "door": {
+              "title": "Porte Secrète",
+              "subtitle": "Où mène-t-elle ?"
+            }
           },
           "companion": {
             "question": "Qui accompagne {name} dans la forêt ?",
-            "fox": { "title": "Renard Sage", "subtitle": "Connaît tous les secrets de la forêt" },
-            "fairy": { "title": "Fée Espiègle", "subtitle": "Toute petite mais pleine de magie" },
-            "owl": { "title": "Hibou Ancien", "subtitle": "A vu passer mille lunes" }
+            "fox": {
+              "title": "Renard Sage",
+              "subtitle": "Connaît tous les secrets de la forêt"
+            },
+            "fairy": {
+              "title": "Fée Espiègle",
+              "subtitle": "Toute petite mais pleine de magie"
+            },
+            "owl": {
+              "title": "Hibou Ancien",
+              "subtitle": "A vu passer mille lunes"
+            }
           },
           "challenge": {
             "question": "Quel obstacle apparaît sur le chemin de {name} ?",
-            "river": { "title": "Rivière en Crue", "subtitle": "L'eau monte et il n'y a pas de pont" },
-            "fog": { "title": "Brouillard Enchanté", "subtitle": "On ne voit rien... ou si ?" },
-            "talking-tree": { "title": "Arbre Parlant", "subtitle": "Demande quelque chose en échange pour laisser passer" }
+            "river": {
+              "title": "Rivière en Crue",
+              "subtitle": "L'eau monte et il n'y a pas de pont"
+            },
+            "fog": {
+              "title": "Brouillard Enchanté",
+              "subtitle": "On ne voit rien... ou si ?"
+            },
+            "talking-tree": {
+              "title": "Arbre Parlant",
+              "subtitle": "Demande quelque chose en échange pour laisser passer"
+            }
           }
         },
         "atmosphere": {
@@ -693,34 +894,70 @@
           }
         },
         "endings": {
-          "clearing-celebration": { "title": "Fête dans la Clairière", "description": "Toutes les créatures de la forêt fêtent avec musique et danse parmi les lucioles." },
-          "magic-seed": { "title": "La Graine Magique", "description": "La forêt offre une graine spéciale à planter chez soi pour se souvenir de l'aventure." },
-          "moss-rest": { "title": "Repos sur la Mousse", "description": "S'allonge sur un lit de mousse pour écouter les murmures de la forêt sous les étoiles." }
+          "clearing-celebration": {
+            "title": "Fête dans la Clairière",
+            "description": "Toutes les créatures de la forêt fêtent avec musique et danse parmi les lucioles."
+          },
+          "magic-seed": {
+            "title": "La Graine Magique",
+            "description": "La forêt offre une graine spéciale à planter chez soi pour se souvenir de l'aventure."
+          },
+          "moss-rest": {
+            "title": "Repos sur la Mousse",
+            "description": "S'allonge sur un lit de mousse pour écouter les murmures de la forêt sous les étoiles."
+          }
         }
       },
       "superhero": {
         "title": "Super-Héros pour un Jour",
         "description": "Sauvons la ville ! Découvre des super-pouvoirs cachés et apprends la valeur du courage.",
-        "ageRange": "5-8 ans",
+        "ageRange": "7-10 ans",
         "previewChapterTitle": "L'Éveil du Héros",
         "decisions": {
           "encounter": {
             "question": "Qu'est-ce qui éveille les super-pouvoirs de {name} ?",
-            "mask": { "title": "Masque Mystérieux", "subtitle": "Apparaît de nulle part avec un éclat spécial" },
-            "help-call": { "title": "Appel à l'Aide", "subtitle": "Quelqu'un a besoin d'aide urgente !" },
-            "power-ray": { "title": "Rayon de Pouvoir", "subtitle": "Un éclair qui change tout" }
+            "mask": {
+              "title": "Masque Mystérieux",
+              "subtitle": "Apparaît de nulle part avec un éclat spécial"
+            },
+            "help-call": {
+              "title": "Appel à l'Aide",
+              "subtitle": "Quelqu'un a besoin d'aide urgente !"
+            },
+            "power-ray": {
+              "title": "Rayon de Pouvoir",
+              "subtitle": "Un éclair qui change tout"
+            }
           },
           "companion": {
             "question": "Qui est le coéquipier de {name} ?",
-            "hero-dog": { "title": "Chien Super-Héros", "subtitle": "Avec cape et tout !" },
-            "best-friend": { "title": "Meilleur(e) Ami(e)", "subtitle": "Ensemble, ils forment une équipe imbattable" },
-            "helper-robot": { "title": "Robot Assistant", "subtitle": "A des outils pour tout" }
+            "hero-dog": {
+              "title": "Chien Super-Héros",
+              "subtitle": "Avec cape et tout !"
+            },
+            "best-friend": {
+              "title": "Meilleur(e) Ami(e)",
+              "subtitle": "Ensemble, ils forment une équipe imbattable"
+            },
+            "helper-robot": {
+              "title": "Robot Assistant",
+              "subtitle": "A des outils pour tout"
+            }
           },
           "challenge": {
             "question": "Quel vilain menace la ville de {name} ?",
-            "shadow": { "title": "Le Vilain de l'Ombre", "subtitle": "Veut éteindre toutes les lumières de la ville" },
-            "storm": { "title": "Tempête Chaotique", "subtitle": "Le temps est devenu fou" },
-            "laugh-thief": { "title": "Le Voleur de Rires", "subtitle": "Personne ne peut rire !" }
+            "shadow": {
+              "title": "Le Vilain de l'Ombre",
+              "subtitle": "Veut éteindre toutes les lumières de la ville"
+            },
+            "storm": {
+              "title": "Tempête Chaotique",
+              "subtitle": "Le temps est devenu fou"
+            },
+            "laugh-thief": {
+              "title": "Le Voleur de Rires",
+              "subtitle": "Personne ne peut rire !"
+            }
           }
         },
         "atmosphere": {
@@ -736,34 +973,70 @@
           }
         },
         "endings": {
-          "hero-parade": { "title": "Défilé Héroïque", "description": "La ville fête avec un grand défilé et tout le monde scande le nom du héros." },
-          "secret-identity": { "title": "Identité Secrète", "description": "Retire la cape, sourit, et redevient simplement {name}." },
-          "hero-feast": { "title": "Banquet des Héros", "description": "Tous les personnages sauvés préparent une fête surprise de remerciement." }
+          "hero-parade": {
+            "title": "Défilé Héroïque",
+            "description": "La ville fête avec un grand défilé et tout le monde scande le nom du héros."
+          },
+          "secret-identity": {
+            "title": "Identité Secrète",
+            "description": "Retire la cape, sourit, et redevient simplement {name}."
+          },
+          "hero-feast": {
+            "title": "Banquet des Héros",
+            "description": "Tous les personnages sauvés préparent une fête surprise de remerciement."
+          }
         }
       },
       "pirates": {
         "title": "Pirates des Mers",
         "description": "À la recherche du trésor perdu en naviguant sur les sept mers avec un équipage très amusant.",
-        "ageRange": "4-8 ans",
+        "ageRange": "5-8 ans",
         "previewChapterTitle": "L'Île du Capitaine",
         "decisions": {
           "encounter": {
             "question": "Que découvre {name} sur l'île mystérieuse ?",
-            "treasure-map": { "title": "Carte au Trésor", "subtitle": "X marque l'endroit !" },
-            "talking-parrot": { "title": "Perroquet Bavard", "subtitle": "Raconte des histoires d'aventures passées" },
-            "mystery-island": { "title": "Grotte Sous-Marine", "subtitle": "Cachée sous les vagues" }
+            "treasure-map": {
+              "title": "Carte au Trésor",
+              "subtitle": "X marque l'endroit !"
+            },
+            "talking-parrot": {
+              "title": "Perroquet Bavard",
+              "subtitle": "Raconte des histoires d'aventures passées"
+            },
+            "mystery-island": {
+              "title": "Grotte Sous-Marine",
+              "subtitle": "Cachée sous les vagues"
+            }
           },
           "companion": {
             "question": "Qui fait partie de l'équipage de {name} ?",
-            "monkey": { "title": "Singe Farceur", "subtitle": "Vole toujours les bananes du capitaine" },
-            "mermaid": { "title": "Sirène Amicale", "subtitle": "Connaît tous les secrets de la mer" },
-            "veteran-pirate": { "title": "Pirate Vétéran", "subtitle": "Avec cache-œil, jambe de bois et cœur d'or" }
+            "monkey": {
+              "title": "Singe Farceur",
+              "subtitle": "Vole toujours les bananes du capitaine"
+            },
+            "mermaid": {
+              "title": "Sirène Amicale",
+              "subtitle": "Connaît tous les secrets de la mer"
+            },
+            "veteran-pirate": {
+              "title": "Pirate Vétéran",
+              "subtitle": "Avec cache-œil, jambe de bois et cœur d'or"
+            }
           },
           "challenge": {
             "question": "Quel danger guette l'équipage de {name} ?",
-            "kraken": { "title": "Kraken Géant", "subtitle": "Des tentacules partout !" },
-            "sea-storm": { "title": "Tempête en Mer", "subtitle": "Vagues énormes et vent féroce" },
-            "sinking-island": { "title": "Île qui Coule", "subtitle": "Elle s'enfonce petit à petit !" }
+            "kraken": {
+              "title": "Kraken Géant",
+              "subtitle": "Des tentacules partout !"
+            },
+            "sea-storm": {
+              "title": "Tempête en Mer",
+              "subtitle": "Vagues énormes et vent féroce"
+            },
+            "sinking-island": {
+              "title": "Île qui Coule",
+              "subtitle": "Elle s'enfonce petit à petit !"
+            }
           }
         },
         "atmosphere": {
@@ -779,34 +1052,70 @@
           }
         },
         "endings": {
-          "true-treasure": { "title": "Le Vrai Trésor", "description": "Ils découvrent que le vrai trésor, ce sont les amis qu'ils se sont faits en chemin." },
-          "paradise-island": { "title": "Île Paradisiaque", "description": "Ils jettent l'ancre sur une plage de sable doré pour se reposer et profiter." },
-          "pirate-party": { "title": "Fête Pirate", "description": "Grande célébration sur le navire avec musique, danse et gâteau à la noix de coco." }
+          "true-treasure": {
+            "title": "Le Vrai Trésor",
+            "description": "Ils découvrent que le vrai trésor, ce sont les amis qu'ils se sont faits en chemin."
+          },
+          "paradise-island": {
+            "title": "Île Paradisiaque",
+            "description": "Ils jettent l'ancre sur une plage de sable doré pour se reposer et profiter."
+          },
+          "pirate-party": {
+            "title": "Fête Pirate",
+            "description": "Grande célébration sur le navire avec musique, danse et gâteau à la noix de coco."
+          }
         }
       },
       "chef": {
         "title": "Le Plus Petit Chef",
         "description": "Une cuisine pleine de magie où les ingrédients prennent vie et dansent dans la marmite.",
-        "ageRange": "2-5 ans",
+        "ageRange": "2-4 ans",
         "previewChapterTitle": "La Cuisine Enchantée",
         "decisions": {
           "encounter": {
             "question": "Que découvre {name} dans la cuisine magique ?",
-            "secret-recipe": { "title": "Recette Secrète", "subtitle": "Un vieux livre avec une page qui brille" },
-            "living-ingredient": { "title": "Ingrédient Vivant", "subtitle": "La carotte peut parler !" },
-            "enchanted-kitchen": { "title": "Cuisine Enchantée", "subtitle": "Les ustensiles bougent tout seuls" }
+            "secret-recipe": {
+              "title": "Recette Secrète",
+              "subtitle": "Un vieux livre avec une page qui brille"
+            },
+            "living-ingredient": {
+              "title": "Ingrédient Vivant",
+              "subtitle": "La carotte peut parler !"
+            },
+            "enchanted-kitchen": {
+              "title": "Cuisine Enchantée",
+              "subtitle": "Les ustensiles bougent tout seuls"
+            }
           },
           "companion": {
             "question": "Qui aide {name} dans la cuisine ?",
-            "singing-spoon": { "title": "Cuillère Chanteuse", "subtitle": "Chante en remuant la soupe" },
-            "chef-mouse": { "title": "Souris Chef", "subtitle": "Petite mais avec un palais incroyable" },
-            "magic-grandma": { "title": "Grand-Mère Magique", "subtitle": "Ses recettes ont un ingrédient secret : l'amour" }
+            "singing-spoon": {
+              "title": "Cuillère Chanteuse",
+              "subtitle": "Chante en remuant la soupe"
+            },
+            "chef-mouse": {
+              "title": "Souris Chef",
+              "subtitle": "Petite mais avec un palais incroyable"
+            },
+            "magic-grandma": {
+              "title": "Grand-Mère Magique",
+              "subtitle": "Ses recettes ont un ingrédient secret : l'amour"
+            }
           },
           "challenge": {
             "question": "Quel problème surgit dans la cuisine de {name} ?",
-            "rebel-ingredients": { "title": "Ingrédients Rebelles", "subtitle": "Ils ne veulent pas aller dans la marmite !" },
-            "growing-cake": { "title": "Gâteau Géant", "subtitle": "Il n'arrête pas de grandir !" },
-            "tiny-kitchen": { "title": "Cuisine Minuscule", "subtitle": "Tout devient tout petit !" }
+            "rebel-ingredients": {
+              "title": "Ingrédients Rebelles",
+              "subtitle": "Ils ne veulent pas aller dans la marmite !"
+            },
+            "growing-cake": {
+              "title": "Gâteau Géant",
+              "subtitle": "Il n'arrête pas de grandir !"
+            },
+            "tiny-kitchen": {
+              "title": "Cuisine Minuscule",
+              "subtitle": "Tout devient tout petit !"
+            }
           }
         },
         "atmosphere": {
@@ -822,9 +1131,233 @@
           }
         },
         "endings": {
-          "grand-feast": { "title": "Grand Festin", "description": "Tout le monde goûte la recette magique et c'est la plus délicieuse du monde." },
-          "secret-recipe-kept": { "title": "La Recette Secrète", "description": "Garde la recette dans un livre spécial pour cuisiner quand il le souhaite." },
-          "cooking-together": { "title": "Tous aux Fourneaux", "description": "Tous les personnages cuisinent ensemble la plus grande recette du monde." }
+          "grand-feast": {
+            "title": "Grand Festin",
+            "description": "Tout le monde goûte la recette magique et c'est la plus délicieuse du monde."
+          },
+          "secret-recipe-kept": {
+            "title": "La Recette Secrète",
+            "description": "Garde la recette dans un livre spécial pour cuisiner quand il le souhaite."
+          },
+          "cooking-together": {
+            "title": "Tous aux Fourneaux",
+            "description": "Tous les personnages cuisinent ensemble la plus grande recette du monde."
+          }
+        }
+      },
+      "dinosaurs": {
+        "title": "La Terre des Dinosaures",
+        "description": "Un voyage dans le temps jusqu'à l'ère des dinosaures, où le courage et l'amitié changent tout.",
+        "ageRange": "4-7 ans",
+        "previewChapterTitle": "Le Portail du Temps",
+        "decisions": {
+          "encounter": {
+            "question": "Que découvre {name} en arrivant à l'ère des dinosaures ?",
+            "baby-dino": { "title": "Bébé Dinosaure", "subtitle": "Il s'est perdu et a besoin d'aide" },
+            "fossil-portal": { "title": "Portail de Fossiles", "subtitle": "Un cercle d'os qui brille" },
+            "volcano": { "title": "Volcan Mystérieux", "subtitle": "Quelque chose brille à l'intérieur" }
+          },
+          "companion": {
+            "question": "Qui accompagne {name} à l'ère préhistorique ?",
+            "triceratops": { "title": "Tricératops Gentil", "subtitle": "Fort, loyal et adore jouer" },
+            "pterodactyl": { "title": "Ptérodactyle Rapide", "subtitle": "Voit tout depuis les hauteurs" },
+            "cave-child": { "title": "Enfant des Cavernes", "subtitle": "Parle avec des gestes et des sourires" }
+          },
+          "challenge": {
+            "question": "Quel danger menace les dinosaures de {name} ?",
+            "tar-pits": { "title": "Marécages de Goudron", "subtitle": "Les dinosaures restent coincés !" },
+            "t-rex": { "title": "T-Rex en Colère", "subtitle": "Il a mal aux dents et grogne sur tout le monde" },
+            "meteor": { "title": "Pluie d'Étoiles", "subtitle": "Quelque chose approche depuis le ciel !" }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "prehistoric-dawn": "Aube Jurassique",
+            "golden-afternoon": "Après-midi dans la Vallée",
+            "starlit-night": "Nuit Étoilée"
+          },
+          "setting": {
+            "fern-valley": "Vallée des Fougères",
+            "dino-nests": "Nids de Dinosaures",
+            "crystal-caves": "Grottes de Cristal"
+          }
+        },
+        "endings": {
+          "dino-farewell": { "title": "Adieu Jurassique", "description": "Les dinosaures rugissent de joie en disant au revoir à leur nouvel ami." },
+          "time-souvenir": { "title": "Souvenir du Passé", "description": "Rentre à la maison avec un petit fossile brillant qui garde la magie du voyage." },
+          "sleeping-under-stars": { "title": "Sous les Étoiles Anciennes", "description": "S'endort à côté du tricératops en regardant le plus ancien ciel du monde." }
+        }
+      },
+      "castle": {
+        "title": "Le Château des Rêves",
+        "description": "Un château enchanté où les rêves prennent vie et il faut sauver le royaume de l'obscurité.",
+        "ageRange": "6-10 ans",
+        "previewChapterTitle": "Les Portes du Château",
+        "decisions": {
+          "encounter": {
+            "question": "Que découvre {name} en entrant dans le château ?",
+            "dream-mirror": { "title": "Miroir des Rêves", "subtitle": "Montre des mondes que toi seul peux voir" },
+            "baby-dragon": { "title": "Bébé Dragon", "subtitle": "Éternue des étincelles de couleurs" },
+            "enchanted-armor": { "title": "Armure Enchantée", "subtitle": "Bouge toute seule et veut être ton amie" }
+          },
+          "companion": {
+            "question": "Qui accompagne {name} dans le château ?",
+            "wise-cat": { "title": "Chat du Château", "subtitle": "Connaît tous les passages secrets" },
+            "jester": { "title": "Bouffon Magique", "subtitle": "Ses blagues font de la vraie magie" },
+            "ghost-princess": { "title": "Fantôme Amical", "subtitle": "Connaît l'histoire du château" }
+          },
+          "challenge": {
+            "question": "Qu'est-ce qui menace le royaume de {name} ?",
+            "nightmare-cloud": { "title": "Nuage de Cauchemars", "subtitle": "Transforme les rêves en cauchemars" },
+            "frozen-time": { "title": "Temps Gelé", "subtitle": "Tout s'arrête sauf toi" },
+            "labyrinth": { "title": "Labyrinthe Mouvant", "subtitle": "Les couloirs bougent et changent" }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "royal-dawn": "Aube Royale",
+            "enchanted-twilight": "Crépuscule Enchanté",
+            "moonlit-night": "Nuit de Lune"
+          },
+          "setting": {
+            "throne-room": "Salle du Trône",
+            "tower": "Tour la plus Haute",
+            "gardens": "Jardins Enchantés"
+          }
+        },
+        "endings": {
+          "dream-coronation": { "title": "Couronnement de Rêves", "description": "Le royaume célèbre avec une couronne faite d'étoiles et de rêves réalisés." },
+          "dragon-flight": { "title": "Vol avec le Dragon", "description": "Survole le royaume sur le dos d'un dragon amical au coucher du soleil." },
+          "dream-door": { "title": "La Porte des Rêves", "description": "Découvre qu'on peut retourner au château chaque fois qu'on ferme les yeux." }
+        }
+      },
+      "safari": {
+        "title": "Safari dans la Savane",
+        "description": "Une aventure dans la savane africaine parmi les lions, les éléphants et des couchers de soleil à couper le souffle.",
+        "ageRange": "4-7 ans",
+        "previewChapterTitle": "L'Aube dans la Savane",
+        "decisions": {
+          "encounter": {
+            "question": "Que découvre {name} dans la savane ?",
+            "lion-cub": { "title": "Lionceau", "subtitle": "Petit, courageux et très endormi" },
+            "baobab-tree": { "title": "Baobab Parlant", "subtitle": "Le plus vieil arbre raconte des histoires" },
+            "watering-hole": { "title": "Oasis Magique", "subtitle": "Un endroit où tous les animaux sont amis" }
+          },
+          "companion": {
+            "question": "Qui accompagne {name} en safari ?",
+            "elephant": { "title": "Éléphant Sage", "subtitle": "A la meilleure mémoire du monde" },
+            "meerkat": { "title": "Suricate Exploratrice", "subtitle": "Toujours de garde, toujours alerte" },
+            "giraffe": { "title": "Girafe Gentille", "subtitle": "Voit tout depuis très haut" }
+          },
+          "challenge": {
+            "question": "Quel problème menace la savane de {name} ?",
+            "drought": { "title": "Grande Sécheresse", "subtitle": "L'eau manque et les animaux ont soif" },
+            "lost-herd": { "title": "Troupeau Perdu", "subtitle": "Les éléphants ne trouvent plus le chemin" },
+            "trapped-animals": { "title": "Animaux Piégés", "subtitle": "Un éboulement bloque le passage" }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "savanna-sunrise": "Aube Africaine",
+            "golden-hour": "Heure Dorée",
+            "starry-savanna": "Nuit Étoilée"
+          },
+          "setting": {
+            "acacia-plains": "Plaine d'Acacias",
+            "river-crossing": "Traversée du Fleuve",
+            "kopje-rocks": "Rochers du Kopje"
+          }
+        },
+        "endings": {
+          "sunset-gathering": { "title": "Rassemblement au Coucher du Soleil", "description": "Tous les animaux se rassemblent au coucher du soleil pour célébrer avec des rugissements et des chants." },
+          "baobab-promise": { "title": "La Promesse du Baobab", "description": "Laisse une marque sur le baobab pour se souvenir toujours de l'aventure." },
+          "stargazing-savanna": { "title": "Sous le Ciel Africain", "description": "S'allonge parmi les animaux pour contempler la Voie Lactée au-dessus de la savane." }
+        }
+      },
+      "inventor": {
+        "title": "La Fabrique d'Inventions",
+        "description": "Un atelier d'inventions folles où la créativité et la science se mêlent à la magie.",
+        "ageRange": "8-12 ans",
+        "previewChapterTitle": "L'Atelier Secret",
+        "decisions": {
+          "encounter": {
+            "question": "Que découvre {name} dans la fabrique d'inventions ?",
+            "flying-machine": { "title": "Machine Volante", "subtitle": "Faite de parapluies et d'engrenages" },
+            "talking-invention": { "title": "Invention Parlante", "subtitle": "Elle s'est inventée toute seule !" },
+            "shrink-ray": { "title": "Rayon Miniaturisant", "subtitle": "Tout devient minuscule !" }
+          },
+          "companion": {
+            "question": "Qui aide {name} à inventer ?",
+            "genius-robot": { "title": "Robot Génie", "subtitle": "Calcule tout mais ne comprend pas les blagues" },
+            "mad-professor": { "title": "Professeur Distrait", "subtitle": "Oublie tout sauf d'inventer" },
+            "creative-spark": { "title": "Étincelle Créative", "subtitle": "Une petite lumière qui apparaît quand tu as des idées" }
+          },
+          "challenge": {
+            "question": "Quel problème surgit dans la fabrique de {name} ?",
+            "chain-reaction": { "title": "Réaction en Chaîne", "subtitle": "Une invention déclenche toutes les autres !" },
+            "imagination-drain": { "title": "Plus d'Imagination", "subtitle": "Les idées ont disparu !" },
+            "time-machine": { "title": "Machine à Remonter le Temps en Panne", "subtitle": "Mélange passé, présent et futur" }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "eureka-morning": "Matinée d'Idées",
+            "workshop-afternoon": "Après-midi d'Atelier",
+            "midnight-lab": "Laboratoire Nocturne"
+          },
+          "setting": {
+            "main-workshop": "Atelier Principal",
+            "test-room": "Salle d'Essais",
+            "sky-garage": "Garage du Ciel"
+          }
+        },
+        "endings": {
+          "great-invention": { "title": "La Grande Invention", "description": "Présente l'invention la plus incroyable du monde : une qui rend tout le monde heureux." },
+          "inventor-badge": { "title": "Badge d'Inventeur", "description": "Reçoit le badge officiel d'inventeur et un atelier rien qu'à soi." },
+          "blueprints": { "title": "Plans du Futur", "description": "Dessine les plans de sa prochaine invention : la plus ambitieuse jusqu'ici !" }
+        }
+      },
+      "candy": {
+        "title": "Le Pays des Bonbons",
+        "description": "Un monde où tout est fait de bonbons, de chocolat et de caramel. Mais attention à ne pas trop manger !",
+        "ageRange": "2-5 ans",
+        "previewChapterTitle": "La Porte de Caramel",
+        "decisions": {
+          "encounter": {
+            "question": "Que découvre {name} au Pays des Bonbons ?",
+            "chocolate-river": { "title": "Rivière de Chocolat", "subtitle": "Du chocolat chaud y coule !" },
+            "candy-garden": { "title": "Jardin de Bonbons", "subtitle": "Des fleurs en sucettes et des arbres en réglisse" },
+            "cookie-house": { "title": "Maison en Biscuit", "subtitle": "Avec un toit en chocolat et une porte en gaufrette" }
+          },
+          "companion": {
+            "question": "Qui accompagne {name} au Pays des Bonbons ?",
+            "gummy-bear": { "title": "Ourson en Gélatine", "subtitle": "Mou, joyeux et très sucré" },
+            "cookie-baker": { "title": "Pâtissière des Nuages", "subtitle": "Prépare les nuages les plus moelleux" },
+            "candy-fairy": { "title": "Fée du Sucre", "subtitle": "Sa baguette transforme tout en bonbons" }
+          },
+          "challenge": {
+            "question": "Quel problème y a-t-il au Pays des Bonbons de {name} ?",
+            "melting-kingdom": { "title": "Royaume Fondu", "subtitle": "Il fait trop chaud et tout fond !" },
+            "sour-invasion": { "title": "Invasion Acide", "subtitle": "Les bonbons acides veulent conquérir !" },
+            "sugar-shortage": { "title": "Pénurie de Sucre", "subtitle": "Les bonbons perdent leur saveur !" }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "candy-morning": "Matin Caramel",
+            "chocolate-afternoon": "Après-midi Chocolat",
+            "marshmallow-night": "Nuit Guimauve"
+          },
+          "setting": {
+            "candy-village": "Village de Caramel",
+            "ice-cream-mountain": "Montagne de Glace",
+            "lollipop-forest": "Forêt de Sucettes"
+          }
+        },
+        "endings": {
+          "candy-feast": { "title": "Grand Festin de Bonbons", "description": "Tout le royaume célèbre avec la fête la plus sucrée jamais vue." },
+          "candy-pocket": { "title": "Poche Magique", "description": "Rentre à la maison avec une poche qui contient toujours le bonbon parfait." },
+          "sweet-dreams": { "title": "Doux Rêves", "description": "S'endort dans un lit de barbe à papa en rêvant d'y retourner." }
         }
       }
     }

@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "title": "meapica — Real Stories You Can Touch",
+    "title": "Meapica — Real Stories You Can Touch",
     "description": "Bring back the magic of turning pages. Personalized stories printed on premium paper, designed to create moments of real connection."
   },
   "nav": {
@@ -43,15 +43,22 @@
     "step3Description": "A physical book, lovingly bound, arrives at your door ready to be cherished."
   },
   "bookCollection": {
-    "title": "Our Physical Library",
-    "subtitle": "Limited editions on premium paper. Stories that feel better to the touch.",
-    "subtitleShowcase": "Real examples created on our platform. Click to see the full book.",
+    "title": "Pick a story, add your child",
+    "subtitle": "Illustrated stories ready to personalize. Choose your favorite and make your child the hero.",
+    "subtitleShowcase": "Real stories created on our platform. Click to browse the complete book.",
     "viewAll": "View full collection",
-    "viewSample": "View sample",
+    "viewSample": "Browse book",
     "madeFor": "Made for {name}",
     "hardcover": "Hardcover",
+    "hardcoverShort": "Hardcover",
     "softcover": "Softcover",
     "hardcoverPremium": "Hardcover (Premium)",
+    "personalize": "Make my child the hero",
+    "filterAll": "All ages",
+    "filter2to4": "Ages 2-4",
+    "filter5to7": "Ages 5-7",
+    "filter8to12": "Ages 8-12",
+    "years": "years",
     "books": {
       "enchantedForest": {
         "title": "The Enchanted Forest",
@@ -122,10 +129,60 @@
     "readingClubDescription": "Tips for encouraging screen-free reading.",
     "emailPlaceholder": "Your email address",
     "joinClub": "Join the club",
-    "copyright": "© 2025 meapica. Made with love.",
+    "copyright": "© 2025 Meapica. Made with love.",
     "legalNotice": "Legal Notice",
     "privacy": "Privacy",
     "cookies": "Cookies"
+  },
+  "legal": {
+    "backHome": "Back to home",
+    "lastUpdated": "Last updated: {date}",
+    "privacy": {
+      "title": "Privacy Policy",
+      "intro": "At Meapica, the privacy of our users — especially when it comes to children's data — is our top priority.",
+      "section1Title": "1. Data controller",
+      "section1Text": "Meapica is the data controller for personal data collected through meapica.com.",
+      "section2Title": "2. Data we collect",
+      "section2Text": "We collect the data necessary to create your personalized book: child's name, age, city, interests, and physical characteristics for illustration. We also collect email and shipping address to process orders.",
+      "section3Title": "3. Purpose of processing",
+      "section3Text": "We use your data exclusively to: generate the personalized story, process payment and shipping, and communicate with you about your order. We never sell data to third parties.",
+      "section4Title": "4. Legal basis",
+      "section4Text": "Processing is based on the execution of the contract (your order) and your explicit consent when creating an account.",
+      "section5Title": "5. Third-party services",
+      "section5Text": "We use Supabase (storage), Stripe (payments), and Gelato (printing) as third-party services. Each service has its own privacy policy.",
+      "section6Title": "6. Your rights",
+      "section6Text": "You can exercise your rights of access, rectification, erasure, restriction, and portability by contacting us at hola@meapica.com.",
+      "section7Title": "7. Children's data protection",
+      "section7Text": "We do not collect data directly from children. The child's data is provided by the parent or legal guardian who creates the book."
+    },
+    "terms": {
+      "title": "Legal Notice and Terms of Use",
+      "intro": "By using meapica.com you accept the following terms.",
+      "section1Title": "1. Identification",
+      "section1Text": "Meapica is a personalized children's book creation platform operated from Spain.",
+      "section2Title": "2. Service",
+      "section2Text": "Meapica offers the creation of personalized children's stories with unique illustrations, printed on demand.",
+      "section3Title": "3. Intellectual property",
+      "section3Text": "Illustrations are created specifically for each book. The buyer receives a personal, non-commercial use license for the purchased book.",
+      "section4Title": "4. Prices and payments",
+      "section4Text": "Prices include VAT and are displayed in euros. Payment is processed securely through Stripe.",
+      "section5Title": "5. Shipping and returns",
+      "section5Text": "Books are printed on demand. Delivery time is 7-14 business days. As personalized products, returns are not accepted except for manufacturing defects.",
+      "section6Title": "6. Limitation of liability",
+      "section6Text": "Meapica does not guarantee uninterrupted service availability. Illustrations may vary and a specific result is not guaranteed."
+    },
+    "cookies": {
+      "title": "Cookie Policy",
+      "intro": "Meapica uses strictly necessary cookies for the operation of the service.",
+      "section1Title": "1. What are cookies?",
+      "section1Text": "Cookies are small text files stored in your browser when visiting a website.",
+      "section2Title": "2. Cookies we use",
+      "section2Text": "We only use technical cookies necessary to: keep your user session active, remember the selected language, and manage the purchase process. We do not use marketing or third-party tracking cookies.",
+      "section3Title": "3. Third-party cookies",
+      "section3Text": "Stripe (payment processor) may set its own cookies during the checkout process. Please refer to Stripe's cookie policy for more information.",
+      "section4Title": "4. Cookie management",
+      "section4Text": "You can configure your browser to reject cookies, although this may affect the operation of the service."
+    }
   },
   "notFound": {
     "title": "Page not found",
@@ -215,11 +272,19 @@
   },
   "crear": {
     "preparing": "Preparing your story...",
+    "regenerateConfirm": {
+      "title": "Character has changed",
+      "description": "You've modified the character details since the portrait was created. Would you like to generate a new one?",
+      "regenerate": "New portrait",
+      "keep": "Keep current"
+    },
     "header": {
       "backHome": "Back to home",
       "exit": "Exit",
       "saveAndExit": "Save and exit",
-      "step": "Step {current} of {total}"
+      "step": "Step {current} of {total}",
+      "regenerateTooltip": "Change portrait",
+      "years": "y/o"
     },
     "footer": {
       "back": "Back",
@@ -228,22 +293,23 @@
     },
     "step1": {
       "title": "How do you want to create this adventure?",
-      "subtitle": "Choose the perfect experience for today. You can customize every detail or let the magic surprise you.",
+      "subtitle": "Your choice: prepare it as a surprise or enjoy the experience together as a family.",
       "solo": {
-        "title": "I create it myself",
-        "subtitle": "Magic Surprise",
-        "description": "Design the story in secret and give it as an unforgettable surprise gift. You have full control over the story and its details.",
-        "imageAlt": "Child reading a book with focus"
+        "title": "I prepare it as a surprise",
+        "subtitle": "Secret Gift",
+        "description": "Design the story in secret while your child sleeps. You control every detail: the plot, the illustrations, and the personal message that will be printed inside.",
+        "imageAlt": "Parent preparing a surprise book on a laptop"
       },
       "juntos": {
-        "title": "We create together",
-        "subtitle": "Shared Adventure",
-        "description": "An interactive experience designed to enjoy as a family. Choose characters, colors, and plot twists together with your little one.",
-        "imageAlt": "Parent and child reading a book together"
+        "title": "We create it together",
+        "subtitle": "Family Experience",
+        "description": "An experience to enjoy as a family. Sit down with your child and make decisions together: which adventure to live, which characters to include, and how the story ends.",
+        "imageAlt": "Father, mother and child creating together on a tablet"
       }
     },
     "step2": {
       "title": "Create your little hero",
+      "titleJuntos": "Who are you, little hero?",
       "subtitle": "Customize the magical details to make the story unique.",
       "nameLabel": "Child's name",
       "namePlaceholder": "E.g.: Leo",
@@ -253,6 +319,7 @@
       "year": "year",
       "years": "years",
       "hairColorLabel": "Hair color",
+      "eyeColorLabel": "Eye color",
       "skinToneLabel": "Skin tone",
       "genderLabel": "Gender",
       "boy": "Boy",
@@ -268,6 +335,10 @@
       "companionLabel": "Do they have a pet or special friend?",
       "companionPlaceholder": "E.g.: Their cat Whiskers, their sister Lucy, their teddy bear...",
       "companionHint": "They may appear as a surprise character in the story.",
+      "favoriteFoodLabel": "Favorite food",
+      "favoriteFoodPlaceholder": "E.g.: Pizza, mac and cheese, strawberry ice cream...",
+      "futureDreamLabel": "What do they want to be when they grow up?",
+      "futureDreamPlaceholder": "E.g.: Astronaut, vet, chef, footballer...",
       "greeting": "Hello, {name}!",
       "greetingDefault": "Hello, hero!",
       "previewReady": "Your hero is ready to live adventures with {interests}.",
@@ -275,12 +346,32 @@
       "interestsPrompt": "Choose their interests to personalize the adventure...",
       "skinToneTitle": "Skin tone",
       "hairColorTitle": "Hair color",
-      "andConnector": " and "
+      "eyeColorTitle": "Eye color",
+      "andConnector": " and ",
+      "nebulaHint": "Fill in the details and we'll bring your character to life",
+      "nebulaHintReady": "When you continue, we'll create {name} just as you describe"
+    },
+    "portraitReveal": {
+      "generating": "Creating {name}...",
+      "generatingSubtitle": "We're bringing your character to life, just as you described",
+      "revealTitle": "Meet {name}",
+      "revealSubtitle": "Just as you described. Now choose their adventure.",
+      "continueButton": "Choose adventure",
+      "errorTitle": "We couldn't create the character",
+      "errorSubtitle": "There was a problem with the generation. Please try again.",
+      "backButton": "Go back",
+      "retryButton": "Try again",
+      "regenerateButton": "Generate another",
+      "regenerateTooltip": "Generate a new portrait",
+      "rateLimitError": "You've generated too many portraits. Please try again in an hour."
     },
     "step3": {
       "title": "What adventure will {name} live?",
+      "titleJuntos": "What adventure do you want to live, {name}?",
       "subtitle": "Select a magical story to begin the journey. Each tale is designed to spark their imagination.",
+      "subtitleJuntos": "Choose your favourite adventure. You decide what story this book will tell!",
       "recommendedFor": "For {name}",
+      "recommended": "Top",
       "defaultName": "your hero"
     },
     "step4": {
@@ -305,7 +396,14 @@
         "page": "Page",
         "specialMomentLabel": "Is there a special moment you'd like to include?",
         "specialMomentPlaceholder": "E.g.: Overcoming their fear of the dark, sharing with their sister, learning to be brave...",
-        "specialMomentHint": "The AI will weave this moment into the story naturally."
+        "specialMomentHint": "We'll weave this moment into the story naturally.",
+        "storyPreview": "Story preview",
+        "yourStory": "Your story so far",
+        "notChosen": "Not yet chosen",
+        "companionContext": "Who will travel alongside {name}? This character will appear in key story moments and in the illustrations.",
+        "atmosphereContext": "Choose the time of day and the setting. These shape the emotional tone and visual style of every illustration.",
+        "twistContext": "Every great story has a challenge. This defines the emotional arc and the lesson {name} will learn along the way.",
+        "nextTooltipPrefix": "Still missing"
       },
       "juntos": {
         "defaultName": "the hero",
@@ -317,12 +415,21 @@
     "step5": {
       "title": "The Grand Finale",
       "subtitle": "How do you want <highlight>{name}</highlight>'s adventure to end? You have the final word.",
+      "titleSolo": "The final touch",
+      "subtitleSolo": "Choose how the story ends and write a secret message to <highlight>{name}</highlight> that will be printed forever.",
       "defaultName": "your hero",
-      "dedicationLabel": "Special Dedication",
+      "dedicationLabel": "Dedication",
+      "dedicationLabelSolo": "Your secret message",
       "dedicationPlaceholder": "Dear {name},\nI wrote this story to remind you that you can always reach the stars.\nWith love, Mom.",
+      "dedicationPlaceholderSolo": "Dear {name},\nI created this book thinking of you, your curiosity, and that smile that lights everything up.\nWith all my love.",
       "senderPlaceholder": "Your name (e.g.: Mom, Dad, Grandma...)",
       "adventureOf": "The adventure of {name}",
-      "createMyStory": "Create my story"
+      "createMyStory": "Create my story",
+      "chooseEndingFirst": "Choose how the story ends first",
+      "endingNoteLabel": "Want to add something special to the ending?",
+      "endingNoteOptional": "(optional)",
+      "endingNotePlaceholder": "E.g.: That {name} learns to face fears, makes up with a sibling...",
+      "endingNoteHint": "We'll weave this detail into the ending naturally."
     },
     "guestGate": {
       "title": "Your story is almost ready",
@@ -356,7 +463,16 @@
         "menuBook": "Binding your adventure...",
         "autoAwesome": "Adding a final touch of magic..."
       },
-      "goBack": "Go back"
+      "goBack": "Go back",
+      "errorStuck": "Generation is taking longer than expected. Please try again.",
+      "titlePickerHeading": "Your story is ready!",
+      "titlePickerSubheading": "Choose your book title",
+      "titlePickerCustomPlaceholder": "Write your own title...",
+      "titlePickerConfirm": "Confirm title",
+      "titlePickerSaving": "Saving...",
+      "titlePickerAutoConfirmHint": "Will be confirmed automatically in {seconds}s",
+      "illustrationsGenerating": "Creating the illustrations...",
+      "viewStoryButton": "View my story"
     },
     "preview": {
       "loadingStory": "Loading your story...",
@@ -393,7 +509,14 @@
       "saveForLater": "Save & create account",
       "savedGoToLibrary": "Saved — go to my library",
       "saveForLaterHintAnonymous": "Create a free account to save this book and buy it whenever you're ready.",
-      "saveForLaterHintLoggedIn": "Your book is already saved in your library."
+      "saveForLaterHintLoggedIn": "Your book is already saved in your library.",
+      "hero": "The hero",
+      "heroine": "The heroine",
+      "years": "years old",
+      "superpower": "Superpower",
+      "companion": "Companion",
+      "interests": "Loves",
+      "colophonText": "This book was lovingly created by Meapica. Every story is unique, written and illustrated especially for its protagonist. Because every child deserves to be the hero of their own adventure."
     }
   },
   "checkout": {
@@ -453,7 +576,9 @@
       "preview": "Preview ready",
       "completing": "Completing...",
       "ready": "Ready",
-      "ordered": "Ordered"
+      "ordered": "Ordered",
+      "shipped": "Shipped",
+      "delivered": "Delivered"
     },
     "storyActions": {
       "viewStory": "View story",
@@ -500,8 +625,21 @@
       "description": "When you create a story, your character will be saved here for reuse.",
       "cta": "Create a story"
     },
+    "bookCount": "{count, plural, one {1 book} other {{count} books}}",
+    "moreBooks": "+{count} more",
+    "noBooksYet": "No books yet",
     "editTitle": "Edit title",
-    "downloadPdf": "Download PDF"
+    "viewDetail": "View detail",
+    "createBook": "Create new book",
+    "createdOn": "Created on",
+    "interests": "Interests",
+    "downloadPdf": "Download PDF",
+    "storiesLived": "Adventures lived",
+    "noStoriesYet": "No books yet",
+    "newAdventuresFor": "New adventure for {name}",
+    "newAdventuresHint": "Based on their age and interests, these stories will be a hit.",
+    "recommendedFor": "Perfect for {name}",
+    "allAdventuresDone": "{name} has already lived all available adventures! You can create a new book by revisiting a favourite."
   },
   "profile": {
     "title": "My profile",
@@ -615,26 +753,53 @@
       "space": {
         "title": "The Great Space Adventure",
         "description": "A journey to the stars where they'll discover unknown planets and make alien friends.",
-        "ageRange": "Ages 4-7",
+        "ageRange": "Ages 5-8",
         "previewChapterTitle": "The Ship of Dreams",
         "decisions": {
           "encounter": {
             "question": "What does {name} discover on the unknown planet?",
-            "robot": { "title": "Friendly Robot", "subtitle": "Beep boop, want to be my friend?" },
-            "crystal": { "title": "Glowing Crystal", "subtitle": "It shines with all the colors of the rainbow" },
-            "ship": { "title": "Abandoned Spaceship", "subtitle": "Who left it here?" }
+            "robot": {
+              "title": "Friendly Robot",
+              "subtitle": "Beep boop, want to be my friend?"
+            },
+            "crystal": {
+              "title": "Glowing Crystal",
+              "subtitle": "It shines with all the colors of the rainbow"
+            },
+            "ship": {
+              "title": "Abandoned Spaceship",
+              "subtitle": "Who left it here?"
+            }
           },
           "companion": {
             "question": "Who joins {name} on this space mission?",
-            "alien": { "title": "Friendly Alien", "subtitle": "Has three eyes and a huge smile" },
-            "copilot-robot": { "title": "Co-Pilot Robot", "subtitle": "The best navigator in the galaxy" },
-            "star": { "title": "Guiding Star", "subtitle": "A little star that talks and shows the way" }
+            "alien": {
+              "title": "Friendly Alien",
+              "subtitle": "Has three eyes and a huge smile"
+            },
+            "copilot-robot": {
+              "title": "Co-Pilot Robot",
+              "subtitle": "The best navigator in the galaxy"
+            },
+            "star": {
+              "title": "Guiding Star",
+              "subtitle": "A little star that talks and shows the way"
+            }
           },
           "challenge": {
             "question": "What danger appears on {name}'s mission?",
-            "asteroids": { "title": "Asteroid Storm", "subtitle": "Dodge and fly!" },
-            "shrinking-planet": { "title": "Shrinking Planet", "subtitle": "The inhabitants need saving!" },
-            "black-hole": { "title": "Mischievous Black Hole", "subtitle": "It swallows up all the fun!" }
+            "asteroids": {
+              "title": "Asteroid Storm",
+              "subtitle": "Dodge and fly!"
+            },
+            "shrinking-planet": {
+              "title": "Shrinking Planet",
+              "subtitle": "The inhabitants need saving!"
+            },
+            "black-hole": {
+              "title": "Mischievous Black Hole",
+              "subtitle": "It swallows up all the fun!"
+            }
           }
         },
         "atmosphere": {
@@ -650,34 +815,70 @@
           }
         },
         "endings": {
-          "triumphant-return": { "title": "Triumphant Return", "description": "Returns to Earth with a gift from space and an incredible story to tell." },
-          "galactic-party": { "title": "Intergalactic Party", "description": "All the alien friends celebrate with cosmic music and star-shaped treats." },
-          "stargazing": { "title": "Stargazing Camp", "description": "Lies down on a soft planet to gaze at the constellations and remember the adventure." }
+          "triumphant-return": {
+            "title": "Triumphant Return",
+            "description": "Returns to Earth with a gift from space and an incredible story to tell."
+          },
+          "galactic-party": {
+            "title": "Intergalactic Party",
+            "description": "All the alien friends celebrate with cosmic music and star-shaped treats."
+          },
+          "stargazing": {
+            "title": "Stargazing Camp",
+            "description": "Lies down on a soft planet to gaze at the constellations and remember the adventure."
+          }
         }
       },
       "forest": {
         "title": "The Enchanted Forest",
         "description": "Secrets among ancient trees and fantastic creatures that need help.",
-        "ageRange": "Ages 3-6",
+        "ageRange": "Ages 2-5",
         "previewChapterTitle": "The Whispering Woods",
         "decisions": {
           "encounter": {
             "question": "What does {name} find among the trees?",
-            "dragon": { "title": "Sleeping Dragon", "subtitle": "Zzz... under the ancient tree" },
-            "treasure": { "title": "Magic Chest", "subtitle": "Full of fairy dust!" },
-            "door": { "title": "Secret Door", "subtitle": "Where does it lead?" }
+            "dragon": {
+              "title": "Sleeping Dragon",
+              "subtitle": "Zzz... under the ancient tree"
+            },
+            "treasure": {
+              "title": "Magic Chest",
+              "subtitle": "Full of fairy dust!"
+            },
+            "door": {
+              "title": "Secret Door",
+              "subtitle": "Where does it lead?"
+            }
           },
           "companion": {
             "question": "Who joins {name} in the forest?",
-            "fox": { "title": "Wise Fox", "subtitle": "Knows all the secrets of the forest" },
-            "fairy": { "title": "Mischievous Fairy", "subtitle": "Tiny but full of magic" },
-            "owl": { "title": "Ancient Owl", "subtitle": "Has watched a thousand moons go by" }
+            "fox": {
+              "title": "Wise Fox",
+              "subtitle": "Knows all the secrets of the forest"
+            },
+            "fairy": {
+              "title": "Mischievous Fairy",
+              "subtitle": "Tiny but full of magic"
+            },
+            "owl": {
+              "title": "Ancient Owl",
+              "subtitle": "Has watched a thousand moons go by"
+            }
           },
           "challenge": {
             "question": "What obstacle appears on {name}'s path?",
-            "river": { "title": "Rising River", "subtitle": "The water's rising and there's no bridge" },
-            "fog": { "title": "Enchanted Fog", "subtitle": "Can't see a thing... or can you?" },
-            "talking-tree": { "title": "Talking Tree", "subtitle": "Asks for something in return to let you pass" }
+            "river": {
+              "title": "Rising River",
+              "subtitle": "The water's rising and there's no bridge"
+            },
+            "fog": {
+              "title": "Enchanted Fog",
+              "subtitle": "Can't see a thing... or can you?"
+            },
+            "talking-tree": {
+              "title": "Talking Tree",
+              "subtitle": "Asks for something in return to let you pass"
+            }
           }
         },
         "atmosphere": {
@@ -693,34 +894,70 @@
           }
         },
         "endings": {
-          "clearing-celebration": { "title": "Clearing Celebration", "description": "All the forest creatures celebrate with music and dancing among the fireflies." },
-          "magic-seed": { "title": "The Magic Seed", "description": "The forest gives a special seed to plant at home and remember the adventure." },
-          "moss-rest": { "title": "Resting on Moss", "description": "Lies down on a soft bed of moss to listen to the forest whispers under the stars." }
+          "clearing-celebration": {
+            "title": "Clearing Celebration",
+            "description": "All the forest creatures celebrate with music and dancing among the fireflies."
+          },
+          "magic-seed": {
+            "title": "The Magic Seed",
+            "description": "The forest gives a special seed to plant at home and remember the adventure."
+          },
+          "moss-rest": {
+            "title": "Resting on Moss",
+            "description": "Lies down on a soft bed of moss to listen to the forest whispers under the stars."
+          }
         }
       },
       "superhero": {
         "title": "Superhero for a Day",
         "description": "Save the city! Discover hidden superpowers and learn the value of bravery.",
-        "ageRange": "Ages 5-8",
+        "ageRange": "Ages 7-10",
         "previewChapterTitle": "The Hero Awakens",
         "decisions": {
           "encounter": {
             "question": "What awakens {name}'s superpowers?",
-            "mask": { "title": "Mysterious Mask", "subtitle": "Appears out of nowhere with a special glow" },
-            "help-call": { "title": "Call for Help", "subtitle": "Someone needs urgent help!" },
-            "power-ray": { "title": "Power Ray", "subtitle": "A flash that changes everything" }
+            "mask": {
+              "title": "Mysterious Mask",
+              "subtitle": "Appears out of nowhere with a special glow"
+            },
+            "help-call": {
+              "title": "Call for Help",
+              "subtitle": "Someone needs urgent help!"
+            },
+            "power-ray": {
+              "title": "Power Ray",
+              "subtitle": "A flash that changes everything"
+            }
           },
           "companion": {
             "question": "Who is {name}'s teammate?",
-            "hero-dog": { "title": "Superhero Dog", "subtitle": "Cape and all!" },
-            "best-friend": { "title": "Best Friend", "subtitle": "Together they're an unstoppable team" },
-            "helper-robot": { "title": "Helper Robot", "subtitle": "Has tools for everything" }
+            "hero-dog": {
+              "title": "Superhero Dog",
+              "subtitle": "Cape and all!"
+            },
+            "best-friend": {
+              "title": "Best Friend",
+              "subtitle": "Together they're an unstoppable team"
+            },
+            "helper-robot": {
+              "title": "Helper Robot",
+              "subtitle": "Has tools for everything"
+            }
           },
           "challenge": {
             "question": "What villain threatens {name}'s city?",
-            "shadow": { "title": "The Shadow Villain", "subtitle": "Wants to turn off all the city lights" },
-            "storm": { "title": "Chaotic Storm", "subtitle": "The weather has gone crazy" },
-            "laugh-thief": { "title": "The Laughter Thief", "subtitle": "Nobody can laugh!" }
+            "shadow": {
+              "title": "The Shadow Villain",
+              "subtitle": "Wants to turn off all the city lights"
+            },
+            "storm": {
+              "title": "Chaotic Storm",
+              "subtitle": "The weather has gone crazy"
+            },
+            "laugh-thief": {
+              "title": "The Laughter Thief",
+              "subtitle": "Nobody can laugh!"
+            }
           }
         },
         "atmosphere": {
@@ -736,34 +973,70 @@
           }
         },
         "endings": {
-          "hero-parade": { "title": "Hero Parade", "description": "The city celebrates with a grand parade and everyone chants the hero's name." },
-          "secret-identity": { "title": "Secret Identity", "description": "Takes off the cape, smiles, and goes back to being simply {name}." },
-          "hero-feast": { "title": "Hero Feast", "description": "All the rescued characters throw a surprise thank-you party." }
+          "hero-parade": {
+            "title": "Hero Parade",
+            "description": "The city celebrates with a grand parade and everyone chants the hero's name."
+          },
+          "secret-identity": {
+            "title": "Secret Identity",
+            "description": "Takes off the cape, smiles, and goes back to being simply {name}."
+          },
+          "hero-feast": {
+            "title": "Hero Feast",
+            "description": "All the rescued characters throw a surprise thank-you party."
+          }
         }
       },
       "pirates": {
         "title": "Pirates of the Sea",
         "description": "Searching for the lost treasure across the seven seas with a hilarious crew.",
-        "ageRange": "Ages 4-8",
+        "ageRange": "Ages 5-8",
         "previewChapterTitle": "The Captain's Island",
         "decisions": {
           "encounter": {
             "question": "What does {name} discover on the mysterious island?",
-            "treasure-map": { "title": "Treasure Map", "subtitle": "X marks the spot!" },
-            "talking-parrot": { "title": "Chatty Parrot", "subtitle": "Tells tales of past adventures" },
-            "mystery-island": { "title": "Underwater Cave", "subtitle": "Hidden beneath the waves" }
+            "treasure-map": {
+              "title": "Treasure Map",
+              "subtitle": "X marks the spot!"
+            },
+            "talking-parrot": {
+              "title": "Chatty Parrot",
+              "subtitle": "Tells tales of past adventures"
+            },
+            "mystery-island": {
+              "title": "Underwater Cave",
+              "subtitle": "Hidden beneath the waves"
+            }
           },
           "companion": {
             "question": "Who is part of {name}'s crew?",
-            "monkey": { "title": "Mischievous Monkey", "subtitle": "Always steals the captain's bananas" },
-            "mermaid": { "title": "Friendly Mermaid", "subtitle": "Knows all the secrets of the sea" },
-            "veteran-pirate": { "title": "Veteran Pirate", "subtitle": "Eye patch, wooden leg, and a heart of gold" }
+            "monkey": {
+              "title": "Mischievous Monkey",
+              "subtitle": "Always steals the captain's bananas"
+            },
+            "mermaid": {
+              "title": "Friendly Mermaid",
+              "subtitle": "Knows all the secrets of the sea"
+            },
+            "veteran-pirate": {
+              "title": "Veteran Pirate",
+              "subtitle": "Eye patch, wooden leg, and a heart of gold"
+            }
           },
           "challenge": {
             "question": "What danger lurks for {name}'s crew?",
-            "kraken": { "title": "Giant Kraken", "subtitle": "Tentacles everywhere!" },
-            "sea-storm": { "title": "Sea Storm", "subtitle": "Enormous waves and fierce winds" },
-            "sinking-island": { "title": "Sinking Island", "subtitle": "It's sinking little by little!" }
+            "kraken": {
+              "title": "Giant Kraken",
+              "subtitle": "Tentacles everywhere!"
+            },
+            "sea-storm": {
+              "title": "Sea Storm",
+              "subtitle": "Enormous waves and fierce winds"
+            },
+            "sinking-island": {
+              "title": "Sinking Island",
+              "subtitle": "It's sinking little by little!"
+            }
           }
         },
         "atmosphere": {
@@ -779,34 +1052,70 @@
           }
         },
         "endings": {
-          "true-treasure": { "title": "The True Treasure", "description": "They discover that the real treasure is the friends they made along the way." },
-          "paradise-island": { "title": "Paradise Island", "description": "They anchor on a golden sand beach to rest and enjoy." },
-          "pirate-party": { "title": "Pirate Party", "description": "A grand celebration on the ship with music, dancing, and coconut cake." }
+          "true-treasure": {
+            "title": "The True Treasure",
+            "description": "They discover that the real treasure is the friends they made along the way."
+          },
+          "paradise-island": {
+            "title": "Paradise Island",
+            "description": "They anchor on a golden sand beach to rest and enjoy."
+          },
+          "pirate-party": {
+            "title": "Pirate Party",
+            "description": "A grand celebration on the ship with music, dancing, and coconut cake."
+          }
         }
       },
       "chef": {
         "title": "The Littlest Chef",
         "description": "A kitchen full of magic where ingredients come to life and dance in the pot.",
-        "ageRange": "Ages 2-5",
+        "ageRange": "Ages 2-4",
         "previewChapterTitle": "The Enchanted Kitchen",
         "decisions": {
           "encounter": {
             "question": "What does {name} discover in the magic kitchen?",
-            "secret-recipe": { "title": "Secret Recipe", "subtitle": "An old book with a glowing page" },
-            "living-ingredient": { "title": "Living Ingredient", "subtitle": "The carrot can talk!" },
-            "enchanted-kitchen": { "title": "Enchanted Kitchen", "subtitle": "The utensils move on their own" }
+            "secret-recipe": {
+              "title": "Secret Recipe",
+              "subtitle": "An old book with a glowing page"
+            },
+            "living-ingredient": {
+              "title": "Living Ingredient",
+              "subtitle": "The carrot can talk!"
+            },
+            "enchanted-kitchen": {
+              "title": "Enchanted Kitchen",
+              "subtitle": "The utensils move on their own"
+            }
           },
           "companion": {
             "question": "Who helps {name} in the kitchen?",
-            "singing-spoon": { "title": "Singing Spoon", "subtitle": "Sings while stirring the soup" },
-            "chef-mouse": { "title": "Chef Mouse", "subtitle": "Small but with an amazing palate" },
-            "magic-grandma": { "title": "Magic Grandma", "subtitle": "Her recipes have a secret ingredient: love" }
+            "singing-spoon": {
+              "title": "Singing Spoon",
+              "subtitle": "Sings while stirring the soup"
+            },
+            "chef-mouse": {
+              "title": "Chef Mouse",
+              "subtitle": "Small but with an amazing palate"
+            },
+            "magic-grandma": {
+              "title": "Magic Grandma",
+              "subtitle": "Her recipes have a secret ingredient: love"
+            }
           },
           "challenge": {
             "question": "What problem comes up in {name}'s kitchen?",
-            "rebel-ingredients": { "title": "Rebel Ingredients", "subtitle": "They don't want to go in the pot!" },
-            "growing-cake": { "title": "Giant Cake", "subtitle": "It won't stop growing!" },
-            "tiny-kitchen": { "title": "Tiny Kitchen", "subtitle": "Everything is shrinking!" }
+            "rebel-ingredients": {
+              "title": "Rebel Ingredients",
+              "subtitle": "They don't want to go in the pot!"
+            },
+            "growing-cake": {
+              "title": "Giant Cake",
+              "subtitle": "It won't stop growing!"
+            },
+            "tiny-kitchen": {
+              "title": "Tiny Kitchen",
+              "subtitle": "Everything is shrinking!"
+            }
           }
         },
         "atmosphere": {
@@ -822,9 +1131,233 @@
           }
         },
         "endings": {
-          "grand-feast": { "title": "Grand Feast", "description": "Everyone tastes the magic recipe and it's the most delicious thing in the world." },
-          "secret-recipe-kept": { "title": "The Secret Recipe", "description": "Keeps the recipe in a special book to cook whenever they want." },
-          "cooking-together": { "title": "Everyone Cooks Together", "description": "All the characters cook together the biggest recipe in the world." }
+          "grand-feast": {
+            "title": "Grand Feast",
+            "description": "Everyone tastes the magic recipe and it's the most delicious thing in the world."
+          },
+          "secret-recipe-kept": {
+            "title": "The Secret Recipe",
+            "description": "Keeps the recipe in a special book to cook whenever they want."
+          },
+          "cooking-together": {
+            "title": "Everyone Cooks Together",
+            "description": "All the characters cook together the biggest recipe in the world."
+          }
+        }
+      },
+      "dinosaurs": {
+        "title": "The Land of the Dinosaurs",
+        "description": "A time-travel journey to the age of dinosaurs, where bravery and friendship change everything.",
+        "ageRange": "Ages 4-7",
+        "previewChapterTitle": "The Time Portal",
+        "decisions": {
+          "encounter": {
+            "question": "What does {name} discover upon arriving in the age of dinosaurs?",
+            "baby-dino": { "title": "Baby Dinosaur", "subtitle": "Lost and in need of help" },
+            "fossil-portal": { "title": "Fossil Portal", "subtitle": "A glowing circle made of bones" },
+            "volcano": { "title": "Mysterious Volcano", "subtitle": "Something glows deep inside" }
+          },
+          "companion": {
+            "question": "Who joins {name} in the prehistoric era?",
+            "triceratops": { "title": "Friendly Triceratops", "subtitle": "Strong, loyal, and loves to play" },
+            "pterodactyl": { "title": "Swift Pterodactyl", "subtitle": "Sees everything from up high" },
+            "cave-child": { "title": "Cave Child", "subtitle": "Speaks with gestures and smiles" }
+          },
+          "challenge": {
+            "question": "What danger threatens {name}'s dinosaurs?",
+            "tar-pits": { "title": "Tar Pits", "subtitle": "The dinosaurs are getting trapped!" },
+            "t-rex": { "title": "Angry T-Rex", "subtitle": "Has a toothache and growls at everyone" },
+            "meteor": { "title": "Shooting Stars", "subtitle": "Something is heading this way from the sky!" }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "prehistoric-dawn": "Jurassic Dawn",
+            "golden-afternoon": "Valley Afternoon",
+            "starlit-night": "Starlit Night"
+          },
+          "setting": {
+            "fern-valley": "Fern Valley",
+            "dino-nests": "Dinosaur Nests",
+            "crystal-caves": "Crystal Caves"
+          }
+        },
+        "endings": {
+          "dino-farewell": { "title": "Jurassic Farewell", "description": "The dinosaurs roar with joy as they say goodbye to their new friend." },
+          "time-souvenir": { "title": "A Souvenir from the Past", "description": "Returns home with a small glowing fossil that holds the magic of the journey." },
+          "sleeping-under-stars": { "title": "Under the Ancient Stars", "description": "Falls asleep next to the triceratops gazing at the oldest sky in the world." }
+        }
+      },
+      "castle": {
+        "title": "The Castle of Dreams",
+        "description": "An enchanted castle where dreams come to life and the kingdom must be saved from darkness.",
+        "ageRange": "Ages 6-10",
+        "previewChapterTitle": "The Castle Gates",
+        "decisions": {
+          "encounter": {
+            "question": "What does {name} discover upon entering the castle?",
+            "dream-mirror": { "title": "Dream Mirror", "subtitle": "Shows worlds only you can see" },
+            "baby-dragon": { "title": "Baby Dragon", "subtitle": "Sneezes colourful sparks" },
+            "enchanted-armor": { "title": "Enchanted Armour", "subtitle": "Moves on its own and wants to be your friend" }
+          },
+          "companion": {
+            "question": "Who joins {name} through the castle?",
+            "wise-cat": { "title": "Castle Cat", "subtitle": "Knows every secret passage" },
+            "jester": { "title": "Magic Jester", "subtitle": "His jokes cast real spells" },
+            "ghost-princess": { "title": "Friendly Ghost", "subtitle": "Knows the castle's history" }
+          },
+          "challenge": {
+            "question": "What threatens {name}'s kingdom?",
+            "nightmare-cloud": { "title": "Nightmare Cloud", "subtitle": "Turns dreams into nightmares" },
+            "frozen-time": { "title": "Frozen Time", "subtitle": "Everything stops except you" },
+            "labyrinth": { "title": "Shifting Labyrinth", "subtitle": "The corridors move and change" }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "royal-dawn": "Royal Dawn",
+            "enchanted-twilight": "Enchanted Twilight",
+            "moonlit-night": "Moonlit Night"
+          },
+          "setting": {
+            "throne-room": "Throne Room",
+            "tower": "Tallest Tower",
+            "gardens": "Enchanted Gardens"
+          }
+        },
+        "endings": {
+          "dream-coronation": { "title": "Dream Coronation", "description": "The kingdom celebrates with a crown made of stars and fulfilled dreams." },
+          "dragon-flight": { "title": "Dragon Flight", "description": "Soars over the kingdom on the back of a friendly dragon at sunset." },
+          "dream-door": { "title": "The Door of Dreams", "description": "Discovers they can return to the castle every time they close their eyes." }
+        }
+      },
+      "safari": {
+        "title": "Savanna Safari",
+        "description": "An adventure across the African savanna among lions, elephants, and breathtaking sunsets.",
+        "ageRange": "Ages 4-7",
+        "previewChapterTitle": "Sunrise on the Savanna",
+        "decisions": {
+          "encounter": {
+            "question": "What does {name} discover on the savanna?",
+            "lion-cub": { "title": "Lion Cub", "subtitle": "Small, brave, and very sleepy" },
+            "baobab-tree": { "title": "Talking Baobab", "subtitle": "The oldest tree tells stories" },
+            "watering-hole": { "title": "Magic Oasis", "subtitle": "A place where all animals are friends" }
+          },
+          "companion": {
+            "question": "Who joins {name} on the safari?",
+            "elephant": { "title": "Wise Elephant", "subtitle": "Has the best memory in the world" },
+            "meerkat": { "title": "Explorer Meerkat", "subtitle": "Always on guard, always alert" },
+            "giraffe": { "title": "Kind Giraffe", "subtitle": "Sees everything from way up high" }
+          },
+          "challenge": {
+            "question": "What problem threatens {name}'s savanna?",
+            "drought": { "title": "Great Drought", "subtitle": "Water is running out and the animals are thirsty" },
+            "lost-herd": { "title": "Lost Herd", "subtitle": "The elephants can't find their way" },
+            "trapped-animals": { "title": "Trapped Animals", "subtitle": "A landslide blocks the path" }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "savanna-sunrise": "African Sunrise",
+            "golden-hour": "Golden Hour",
+            "starry-savanna": "Starry Night"
+          },
+          "setting": {
+            "acacia-plains": "Acacia Plains",
+            "river-crossing": "River Crossing",
+            "kopje-rocks": "Kopje Rocks"
+          }
+        },
+        "endings": {
+          "sunset-gathering": { "title": "Sunset Gathering", "description": "All the animals gather at sunset to celebrate with roars and songs." },
+          "baobab-promise": { "title": "The Baobab Promise", "description": "Leaves a mark on the baobab to always remember the adventure." },
+          "stargazing-savanna": { "title": "Under the African Sky", "description": "Lies down among the animals to gaze at the Milky Way over the savanna." }
+        }
+      },
+      "inventor": {
+        "title": "The Invention Factory",
+        "description": "A workshop full of wacky inventions where creativity and science blend with magic.",
+        "ageRange": "Ages 8-12",
+        "previewChapterTitle": "The Secret Workshop",
+        "decisions": {
+          "encounter": {
+            "question": "What does {name} discover in the invention factory?",
+            "flying-machine": { "title": "Flying Machine", "subtitle": "Made of umbrellas and gears" },
+            "talking-invention": { "title": "Talking Invention", "subtitle": "It invented itself!" },
+            "shrink-ray": { "title": "Shrink Ray", "subtitle": "Everything becomes tiny!" }
+          },
+          "companion": {
+            "question": "Who helps {name} invent?",
+            "genius-robot": { "title": "Genius Robot", "subtitle": "Calculates everything but doesn't get jokes" },
+            "mad-professor": { "title": "Absent-Minded Professor", "subtitle": "Forgets everything except inventing" },
+            "creative-spark": { "title": "Creative Spark", "subtitle": "A little light that appears when you have ideas" }
+          },
+          "challenge": {
+            "question": "What problem arises in {name}'s factory?",
+            "chain-reaction": { "title": "Chain Reaction", "subtitle": "One invention sets off all the others!" },
+            "imagination-drain": { "title": "No Imagination", "subtitle": "The ideas have vanished!" },
+            "time-machine": { "title": "Broken Time Machine", "subtitle": "Mixes up past, present, and future" }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "eureka-morning": "Eureka Morning",
+            "workshop-afternoon": "Workshop Afternoon",
+            "midnight-lab": "Midnight Lab"
+          },
+          "setting": {
+            "main-workshop": "Main Workshop",
+            "test-room": "Testing Room",
+            "sky-garage": "Sky Garage"
+          }
+        },
+        "endings": {
+          "great-invention": { "title": "The Great Invention", "description": "Presents the most incredible invention in the world: one that makes everyone happy." },
+          "inventor-badge": { "title": "Inventor Badge", "description": "Receives the official inventor badge and a workshop of their own." },
+          "blueprints": { "title": "Blueprints for the Future", "description": "Draws up blueprints for the next invention: the most ambitious one yet!" }
+        }
+      },
+      "candy": {
+        "title": "Candy Land",
+        "description": "A world where everything is made of sweets, chocolate, and caramel. But be careful not to eat too much!",
+        "ageRange": "Ages 2-5",
+        "previewChapterTitle": "The Caramel Gate",
+        "decisions": {
+          "encounter": {
+            "question": "What does {name} discover in Candy Land?",
+            "chocolate-river": { "title": "Chocolate River", "subtitle": "Hot chocolate flows through it!" },
+            "candy-garden": { "title": "Gummy Garden", "subtitle": "Lollipop flowers and liquorice trees" },
+            "cookie-house": { "title": "Cookie House", "subtitle": "With chocolate roof tiles and a wafer door" }
+          },
+          "companion": {
+            "question": "Who joins {name} through Candy Land?",
+            "gummy-bear": { "title": "Gummy Bear", "subtitle": "Soft, cheerful, and very sweet" },
+            "cookie-baker": { "title": "Cloud Baker", "subtitle": "Bakes the fluffiest clouds" },
+            "candy-fairy": { "title": "Sugar Fairy", "subtitle": "Her wand turns everything into sweets" }
+          },
+          "challenge": {
+            "question": "What problem arises in {name}'s Candy Land?",
+            "melting-kingdom": { "title": "Melting Kingdom", "subtitle": "It's too hot and everything is melting!" },
+            "sour-invasion": { "title": "Sour Invasion", "subtitle": "The sour candies want to take over!" },
+            "sugar-shortage": { "title": "Sugar Shortage", "subtitle": "The sweets are losing their flavour!" }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "candy-morning": "Candy Morning",
+            "chocolate-afternoon": "Chocolate Afternoon",
+            "marshmallow-night": "Marshmallow Night"
+          },
+          "setting": {
+            "candy-village": "Candy Village",
+            "ice-cream-mountain": "Ice Cream Mountain",
+            "lollipop-forest": "Lollipop Forest"
+          }
+        },
+        "endings": {
+          "candy-feast": { "title": "Grand Sweet Feast", "description": "The whole kingdom celebrates with the sweetest party ever seen." },
+          "candy-pocket": { "title": "Magic Pocket", "description": "Returns home with a pocket that always has the perfect sweet." },
+          "sweet-dreams": { "title": "Sweet Dreams", "description": "Falls asleep in a bed of cotton candy, dreaming of coming back." }
         }
       }
     }

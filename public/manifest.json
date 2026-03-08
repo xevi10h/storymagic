@@ -1,6 +1,6 @@
 {
-  "name": "meapica",
-  "short_name": "meapica",
+  "name": "Meapica",
+  "short_name": "Meapica",
   "description": "Personalized illustrated children's books",
   "start_url": "/",
   "display": "standalone",

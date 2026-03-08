@@ -2,18 +2,26 @@
 
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import LogoIcon from "@/components/LogoIcon";
+import BrandLogo from "@/components/BrandLogo";
 
 interface CreationHeaderProps {
   currentStep?: number;
   totalSteps?: number;
   rightAction?: "close" | "save" | "none";
+  portraitUrl?: string | null;
+  characterName?: string;
+  characterAge?: number;
+  onRegeneratePortrait?: () => void;
 }
 
 export default function CreationHeader({
   currentStep,
   totalSteps = 5,
   rightAction = "close",
+  portraitUrl,
+  characterName,
+  characterAge,
+  onRegeneratePortrait,
 }: CreationHeaderProps) {
   const t = useTranslations("crear.header");
   const progress =
@@ -35,12 +43,67 @@ export default function CreationHeader({
             </span>
           </Link>
 
-          <Link href="/" className="flex items-center gap-2.5">
-            <LogoIcon className="h-7 w-7 text-create-primary" />
-            <span className="font-display text-lg font-bold tracking-tight text-create-text-dark">
-              meapica
-            </span>
+          <Link href="/" className={`flex items-center ${portraitUrl ? "hidden sm:flex" : ""}`}>
+            <BrandLogo className="h-5 text-secondary" />
           </Link>
+
+          {/* Character portrait (visible after Step 2) */}
+          {portraitUrl && (
+            <div className="flex items-center ml-2 sm:ml-3 pl-2 sm:pl-3 border-l border-create-primary/10">
+              {onRegeneratePortrait ? (
+                <button
+                  onClick={onRegeneratePortrait}
+                  className="group relative flex items-center gap-1.5 sm:gap-2 rounded-full bg-create-neutral/60 pr-2.5 sm:pr-3 transition-colors hover:bg-create-neutral"
+                  title={t("regenerateTooltip")}
+                >
+                  <div className="relative shrink-0">
+                    <img
+                      src={portraitUrl}
+                      alt={characterName || ""}
+                      className="w-8 h-8 rounded-full object-cover ring-2 ring-create-primary/30 shadow-sm group-hover:ring-create-primary/50 transition-all"
+                    />
+                    <div className="absolute inset-0 rounded-full bg-black/0 group-hover:bg-black/30 transition-all flex items-center justify-center">
+                      <span className="material-symbols-outlined text-white text-sm opacity-0 group-hover:opacity-100 transition-opacity">
+                        refresh
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-start leading-none min-w-0">
+                    {characterName && (
+                      <span className="text-xs sm:text-sm font-display font-bold text-create-text truncate max-w-20 sm:max-w-24 group-hover:text-create-primary transition-colors">
+                        {characterName}
+                      </span>
+                    )}
+                    {characterAge != null && (
+                      <span className="text-[10px] sm:text-xs text-create-text-sub font-medium">
+                        {characterAge} {t("years")}
+                      </span>
+                    )}
+                  </div>
+                </button>
+              ) : (
+                <div className="flex items-center gap-1.5 sm:gap-2 rounded-full bg-create-neutral/60 pr-2.5 sm:pr-3">
+                  <img
+                    src={portraitUrl}
+                    alt={characterName || ""}
+                    className="w-8 h-8 rounded-full object-cover ring-2 ring-create-primary/30 shadow-sm"
+                  />
+                  <div className="flex flex-col items-start leading-none min-w-0">
+                    {characterName && (
+                      <span className="text-xs sm:text-sm font-display font-bold text-create-text truncate max-w-20 sm:max-w-24">
+                        {characterName}
+                      </span>
+                    )}
+                    {characterAge != null && (
+                      <span className="text-[10px] sm:text-xs text-create-text-sub font-medium">
+                        {characterAge} {t("years")}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Center: Step progress (desktop) — fixed in the middle */}

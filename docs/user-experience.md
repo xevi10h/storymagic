@@ -134,51 +134,58 @@ Chapter-by-chapter builder: choose companion (Robot/Alien/Pet), magical tool (Ma
 
 ---
 
-### Step 6: Magic Generation (NOT YET IN STITCH)
+### Step 6: Magic Generation ✅ IMPLEMENTED
 
+**Route:** `/crear/[storyId]/generar`
 **Purpose:** Entertaining wait screen while AI generates the book.
 
-**Concept:**
-- Animated illustration showing the book being "crafted"
-- Progress indicators with whimsical messages ("Your hero is packing their backpack...", "The illustrations are drying...")
-- Estimated time: 2-5 minutes
-- Option to receive email notification when ready
+**Implementation:**
+- Animated WritingAnimation quill + Meapica logo reveal
+- Cycling whimsical progress messages per step ("Writing your story...", "Painting the illustrations...", etc.)
+- Polls generation status, auto-redirects to Step 7 when ready
+- Fully i18n'd in ES/CA/EN/FR
 
 ---
 
-### Step 7: Preview & Checkout (NOT YET IN STITCH)
+### Step 7: Preview & Checkout ✅ IMPLEMENTED
 
+**Route:** `/crear/[storyId]/preview`
 **Purpose:** Review the generated book and purchase.
 
-**Concept:**
-- Interactive book preview (flip through pages)
-- Option to regenerate specific pages
-- Format selection (softcover / hardcover)
-- Add-ons (Pack Aventura, digital PDF, extra copy)
-- Shipping details
-- Payment via Stripe
-- Order confirmation
+**Implementation:**
+- Interactive book viewer with page-flip animation + sound (react-pageflip)
+- Mobile portrait mode optimized, fullscreen viewer
+- Format selection (softcover 34.90 EUR / hardcover 49.90 EUR)
+- Stripe Checkout session creation
+- Post-purchase: `/checkout/success` confirmation page
 
 ---
 
-### Dashboard (NOT YET IN STITCH)
+### Dashboard ✅ IMPLEMENTED
 
-**Purpose:** Manage books, sagas, and orders.
+**Route:** `/dashboard`
+**Purpose:** Manage books, orders, and characters.
 
-**Concept:**
-- My Books: list of created/purchased books
-- My Heroes: saved character profiles (reuse for sagas)
-- Order tracking
-- Start new adventure
+**Implementation:**
+- My Books: list of created/purchased stories with status badges
+- My Heroes: saved character profiles
+- Authenticated route (redirects to /auth/login if not logged in)
 
 ---
 
-## Design Decisions Pending
+### Profile ✅ IMPLEMENTED
 
-| Decision | Options | Recommendation |
-|----------|---------|----------------|
-| Step 4 variants | 4 variants in Stitch | Implement A (juntos) + C (solo) for MVP |
-| Step count | Some screens say "7 steps", others "6 steps" | Standardize to 7 steps |
-| Missing screens | Steps 6, 7, Dashboard, Auth, Order confirmation | Design needed before or during implementation |
-| Interest tags | 6 shown in Stitch | Expand to 10-12 for more personalization range |
-| Language toggle | Not in current designs | Add ES/CA/EN switcher in nav for MVP |
+**Route:** `/perfil`
+**Implementation:** Edit name, change password, account info. Full password reset flow (`/auth/reset-password` + `/auth/update-password`).
+
+---
+
+## Design Decisions — Resolved
+
+| Decision | Resolution |
+|----------|------------|
+| Step 4 variants | Implemented: Variant A (Juntos) + Variant C (Solo) |
+| Step count | Standardized to 7 steps |
+| Missing screens | Steps 6, 7, Dashboard, Auth — all implemented |
+| Language toggle | LocaleSwitcher component in nav (ES/CA/EN/FR) |
+| Interest tags | 6 interests (space/animals/sports/castles/dinosaurs/music), max 4 selectable |

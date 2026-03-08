@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "title": "meapica — Historias Reales para Tocar",
+    "title": "Meapica — Historias Reales para Tocar",
     "description": "Recupera la magia de pasar las páginas. Cuentos personalizados impresos en papel de alta calidad, diseñados para crear momentos de conexión real."
   },
   "nav": {
@@ -43,15 +43,22 @@
     "step3Description": "Un libro físico, encuadernado con cariño, llega a tu puerta listo para ser amado."
   },
   "bookCollection": {
-    "title": "Nuestra Biblioteca Física",
-    "subtitle": "Ediciones limitadas en papel premium. Historias que se sienten mejor al tacto.",
-    "subtitleShowcase": "Ejemplos reales creados en nuestra plataforma. Haz clic para ver el libro completo.",
+    "title": "Elige un cuento, añade a tu hijo",
+    "subtitle": "Historias ilustradas listas para personalizar. Elige la que más te guste y haz que tu hijo sea el protagonista.",
+    "subtitleShowcase": "Cuentos reales creados en nuestra plataforma. Haz clic para hojear el libro completo.",
     "viewAll": "Ver colección completa",
-    "viewSample": "Ver ejemplo",
+    "viewSample": "Hojear libro",
     "madeFor": "Creado para {name}",
     "hardcover": "Tapa Dura",
+    "hardcoverShort": "Tapa dura",
     "softcover": "Tapa blanda",
     "hardcoverPremium": "Tapa dura (Premium)",
+    "personalize": "Hacer protagonista a mi hijo",
+    "filterAll": "Todas las edades",
+    "filter2to4": "2-4 años",
+    "filter5to7": "5-7 años",
+    "filter8to12": "8-12 años",
+    "years": "años",
     "books": {
       "enchantedForest": {
         "title": "El Bosque Encantado",
@@ -122,10 +129,60 @@
     "readingClubDescription": "Consejos para fomentar la lectura sin pantallas.",
     "emailPlaceholder": "Tu correo electrónico",
     "joinClub": "Unirme al club",
-    "copyright": "© 2025 meapica. Hecho con amor.",
+    "copyright": "© 2025 Meapica. Hecho con amor.",
     "legalNotice": "Aviso Legal",
     "privacy": "Privacidad",
     "cookies": "Cookies"
+  },
+  "legal": {
+    "backHome": "Volver al inicio",
+    "lastUpdated": "Última actualización: {date}",
+    "privacy": {
+      "title": "Política de Privacidad",
+      "intro": "En Meapica, la privacidad de nuestros usuarios —especialmente cuando se trata de datos de menores— es nuestra máxima prioridad.",
+      "section1Title": "1. Responsable del tratamiento",
+      "section1Text": "Meapica es responsable del tratamiento de los datos personales recogidos a través de meapica.com.",
+      "section2Title": "2. Datos que recogemos",
+      "section2Text": "Recogemos los datos necesarios para crear tu libro personalizado: nombre del niño/a, edad, ciudad, intereses y características físicas para la ilustración. También recogemos email y dirección de envío para procesar pedidos.",
+      "section3Title": "3. Finalidad del tratamiento",
+      "section3Text": "Utilizamos tus datos exclusivamente para: generar el cuento personalizado, procesar el pago y envío, y comunicarnos contigo sobre tu pedido. Nunca vendemos datos a terceros.",
+      "section4Title": "4. Base legal",
+      "section4Text": "El tratamiento se basa en la ejecución del contrato (tu pedido) y tu consentimiento explícito al crear una cuenta.",
+      "section5Title": "5. Servicios de terceros",
+      "section5Text": "Utilizamos Supabase (almacenamiento), Stripe (pagos) y Gelato (impresión) como servicios de terceros. Cada servicio tiene su propia política de privacidad.",
+      "section6Title": "6. Tus derechos",
+      "section6Text": "Puedes ejercer tus derechos de acceso, rectificación, supresión, limitación y portabilidad contactándonos en hola@meapica.com.",
+      "section7Title": "7. Protección de datos de menores",
+      "section7Text": "No recogemos datos directamente de menores. Los datos del niño/a son proporcionados por el padre/madre o tutor legal que crea el libro."
+    },
+    "terms": {
+      "title": "Aviso Legal y Condiciones de Uso",
+      "intro": "Al usar meapica.com aceptas las siguientes condiciones.",
+      "section1Title": "1. Identificación",
+      "section1Text": "Meapica es una plataforma de creación de libros infantiles personalizados operada desde España.",
+      "section2Title": "2. Servicio",
+      "section2Text": "Meapica ofrece la creación de cuentos infantiles personalizados con ilustraciones únicas, impresos bajo demanda.",
+      "section3Title": "3. Propiedad intelectual",
+      "section3Text": "Las ilustraciones son creadas específicamente para cada libro. El comprador recibe una licencia de uso personal no comercial del libro adquirido.",
+      "section4Title": "4. Precios y pagos",
+      "section4Text": "Los precios incluyen IVA y se muestran en euros. El pago se procesa de forma segura a través de Stripe.",
+      "section5Title": "5. Envíos y devoluciones",
+      "section5Text": "Los libros se imprimen bajo demanda. El plazo de entrega es de 7-14 días laborables. Al ser productos personalizados, no se aceptan devoluciones salvo defectos de fabricación.",
+      "section6Title": "6. Limitación de responsabilidad",
+      "section6Text": "Meapica no garantiza la disponibilidad ininterrumpida del servicio. Las ilustraciones pueden variar y no se garantiza un resultado específico."
+    },
+    "cookies": {
+      "title": "Política de Cookies",
+      "intro": "Meapica utiliza cookies estrictamente necesarias para el funcionamiento del servicio.",
+      "section1Title": "1. ¿Qué son las cookies?",
+      "section1Text": "Las cookies son pequeños archivos de texto que se almacenan en tu navegador al visitar un sitio web.",
+      "section2Title": "2. Cookies que utilizamos",
+      "section2Text": "Utilizamos únicamente cookies técnicas necesarias para: mantener tu sesión de usuario activa, recordar el idioma seleccionado y gestionar el proceso de compra. No utilizamos cookies de marketing ni de seguimiento de terceros.",
+      "section3Title": "3. Cookies de terceros",
+      "section3Text": "Stripe (procesador de pagos) puede establecer sus propias cookies durante el proceso de checkout. Consulta la política de cookies de Stripe para más información.",
+      "section4Title": "4. Gestión de cookies",
+      "section4Text": "Puedes configurar tu navegador para rechazar cookies, aunque esto puede afectar al funcionamiento del servicio."
+    }
   },
   "notFound": {
     "title": "Página no encontrada",
@@ -215,11 +272,19 @@
   },
   "crear": {
     "preparing": "Preparando tu cuento...",
+    "regenerateConfirm": {
+      "title": "Has cambiado el personaje",
+      "description": "Has modificado los datos del personaje desde que se generó el retrato. ¿Quieres crear uno nuevo que refleje los cambios?",
+      "regenerate": "Nuevo retrato",
+      "keep": "Mantener actual"
+    },
     "header": {
       "backHome": "Volver al inicio",
       "exit": "Salir",
       "saveAndExit": "Guardar y salir",
-      "step": "Paso {current} de {total}"
+      "step": "Paso {current} de {total}",
+      "regenerateTooltip": "Cambiar retrato",
+      "years": "años"
     },
     "footer": {
       "back": "Atrás",
@@ -228,22 +293,23 @@
     },
     "step1": {
       "title": "¿Cómo quieres crear esta aventura?",
-      "subtitle": "Elige la experiencia perfecta para hoy. Puedes personalizar cada detalle o dejar que la magia te sorprenda.",
+      "subtitle": "Tú decides: prepáralo como sorpresa o vivirlo juntos como una experiencia familiar.",
       "solo": {
-        "title": "Creo yo solo/a",
-        "subtitle": "Sorpresa Mágica",
-        "description": "Diseña el cuento en secreto para dárselo como un regalo sorpresa inolvidable. Tú tienes el control total de la historia y los detalles.",
-        "imageAlt": "Niño leyendo un libro concentrado"
+        "title": "Lo preparo como sorpresa",
+        "subtitle": "Regalo Secreto",
+        "description": "Diseña el cuento en secreto mientras tu hijo duerme. Tú controlas cada detalle: la historia, las ilustraciones y el mensaje especial que encontrará impreso.",
+        "imageAlt": "Padre o madre preparando un libro sorpresa en el ordenador"
       },
       "juntos": {
-        "title": "Creamos juntos",
-        "subtitle": "Aventura Compartida",
-        "description": "Una experiencia interactiva diseñada para disfrutar en familia. Elige personajes, colores y giros de la trama junto a tu peque.",
-        "imageAlt": "Padre e hijo leyendo juntos un libro"
+        "title": "Lo creamos juntos",
+        "subtitle": "Experiencia Familiar",
+        "description": "Una experiencia para disfrutar en familia. Siéntate con tu hijo y tomad las decisiones juntos: qué aventura vivir, qué personajes incluir y cómo termina la historia.",
+        "imageAlt": "Padre, madre e hijo creando juntos en una tablet"
       }
     },
     "step2": {
       "title": "Crea a tu pequeño héroe",
+      "titleJuntos": "¿Cómo eres, pequeño héroe?",
       "subtitle": "Personaliza los detalles mágicos para que el cuento sea único.",
       "nameLabel": "Nombre del niño/a",
       "namePlaceholder": "Ej: Leo",
@@ -253,6 +319,7 @@
       "year": "año",
       "years": "años",
       "hairColorLabel": "Color de pelo",
+      "eyeColorLabel": "Color de ojos",
       "skinToneLabel": "Tono de piel",
       "genderLabel": "Género",
       "boy": "Niño",
@@ -268,6 +335,10 @@
       "companionLabel": "¿Tiene mascota o amigo especial?",
       "companionPlaceholder": "Ej: Su gato Michi, su hermana Lucía, su peluche Oso...",
       "companionHint": "Puede aparecer como personaje sorpresa en la historia.",
+      "favoriteFoodLabel": "Su comida favorita",
+      "favoriteFoodPlaceholder": "Ej: Pizza, macarrones con queso, helado de fresa...",
+      "futureDreamLabel": "¿Qué quiere ser de mayor?",
+      "futureDreamPlaceholder": "Ej: Astronauta, veterinaria, chef, futbolista...",
       "greeting": "¡Hola, {name}!",
       "greetingDefault": "¡Hola, héroe!",
       "previewReady": "Tu héroe está listo para vivir aventuras entre {interests}.",
@@ -275,12 +346,32 @@
       "interestsPrompt": "Elige sus intereses para personalizar la aventura...",
       "skinToneTitle": "Tono de piel",
       "hairColorTitle": "Color de pelo",
-      "andConnector": " y "
+      "eyeColorTitle": "Color de ojos",
+      "andConnector": " y ",
+      "nebulaHint": "Completa los datos y daremos vida a tu personaje",
+      "nebulaHintReady": "Cuando avances, crearemos a {name} tal como lo describes"
+    },
+    "portraitReveal": {
+      "generating": "Creando a {name}...",
+      "generatingSubtitle": "Estamos dando vida a tu personaje tal como lo has descrito",
+      "revealTitle": "Este es {name}",
+      "revealSubtitle": "Tal como lo has descrito. Ahora elige su aventura.",
+      "continueButton": "Elegir aventura",
+      "errorTitle": "No hemos podido crear el personaje",
+      "errorSubtitle": "Ha habido un problema con la generación. Inténtalo de nuevo.",
+      "backButton": "Volver",
+      "retryButton": "Reintentar",
+      "regenerateButton": "Generar otro",
+      "regenerateTooltip": "Generar un nuevo retrato",
+      "rateLimitError": "Has generado demasiados retratos. Inténtalo de nuevo en una hora."
     },
     "step3": {
       "title": "¿Qué aventura vivirá {name}?",
+      "titleJuntos": "¿Qué aventura quieres vivir, {name}?",
       "subtitle": "Selecciona una historia mágica para comenzar el viaje. Cada cuento está diseñado para despertar su imaginación.",
+      "subtitleJuntos": "Elige tu aventura favorita. ¡Tú decides qué historia contará este libro!",
       "recommendedFor": "Para {name}",
+      "recommended": "Top",
       "defaultName": "tu héroe"
     },
     "step4": {
@@ -305,7 +396,14 @@
         "page": "Página",
         "specialMomentLabel": "¿Hay algún momento especial que quieras incluir?",
         "specialMomentPlaceholder": "Ej: Que supere su miedo a la oscuridad, que comparta con su hermana, que aprenda a ser valiente...",
-        "specialMomentHint": "La IA incluirá este momento en la historia de forma natural."
+        "specialMomentHint": "Incluiremos este momento en la historia de forma natural.",
+        "storyPreview": "Vista previa",
+        "yourStory": "Tu historia hasta ahora",
+        "notChosen": "Sin elegir",
+        "companionContext": "¿Quién acompañará a {name} en su aventura? Este personaje aparecerá en los momentos clave del cuento y en las ilustraciones.",
+        "atmosphereContext": "Elige el momento del día y el escenario. Esto da forma al tono emocional y al estilo visual de cada ilustración.",
+        "twistContext": "Todo gran cuento tiene un desafío. Esto define el arco emocional y la lección que {name} aprenderá durante la historia.",
+        "nextTooltipPrefix": "Falta completar"
       },
       "juntos": {
         "defaultName": "el héroe",
@@ -317,12 +415,21 @@
     "step5": {
       "title": "El Gran Final",
       "subtitle": "¿Cómo quieres que termine la aventura de <highlight>{name}</highlight>? Tú tienes la última palabra.",
+      "titleSolo": "El toque final",
+      "subtitleSolo": "Elige cómo termina la historia y escríbele un mensaje secreto a <highlight>{name}</highlight> que quedará impreso para siempre.",
       "defaultName": "tu héroe",
-      "dedicationLabel": "Dedicatoria Especial",
+      "dedicationLabel": "Dedicatoria",
+      "dedicationLabelSolo": "Tu mensaje secreto",
       "dedicationPlaceholder": "Querido {name},\nEscribí este cuento para recordarte que siempre puedes alcanzar las estrellas.\nCon amor, Mamá.",
+      "dedicationPlaceholderSolo": "Querido {name},\nEste libro lo creé pensando en ti, en tu curiosidad y en esa sonrisa que ilumina todo.\nCon todo mi amor.",
       "senderPlaceholder": "Tu nombre (ej: Mamá, Papá, Abuela...)",
       "adventureOf": "La aventura de {name}",
-      "createMyStory": "Crear mi cuento"
+      "createMyStory": "Crear mi cuento",
+      "chooseEndingFirst": "Elige primero cómo termina la historia",
+      "endingNoteLabel": "¿Quieres añadir algo especial al final?",
+      "endingNoteOptional": "(opcional)",
+      "endingNotePlaceholder": "Ej: Que {name} aprenda a no tener miedo, que haga las paces con su hermano...",
+      "endingNoteHint": "Incluiremos este detalle en el desenlace de forma natural."
     },
     "guestGate": {
       "title": "Tu cuento está casi listo",
@@ -356,7 +463,16 @@
         "menuBook": "Encuadernando tu aventura...",
         "autoAwesome": "Añadiendo un toque de magia final..."
       },
-      "goBack": "Volver atrás"
+      "goBack": "Volver atrás",
+      "errorStuck": "La generación está tardando más de lo esperado. Por favor, inténtalo de nuevo.",
+      "titlePickerHeading": "¡Tu historia ya está lista!",
+      "titlePickerSubheading": "Elige el título de tu libro",
+      "titlePickerCustomPlaceholder": "Escribe tu propio título...",
+      "titlePickerConfirm": "Confirmar título",
+      "titlePickerSaving": "Guardando...",
+      "titlePickerAutoConfirmHint": "Se confirmará automáticamente en {seconds}s",
+      "illustrationsGenerating": "Creando las ilustraciones...",
+      "viewStoryButton": "Ver mi historia"
     },
     "preview": {
       "loadingStory": "Cargando tu cuento...",
@@ -391,7 +507,14 @@
       "saveForLater": "Guardar y crear cuenta",
       "savedGoToLibrary": "Guardado — ir a mi biblioteca",
       "saveForLaterHintAnonymous": "Crea una cuenta gratuita para guardar este cuento y comprarlo cuando quieras.",
-      "saveForLaterHintLoggedIn": "Tu cuento ya está guardado en tu biblioteca."
+      "saveForLaterHintLoggedIn": "Tu cuento ya está guardado en tu biblioteca.",
+      "hero": "El héroe",
+      "heroine": "La heroína",
+      "years": "años",
+      "superpower": "Superpoder",
+      "companion": "Compañero",
+      "interests": "Le encanta",
+      "colophonText": "Este libro ha sido creado con amor por Meapica. Cada historia es única, escrita e ilustrada especialmente para su protagonista. Porque cada niño merece ser el héroe de su propia aventura."
     }
   },
   "checkout": {
@@ -451,7 +574,9 @@
       "preview": "Preview listo",
       "completing": "Completando...",
       "ready": "Listo",
-      "ordered": "Pedido"
+      "ordered": "Pedido",
+      "shipped": "Enviado",
+      "delivered": "Entregado"
     },
     "storyActions": {
       "viewStory": "Ver cuento",
@@ -498,8 +623,21 @@
       "description": "Cuando crees un cuento, tu personaje se guardará aquí para reutilizarlo.",
       "cta": "Crear un cuento"
     },
+    "bookCount": "{count, plural, one {1 libro} other {{count} libros}}",
+    "moreBooks": "+{count} más",
+    "noBooksYet": "Sin libros todavía",
     "editTitle": "Editar título",
-    "downloadPdf": "Descargar PDF"
+    "downloadPdf": "Descargar PDF",
+    "viewDetail": "Ver detalle",
+    "createBook": "Crear nuevo libro",
+    "createdOn": "Creado el",
+    "interests": "Intereses",
+    "storiesLived": "Aventuras vividas",
+    "noStoriesYet": "Todavía sin libros",
+    "newAdventuresFor": "Nueva aventura para {name}",
+    "newAdventuresHint": "Basado en su edad e intereses, estas historias le encantarán.",
+    "recommendedFor": "Perfecta para {name}",
+    "allAdventuresDone": "¡{name} ya ha vivido todas las aventuras disponibles! Puedes crear un libro nuevo repitiendo una que le haya encantado."
   },
   "profile": {
     "title": "Mi perfil",
@@ -613,7 +751,7 @@
       "space": {
         "title": "La Gran Aventura Espacial",
         "description": "Un viaje a las estrellas donde descubrirán planetas desconocidos y harán amigos alienígenas.",
-        "ageRange": "4-7 años",
+        "ageRange": "5-8 años",
         "previewChapterTitle": "La Nave de los Sueños",
         "decisions": {
           "encounter": {
@@ -656,7 +794,7 @@
       "forest": {
         "title": "El Bosque Mágico",
         "description": "Secretos entre los árboles antiguos y criaturas fantásticas que necesitan ayuda.",
-        "ageRange": "3-6 años",
+        "ageRange": "2-5 años",
         "previewChapterTitle": "El Bosque de los Susurros",
         "decisions": {
           "encounter": {
@@ -699,7 +837,7 @@
       "superhero": {
         "title": "Superhéroe por un Día",
         "description": "¡A salvar la ciudad! Descubre superpoderes ocultos y aprende el valor de la valentía.",
-        "ageRange": "5-8 años",
+        "ageRange": "7-10 años",
         "previewChapterTitle": "El Despertar del Héroe",
         "decisions": {
           "encounter": {
@@ -742,7 +880,7 @@
       "pirates": {
         "title": "Piratas del Mar",
         "description": "En busca del tesoro perdido navegando los siete mares con una tripulación muy divertida.",
-        "ageRange": "4-8 años",
+        "ageRange": "5-8 años",
         "previewChapterTitle": "La Isla del Capitán",
         "decisions": {
           "encounter": {
@@ -785,7 +923,7 @@
       "chef": {
         "title": "El Chef Más Pequeño",
         "description": "Una cocina llena de magia donde los ingredientes cobran vida y bailan en la olla.",
-        "ageRange": "2-5 años",
+        "ageRange": "2-4 años",
         "previewChapterTitle": "La Cocina Encantada",
         "decisions": {
           "encounter": {
@@ -823,6 +961,221 @@
           "grand-feast": { "title": "Gran Banquete", "description": "Todos prueban la receta mágica y es la más deliciosa del mundo." },
           "secret-recipe-kept": { "title": "La Receta Secreta", "description": "Guarda la receta en un libro especial para cocinar siempre que quiera." },
           "cooking-together": { "title": "Todos a Cocinar", "description": "Todos los personajes cocinan juntos la receta más grande del mundo." }
+        }
+      },
+      "dinosaurs": {
+        "title": "La Tierra de los Dinosaurios",
+        "description": "Un viaje en el tiempo a la era de los dinosaurios, donde la valentía y la amistad lo cambian todo.",
+        "ageRange": "4-7 años",
+        "previewChapterTitle": "El Portal del Tiempo",
+        "decisions": {
+          "encounter": {
+            "question": "¿Qué descubre {name} al llegar a la era de los dinosaurios?",
+            "baby-dino": { "title": "Bebé Dinosaurio", "subtitle": "Se ha perdido y necesita ayuda" },
+            "fossil-portal": { "title": "Portal de Fósiles", "subtitle": "Un círculo de huesos que brilla" },
+            "volcano": { "title": "Volcán Misterioso", "subtitle": "Algo brilla en su interior" }
+          },
+          "companion": {
+            "question": "¿Quién acompaña a {name} en la era prehistórica?",
+            "triceratops": { "title": "Triceratops Amable", "subtitle": "Fuerte, leal y le encanta jugar" },
+            "pterodactyl": { "title": "Pterodáctilo Veloz", "subtitle": "Ve todo desde las alturas" },
+            "cave-child": { "title": "Niño/a de las Cavernas", "subtitle": "Habla con gestos y sonrisas" }
+          },
+          "challenge": {
+            "question": "¿Qué peligro amenaza a los dinosaurios de {name}?",
+            "tar-pits": { "title": "Pantanos de Alquitrán", "subtitle": "¡Los dinosaurios quedan atrapados!" },
+            "t-rex": { "title": "T-Rex Enfadado", "subtitle": "Tiene dolor de muelas y gruñe a todos" },
+            "meteor": { "title": "Lluvia de Estrellas", "subtitle": "¡Algo se acerca desde el cielo!" }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "prehistoric-dawn": "Amanecer Jurásico",
+            "golden-afternoon": "Tarde en el Valle",
+            "starlit-night": "Noche Estrellada"
+          },
+          "setting": {
+            "fern-valley": "Valle de Helechos",
+            "dino-nests": "Nidos de Dinosaurio",
+            "crystal-caves": "Cuevas de Cristal"
+          }
+        },
+        "endings": {
+          "dino-farewell": { "title": "Despedida Jurásica", "description": "Los dinosaurios rugen de alegría al despedirse de su nuevo amigo." },
+          "time-souvenir": { "title": "Recuerdo del Pasado", "description": "Vuelve a casa con un pequeño fósil brillante que guarda la magia del viaje." },
+          "sleeping-under-stars": { "title": "Bajo las Estrellas Antiguas", "description": "Se duerme junto al triceratops mirando el cielo más antiguo del mundo." }
+        }
+      },
+      "castle": {
+        "title": "El Castillo de los Sueños",
+        "description": "Un castillo encantado donde los sueños cobran vida y hay que salvar al reino de la oscuridad.",
+        "ageRange": "6-10 años",
+        "previewChapterTitle": "Las Puertas del Castillo",
+        "decisions": {
+          "encounter": {
+            "question": "¿Qué descubre {name} al entrar en el castillo?",
+            "dream-mirror": { "title": "Espejo de Sueños", "subtitle": "Muestra mundos que solo tú puedes ver" },
+            "baby-dragon": { "title": "Dragón Bebé", "subtitle": "Estornuda chispas de colores" },
+            "enchanted-armor": { "title": "Armadura Encantada", "subtitle": "Se mueve sola y quiere ser tu amiga" }
+          },
+          "companion": {
+            "question": "¿Quién acompaña a {name} por el castillo?",
+            "wise-cat": { "title": "Gato del Castillo", "subtitle": "Conoce todos los pasadizos secretos" },
+            "jester": { "title": "Bufón Mágico", "subtitle": "Sus chistes hacen magia de verdad" },
+            "ghost-princess": { "title": "Fantasma Amigable", "subtitle": "Conoce la historia del castillo" }
+          },
+          "challenge": {
+            "question": "¿Qué amenaza al reino de {name}?",
+            "nightmare-cloud": { "title": "Nube de Pesadillas", "subtitle": "Convierte los sueños en pesadillas" },
+            "frozen-time": { "title": "Tiempo Congelado", "subtitle": "Todo se detiene excepto tú" },
+            "labyrinth": { "title": "Laberinto Cambiante", "subtitle": "Los pasillos se mueven y cambian" }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "royal-dawn": "Amanecer Real",
+            "enchanted-twilight": "Crepúsculo Encantado",
+            "moonlit-night": "Noche de Luna"
+          },
+          "setting": {
+            "throne-room": "Sala del Trono",
+            "tower": "Torre más Alta",
+            "gardens": "Jardines Encantados"
+          }
+        },
+        "endings": {
+          "dream-coronation": { "title": "Coronación de Sueños", "description": "El reino celebra con una corona hecha de estrellas y sueños cumplidos." },
+          "dragon-flight": { "title": "Vuelo con el Dragón", "description": "Sobrevuela el reino en el lomo de un dragón amigable al atardecer." },
+          "dream-door": { "title": "La Puerta de los Sueños", "description": "Descubre que puede volver al castillo cada vez que cierre los ojos." }
+        }
+      },
+      "safari": {
+        "title": "Safari en la Sabana",
+        "description": "Una aventura por la sabana africana entre leones, elefantes y atardeceres que quitan el aliento.",
+        "ageRange": "4-7 años",
+        "previewChapterTitle": "El Amanecer en la Sabana",
+        "decisions": {
+          "encounter": {
+            "question": "¿Qué descubre {name} en la sabana?",
+            "lion-cub": { "title": "Cachorro de León", "subtitle": "Pequeño, valiente y con mucho sueño" },
+            "baobab-tree": { "title": "Baobab Parlante", "subtitle": "El árbol más viejo cuenta historias" },
+            "watering-hole": { "title": "Oasis Mágico", "subtitle": "Un lugar donde todos los animales son amigos" }
+          },
+          "companion": {
+            "question": "¿Quién acompaña a {name} en el safari?",
+            "elephant": { "title": "Elefante Sabio", "subtitle": "Tiene la mejor memoria del mundo" },
+            "meerkat": { "title": "Suricata Exploradora", "subtitle": "Siempre de guardia, siempre alerta" },
+            "giraffe": { "title": "Jirafa Amable", "subtitle": "Ve todo desde muy arriba" }
+          },
+          "challenge": {
+            "question": "¿Qué problema amenaza la sabana de {name}?",
+            "drought": { "title": "Gran Sequía", "subtitle": "El agua se acaba y los animales tienen sed" },
+            "lost-herd": { "title": "Manada Perdida", "subtitle": "Los elefantes no encuentran el camino" },
+            "trapped-animals": { "title": "Animales Atrapados", "subtitle": "Un derrumbe bloquea el paso" }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "savanna-sunrise": "Amanecer Africano",
+            "golden-hour": "Hora Dorada",
+            "starry-savanna": "Noche Estrellada"
+          },
+          "setting": {
+            "acacia-plains": "Llanura de Acacias",
+            "river-crossing": "Cruce del Río",
+            "kopje-rocks": "Rocas del Kopje"
+          }
+        },
+        "endings": {
+          "sunset-gathering": { "title": "Reunión al Atardecer", "description": "Todos los animales se reúnen al atardecer para celebrar con rugidos y cantos." },
+          "baobab-promise": { "title": "La Promesa del Baobab", "description": "Deja una marca en el baobab para recordar siempre la aventura." },
+          "stargazing-savanna": { "title": "Bajo el Cielo Africano", "description": "Se tumba entre los animales a mirar la Vía Láctea sobre la sabana." }
+        }
+      },
+      "inventor": {
+        "title": "La Fábrica de Inventos",
+        "description": "Un taller de inventos locos donde la creatividad y la ciencia se mezclan con la magia.",
+        "ageRange": "8-12 años",
+        "previewChapterTitle": "El Taller Secreto",
+        "decisions": {
+          "encounter": {
+            "question": "¿Qué descubre {name} en la fábrica de inventos?",
+            "flying-machine": { "title": "Máquina Voladora", "subtitle": "Hecha de paraguas y engranajes" },
+            "talking-invention": { "title": "Invento Parlante", "subtitle": "¡Se ha inventado a sí mismo!" },
+            "shrink-ray": { "title": "Rayo Miniaturizador", "subtitle": "¡Todo se hace pequeñito!" }
+          },
+          "companion": {
+            "question": "¿Quién ayuda a {name} a inventar?",
+            "genius-robot": { "title": "Robot Genio", "subtitle": "Calcula todo pero no entiende los chistes" },
+            "mad-professor": { "title": "Profesor Despistado", "subtitle": "Se olvida de todo menos de inventar" },
+            "creative-spark": { "title": "Chispa Creativa", "subtitle": "Una lucecita que aparece cuando tienes ideas" }
+          },
+          "challenge": {
+            "question": "¿Qué problema surge en la fábrica de {name}?",
+            "chain-reaction": { "title": "Reacción en Cadena", "subtitle": "¡Un invento activa todos los demás!" },
+            "imagination-drain": { "title": "Sin Imaginación", "subtitle": "¡Las ideas han desaparecido!" },
+            "time-machine": { "title": "Máquina del Tiempo Rota", "subtitle": "Mezcla pasado, presente y futuro" }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "eureka-morning": "Mañana de Ideas",
+            "workshop-afternoon": "Tarde de Taller",
+            "midnight-lab": "Laboratorio Nocturno"
+          },
+          "setting": {
+            "main-workshop": "Taller Principal",
+            "test-room": "Sala de Pruebas",
+            "sky-garage": "Garaje del Cielo"
+          }
+        },
+        "endings": {
+          "great-invention": { "title": "El Gran Invento", "description": "Presenta el invento más increíble del mundo: uno que hace feliz a todos." },
+          "inventor-badge": { "title": "Insignia de Inventor", "description": "Recibe la insignia oficial de inventor y un taller propio." },
+          "blueprints": { "title": "Planos del Futuro", "description": "Dibuja los planos de su próximo invento: ¡el más ambicioso hasta ahora!" }
+        }
+      },
+      "candy": {
+        "title": "El País de los Dulces",
+        "description": "Un mundo donde todo está hecho de dulces, chocolate y caramelo. ¡Pero cuidado con comer demasiado!",
+        "ageRange": "2-5 años",
+        "previewChapterTitle": "La Puerta de Caramelo",
+        "decisions": {
+          "encounter": {
+            "question": "¿Qué descubre {name} en el País de los Dulces?",
+            "chocolate-river": { "title": "Río de Chocolate", "subtitle": "¡Fluye chocolate caliente!" },
+            "candy-garden": { "title": "Jardín de Gominolas", "subtitle": "Flores de piruleta y árboles de regaliz" },
+            "cookie-house": { "title": "Casa de Galleta", "subtitle": "Con tejas de chocolate y puerta de barquillo" }
+          },
+          "companion": {
+            "question": "¿Quién acompaña a {name} por el País de los Dulces?",
+            "gummy-bear": { "title": "Osito de Gominola", "subtitle": "Blandito, alegre y muy dulce" },
+            "cookie-baker": { "title": "Pastelera de las Nubes", "subtitle": "Hornea las nubes más esponjosas" },
+            "candy-fairy": { "title": "Hada de Azúcar", "subtitle": "Su varita convierte todo en dulces" }
+          },
+          "challenge": {
+            "question": "¿Qué problema hay en el País de los Dulces de {name}?",
+            "melting-kingdom": { "title": "Reino Derretido", "subtitle": "¡Hace demasiado calor y todo se derrite!" },
+            "sour-invasion": { "title": "Invasión Ácida", "subtitle": "¡Los caramelos ácidos quieren conquistar!" },
+            "sugar-shortage": { "title": "Falta de Azúcar", "subtitle": "¡Los dulces pierden su sabor!" }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "candy-morning": "Mañana de Caramelo",
+            "chocolate-afternoon": "Tarde de Chocolate",
+            "marshmallow-night": "Noche de Malvavisco"
+          },
+          "setting": {
+            "candy-village": "Pueblo de Caramelo",
+            "ice-cream-mountain": "Montaña de Helado",
+            "lollipop-forest": "Bosque de Piruletas"
+          }
+        },
+        "endings": {
+          "candy-feast": { "title": "Gran Banquete de Dulces", "description": "Todo el reino celebra con la fiesta más dulce jamás vista." },
+          "candy-pocket": { "title": "Bolsillo Mágico", "description": "Vuelve a casa con un bolsillo que siempre tiene el dulce perfecto." },
+          "sweet-dreams": { "title": "Dulces Sueños", "description": "Se duerme en una cama de algodón de azúcar soñando con volver." }
         }
       }
     }

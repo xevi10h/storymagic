@@ -1,38 +1,52 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import type { EndingChoice, StoryTemplateConfig } from "@/lib/create-store";
+import type { CreationMode, EndingChoice, StoryTemplateConfig } from "@/lib/create-store";
 import CreationHeader from "./CreationHeader";
 import CreationFooterNav from "./CreationFooterNav";
+import BrandLogo from "@/components/BrandLogo";
 
 interface Step5Props {
+  mode: CreationMode;
   dedication: string;
   senderName: string;
   ending: EndingChoice;
+  endingNote: string;
   saving: boolean;
   template: StoryTemplateConfig;
   characterName: string;
+  characterAge?: number;
+  portraitUrl?: string | null;
+  onRegeneratePortrait?: () => void;
   onSetDedication: (text: string) => void;
   onSetSenderName: (name: string) => void;
   onSetEnding: (ending: EndingChoice) => void;
+  onSetEndingNote: (note: string) => void;
   onNext: () => void;
   onBack: () => void;
 }
 
 export default function Step5AuthorMessage({
+  mode,
   dedication,
   senderName,
   ending,
+  endingNote,
   saving,
   template,
   characterName,
+  characterAge,
+  portraitUrl,
+  onRegeneratePortrait,
   onSetDedication,
   onSetSenderName,
   onSetEnding,
+  onSetEndingNote,
   onNext,
   onBack,
 }: Step5Props) {
   const t = useTranslations("crear.step5");
+  const isSolo = mode === "solo";
   const td = useTranslations("data");
   const displayName = characterName || t("defaultName");
   const endingOptions = template.endings;
@@ -40,14 +54,14 @@ export default function Step5AuthorMessage({
 
   return (
     <div className="min-h-screen flex flex-col bg-create-bg text-create-text">
-      <CreationHeader currentStep={5} rightAction="save" />
+      <CreationHeader currentStep={5} rightAction="save" portraitUrl={portraitUrl} characterName={characterName} characterAge={characterAge} onRegeneratePortrait={onRegeneratePortrait} />
 
       {/* Main */}
       <main className="flex-1 flex flex-col relative">
         {/* Star pattern background */}
         <div className="absolute inset-0 bg-create-neutral/30 create-star-pattern opacity-60 pointer-events-none z-0" />
 
-        <div className="relative z-10 w-full max-w-[1200px] mx-auto px-4 py-4 flex flex-col gap-3">
+        <div className="relative z-10 w-full max-w-300 mx-auto px-4 py-4 flex flex-col gap-3">
 
           {/* Content Grid */}
           <div className="grid lg:grid-cols-12 gap-6 items-start">
@@ -62,30 +76,23 @@ export default function Step5AuthorMessage({
                 }}
               >
                 {/* Spine hint */}
-                <div className="absolute left-0 top-0 bottom-0 w-[10px] bg-linear-to-r from-white/10 to-transparent" />
-
-                {/* Top decorative */}
-                <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mb-3 backdrop-blur-sm border border-white/20">
-                  <span className="material-symbols-outlined text-white text-4xl">
-                    auto_stories
-                  </span>
-                </div>
+                <div className="absolute left-0 top-0 bottom-0 w-2.5 bg-linear-to-r from-white/10 to-transparent" />
 
                 {/* Dedication card */}
-                <div className="relative w-full bg-[#faf9f6] p-5 rounded-sm shadow-md rotate-[1deg] max-w-[380px]">
+                <div className="relative w-full bg-[#faf9f6] p-5 rounded-sm shadow-md rotate-1 max-w-95">
                   {/* Tape */}
                   <div className="create-tape-effect absolute -top-3 left-1/2 -translate-x-1/2 w-32 h-8 z-10" />
                   <label
                     className="block text-center text-create-primary font-bold text-sm mb-3 uppercase tracking-wider"
                     htmlFor="dedication"
                   >
-                    {t("dedicationLabel")}
+                    {isSolo ? t("dedicationLabelSolo") : t("dedicationLabel")}
                   </label>
                   <textarea
                     id="dedication"
                     value={dedication}
                     onChange={(e) => onSetDedication(e.target.value)}
-                    placeholder={t("dedicationPlaceholder", { name: displayName })}
+                    placeholder={t(isSolo ? "dedicationPlaceholderSolo" : "dedicationPlaceholder", { name: displayName })}
                     rows={4}
                     maxLength={500}
                     className="w-full border-none bg-transparent p-0 text-center text-lg text-gray-700 focus:ring-0 resize-none leading-relaxed placeholder:text-gray-400 placeholder:italic"
@@ -101,7 +108,7 @@ export default function Step5AuthorMessage({
                     />
                   </div>
                   <div className="mt-4 pt-4 border-t border-gray-200 flex justify-between items-center text-xs text-gray-400 font-medium">
-                    <span>meapica press</span>
+                    <span>Meapica</span>
                     <span>{new Date().getFullYear()} Edition</span>
                   </div>
                 </div>
@@ -114,8 +121,8 @@ export default function Step5AuthorMessage({
                   <p className="text-white/60 text-sm mt-1 font-medium">
                     {t("adventureOf", { name: displayName })}
                   </p>
-                  <div className="mt-4 bg-white p-1 px-2 rounded-sm inline-block">
-                    <div className="h-6 w-24 bg-gray-300 opacity-80" />
+                  <div className="mt-4 bg-white/10 px-4 py-2 rounded-sm inline-block">
+                    <BrandLogo className="h-5 text-white/80" />
                   </div>
                 </div>
               </div>
@@ -125,10 +132,10 @@ export default function Step5AuthorMessage({
             <div className="lg:col-span-5 flex flex-col gap-4 pt-2">
               <div className="text-center lg:text-left">
                 <h1 className="text-2xl md:text-3xl font-display font-bold text-create-text leading-tight mb-1">
-                  {t("title")}
+                  {isSolo ? t("titleSolo") : t("title")}
                 </h1>
                 <p className="text-create-text-sub text-base font-medium leading-relaxed">
-                  {t.rich("subtitle", {
+                  {t.rich(isSolo ? "subtitleSolo" : "subtitle", {
                     name: displayName,
                     highlight: (chunks) => (
                       <span className="text-create-primary font-bold">{chunks}</span>
@@ -196,6 +203,27 @@ export default function Step5AuthorMessage({
                 })}
               </div>
 
+              {/* Optional ending note — appears once an ending is selected */}
+              {ending && (
+                <div className="flex flex-col gap-1.5 mt-1">
+                  <label className="text-sm font-bold text-create-text opacity-80">
+                    {t("endingNoteLabel")}
+                    <span className="text-create-text-sub font-normal ml-2 normal-case tracking-normal">
+                      {t("endingNoteOptional")}
+                    </span>
+                  </label>
+                  <textarea
+                    value={endingNote}
+                    onChange={(e) => onSetEndingNote(e.target.value)}
+                    placeholder={t("endingNotePlaceholder", { name: displayName })}
+                    rows={2}
+                    maxLength={300}
+                    className="w-full px-4 py-3 rounded-xl border-2 border-create-neutral bg-white focus:border-create-primary focus:ring-0 transition-all outline-none placeholder:text-gray-300 text-sm font-medium text-create-text resize-none"
+                  />
+                  <p className="text-xs text-create-text-sub">{t("endingNoteHint")}</p>
+                </div>
+              )}
+
             </div>
           </div>
         </div>
@@ -206,6 +234,8 @@ export default function Step5AuthorMessage({
         onNext={onNext}
         nextLabel={t("createMyStory")}
         nextLoading={saving}
+        nextDisabled={!ending}
+        nextDisabledTooltip={!ending ? t("chooseEndingFirst") : undefined}
       />
     </div>
   );

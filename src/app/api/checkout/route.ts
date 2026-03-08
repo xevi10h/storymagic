@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { getStripe, PRICING, ADDONS, type BookFormat, type AddonId } from "@/lib/stripe";
+import { getStripePriceId } from "@/lib/pricing";
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -57,27 +58,13 @@ export async function POST(request: Request) {
   const requiresShipping = formatConfig.requiresShipping;
 
   // Build line items for Stripe
-  const generatedText = story.generated_text as { bookTitle?: string };
-  const bookTitle = generatedText.bookTitle ?? "Personalized Story";
-  const characterName = (story.characters as { name: string } | null)?.name ?? "";
-
-  const lineItems: {
-    price_data: {
-      currency: string;
-      product_data: { name: string; description?: string };
-      unit_amount: number;
-    };
-    quantity: number;
-  }[] = [
+  const lineItems: (
+    | { price: string; quantity: number }
+    | { price_data: { currency: string; product_data: { name: string }; unit_amount: number }; quantity: number }
+  )[] = [
     {
-      price_data: {
-        currency: "eur",
-        product_data: {
-          name: `${bookTitle} (${formatConfig.label})`,
-          description: characterName ? `Personalized book for ${characterName}` : "Personalized children's book",
-        },
-        unit_amount: formatConfig.price,
-      },
+      // Use registered Stripe price ID — switches automatically between test/live
+      price: getStripePriceId(format),
       quantity: 1,
     },
   ];
@@ -112,6 +99,31 @@ export async function POST(request: Request) {
     formatConfig.price +
     validAddons.reduce((sum, id) => sum + ADDONS[id].price, 0);
 
+  // MOCK_MODE: bypass Stripe entirely — create a paid order directly so the
+  // full unlock flow (complete route → all illustrations) works without webhooks.
+  // Safety: NEVER allow mock mode when Stripe is in live mode (production safeguard)
+  if (process.env.MOCK_MODE === "true" && process.env.STRIPE_ENVIRONMENT !== "live") {
+    const mockSessionId = `mock_${Date.now()}_${storyId.slice(0, 8)}`;
+    const { error: orderError } = await supabase.from("orders").insert({
+      user_id: user.id,
+      story_id: storyId,
+      stripe_checkout_session_id: mockSessionId,
+      format,
+      addons: JSON.parse(JSON.stringify(validAddons)),
+      subtotal: subtotal / 100,
+      total: subtotal / 100,
+      status: "paid",
+    });
+
+    if (orderError) {
+      console.error("Mock checkout error:", orderError);
+      return NextResponse.json({ error: "Failed to create mock order" }, { status: 500 });
+    }
+
+    const origin = new URL(request.url).origin;
+    return NextResponse.json({ url: `${origin}/checkout/success?session_id=${mockSessionId}` });
+  }
+
   try {
     const origin = new URL(request.url).origin;
 
@@ -121,7 +133,7 @@ export async function POST(request: Request) {
       mode: "payment",
       payment_method_types: ["card"],
       line_items: lineItems,
-      customer_email: user.email ?? undefined,
+      customer_email: user.email || undefined,
       metadata: {
         story_id: storyId,
         user_id: user.id,

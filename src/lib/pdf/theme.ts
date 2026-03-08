@@ -1,9 +1,9 @@
 /**
  * PDF Book Theme System
  *
- * Dimensions follow Gelato print specs:
- * - Trim size: 210mm × 210mm (square children's book standard)
- * - Bleed: 3mm on all sides → total page: 216mm × 216mm
+ * Dimensions follow Gelato print specs for 20×20cm / 8×8" square photo book:
+ * - Trim size: 200mm × 200mm
+ * - Bleed: 4mm on all sides → total page: 208mm × 208mm  ← Gelato requires 4mm
  * - Safe area: 15mm from trim edge (text/important elements)
  *
  * 1mm = 2.83465pt (PDF points)
@@ -14,18 +14,18 @@
 const MM_TO_PT = 2.83465;
 
 export const BOOK = {
-  /** Page with bleed (216mm) */
-  pageWidth: 216 * MM_TO_PT,
-  pageHeight: 216 * MM_TO_PT,
-  /** Trim size (210mm) */
-  trimWidth: 210 * MM_TO_PT,
-  trimHeight: 210 * MM_TO_PT,
-  /** Bleed area */
-  bleed: 3 * MM_TO_PT,
+  /** Page with bleed (208mm) */
+  pageWidth: 208 * MM_TO_PT,
+  pageHeight: 208 * MM_TO_PT,
+  /** Trim size (200mm) */
+  trimWidth: 200 * MM_TO_PT,
+  trimHeight: 200 * MM_TO_PT,
+  /** Bleed area — Gelato requires 4mm */
+  bleed: 4 * MM_TO_PT,
   /** Safe margin from trim edge for text content */
   safeMargin: 15 * MM_TO_PT,
   /** Inner content margin (from page edge including bleed) */
-  contentMargin: 18 * MM_TO_PT, // bleed(3) + safe(15)
+  contentMargin: 19 * MM_TO_PT, // bleed(4) + safe(15)
 } as const;
 
 // ── Template Color Palettes ────────────────────────────────────────────────
@@ -98,6 +98,56 @@ export const TEMPLATE_THEMES: Record<string, TemplateTheme> = {
     titleColor: "#7c2d12",
     ornamentColor: "#fdba74",
   },
+  dinosaurs: {
+    id: "dinosaurs",
+    coverGradientStart: "#1b4332",
+    coverGradientEnd: "#2d6a4f",
+    accent: "#40916c",
+    accentLight: "#d8f3dc",
+    pageTint: "#f6fdf8",
+    titleColor: "#1b4332",
+    ornamentColor: "#95d5b2",
+  },
+  castle: {
+    id: "castle",
+    coverGradientStart: "#2e1065",
+    coverGradientEnd: "#4c1d95",
+    accent: "#7c3aed",
+    accentLight: "#ede9fe",
+    pageTint: "#faf5ff",
+    titleColor: "#3b0764",
+    ornamentColor: "#c4b5fd",
+  },
+  safari: {
+    id: "safari",
+    coverGradientStart: "#7c2d12",
+    coverGradientEnd: "#b45309",
+    accent: "#d97706",
+    accentLight: "#fef3c7",
+    pageTint: "#fffbeb",
+    titleColor: "#78350f",
+    ornamentColor: "#fcd34d",
+  },
+  inventor: {
+    id: "inventor",
+    coverGradientStart: "#0c4a6e",
+    coverGradientEnd: "#075985",
+    accent: "#0284c7",
+    accentLight: "#e0f2fe",
+    pageTint: "#f0f9ff",
+    titleColor: "#0c4a6e",
+    ornamentColor: "#7dd3fc",
+  },
+  candy: {
+    id: "candy",
+    coverGradientStart: "#831843",
+    coverGradientEnd: "#9d174d",
+    accent: "#db2777",
+    accentLight: "#fce7f3",
+    pageTint: "#fdf2f8",
+    titleColor: "#831843",
+    ornamentColor: "#f9a8d4",
+  },
 };
 
 export function getTheme(templateId: string): TemplateTheme {
@@ -123,6 +173,36 @@ export const TYPE = {
   finalMessage: { fontFamily: FONTS.display, fontSize: 16, fontWeight: 600 as const, color: "#5D4037", lineHeight: 1.5 },
   backText: { fontFamily: FONTS.body, fontSize: 11, color: "#ffffffbb", lineHeight: 1.5 },
 } as const;
+
+// ── Age-adaptive text sizing ──────────────────────────────────────────────
+// Younger children → fewer words → larger text to fill the page nicely.
+// Older children → more words → smaller text so everything fits.
+
+export interface PdfTextConfig {
+  /** Scene body text font size (pt) */
+  body: number;
+  /** Scene body line height multiplier */
+  bodyLeading: number;
+  /** Scene title font size (pt) */
+  title: number;
+  /** Drop cap font size for ventana spread (pt) */
+  dropCap: number;
+  /** Bridge (puente) display text size (pt) */
+  bridgeText: number;
+}
+
+export function getPdfTextConfig(age: number): PdfTextConfig {
+  if (age <= 4) {
+    // 50-80 words/scene → large, spacious text
+    return { body: 15, bodyLeading: 2.0, title: 22, dropCap: 72, bridgeText: 28 };
+  }
+  if (age <= 7) {
+    // 100-140 words/scene → medium
+    return { body: 12.5, bodyLeading: 1.85, title: 20, dropCap: 64, bridgeText: 24 };
+  }
+  // 150-200 words/scene → compact
+  return { body: 10.5, bodyLeading: 1.7, title: 18, dropCap: 56, bridgeText: 22 };
+}
 
 // ── Shared colors ──────────────────────────────────────────────────────────
 

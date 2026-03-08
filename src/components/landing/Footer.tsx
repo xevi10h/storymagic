@@ -1,5 +1,6 @@
 import { useTranslations } from "next-intl";
-import LogoIcon from "@/components/LogoIcon";
+import { Link } from "@/i18n/navigation";
+import BrandLogo from "@/components/BrandLogo";
 
 export default function Footer() {
   const t = useTranslations("footer");
@@ -10,11 +11,8 @@ export default function Footer() {
         <div className="mb-16 grid grid-cols-1 gap-12 md:grid-cols-4">
           {/* Brand */}
           <div className="col-span-1 md:col-span-1">
-            <div className="mb-6 flex items-center gap-2">
-              <LogoIcon className="h-6 w-6 text-primary" />
-              <span className="font-display text-xl font-bold tracking-tight text-white">
-                meapica
-              </span>
+            <div className="mb-6">
+              <BrandLogo className="h-6 text-white" />
             </div>
             <p className="mb-6 text-sm leading-relaxed text-footer-muted whitespace-pre-line">
               {t("tagline")}
@@ -87,15 +85,15 @@ export default function Footer() {
         <div className="flex flex-col items-center justify-between gap-4 border-t border-footer-border pt-8 text-xs text-footer-border md:flex-row">
           <p>{t("copyright")}</p>
           <div className="flex gap-6">
-            <a className="transition-colors hover:text-white" href="#">
+            <Link className="transition-colors hover:text-white" href="/legal#terms">
               {t("legalNotice")}
-            </a>
-            <a className="transition-colors hover:text-white" href="#">
+            </Link>
+            <Link className="transition-colors hover:text-white" href="/legal#privacy">
               {t("privacy")}
-            </a>
-            <a className="transition-colors hover:text-white" href="#">
+            </Link>
+            <Link className="transition-colors hover:text-white" href="/legal#cookies">
               {t("cookies")}
-            </a>
+            </Link>
           </div>
         </div>
       </div>

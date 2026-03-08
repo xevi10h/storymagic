@@ -1,5 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createClient as createSupabaseAdmin } from "@supabase/supabase-js";
+import type { Database } from "@/lib/database.types";
+
+function createServiceClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !serviceKey) throw new Error("Missing Supabase service config");
+  return createSupabaseAdmin<Database>(url, serviceKey);
+}
 
 export async function GET(request: NextRequest) {
   const sessionId = request.nextUrl.searchParams.get("session_id");
@@ -11,23 +20,23 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const supabase = await createClient();
+  // Try user session first, fall back to service role for guest users
+  // The Stripe checkout session ID acts as proof of ownership
+  const userSupabase = await createClient();
+  const { data: { user } } = await userSupabase.auth.getUser();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const supabase = user ? userSupabase : createServiceClient();
 
   // Fetch order by checkout session ID — only return paid orders
-  const { data: order, error } = await supabase
+  const query = supabase
     .from("orders")
     .select("format, status, story_id, stories(generated_text, characters(name))")
-    .eq("stripe_checkout_session_id", sessionId)
-    .eq("user_id", user.id)
-    .single();
+    .eq("stripe_checkout_session_id", sessionId);
+
+  // If authenticated, scope to user; otherwise session ID is proof enough
+  if (user) query.eq("user_id", user.id);
+
+  const { data: order, error } = await query.single();
 
   if (error || !order) {
     return NextResponse.json({ error: "Order not found" }, { status: 404 });

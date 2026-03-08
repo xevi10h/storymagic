@@ -399,6 +399,23 @@ input[type=range].create-slider:focus {
   animation: fade-in 0.4s ease-out;
 }
 
+/* Writing animation — quill reveals the brand logo left-to-right */
+@keyframes writing-reveal {
+  from { transform: scaleX(1); }
+  to   { transform: scaleX(0); }
+}
+
+@keyframes pen-travel {
+  from { left: 0%; }
+  to   { left: 100%; }
+}
+
+@keyframes ink-settle {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
 /* ============================
    Utilities
    ============================ */
@@ -409,4 +426,140 @@ input[type=range].create-slider:focus {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* ============================
+   Page Flip Transition
+   ============================ */
+
+.page-flip-viewport {
+  position: relative;
+  min-height: 100vh;
+}
+
+.page-flip-active {
+  perspective: 1600px;
+  overflow: hidden;
+}
+
+.page-flip-layer {
+  position: absolute;
+  inset: 0;
+  min-height: 100vh;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+/* Shadow overlay on outgoing page */
+.page-flip-shadow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* --- FORWARD (next step): page turns left like a book --- */
+
+.pf-out-forward {
+  transform-origin: left center;
+  z-index: 3;
+  animation: pfOutFwd 800ms cubic-bezier(0.45, 0, 0.15, 1) forwards;
+}
+
+/* Incoming page is STATIC — just revealed as outgoing flips away */
+.pf-in-forward {
+  z-index: 1;
+  animation: pfReveal 800ms ease-out forwards;
+}
+
+.pf-shadow-forward {
+  animation: pfShadowFwd 800ms cubic-bezier(0.45, 0, 0.15, 1) forwards;
+}
+
+/* --- BACKWARD (prev step): page turns right --- */
+
+.pf-out-back {
+  transform-origin: right center;
+  z-index: 3;
+  animation: pfOutBack 800ms cubic-bezier(0.45, 0, 0.15, 1) forwards;
+}
+
+.pf-in-back {
+  z-index: 1;
+  animation: pfReveal 800ms ease-out forwards;
+}
+
+.pf-shadow-back {
+  animation: pfShadowBack 800ms cubic-bezier(0.45, 0, 0.15, 1) forwards;
+}
+
+/* --- Keyframes --- */
+
+/* Outgoing page flips away around left spine (forward) */
+@keyframes pfOutFwd {
+  0% {
+    transform: rotateY(0deg);
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: rotateY(-100deg);
+    opacity: 0;
+  }
+}
+
+/* Outgoing page flips away around right spine (backward) */
+@keyframes pfOutBack {
+  0% {
+    transform: rotateY(0deg);
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: rotateY(100deg);
+    opacity: 0;
+  }
+}
+
+/* Incoming page — dimmed at start, brightens as outgoing reveals it */
+@keyframes pfReveal {
+  0% {
+    filter: brightness(0.82);
+  }
+  50% {
+    filter: brightness(0.88);
+  }
+  100% {
+    filter: brightness(1);
+  }
+}
+
+/* Shadow sweeps across outgoing page as it folds (forward) */
+@keyframes pfShadowFwd {
+  0% {
+    background: linear-gradient(to left, transparent 80%, rgba(0,0,0,0) 100%);
+  }
+  40% {
+    background: linear-gradient(to left, transparent 30%, rgba(0,0,0,0.12) 80%, rgba(0,0,0,0.03) 100%);
+  }
+  100% {
+    background: linear-gradient(to left, transparent 0%, rgba(0,0,0,0) 100%);
+  }
+}
+
+/* Shadow sweeps across outgoing page as it folds (backward) */
+@keyframes pfShadowBack {
+  0% {
+    background: linear-gradient(to right, transparent 80%, rgba(0,0,0,0) 100%);
+  }
+  40% {
+    background: linear-gradient(to right, transparent 30%, rgba(0,0,0,0.12) 80%, rgba(0,0,0,0.03) 100%);
+  }
+  100% {
+    background: linear-gradient(to right, transparent 0%, rgba(0,0,0,0) 100%);
+  }
 }

@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import CreationHeader from "@/components/crear/CreationHeader";
 import BookViewerSwitch from "@/components/book-viewer/BookViewerSwitch";
 import type { BookPage } from "@/components/book-viewer/types";
+import { SCENE_LAYOUT_PAIRS, getActLabel, getSpreadType } from "@/components/book-viewer/types";
 import type { GeneratedStory } from "@/lib/ai/story-generator";
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -17,6 +18,9 @@ interface StoryData {
   id: string;
   status: string;
   template_id: string;
+  title: string | null;
+  cover_image_url: string | null;
+  character_portrait_url: string | null;
   generated_text: GeneratedStory;
   dedication_text: string | null;
   sender_name: string | null;
@@ -25,6 +29,12 @@ interface StoryData {
     age: number;
     gender: string;
     city: string | null;
+    interests: string[] | null;
+    special_trait: string | null;
+    favorite_companion: string | null;
+    favorite_food: string | null;
+    future_dream: string | null;
+    avatar_url: string | null;
   };
   story_illustrations: {
     scene_number: number;
@@ -35,6 +45,29 @@ interface StoryData {
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
+/**
+ * Build exactly 32 pages — standard children's book structure:
+ *
+ *  1  Cover
+ *  2  Front endpaper
+ *  3  Title + Dedication (combined)
+ *  4-27  12 scenes × 2 pages = 24
+ *  28 Final message
+ *  29 Hero card
+ *  30 Colophon (imprint + QR)
+ *  31 Back endpaper
+ *  32 Back cover
+ *
+ * 3 header pages (odd count) ensure all scene first-pages land on LEFT
+ * positions in the two-page viewer, so panoramic spreads are on facing pages.
+ *
+ * Viewer pairing (cover is alone, then pairs):
+ *   [0]        cover
+ *   [1, 2]     endpaper + title_dedication
+ *   [3, 4]     scene 1 page 1 (LEFT) + scene 1 page 2 (RIGHT)
+ *   ...
+ *   [7, 8]     scene 3 spread_left (LEFT) + spread_right (RIGHT) ✓
+ */
 function buildPages(story: StoryData): BookPage[] {
   const generated = story.generated_text;
   const illustrations = story.story_illustrations.sort(
@@ -42,52 +75,126 @@ function buildPages(story: StoryData): BookPage[] {
   );
   const isPreview = story.status === "preview";
 
+  // 3 header pages (odd count) for spread alignment
   const pages: BookPage[] = [
+    // 1. Cover
     {
       type: "cover",
-      title: generated.bookTitle,
+      title: story.title ?? generated.bookTitle,
       characterName: story.characters.name,
       templateId: story.template_id,
+      imageUrl: story.cover_image_url ?? null,
     },
+    // 2. Front endpaper
+    { type: "endpaper", templateId: story.template_id },
+    // 3. Title + Dedication (combined — gets to story faster)
     {
-      type: "dedication",
-      text: generated.dedication,
+      type: "title_dedication",
+      title: story.title ?? generated.bookTitle,
+      characterName: story.characters.name,
+      templateId: story.template_id,
+      dedicationText: generated.dedication,
       senderName: story.sender_name,
     },
   ];
 
+  // 4-27. Each scene = 2 pages. Layout pairs define the visual variety.
+  // Act labels mark the start of each narrative act (I, II, III).
+  // Spread types cycle galeria → pergamino → ventana for scenes (bridges = puente),
+  // matching the PDF editorial cycling system exactly.
+  let sceneOnlyIndex = 0;
   for (const scene of generated.scenes) {
+    const pair = SCENE_LAYOUT_PAIRS[(scene.sceneNumber - 1) % SCENE_LAYOUT_PAIRS.length];
+    const isSpread = pair[0] === "spread_left";
+    const isBridge = scene.type === "bridge";
+    const spreadType = getSpreadType(scene.type ?? "scene", sceneOnlyIndex);
+
     const illustration = illustrations.find(
       (i) => i.scene_number === scene.sceneNumber
     );
+    const secondaryIllustration = illustrations.find(
+      (i) => i.scene_number === scene.sceneNumber + 12
+    );
     const hasIllustration = illustration?.status === "ready" && !!illustration?.image_url;
+    const hasSecondary = secondaryIllustration?.status === "ready" && !!secondaryIllustration?.image_url;
+    const locked = isPreview && !hasIllustration;
+    const imageUrl = illustration?.image_url ?? null;
+    const secondaryImageUrl = hasSecondary ? secondaryIllustration.image_url : null;
+    const actLabel = getActLabel(scene.sceneNumber);
 
-    pages.push({
-      type: "scene",
-      scene,
-      imageUrl: illustration?.image_url ?? null,
-      locked: isPreview && !hasIllustration,
-    });
+    const characterAge = story.characters.age;
+
+    // Page 1: primary layout with primary illustration + optional act label
+    pages.push({ type: "scene", scene, imageUrl, locked, layout: pair[0], actLabel, characterAge, spreadType });
+
+    // Page 2: depends on layout type
+    if (isSpread) {
+      // Panoramic spread — same image, right half
+      pages.push({ type: "scene", scene, imageUrl, locked, layout: "spread_right", characterAge, spreadType });
+    } else if (secondaryImageUrl) {
+      // Secondary illustration exists → show it WITH scene text (never pure immersive)
+      pages.push({ type: "scene", scene, imageUrl: secondaryImageUrl, locked, layout: "illustration_text", characterAge, spreadType });
+    } else {
+      // No secondary → pure text page
+      pages.push({ type: "scene", scene, imageUrl: null, locked, layout: pair[1], characterAge, spreadType });
+    }
+
+    if (!isBridge) sceneOnlyIndex++;
   }
 
+  // 28. Final message
   pages.push({
     type: "final",
     message: generated.finalMessage,
     characterName: story.characters.name,
   });
 
+  // 29. Hero card
   pages.push({
-    type: "back",
+    type: "hero_card",
     characterName: story.characters.name,
+    age: story.characters.age,
+    city: story.characters.city,
+    gender: story.characters.gender,
+    interests: story.characters.interests ?? [],
+    specialTrait: story.characters.special_trait,
+    favoriteCompanion: story.characters.favorite_companion,
+    favoriteFood: story.characters.favorite_food,
+    futureDream: story.characters.future_dream,
+    avatarUrl: story.characters.avatar_url,
+    portraitUrl: story.character_portrait_url,
+    templateId: story.template_id,
   });
 
-  return pages;
+  // 30. Colophon (imprint + QR — standard end-of-book position)
+  pages.push({ type: "colophon", storyId: story.id });
+
+  // 31. Back endpaper
+  pages.push({ type: "endpaper", templateId: story.template_id });
+
+  // 32. Back cover
+  const lastSceneIllustration = illustrations.find(
+    (i) => i.scene_number === generated.scenes.length
+  );
+  const backCoverImageUrl =
+    (lastSceneIllustration?.status === "ready" && lastSceneIllustration?.image_url) ||
+    story.cover_image_url;
+
+  pages.push({
+    type: "back",
+    title: story.title ?? generated.bookTitle,
+    characterName: story.characters.name,
+    synopsis: generated.synopsis ?? `${story.characters.name} está a punto de vivir la aventura más extraordinaria de su vida.`,
+    coverImageUrl: backCoverImageUrl,
+    templateId: story.template_id,
+    storyId: story.id,
+  });
+
+  return pages; // Always 32 pages
 }
 
-// Number of clear scene pages visible in preview (scenes with illustrations)
-const PREVIEW_CLEAR_SCENES = 3;
-// Additional blurred scene pages to show after clear ones
-const PREVIEW_BLURRED_SCENES = 2;
+// In preview mode: show first N scenes fully (illustration + text) then 1 locked teaser page
+const PREVIEW_CLEAR_SCENES = 3;  // 3 clear scenes × 2 pages = 6 scene pages
 
 // ── Page Component ─────────────────────────────────────────────────────────
 
@@ -110,9 +217,14 @@ export default function PreviewPage() {
   const [checkingOut, setCheckingOut] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
-  // PDF download state (only for completed stories)
-  const [downloadingPdf, setDownloadingPdf] = useState(false);
-  const [pdfError, setPdfError] = useState<string | null>(null);
+  // PDF download filename built from book title
+  const pdfFilename = story?.generated_text?.bookTitle
+    ? `${story.generated_text.bookTitle.replace(/[^a-zA-Z0-9áéíóúñüÁÉÍÓÚÑÜ\s-]/g, "").replace(/\s+/g, "-").toLowerCase().slice(0, 60)}-meapica.pdf`
+    : `${storyId}.pdf`;
+
+  // Dev bypass: instant unlock without checkout (MOCK_MODE only)
+  const [bypassingUnlock, setBypassingUnlock] = useState(false);
+  const isMockMode = process.env.NEXT_PUBLIC_MOCK_MODE === "true";
 
   const isPreviewMode = story?.status === "preview";
   const isFullyReady = story?.status === "ready" || story?.status === "ordered";
@@ -144,11 +256,21 @@ export default function PreviewPage() {
 
   const pages = story ? buildPages(story) : [];
 
-  // In preview mode, limit visible pages: cover + dedication + clear scenes + blurred scenes
+  // In preview mode, limit visible pages:
+  // 3 header (cover + endpaper + title_dedication) + clear scenes × 2 pages + 1 locked teaser
+  const previewScenePages = PREVIEW_CLEAR_SCENES * 2;
   const maxVisiblePages = isPreviewMode
-    ? 2 + PREVIEW_CLEAR_SCENES + PREVIEW_BLURRED_SCENES // cover + dedication + 3 clear + 2 blurred
+    ? 3 + previewScenePages + 1  // 3 headers + 6 scene pages + 1 locked = 10
     : pages.length;
-  const visiblePages = pages.slice(0, maxVisiblePages);
+  const visiblePages = isPreviewMode
+    ? pages.slice(0, maxVisiblePages).map((page, i) => {
+        // Force the last page to be locked as a teaser, regardless of illustration status
+        if (i === maxVisiblePages - 1 && page.type === "scene") {
+          return { ...page, locked: true, imageUrl: null };
+        }
+        return page;
+      })
+    : pages.slice(0, maxVisiblePages);
   const totalPages = visiblePages.length;
 
   // Keyboard navigation
@@ -184,33 +306,6 @@ export default function PreviewPage() {
     PRICING[format].price +
     Array.from(addons).reduce((sum, id) => sum + ADDONS[id].price, 0);
 
-  const handleDownloadPdf = useCallback(async () => {
-    setDownloadingPdf(true);
-    setPdfError(null);
-    try {
-      const res = await fetch(`/api/stories/${storyId}/pdf`);
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || t("pdfError"));
-      }
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download =
-        res.headers.get("Content-Disposition")?.match(/filename="(.+)"/)?.[1] ??
-        "meapica-book.pdf";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    } catch (err) {
-      setPdfError(err instanceof Error ? err.message : t("pdfError"));
-    } finally {
-      setDownloadingPdf(false);
-    }
-  }, [storyId, t]);
-
   const handleCheckout = useCallback(async () => {
     setCheckingOut(true);
     setCheckoutError(null);
@@ -240,6 +335,25 @@ export default function PreviewPage() {
       setCheckingOut(false);
     }
   }, [storyId, format, addons, t]);
+
+  // Dev-only: bypass checkout and unlock all illustrations instantly
+  const handleDevUnlock = useCallback(async () => {
+    setBypassingUnlock(true);
+    try {
+      const res = await fetch(`/api/stories/${storyId}/complete`, { method: "POST" });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Unlock failed");
+      }
+      // Refresh story data
+      const storyRes = await fetch(`/api/stories/${storyId}`);
+      if (storyRes.ok) setStory(await storyRes.json());
+    } catch (err) {
+      console.error("[DEV] Unlock failed:", err);
+    } finally {
+      setBypassingUnlock(false);
+    }
+  }, [storyId]);
 
   // ── Loading / Error states ───────────────────────────────────────────────
 
@@ -284,7 +398,7 @@ export default function PreviewPage() {
       {/* Book title + page counter */}
       <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-2">
         <h2 className="font-display text-sm font-bold text-secondary truncate max-w-50 sm:max-w-none">
-          {story.generated_text.bookTitle}
+          {story.title ?? story.generated_text.bookTitle}
         </h2>
         <div className="flex items-center gap-2">
           {isPreviewMode && (
@@ -311,33 +425,19 @@ export default function PreviewPage() {
       {/* PDF Download — only for fully ready stories */}
       {isFullyReady && (
         <div className="mx-auto max-w-3xl px-4 pb-6">
-          <button
-            onClick={handleDownloadPdf}
-            disabled={downloadingPdf}
-            className="group mx-auto flex items-center gap-2.5 rounded-xl border-2 border-border-light bg-white px-6 py-3.5 text-sm font-bold text-secondary transition-all hover:border-create-primary hover:bg-create-primary/5 hover:text-create-primary active:scale-[0.98] disabled:opacity-60 shadow-sm"
+          <a
+            href={`/api/stories/${storyId}/pdf`}
+            download={pdfFilename}
+            className="group mx-auto flex items-center gap-2.5 rounded-xl border-2 border-border-light bg-white px-6 py-3.5 text-sm font-bold text-secondary transition-all hover:border-create-primary hover:bg-create-primary/5 hover:text-create-primary active:scale-[0.98] shadow-sm"
           >
-            {downloadingPdf ? (
-              <>
-                <span className="material-symbols-outlined animate-spin text-lg">
-                  progress_activity
-                </span>
-                {t("generatingPdf")}
-              </>
-            ) : (
-              <>
-                <span className="material-symbols-outlined text-lg">
-                  picture_as_pdf
-                </span>
-                {t("downloadPdf")}
-              </>
-            )}
-          </button>
+            <span className="material-symbols-outlined text-lg">
+              picture_as_pdf
+            </span>
+            {t("downloadPdf")}
+          </a>
           <p className="mt-2 text-center text-xs text-text-muted">
             {t("downloadHint")}
           </p>
-          {pdfError && (
-            <p className="mt-2 text-center text-xs text-red-600">{pdfError}</p>
-          )}
         </div>
       )}
 
@@ -498,6 +598,32 @@ export default function PreviewPage() {
                     }
                   )}
                 </div>
+              </div>
+            )}
+
+            {/* Dev-only: instant unlock bypassing checkout */}
+            {isMockMode && (
+              <div className="mt-6 rounded-lg border border-dashed border-amber-400 bg-amber-50 p-4">
+                <p className="mb-3 text-center text-xs font-bold text-amber-700 uppercase tracking-wider">
+                  DEV — Mock Mode
+                </p>
+                <button
+                  onClick={handleDevUnlock}
+                  disabled={bypassingUnlock}
+                  className="w-full rounded-lg bg-amber-500 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-amber-600 disabled:opacity-60"
+                >
+                  {bypassingUnlock ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <span className="material-symbols-outlined animate-spin text-base">progress_activity</span>
+                      Unlocking…
+                    </span>
+                  ) : (
+                    <span className="flex items-center justify-center gap-2">
+                      <span className="material-symbols-outlined text-base">lock_open</span>
+                      Unlock all scenes instantly (skip checkout)
+                    </span>
+                  )}
+                </button>
               </div>
             )}
 

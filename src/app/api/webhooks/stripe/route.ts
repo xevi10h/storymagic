@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getStripe } from "@/lib/stripe";
+import { getStripe, getStripeWebhookSecret } from "@/lib/stripe";
 import { createClient as createSupabaseAdmin } from "@supabase/supabase-js";
 import type Stripe from "stripe";
 import type { Database } from "@/lib/database.types";
@@ -28,9 +28,11 @@ export async function POST(request: Request) {
     );
   }
 
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-  if (!webhookSecret) {
-    console.error("STRIPE_WEBHOOK_SECRET not configured");
+  let webhookSecret: string;
+  try {
+    webhookSecret = getStripeWebhookSecret();
+  } catch (err) {
+    console.error("Stripe webhook secret not configured:", err);
     return NextResponse.json(
       { error: "Webhook not configured" },
       { status: 500 }
@@ -102,19 +104,15 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   // Retrieve full session with shipping details from Stripe API
   const fullSession = await getStripe().checkout.sessions.retrieve(session.id);
 
-  // Extract shipping details from collected_information (basil API)
-  const shippingRaw = fullSession as unknown as Record<string, unknown>;
-  const shipping = (shippingRaw.collected_information as Record<string, unknown>)?.shipping_details as {
-    name?: string;
-    address?: {
-      line1?: string;
-      line2?: string;
-      city?: string;
-      state?: string;
-      postal_code?: string;
-      country?: string;
-    };
-  } | undefined;
+  // Extract shipping details — Stripe Basil API (2025-03-31+) moved shipping
+  // into collected_information.shipping_details. Fall back to top-level
+  // shipping_details for older API versions / SDK compatibility.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const rawSession = fullSession as any;
+  const shipping: { name?: string; address?: Record<string, string> } | undefined =
+    rawSession.collected_information?.shipping_details ??
+    rawSession.shipping_details ??
+    undefined;
 
   const shippingAddress = shipping?.address
     ? {
@@ -126,6 +124,10 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         country: shipping.address.country ?? "",
       }
     : null;
+
+  if (!shippingAddress && session.metadata?.format !== "digital_pdf") {
+    console.warn(`[Stripe webhook] No shipping address found for physical order — session ${session.id}`);
+  }
 
   // Update order
   const { error } = await supabase

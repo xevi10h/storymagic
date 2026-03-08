@@ -22,6 +22,8 @@ export type Database = {
           created_at: string
           eye_color: string | null
           favorite_companion: string | null
+          favorite_food: string | null
+          future_dream: string | null
           gender: string
           hair_color: string
           hairstyle: string | null
@@ -40,6 +42,8 @@ export type Database = {
           created_at?: string
           eye_color?: string | null
           favorite_companion?: string | null
+          favorite_food?: string | null
+          future_dream?: string | null
           gender: string
           hair_color: string
           hairstyle?: string | null
@@ -58,6 +62,8 @@ export type Database = {
           created_at?: string
           eye_color?: string | null
           favorite_companion?: string | null
+          favorite_food?: string | null
+          future_dream?: string | null
           gender?: string
           hair_color?: string
           hairstyle?: string | null
@@ -283,6 +289,8 @@ export type Database = {
       stories: {
         Row: {
           character_id: string
+          character_portrait_url: string | null
+          cover_image_url: string | null
           created_at: string
           creation_mode: string
           dedication_text: string | null
@@ -303,6 +311,8 @@ export type Database = {
         }
         Insert: {
           character_id: string
+          character_portrait_url?: string | null
+          cover_image_url?: string | null
           created_at?: string
           creation_mode: string
           dedication_text?: string | null
@@ -323,6 +333,8 @@ export type Database = {
         }
         Update: {
           character_id?: string
+          character_portrait_url?: string | null
+          cover_image_url?: string | null
           created_at?: string
           creation_mode?: string
           dedication_text?: string | null

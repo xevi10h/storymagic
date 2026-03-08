@@ -88,6 +88,11 @@ function getTemplateGradient(templateId: string): string {
     space: "from-indigo-900 to-slate-900",
     forest: "from-emerald-800 to-green-900",
     superhero: "from-red-700 to-rose-900",
+    dinosaurs: "from-green-900 to-emerald-800",
+    castle: "from-purple-900 to-violet-800",
+    safari: "from-amber-800 to-orange-700",
+    inventor: "from-cyan-800 to-blue-700",
+    candy: "from-pink-700 to-rose-600",
     pirates: "from-blue-800 to-cyan-900",
     chef: "from-orange-600 to-amber-800",
   };

@@ -16,7 +16,7 @@ export async function GET() {
   const [storiesResult, ordersResult, charactersResult] = await Promise.all([
     supabase
       .from("stories")
-      .select("id, title, template_id, creation_mode, status, pdf_url, created_at, characters(name, gender, age)")
+      .select("id, title, template_id, creation_mode, status, pdf_url, created_at, generated_text, characters(name, gender, age)")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false }),
     supabase
@@ -26,7 +26,10 @@ export async function GET() {
       .order("created_at", { ascending: false }),
     supabase
       .from("characters")
-      .select("id, name, gender, age, hair_color, skin_tone, hairstyle, interests, created_at")
+      .select(`
+        id, name, gender, age, hair_color, skin_tone, hairstyle, interests, avatar_url, created_at,
+        stories!character_id(id, title, status, template_id, generated_text)
+      `)
       .eq("user_id", user.id)
       .order("updated_at", { ascending: false }),
   ]);

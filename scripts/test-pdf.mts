@@ -1,5 +1,5 @@
 /**
- * Test script — renders a full 24-page PDF book with mock 12-scene data.
+ * Test script — renders a full 32-page PDF book with mock 12-scene data.
  * Run: npx tsx --tsconfig tsconfig.json scripts/test-pdf.mts
  * Output: scripts/test-output.pdf
  */
@@ -55,82 +55,103 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const mockStory = {
   bookTitle: "Lucía y el Bosque de las Estrellas",
+  titleOptions: [
+    "Lucía y el Bosque de las Estrellas",
+    "La gran aventura de Lucía",
+    "Lucía y el misterio del bosque",
+    "La niña que tocó las estrellas",
+  ],
+  coverImagePrompt: "A 6-year-old girl with brown hair in a magical glowing forest, hero pose, cinematic wide shot, children's book cover art, no text.",
   dedication:
     "Para mi pequeña Lucía, que cada noche mira las estrellas desde su ventana y sueña con tocarlas. Este cuento es tuyo, como lo es cada estrella que brilla en el cielo.",
   finalMessage:
     "Y así, Lucía descubrió que la magia más poderosa no estaba en las estrellas del cielo, sino en el brillo de su propio corazón valiente.",
+  synopsis:
+    "Lucía sueña con tocar las estrellas cada noche. Un día extraordinario le revelará que la magia más grande siempre estuvo dentro de ella. ¿Te atreves a descubrirla?",
   scenes: [
     {
       sceneNumber: 1,
       title: "Una noche especial",
       text: "Lucía vivía en un pequeño pueblo rodeado de montañas, donde las noches eran tan oscuras que las estrellas parecían diamantes esparcidos sobre terciopelo negro. Cada noche, antes de dormir, se asomaba a su ventana y les susurraba secretos.",
       imagePrompt: "",
+      type: "scene" as const,
     },
     {
       sceneNumber: 2,
       title: "La estrella fugaz",
       text: "Una noche, una estrella fugaz cruzó el cielo dejando una estela dorada que no se desvanecía. La luz descendió lentamente hasta posarse entre los árboles del bosque cercano, iluminando las copas con un resplandor mágico.",
       imagePrompt: "",
+      type: "scene" as const,
     },
     {
       sceneNumber: 3,
       title: "El camino de luciérnagas",
       text: "Sin pensarlo dos veces, Lucía se puso sus botas de lluvia y salió al jardín. Un sendero de luciérnagas apareció ante ella, como si las pequeñas luces la invitaran a seguirlas hacia el corazón del bosque encantado.",
       imagePrompt: "",
+      type: "scene" as const,
     },
     {
       sceneNumber: 4,
       title: "El Guardián del Bosque",
       text: "En un claro bañado de luz de luna, Lucía encontró un enorme ciervo con astas que brillaban como constelaciones. «Bienvenida, pequeña soñadora», dijo con voz profunda y amable. «Te estábamos esperando.»",
       imagePrompt: "",
+      type: "scene" as const,
     },
     {
       sceneNumber: 5,
       title: "Zuri, la zorra de las estrellas",
       text: "De entre los helechos emergió una pequeña zorra de pelaje azul medianoche, con manchas que centelleaban como estrellas. «¡Me llamo Zuri!», exclamó dando vueltas. «¡Yo seré tu guía en esta aventura!»",
       imagePrompt: "",
+      type: "scene" as const,
     },
     {
       sceneNumber: 6,
       title: "El jardín de cristal",
       text: "Zuri condujo a Lucía a un jardín secreto donde las flores eran de cristal transparente y cada pétalo contenía una pequeña galaxia en su interior. Cuando Lucía tocó una, una melodía dulce llenó el aire y las flores comenzaron a brillar con más intensidad.",
       imagePrompt: "",
+      type: "scene" as const,
     },
     {
       sceneNumber: 7,
       title: "El puente de arcoíris",
       text: "Para cruzar el Río de los Reflejos, Lucía tuvo que construir un puente con notas musicales que flotaban en el aire. Cantó la canción que su abuela siempre le cantaba, y las notas se solidificaron formando un camino brillante.",
       imagePrompt: "",
+      type: "scene" as const,
     },
     {
       sceneNumber: 8,
       title: "Secretos bajo la luna",
       text: "Sentadas en una roca junto al río, Lucía y Zuri compartieron sus sueños más profundos. «Yo sueño con tener alas», confesó Zuri. «Yo sueño con que mi abuela pueda ver las estrellas otra vez», susurró Lucía con los ojos brillantes.",
       imagePrompt: "",
+      type: "scene" as const,
     },
     {
       sceneNumber: 9,
       title: "La Sombra Oscura",
       text: "De pronto, una sombra inmensa cubrió el bosque. El Devorador de Luz, una criatura hecha de oscuridad pura, había despertado y estaba apagando las estrellas una a una. El bosque comenzó a sumirse en la negrura más absoluta.",
       imagePrompt: "",
+      type: "scene" as const,
     },
     {
       sceneNumber: 10,
       title: "Todo está perdido",
       text: "La última estrella del bosque se apagó. En la oscuridad total, Lucía no podía ver ni sus propias manos. El miedo se apoderó de ella y las lágrimas comenzaron a rodar por sus mejillas. «No puedo hacerlo», gimió. «Soy solo una niña.»",
       imagePrompt: "",
+      type: "scene" as const,
     },
     {
       sceneNumber: 11,
       title: "La luz interior",
       text: "Entonces Zuri presionó su nariz fría contra la mano de Lucía. «Las estrellas no están fuera, Lucía. Están dentro de ti.» Lucía cerró los ojos, pensó en su abuela, en su familia, en todo lo que amaba, y un resplandor dorado nació de su corazón.",
       imagePrompt: "",
+      type: "scene" as const,
     },
     {
       sceneNumber: 12,
       title: "De vuelta a casa",
       text: "Las estrellas regresaron al cielo, más brillantes que nunca. Lucía volvió a su cama con una pequeña estrella de cristal que Zuri le regaló como recuerdo. Desde entonces, cada vez que mira al cielo nocturno, sabe que el bosque la recuerda y que la verdadera magia vive en su corazón.",
       imagePrompt: "",
+      type: "scene" as const,
     },
   ],
 };
@@ -178,6 +199,8 @@ async function buildMockInput(): Promise<BookPdfInput> {
     characterAge: 6,
     dedicationText: mockStory.dedication,
     senderName: "Mamá y Papá",
+    storyId: "test-00000000-0000-0000-0000-000000000000",
+    coverImageUrl: null,
     illustrations,
   };
 }

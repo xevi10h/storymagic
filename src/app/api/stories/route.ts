@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { z } from "zod";
 import type { Json } from "@/lib/database.types";
 
-const VALID_TEMPLATE_IDS = ["space", "forest", "superhero", "pirates", "chef"] as const;
+const VALID_TEMPLATE_IDS = ["space", "forest", "superhero", "pirates", "chef", "dinosaurs", "castle", "safari", "inventor", "candy"] as const;
 const VALID_MODES = ["solo", "juntos"] as const;
 const VALID_GENDERS = ["boy", "girl", "neutral"] as const;
 
@@ -13,12 +13,15 @@ const storyInputSchema = z.object({
     gender: z.enum(VALID_GENDERS),
     age: z.number().int().min(1).max(12),
     hairColor: z.string().max(20).optional(),
+    eyeColor: z.string().max(20).optional(),
     skinTone: z.string().max(20).optional(),
     hairstyle: z.string().max(30).optional(),
     interests: z.array(z.string().max(50)).max(10).optional(),
     city: z.string().max(100).optional(),
     specialTrait: z.string().max(300).optional(),
     favoriteCompanion: z.string().max(200).optional(),
+    favoriteFood: z.string().max(100).optional(),
+    futureDream: z.string().max(150).optional(),
   }),
   templateId: z.enum(VALID_TEMPLATE_IDS),
   creationMode: z.enum(VALID_MODES),
@@ -26,6 +29,8 @@ const storyInputSchema = z.object({
   dedication: z.string().max(500).optional(),
   senderName: z.string().max(100).optional(),
   ending: z.string().max(100).optional(),
+  portraitUrl: z.string().url().max(2000).nullish(),
+  recraftStyleId: z.string().max(100).nullish(),
 });
 
 export async function POST(request: Request) {
@@ -55,7 +60,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const { character, templateId, creationMode, decisions, dedication, senderName, ending } = parsed.data;
+  const { character, templateId, creationMode, decisions, dedication, senderName, ending, portraitUrl, recraftStyleId } = parsed.data;
 
   // 1. Upsert character (reuse if same name + user)
   const { data: existingCharacter } = await supabase
@@ -74,6 +79,9 @@ export async function POST(request: Request) {
     city: character.city || null,
     special_trait: character.specialTrait || null,
     favorite_companion: character.favoriteCompanion || null,
+    favorite_food: character.favoriteFood || null,
+    future_dream: character.futureDream || null,
+    avatar_url: portraitUrl || null,
   };
 
   if (existingCharacter) {
@@ -84,6 +92,7 @@ export async function POST(request: Request) {
         gender: character.gender as string,
         age: character.age,
         hair_color: character.hairColor || undefined,
+        eye_color: character.eyeColor || undefined,
         skin_tone: character.skinTone || undefined,
         ...optionalFields,
       })
@@ -106,6 +115,7 @@ export async function POST(request: Request) {
         gender: character.gender as string,
         age: character.age,
         hair_color: character.hairColor || "brown",
+        eye_color: character.eyeColor || null,
         skin_tone: character.skinTone || "medium",
         ...optionalFields,
       })
@@ -133,6 +143,7 @@ export async function POST(request: Request) {
       dedication_text: dedication || null,
       sender_name: senderName || null,
       ending_choice: ending || null,
+      recraft_style_id: recraftStyleId || null,
       status: "draft",
     })
     .select("id")

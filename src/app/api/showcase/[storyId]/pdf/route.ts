@@ -67,6 +67,8 @@ export async function GET(
     characterAge: character.age,
     dedicationText: story.dedication_text,
     senderName: story.sender_name,
+    storyId,
+    coverImageUrl: story.cover_image_url ?? null,
     illustrations,
   };
 

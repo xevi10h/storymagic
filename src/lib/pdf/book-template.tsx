@@ -1,40 +1,46 @@
 /**
  * PDF Book Template — Editorial children's book layout
  *
- * 24-page structure with 12 scenes across 5 layout types:
- * (24 pages = multiple of 4, required for print binding)
+ * 32-page structure: 3 header + 24 content (12 slots × 2) + 5 footer.
+ * Content slots can be "scene" (full narrative) or "bridge" (atmospheric transition).
+ * The mix depends on the child's age (managed by story-generator.ts).
  *
- * Page  Type              Content
- * ────  ────────────────  ────────────────────────────────
- *  1    COVER             Front cover (themed gradient + title)
- *  2    ENDPAPER          Decorative pattern
- *  3    TITLE             "meapica presents..." + book title
- *  4    DEDICATION        Dedication text in ornamental frame
- *  5    FULL_BLEED        Scene 1 — Opening (dramatic first impression)
- *  6    TEXT_PAGE          Scene 1 text
- *  7    CLASSIC           Scene 2 — The spark
- *  8    SPLIT             Scene 3 — Crossing the threshold
- *  9    VIGNETTE          Scene 4 — First encounter (intimate)
- * 10    CLASSIC           Scene 5 — Making an ally
- * 11    SPLIT             Scene 6 — Exploration (discovery)
- * 12    FULL_BLEED        Scene 7 — First test (dramatic mid-point)
- * 13    TEXT_PAGE          Scene 7 text
- * 14    VIGNETTE          Scene 8 — Deepening bonds (quiet moment)
- * 15    CLASSIC           Scene 9 — The great challenge
- * 16    FULL_BLEED        Scene 10 — Darkest moment (maximum impact)
- * 17    TEXT_PAGE          Scene 10 text
- * 18    SPLIT             Scene 11 — Breakthrough (triumph)
- * 19    VIGNETTE          Scene 12 — Homecoming (intimate resolution)
- * 20    FINAL             Final message + "Fin"
- * 21    ABOUT_READER      "About the protagonist" keepsake page
- * 22    COLOPHON          Credits
- * 23    ENDPAPER          Back endpapers
- * 24    BACK_COVER        Back cover
+ * Page map:
+ *  1    COVER               Front cover (themed gradient + title)
+ *  2    ENDPAPER            Decorative pattern (front)
+ *  3    TITLE_DEDICATION    Title + dedication merged into one page
+ *  4-27 SCENES              12 content slots × 2 pages each (spreads)
+ *  28   FINAL               Final message + "Fin"
+ *  29   ABOUT_READER        "About the protagonist" keepsake page
+ *  30   COLOPHON            Colophon / credits
+ *  31   ENDPAPER            Back endpapers
+ *  32   BACK_COVER          Back cover
+ *
+ * Spread types for SCENES (cycling: galeria → pergamino → ventana):
+ *
+ * GALERIA:
+ *   Page A: Full-bleed illustration + badge + gradient title band at bottom
+ *   Page B: Paper white + FrameBorder + pill / title / OrnamentalDivider / text / ornament
+ *
+ * PERGAMINO:
+ *   Page A: accentLight bg + FrameBorder + scene number / title / accent rule / text / WavyLine
+ *   Page B: Full-bleed illustration + badge
+ *
+ * VENTANA:
+ *   Page A: Paper white + FrameBorder + drop cap row + rest of text
+ *   Page B: Full-bleed illustration + badge + title overlay at bottom
+ *
+ * Spread type for BRIDGES (atmospheric transitions):
+ *
+ * PUENTE:
+ *   Page A: Full-bleed atmospheric illustration (no text overlay, no badge)
+ *   Page B: Colored background + single large evocative sentence centered + ornaments
  *
  * IMPORTANT @react-pdf constraints:
  * - SVGs with full-page dimensions cause page overflow → use View-based borders
- * - Images with position:absolute at 100% size overflow → use flow layout
+ * - Images with position:absolute at 100% size overflow → use flow layout with fixed dimensions
  * - All decorative SVGs must be small (< 150pt) to avoid wrap warnings
+ * - Drop caps use flexDirection:"row" (not float) to avoid layout engine issues
  */
 
 import React, { createElement } from "react";
@@ -48,7 +54,7 @@ import {
   StyleSheet,
   renderToBuffer,
 } from "@react-pdf/renderer";
-import { BOOK, COLORS, TYPE, FONTS, getTheme, type TemplateTheme } from "./theme";
+import { BOOK, COLORS, TYPE, FONTS, getTheme, getPdfTextConfig, type TemplateTheme, type PdfTextConfig } from "./theme";
 import { OrnamentalDivider, StarCluster, WavyLine } from "./decorations";
 import type { GeneratedScene, GeneratedStory } from "@/lib/ai/story-generator";
 
@@ -98,36 +104,30 @@ export interface BookPdfInput {
   characterAge: number;
   dedicationText: string | null;
   senderName: string | null;
+  storyId: string;
+  coverImageUrl: string | null;
   illustrations: { sceneNumber: number; imageUrl: string | null }[];
 }
 
-// ── Layout assignment ──────────────────────────────────────────────────────
-// Deliberately mapped to narrative arc beats for visual rhythm:
-//   - FULL_BLEED (2 pages): dramatic moments → scenes 1, 7, 10
-//   - CLASSIC (1 page): standard narration → scenes 2, 5, 9
-//   - SPLIT (1 page): transitions/discovery → scenes 3, 6, 11
-//   - VIGNETTE (1 page): intimate/quiet → scenes 4, 8, 12
-// No two consecutive scenes share the same layout type.
+// ── Spread assignment ──────────────────────────────────────────────────────
+// Each content slot (scene or bridge) produces exactly 2 pages.
+// Scenes cycle through galeria → pergamino → ventana.
+// Bridges always use the "puente" spread type.
 
-type SceneLayout = "full_bleed" | "classic" | "split" | "vignette";
+type SpreadType = "galeria" | "pergamino" | "ventana" | "puente";
 
-const SCENE_LAYOUTS: SceneLayout[] = [
-  "full_bleed", // Scene 1  — Opening
-  "classic",    // Scene 2  — The spark
-  "split",      // Scene 3  — Crossing the threshold
-  "vignette",   // Scene 4  — First encounter
-  "classic",    // Scene 5  — Making an ally
-  "split",      // Scene 6  — Exploration
-  "full_bleed", // Scene 7  — First test (mid-point)
-  "vignette",   // Scene 8  — Deepening bonds
-  "classic",    // Scene 9  — The great challenge
-  "full_bleed", // Scene 10 — Darkest moment
-  "split",      // Scene 11 — Breakthrough
-  "vignette",   // Scene 12 — Homecoming
+const SCENE_CYCLE: ("galeria" | "pergamino" | "ventana")[] = [
+  "galeria", "pergamino", "ventana",
 ];
 
-function getSceneLayout(sceneIndex: number): SceneLayout {
-  return SCENE_LAYOUTS[sceneIndex] ?? "classic";
+/**
+ * Returns the spread type for a given slot.
+ * Bridges → always "puente".
+ * Scenes → cycle through galeria/pergamino/ventana based on scene index.
+ */
+function getSpreadType(scene: GeneratedScene, sceneOnlyIndex: number): SpreadType {
+  if (scene.type === "bridge") return "puente";
+  return SCENE_CYCLE[sceneOnlyIndex % SCENE_CYCLE.length];
 }
 
 // ── View-based frame border ────────────────────────────────────────────────
@@ -152,7 +152,6 @@ function FrameBorder({ color, inset }: { color: string; inset: number }) {
 }
 
 // ── Small corner dots (replaces CornerFlourish SVG) ────────────────────────
-// Simple dot decorations that don't cause SVG overflow
 
 function CornerDot({ color, top, left, right, bottom }: {
   color: string;
@@ -196,32 +195,6 @@ const s = StyleSheet.create({
     padding: BOOK.contentMargin + 10,
   },
 
-  // Text page: text-only companion to full_bleed
-  textPage: {
-    backgroundColor: COLORS.paper,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: BOOK.contentMargin + 15,
-  },
-  textPageInner: { alignItems: "center", maxWidth: BOOK.trimWidth * 0.78 },
-
-  // CLASSIC: image top, text bottom
-  classicTextArea: {
-    flex: 1,
-    padding: BOOK.contentMargin,
-    paddingTop: 16,
-    justifyContent: "flex-start",
-    backgroundColor: COLORS.paper,
-  },
-
-  // VIGNETTE: text with small centered illustration
-  vignettePage: {
-    backgroundColor: COLORS.paper,
-    padding: BOOK.contentMargin,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
   // Page number
   pageNumberWrap: {
     position: "absolute",
@@ -246,115 +219,337 @@ function PageNumber({ num, color }: { num: number; color?: string }) {
   );
 }
 
+// ── Full-bleed illustration helper ─────────────────────────────────────────
+// Used in multiple spreads. Image fills the page via flow layout.
+
+function FullBleedImage({ imageUrl, sceneNumber }: { imageUrl: string | null; sceneNumber: number }) {
+  if (imageUrl) {
+    return (
+      <View style={{ width: BOOK.pageWidth, height: BOOK.pageHeight }}>
+        <Image
+          src={imageUrl}
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        />
+      </View>
+    );
+  }
+  return (
+    <View style={{ width: BOOK.pageWidth, height: BOOK.pageHeight, backgroundColor: COLORS.cream, justifyContent: "center", alignItems: "center" }}>
+      <Text style={{ fontFamily: FONTS.body, fontSize: 11, color: COLORS.textMuted }}>
+        Scene {sceneNumber}
+      </Text>
+    </View>
+  );
+}
+
+// ── Scene number pill ──────────────────────────────────────────────────────
+
+function SceneBadge({ num, top, left, right, color }: {
+  num: number; top: number; left?: number; right?: number; color: string;
+}) {
+  return (
+    <View style={{
+      position: "absolute",
+      top,
+      left,
+      right,
+      width: 28,
+      height: 28,
+      borderRadius: 14,
+      backgroundColor: color,
+      justifyContent: "center",
+      alignItems: "center",
+    }}>
+      <Text style={{ fontFamily: FONTS.display, fontSize: 11, color: "#ffffff", fontWeight: 600 }}>{num}</Text>
+    </View>
+  );
+}
+
 // ── Document ───────────────────────────────────────────────────────────────
 
 export function BookPdf({ input }: { input: BookPdfInput }) {
   const theme = getTheme(input.templateId);
   const { story } = input;
+  const tc = getPdfTextConfig(input.characterAge);
 
-  // Build scene pages with their assigned layouts
+  // Build content pages — each slot (scene or bridge) produces exactly 2 pages
   const scenePages: React.JSX.Element[] = [];
-  let pageCounter = 5; // First scene page starts at 5
+  let pageCounter = 4; // First content page starts at page 4 (after 3 header pages)
+  let sceneOnlyIndex = 0; // Counter for scenes only (used for spread cycling)
 
-  story.scenes.forEach((scene, i) => {
-    const layout = getSceneLayout(i);
+  story.scenes.forEach((scene) => {
     const illustration = input.illustrations.find(
       (ill) => ill.sceneNumber === scene.sceneNumber,
     );
     const imageUrl = illustration?.imageUrl ?? null;
+    const spreadType = getSpreadType(scene, sceneOnlyIndex);
 
-    if (layout === "full_bleed") {
+    if (spreadType === "puente") {
       scenePages.push(
-        <FullBleedPage
-          key={`fb-${scene.sceneNumber}`}
-          theme={theme}
-          scene={scene}
-          imageUrl={imageUrl}
-          pageNumber={pageCounter}
-        />,
+        <SpreadPuenteA key={`pu-a-${scene.sceneNumber}`} theme={theme} scene={scene} imageUrl={imageUrl} pageNumber={pageCounter} />,
       );
       pageCounter++;
       scenePages.push(
-        <TextOnlyPage
-          key={`tp-${scene.sceneNumber}`}
-          theme={theme}
-          scene={scene}
-          pageNumber={pageCounter}
-        />,
+        <SpreadPuenteB key={`pu-b-${scene.sceneNumber}`} theme={theme} scene={scene} pageNumber={pageCounter} tc={tc} />,
       );
       pageCounter++;
-    } else if (layout === "classic") {
+    } else if (spreadType === "galeria") {
       scenePages.push(
-        <ClassicPage
-          key={`cl-${scene.sceneNumber}`}
-          theme={theme}
-          scene={scene}
-          imageUrl={imageUrl}
-          pageNumber={pageCounter}
-        />,
+        <SpreadGaleriaA key={`ga-a-${scene.sceneNumber}`} theme={theme} scene={scene} imageUrl={imageUrl} pageNumber={pageCounter} />,
       );
       pageCounter++;
-    } else if (layout === "split") {
       scenePages.push(
-        <SplitPage
-          key={`sp-${scene.sceneNumber}`}
-          theme={theme}
-          scene={scene}
-          imageUrl={imageUrl}
-          pageNumber={pageCounter}
-        />,
+        <SpreadGaleriaB key={`ga-b-${scene.sceneNumber}`} theme={theme} scene={scene} pageNumber={pageCounter} tc={tc} />,
       );
       pageCounter++;
+      sceneOnlyIndex++;
+    } else if (spreadType === "pergamino") {
+      scenePages.push(
+        <SpreadPergaminoA key={`pe-a-${scene.sceneNumber}`} theme={theme} scene={scene} pageNumber={pageCounter} tc={tc} />,
+      );
+      pageCounter++;
+      scenePages.push(
+        <SpreadPergaminoB key={`pe-b-${scene.sceneNumber}`} theme={theme} scene={scene} imageUrl={imageUrl} pageNumber={pageCounter} />,
+      );
+      pageCounter++;
+      sceneOnlyIndex++;
     } else {
+      // ventana
       scenePages.push(
-        <VignettePage
-          key={`vi-${scene.sceneNumber}`}
-          theme={theme}
-          scene={scene}
-          imageUrl={imageUrl}
-          pageNumber={pageCounter}
-        />,
+        <SpreadVentanaA key={`ve-a-${scene.sceneNumber}`} theme={theme} scene={scene} pageNumber={pageCounter} tc={tc} />,
       );
       pageCounter++;
+      scenePages.push(
+        <SpreadVentanaB key={`ve-b-${scene.sceneNumber}`} theme={theme} scene={scene} imageUrl={imageUrl} pageNumber={pageCounter} />,
+      );
+      pageCounter++;
+      sceneOnlyIndex++;
     }
   });
 
   return (
     <Document
       title={story.bookTitle}
-      author="meapica"
+      author="Meapica"
       subject={`Cuento personalizado para ${input.characterName}`}
-      creator="meapica — meapica.com"
+      creator="Meapica — meapica.com"
     >
       {/* 1. Cover */}
-      <CoverPage theme={theme} title={story.bookTitle} characterName={input.characterName} />
-      {/* 2. Endpapers */}
+      <CoverPage theme={theme} title={story.bookTitle} characterName={input.characterName} coverImageUrl={input.coverImageUrl} />
+      {/* 2. Front Endpapers */}
       <EndpapersPage theme={theme} />
-      {/* 3. Title */}
-      <TitlePage theme={theme} title={story.bookTitle} characterName={input.characterName} />
-      {/* 4. Dedication */}
-      <DedicationPage theme={theme} text={story.dedication} senderName={input.senderName} />
-      {/* 5-20. Scenes */}
+      {/* 3. Title + Dedication (merged) */}
+      <TitleDedicationPage theme={theme} title={story.bookTitle} characterName={input.characterName} dedicationText={story.dedication} senderName={input.senderName} />
+      {/* 4-27. Scenes (12 × 2 pages each) */}
       {scenePages}
-      {/* 20. Final message */}
+      {/* 28. Final message */}
       <FinalPage theme={theme} message={story.finalMessage} characterName={input.characterName} />
-      {/* 21. About the reader — keepsake page */}
+      {/* 29. About the reader — keepsake page */}
       <AboutReaderPage theme={theme} characterName={input.characterName} characterAge={input.characterAge} />
-      {/* 22. Colophon */}
-      <ColophonPage theme={theme} characterName={input.characterName} />
-      {/* 23. Endpapers */}
+      {/* 30. Colophon */}
+      <ColophonPage theme={theme} storyId={input.storyId} />
+      {/* 31. Back Endpapers */}
       <EndpapersPage theme={theme} />
-      {/* 24. Back cover */}
+      {/* 32. Back cover */}
       <BackCoverPage theme={theme} characterName={input.characterName} />
     </Document>
   );
 }
 
-// ── Render helper ─────────────────────────────────────────────────────────
+// ── Render helpers ────────────────────────────────────────────────────────
 
+/** Full 32-page PDF — used for user-facing download */
 export async function renderBookPdf(input: BookPdfInput): Promise<Buffer> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const element = createElement(BookPdf as any, { input });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return renderToBuffer(element as any);
+}
+
+/**
+ * Interior-only PDF for Gelato — pages 2–31 (30 inner pages).
+ * Submitted as `type: "inside"` in the Gelato order.
+ * Excludes the front cover (page 1) and back cover (page 32) which go
+ * in the cover spread file instead.
+ */
+export function InteriorOnlyPdf({ input }: { input: BookPdfInput }) {
+  const theme = getTheme(input.templateId);
+  const { story } = input;
+  const tc = getPdfTextConfig(input.characterAge);
+
+  const scenePages: React.JSX.Element[] = [];
+  let pageCounter = 4;
+  let sceneOnlyIndex = 0;
+
+  story.scenes.forEach((scene) => {
+    const illustration = input.illustrations.find(
+      (ill) => ill.sceneNumber === scene.sceneNumber,
+    );
+    const imageUrl = illustration?.imageUrl ?? null;
+    const spreadType = getSpreadType(scene, sceneOnlyIndex);
+
+    if (spreadType === "puente") {
+      scenePages.push(<SpreadPuenteA key={`pu-a-${scene.sceneNumber}`} theme={theme} scene={scene} imageUrl={imageUrl} pageNumber={pageCounter} />);
+      pageCounter++;
+      scenePages.push(<SpreadPuenteB key={`pu-b-${scene.sceneNumber}`} theme={theme} scene={scene} pageNumber={pageCounter} tc={tc} />);
+      pageCounter++;
+    } else if (spreadType === "galeria") {
+      scenePages.push(<SpreadGaleriaA key={`ga-a-${scene.sceneNumber}`} theme={theme} scene={scene} imageUrl={imageUrl} pageNumber={pageCounter} />);
+      pageCounter++;
+      scenePages.push(<SpreadGaleriaB key={`ga-b-${scene.sceneNumber}`} theme={theme} scene={scene} pageNumber={pageCounter} tc={tc} />);
+      pageCounter++;
+      sceneOnlyIndex++;
+    } else if (spreadType === "pergamino") {
+      scenePages.push(<SpreadPergaminoA key={`pe-a-${scene.sceneNumber}`} theme={theme} scene={scene} pageNumber={pageCounter} tc={tc} />);
+      pageCounter++;
+      scenePages.push(<SpreadPergaminoB key={`pe-b-${scene.sceneNumber}`} theme={theme} scene={scene} imageUrl={imageUrl} pageNumber={pageCounter} />);
+      pageCounter++;
+      sceneOnlyIndex++;
+    } else {
+      scenePages.push(<SpreadVentanaA key={`ve-a-${scene.sceneNumber}`} theme={theme} scene={scene} pageNumber={pageCounter} tc={tc} />);
+      pageCounter++;
+      scenePages.push(<SpreadVentanaB key={`ve-b-${scene.sceneNumber}`} theme={theme} scene={scene} imageUrl={imageUrl} pageNumber={pageCounter} />);
+      pageCounter++;
+      sceneOnlyIndex++;
+    }
+  });
+
+  return (
+    <Document creator="Meapica — meapica.com">
+      {/* Page 2 — Front Endpapers */}
+      <EndpapersPage theme={theme} />
+      {/* Page 3 — Title + Dedication */}
+      <TitleDedicationPage theme={theme} title={story.bookTitle} characterName={input.characterName} dedicationText={story.dedication} senderName={input.senderName} />
+      {/* Pages 4–27 — Scenes (12 × 2 pages) */}
+      {scenePages}
+      {/* Page 28 — Final message */}
+      <FinalPage theme={theme} message={story.finalMessage} characterName={input.characterName} />
+      {/* Page 29 — About the reader */}
+      <AboutReaderPage theme={theme} characterName={input.characterName} characterAge={input.characterAge} />
+      {/* Page 30 — Colophon */}
+      <ColophonPage theme={theme} storyId={input.storyId} />
+      {/* Page 31 — Back Endpapers */}
+      <EndpapersPage theme={theme} />
+    </Document>
+  );
+}
+
+export async function renderInteriorPdf(input: BookPdfInput): Promise<Buffer> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const element = createElement(InteriorOnlyPdf as any, { input });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return renderToBuffer(element as any);
+}
+
+/**
+ * Cover spread PDF for Gelato — one wide page containing:
+ *   [ back cover ] [ spine strip ] [ front cover ]
+ * Submitted as `type: "default"` in the Gelato order.
+ *
+ * @param coverWidthPt  Total spread width in PDF points (from Gelato cover-dimensions API)
+ * @param coverHeightPt Total spread height in PDF points (from Gelato cover-dimensions API)
+ * @param spineWidthPt  Spine width in PDF points
+ */
+export function CoverSpreadPdf({
+  input,
+  coverWidthPt,
+  coverHeightPt,
+  spineWidthPt,
+}: {
+  input: BookPdfInput;
+  coverWidthPt: number;
+  coverHeightPt: number;
+  spineWidthPt: number;
+}) {
+  const theme = getTheme(input.templateId);
+  const { story } = input;
+
+  // Each cover panel = (totalWidth - spine) / 2
+  const panelWidth = (coverWidthPt - spineWidthPt) / 2;
+
+  return (
+    <Document creator="Meapica — meapica.com">
+      <Page size={[coverWidthPt, coverHeightPt]} style={{ flexDirection: "row" }}>
+
+        {/* ── Back cover (left panel) ── */}
+        <View style={{ width: panelWidth, height: coverHeightPt, backgroundColor: theme.coverGradientStart, justifyContent: "center", alignItems: "center", padding: BOOK.contentMargin + 20 }}>
+          <Text style={{ fontFamily: FONTS.body, fontSize: 11, color: "#ffffffbb", textAlign: "center", lineHeight: 1.7 }}>
+            Esta historia fue creada especialmente para
+          </Text>
+          <Text style={{ fontFamily: FONTS.display, fontSize: 20, fontWeight: 600, color: "#ffffff", marginTop: 8, textAlign: "center" }}>
+            {input.characterName}
+          </Text>
+          <View style={{ width: 40, height: 1, backgroundColor: "#ffffff33", marginVertical: 14 }} />
+          <Text style={{ fontFamily: FONTS.display, fontSize: 9, color: "#ffffff88", letterSpacing: 3 }}>
+            MEAPICA
+          </Text>
+          <Text style={{ fontFamily: FONTS.body, fontSize: 7, color: "#ffffff55", marginTop: 4, letterSpacing: 1 }}>
+            meapica.com
+          </Text>
+          {/* Colophon */}
+          <View style={{ position: "absolute", bottom: BOOK.contentMargin + 10, left: BOOK.contentMargin, right: BOOK.contentMargin, alignItems: "center" }}>
+            <Text style={{ fontFamily: FONTS.body, fontSize: 6, color: "#ffffff44", textAlign: "center", lineHeight: 1.7 }}>
+              Texto e ilustraciones creados exclusivamente para este libro.{"\n"}
+              Dise{"\u00F1"}o editorial por Meapica — meapica.com
+            </Text>
+          </View>
+        </View>
+
+        {/* ── Spine ── */}
+        <View style={{ width: spineWidthPt, height: coverHeightPt, backgroundColor: theme.coverGradientEnd, justifyContent: "center", alignItems: "center" }}>
+          {/* Rotate spine text 90° via nested flex trick */}
+          <View style={{ width: coverHeightPt * 0.6, height: spineWidthPt, justifyContent: "space-between", alignItems: "center", flexDirection: "row", transform: "rotate(-90deg)" }}>
+            <Text style={{ fontFamily: FONTS.display, fontSize: 7, color: "#ffffffaa", letterSpacing: 1 }}>
+              MEAPICA
+            </Text>
+            <Text style={{ fontFamily: FONTS.display, fontSize: 8, fontWeight: 600, color: "#ffffff", maxWidth: coverHeightPt * 0.4 }}>
+              {story.bookTitle}
+            </Text>
+          </View>
+        </View>
+
+        {/* ── Front cover (right panel) ── */}
+        <View style={{ width: panelWidth, height: coverHeightPt, backgroundColor: theme.coverGradientStart, justifyContent: "center", alignItems: "center", padding: BOOK.contentMargin + 10 }}>
+          <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: theme.coverGradientEnd, opacity: 0.4 }} />
+          <CornerDot color="#ffffff" top={BOOK.contentMargin} right={BOOK.contentMargin} />
+          <CornerDot color="#ffffff" bottom={BOOK.contentMargin + 30} left={BOOK.contentMargin} />
+          <View style={{ alignItems: "center", maxWidth: panelWidth * 0.75 }}>
+            <Text style={{ fontFamily: FONTS.display, fontSize: 10, color: "#ffffff88", letterSpacing: 3 }}>
+              MEAPICA
+            </Text>
+            <View style={{ width: 40, height: 1, backgroundColor: "#ffffff44", marginVertical: 16 }} />
+            <Text style={{ fontFamily: FONTS.display, fontSize: 26, fontWeight: 600, color: "#ffffff", textAlign: "center", lineHeight: 1.3 }}>
+              {story.bookTitle}
+            </Text>
+            <View style={{ width: 40, height: 1, backgroundColor: "#ffffff44", marginVertical: 16 }} />
+            <Text style={{ fontFamily: FONTS.body, fontSize: 11, color: "#ffffffcc", textAlign: "center" }}>
+              Una historia personalizada para
+            </Text>
+            <Text style={{ fontFamily: FONTS.display, fontSize: 20, fontWeight: 600, color: "#ffffff", marginTop: 6, textAlign: "center" }}>
+              {input.characterName}
+            </Text>
+          </View>
+        </View>
+
+      </Page>
+    </Document>
+  );
+}
+
+export async function renderCoverSpreadPdf(
+  input: BookPdfInput,
+  coverWidthMm: number,
+  coverHeightMm: number,
+  spineWidthMm: number,
+): Promise<Buffer> {
+  const MM_TO_PT = 2.83465;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const element = createElement(CoverSpreadPdf as any, {
+    input,
+    coverWidthPt: coverWidthMm * MM_TO_PT,
+    coverHeightPt: coverHeightMm * MM_TO_PT,
+    spineWidthPt: spineWidthMm * MM_TO_PT,
+  });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return renderToBuffer(element as any);
 }
@@ -365,12 +560,22 @@ export async function renderBookPdf(input: BookPdfInput): Promise<Buffer> {
 
 // ── Cover Page ──────────────────────────────────────────────────────────
 
-function CoverPage({ theme, title, characterName }: { theme: TemplateTheme; title: string; characterName: string }) {
+function CoverPage({ theme, title, characterName, coverImageUrl }: { theme: TemplateTheme; title: string; characterName: string; coverImageUrl: string | null }) {
   return (
     <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={s.page}>
-      {/* Background gradient simulation — two overlapping color layers */}
-      <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: theme.coverGradientStart }} />
-      <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: theme.coverGradientEnd, opacity: 0.4 }} />
+      {/* Background: cover illustration or gradient fallback */}
+      {coverImageUrl ? (
+        <>
+          <Image src={coverImageUrl} style={{ position: "absolute", top: 0, left: 0, width: BOOK.pageWidth, height: BOOK.pageHeight, objectFit: "cover" }} />
+          {/* Dark overlay for text readability */}
+          <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "#000000", opacity: 0.35 }} />
+        </>
+      ) : (
+        <>
+          <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: theme.coverGradientStart }} />
+          <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: theme.coverGradientEnd, opacity: 0.4 }} />
+        </>
+      )}
 
       {/* Decorative dots in corners */}
       <CornerDot color="#ffffff" top={BOOK.contentMargin} right={BOOK.contentMargin} />
@@ -445,70 +650,59 @@ function EndpapersPage({ theme }: { theme: TemplateTheme }) {
   );
 }
 
-// ── Title Page ──────────────────────────────────────────────────────────
+// ── Title + Dedication Page (merged) ─────────────────────────────────────
 
-function TitlePage({ theme, title, characterName }: { theme: TemplateTheme; title: string; characterName: string }) {
+function TitleDedicationPage({ theme, title, characterName, dedicationText, senderName }: {
+  theme: TemplateTheme; title: string; characterName: string; dedicationText: string; senderName: string | null;
+}) {
   return (
     <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: COLORS.paper }]}>
-      {/* View-based border instead of SVG PageFrameBorder */}
       <FrameBorder color={theme.ornamentColor} inset={BOOK.contentMargin - 5} />
 
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: BOOK.contentMargin + 20 }}>
-        <Text style={{ fontFamily: FONTS.display, fontSize: 9, color: COLORS.textMuted, letterSpacing: 2, marginBottom: 30 }}>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: BOOK.contentMargin + 15 }}>
+        {/* Brand */}
+        <Text style={{ fontFamily: FONTS.display, fontSize: 9, color: COLORS.textMuted, letterSpacing: 2, marginBottom: 16 }}>
           MEAPICA PRESENTA
         </Text>
 
-        <OrnamentalDivider color={theme.ornamentColor} width={80} />
-
-        <Text style={{ fontFamily: FONTS.display, fontSize: 28, fontWeight: 600, color: theme.titleColor, textAlign: "center", marginTop: 24, lineHeight: 1.3 }}>
+        {/* Title */}
+        <Text style={{ fontFamily: FONTS.display, fontSize: 26, fontWeight: 600, color: theme.titleColor, textAlign: "center", lineHeight: 1.3 }}>
           {title}
         </Text>
 
-        <View style={{ marginTop: 24, marginBottom: 24 }}>
+        <View style={{ marginTop: 10, marginBottom: 10 }}>
           <WavyLine color={theme.ornamentColor} width={60} />
         </View>
 
-        <Text style={{ fontFamily: FONTS.body, fontSize: 12, color: COLORS.textMedium, textAlign: "center" }}>
+        <Text style={{ fontFamily: FONTS.body, fontSize: 11, color: COLORS.textMedium, textAlign: "center" }}>
           Una aventura personalizada para
         </Text>
-        <Text style={{ fontFamily: FONTS.display, fontSize: 20, fontWeight: 600, color: theme.accent, marginTop: 8, textAlign: "center" }}>
+        <Text style={{ fontFamily: FONTS.display, fontSize: 18, fontWeight: 600, color: theme.accent, marginTop: 4, textAlign: "center" }}>
           {characterName}
         </Text>
 
-        <View style={{ marginTop: 40 }}>
-          <StarCluster color={COLORS.gold} size={30} />
+        {/* Heart divider */}
+        <View style={{ flexDirection: "row", alignItems: "center", marginTop: 20, marginBottom: 20, gap: 8 }}>
+          <View style={{ width: 30, height: 0.5, backgroundColor: COLORS.gold, opacity: 0.5 }} />
+          <Text style={{ fontFamily: FONTS.body, fontSize: 10, color: COLORS.gold, opacity: 0.6 }}>{"\u2665"}</Text>
+          <View style={{ width: 30, height: 0.5, backgroundColor: COLORS.gold, opacity: 0.5 }} />
         </View>
-      </View>
-    </Page>
-  );
-}
 
-// ── Dedication Page ─────────────────────────────────────────────────────
-
-function DedicationPage({ theme, text, senderName }: { theme: TemplateTheme; text: string; senderName: string | null }) {
-  return (
-    <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: COLORS.paper }]}>
-      <FrameBorder color={theme.ornamentColor} inset={BOOK.contentMargin - 5} />
-
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: BOOK.contentMargin + 20 }}>
-        <View style={{ alignItems: "center", maxWidth: BOOK.trimWidth * 0.65 }}>
-          <Text style={{ fontFamily: FONTS.display, fontSize: 42, color: COLORS.gold, opacity: 0.4, marginBottom: -8 }}>
-            {"\u201C"}
-          </Text>
-
-          <Text style={[TYPE.dedicationText, { textAlign: "center" }]}>{text}</Text>
-
-          <Text style={{ fontFamily: FONTS.display, fontSize: 42, color: COLORS.gold, opacity: 0.4, marginTop: -4, marginBottom: 15 }}>
-            {"\u201D"}
+        {/* Dedication */}
+        <View style={{ alignItems: "center", maxWidth: BOOK.trimWidth * 0.6 }}>
+          <Text style={{ fontFamily: FONTS.body, fontStyle: "italic", fontSize: 12, color: COLORS.textMedium, textAlign: "center", lineHeight: 1.8 }}>
+            {dedicationText}
           </Text>
 
           {senderName && (
-            <Text style={[TYPE.dedicationSender, { textAlign: "center" }]}>{"\u2014"} {senderName}</Text>
+            <Text style={{ fontFamily: FONTS.body, fontSize: 10, color: COLORS.textMuted, marginTop: 8, textAlign: "center" }}>
+              {"\u2014"} {senderName}
+            </Text>
           )}
+        </View>
 
-          <View style={{ marginTop: 24 }}>
-            <OrnamentalDivider color={theme.ornamentColor} width={90} />
-          </View>
+        <View style={{ marginTop: 20 }}>
+          <StarCluster color={COLORS.gold} size={24} />
         </View>
       </View>
     </Page>
@@ -516,36 +710,22 @@ function DedicationPage({ theme, text, senderName }: { theme: TemplateTheme; tex
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-// SCENE LAYOUTS
+// SPREAD LAYOUTS
 // ══════════════════════════════════════════════════════════════════════════
 
-// ── Layout: FULL_BLEED ──────────────────────────────────────────────────
-// Full-page illustration with scene title overlaid at the bottom.
-// CRITICAL: Image uses flow layout (not position:absolute) to avoid
-// @react-pdf creating a separate page for the image.
+// ── GALERIA spread ──────────────────────────────────────────────────────
+// Page A: full-bleed illustration + badge top-left + gradient title band at bottom
+// Page B: paper white + FrameBorder + pill / title / divider / text / ornament
 
-function FullBleedPage({ theme, scene, imageUrl, pageNumber }: {
+function SpreadGaleriaA({ theme, scene, imageUrl, pageNumber }: {
   theme: TemplateTheme; scene: GeneratedScene; imageUrl: string | null; pageNumber: number;
 }) {
   return (
     <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={s.page}>
-      {/* Image fills the page via flow layout */}
-      {imageUrl ? (
-        <View style={{ width: BOOK.pageWidth, height: BOOK.pageHeight }}>
-          <Image
-            src={imageUrl}
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
-          />
-        </View>
-      ) : (
-        <View style={{ width: BOOK.pageWidth, height: BOOK.pageHeight, backgroundColor: COLORS.cream, justifyContent: "center", alignItems: "center" }}>
-          <Text style={{ fontFamily: FONTS.body, fontSize: 11, color: COLORS.textMuted }}>
-            Scene {scene.sceneNumber}
-          </Text>
-        </View>
-      )}
+      {/* Full-bleed illustration */}
+      <FullBleedImage imageUrl={imageUrl} sceneNumber={scene.sceneNumber} />
 
-      {/* Title overlay at bottom — absolute positioned ON TOP of image */}
+      {/* Gradient band at bottom with title */}
       <View style={{
         position: "absolute",
         bottom: 0,
@@ -554,26 +734,198 @@ function FullBleedPage({ theme, scene, imageUrl, pageNumber }: {
         paddingTop: 28,
         paddingBottom: BOOK.contentMargin + 10,
         paddingHorizontal: BOOK.contentMargin,
-        backgroundColor: "rgba(0,0,0,0.4)",
+        backgroundColor: "rgba(0,0,0,0.42)",
       }}>
         <Text style={{ fontFamily: FONTS.display, fontSize: 20, fontWeight: 600, color: "#ffffff", lineHeight: 1.3 }}>
           {scene.title}
         </Text>
       </View>
 
-      {/* Scene number badge */}
+      {/* Scene number badge — top-left */}
+      <SceneBadge num={scene.sceneNumber} top={BOOK.contentMargin} left={BOOK.contentMargin} color={theme.accent} />
+
+      <PageNumber num={pageNumber} color="#ffffff88" />
+    </Page>
+  );
+}
+
+function SpreadGaleriaB({ theme, scene, pageNumber, tc }: {
+  theme: TemplateTheme; scene: GeneratedScene; pageNumber: number; tc: PdfTextConfig;
+}) {
+  return (
+    <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: COLORS.paper }]}>
+      <FrameBorder color={theme.ornamentColor} inset={BOOK.contentMargin - 5} />
+
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: BOOK.contentMargin + 15 }}>
+        <View style={{ alignItems: "center", maxWidth: BOOK.trimWidth * 0.78 }}>
+          {/* Small scene number pill */}
+          <View style={{
+            backgroundColor: theme.accentLight,
+            borderRadius: 10,
+            paddingHorizontal: 10,
+            paddingVertical: 3,
+            marginBottom: 14,
+          }}>
+            <Text style={{ fontFamily: FONTS.display, fontSize: 9, color: theme.accent, letterSpacing: 1 }}>
+              {scene.sceneNumber}
+            </Text>
+          </View>
+
+          {/* Title */}
+          <Text style={{ fontFamily: FONTS.display, fontSize: tc.title, fontWeight: 600, color: theme.titleColor, textAlign: "center", lineHeight: 1.3, marginBottom: 16 }}>
+            {scene.title}
+          </Text>
+
+          <OrnamentalDivider color={theme.ornamentColor} width={80} />
+
+          {/* Text */}
+          <Text style={{ fontFamily: FONTS.body, fontSize: tc.body, color: COLORS.textDark, lineHeight: tc.bodyLeading, textAlign: "center", marginTop: 16 }}>
+            {scene.text}
+          </Text>
+
+          {/* Bottom ornament */}
+          <View style={{ marginTop: 20 }}>
+            <StarCluster color={COLORS.gold} size={24} />
+          </View>
+        </View>
+      </View>
+
+      <PageNumber num={pageNumber} />
+    </Page>
+  );
+}
+
+// ── PERGAMINO spread ────────────────────────────────────────────────────
+// Page A: accentLight bg + FrameBorder + scene number / title / accent rule / text / WavyLine
+// Page B: full-bleed illustration + badge top-right
+
+function SpreadPergaminoA({ theme, scene, pageNumber, tc }: {
+  theme: TemplateTheme; scene: GeneratedScene; pageNumber: number; tc: PdfTextConfig;
+}) {
+  return (
+    <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: theme.accentLight }]}>
+      <FrameBorder color={theme.ornamentColor} inset={BOOK.contentMargin - 5} />
+
+      <View style={{ flex: 1, justifyContent: "center", padding: BOOK.contentMargin + 12 }}>
+        {/* Small scene number */}
+        <Text style={{ fontFamily: FONTS.display, fontSize: 11, color: theme.ornamentColor, letterSpacing: 2, marginBottom: 10 }}>
+          {String(scene.sceneNumber).padStart(2, "0")}
+        </Text>
+
+        {/* Title */}
+        <Text style={{ fontFamily: FONTS.display, fontSize: tc.title, fontWeight: 600, color: theme.titleColor, lineHeight: 1.3, marginBottom: 14 }}>
+          {scene.title}
+        </Text>
+
+        {/* Thick accent rule */}
+        <View style={{ width: BOOK.trimWidth * 0.35, height: 3, backgroundColor: theme.accent, borderRadius: 2, marginBottom: 18, opacity: 0.8 }} />
+
+        {/* Text */}
+        <Text style={{ fontFamily: FONTS.body, fontSize: tc.body, color: COLORS.textDark, lineHeight: tc.bodyLeading }}>
+          {scene.text}
+        </Text>
+
+        {/* Bottom WavyLine */}
+        <View style={{ marginTop: 24 }}>
+          <WavyLine color={theme.ornamentColor} width={60} />
+        </View>
+      </View>
+
+      <PageNumber num={pageNumber} />
+    </Page>
+  );
+}
+
+function SpreadPergaminoB({ theme, scene, imageUrl, pageNumber }: {
+  theme: TemplateTheme; scene: GeneratedScene; imageUrl: string | null; pageNumber: number;
+}) {
+  return (
+    <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={s.page}>
+      {/* Full-bleed illustration */}
+      <FullBleedImage imageUrl={imageUrl} sceneNumber={scene.sceneNumber} />
+
+      {/* Scene number badge — top-right */}
+      <SceneBadge num={scene.sceneNumber} top={BOOK.contentMargin} right={BOOK.contentMargin} color={theme.accent} />
+
+      <PageNumber num={pageNumber} color="#ffffff88" />
+    </Page>
+  );
+}
+
+// ── VENTANA spread ──────────────────────────────────────────────────────
+// Page A: paper white + FrameBorder + drop cap row + rest of text
+// Page B: full-bleed illustration + badge top-left + title overlay at bottom
+
+function SpreadVentanaA({ theme, scene, pageNumber, tc }: {
+  theme: TemplateTheme; scene: GeneratedScene; pageNumber: number; tc: PdfTextConfig;
+}) {
+  // Split text: first character is the drop cap, rest is the body
+  const firstChar = scene.text.charAt(0);
+  const restText = scene.text.slice(1);
+
+  return (
+    <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: COLORS.paper }]}>
+      <FrameBorder color={theme.ornamentColor} inset={BOOK.contentMargin - 5} />
+
+      <View style={{ flex: 1, justifyContent: "center", padding: BOOK.contentMargin + 15 }}>
+        {/* Scene title above text block */}
+        <Text style={{ fontFamily: FONTS.display, fontSize: tc.title, fontWeight: 600, color: theme.titleColor, marginBottom: 18, lineHeight: 1.3 }}>
+          {scene.title}
+        </Text>
+
+        {/* Drop cap row layout — avoids float, safe in @react-pdf */}
+        <View style={{ flexDirection: "row", alignItems: "flex-start" }}>
+          {/* Drop cap letter */}
+          <View style={{ marginRight: 6, marginTop: 2 }}>
+            <Text style={{ fontFamily: FONTS.display, fontSize: tc.dropCap, fontWeight: 600, color: theme.accent, lineHeight: 1 }}>
+              {firstChar}
+            </Text>
+          </View>
+
+          {/* Rest of the text */}
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontFamily: FONTS.body, fontSize: tc.body, color: COLORS.textDark, lineHeight: tc.bodyLeading }}>
+              {restText}
+            </Text>
+          </View>
+        </View>
+
+        {/* Bottom ornament */}
+        <View style={{ marginTop: 20 }}>
+          <OrnamentalDivider color={theme.ornamentColor} width={70} />
+        </View>
+      </View>
+
+      <PageNumber num={pageNumber} />
+    </Page>
+  );
+}
+
+function SpreadVentanaB({ theme, scene, imageUrl, pageNumber }: {
+  theme: TemplateTheme; scene: GeneratedScene; imageUrl: string | null; pageNumber: number;
+}) {
+  return (
+    <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={s.page}>
+      {/* Full-bleed illustration */}
+      <FullBleedImage imageUrl={imageUrl} sceneNumber={scene.sceneNumber} />
+
+      {/* Scene number badge — top-left */}
+      <SceneBadge num={scene.sceneNumber} top={BOOK.contentMargin} left={BOOK.contentMargin} color={theme.accent} />
+
+      {/* Title overlay at bottom */}
       <View style={{
         position: "absolute",
-        top: BOOK.contentMargin,
-        left: BOOK.contentMargin,
-        width: 28,
-        height: 28,
-        borderRadius: 14,
-        backgroundColor: theme.accent,
-        justifyContent: "center",
-        alignItems: "center",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        paddingTop: 28,
+        paddingBottom: BOOK.contentMargin + 10,
+        paddingHorizontal: BOOK.contentMargin,
+        backgroundColor: "rgba(0,0,0,0.42)",
       }}>
-        <Text style={{ fontFamily: FONTS.display, fontSize: 11, color: "#ffffff", fontWeight: 600 }}>{scene.sceneNumber}</Text>
+        <Text style={{ fontFamily: FONTS.display, fontSize: 18, fontWeight: 600, color: "#ffffff", lineHeight: 1.3 }}>
+          {scene.title}
+        </Text>
       </View>
 
       <PageNumber num={pageNumber} color="#ffffff88" />
@@ -581,217 +933,55 @@ function FullBleedPage({ theme, scene, imageUrl, pageNumber }: {
   );
 }
 
-// ── Layout: TEXT_PAGE ───────────────────────────────────────────────────
-// Text-only companion page for FULL_BLEED scenes.
-// Uses View-based border instead of SVG PageFrameBorder.
+// ── PUENTE spread (bridge / atmospheric transition) ─────────────────────
+// Page A: Full-bleed atmospheric illustration (no badge, no text overlay)
+// Page B: Colored background + single evocative sentence centered large
 
-function TextOnlyPage({ theme, scene, pageNumber }: {
-  theme: TemplateTheme; scene: GeneratedScene; pageNumber: number;
-}) {
-  return (
-    <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, s.textPage]}>
-      <FrameBorder color={theme.ornamentColor} inset={BOOK.contentMargin - 5} />
-
-      <View style={s.textPageInner}>
-        <View style={{ width: 30, height: 2, backgroundColor: theme.accent, borderRadius: 1, marginBottom: 16, opacity: 0.6 }} />
-
-        <Text style={[TYPE.sceneText, { textAlign: "center", lineHeight: 2.0, fontSize: 13 }]}>
-          {scene.text}
-        </Text>
-
-        <View style={{ marginTop: 20 }}>
-          <OrnamentalDivider color={theme.ornamentColor} width={80} />
-        </View>
-      </View>
-
-      <PageNumber num={pageNumber} />
-    </Page>
-  );
-}
-
-// ── Layout: CLASSIC ─────────────────────────────────────────────────────
-// Image top (60%), text bottom (40%). The workhorse layout.
-// Uses flow layout for the image — NO position:absolute.
-
-function ClassicPage({ theme, scene, imageUrl, pageNumber }: {
+function SpreadPuenteA({ theme, scene, imageUrl, pageNumber }: {
   theme: TemplateTheme; scene: GeneratedScene; imageUrl: string | null; pageNumber: number;
 }) {
-  const imageHeight = BOOK.pageHeight * 0.6;
-
-  return (
-    <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: COLORS.paper }]}>
-      {/* Image area — fixed height, flow layout */}
-      <View style={{ width: BOOK.pageWidth, height: imageHeight, overflow: "hidden" }}>
-        {imageUrl ? (
-          <Image
-            src={imageUrl}
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
-          />
-        ) : (
-          <View style={{ width: "100%", height: "100%", backgroundColor: COLORS.cream, justifyContent: "center", alignItems: "center" }}>
-            <Text style={{ fontFamily: FONTS.body, fontSize: 11, color: COLORS.textMuted }}>
-              Scene {scene.sceneNumber}
-            </Text>
-          </View>
-        )}
-      </View>
-
-      {/* Scene badge on top of image */}
-      <View style={{
-        position: "absolute",
-        top: 12,
-        left: BOOK.contentMargin,
-        width: 28,
-        height: 28,
-        borderRadius: 14,
-        backgroundColor: theme.accent,
-        justifyContent: "center",
-        alignItems: "center",
-      }}>
-        <Text style={{ fontFamily: FONTS.display, fontSize: 11, color: "#ffffff", fontWeight: 600 }}>{scene.sceneNumber}</Text>
-      </View>
-
-      {/* Text area */}
-      <View style={s.classicTextArea}>
-        <View style={{ width: 30, height: 2, backgroundColor: theme.accent, borderRadius: 1, marginBottom: 10, opacity: 0.6 }} />
-        <Text style={[TYPE.sceneTitle, { color: theme.titleColor }]}>{scene.title}</Text>
-        <Text style={[TYPE.sceneText, { marginTop: 8 }]}>{scene.text}</Text>
-      </View>
-
-      <PageNumber num={pageNumber} />
-    </Page>
-  );
-}
-
-// ── Layout: SPLIT ──────────────────────────────────────────────────────
-// Side-by-side: image left (~52%), text right (~48%).
-// Used for transition/discovery scenes — creates a cinematic feel.
-
-function SplitPage({ theme, scene, imageUrl, pageNumber }: {
-  theme: TemplateTheme; scene: GeneratedScene; imageUrl: string | null; pageNumber: number;
-}) {
-  const imageWidth = BOOK.pageWidth * 0.52;
-  const textWidth = BOOK.pageWidth - imageWidth;
-
   return (
     <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={s.page}>
-      <View style={{ flexDirection: "row", width: BOOK.pageWidth, height: BOOK.pageHeight }}>
-        {/* Left: illustration */}
-        <View style={{ width: imageWidth, height: BOOK.pageHeight, overflow: "hidden" }}>
-          {imageUrl ? (
-            <Image
-              src={imageUrl}
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-            />
-          ) : (
-            <View style={{ width: "100%", height: "100%", backgroundColor: COLORS.cream, justifyContent: "center", alignItems: "center" }}>
-              <Text style={{ fontFamily: FONTS.body, fontSize: 11, color: COLORS.textMuted }}>
-                Scene {scene.sceneNumber}
-              </Text>
-            </View>
-          )}
-        </View>
+      {/* Full-bleed atmospheric illustration — no overlay, purely visual */}
+      <FullBleedImage imageUrl={imageUrl} sceneNumber={scene.sceneNumber} />
+      <PageNumber num={pageNumber} color="#ffffff88" />
+    </Page>
+  );
+}
 
-        {/* Right: text content */}
-        <View style={{
-          width: textWidth,
-          height: BOOK.pageHeight,
-          backgroundColor: COLORS.paper,
-          justifyContent: "center",
-          paddingHorizontal: BOOK.contentMargin,
-          paddingVertical: BOOK.contentMargin + 10,
-        }}>
-          {/* Thin accent bar */}
-          <View style={{ width: 24, height: 2.5, backgroundColor: theme.accent, borderRadius: 1, marginBottom: 14, opacity: 0.7 }} />
+function SpreadPuenteB({ theme, scene, pageNumber, tc }: {
+  theme: TemplateTheme; scene: GeneratedScene; pageNumber: number; tc: PdfTextConfig;
+}) {
+  return (
+    <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: theme.accentLight }]}>
+      <FrameBorder color={theme.ornamentColor} inset={BOOK.contentMargin - 5} />
 
-          {/* Scene title */}
-          <Text style={[TYPE.sceneTitle, { color: theme.titleColor, marginBottom: 12 }]}>
-            {scene.title}
-          </Text>
+      {/* Corner dots for visual warmth */}
+      <CornerDot color={theme.accent} top={BOOK.contentMargin + 4} left={BOOK.contentMargin + 4} />
+      <CornerDot color={theme.accent} top={BOOK.contentMargin + 4} right={BOOK.contentMargin + 4} />
+      <CornerDot color={theme.accent} bottom={BOOK.contentMargin + 4} left={BOOK.contentMargin + 4} />
+      <CornerDot color={theme.accent} bottom={BOOK.contentMargin + 4} right={BOOK.contentMargin + 4} />
 
-          {/* Scene text */}
-          <Text style={[TYPE.sceneText, { lineHeight: 1.9 }]}>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: BOOK.contentMargin + 30 }}>
+        <View style={{ alignItems: "center", maxWidth: BOOK.trimWidth * 0.7 }}>
+          <OrnamentalDivider color={theme.ornamentColor} width={60} />
+
+          {/* Single evocative sentence — large display typography */}
+          <Text style={{
+            fontFamily: FONTS.display,
+            fontSize: tc.bridgeText,
+            fontWeight: 600,
+            color: theme.titleColor,
+            textAlign: "center",
+            lineHeight: 1.5,
+            marginTop: 28,
+            marginBottom: 28,
+          }}>
             {scene.text}
           </Text>
 
-          {/* Bottom decoration */}
-          <View style={{ marginTop: 20 }}>
-            <WavyLine color={theme.ornamentColor} width={55} />
-          </View>
+          <WavyLine color={theme.ornamentColor} width={60} />
         </View>
-      </View>
-
-      {/* Scene number badge — top-left on the image */}
-      <View style={{
-        position: "absolute",
-        top: BOOK.contentMargin,
-        left: BOOK.contentMargin,
-        width: 28,
-        height: 28,
-        borderRadius: 14,
-        backgroundColor: theme.accent,
-        justifyContent: "center",
-        alignItems: "center",
-      }}>
-        <Text style={{ fontFamily: FONTS.display, fontSize: 11, color: "#ffffff", fontWeight: 600 }}>{scene.sceneNumber}</Text>
-      </View>
-
-      <PageNumber num={pageNumber} />
-    </Page>
-  );
-}
-
-// ── Layout: VIGNETTE ────────────────────────────────────────────────────
-// Text-centric page with a small centered illustration.
-// Uses View-based corner decorations instead of SVG CornerFlourish.
-
-function VignettePage({ theme, scene, imageUrl, pageNumber }: {
-  theme: TemplateTheme; scene: GeneratedScene; imageUrl: string | null; pageNumber: number;
-}) {
-  const vignetteSize = BOOK.trimWidth * 0.48;
-
-  return (
-    <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, s.vignettePage]}>
-      {/* Corner dots instead of large SVG flourishes */}
-      <CornerDot color={theme.ornamentColor} top={BOOK.contentMargin} left={BOOK.contentMargin} />
-      <CornerDot color={theme.ornamentColor} top={BOOK.contentMargin} right={BOOK.contentMargin} />
-      <CornerDot color={theme.ornamentColor} bottom={BOOK.contentMargin} left={BOOK.contentMargin} />
-      <CornerDot color={theme.ornamentColor} bottom={BOOK.contentMargin} right={BOOK.contentMargin} />
-
-      {/* Title */}
-      <Text style={[TYPE.sceneTitle, { color: theme.titleColor, textAlign: "center", marginBottom: 14 }]}>
-        {scene.title}
-      </Text>
-
-      {/* Small centered illustration */}
-      <View style={{
-        width: vignetteSize,
-        height: vignetteSize,
-        borderRadius: 12,
-        overflow: "hidden",
-        borderWidth: 2,
-        borderColor: theme.accentLight,
-        marginVertical: 10,
-      }}>
-        {imageUrl ? (
-          <Image
-            src={imageUrl}
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
-          />
-        ) : (
-          <View style={{ width: "100%", height: "100%", backgroundColor: COLORS.cream, justifyContent: "center", alignItems: "center", borderRadius: 12 }}>
-            <Text style={{ fontFamily: FONTS.body, fontSize: 10, color: COLORS.textMuted }}>
-              Scene {scene.sceneNumber}
-            </Text>
-          </View>
-        )}
-      </View>
-
-      {/* Text below illustration */}
-      <View style={{ alignItems: "center", paddingHorizontal: BOOK.contentMargin, maxWidth: BOOK.trimWidth * 0.85 }}>
-        <Text style={[TYPE.sceneText, { textAlign: "center", lineHeight: 1.9 }]}>
-          {scene.text}
-        </Text>
       </View>
 
       <PageNumber num={pageNumber} />
@@ -836,8 +1026,6 @@ function FinalPage({ theme, message, characterName }: { theme: TemplateTheme; me
 }
 
 // ── About the Reader (keepsake) ──────────────────────────────────────────
-// A personal page where the child's name and age are highlighted.
-// Fills the 24th page slot required for print binding (multiple of 4).
 
 function AboutReaderPage({ theme, characterName, characterAge }: {
   theme: TemplateTheme; characterName: string; characterAge: number;
@@ -899,35 +1087,45 @@ function AboutReaderPage({ theme, characterName, characterAge }: {
   );
 }
 
-// ── Colophon ────────────────────────────────────────────────────────────
+// ── Colophon Page ──────────────────────────────────────────────────────
 
-function ColophonPage({ theme, characterName }: { theme: TemplateTheme; characterName: string }) {
+function ColophonPage({ theme, storyId }: { theme: TemplateTheme; storyId: string }) {
   return (
     <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: COLORS.paper }]}>
-      <View style={{ flex: 1, justifyContent: "flex-end", alignItems: "center", padding: BOOK.contentMargin + 20, paddingBottom: BOOK.contentMargin + 40 }}>
-        <WavyLine color={theme.ornamentColor} width={60} />
+      <FrameBorder color={theme.ornamentColor} inset={BOOK.contentMargin - 5} />
 
-        <Text style={{ fontFamily: FONTS.body, fontSize: 8, color: COLORS.textMuted, marginTop: 20, textAlign: "center", lineHeight: 1.8 }}>
-          Este libro fue creado especialmente para {characterName}.{"\n"}
-          Texto generado por inteligencia artificial.{"\n"}
-          Ilustraciones generadas por Recraft V3.{"\n"}
-          Dise{"\u00F1"}o editorial por meapica.
-        </Text>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: BOOK.contentMargin + 30 }}>
+        <View style={{ alignItems: "center", maxWidth: BOOK.trimWidth * 0.65 }}>
+          <Text style={{ fontFamily: FONTS.display, fontSize: 9, color: COLORS.textMuted, letterSpacing: 2, marginBottom: 16 }}>
+            MEAPICA PRESS
+          </Text>
 
-        <View style={{ marginTop: 16 }}>
-          <Text style={{ fontFamily: FONTS.display, fontSize: 9, color: COLORS.textLight, letterSpacing: 2 }}>
-            MEAPICA
+          <OrnamentalDivider color={theme.ornamentColor} width={70} />
+
+          <Text style={{ fontFamily: FONTS.body, fontSize: 8, color: COLORS.textMuted, textAlign: "center", lineHeight: 1.8, marginTop: 20 }}>
+            Texto generado mediante inteligencia artificial.{"\n"}
+            Ilustraciones creadas exclusivamente para este libro.{"\n"}
+            Dise{"\u00F1"}o editorial por Meapica.
+          </Text>
+
+          <View style={{ marginTop: 16, marginBottom: 16 }}>
+            <WavyLine color={theme.ornamentColor} width={50} />
+          </View>
+
+          <Text style={{ fontFamily: FONTS.body, fontSize: 7, color: COLORS.textLight, textAlign: "center", letterSpacing: 0.5 }}>
+            meapica.com
+          </Text>
+
+          <Text style={{ fontFamily: FONTS.body, fontSize: 6, color: COLORS.textLight, marginTop: 10, letterSpacing: 0.5 }}>
+            ID: {storyId.slice(0, 8)}
           </Text>
         </View>
-        <Text style={{ fontFamily: FONTS.body, fontSize: 6, color: COLORS.textLight, marginTop: 4, letterSpacing: 1 }}>
-          Historias reales para tocar
-        </Text>
       </View>
     </Page>
   );
 }
 
-// ── Back Cover ──────────────────────────────────────────────────────────
+// ── Back Cover ─────────────────────────────────────────────────────────
 
 function BackCoverPage({ theme, characterName }: { theme: TemplateTheme; characterName: string }) {
   return (
@@ -952,6 +1150,20 @@ function BackCoverPage({ theme, characterName }: { theme: TemplateTheme; charact
             Historias reales para tocar
           </Text>
         </View>
+      </View>
+
+      {/* Colophon credit — bottom of back cover */}
+      <View style={{
+        position: "absolute",
+        bottom: BOOK.contentMargin + 10,
+        left: BOOK.contentMargin,
+        right: BOOK.contentMargin,
+        alignItems: "center",
+      }}>
+        <Text style={{ fontFamily: FONTS.body, fontSize: 7, color: "#ffffff44", textAlign: "center", lineHeight: 1.7 }}>
+          Texto e ilustraciones creados exclusivamente para este libro.{"\n"}
+          Dise{"\u00F1"}o editorial por Meapica — meapica.com
+        </Text>
       </View>
     </Page>
   );

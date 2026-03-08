@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { createClient } from "@/lib/supabase/client";
-import { STORY_TEMPLATES } from "@/lib/create-store";
+import { STORY_TEMPLATES, getRecommendedTemplates } from "@/lib/create-store";
 import { useTranslations, useLocale } from "next-intl";
-import LogoIcon from "@/components/LogoIcon";
+import BrandLogo from "@/components/BrandLogo";
+import BrandIcon from "@/components/BrandIcon";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -38,6 +39,14 @@ interface DashboardOrder {
   } | null;
 }
 
+interface CharacterStory {
+  id: string;
+  title: string | null;
+  status: string;
+  template_id: string | null;
+  generated_text: { bookTitle?: string; synopsis?: string } | null;
+}
+
 interface DashboardCharacter {
   id: string;
   name: string;
@@ -47,7 +56,9 @@ interface DashboardCharacter {
   skin_tone: string;
   hairstyle: string | null;
   interests: string[];
+  avatar_url: string | null;
   created_at: string;
+  stories: CharacterStory[];
 }
 
 interface DashboardData {
@@ -67,6 +78,8 @@ const STORY_STATUS_STYLES: Record<string, { color: string; icon: string }> = {
   completing: { color: "bg-blue-100 text-blue-700", icon: "hourglass_top" },
   ready: { color: "bg-emerald-100 text-emerald-700", icon: "check_circle" },
   ordered: { color: "bg-purple-100 text-purple-700", icon: "shopping_bag" },
+  shipped: { color: "bg-indigo-100 text-indigo-700", icon: "local_shipping" },
+  delivered: { color: "bg-emerald-100 text-emerald-700", icon: "inventory" },
 };
 
 const ORDER_STATUS_STYLES: Record<string, { color: string; icon: string }> = {
@@ -138,9 +151,7 @@ export default function DashboardPage() {
   if (authLoading || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-cream">
-        <span className="material-symbols-outlined animate-spin text-4xl text-primary">
-          progress_activity
-        </span>
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-border-light border-t-primary" />
       </div>
     );
   }
@@ -157,8 +168,8 @@ export default function DashboardPage() {
     );
   }
 
-  const tabs: { id: TabId; label: string; icon: string; count: number }[] = [
-    { id: "stories", label: t("tabs.stories"), icon: "auto_stories", count: data?.stories.length ?? 0 },
+  const tabs: { id: TabId; label: string; icon?: string; IconComponent?: React.ComponentType<{ className?: string }>; count: number }[] = [
+    { id: "stories", label: t("tabs.stories"), IconComponent: BrandIcon, count: data?.stories.length ?? 0 },
     { id: "orders", label: t("tabs.orders"), icon: "shopping_bag", count: data?.orders.length ?? 0 },
     { id: "characters", label: t("tabs.characters"), icon: "face", count: data?.characters.length ?? 0 },
   ];
@@ -168,11 +179,8 @@ export default function DashboardPage() {
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-border-light bg-white/95 backdrop-blur-sm">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 sm:px-6">
-          <Link href="/" className="flex items-center gap-2.5">
-            <LogoIcon className="h-7 w-7 text-primary" />
-            <span className="font-display text-lg font-bold tracking-tight text-secondary">
-              meapica
-            </span>
+          <Link href="/" className="flex items-center">
+            <BrandLogo className="h-5 text-secondary" />
           </Link>
 
           <div className="flex items-center gap-3">
@@ -217,7 +225,11 @@ export default function DashboardPage() {
                   : "text-text-soft hover:bg-cream hover:text-text-main"
               }`}
             >
-              <span className="material-symbols-outlined text-lg">{tab.icon}</span>
+              {tab.IconComponent ? (
+                <tab.IconComponent className="h-4.5 w-auto" />
+              ) : (
+                <span className="material-symbols-outlined text-lg">{tab.icon}</span>
+              )}
               <span className="hidden sm:inline">{tab.label}</span>
               {tab.count > 0 && (
                 <span
@@ -254,7 +266,7 @@ export default function DashboardPage() {
           />
         )}
         {activeTab === "orders" && <OrdersTab orders={data?.orders ?? []} t={t} formatDate={formatDate} />}
-        {activeTab === "characters" && <CharactersTab characters={data?.characters ?? []} t={t} />}
+        {activeTab === "characters" && <CharactersTab characters={data?.characters ?? []} t={t} formatDate={formatDate} />}
       </div>
     </div>
   );
@@ -276,7 +288,7 @@ function StoriesTab({
   if (stories.length === 0) {
     return (
       <EmptyState
-        icon="auto_stories"
+        IconComponent={BrandIcon}
         title={t("emptyStories.title")}
         description={t("emptyStories.description")}
         ctaLabel={t("emptyStories.cta")}
@@ -399,9 +411,7 @@ function StoryCard({
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center bg-cream">
-              <span className="material-symbols-outlined text-xl text-text-muted">
-                auto_stories
-              </span>
+              <BrandIcon className="h-7 w-auto text-text-muted" />
             </div>
           )}
         </div>
@@ -442,10 +452,8 @@ function StoryCard({
           </p>
         </div>
 
-        {/* Status + actions */}
+        {/* Actions */}
         <div className="flex shrink-0 items-center gap-2">
-          <StatusBadge status={story.status} label={statusLabel} styleMap={STORY_STATUS_STYLES} />
-
           {/* PDF download */}
           {hasReadyPdf && (
             <button
@@ -455,22 +463,26 @@ function StoryCard({
               aria-label={t("downloadPdf")}
             >
               {downloading ? (
-                <span className="material-symbols-outlined animate-spin text-sm">progress_activity</span>
+                <span className="material-symbols-outlined animate-spin text-sm leading-none">progress_activity</span>
               ) : (
-                <span className="material-symbols-outlined text-sm">download</span>
+                <span className="material-symbols-outlined text-sm leading-none">download</span>
               )}
-              <span className="hidden sm:inline">PDF</span>
+              <span>PDF</span>
             </button>
           )}
 
           <Link
             href={actionHref}
-            className="rounded-lg border border-border-light px-3 py-1.5 text-xs font-medium text-text-soft transition-colors hover:bg-cream hover:text-text-main"
+            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
+              story.status === "ready" || story.status === "ordered"
+                ? "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100"
+                : story.status === "preview"
+                  ? "bg-cyan-50 text-cyan-700 border border-cyan-200 hover:bg-cyan-100"
+                  : "border border-border-light text-text-soft hover:bg-cream hover:text-text-main"
+            }`}
           >
-            <span className="hidden sm:inline">{actionLabel}</span>
-            <span className="material-symbols-outlined text-sm sm:hidden">
-              {story.status === "draft" ? "edit" : "visibility"}
-            </span>
+            {actionLabel}
+            <span className="material-symbols-outlined text-sm leading-none">arrow_forward</span>
           </Link>
         </div>
       </div>
@@ -565,13 +577,62 @@ function OrdersTab({
 
 // ── Characters Tab ─────────────────────────────────────────────────────────
 
+const INTEREST_STYLE: Record<string, { bg: string; text: string }> = {
+  space:     { bg: "bg-indigo-50",  text: "text-indigo-700" },
+  animals:   { bg: "bg-emerald-50", text: "text-emerald-700" },
+  sports:    { bg: "bg-sky-50",     text: "text-sky-700" },
+  castles:   { bg: "bg-purple-50",  text: "text-purple-700" },
+  dinosaurs: { bg: "bg-lime-50",    text: "text-lime-700" },
+  music:     { bg: "bg-amber-50",   text: "text-amber-700" },
+};
+
+/** Portrait image or initial-letter fallback */
+function CharacterPortrait({ char, size }: { char: DashboardCharacter; size: number }) {
+  if (char.avatar_url) {
+    return (
+      <img
+        src={char.avatar_url}
+        alt={char.name}
+        className="rounded-full object-cover ring-2 ring-border-light"
+        style={{ width: size, height: size }}
+      />
+    );
+  }
+  // Fallback: initial letter circle
+  return (
+    <div
+      className="rounded-full bg-cream flex items-center justify-center ring-2 ring-border-light"
+      style={{ width: size, height: size }}
+    >
+      <span className="font-display font-bold text-text-muted" style={{ fontSize: size * 0.4 }}>
+        {char.name.charAt(0).toUpperCase()}
+      </span>
+    </div>
+  );
+}
+
+function getStoryTitle(story: CharacterStory, fallback: string): string {
+  return story.title ?? story.generated_text?.bookTitle ?? fallback;
+}
+
+function getStoryHref(story: CharacterStory): string {
+  return story.status === "preview" || story.status === "ready" || story.status === "ordered"
+    ? `/crear/${story.id}/preview`
+    : `/crear/${story.id}/generar`;
+}
+
 function CharactersTab({
   characters,
   t,
+  formatDate,
 }: {
   characters: DashboardCharacter[];
   t: ReturnType<typeof useTranslations<"dashboard">>;
+  formatDate: (iso: string) => string;
 }) {
+  const [selectedCharacter, setSelectedCharacter] = useState<DashboardCharacter | null>(null);
+  const td = useTranslations("data");
+
   if (characters.length === 0) {
     return (
       <EmptyState
@@ -588,39 +649,308 @@ function CharactersTab({
     g === "boy" ? t("gender.boy") : g === "girl" ? t("gender.girl") : t("gender.neutral");
 
   return (
-    <div className="grid gap-3 sm:grid-cols-2">
-      {characters.map((char) => (
-        <div
-          key={char.id}
-          className="rounded-xl border border-border-light bg-white p-4 transition-shadow hover:shadow-sm"
-        >
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-cream">
-              <span className="material-symbols-outlined text-xl text-primary">
-                {char.gender === "boy" ? "boy" : char.gender === "girl" ? "girl" : "face"}
-              </span>
-            </div>
-            <div className="min-w-0 flex-1">
-              <h3 className="truncate text-sm font-bold text-text-main">{char.name}</h3>
-              <p className="text-xs text-text-muted">
-                {genderLabel(char.gender)} · {char.age} {t("yearsOld")}
-              </p>
-            </div>
-          </div>
-          {char.interests.length > 0 && (
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              {char.interests.map((interest) => (
-                <span
-                  key={interest}
-                  className="rounded-full bg-badge-bg px-2 py-0.5 text-[10px] font-medium text-text-soft capitalize"
+    <>
+      <div className="grid gap-4 sm:grid-cols-2">
+        {characters.map((char) => {
+          const storyCount = char.stories?.length ?? 0;
+          const recentStories = (char.stories ?? []).slice(0, 3);
+
+          return (
+            <div
+              key={char.id}
+              className="flex flex-col rounded-xl border border-border-light bg-white overflow-hidden transition-shadow hover:shadow-md"
+            >
+              {/* Card header */}
+              <div className="flex items-center gap-4 p-4">
+                {/* Avatar */}
+                <div className="shrink-0">
+                  <CharacterPortrait char={char} size={64} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h3 className="truncate text-base font-bold text-text-main">{char.name}</h3>
+                  <p className="text-xs text-text-muted">
+                    {genderLabel(char.gender)} · {char.age} {t("yearsOld")}
+                  </p>
+                  {char.interests.length > 0 && (
+                    <div className="mt-1.5 flex flex-wrap gap-1">
+                      {char.interests.slice(0, 4).map((interest) => {
+                        const style = INTEREST_STYLE[interest] ?? { bg: "bg-badge-bg", text: "text-text-soft" };
+                        return (
+                          <span
+                            key={interest}
+                            className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${style.bg} ${style.text}`}
+                          >
+                            {td(`interests.${interest}`)}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Stories section */}
+              {storyCount > 0 ? (
+                <div className="border-t border-border-light px-4 py-3 space-y-2">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-text-muted">
+                    {t("bookCount", { count: storyCount })}
+                  </p>
+                  {recentStories.map((story) => (
+                    <Link
+                      key={story.id}
+                      href={getStoryHref(story)}
+                      className="flex items-center justify-between rounded-lg bg-cream px-3 py-2 transition-colors hover:bg-border-light"
+                    >
+                      <span className="truncate text-xs font-medium text-text-main">
+                        {getStoryTitle(story, t("untitledStory"))}
+                      </span>
+                      <span className={`ml-2 shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                        story.status === "ready" || story.status === "ordered"
+                          ? "bg-emerald-100 text-emerald-700"
+                          : story.status === "preview"
+                            ? "bg-cyan-100 text-cyan-700"
+                            : "bg-amber-100 text-amber-700"
+                      }`}>
+                        {t(`storyStatus.${story.status}` as "storyStatus.draft")}
+                      </span>
+                    </Link>
+                  ))}
+                  {storyCount > 3 && (
+                    <p className="text-[10px] text-text-muted pl-1">
+                      {t("moreBooks", { count: storyCount - 3 })}
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <div className="border-t border-border-light px-4 py-3">
+                  <p className="text-xs text-text-muted italic">{t("noBooksYet")}</p>
+                </div>
+              )}
+
+              {/* Footer actions */}
+              <div className="flex items-center gap-2 border-t border-border-light p-3 mt-auto">
+                <button
+                  onClick={() => setSelectedCharacter(char)}
+                  className="flex-1 rounded-lg border border-border-light px-3 py-2 text-xs font-medium text-text-soft transition-colors hover:bg-cream hover:text-text-main"
                 >
-                  {interest}
-                </span>
-              ))}
+                  {t("viewDetail")}
+                </button>
+                <Link
+                  href="/crear"
+                  className="flex-1 rounded-lg bg-primary px-3 py-2 text-center text-xs font-bold text-white transition-colors hover:bg-primary-hover"
+                >
+                  {t("createBook")}
+                </Link>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Character detail modal */}
+      {selectedCharacter && (
+        <CharacterDetailModal
+          character={selectedCharacter}
+          t={t}
+          formatDate={formatDate}
+          onClose={() => setSelectedCharacter(null)}
+        />
+      )}
+    </>
+  );
+}
+
+// ── Character Detail Modal ──────────────────────────────────────────────────
+
+function CharacterDetailModal({
+  character,
+  t,
+  formatDate,
+  onClose,
+}: {
+  character: DashboardCharacter;
+  t: ReturnType<typeof useTranslations<"dashboard">>;
+  formatDate: (iso: string) => string;
+  onClose: () => void;
+}) {
+  const td = useTranslations("data");
+  const genderLabel = (g: string) =>
+    g === "boy" ? t("gender.boy") : g === "girl" ? t("gender.girl") : t("gender.neutral");
+
+  // Suggested templates: scored by age+interests, excluding already-done ones
+  const usedTemplateIds = new Set(
+    (character.stories ?? []).map((s) => s.template_id).filter(Boolean)
+  );
+  const suggestedTemplates = getRecommendedTemplates(character.age, character.interests)
+    .filter((tpl) => !usedTemplateIds.has(tpl.id))
+    .slice(0, 3);
+
+  // Close on Escape
+  React.useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose]);
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-lg rounded-t-2xl sm:rounded-2xl bg-white max-h-[92vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-start gap-5 p-6 pb-5">
+          <div className="shrink-0">
+            <CharacterPortrait char={character} size={88} />
+          </div>
+          <div className="min-w-0 flex-1 pt-1">
+            <div className="flex items-start justify-between gap-2">
+              <h2 className="font-display text-xl font-bold text-secondary">{character.name}</h2>
+              <button
+                onClick={onClose}
+                className="shrink-0 rounded-lg p-1 text-text-muted transition-colors hover:bg-cream hover:text-text-main"
+                aria-label="Cerrar"
+              >
+                <span className="material-symbols-outlined text-xl">close</span>
+              </button>
+            </div>
+            <p className="mt-0.5 text-sm text-text-muted">
+              {genderLabel(character.gender)} · {character.age} {t("yearsOld")}
+            </p>
+            {character.interests.length > 0 && (
+              <div className="mt-2.5 flex flex-wrap gap-1.5">
+                {character.interests.map((interest) => {
+                  const style = INTEREST_STYLE[interest] ?? { bg: "bg-badge-bg", text: "text-text-soft" };
+                  return (
+                    <span
+                      key={interest}
+                      className={`rounded-full px-2.5 py-0.5 text-[11px] font-medium ${style.bg} ${style.text}`}
+                    >
+                      {td(`interests.${interest}`)}
+                    </span>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Stories lived */}
+        <div className="border-t border-border-light px-6 py-5">
+          <p className="mb-3 text-[10px] font-semibold uppercase tracking-wider text-text-muted">
+            {t("storiesLived")} {(character.stories ?? []).length > 0 && `(${character.stories.length})`}
+          </p>
+          {(character.stories ?? []).length === 0 ? (
+            <p className="text-sm text-text-muted italic">{t("noStoriesYet")}</p>
+          ) : (
+            <div className="space-y-3">
+              {(character.stories ?? []).map((story) => {
+                const synopsis = story.generated_text?.synopsis;
+                return (
+                  <Link
+                    key={story.id}
+                    href={getStoryHref(story)}
+                    onClick={onClose}
+                    className="group block rounded-xl bg-cream px-4 py-3.5 transition-colors hover:bg-border-light"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <p className="text-sm font-semibold text-text-main leading-snug">
+                        {getStoryTitle(story, t("untitledStory"))}
+                      </p>
+                      <div className="flex shrink-0 items-center gap-1.5 pt-0.5">
+                        <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-medium ${
+                          story.status === "ready" || story.status === "ordered"
+                            ? "bg-emerald-100 text-emerald-700"
+                            : story.status === "preview"
+                              ? "bg-cyan-100 text-cyan-700"
+                              : "bg-amber-100 text-amber-700"
+                        }`}>
+                          {t(`storyStatus.${story.status}` as "storyStatus.draft")}
+                        </span>
+                        <span className="material-symbols-outlined text-sm text-text-muted transition-transform group-hover:translate-x-0.5">
+                          arrow_forward
+                        </span>
+                      </div>
+                    </div>
+                    {synopsis && (
+                      <p className="mt-1.5 text-xs text-text-muted line-clamp-2 leading-relaxed">
+                        {synopsis}
+                      </p>
+                    )}
+                  </Link>
+                );
+              })}
             </div>
           )}
         </div>
-      ))}
+
+        {/* Suggested new adventures */}
+        {suggestedTemplates.length > 0 && (
+          <div className="border-t border-border-light px-6 py-5 pb-6">
+            <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-text-muted">
+              {t("newAdventuresFor", { name: character.name })}
+            </p>
+            <p className="mb-4 text-xs text-text-muted">{t("newAdventuresHint")}</p>
+            <div className="space-y-3">
+              {suggestedTemplates.map((tpl, idx) => (
+                <div key={tpl.id} className="relative">
+                  {idx === 0 && (
+                    <div className="mb-1.5 flex items-center gap-1.5">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-0.5 text-[10px] font-semibold text-amber-700">
+                        <span className="material-symbols-outlined text-[12px]">kid_star</span>
+                        {t("recommendedFor", { name: character.name })}
+                      </span>
+                    </div>
+                  )}
+                  <Link
+                    href={`/crear?template=${tpl.id}&characterId=${character.id}`}
+                    onClick={onClose}
+                    className="group flex items-center gap-4 rounded-xl border border-border-light bg-white p-4 transition-all hover:border-transparent hover:shadow-md"
+                    style={{ borderLeftWidth: "4px", borderLeftColor: tpl.themeColor }}
+                  >
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-semibold text-text-main">
+                          {td(`templates.${tpl.id}.title`)}
+                        </p>
+                        <span className="shrink-0 rounded-full bg-cream px-2 py-0.5 text-[10px] font-medium text-text-muted">
+                          {tpl.ageRange}
+                        </span>
+                      </div>
+                      <p className="mt-0.5 line-clamp-1 text-xs text-text-muted">
+                        {td(`templates.${tpl.id}.description`)}
+                      </p>
+                    </div>
+                    <span className="material-symbols-outlined shrink-0 text-sm text-text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-primary">
+                      arrow_forward
+                    </span>
+                  </Link>
+                </div>
+              ))}
+            </div>
+
+            {/* Fallback CTA when all templates are done */}
+          </div>
+        )}
+
+        {/* If all templates used, show simple CTA */}
+        {suggestedTemplates.length === 0 && (
+          <div className="border-t border-border-light px-6 py-5">
+            <p className="mb-3 text-sm text-text-muted">{t("allAdventuresDone", { name: character.name })}</p>
+            <Link
+              href={`/crear?characterId=${character.id}`}
+              onClick={onClose}
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-bold text-white transition-colors hover:bg-primary-hover active:scale-[0.98]"
+            >
+              <span className="material-symbols-outlined text-lg">add</span>
+              {t("createBook")}
+            </Link>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -629,12 +959,14 @@ function CharactersTab({
 
 function EmptyState({
   icon,
+  IconComponent,
   title,
   description,
   ctaLabel,
   ctaHref,
 }: {
-  icon: string;
+  icon?: string;
+  IconComponent?: React.ComponentType<{ className?: string }>;
   title: string;
   description: string;
   ctaLabel: string;
@@ -643,7 +975,11 @@ function EmptyState({
   return (
     <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border-light bg-white py-16 px-4 text-center">
       <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-cream">
-        <span className="material-symbols-outlined text-3xl text-text-muted">{icon}</span>
+        {IconComponent ? (
+          <IconComponent className="h-9 w-auto text-text-muted" />
+        ) : (
+          <span className="material-symbols-outlined text-3xl text-text-muted">{icon}</span>
+        )}
       </div>
       <h3 className="font-display text-lg font-bold text-secondary">{title}</h3>
       <p className="mt-2 max-w-sm text-sm text-text-muted">{description}</p>

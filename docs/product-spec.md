@@ -10,23 +10,53 @@
 | Interior | Full color, Munken 170g minimum paper |
 | Print partner | Gelato (print-on-demand, global shipping) |
 
-## Story Structure (12 Spreads)
+## Book Layout (24 Pages — Implemented)
 
-| # | Spread | Content |
-|---|--------|---------|
+| # | Page | Content |
+|---|------|---------|
 | 1 | Cover | Illustration of the child protagonist + personalized title |
-| 2 | Endpapers | Thematic decorative pattern |
-| 3 | Dedication | "This story is for [name], the most [adjective] in [city]" |
-| 4 | Scene 1 | Introduction: the child in their real environment (city, home) |
-| 5 | Scene 2 | Inciting event: something magical happens |
-| 6 | Scene 3 | Adventure begins: the child discovers something new |
-| 7 | Scene 4 | First challenge: the child uses their interests/skills |
-| 8 | Scene 5 | Encounter: meets a friend character |
-| 9 | Scene 6 | Greater challenge: more complicated situation |
-| 10 | Scene 7 | Climax: the child resolves everything with bravery |
-| 11 | Scene 8 | Resolution: return home with lessons learned |
-| 12 | Final page | Message: "And so, [name] discovered that [moral]" |
-| 13 | Back cover | Illustration + "A story created especially for [name]" |
+| 2 | Front endpaper | Thematic decorative pattern |
+| 3 | Title page | Title + subtitle + Meapica Press imprint |
+| 4 | Dedication | "This story is for [name]..." |
+| 5–16 | Scenes 1–12 | 12 illustrated scenes, cycling through 4 layout types |
+| 17 | Final message | "And so, [name] discovered that..." |
+| 18 | Colophon | Meapica Press editorial note |
+| 19 | Back endpaper | Thematic decorative pattern |
+| 20–24 | (Back matter / cover) | Back cover |
+
+**Scene spread types (cycling for scenes):** galería → pergamino → ventana → repeat
+**Bridge spread type:** puente (full-bleed illustration + centered sentence page)
+
+## Narrative Structure (Block-Based, Age-Adaptive)
+
+Always 12 content slots × 2 pages = 24 content pages. Slots are either "scene" (full narrative) or "bridge" (atmospheric transition). The mix depends on the child's age.
+
+### Narrative Blocks
+
+| Block | Name | Purpose |
+|-------|------|---------|
+| 1 | MI MUNDO | Who I am, where I live, what I love — the reader recognizes themselves |
+| 2 | LA LLAMADA | Something changes, the adventure world opens |
+| 3 | EL CAMINO | The journey — discoveries, friends, wonders |
+| 4 | LA PRUEBA | The great challenge + overcoming it |
+| 5 | VOLVER A CASA | Return transformed, carrying the lesson |
+
+### Age-Based Adaptation
+
+| Age Range | Scenes | Bridges | Words/Scene | Text Style | Illustration Style |
+|-----------|--------|---------|-------------|------------|-------------------|
+| 2-4 years | 8 | 4 | 50-80 | Simple sentences, onomatopoeia, repetition, sensory | `child_book` — watercolor, big shapes |
+| 5-7 years | 10 | 2 | 100-140 | Playful dialogues, humor, wonder, mild suspense | `child_book` — detailed backgrounds |
+| 8-12 years | 12 | 0 | 150-200 | Rich prose, inner monologue, metaphors, complex emotions | `hand_drawn` — editorial, cinematic |
+
+### Bridge Pages
+
+Atmospheric transitions between narrative blocks. One evocative sentence (max 25 words) + mood illustration. Examples:
+- "Pero algo estaba a punto de cambiar..."
+- "Y entonces, el mundo se llenó de estrellas."
+- "Nadie imaginaba lo que vendría después."
+
+For ages 2-4, bridges also serve as parent reading pauses.
 
 ## Story Templates (MVP: 5 templates)
 

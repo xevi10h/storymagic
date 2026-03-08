@@ -9,7 +9,10 @@ import CreationFooterNav from "./CreationFooterNav";
 interface Step4JuntosProps {
   decisions: StoryDecisions;
   characterName: string;
+  characterAge?: number;
   template: StoryTemplateConfig;
+  portraitUrl?: string | null;
+  onRegeneratePortrait?: () => void;
   onUpdateDecisions: (updates: Partial<StoryDecisions>) => void;
   onNext: () => void;
   onBack: () => void;
@@ -18,7 +21,10 @@ interface Step4JuntosProps {
 export default function Step4Juntos({
   decisions,
   characterName,
+  characterAge,
   template,
+  portraitUrl,
+  onRegeneratePortrait,
   onUpdateDecisions,
   onNext,
   onBack,
@@ -75,7 +81,7 @@ export default function Step4Juntos({
         style={{ backgroundPosition: "0 0, 20px 20px" }}
       />
 
-      <CreationHeader currentStep={4} />
+      <CreationHeader currentStep={4} portraitUrl={portraitUrl} characterName={characterName} characterAge={characterAge} onRegeneratePortrait={onRegeneratePortrait} />
 
       {/* Main */}
       <main className="relative z-10 flex-1 flex flex-col items-center justify-center p-3 md:p-4 lg:p-6">
@@ -98,22 +104,63 @@ export default function Step4Juntos({
           </span>
         </div>
 
-        {/* Floating prompt */}
-        <div className="relative z-30 mb-4 max-w-2xl w-full text-center animate-create-float">
-          <div className="relative bg-white rounded-[3rem] px-6 py-4 shadow-xl border-4 border-create-primary/20 inline-block">
-            <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-6 h-6 bg-white border-b-4 border-r-4 border-create-primary/20 transform rotate-45" />
-            <h1 className="text-xl md:text-3xl font-display font-bold text-create-text mb-1">
+        {/* Question prompt */}
+        <div className="relative z-30 mb-4 max-w-2xl w-full text-center md:animate-create-float">
+          <div className="relative bg-white rounded-2xl md:rounded-[3rem] px-5 py-3 md:px-6 md:py-4 shadow-xl border-2 md:border-4 border-create-primary/20 inline-block">
+            <div className="hidden md:block absolute -bottom-3 left-1/2 -translate-x-1/2 w-6 h-6 bg-white border-b-4 border-r-4 border-create-primary/20 transform rotate-45" />
+            <h1 className="text-lg md:text-3xl font-display font-bold text-create-text mb-0.5 md:mb-1">
               {question}
             </h1>
-            <p className="text-create-primary font-medium text-base">
+            <p className="text-create-primary font-medium text-sm md:text-base">
               {t("chooseNext")}
             </p>
           </div>
         </div>
 
-        {/* The Open Book */}
+        {/* Mobile: compact option cards */}
+        <div className="flex flex-col gap-3 w-full max-w-sm md:hidden">
+          {currentDecision.options.map((option) => {
+            const isSelected = selectedId === option.id;
+            return (
+              <button
+                key={option.id}
+                onClick={() => handleSelect(option.id)}
+                className={`flex items-center gap-3.5 p-3.5 rounded-2xl border-2 transition-all text-left ${
+                  isSelected
+                    ? "border-create-primary bg-create-primary/5 shadow-md"
+                    : "border-create-neutral bg-white hover:border-create-primary/40"
+                }`}
+              >
+                <div
+                  className={`shrink-0 w-14 h-14 rounded-full flex items-center justify-center bg-linear-to-br ${gradient} shadow-lg ${
+                    isSelected ? "ring-3 ring-create-primary/30" : ""
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-white text-2xl">
+                    {option.icon}
+                  </span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className={`font-bold text-sm ${isSelected ? "text-create-primary" : "text-create-text"}`}>
+                    {td(`${tpl}.decisions.${currentKey}.${option.id}.title`)}
+                  </h3>
+                  <p className="text-xs text-create-text-sub mt-0.5 line-clamp-2">
+                    {td(`${tpl}.decisions.${currentKey}.${option.id}.subtitle`)}
+                  </p>
+                </div>
+                {isSelected && (
+                  <span className="material-symbols-outlined text-create-primary text-xl shrink-0">
+                    check_circle
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Desktop: The Open Book */}
         <div
-          className="relative w-full max-w-5xl aspect-16/8 md:aspect-16/7 lg:aspect-5/2 bg-[#fffdfc] rounded-[3rem] overflow-hidden flex border-8 border-[#8B5E3C]"
+          className="relative w-full max-w-5xl aspect-16/7 lg:aspect-5/2 bg-[#fffdfc] rounded-[3rem] overflow-hidden hidden md:flex border-8 border-[#8B5E3C]"
           style={{
             boxShadow:
               "0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06), inset 20px 0 50px rgba(0,0,0,0.05), inset -20px 0 50px rgba(0,0,0,0.05)",
@@ -122,7 +169,7 @@ export default function Step4Juntos({
           }}
         >
           {/* Left Page */}
-          <div className="flex-1 relative p-6 md:p-12 flex flex-col items-center justify-center border-r border-gray-200/50">
+          <div className="flex-1 relative p-12 flex flex-col items-center justify-center border-r border-gray-200/50">
             <span className="absolute bottom-6 left-8 text-gray-400 font-serif italic text-lg">
               {10 + subStep * 2}
             </span>
@@ -139,7 +186,7 @@ export default function Step4Juntos({
           <div className="absolute left-1/2 top-0 bottom-0 w-16 -ml-8 z-10 create-spine-shadow pointer-events-none" />
 
           {/* Right Page */}
-          <div className="flex-1 relative p-6 md:p-12 flex flex-col items-center justify-center">
+          <div className="flex-1 relative p-12 flex flex-col items-center justify-center">
             <span className="absolute bottom-6 right-8 text-gray-400 font-serif italic text-lg">
               {11 + subStep * 2}
             </span>
@@ -153,7 +200,7 @@ export default function Step4Juntos({
           </div>
 
           {/* Floating options */}
-          <div className="absolute inset-0 z-20 flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 p-6">
+          <div className="absolute inset-0 z-20 flex flex-row items-center justify-center gap-8 p-6">
             {currentDecision.options.map((option, idx) => {
               const isSelected = selectedId === option.id;
               const floatClass =
@@ -174,8 +221,8 @@ export default function Step4Juntos({
                     <div
                       className={`rounded-full overflow-hidden shadow-xl transition-all duration-300 ease-out flex items-center justify-center bg-linear-to-br ${gradient} ${
                         isSelected
-                          ? "w-28 h-28 md:w-40 md:h-40 border-[6px] border-create-primary scale-105"
-                          : "w-24 h-24 md:w-36 md:h-36 border-[6px] border-white group-hover:scale-110 group-hover:shadow-2xl group-hover:border-create-primary"
+                          ? "w-40 h-40 border-[6px] border-create-primary scale-105"
+                          : "w-36 h-36 border-[6px] border-white group-hover:scale-110 group-hover:shadow-2xl group-hover:border-create-primary"
                       }`}
                       style={
                         isSelected
@@ -185,7 +232,7 @@ export default function Step4Juntos({
                     >
                       <span
                         className={`material-symbols-outlined text-white transition-transform duration-300 group-hover:scale-110 ${
-                          isSelected ? "text-5xl md:text-6xl" : "text-4xl md:text-5xl"
+                          isSelected ? "text-6xl" : "text-5xl"
                         }`}
                       >
                         {option.icon}
@@ -193,14 +240,14 @@ export default function Step4Juntos({
                     </div>
                     {/* Check indicator */}
                     {isSelected ? (
-                      <div className="absolute -top-2 -right-2 md:-top-3 md:-right-3 bg-create-primary text-white w-8 h-8 md:w-10 md:h-10 rounded-full shadow-lg z-20 flex items-center justify-center border-2 border-white">
-                        <span className="material-symbols-outlined text-lg md:text-xl">
+                      <div className="absolute -top-3 -right-3 bg-create-primary text-white w-10 h-10 rounded-full shadow-lg z-20 flex items-center justify-center border-2 border-white">
+                        <span className="material-symbols-outlined text-xl">
                           check
                         </span>
                       </div>
                     ) : (
-                      <div className="absolute -top-2 -right-2 md:-top-3 md:-right-3 bg-create-primary text-white w-7 h-7 md:w-9 md:h-9 rounded-full opacity-0 group-hover:opacity-100 scale-0 group-hover:scale-100 transition-all z-20 flex items-center justify-center border-2 border-white">
-                        <span className="material-symbols-outlined text-base md:text-lg">
+                      <div className="absolute -top-3 -right-3 bg-create-primary text-white w-9 h-9 rounded-full opacity-0 group-hover:opacity-100 scale-0 group-hover:scale-100 transition-all z-20 flex items-center justify-center border-2 border-white">
+                        <span className="material-symbols-outlined text-lg">
                           check
                         </span>
                       </div>

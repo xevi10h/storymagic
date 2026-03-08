@@ -11,7 +11,10 @@ interface Step4Props {
   mode: CreationMode;
   decisions: StoryDecisions;
   characterName: string;
+  characterAge?: number;
   template: StoryTemplateConfig;
+  portraitUrl?: string | null;
+  onRegeneratePortrait?: () => void;
   onUpdateDecisions: (updates: Partial<StoryDecisions>) => void;
   onNext: () => void;
   onBack: () => void;
@@ -21,7 +24,10 @@ export default function Step4Decisions({
   mode,
   decisions,
   characterName,
+  characterAge,
   template,
+  portraitUrl,
+  onRegeneratePortrait,
   onUpdateDecisions,
   onNext,
   onBack,
@@ -31,7 +37,10 @@ export default function Step4Decisions({
       <Step4Juntos
         decisions={decisions}
         characterName={characterName}
+        characterAge={characterAge}
         template={template}
+        portraitUrl={portraitUrl}
+        onRegeneratePortrait={onRegeneratePortrait}
         onUpdateDecisions={onUpdateDecisions}
         onNext={onNext}
         onBack={onBack}
@@ -43,7 +52,10 @@ export default function Step4Decisions({
     <Step4Solo
       decisions={decisions}
       characterName={characterName}
+      characterAge={characterAge}
       template={template}
+      portraitUrl={portraitUrl}
+      onRegeneratePortrait={onRegeneratePortrait}
       onUpdateDecisions={onUpdateDecisions}
       onNext={onNext}
       onBack={onBack}
