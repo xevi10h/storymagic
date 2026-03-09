@@ -76,7 +76,9 @@ export async function GET(request: NextRequest) {
             }
           : null;
 
-        const { error: updateError } = await supabase
+        // Always use service client for order updates — user's RLS may not allow status changes
+        const adminClient = createServiceClient();
+        const { error: updateError } = await adminClient
           .from("orders")
           .update({
             status: "paid",
