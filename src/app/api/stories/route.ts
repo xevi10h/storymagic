@@ -114,9 +114,9 @@ export async function POST(request: Request) {
         name: character.name,
         gender: character.gender as string,
         age: character.age,
-        hair_color: character.hairColor || "brown-dark",
-        eye_color: character.eyeColor || "brown-dark",
-        skin_tone: character.skinTone || "light",
+        hair_color: character.hairColor || "brown",
+        eye_color: character.eyeColor || null,
+        skin_tone: character.skinTone || "medium",
         ...optionalFields,
       })
       .select("id")

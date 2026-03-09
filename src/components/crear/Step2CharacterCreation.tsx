@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import type { CharacterData, CreationMode, Gender } from "@/lib/create-store";
 import CreationHeader from "./CreationHeader";
 import CreationFooterNav from "./CreationFooterNav";
-import { HAIR_COLORS, EYE_COLORS, SKIN_TONES, INTERESTS, HAIRSTYLES, getHairHex, getEyeHex, getSkinHex } from "@/lib/create-store";
+import { HAIR_COLORS, EYE_COLORS, SKIN_TONES, INTERESTS, HAIRSTYLES } from "@/lib/create-store";
 
 interface Step2Props {
   mode: CreationMode;
@@ -331,11 +331,11 @@ export default function Step2CharacterCreation({
                   </label>
                   <div className="flex gap-2">
                     {HAIR_COLORS.map((h) => {
-                      const isSelected = character.hairColor === h.id;
+                      const isSelected = character.hairColor === h.color;
                       return (
                         <button
                           key={h.id}
-                          onClick={() => onUpdateCharacter({ hairColor: h.id })}
+                          onClick={() => onUpdateCharacter({ hairColor: h.color })}
                           className={`w-9 h-9 rounded-full transition-all ${
                             isSelected
                               ? "ring-[3px] ring-create-primary ring-offset-2 shadow-md scale-110"
@@ -362,11 +362,11 @@ export default function Step2CharacterCreation({
                   </label>
                   <div className="flex gap-2">
                     {EYE_COLORS.map((e) => {
-                      const isSelected = character.eyeColor === e.id;
+                      const isSelected = character.eyeColor === e.color;
                       return (
                         <button
                           key={e.id}
-                          onClick={() => onUpdateCharacter({ eyeColor: e.id })}
+                          onClick={() => onUpdateCharacter({ eyeColor: e.color })}
                           className={`w-9 h-9 rounded-full transition-all ${
                             isSelected
                               ? "ring-[3px] ring-create-primary ring-offset-2 shadow-md scale-110"
@@ -396,11 +396,11 @@ export default function Step2CharacterCreation({
                   </label>
                   <div className="flex gap-2">
                     {SKIN_TONES.map((s) => {
-                      const isSelected = character.skinTone === s.id;
+                      const isSelected = character.skinTone === s.color;
                       return (
                         <button
                           key={s.id}
-                          onClick={() => onUpdateCharacter({ skinTone: s.id })}
+                          onClick={() => onUpdateCharacter({ skinTone: s.color })}
                           className={`w-9 h-9 rounded-full transition-all ${
                             isSelected
                               ? "ring-[3px] ring-create-primary ring-offset-2 shadow-md scale-110"
@@ -554,17 +554,17 @@ export default function Step2CharacterCreation({
               <div className="absolute -bottom-1 -left-1 z-10 flex gap-1.5 bg-white rounded-full shadow-lg border border-create-primary/10 px-2.5 py-1.5">
                 <div
                   className="w-4 h-4 rounded-full ring-2 ring-white shadow-sm transition-colors duration-300"
-                  style={{ backgroundColor: getSkinHex(character.skinTone) }}
+                  style={{ backgroundColor: character.skinTone }}
                   title={t("skinToneTitle")}
                 />
                 <div
                   className="w-4 h-4 rounded-full ring-2 ring-white shadow-sm transition-colors duration-300"
-                  style={{ backgroundColor: getHairHex(character.hairColor) }}
+                  style={{ backgroundColor: character.hairColor }}
                   title={t("hairColorTitle")}
                 />
                 <div
                   className="w-4 h-4 rounded-full ring-2 ring-white shadow-sm transition-colors duration-300"
-                  style={{ backgroundColor: getEyeHex(character.eyeColor) }}
+                  style={{ backgroundColor: character.eyeColor }}
                   title={t("eyeColorTitle")}
                 />
               </div>
