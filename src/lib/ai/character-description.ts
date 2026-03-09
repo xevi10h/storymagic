@@ -18,28 +18,28 @@ export interface CharacterDescriptionInput {
 // --- Lookup maps ---
 
 const SKIN_MAP: Record<string, string> = {
-  "#fce4d6": "light peachy skin",
-  "#eebb99": "warm medium-light skin",
-  "#c68642": "warm medium-brown skin",
-  "#8d5524": "rich dark brown skin",
-  "#523218": "deep dark skin",
+  light: "light peachy skin",
+  "medium-light": "warm medium-light skin",
+  "medium-dark": "warm medium-brown skin",
+  dark: "rich dark brown skin",
+  "very-dark": "deep dark skin",
 };
 
 const HAIR_COLOR_MAP: Record<string, string> = {
-  "#2a2a2a": "jet black",
-  "#5d4037": "dark brown",
-  "#8d6e63": "chestnut brown",
-  "#e6c07b": "golden blonde",
-  "#d84315": "bright red",
+  black: "jet black",
+  "brown-dark": "dark brown",
+  brown: "chestnut brown",
+  blonde: "golden blonde",
+  red: "bright red",
 };
 
 const EYE_COLOR_MAP: Record<string, string> = {
-  "#5d4037": "dark brown",
-  "#8d6e63": "warm brown",
-  "#558b2f": "bright green",
-  "#1976d2": "clear blue",
-  "#a0875b": "hazel",
-  "#78909c": "soft gray",
+  "brown-dark": "dark brown",
+  brown: "warm brown",
+  green: "bright green",
+  blue: "clear blue",
+  hazel: "hazel",
+  gray: "soft gray",
 };
 
 const HAIRSTYLE_MAP: Record<string, string> = {
@@ -51,6 +51,11 @@ const HAIRSTYLE_MAP: Record<string, string> = {
   pigtails: "in two pigtails",
   bob: "bob-cut",
   medium: "medium-length",
+  afro: "voluminous afro",
+  mohawk: "bold mohawk",
+  ponytail: "in a ponytail",
+  braids: "in braids",
+  bun: "in a bun",
 };
 
 /**

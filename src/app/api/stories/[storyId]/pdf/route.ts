@@ -118,12 +118,21 @@ export async function GET(
   const character = story.characters as unknown as {
     name: string;
     age: number;
+    gender: string;
+    city: string | null;
+    interests: string[] | null;
+    special_trait: string | null;
+    favorite_companion: string | null;
+    favorite_food: string | null;
+    future_dream: string | null;
+    avatar_url: string | null;
   };
 
-  // Pre-fetch cover image as base64 data URI
-  const coverImageUrl = story.cover_image_url
-    ? await prefetchImageAsDataUri(story.cover_image_url)
-    : null;
+  // Pre-fetch cover and portrait images as base64 data URIs
+  const [coverImageUrl, portraitUrl] = await Promise.all([
+    story.cover_image_url ? prefetchImageAsDataUri(story.cover_image_url) : null,
+    story.character_portrait_url ? prefetchImageAsDataUri(story.character_portrait_url) : null,
+  ]);
 
   const illustrations = (
     story.story_illustrations as unknown as {
@@ -151,6 +160,14 @@ export async function GET(
     storyId,
     coverImageUrl,
     illustrations: prefetchedIllustrations,
+    portraitUrl,
+    characterGender: character.gender,
+    characterCity: character.city,
+    characterInterests: character.interests ?? [],
+    specialTrait: character.special_trait,
+    favoriteCompanion: character.favorite_companion,
+    favoriteFood: character.favorite_food,
+    futureDream: character.future_dream,
   };
 
   try {

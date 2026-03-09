@@ -130,9 +130,9 @@ export const INITIAL_STATE: CreateBookState = {
     name: "",
     city: "",
     age: 5,
-    hairColor: "#5d4037",
-    eyeColor: "#5d4037",
-    skinTone: "#fce4d6",
+    hairColor: "brown-dark",
+    eyeColor: "brown-dark",
+    skinTone: "light",
     gender: "boy",
     hairstyle: "short",
     interests: [],
@@ -180,6 +180,17 @@ export const SKIN_TONES = [
   { id: "dark", color: "#8d5524" },
   { id: "very-dark", color: "#523218" },
 ];
+
+// Resolve semantic IDs to hex colors for UI display
+export function getHairHex(id: string): string {
+  return HAIR_COLORS.find((h) => h.id === id)?.color ?? "#5d4037";
+}
+export function getEyeHex(id: string): string {
+  return EYE_COLORS.find((e) => e.id === id)?.color ?? "#5d4037";
+}
+export function getSkinHex(id: string): string {
+  return SKIN_TONES.find((s) => s.id === id)?.color ?? "#fce4d6";
+}
 
 // Labels are translated via i18n: td('interests.${id}')
 export const INTERESTS = [

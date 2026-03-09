@@ -174,6 +174,26 @@ export function PageFrameBorder({
   );
 }
 
+// ── Wavy dots (3 dots in a row — matches web WavyDots component) ─────────
+
+export function WavyDots({
+  color = "#E6C9A8",
+  size = 4,
+}: {
+  color?: string;
+  size?: number;
+}) {
+  const w = size * 5;
+  const h = size;
+  return (
+    <Svg viewBox="0 0 30 6" style={{ width: w, height: h }}>
+      <Circle cx={5} cy={3} r={2} fill={color} opacity={0.4} />
+      <Circle cx={15} cy={3} r={2} fill={color} opacity={0.6} />
+      <Circle cx={25} cy={3} r={2} fill={color} opacity={0.4} />
+    </Svg>
+  );
+}
+
 // ── Wavy line ──────────────────────────────────────────────────────────────
 
 export function WavyLine({

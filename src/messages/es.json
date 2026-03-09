@@ -230,7 +230,11 @@
       "upgradeSubtitle": "Crea una cuenta para guardar tus cuentos",
       "upgradeSuccess": "¡Cuenta creada!",
       "upgradeSuccessDesc": "Tu cuenta se ha creado correctamente. Todos tus cuentos están guardados en tu biblioteca.",
-      "goToLibrary": "Ir a la biblioteca"
+      "upgradeCheckEmail": "¡Ya casi! Confirma tu email",
+      "upgradeCheckEmailDesc": "Te hemos enviado un enlace de confirmación a",
+      "upgradeCheckEmailAction": "Haz clic en el enlace para activar tu cuenta. Tus cuentos estarán guardados.",
+      "goToLibrary": "Ir a la biblioteca",
+      "emailAlreadyRegistered": "Este email ya está registrado. Prueba a iniciar sesión."
     },
     "resetPassword": {
       "subtitle": "Recupera el acceso a tu cuenta",

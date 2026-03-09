@@ -2,13 +2,14 @@
 
 import { Suspense, useEffect, useState, useRef } from "react";
 import { useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import BrandLogo from "@/components/BrandLogo";
 
 function UpdatePasswordContent() {
   const t = useTranslations("auth.updatePassword");
+  const locale = useLocale();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [password, setPassword] = useState("");
@@ -44,7 +45,7 @@ function UpdatePasswordContent() {
       .finally(() => {
         setExchanging(false);
         // Clean the URL to remove the code
-        window.history.replaceState(null, "", "/auth/update-password");
+        window.history.replaceState(null, "", `/${locale}/auth/update-password`);
       });
   }, [searchParams, t]);
 

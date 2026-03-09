@@ -230,7 +230,11 @@
       "upgradeSubtitle": "Create an account to save your stories",
       "upgradeSuccess": "Account created!",
       "upgradeSuccessDesc": "Your account has been created successfully. All your stories are saved in your library.",
-      "goToLibrary": "Go to library"
+      "upgradeCheckEmail": "Almost there! Confirm your email",
+      "upgradeCheckEmailDesc": "We've sent a confirmation link to",
+      "upgradeCheckEmailAction": "Click the link to activate your account. Your stories will be saved.",
+      "goToLibrary": "Go to library",
+      "emailAlreadyRegistered": "This email is already registered. Try logging in instead."
     },
     "resetPassword": {
       "subtitle": "Recover access to your account",

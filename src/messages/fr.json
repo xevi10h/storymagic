@@ -230,7 +230,11 @@
       "upgradeSubtitle": "Créez un compte pour sauvegarder vos contes",
       "upgradeSuccess": "Compte créé !",
       "upgradeSuccessDesc": "Votre compte a été créé avec succès. Tous vos contes sont sauvegardés dans votre bibliothèque.",
-      "goToLibrary": "Aller à la bibliothèque"
+      "upgradeCheckEmail": "Presque terminé ! Confirmez votre email",
+      "upgradeCheckEmailDesc": "Nous vous avons envoyé un lien de confirmation à",
+      "upgradeCheckEmailAction": "Cliquez sur le lien pour activer votre compte. Vos contes seront sauvegardés.",
+      "goToLibrary": "Aller à la bibliothèque",
+      "emailAlreadyRegistered": "Cet email est déjà enregistré. Essayez de vous connecter."
     },
     "resetPassword": {
       "subtitle": "Récupérez l'accès à votre compte",

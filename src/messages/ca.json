@@ -230,7 +230,11 @@
       "upgradeSubtitle": "Crea un compte per guardar els teus contes",
       "upgradeSuccess": "Compte creat!",
       "upgradeSuccessDesc": "El teu compte s'ha creat correctament. Tots els teus contes estan guardats a la teva biblioteca.",
-      "goToLibrary": "Anar a la biblioteca"
+      "upgradeCheckEmail": "Quasi fet! Confirma el teu email",
+      "upgradeCheckEmailDesc": "T'hem enviat un enllaç de confirmació a",
+      "upgradeCheckEmailAction": "Fes clic a l'enllaç per activar el teu compte. Els teus contes estaran guardats.",
+      "goToLibrary": "Anar a la biblioteca",
+      "emailAlreadyRegistered": "Aquest email ja està registrat. Prova d'iniciar sessió."
     },
     "resetPassword": {
       "subtitle": "Recupera l'accés al teu compte",

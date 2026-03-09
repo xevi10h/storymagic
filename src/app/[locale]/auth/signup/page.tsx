@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import BrandLogo from "@/components/BrandLogo";
@@ -17,6 +17,7 @@ export default function SignupPage() {
 
 function SignupPageContent() {
   const t = useTranslations("auth.signup");
+  const locale = useLocale();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -45,11 +46,15 @@ function SignupPageContent() {
     setLoading(true);
 
     if (isAnonymous) {
-      // Upgrade anonymous user → keeps the same user_id, preserving all stories
+      // Upgrade anonymous user → keeps the same user_id, preserving all stories.
+      // Supabase treats the email as a "change" requiring confirmation.
+      // The user must click the confirmation link before is_anonymous becomes false.
       const { error } = await supabase.auth.updateUser({
         email,
         password,
         data: { full_name: name },
+      }, {
+        emailRedirectTo: `${window.location.origin}/${locale}/auth/callback?next=${encodeURIComponent("/dashboard")}`,
       });
 
       if (error) {
@@ -58,8 +63,7 @@ function SignupPageContent() {
         return;
       }
 
-      // Only update profile name — email will be confirmed via verification link.
-      // The auth callback or onAuthStateChange will sync the verified email.
+      // Update profile name immediately (email will sync after confirmation)
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         await supabase.from("profiles").upsert({
@@ -74,19 +78,27 @@ function SignupPageContent() {
     }
 
     // Normal signup for non-anonymous users
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: {
           full_name: name,
         },
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextUrl)}`,
+        emailRedirectTo: `${window.location.origin}/${locale}/auth/callback?next=${encodeURIComponent(nextUrl)}`,
       },
     });
 
     if (error) {
       setError(error.message);
+      setLoading(false);
+      return;
+    }
+
+    // Supabase returns a user with empty identities when email already exists
+    // (no error is thrown, but no confirmation email is sent either)
+    if (data.user && data.user.identities?.length === 0) {
+      setError(t("emailAlreadyRegistered"));
       setLoading(false);
       return;
     }
@@ -103,7 +115,7 @@ function SignupPageContent() {
       const { error } = await supabase.auth.linkIdentity({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextUrl)}`,
+          redirectTo: `${window.location.origin}/${locale}/auth/callback?next=${encodeURIComponent(nextUrl)}`,
         },
       });
       if (error) {
@@ -125,35 +137,7 @@ function SignupPageContent() {
   }
 
   if (success) {
-    // Anonymous upgrade: redirect to dashboard immediately
-    if (isAnonymous) {
-      return (
-        <div className="flex min-h-screen items-center justify-center bg-create-bg px-4">
-          <div className="w-full max-w-md text-center">
-            <div className="rounded-2xl border border-border-light bg-white p-8 shadow-sm">
-              <span className="material-symbols-outlined mb-4 text-5xl text-success">
-                check_circle
-              </span>
-              <h2 className="font-display text-2xl font-bold text-secondary">
-                {t("upgradeSuccess")}
-              </h2>
-              <p className="mt-3 text-sm leading-relaxed text-text-muted">
-                {t("upgradeSuccessDesc")}
-              </p>
-              <Link
-                href="/dashboard"
-                className="mt-6 inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-white transition-all hover:bg-primary-hover"
-              >
-                <span className="material-symbols-outlined text-lg">library_books</span>
-                {t("goToLibrary")}
-              </Link>
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    // Normal signup: check email
+    // Both anonymous upgrade and normal signup need email confirmation
     return (
       <div className="flex min-h-screen items-center justify-center bg-create-bg px-4">
         <div className="w-full max-w-md text-center">
@@ -162,18 +146,28 @@ function SignupPageContent() {
               mark_email_read
             </span>
             <h2 className="font-display text-2xl font-bold text-secondary">
-              {t("checkEmail")}
+              {isAnonymous ? t("upgradeCheckEmail") : t("checkEmail")}
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-text-muted">
-              {t("confirmationSent")}{" "}
-              <strong className="text-text-main">{email}</strong>. {t("confirmationAction")}
+              {isAnonymous ? t("upgradeCheckEmailDesc") : t("confirmationSent")}{" "}
+              <strong className="text-text-main">{email}</strong>.{" "}
+              {isAnonymous ? t("upgradeCheckEmailAction") : t("confirmationAction")}
             </p>
-            <Link
-              href={`/auth/login${nextUrl !== "/crear" ? `?next=${encodeURIComponent(nextUrl)}` : ""}`}
-              className="mt-6 inline-block text-sm font-semibold text-primary hover:underline"
-            >
-              {t("goToLogin")}
-            </Link>
+            {isAnonymous ? (
+              <Link
+                href="/dashboard"
+                className="mt-6 inline-block text-sm font-semibold text-primary hover:underline"
+              >
+                {t("goToLibrary")}
+              </Link>
+            ) : (
+              <Link
+                href={`/auth/login${nextUrl !== "/crear" ? `?next=${encodeURIComponent(nextUrl)}` : ""}`}
+                className="mt-6 inline-block text-sm font-semibold text-primary hover:underline"
+              >
+                {t("goToLogin")}
+              </Link>
+            )}
           </div>
         </div>
       </div>
