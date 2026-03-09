@@ -172,7 +172,8 @@ export async function POST(
       (async (): Promise<string | null> => {
         if (mockMode || !hasRecraft) return mockMode ? getMockCoverUrl() : null;
         try {
-          const coverPrompt = `${generatedStory.coverImagePrompt} Children's book illustration, soft warm palette, gentle lighting, no text in image.`;
+          let coverPrompt = `${generatedStory.coverImagePrompt} Children's book illustration, soft warm palette, gentle lighting, no text in image.`;
+          if (coverPrompt.length > 1000) coverPrompt = coverPrompt.slice(0, 999) + "…";
           const coverUrl = await generateWithRetry(coverPrompt, recraftApiToken!, styleId ? { styleId } : undefined);
           return await uploadCoverFromUrl(supabase, storyId, coverUrl);
         } catch (coverError) {

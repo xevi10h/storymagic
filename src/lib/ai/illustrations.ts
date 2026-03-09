@@ -219,7 +219,9 @@ export function buildSecondaryPrompt(
   sceneIndex: number = 0,
 ): string {
   const composition = SECONDARY_COMPOSITIONS[sceneIndex % SECONDARY_COMPOSITIONS.length];
-  return `${sceneTitle}. ${composition} ${characterRef}. Children's book illustration, rich textures, no text in image.`;
+  let prompt = `${sceneTitle}. ${composition} ${characterRef}. Children's book illustration, rich textures, no text in image.`;
+  if (prompt.length > 1000) prompt = prompt.slice(0, 999) + "…";
+  return prompt;
 }
 
 // --- Public API ---
@@ -277,12 +279,22 @@ export async function generateIllustrationsForStory(
 
   console.log(`[Illustrations] Generating ${imagePrompts.length} images via Recraft V3 (styleId: ${styleId.slice(0, 8)}...)`);
 
-  // Enhance each prompt: scene description first (for visual variety),
-  // character reference appended (for consistency), style suffix last.
+  // Enhance each prompt: the LLM-generated imagePrompt already includes character
+  // description + style (from the architect template). We append extras only if missing,
+  // then TRUNCATE to Recraft's 1000-char limit to avoid 400 errors.
+  const RECRAFT_MAX_PROMPT = 1000;
   const enhancedPrompts = imagePrompts.map((scenePrompt) => {
     const hasCharRef = scenePrompt.toLowerCase().includes(characterRef.toLowerCase().slice(0, 20));
-    const suffix = hasCharRef ? "" : ` The protagonist: ${characterRef}.`;
-    return `${scenePrompt}.${suffix} ${ageConf.illustrationPromptStyle}`;
+    const hasStyle = scenePrompt.toLowerCase().includes(ageConf.illustrationPromptStyle.toLowerCase().slice(0, 30));
+    let prompt = scenePrompt;
+    if (!hasCharRef) prompt += ` The protagonist: ${characterRef}.`;
+    if (!hasStyle) prompt += ` ${ageConf.illustrationPromptStyle}`;
+    // Truncate to Recraft's limit — scene description is always first, so important content survives
+    if (prompt.length > RECRAFT_MAX_PROMPT) {
+      prompt = prompt.slice(0, RECRAFT_MAX_PROMPT - 1) + "…";
+      console.warn(`[Illustrations] Prompt truncated from ${scenePrompt.length + (prompt.length - scenePrompt.length)} to ${RECRAFT_MAX_PROMPT} chars`);
+    }
+    return prompt;
   });
 
   // Build per-image Recraft options with correct sizes
