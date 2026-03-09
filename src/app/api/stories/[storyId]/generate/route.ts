@@ -8,6 +8,7 @@ import {
   createStyleFromAvatar,
   generateWithRetry,
   getSecondaryScenes,
+  getGenderColorDirective,
 } from "@/lib/ai/illustrations";
 import { uploadIllustrationFromUrl, uploadCoverFromUrl } from "@/lib/supabase/storage";
 import { getMockIllustrationUrl, getMockCoverUrl, getMockPortraitUrl, getMockSecondaryIllustrationUrl } from "@/lib/ai/mock-story";
@@ -172,7 +173,8 @@ export async function POST(
       (async (): Promise<string | null> => {
         if (mockMode || !hasRecraft) return mockMode ? getMockCoverUrl() : null;
         try {
-          let coverPrompt = `${generatedStory.coverImagePrompt} Children's book illustration, soft warm palette, gentle lighting, no text in image.`;
+          const genderColor = getGenderColorDirective(input.gender);
+          let coverPrompt = `${generatedStory.coverImagePrompt} Children's book illustration, soft warm palette, gentle lighting, no text in image.${genderColor ? ` ${genderColor}` : ""}`;
           if (coverPrompt.length > 1000) coverPrompt = coverPrompt.slice(0, 999) + "…";
           const coverUrl = await generateWithRetry(coverPrompt, recraftApiToken!, styleId ? { styleId } : undefined);
           return await uploadCoverFromUrl(supabase, storyId, coverUrl);
@@ -185,6 +187,7 @@ export async function POST(
       generateIllustrationsForStory(previewPrompts, characterRef, {
         styleId,
         childAge: input.age,
+        gender: input.gender,
         imageSizes: previewSizes,
       }),
     ]);

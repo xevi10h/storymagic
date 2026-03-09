@@ -214,6 +214,7 @@ export async function POST(
         {
           styleId: storedStyleId,
           childAge: character.age,
+          gender: character.gender,
           imageSizes: remainingSizes,
         },
       );

@@ -112,6 +112,23 @@ export function buildCharacterReference(input: CharacterDescriptionInput): strin
   return parts.filter(Boolean).join(", ");
 }
 
+// ── Gender-aware color directives for illustration prompts ────────────────
+
+const GENDER_COLOR_DIRECTIVES: Record<string, string> = {
+  girl: "Use a warm color palette leaning toward soft pinks, rose, coral, lavender, and gentle magenta tones. Backgrounds should have warm rosy undertones.",
+  boy: "Use a cool color palette leaning toward soft blues, teal, sky blue, cerulean, and gentle navy tones. Backgrounds should have cool blue undertones.",
+};
+
+/**
+ * Returns a color direction string to append to image prompts,
+ * so illustrations match the gender-tinted book palette.
+ * Neutral gender returns empty string (no color override).
+ */
+export function getGenderColorDirective(gender?: string): string {
+  if (!gender) return "";
+  return GENDER_COLOR_DIRECTIVES[gender] ?? "";
+}
+
 /**
  * Builds a shorter version for LLM text generation prompts.
  * Used in story-generator.ts to give the LLM physical context.

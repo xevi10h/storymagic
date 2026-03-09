@@ -11,7 +11,8 @@
 import crypto from "crypto";
 import { getMockIllustrationUrl } from "./mock-story";
 import { getAgeConfig } from "./story-generator";
-export { buildCharacterReference } from "./character-description";
+export { buildCharacterReference, getGenderColorDirective } from "./character-description";
+import { getGenderColorDirective } from "./character-description";
 
 const RECRAFT_BASE = "https://external.api.recraft.ai/v1";
 const RECRAFT_GENERATE_URL = `${RECRAFT_BASE}/images/generations`;
@@ -254,6 +255,8 @@ export async function generateIllustrationsForStory(
   options?: {
     styleId?: string | null;
     childAge?: number;
+    /** Character gender — influences illustration color palette ("boy" | "girl" | "neutral") */
+    gender?: string;
     /** Per-image Recraft size (e.g. "1024x1024", "1820x1024", "2048x1024"). Falls back to DEFAULT_IMAGE_SIZE. */
     imageSizes?: string[];
   },
@@ -277,7 +280,10 @@ export async function generateIllustrationsForStory(
   // Custom style_id from portrait takes precedence; fall back to age-based community style UUID
   const styleId = options?.styleId ?? ageConf.illustrationStyleId;
 
-  console.log(`[Illustrations] Generating ${imagePrompts.length} images via Recraft V3 (styleId: ${styleId.slice(0, 8)}...)`);
+  // Gender color directive — appended to every prompt so illustrations match the book palette
+  const colorDirective = getGenderColorDirective(options?.gender);
+
+  console.log(`[Illustrations] Generating ${imagePrompts.length} images via Recraft V3 (styleId: ${styleId.slice(0, 8)}..., gender: ${options?.gender ?? "neutral"})`);
 
   // Enhance each prompt: the LLM-generated imagePrompt already includes character
   // description + style (from the architect template). We append extras only if missing,
@@ -289,6 +295,7 @@ export async function generateIllustrationsForStory(
     let prompt = scenePrompt;
     if (!hasCharRef) prompt += ` The protagonist: ${characterRef}.`;
     if (!hasStyle) prompt += ` ${ageConf.illustrationPromptStyle}`;
+    if (colorDirective) prompt += ` ${colorDirective}`;
     // Truncate to Recraft's limit — scene description is always first, so important content survives
     if (prompt.length > RECRAFT_MAX_PROMPT) {
       prompt = prompt.slice(0, RECRAFT_MAX_PROMPT - 1) + "…";

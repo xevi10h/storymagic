@@ -21,7 +21,7 @@ import {
   getAtmosphereNarrative,
 } from "@/lib/create-store";
 import { generateMockStory } from "./mock-story";
-import { buildCharacterVisualDescription } from "./character-description";
+import { buildCharacterVisualDescription, getGenderColorDirective } from "./character-description";
 
 // ── Native HTTPS fetch (bypasses undici) ─────────────────────────────────────
 
@@ -528,6 +528,12 @@ function buildArchitectPrompt(input: StoryInput): string {
 
   const narrativeStructure = buildNarrativeStructure(input, ageConfig);
 
+  // Gender-aware color direction for illustration prompts
+  const colorDirective = getGenderColorDirective(input.gender);
+  const colorInstruction = colorDirective
+    ? `\nCOLOR PALETTE for ALL image prompts: ${colorDirective}`
+    : "";
+
   return `You are a world-class children's book ARCHITECT. Your job: plan an ENTIRE personalized book in one coherent creative vision.
 
 You produce a SKELETON — for each scene you write a SHORT BRIEF (2-3 sentences summarizing what happens, the emotion, key details) that a writer will later expand. You also produce the FINAL image prompts (ready for the illustrator).
@@ -543,7 +549,7 @@ RULES:
   * Vary poses: running, sitting, reaching, crouching, jumping, climbing, hugging
   * Vary framing: small in landscape, filling frame, interacting with objects/creatures
   * NEVER repeat "character standing and looking at something"
-
+${colorInstruction}
 AGE: ${input.age} years old
 MODE: ${modeInstruction}
 
