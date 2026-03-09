@@ -132,7 +132,7 @@ export default function Step2CharacterCreation({
           </div>
 
           {/* Mobile preview strip — nebula placeholder */}
-          <div className="flex lg:hidden items-center gap-3 bg-white rounded-2xl border border-create-neutral/60 shadow-sm px-4 py-3 mb-1">
+          <div className="flex lg:hidden items-center gap-3 bg-white rounded-2xl border border-create-neutral/60 shadow-sm px-4 py-3 mb-4">
             <div className="relative shrink-0">
               <div className="rounded-full p-0.5 bg-gradient-to-br from-create-primary via-amber-400 to-create-primary shadow-md">
                 <NebulaPlaceholder size={56} name={character.name} />
@@ -523,71 +523,55 @@ export default function Step2CharacterCreation({
                 })}
               </div>
             </div>
+
           </div>
         </section>
 
-        {/* Right: Character Card (desktop only) — nebula mystery placeholder */}
-        <section className="hidden lg:flex flex-col items-center justify-center w-[32%] relative">
+        {/* Right: Character Card (desktop only) — nebula + art style selector */}
+        <section className="hidden lg:flex flex-col items-center w-[32%] relative py-4 overflow-y-auto no-scrollbar">
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute top-[10%] right-[5%] w-48 h-48 rounded-full bg-create-primary/5 blur-3xl" />
             <div className="absolute bottom-[15%] left-[10%] w-36 h-36 rounded-full bg-amber-200/20 blur-3xl" />
           </div>
 
-          <div className="relative z-10 w-[280px] flex flex-col items-center gap-0">
-            {/* Nebula placeholder */}
+          <div className="relative z-10 w-[260px] flex flex-col items-center gap-0">
+            {/* Nebula placeholder — compact */}
             <div className="relative">
-              <div className="rounded-full p-1 bg-gradient-to-br from-create-primary/60 via-amber-400/50 to-create-primary/40 shadow-lg">
-                <NebulaPlaceholder size={160} name={character.name} />
+              <div className="rounded-full p-0.5 bg-gradient-to-br from-create-primary/60 via-amber-400/50 to-create-primary/40 shadow-lg">
+                <NebulaPlaceholder size={100} name={character.name} />
               </div>
 
               {/* Age badge */}
-              <div className="absolute -top-1 -right-1 z-10 bg-white rounded-full shadow-lg border-2 border-create-primary/20 w-11 h-11 flex flex-col items-center justify-center">
-                <span className="text-create-primary font-display text-sm leading-none">
+              <div className="absolute -top-0.5 -right-0.5 z-10 bg-white rounded-full shadow-lg border-2 border-create-primary/20 w-8 h-8 flex flex-col items-center justify-center">
+                <span className="text-create-primary font-display text-xs leading-none font-bold">
                   {character.age}
-                </span>
-                <span className="text-[7px] font-bold text-create-text-sub leading-none mt-0.5">
-                  {character.age === 1 ? t("year") : t("years")}
                 </span>
               </div>
 
               {/* Trait dots */}
-              <div className="absolute -bottom-1 -left-1 z-10 flex gap-1.5 bg-white rounded-full shadow-lg border border-create-primary/10 px-2.5 py-1.5">
-                <div
-                  className="w-4 h-4 rounded-full ring-2 ring-white shadow-sm transition-colors duration-300"
-                  style={{ backgroundColor: character.skinTone }}
-                  title={t("skinToneTitle")}
-                />
-                <div
-                  className="w-4 h-4 rounded-full ring-2 ring-white shadow-sm transition-colors duration-300"
-                  style={{ backgroundColor: character.hairColor }}
-                  title={t("hairColorTitle")}
-                />
-                <div
-                  className="w-4 h-4 rounded-full ring-2 ring-white shadow-sm transition-colors duration-300"
-                  style={{ backgroundColor: character.eyeColor }}
-                  title={t("eyeColorTitle")}
-                />
+              <div className="absolute -bottom-0.5 -left-0.5 z-10 flex gap-1 bg-white rounded-full shadow-lg border border-create-primary/10 px-2 py-1">
+                <div className="w-3.5 h-3.5 rounded-full ring-2 ring-white shadow-sm" style={{ backgroundColor: character.skinTone }} />
+                <div className="w-3.5 h-3.5 rounded-full ring-2 ring-white shadow-sm" style={{ backgroundColor: character.hairColor }} />
+                <div className="w-3.5 h-3.5 rounded-full ring-2 ring-white shadow-sm" style={{ backgroundColor: character.eyeColor }} />
               </div>
             </div>
 
             {/* Greeting */}
-            <div className="text-center mt-2">
-              <h3 className="text-lg font-display text-create-text leading-tight">
-                {greetingText}
-              </h3>
-            </div>
+            <h3 className="text-base font-display text-create-text leading-tight text-center mt-2">
+              {greetingText}
+            </h3>
 
-            {/* Hint: communicate that avatar will be created */}
-            <p className="text-center text-create-text-sub text-xs font-medium leading-snug max-w-56 mt-1 mb-2">
+            {/* Hint */}
+            <p className="text-center text-create-text-sub text-[11px] font-medium leading-snug max-w-52 mt-0.5 mb-2">
               {character.name.trim()
                 ? t("nebulaHintReady", { name: character.name })
                 : t("nebulaHint")}
             </p>
 
-            {/* Info card */}
-            <div className="w-full bg-white/70 backdrop-blur-sm rounded-xl border border-create-primary/10 shadow-sm px-3.5 py-3 flex flex-col gap-1.5">
-              <div className="flex items-center gap-2 text-sm">
-                <span className="material-symbols-outlined text-create-primary text-base">
+            {/* Info card — compact */}
+            <div className="w-full bg-white/70 backdrop-blur-sm rounded-xl border border-create-primary/10 shadow-sm px-3 py-2.5 flex flex-col gap-1">
+              <div className="flex items-center gap-2 text-xs">
+                <span className="material-symbols-outlined text-create-primary text-sm">
                   {character.gender === "boy" ? "boy" : character.gender === "girl" ? "girl" : "sentiment_satisfied"}
                 </span>
                 <span className="font-bold text-create-text">
@@ -600,16 +584,16 @@ export default function Step2CharacterCreation({
               </div>
 
               {character.interests.length > 0 ? (
-                <div className="flex flex-wrap gap-1.5">
+                <div className="flex flex-wrap gap-1">
                   {character.interests.map((id) => {
                     const interest = INTERESTS.find((i) => i.id === id);
                     if (!interest) return null;
                     return (
                       <span
                         key={id}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-create-primary/8 text-create-primary text-xs font-bold"
+                        className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-create-primary/8 text-create-primary text-[10px] font-bold"
                       >
-                        <span className="material-symbols-outlined text-xs">
+                        <span className="material-symbols-outlined text-[10px]">
                           {interest.icon}
                         </span>
                         {td(`interests.${interest.id}`)}
@@ -618,17 +602,12 @@ export default function Step2CharacterCreation({
                   })}
                 </div>
               ) : (
-                <p className="text-create-text-sub text-sm font-medium italic">
+                <p className="text-create-text-sub text-xs font-medium italic">
                   {t("interestsPrompt")}
                 </p>
               )}
-
-              {interestLabels.length > 0 && (
-                <p className="text-create-text-sub text-xs leading-relaxed border-t border-create-primary/5 pt-2">
-                  {previewText}
-                </p>
-              )}
             </div>
+
           </div>
         </section>
       </main>

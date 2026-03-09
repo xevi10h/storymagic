@@ -298,6 +298,7 @@ export type Database = {
           generated_text: Json | null
           id: string
           is_showcase: boolean
+          locale: string
           pdf_url: string | null
           saga_id: string | null
           saga_order: number | null
@@ -320,6 +321,7 @@ export type Database = {
           generated_text?: Json | null
           id?: string
           is_showcase?: boolean
+          locale?: string
           pdf_url?: string | null
           saga_id?: string | null
           saga_order?: number | null
@@ -342,6 +344,7 @@ export type Database = {
           generated_text?: Json | null
           id?: string
           is_showcase?: boolean
+          locale?: string
           pdf_url?: string | null
           saga_id?: string | null
           saga_order?: number | null

@@ -29,7 +29,7 @@ function SignupPageContent() {
   const router = useRouter();
   const supabase = createClient();
 
-  const nextUrl = searchParams.get("next") || "/crear";
+  const nextUrl = searchParams.get("next") || "/dashboard";
 
   // Detect anonymous users — they need account upgrade, not new signup
   useEffect(() => {
@@ -162,7 +162,7 @@ function SignupPageContent() {
               </Link>
             ) : (
               <Link
-                href={`/auth/login${nextUrl !== "/crear" ? `?next=${encodeURIComponent(nextUrl)}` : ""}`}
+                href={`/auth/login${nextUrl !== "/dashboard" ? `?next=${encodeURIComponent(nextUrl)}` : ""}`}
                 className="mt-6 inline-block text-sm font-semibold text-primary hover:underline"
               >
                 {t("goToLogin")}

@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useState, useCallback, useEffect, useRef } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useSearchParams } from "next/navigation";
 import {
@@ -36,6 +36,7 @@ export default function CrearPage() {
 
 function CrearPageContent() {
   const t = useTranslations("crear");
+  const locale = useLocale();
   const [state, setState, clearState] = usePersistedState<CreateBookState>(
     STORAGE_KEY,
     INITIAL_STATE
@@ -164,10 +165,10 @@ function CrearPageContent() {
 
   const updateCharacter = useCallback(
     (updates: Partial<CreateBookState["character"]>) => {
-      setState((prev) => ({
-        ...prev,
-        character: { ...prev.character, ...updates },
-      }));
+      setState((prev) => {
+        const newCharacter = { ...prev.character, ...updates };
+        return { ...prev, character: newCharacter };
+      });
     },
     [setState]
   );
@@ -246,6 +247,7 @@ function CrearPageContent() {
           ending: state.ending,
           portraitUrl: state.portraitUrl,
           recraftStyleId: state.recraftStyleId,
+          locale,
         }),
       });
 

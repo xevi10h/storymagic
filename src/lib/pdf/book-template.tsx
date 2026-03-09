@@ -45,12 +45,38 @@ import {
   StyleSheet,
   Svg,
   Rect,
+  Defs,
+  LinearGradient,
+  Stop,
   renderToBuffer,
 } from "@react-pdf/renderer";
 import { BOOK, COLORS, TYPE, FONTS, getTheme, getPdfTextConfig, type TemplateTheme, type PdfTextConfig } from "./theme";
 import { OrnamentalDivider, StarCluster, WavyLine, WavyDots } from "./decorations";
 import type { GeneratedScene, GeneratedStory } from "@/lib/ai/story-generator";
 import QRCode from "qrcode";
+
+// ── Brand logo PNG — rasterised server-side with sharp ────────────────────────
+// @react-pdf/renderer Image only supports PNG/JPEG, not SVG data URIs.
+// We convert once per process and cache the result.
+
+const BRAND_LOGO_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1013 255" fill="white"><g transform="translate(0,255) scale(0.1,-0.1)"><path d="M443 2525 c-28 -20 -30 -65 -5 -87 9 -9 44 -21 77 -28 246 -48 461 -157 617 -311 98 -97 121 -142 30 -58 -187 173 -574 300 -922 303 -129 1 -161 -9 -202 -66 -31 -44 -30 -112 1 -373 20 -162 24 -249 25 -460 0 -251 -5 -334 -40 -626 -20 -161 -15 -197 32 -248 42 -48 94 -63 194 -59 l75 3 17 136 c63 508 70 935 22 1319 -21 171 -33 154 99 146 417 -25 698 -186 793 -455 36 -100 32 -143 -30 -331 -136 -414 -158 -701 -77 -1007 48 -181 83 -228 188 -259 108 -31 193 2 283 111 106 127 230 209 399 265 135 44 241 60 451 69 203 8 230 15 270 71 33 47 34 87 6 308 -34 269 -36 252 22 208 52 -40 133 -84 204 -111 45 -17 46 -18 63 -83 46 -186 195 -343 375 -397 30 -9 105 -19 165 -22 256 -13 464 68 654 254 52 51 95 93 96 93 1 0 12 -27 24 -59 44 -121 137 -219 248 -261 123 -47 296 -35 402 27 54 31 130 108 157 158 10 19 22 35 25 35 4 0 10 -20 13 -44 11 -70 63 -146 121 -176 66 -34 177 -35 247 -3 62 28 131 93 175 165 20 32 38 58 40 58 3 0 2 -146 -2 -324 l-8 -325 30 -30 c57 -57 165 -51 203 12 19 31 20 54 20 570 0 595 3 634 62 755 73 147 231 218 389 173 135 -38 240 -194 243 -359 l1 -55 -160 -59 c-270 -98 -363 -154 -423 -256 -22 -39 -27 -59 -27 -118 0 -61 4 -77 30 -120 45 -72 117 -107 235 -112 302 -15 528 165 591 471 10 51 19 104 19 118 0 20 13 37 56 70 31 23 90 80 132 125 l77 82 0 -292 c0 -248 3 -300 18 -356 41 -150 123 -215 272 -215 68 0 89 4 138 28 64 32 125 95 173 182 l31 56 38 -50 c74 -97 175 -164 296 -197 88 -24 280 -24 369 0 131 36 268 132 349 244 45 63 61 75 61 46 0 -9 13 -44 30 -79 77 -160 235 -245 434 -232 142 9 255 71 331 181 40 59 52 59 54 0 2 -41 34 -123 56 -144 36 -34 90 -42 149 -22 72 25 81 52 50 157 -38 125 -47 236 -40 467 9 271 3 283 -124 280 -36 -1 -63 -8 -80 -20 -24 -18 -25 -25 -37 -191 -13 -199 -37 -292 -95 -382 -82 -128 -232 -173 -362 -109 -37 17 -58 37 -86 81 -50 77 -64 140 -64 274 1 128 18 207 68 310 49 99 94 148 178 189 59 30 81 36 136 36 87 0 136 -16 182 -61 51 -49 70 -59 120 -59 80 0 130 36 130 95 0 58 -50 110 -151 154 -167 74 -407 68 -571 -15 -77 -39 -205 -172 -250 -259 -56 -111 -98 -261 -98 -354 0 -51 -70 -162 -154 -247 -151 -151 -350 -201 -530 -134 -138 52 -226 214 -226 415 1 266 147 458 349 458 48 0 78 -6 108 -22 50 -25 67 -49 84 -114 16 -64 41 -81 116 -75 48 4 61 10 85 37 23 26 28 40 28 84 -1 98 -58 178 -164 228 -87 42 -154 52 -286 46 -177 -8 -273 -48 -386 -161 -137 -137 -192 -303 -181 -547 l6 -136 -35 -74 c-48 -99 -79 -138 -130 -160 -49 -22 -80 -15 -112 26 -38 49 -45 142 -36 485 13 451 12 481 -8 513 -25 37 -86 52 -147 37 -61 -15 -88 -43 -107 -110 -28 -95 -84 -190 -163 -272 -40 -43 -77 -78 -82 -78 -4 0 -15 26 -24 58 -61 214 -199 357 -391 407 -113 29 -278 14 -374 -35 -48 -25 -134 -102 -161 -147 -13 -20 -24 -32 -25 -27 -2 5 -8 43 -15 84 -16 101 -43 130 -124 130 -67 0 -121 -21 -136 -53 -8 -18 -6 -42 10 -104 29 -111 44 -269 39 -388 -4 -84 -12 -121 -48 -229 -48 -144 -118 -264 -169 -290 -79 -41 -142 -3 -157 96 -4 29 -6 139 -4 243 7 315 8 312 -21 341 -22 21 -35 25 -84 25 -70 0 -109 -14 -124 -47 -6 -14 -11 -73 -11 -132 0 -335 -113 -536 -310 -550 -142 -10 -240 73 -281 238 -19 77 -16 240 6 320 62 225 182 347 351 358 91 6 135 -9 196 -66 42 -40 56 -46 101 -50 140 -11 195 94 95 183 -149 135 -459 155 -671 43 -38 -20 -93 -63 -139 -110 -119 -119 -184 -267 -203 -461 -8 -75 -26 -108 -114 -207 -156 -178 -424 -281 -623 -239 -107 23 -191 80 -238 163 -43 74 -41 86 18 86 147 0 328 41 457 104 106 52 160 96 209 171 96 144 79 330 -40 450 -50 49 -124 87 -202 104 -67 14 -211 14 -288 0 -228 -41 -420 -250 -461 -502 l-16 -96 -38 21 c-86 48 -168 148 -212 259 -57 143 -58 208 -10 554 30 218 27 253 -21 301 -49 49 -98 58 -241 45 -155 -15 -290 -43 -423 -87 -168 -57 -267 -112 -431 -239 l-26 -20 23 31 c42 60 169 169 257 221 105 63 259 124 370 148 138 30 150 35 153 77 2 28 -2 40 -20 52 -30 21 -47 20 -159 -9 -164 -42 -314 -112 -440 -206 -75 -55 -199 -182 -247 -251 -34 -49 -104 -189 -116 -230 -6 -20 -11 -14 -40 48 -90 192 -218 348 -372 454 -139 96 -358 186 -499 204 -38 5 -55 3 -72 -9z m1983 -467 c-33 -263 -40 -373 -40 -633 0 -206 4 -320 17 -430 10 -82 20 -160 23 -171 5 -20 0 -22 -68 -28 -184 -18 -397 -77 -527 -147 -79 -42 -188 -124 -220 -165 -11 -14 -22 -21 -25 -16 -9 15 -44 244 -61 392 -24 219 -29 366 -16 483 37 336 162 529 422 651 123 58 340 112 463 115 l39 1 -7 -52z m1316 -489 c70 -36 104 -106 95 -197 -15 -144 -178 -247 -430 -273 -142 -14 -147 -12 -147 59 0 115 50 250 121 327 95 103 251 139 361 84z m2963 -621 c-49 -166 -163 -271 -294 -271 -67 0 -98 14 -107 49 -15 58 84 133 261 198 142 53 149 54 140 24z"/><path d="M7295 2276 c-41 -18 -83 -69 -91 -111 -20 -108 49 -187 166 -189 97 -1 160 53 168 146 4 61 -19 106 -77 145 -39 27 -117 31 -166 9z"/></g></svg>`;
+
+const _brandLogoPngCache = new Map<string, string>();
+
+async function getBrandLogoPng(fill: string = "#ffffff"): Promise<string> {
+  const cached = _brandLogoPngCache.get(fill);
+  if (cached) return cached;
+  const sharp = (await import("sharp")).default;
+  // Swap the hardcoded fill color in the SVG before rasterising
+  const svgWithColor = BRAND_LOGO_SVG.replace('fill="white"', `fill="${fill}"`);
+  const pngBuffer = await sharp(Buffer.from(svgWithColor))
+    .resize(400)
+    .png()
+    .toBuffer();
+  const dataUri = `data:image/png;base64,${pngBuffer.toString("base64")}`;
+  _brandLogoPngCache.set(fill, dataUri);
+  return dataUri;
+}
 
 // ── Font Registration ──────────────────────────────────────────────────────
 
@@ -151,21 +177,29 @@ function getSpreadType(sceneType: string, sceneOnlyIndex: number): SpreadType {
   return SPREAD_CYCLE[sceneOnlyIndex % SPREAD_CYCLE.length];
 }
 
+/** Returns the act label for a scene number (matching web getActLabel) */
+function getActLabel(sceneNumber: number): string | undefined {
+  if (sceneNumber === 1) return "I";
+  if (sceneNumber === 4) return "II";
+  if (sceneNumber === 10) return "III";
+  return undefined;
+}
+
 // ── View-based frame border ────────────────────────────────────────────────
 
-function FrameBorder({ color, inset }: { color: string; inset: number }) {
+function FrameBorder({ color }: { color: string }) {
   return (
     <View
       style={{
         position: "absolute",
-        top: inset,
-        left: inset,
-        right: inset,
-        bottom: inset,
+        top: 10,
+        left: 10,
+        right: 10,
+        bottom: 10,
         borderWidth: 0.75,
         borderColor: color,
         borderRadius: 6,
-        opacity: 0.4,
+        opacity: 0.35,
       }}
     />
   );
@@ -261,6 +295,31 @@ function FullBleedImage({ imageUrl, sceneNumber }: { imageUrl: string | null; sc
   );
 }
 
+// ── Smooth SVG gradient overlay ──────────────────────────────────────────────
+// Uses @react-pdf's Svg + LinearGradient for a truly smooth gradient (no layers).
+// Matches CSS `bg-linear-to-t from-black/60 via-transparent to-transparent`.
+
+function BottomGradientOverlay({ maxOpacity = 0.6, height = 0.55 }: { maxOpacity?: number; height?: number }) {
+  const h = BOOK.pageHeight * height;
+  const topY = BOOK.pageHeight - h;
+  // Convert maxOpacity to hex alpha: 0.6 → 99, 0.75 → BF, 0.55 → 8C
+  const alphaHex = Math.round(maxOpacity * 255).toString(16).padStart(2, "0");
+  return (
+    <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: h }}>
+      <Svg width={BOOK.pageWidth} height={h} viewBox={`0 0 ${BOOK.pageWidth} ${h}`}>
+        <Defs>
+          <LinearGradient id="botGrad" x1="0" y1="0" x2="0" y2={String(h)}>
+            <Stop offset="0%" stopColor="#000000" stopOpacity={0} />
+            <Stop offset="50%" stopColor="#000000" stopOpacity={maxOpacity * 0.3} />
+            <Stop offset="100%" stopColor="#000000" stopOpacity={maxOpacity} />
+          </LinearGradient>
+        </Defs>
+        <Rect x="0" y="0" width={BOOK.pageWidth} height={h} fill="url(#botGrad)" />
+      </Svg>
+    </View>
+  );
+}
+
 // ── Scene number badge ──────────────────────────────────────────────────────
 
 function SceneBadge({ num, top, left, right, color }: {
@@ -294,17 +353,32 @@ interface ScenePageProps {
   imageUrl: string | null;
   pageNumber: number;
   tc: PdfTextConfig;
+  actLabel?: string;
+}
+
+/** Act label overlay — decorative "I", "II", "III" at top of illustration pages */
+function ActLabel({ label, variant }: { label: string; variant: "light" | "dark"; color?: string }) {
+  const isLight = variant === "light";
+  const lineColor = isLight ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.15)";
+  const textColor = isLight ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.3)";
+  return (
+    <View style={{ position: "absolute", top: 14, left: 0, right: 0, flexDirection: "row", justifyContent: "center", alignItems: "center", gap: 6 }}>
+      <View style={{ width: 18, height: 0.5, backgroundColor: lineColor }} />
+      <Text style={{ fontFamily: FONTS.display, fontSize: 8, fontWeight: 600, color: textColor, letterSpacing: 3 }}>{label}</Text>
+      <View style={{ width: 18, height: 0.5, backgroundColor: lineColor }} />
+    </View>
+  );
 }
 
 /** immersive — full-bleed image + gradient overlay + title at bottom (matches web SceneImmersive) */
-function PageImmersive({ theme, scene, imageUrl, pageNumber }: ScenePageProps) {
+function PageImmersive({ theme, scene, imageUrl, pageNumber, actLabel }: ScenePageProps) {
   return (
     <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={s.page}>
       <FullBleedImage imageUrl={imageUrl} sceneNumber={scene.sceneNumber} />
 
-      {/* Gradient overlay: transparent at top, dark at bottom */}
-      <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: BOOK.pageHeight * 0.5, backgroundColor: "#000000", opacity: 0.55 }} />
-      <View style={{ position: "absolute", bottom: BOOK.pageHeight * 0.35, left: 0, right: 0, height: BOOK.pageHeight * 0.15, backgroundColor: "#000000", opacity: 0.2 }} />
+      <BottomGradientOverlay maxOpacity={0.6} />
+
+      {actLabel && <ActLabel label={actLabel} variant="light" />}
 
       {/* Scene number badge — top-left */}
       <SceneBadge num={scene.sceneNumber} top={BOOK.contentMargin} left={BOOK.contentMargin} color={theme.accent} />
@@ -322,7 +396,7 @@ function PageImmersive({ theme, scene, imageUrl, pageNumber }: ScenePageProps) {
 }
 
 /** split_top — image top ~78% + title strip below (matches web SceneSplitTop) */
-function PageSplitTop({ theme, scene, imageUrl, pageNumber }: ScenePageProps) {
+function PageSplitTop({ theme, scene, imageUrl, pageNumber, actLabel }: ScenePageProps) {
   const imageHeight = BOOK.pageHeight * 0.78;
   const stripHeight = BOOK.pageHeight - imageHeight;
 
@@ -336,6 +410,8 @@ function PageSplitTop({ theme, scene, imageUrl, pageNumber }: ScenePageProps) {
           <View style={{ width: "100%", height: "100%", backgroundColor: COLORS.cream }} />
         )}
       </View>
+
+      {actLabel && <ActLabel label={actLabel} variant="light" />}
 
       {/* Scene badge on image — top-left */}
       <SceneBadge num={scene.sceneNumber} top={BOOK.contentMargin} left={BOOK.contentMargin} color={theme.accent} />
@@ -356,12 +432,14 @@ function PageSplitTop({ theme, scene, imageUrl, pageNumber }: ScenePageProps) {
 }
 
 /** split_bottom — title strip top + image bottom ~78% (matches web SceneSplitBottom) */
-function PageSplitBottom({ theme, scene, imageUrl, pageNumber }: ScenePageProps) {
+function PageSplitBottom({ theme, scene, imageUrl, pageNumber, actLabel }: ScenePageProps) {
   const imageHeight = BOOK.pageHeight * 0.78;
   const stripHeight = BOOK.pageHeight - imageHeight;
 
   return (
     <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: COLORS.cream }]}>
+      {actLabel && <ActLabel label={actLabel} variant="dark" />}
+
       {/* Title strip at top */}
       <View style={{ height: stripHeight, justifyContent: "center", paddingHorizontal: BOOK.contentMargin }}>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
@@ -392,10 +470,11 @@ function PageSplitBottom({ theme, scene, imageUrl, pageNumber }: ScenePageProps)
 }
 
 /** full_illustration — image fills entire page, badge only (matches web SceneFullIllustration) */
-function PageFullIllustration({ theme, scene, imageUrl, pageNumber }: ScenePageProps) {
+function PageFullIllustration({ theme, scene, imageUrl, pageNumber, actLabel }: ScenePageProps) {
   return (
     <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={s.page}>
       <FullBleedImage imageUrl={imageUrl} sceneNumber={scene.sceneNumber} />
+      {actLabel && <ActLabel label={actLabel} variant="light" />}
       <SceneBadge num={scene.sceneNumber} top={BOOK.contentMargin} left={BOOK.contentMargin} color={theme.accent} />
       <PageNumber num={pageNumber} color="#ffffff88" />
     </Page>
@@ -403,7 +482,7 @@ function PageFullIllustration({ theme, scene, imageUrl, pageNumber }: ScenePageP
 }
 
 /** spread_left — left half of a panoramic 2:1 image + gradient + title (matches web SceneSpreadLeft) */
-function PageSpreadLeft({ theme, scene, imageUrl, pageNumber }: ScenePageProps) {
+function PageSpreadLeft({ theme, scene, imageUrl, pageNumber, actLabel }: ScenePageProps) {
   return (
     <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={s.page}>
       {/* Show left half of panoramic image by using a 2x wide container and clipping */}
@@ -422,9 +501,9 @@ function PageSpreadLeft({ theme, scene, imageUrl, pageNumber }: ScenePageProps) 
         )}
       </View>
 
-      {/* Gradient overlay */}
-      <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: BOOK.pageHeight * 0.5, backgroundColor: "#000000", opacity: 0.5 }} />
-      <View style={{ position: "absolute", bottom: BOOK.pageHeight * 0.35, left: 0, right: 0, height: BOOK.pageHeight * 0.15, backgroundColor: "#000000", opacity: 0.15 }} />
+      <BottomGradientOverlay maxOpacity={0.55} />
+
+      {actLabel && <ActLabel label={actLabel} variant="light" />}
 
       {/* Badge */}
       <SceneBadge num={scene.sceneNumber} top={BOOK.contentMargin} left={BOOK.contentMargin} color={theme.accent} />
@@ -462,9 +541,7 @@ function PageSpreadRight({ theme, scene, imageUrl, pageNumber, tc }: ScenePagePr
         )}
       </View>
 
-      {/* Gradient overlay */}
-      <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: BOOK.pageHeight * 0.5, backgroundColor: "#000000", opacity: 0.55 }} />
-      <View style={{ position: "absolute", bottom: BOOK.pageHeight * 0.35, left: 0, right: 0, height: BOOK.pageHeight * 0.15, backgroundColor: "#000000", opacity: 0.2 }} />
+      <BottomGradientOverlay maxOpacity={0.6} />
 
       {/* Text overlay at bottom */}
       <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, paddingBottom: BOOK.contentMargin + 10, paddingHorizontal: BOOK.contentMargin }}>
@@ -480,11 +557,14 @@ function PageSpreadRight({ theme, scene, imageUrl, pageNumber, tc }: ScenePagePr
 
 /** illustration_text — secondary illustration top ~56% + text below (matches web SceneIllustrationText) */
 function PageIllustrationText({ theme, scene, imageUrl, pageNumber, tc }: ScenePageProps) {
-  const imageHeight = BOOK.pageHeight * 0.56;
+  // Image takes 40% to leave enough room for text (web uses 56% but clips with overflow-hidden)
+  const imageHeight = BOOK.pageHeight * 0.40;
+  // Slightly smaller font so text fits under the illustration
+  const fontSize = Math.max(tc.body - 1, 9);
 
   return (
-    <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: COLORS.paper }]}>
-      <FrameBorder color={theme.ornamentColor} inset={BOOK.contentMargin - 5} />
+    <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: COLORS.cream }]}>
+      <FrameBorder color={theme.ornamentColor} />
 
       {/* Secondary illustration — full width, landscape ratio */}
       <View style={{ width: BOOK.pageWidth, height: imageHeight }}>
@@ -496,15 +576,15 @@ function PageIllustrationText({ theme, scene, imageUrl, pageNumber, tc }: SceneP
       </View>
 
       {/* Body text below — no title (already on facing page), centered editorial style */}
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", paddingHorizontal: BOOK.contentMargin + 10, paddingTop: 10 }}>
-        <View style={{ alignItems: "center", maxWidth: BOOK.trimWidth * 0.85 }}>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", paddingHorizontal: BOOK.contentMargin + 6, paddingTop: 8 }}>
+        <View style={{ alignItems: "center", maxWidth: BOOK.trimWidth * 0.88 }}>
           <OrnamentalDivider color={theme.ornamentColor} width={60} />
 
-          <Text style={{ fontFamily: FONTS.body, fontSize: tc.body, color: COLORS.textDark, lineHeight: tc.bodyLeading, textAlign: "center", marginTop: 10 }}>
+          <Text style={{ fontFamily: FONTS.body, fontSize, color: COLORS.textDark, lineHeight: tc.bodyLeading, textAlign: "center", marginTop: 8 }}>
             {scene.text}
           </Text>
 
-          <View style={{ marginTop: 8 }}>
+          <View style={{ marginTop: 6 }}>
             <WavyDots color={theme.ornamentColor} />
           </View>
         </View>
@@ -522,25 +602,25 @@ function PageIllustrationText({ theme, scene, imageUrl, pageNumber, tc }: SceneP
 /** Galeria text — centered text with ornamental divider, star cluster. Paper white bg, frame border. */
 function TextPageGaleria({ theme, scene, pageNumber, tc }: ScenePageProps) {
   return (
-    <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: COLORS.paper }]}>
-      <FrameBorder color={theme.ornamentColor} inset={BOOK.contentMargin - 5} />
+    <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: COLORS.cream }]}>
+      <FrameBorder color={theme.ornamentColor} />
 
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: BOOK.contentMargin + 15 }}>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", paddingHorizontal: BOOK.contentMargin + 10, paddingVertical: BOOK.contentMargin }}>
         <View style={{ alignItems: "center", maxWidth: BOOK.trimWidth * 0.78 }}>
           {/* Title */}
-          <Text style={{ fontFamily: FONTS.display, fontSize: tc.title, fontWeight: 600, color: theme.titleColor, textAlign: "center", lineHeight: 1.3, marginBottom: 16 }}>
+          <Text style={{ fontFamily: FONTS.display, fontSize: tc.title, fontWeight: 600, color: theme.titleColor, textAlign: "center", lineHeight: 1.3, marginBottom: 12 }}>
             {scene.title}
           </Text>
 
           <OrnamentalDivider color={theme.ornamentColor} width={80} />
 
           {/* Text */}
-          <Text style={{ fontFamily: FONTS.body, fontSize: tc.body, color: COLORS.textDark, lineHeight: tc.bodyLeading, textAlign: "center", marginTop: 16 }}>
+          <Text style={{ fontFamily: FONTS.body, fontSize: tc.body, color: COLORS.textDark, lineHeight: tc.bodyLeading, textAlign: "center", marginTop: 12 }}>
             {scene.text}
           </Text>
 
           {/* Bottom ornament */}
-          <View style={{ marginTop: 20 }}>
+          <View style={{ marginTop: 14 }}>
             <StarCluster color={COLORS.gold} size={24} />
           </View>
         </View>
@@ -555,16 +635,16 @@ function TextPageGaleria({ theme, scene, pageNumber, tc }: ScenePageProps) {
 function TextPagePergamino({ theme, scene, pageNumber, tc }: ScenePageProps) {
   return (
     <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: theme.accentLight }]}>
-      <FrameBorder color={theme.ornamentColor} inset={BOOK.contentMargin - 5} />
+      <FrameBorder color={theme.ornamentColor} />
 
-      <View style={{ flex: 1, justifyContent: "center", padding: BOOK.contentMargin + 12 }}>
+      <View style={{ flex: 1, justifyContent: "center", paddingHorizontal: BOOK.contentMargin + 8, paddingVertical: BOOK.contentMargin }}>
         {/* Title */}
-        <Text style={{ fontFamily: FONTS.display, fontSize: tc.title, fontWeight: 600, color: theme.titleColor, lineHeight: 1.3, marginBottom: 14 }}>
+        <Text style={{ fontFamily: FONTS.display, fontSize: tc.title, fontWeight: 600, color: theme.titleColor, lineHeight: 1.3, marginBottom: 10 }}>
           {scene.title}
         </Text>
 
-        {/* Thick accent rule */}
-        <View style={{ width: BOOK.trimWidth * 0.35, height: 3, backgroundColor: theme.accent, borderRadius: 2, marginBottom: 18, opacity: 0.8 }} />
+        {/* Accent rule */}
+        <View style={{ width: BOOK.trimWidth * 0.35, height: 1, backgroundColor: theme.accent, borderRadius: 1, marginBottom: 14, opacity: 0.8 }} />
 
         {/* Text */}
         <Text style={{ fontFamily: FONTS.body, fontSize: tc.body, color: COLORS.textDark, lineHeight: tc.bodyLeading }}>
@@ -572,7 +652,7 @@ function TextPagePergamino({ theme, scene, pageNumber, tc }: ScenePageProps) {
         </Text>
 
         {/* Bottom dots */}
-        <View style={{ marginTop: 24 }}>
+        <View style={{ marginTop: 16 }}>
           <WavyDots color={theme.ornamentColor} />
         </View>
       </View>
@@ -588,12 +668,12 @@ function TextPageVentana({ theme, scene, pageNumber, tc }: ScenePageProps) {
   const restText = scene.text.slice(1);
 
   return (
-    <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: COLORS.paper }]}>
-      <FrameBorder color={theme.ornamentColor} inset={BOOK.contentMargin - 5} />
+    <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: COLORS.cream }]}>
+      <FrameBorder color={theme.ornamentColor} />
 
-      <View style={{ flex: 1, justifyContent: "center", padding: BOOK.contentMargin + 15 }}>
+      <View style={{ flex: 1, justifyContent: "center", paddingHorizontal: BOOK.contentMargin + 10, paddingVertical: BOOK.contentMargin }}>
         {/* Scene title */}
-        <Text style={{ fontFamily: FONTS.display, fontSize: tc.title, fontWeight: 600, color: theme.titleColor, marginBottom: 18, lineHeight: 1.3 }}>
+        <Text style={{ fontFamily: FONTS.display, fontSize: tc.title, fontWeight: 600, color: theme.titleColor, marginBottom: 14, lineHeight: 1.3 }}>
           {scene.title}
         </Text>
 
@@ -612,7 +692,7 @@ function TextPageVentana({ theme, scene, pageNumber, tc }: ScenePageProps) {
         </View>
 
         {/* Bottom ornament */}
-        <View style={{ marginTop: 20 }}>
+        <View style={{ marginTop: 14 }}>
           <OrnamentalDivider color={theme.ornamentColor} width={70} />
         </View>
       </View>
@@ -626,7 +706,7 @@ function TextPageVentana({ theme, scene, pageNumber, tc }: ScenePageProps) {
 function TextPagePuente({ theme, scene, pageNumber, tc }: ScenePageProps) {
   return (
     <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: theme.accentLight }]}>
-      <FrameBorder color={theme.ornamentColor} inset={BOOK.contentMargin - 5} />
+      <FrameBorder color={theme.ornamentColor} />
 
       {/* Corner dots */}
       <CornerDot color={theme.accent} top={BOOK.contentMargin + 4} left={BOOK.contentMargin + 4} />
@@ -671,16 +751,6 @@ function TextPageBySpread({ theme, scene, pageNumber, tc, spreadType }: ScenePag
   }
 }
 
-/** Bridge illustration page — full-bleed atmospheric image, no badge, no overlay (matches web) */
-function PageBridgeIllustration({ scene, imageUrl, pageNumber }: ScenePageProps) {
-  return (
-    <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={s.page}>
-      <FullBleedImage imageUrl={imageUrl} sceneNumber={scene.sceneNumber} />
-      <PageNumber num={pageNumber} color="#ffffff88" />
-    </Page>
-  );
-}
-
 /** Routes illustration page to the correct layout renderer */
 function renderIllustrationPage(layout: ScenePageLayout, props: ScenePageProps): React.JSX.Element {
   switch (layout) {
@@ -699,7 +769,7 @@ function renderIllustrationPage(layout: ScenePageLayout, props: ScenePageProps):
 // DOCUMENT
 // ══════════════════════════════════════════════════════════════════════════
 
-export function BookPdf({ input, qrDataUrl }: { input: BookPdfInput; qrDataUrl?: string }) {
+export function BookPdf({ input, qrDataUrl, logoDataUri, logoMuted }: { input: BookPdfInput; qrDataUrl?: string; logoDataUri?: string; logoMuted?: string }) {
   const theme = getTheme(input.templateId);
   const { story } = input;
   const tc = getPdfTextConfig(input.characterAge);
@@ -723,17 +793,33 @@ export function BookPdf({ input, qrDataUrl }: { input: BookPdfInput; qrDataUrl?:
     const imageUrl = illustration?.imageUrl ?? null;
     const secondaryImageUrl = secondaryIllustration?.imageUrl ?? null;
 
-    const baseProps: ScenePageProps = { theme, scene, imageUrl, pageNumber: pageCounter, tc };
+    const actLabel = getActLabel(scene.sceneNumber);
+    const baseProps: ScenePageProps = { theme, scene, imageUrl, pageNumber: pageCounter, tc, actLabel };
 
     if (isBridge) {
-      // Bridge: illustration page (no overlay) + puente text page
+      // Bridge: uses SCENE_LAYOUT_PAIRS like regular scenes (matching web)
+      const isSpread = pair[0] === "spread_left";
+
       scenePages.push(
-        <PageBridgeIllustration key={`br-ill-${scene.sceneNumber}`} {...baseProps} />,
+        React.cloneElement(
+          renderIllustrationPage(pair[0], baseProps),
+          { key: `br-p1-${scene.sceneNumber}` }
+        ),
       );
       pageCounter++;
-      scenePages.push(
-        <TextPagePuente key={`br-txt-${scene.sceneNumber}`} {...{ ...baseProps, pageNumber: pageCounter, imageUrl: null }} />,
-      );
+
+      if (isSpread) {
+        scenePages.push(
+          React.cloneElement(
+            renderIllustrationPage("spread_right", { ...baseProps, pageNumber: pageCounter }),
+            { key: `br-p2-${scene.sceneNumber}` }
+          ),
+        );
+      } else {
+        scenePages.push(
+          <TextPagePuente key={`br-txt-${scene.sceneNumber}`} {...{ ...baseProps, pageNumber: pageCounter, imageUrl: null }} />,
+        );
+      }
       pageCounter++;
     } else {
       // Scene: Page 1 = illustration layout, Page 2 = text or secondary illustration
@@ -787,11 +873,11 @@ export function BookPdf({ input, qrDataUrl }: { input: BookPdfInput; qrDataUrl?:
       creator="Meapica — meapica.com"
     >
       {/* 1. Cover */}
-      <CoverPage theme={theme} title={story.bookTitle} characterName={input.characterName} coverImageUrl={input.coverImageUrl} />
+      <CoverPage theme={theme} title={story.bookTitle} characterName={input.characterName} coverImageUrl={input.coverImageUrl} logoDataUri={logoDataUri} />
       {/* 2. Front Endpapers */}
       <EndpapersPage theme={theme} />
       {/* 3. Title + Dedication (merged) */}
-      <TitleDedicationPage theme={theme} title={story.bookTitle} characterName={input.characterName} dedicationText={story.dedication} senderName={input.senderName} />
+      <TitleDedicationPage theme={theme} title={story.bookTitle} characterName={input.characterName} dedicationText={story.dedication} senderName={input.senderName} logoDataUri={logoMuted} />
       {/* 4-27. Scenes */}
       {scenePages}
       {/* 28. Final message */}
@@ -803,7 +889,7 @@ export function BookPdf({ input, qrDataUrl }: { input: BookPdfInput; qrDataUrl?:
       {/* 31. Back Endpapers */}
       <EndpapersPage theme={theme} />
       {/* 32. Back cover */}
-      <BackCoverPage theme={theme} input={input} />
+      <BackCoverPage theme={theme} input={input} logoDataUri={logoDataUri} />
     </Document>
   );
 }
@@ -827,9 +913,14 @@ async function generateQrDataUrl(storyId: string, color: string): Promise<string
 /** Full 32-page PDF — used for user-facing download */
 export async function renderBookPdf(input: BookPdfInput): Promise<Buffer> {
   const theme = getTheme(input.templateId);
-  const qrDataUrl = await generateQrDataUrl(input.storyId, theme.coverGradientStart);
+  const [qrDataUrl, logoWhite, logoOrnament] = await Promise.all([
+    generateQrDataUrl(input.storyId, theme.coverGradientStart),
+    getBrandLogoPng("#ffffff"),
+    // Title page logo uses the theme ornament color — same as web's var(--bk-ornament)
+    getBrandLogoPng(theme.ornamentColor),
+  ]);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const element = createElement(BookPdf as any, { input, qrDataUrl });
+  const element = createElement(BookPdf as any, { input, qrDataUrl, logoDataUri: logoWhite, logoMuted: logoOrnament });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return renderToBuffer(element as any);
 }
@@ -859,12 +950,32 @@ export function InteriorOnlyPdf({ input, qrDataUrl }: { input: BookPdfInput; qrD
     );
     const imageUrl = illustration?.imageUrl ?? null;
     const secondaryImageUrl = secondaryIllustration?.imageUrl ?? null;
-    const baseProps: ScenePageProps = { theme, scene, imageUrl, pageNumber: pageCounter, tc };
+    const actLabel = getActLabel(scene.sceneNumber);
+    const baseProps: ScenePageProps = { theme, scene, imageUrl, pageNumber: pageCounter, tc, actLabel };
 
     if (isBridge) {
-      scenePages.push(<PageBridgeIllustration key={`br-ill-${scene.sceneNumber}`} {...baseProps} />);
+      const isSpread = pair[0] === "spread_left";
+
+      scenePages.push(
+        React.cloneElement(
+          renderIllustrationPage(pair[0], baseProps),
+          { key: `br-p1-${scene.sceneNumber}` }
+        ),
+      );
       pageCounter++;
-      scenePages.push(<TextPagePuente key={`br-txt-${scene.sceneNumber}`} {...{ ...baseProps, pageNumber: pageCounter, imageUrl: null }} />);
+
+      if (isSpread) {
+        scenePages.push(
+          React.cloneElement(
+            renderIllustrationPage("spread_right", { ...baseProps, pageNumber: pageCounter }),
+            { key: `br-p2-${scene.sceneNumber}` }
+          ),
+        );
+      } else {
+        scenePages.push(
+          <TextPagePuente key={`br-txt-${scene.sceneNumber}`} {...{ ...baseProps, pageNumber: pageCounter, imageUrl: null }} />,
+        );
+      }
       pageCounter++;
     } else {
       const isSpread = pair[0] === "spread_left";
@@ -1031,14 +1142,26 @@ export async function renderCoverSpreadPdf(
 
 // ── Cover Page ──────────────────────────────────────────────────────────
 
-function CoverPage({ theme, title, characterName, coverImageUrl }: { theme: TemplateTheme; title: string; characterName: string; coverImageUrl: string | null }) {
+function CoverPage({ theme, title, characterName, coverImageUrl, logoDataUri }: { theme: TemplateTheme; title: string; characterName: string; coverImageUrl: string | null; logoDataUri?: string }) {
   return (
     <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={s.page}>
       {coverImageUrl ? (
         <>
           <Image src={coverImageUrl} style={{ position: "absolute", top: 0, left: 0, width: BOOK.pageWidth, height: BOOK.pageHeight, objectFit: "cover" }} />
-          <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "#000000", opacity: 0.15 }} />
-          <View style={{ position: "absolute", top: BOOK.pageHeight * 0.5, left: 0, right: 0, bottom: 0, backgroundColor: "#000000", opacity: 0.45 }} />
+          {/* Smooth gradient: from-black/20 at top, via-transparent, to-black/75 at bottom */}
+          <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}>
+            <Svg width={BOOK.pageWidth} height={BOOK.pageHeight} viewBox={`0 0 ${BOOK.pageWidth} ${BOOK.pageHeight}`}>
+              <Defs>
+                <LinearGradient id="coverGrad" x1="0" y1="0" x2="0" y2={String(BOOK.pageHeight)}>
+                  <Stop offset="0%" stopColor="#000000" stopOpacity={0.2} />
+                  <Stop offset="35%" stopColor="#000000" stopOpacity={0} />
+                  <Stop offset="65%" stopColor="#000000" stopOpacity={0.15} />
+                  <Stop offset="100%" stopColor="#000000" stopOpacity={0.75} />
+                </LinearGradient>
+              </Defs>
+              <Rect x="0" y="0" width={BOOK.pageWidth} height={BOOK.pageHeight} fill="url(#coverGrad)" />
+            </Svg>
+          </View>
         </>
       ) : (
         <>
@@ -1047,12 +1170,12 @@ function CoverPage({ theme, title, characterName, coverImageUrl }: { theme: Temp
         </>
       )}
 
-      {/* Brand at top */}
-      <View style={{ position: "absolute", top: BOOK.contentMargin + 10, left: 0, right: 0, alignItems: "center" }}>
-        <Text style={{ fontFamily: FONTS.display, fontSize: 14, color: "#ffffffcc", letterSpacing: 1 }}>
-          Meapica
-        </Text>
-      </View>
+      {/* Brand logo at top — matching web BrandLogo */}
+      {logoDataUri && (
+        <View style={{ position: "absolute", top: BOOK.contentMargin + 10, left: 0, right: 0, alignItems: "center" }}>
+          <Image src={logoDataUri} style={{ height: 26, width: Math.round(26 * (1013 / 255)), opacity: 0.85 }} />
+        </View>
+      )}
 
       {/* Title + character at bottom — matching web order */}
       <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, paddingHorizontal: BOOK.contentMargin + 5, paddingBottom: BOOK.contentMargin + 15, alignItems: "center" }}>
@@ -1071,27 +1194,35 @@ function CoverPage({ theme, title, characterName, coverImageUrl }: { theme: Temp
 // ── Endpapers ───────────────────────────────────────────────────────────
 
 function EndpapersPage({ theme }: { theme: TemplateTheme }) {
-  return (
-    <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={s.page}>
-      <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: theme.coverGradientStart }} />
-      <View style={{ position: "absolute", top: 0, left: 0, width: BOOK.pageWidth * 0.5, bottom: 0, backgroundColor: theme.coverGradientEnd, opacity: 0.3 }} />
+  const W = BOOK.pageWidth;
+  const H = BOOK.pageHeight;
+  const SPACING = 20;
+  const cols = Math.ceil(W / SPACING) + 1;
+  const rows = Math.ceil(H / SPACING) + 1;
 
-      {/* Dot texture */}
-      <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, justifyContent: "center", alignItems: "center" }}>
-        <View style={{ flexDirection: "row", flexWrap: "wrap", width: BOOK.trimWidth * 0.8, justifyContent: "center", gap: 20 }}>
-          {Array.from({ length: 40 }).map((_, i) => (
-            <View
-              key={i}
-              style={{
-                width: 2,
-                height: 2,
-                borderRadius: 1,
-                backgroundColor: "#ffffff",
-                opacity: 0.04 + (i % 4) * 0.015,
-              }}
-            />
-          ))}
-        </View>
+  return (
+    <Page size={[W, H]} style={[s.page, { backgroundColor: theme.coverGradientStart }]}>
+      {/* Secondary gradient overlay — matches web's "to bottom right" gradient */}
+      <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: theme.coverGradientEnd, opacity: 0.3 }} />
+      {/* White dot grid — PDF needs larger dots + higher opacity than web CSS to be visible */}
+      <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}>
+        <Svg width={W} height={H} viewBox={`0 0 ${W} ${H}`}>
+          {Array.from({ length: rows }).map((_, r) =>
+            Array.from({ length: cols }).map((_, c) => (
+              <Rect
+                key={`${r}-${c}`}
+                x={c * SPACING - 1}
+                y={r * SPACING - 1}
+                width={2.5}
+                height={2.5}
+                rx={1.25}
+                ry={1.25}
+                fill="#ffffff"
+                fillOpacity={0.12}
+              />
+            ))
+          )}
+        </Svg>
       </View>
     </Page>
   );
@@ -1099,18 +1230,22 @@ function EndpapersPage({ theme }: { theme: TemplateTheme }) {
 
 // ── Title + Dedication Page (merged) ─────────────────────────────────────
 
-function TitleDedicationPage({ theme, title, characterName, dedicationText, senderName }: {
-  theme: TemplateTheme; title: string; characterName: string; dedicationText: string; senderName: string | null;
+function TitleDedicationPage({ theme, title, characterName, dedicationText, senderName, logoDataUri }: {
+  theme: TemplateTheme; title: string; characterName: string; dedicationText: string; senderName: string | null; logoDataUri?: string;
 }) {
   return (
-    <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: COLORS.paper }]}>
-      <FrameBorder color={theme.ornamentColor} inset={BOOK.contentMargin - 5} />
+    <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: COLORS.cream }]}>
+      <FrameBorder color={theme.ornamentColor} />
 
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: BOOK.contentMargin + 15 }}>
         {/* Brand */}
-        <Text style={{ fontFamily: FONTS.display, fontSize: 9, color: COLORS.textMuted, letterSpacing: 2, marginBottom: 16 }}>
-          MEAPICA
-        </Text>
+        {logoDataUri ? (
+          <Image src={logoDataUri} style={{ height: 14, width: Math.round(14 * (1013 / 255)), marginBottom: 16, opacity: 0.7 }} />
+        ) : (
+          <Text style={{ fontFamily: FONTS.display, fontSize: 9, color: COLORS.textMuted, letterSpacing: 2, marginBottom: 16 }}>
+            MEAPICA
+          </Text>
+        )}
 
         {/* Title */}
         <Text style={{ fontFamily: FONTS.display, fontSize: 26, fontWeight: 600, color: theme.titleColor, textAlign: "center", lineHeight: 1.3 }}>
@@ -1138,7 +1273,7 @@ function TitleDedicationPage({ theme, title, characterName, dedicationText, send
         {/* Dedication */}
         <View style={{ alignItems: "center", maxWidth: BOOK.trimWidth * 0.6 }}>
           <Text style={{ fontFamily: FONTS.body, fontStyle: "italic", fontSize: 12, color: COLORS.textMedium, textAlign: "center", lineHeight: 1.8 }}>
-            {dedicationText}
+            {"\u201C"}{dedicationText}{"\u201D"}
           </Text>
 
           {senderName && (
@@ -1164,8 +1299,8 @@ function TitleDedicationPage({ theme, title, characterName, dedicationText, send
 
 function FinalPage({ theme, message, characterName }: { theme: TemplateTheme; message: string; characterName: string }) {
   return (
-    <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: COLORS.paper }]}>
-      <FrameBorder color={theme.ornamentColor} inset={BOOK.contentMargin - 5} />
+    <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: COLORS.cream }]}>
+      <FrameBorder color={theme.ornamentColor} />
 
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: BOOK.contentMargin + 20 }}>
         <View style={{ alignItems: "center", maxWidth: BOOK.trimWidth * 0.7 }}>
@@ -1311,11 +1446,9 @@ function AboutReaderPage({ theme, input }: {
 
 // ── Colophon Page ──────────────────────────────────────────────────────
 
-function ColophonPage({ theme, storyId, qrDataUrl }: { theme: TemplateTheme; storyId: string; qrDataUrl?: string }) {
+function ColophonPage({ qrDataUrl }: { theme: TemplateTheme; storyId: string; qrDataUrl?: string }) {
   return (
-    <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: COLORS.paper }]}>
-      <FrameBorder color={theme.ornamentColor} inset={BOOK.contentMargin - 5} />
-
+    <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: COLORS.cream }]}>
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: BOOK.contentMargin + 30 }}>
         <View style={{ alignItems: "center", maxWidth: BOOK.trimWidth * 0.65 }}>
           {/* Colophon text */}
@@ -1339,16 +1472,15 @@ function ColophonPage({ theme, storyId, qrDataUrl }: { theme: TemplateTheme; sto
             </View>
           )}
 
+          {/* Divider */}
+          <View style={{ width: 48, height: 0.5, backgroundColor: COLORS.textLight, marginTop: 16 }} />
+
           {/* Brand */}
-          <View style={{ marginTop: qrDataUrl ? 10 : 0 }}>
+          <View style={{ marginTop: 12 }}>
             <Text style={{ fontFamily: FONTS.display, fontSize: 12, color: COLORS.textMuted, opacity: 0.4, letterSpacing: 1 }}>
               Meapica
             </Text>
           </View>
-
-          <Text style={{ fontFamily: FONTS.body, fontSize: 6, color: COLORS.textLight, marginTop: 10, letterSpacing: 0.5 }}>
-            ID: {storyId.slice(0, 8)}
-          </Text>
         </View>
       </View>
     </Page>
@@ -1357,7 +1489,7 @@ function ColophonPage({ theme, storyId, qrDataUrl }: { theme: TemplateTheme; sto
 
 // ── Back Cover ─────────────────────────────────────────────────────────
 
-function BackCoverPage({ theme, input }: { theme: TemplateTheme; input: BookPdfInput }) {
+function BackCoverPage({ theme, input, logoDataUri }: { theme: TemplateTheme; input: BookPdfInput; logoDataUri?: string }) {
   const synopsis = input.story.synopsis || `${input.characterName} est\u00E1 a punto de vivir la aventura m\u00E1s extraordinaria de su vida.`;
   const hasCoverImage = !!input.coverImageUrl;
 
@@ -1400,7 +1532,7 @@ function BackCoverPage({ theme, input }: { theme: TemplateTheme; input: BookPdfI
 
         {/* Center: synopsis */}
         <View style={{ alignItems: "center", maxWidth: BOOK.trimWidth * 0.78 }}>
-          <Text style={{ fontFamily: FONTS.body, fontStyle: "italic", fontSize: 11, color: "#ffffffbb", textAlign: "center", lineHeight: 1.6 }}>
+          <Text style={{ fontFamily: FONTS.display, fontSize: 11, color: "#ffffffbb", textAlign: "center", lineHeight: 1.6 }}>
             {"\u201C"}{synopsis}{"\u201D"}
           </Text>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginTop: 14 }}>
@@ -1412,9 +1544,11 @@ function BackCoverPage({ theme, input }: { theme: TemplateTheme; input: BookPdfI
 
         {/* Bottom: brand */}
         <View style={{ alignItems: "center" }}>
-          <Text style={{ fontFamily: FONTS.display, fontSize: 12, color: "#ffffff44", letterSpacing: 1 }}>
-            Meapica
-          </Text>
+          {logoDataUri ? (
+            <Image src={logoDataUri} style={{ height: 16, width: Math.round(16 * (1013 / 255)), opacity: 0.35 }} />
+          ) : (
+            <Text style={{ fontFamily: FONTS.display, fontSize: 12, color: "#ffffff44", letterSpacing: 1 }}>Meapica</Text>
+          )}
           <Text style={{ fontFamily: FONTS.body, fontSize: 6, color: "#ffffff22", marginTop: 3, letterSpacing: 2 }}>
             meapica.com
           </Text>

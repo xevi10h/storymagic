@@ -18,11 +18,11 @@ export interface CharacterDescriptionInput {
 // --- Lookup maps ---
 
 const SKIN_MAP: Record<string, string> = {
-  "#fce4d6": "light peachy skin",
-  "#eebb99": "warm medium-light skin",
-  "#c68642": "warm medium-brown skin",
-  "#8d5524": "rich dark brown skin",
-  "#523218": "deep dark skin",
+  "#fce4d6": "very fair, pale white skin with a rosy undertone — the lightest Caucasian complexion",
+  "#eebb99": "light beige skin with a warm golden undertone — light Caucasian complexion",
+  "#c68642": "warm caramel-brown skin — medium tan complexion like a Mediterranean or Latin American child",
+  "#8d5524": "rich dark brown skin — deep brown complexion",
+  "#523218": "very dark ebony skin — the deepest dark brown complexion",
 };
 
 const HAIR_COLOR_MAP: Record<string, string> = {
@@ -34,12 +34,12 @@ const HAIR_COLOR_MAP: Record<string, string> = {
 };
 
 const EYE_COLOR_MAP: Record<string, string> = {
-  "#5d4037": "dark brown",
-  "#8d6e63": "warm brown",
-  "#558b2f": "bright green",
-  "#1976d2": "clear blue",
-  "#a0875b": "hazel",
-  "#78909c": "soft gray",
+  "#5d4037": "deep dark brown eyes — almost black, very dark chocolate brown irises",
+  "#8d6e63": "warm medium-brown eyes — soft chestnut brown irises",
+  "#558b2f": "vivid bright green eyes — clearly green irises, not hazel, not brown",
+  "#1976d2": "clear bright blue eyes — distinctly blue irises",
+  "#a0875b": "warm amber-hazel eyes — golden-brown irises with honey and amber tones, NOT green",
+  "#78909c": "soft blue-gray eyes — cool grayish-blue irises",
 };
 
 const HAIRSTYLE_MAP: Record<string, string> = {

@@ -105,6 +105,7 @@ export async function generateWithRetry(
 export async function createStyleFromAvatar(
   avatarUrl: string,
   apiToken: string,
+  baseStyle: string = "digital_illustration",
 ): Promise<string | null> {
   try {
     // Resolve the correct image URL based on the source
@@ -130,7 +131,7 @@ export async function createStyleFromAvatar(
     const imageBlob = await imageResponse.blob();
 
     const formData = new FormData();
-    formData.append("style", "digital_illustration");
+    formData.append("style", baseStyle);
     formData.append("file", imageBlob, "avatar.png");
 
     const response = await fetch(RECRAFT_STYLES_URL, {
@@ -259,14 +260,12 @@ export async function generateIllustrationsForStory(
     }));
   }
 
-  // Age-based illustration style (used as fallback when no custom styleId)
+  // Age-based illustration config (used as fallback when no custom styleId from portrait)
   const ageConf = getAgeConfig(options?.childAge ?? 6);
-  const styleId = options?.styleId ?? null;
+  // Custom style_id from portrait takes precedence; fall back to age-based community style UUID
+  const styleId = options?.styleId ?? ageConf.illustrationStyleId;
 
-  const styleLabel = styleId
-    ? `custom style ${styleId.slice(0, 8)}...`
-    : `${ageConf.illustrationStyle}/${ageConf.illustrationSubstyle ?? "default"}`;
-  console.log(`[Illustrations] Generating ${imagePrompts.length} images via Recraft V3 (${styleLabel})`);
+  console.log(`[Illustrations] Generating ${imagePrompts.length} images via Recraft V3 (styleId: ${styleId.slice(0, 8)}...)`);
 
   // Enhance each prompt: scene description first (for visual variety),
   // character reference appended (for consistency), style suffix last.
@@ -283,10 +282,7 @@ export async function generateIllustrationsForStory(
   const results = await Promise.allSettled(
     enhancedPrompts.map((prompt, index) => {
       const size = sizes[index] || DEFAULT_IMAGE_SIZE;
-      const recraftOpts = styleId
-        ? { styleId, size }
-        : { style: ageConf.illustrationStyle, substyle: ageConf.illustrationSubstyle, size };
-      return generateWithRetry(prompt, apiToken, recraftOpts);
+      return generateWithRetry(prompt, apiToken, { styleId, size });
     }),
   );
 

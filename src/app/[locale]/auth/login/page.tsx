@@ -27,7 +27,7 @@ function LoginPageContent() {
   const supabase = createClient();
 
   // Read the redirect destination from URL (e.g. /crear?step=finish)
-  const nextUrl = searchParams.get("next") || "/crear";
+  const nextUrl = searchParams.get("next") || "/dashboard";
   const authError = searchParams.get("error");
 
   async function handleEmailLogin(e: React.FormEvent) {

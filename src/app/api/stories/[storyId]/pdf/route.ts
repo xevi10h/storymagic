@@ -76,8 +76,13 @@ export async function GET(
     );
   }
 
+  // User-chosen title (from the title picker) overrides the AI-generated one
+  const effectiveStory: GeneratedStory = story.title
+    ? { ...generatedText, bookTitle: story.title as string }
+    : generatedText;
+
   // Build safe filename from book title
-  const safeTitle = generatedText.bookTitle
+  const safeTitle = effectiveStory.bookTitle
     .replace(/[^a-zA-Z0-9áéíóúñüÁÉÍÓÚÑÜ\s-]/g, "")
     .replace(/\s+/g, "-")
     .toLowerCase()
@@ -151,7 +156,7 @@ export async function GET(
   const prefetchedIllustrations = await prefetchAllIllustrations(illustrations);
 
   const pdfInput: BookPdfInput = {
-    story: generatedText,
+    story: effectiveStory,
     templateId: story.template_id,
     characterName: character.name,
     characterAge: character.age,

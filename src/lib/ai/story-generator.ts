@@ -115,12 +115,31 @@ interface AgeConfig {
   bridgeCount: number;
   wordsPerScene: string;
   textStyle: string;
-  illustrationStyle: string;
-  illustrationSubstyle: string | null;
+  /** Recraft community style UUID — pass as style_id in generation requests */
+  illustrationStyleId: string;
+  /** Base style for custom style creation (POST /v1/styles) — always digital_illustration */
+  illustrationBaseStyle: string;
   illustrationPromptStyle: string;
 }
 
-function getAgeConfig(age: number): AgeConfig {
+function getAgeConfig(age: number, locale?: string): AgeConfig {
+  const localeConfig = getLocaleConfig(locale);
+
+  // Default styles per age band (fallback when no override provided)
+  const DEFAULT_STYLE_2_4 = "f8a6d90e-e29a-4d73-8f9d-3a5909162a09"; // Whimsy Pastel Mode
+  const DEFAULT_STYLE_5_6 = "99303d77-4f0d-4e89-b2cb-302ac3f46717"; // Whimsical Nook
+  const DEFAULT_STYLE_7_9 = "002b8065-25a9-4d91-a260-8db3692a3865"; // Warm Storytelling
+  const DEFAULT_STYLE_10_12 = "cf3f45c6-a0b9-4220-a9f1-cc57b951247e"; // Classic Oasis
+
+  const defaultStyleId = age <= 4 ? DEFAULT_STYLE_2_4
+    : age <= 6 ? DEFAULT_STYLE_5_6
+    : age <= 9 ? DEFAULT_STYLE_7_9
+    : DEFAULT_STYLE_10_12;
+
+  const illustrationStyleId = defaultStyleId;
+  const illustrationBaseStyle = "digital_illustration";
+  const illustrationPromptStyle = null;
+
   if (age <= 4) {
     return {
       sceneCount: 8,
@@ -130,15 +149,15 @@ function getAgeConfig(age: number): AgeConfig {
         "Write for a very young child (2-4 years old).",
         "Use SHORT, simple sentences (max 10 words each). 3-5 sentences per scene.",
         "Vocabulary must be basic: familiar words a toddler knows.",
-        "Use onomatopoeia (¡SPLASH! ¡BUM! ¡FIUUU!), repetition, and musical rhythm.",
+        `Use onomatopoeia (${localeConfig.onomatopoeia}), repetition, and musical rhythm.`,
         "Include sensory moments: sounds, textures, colors.",
-        "For 'juntos' mode: add spots where the parent can pause — '¿Ves al gatito?' '¡Haz el sonido del cohete!'",
+        "For 'juntos' mode: add spots where the parent can pause with interactive questions.",
         "Emotions should be simple and clear: happy, scared, surprised, proud.",
         "No complex metaphors or abstract concepts.",
       ].join("\n"),
-      illustrationStyle: "digital_illustration",
-      illustrationSubstyle: "child_book",
-      illustrationPromptStyle: "Children's book illustration for toddlers, soft warm watercolor style, big rounded shapes, exaggerated friendly expressions, simple compositions with clear focal point, pastel colors, gentle lighting, no text in image.",
+      illustrationStyleId,
+      illustrationBaseStyle,
+      illustrationPromptStyle: illustrationPromptStyle ?? "Whimsical pastel children's book illustration for toddlers, soft dreamy colors, big rounded shapes, exaggerated friendly expressions, simple compositions, gentle lighting, no text in image.",
     };
   }
 
@@ -157,9 +176,9 @@ function getAgeConfig(age: number): AgeConfig {
         "Vocabulary is richer than toddler level but still accessible: no abstract words.",
         "Build small moments of tension and relief — kids this age love suspense with safe resolution.",
       ].join("\n"),
-      illustrationStyle: "digital_illustration",
-      illustrationSubstyle: "child_book",
-      illustrationPromptStyle: "Children's book illustration, soft warm watercolor style, rich detailed backgrounds, expressive characters, warm pastel colors, whimsical atmosphere, gentle lighting, no text in image.",
+      illustrationStyleId,
+      illustrationBaseStyle,
+      illustrationPromptStyle: illustrationPromptStyle ?? "Whimsical nook illumination children's book illustration, warm glowing light, intricate charming details, cozy storybook atmosphere, expressive characters, rich textures, no text in image.",
     };
   }
 
@@ -178,9 +197,9 @@ function getAgeConfig(age: number): AgeConfig {
       "Build genuine narrative tension — the stakes should feel real.",
       "Subtle humor and wit are welcome. Avoid being preachy — show the moral through action, not words.",
     ].join("\n"),
-    illustrationStyle: "digital_illustration",
-    illustrationSubstyle: "child_book",
-    illustrationPromptStyle: "Editorial children's book illustration, detailed cinematic compositions, atmospheric lighting, deeper color palette, rich textures, immersive world-building, no text in image.",
+    illustrationStyleId,
+    illustrationBaseStyle,
+    illustrationPromptStyle: illustrationPromptStyle ?? "Warm nostalgic Aesopus illustration style, timeless classic book aesthetic, elegant detailed linework, warm earthy tones, sophisticated cinematic compositions, no text in image.",
   };
 }
 
@@ -208,6 +227,45 @@ export interface StoryInput {
   senderName?: string;
   endingChoice?: string;
   endingNote?: string;
+  locale?: string;
+}
+
+// ── Locale helpers ───────────────────────────────────────────────────────────
+
+interface LocaleConfig {
+  /** Full language name for LLM prompts (e.g. "Spanish (Spain)") */
+  language: string;
+  /** Gender label for boy/girl/neutral */
+  genderLabels: { boy: string; girl: string; neutral: string };
+  /** Onomatopoeia examples for toddler text */
+  onomatopoeia: string;
+}
+
+const LOCALE_CONFIGS: Record<string, LocaleConfig> = {
+  es: {
+    language: "Spanish (Spain)",
+    genderLabels: { boy: "niño", girl: "niña", neutral: "niñe" },
+    onomatopoeia: "¡SPLASH! ¡BUM! ¡FIUUU!",
+  },
+  ca: {
+    language: "Catalan",
+    genderLabels: { boy: "nen", girl: "nena", neutral: "infant" },
+    onomatopoeia: "¡SPLASH! ¡BUM! ¡FIUUU!",
+  },
+  en: {
+    language: "English",
+    genderLabels: { boy: "boy", girl: "girl", neutral: "child" },
+    onomatopoeia: "SPLASH! BOOM! WHOOSH!",
+  },
+  fr: {
+    language: "French",
+    genderLabels: { boy: "garçon", girl: "fille", neutral: "enfant" },
+    onomatopoeia: "SPLASH ! BOUM ! WHOUSH !",
+  },
+};
+
+function getLocaleConfig(locale?: string): LocaleConfig {
+  return LOCALE_CONFIGS[locale || "es"] || LOCALE_CONFIGS.es;
 }
 
 // ── Model config ─────────────────────────────────────────────────────────────
@@ -435,12 +493,14 @@ BLOCK 5 — "VOLVER A CASA"
 // ── PHASE 1: Architect prompt ────────────────────────────────────────────────
 
 function buildArchitectPrompt(input: StoryInput): string {
-  const ageConfig = getAgeConfig(input.age);
+  const localeConfig = getLocaleConfig(input.locale);
+  const lang = localeConfig.language;
+  const ageConfig = getAgeConfig(input.age, input.locale);
   const template = getTemplateConfig(input.templateId);
   const theme = template?.theme || "A magical adventure";
   const moral = template?.moral || "Being kind matters";
   const characterVisual = buildCharacterVisualDescription(input);
-  const genderLabel = input.gender === "boy" ? "niño" : input.gender === "girl" ? "niña" : "niñe";
+  const genderLabel = localeConfig.genderLabels[input.gender];
 
   let endingInstruction = "End the story in a warm, satisfying way.";
   if (input.endingChoice && template) {
@@ -473,7 +533,8 @@ function buildArchitectPrompt(input: StoryInput): string {
 You produce a SKELETON — for each scene you write a SHORT BRIEF (2-3 sentences summarizing what happens, the emotion, key details) that a writer will later expand. You also produce the FINAL image prompts (ready for the illustrator).
 
 RULES:
-- Scene briefs in Spanish (Spain). Image prompts in ENGLISH.
+- ALL text content (titles, briefs, dedication, finalMessage, synopsis) MUST be written in ${lang}.
+- Image prompts MUST be in ENGLISH (they go to an image generator).
 - Protagonist is ALWAYS the child below.
 - NEVER include text in image prompts.
 - Protagonist visual in EVERY image prompt: "${characterVisual}" — after action/setting.
@@ -506,28 +567,28 @@ ${narrativeStructure}
 
 JSON:
 {
-  "bookTitle": "Primary title in Spanish",
+  "bookTitle": "Primary title in ${lang}",
   "titleOptions": ["Title 1", "Title 2", "Title 3", "Title 4"],
   "coverImagePrompt": "ENGLISH. Wide-angle editorial cover. ${characterVisual} as hero, adventurous pose, ${theme} world in background. ${ageConfig.illustrationPromptStyle}",
-  "dedication": "Dedication text in Spanish",
+  "dedication": "Dedication text in ${lang}",
   "scenes": [
     {
       "sceneNumber": 1,
       "type": "scene",
-      "title": "Evocative title in Spanish",
-      "brief": "2-3 sentences in Spanish: what happens, the emotion, the key action. This will be expanded by a writer.",
+      "title": "Evocative title in ${lang}",
+      "brief": "2-3 sentences in ${lang}: what happens, the emotion, the key action. This will be expanded by a writer.",
       "imagePrompt": "ENGLISH. Action + setting first, then ${characterVisual} with specific pose. Camera: [angle]. ${ageConfig.illustrationPromptStyle}"
     },
     {
       "sceneNumber": 3,
       "type": "bridge",
-      "brief": "One atmospheric sentence in Spanish (max 25 words). This IS the final text.",
+      "brief": "One atmospheric sentence in ${lang} (max 25 words). This IS the final text.",
       "title": "Short evocative title",
       "imagePrompt": "ENGLISH atmospheric. Mood + environment. ${characterVisual} small/silhouetted. ${ageConfig.illustrationPromptStyle}"
     }
   ],
-  "finalMessage": "Closing message in Spanish, tied to the moral.",
-  "synopsis": "2-3 sentences in Spanish for back cover."
+  "finalMessage": "Closing message in ${lang}, tied to the moral.",
+  "synopsis": "2-3 sentences in ${lang} for back cover."
 }
 
 ONLY the JSON, no markdown, no code blocks.`;
@@ -541,15 +602,17 @@ function buildExpansionPrompt(
   ageConfig: AgeConfig,
   globalContext: { bookTitle: string; totalScenes: number },
 ): string {
-  const genderLabel = input.gender === "boy" ? "niño" : input.gender === "girl" ? "niña" : "niñe";
+  const localeConfig = getLocaleConfig(input.locale);
+  const lang = localeConfig.language;
+  const genderLabel = localeConfig.genderLabels[input.gender];
 
-  return `You are a children's book writer. Expand this scene brief into full narrative text in Spanish (Spain).
+  return `You are a children's book writer. Expand this scene brief into full narrative text in ${lang}.
 
 BOOK: "${globalContext.bookTitle}" — scene ${scene.sceneNumber} of ${globalContext.totalScenes}
 SCENE TITLE: "${scene.title}"
 SCENE BRIEF: "${scene.brief}"
 
-PROTAGONIST: ${input.childName}, ${genderLabel}, ${input.age} años, ${input.city || "una ciudad mágica"}
+PROTAGONIST: ${input.childName}, ${genderLabel}, ${input.age}, ${input.city || "a magical city"}
 
 WRITING STYLE:
 ${ageConfig.textStyle}
@@ -557,11 +620,39 @@ ${ageConfig.textStyle}
 RULES:
 - Write ONLY the narrative text for this scene. No title, no scene number.
 - Target: ${ageConfig.wordsPerScene} words.
-- Write in Spanish (Spain).
+- Write in ${lang}.
 - Stay faithful to the brief — expand, don't reinvent.
 - Make it vivid, emotional, age-appropriate.
 
 Return a JSON object: { "text": "the full narrative text" }`;
+}
+
+// ── Locale-aware fallbacks ───────────────────────────────────────────────────
+
+function getFallbackTitles(childName: string, locale?: string): string[] {
+  switch (locale) {
+    case "ca":
+      return [`La gran aventura d'${childName}`, `${childName} i el món màgic`, `El viatge d'${childName}`];
+    case "en":
+      return [`${childName}'s Great Adventure`, `${childName} and the Magic World`, `The Journey of ${childName}`];
+    case "fr":
+      return [`La grande aventure de ${childName}`, `${childName} et le monde magique`, `Le voyage de ${childName}`];
+    default:
+      return [`La gran aventura de ${childName}`, `${childName} y el mundo mágico`, `El viaje de ${childName}`];
+  }
+}
+
+function getFallbackSynopsis(childName: string, locale?: string): string {
+  switch (locale) {
+    case "ca":
+      return `${childName} està a punt de viure l'aventura més extraordinària de la seva vida. Amb valentia, imaginació i el cor ple de ganes, s'endinsarà en un món on tot és possible. Estàs a punt per acompanyar-lo?`;
+    case "en":
+      return `${childName} is about to live the most extraordinary adventure of their life. With courage, imagination, and a heart full of wonder, they'll step into a world where anything is possible. Are you ready to join them?`;
+    case "fr":
+      return `${childName} est sur le point de vivre l'aventure la plus extraordinaire de sa vie. Avec courage, imagination et le cœur plein d'envie, il s'aventurera dans un monde où tout est possible. Es-tu prêt à l'accompagner ?`;
+    default:
+      return `${childName} está a punto de vivir la aventura más extraordinaria de su vida. Con valentía, imaginación y el corazón lleno de ganas, se adentrará en un mundo donde todo es posible. ¿Estás listo para acompañarle?`;
+  }
 }
 
 // ── Main entry point ─────────────────────────────────────────────────────────
@@ -576,7 +667,7 @@ export async function generateStory(input: StoryInput): Promise<GeneratedStory> 
     return generateMockStory(input);
   }
 
-  const ageConfig = getAgeConfig(input.age);
+  const ageConfig = getAgeConfig(input.age, input.locale);
   const characterVisual = buildCharacterVisualDescription(input);
 
   // ── PHASE 1: Architect call (GPT-5.4) ──────────────────────────────────────
@@ -658,12 +749,7 @@ export async function generateStory(input: StoryInput): Promise<GeneratedStory> 
   // Title options
   let titleOptions = architect.titleOptions;
   if (!Array.isArray(titleOptions) || titleOptions.length < 1) {
-    titleOptions = [
-      architect.bookTitle,
-      `La gran aventura de ${input.childName}`,
-      `${input.childName} y el mundo mágico`,
-      `El viaje de ${input.childName}`,
-    ];
+    titleOptions = [architect.bookTitle, ...getFallbackTitles(input.childName, input.locale)];
   }
   titleOptions = titleOptions.slice(0, 4);
 
@@ -672,8 +758,7 @@ export async function generateStory(input: StoryInput): Promise<GeneratedStory> 
     || `${characterVisual} as a hero in a triumphant pose, wide cinematic composition, the adventure world filling the background, children's book cover art, vivid colors, no text.`;
 
   // Synopsis fallback
-  const synopsis = architect.synopsis
-    || `${input.childName} está a punto de vivir la aventura más extraordinaria de su vida. Con valentía, imaginación y el corazón lleno de ganas, se adentrará en un mundo donde todo es posible. ¿Estás listo para acompañarle?`;
+  const synopsis = architect.synopsis || getFallbackSynopsis(input.childName, input.locale);
 
   return {
     bookTitle: architect.bookTitle,

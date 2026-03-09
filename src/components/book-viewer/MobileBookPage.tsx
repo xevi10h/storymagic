@@ -662,9 +662,7 @@ function PageContent({ page, templateId, pageNumber }: { page: BookPage; templat
       return (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-cream p-8 text-center">
           <FrameBorder />
-          <span className="text-[8px] font-display font-bold tracking-[0.25em] mb-4" style={{ color: "var(--bk-ornament)" }}>
-            MEAPICA
-          </span>
+          <BrandLogo className="h-4 mb-4" style={{ color: "var(--bk-ornament)" }} />
           <h1 className="font-display text-xl font-black leading-tight max-w-[85%]" style={{ color: "var(--bk-title)" }}>
             {page.title}
           </h1>

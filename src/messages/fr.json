@@ -84,6 +84,20 @@
     "paperTitle": "Texture du Papier",
     "paperDescription": "Papier Munken de 170g avec une légère teinte crème pour ne pas fatiguer les yeux. Rugosité naturelle au toucher."
   },
+  "uniqueEdition": {
+    "badge": "Exemplaire Unique",
+    "titleStart": "Aucun autre",
+    "titleHighlight": "livre",
+    "titleEnd": "comme celui-ci n'existe",
+    "description": "Chaque conte que nous créons est unique. L'histoire, les illustrations, les détails : tout est généré une seule fois, exclusivement pour votre enfant. Aucun autre enfant au monde n'aura jamais le même livre.",
+    "pillar1Title": "Histoire irremplaçable",
+    "pillar1Description": "Chaque intrigue est écrite de zéro à partir des goûts, rêves et personnalité de votre enfant.",
+    "pillar2Title": "Illustrations uniques",
+    "pillar2Description": "Chaque aquarelle est créée une seule fois. Pas de modèles : ce sont des pièces originales qui n'existeront plus jamais.",
+    "pillar3Title": "Exemplaire numéroté",
+    "pillar3Description": "Édition à un seul exemplaire. Pas de copies, pas de répliques. Seul celui-ci existe.",
+    "cta": "Créer un livre unique"
+  },
   "adventurePack": {
     "badge": "Expérience Complète",
     "title": "Pack Aventure Artisanal",
@@ -353,7 +367,8 @@
       "eyeColorTitle": "Couleur des yeux",
       "andConnector": " et ",
       "nebulaHint": "Remplissez les détails et nous donnerons vie à votre personnage",
-      "nebulaHintReady": "Quand vous continuerez, nous créerons {name} tel que vous le décrivez"
+      "nebulaHintReady": "Quand vous continuerez, nous créerons {name} tel que vous le décrivez",
+      "recommended": "Recommandé"
     },
     "portraitReveal": {
       "generating": "Création de {name}...",

@@ -161,11 +161,16 @@ export async function POST(
 
   try {
     const character = story.characters;
-    const generatedText = story.generated_text as unknown as GeneratedStory;
+    const rawGeneratedText = story.generated_text as unknown as GeneratedStory;
 
-    if (!generatedText?.scenes?.length) {
+    if (!rawGeneratedText?.scenes?.length) {
       throw new Error("Story has no generated text");
     }
+
+    // User-chosen title overrides the AI-generated one
+    const generatedText: GeneratedStory = story.title
+      ? { ...rawGeneratedText, bookTitle: story.title as string }
+      : rawGeneratedText;
 
     // Get pending illustrations (scenes without images)
     const { data: pendingIllustrations } = await supabase
@@ -204,7 +209,11 @@ export async function POST(
       const illustrations = await generateIllustrationsForStory(
         remainingPrompts,
         characterRef,
-        { styleId: storedStyleId, childAge: character.age, imageSizes: remainingSizes },
+        {
+          styleId: storedStyleId,
+          childAge: character.age,
+          imageSizes: remainingSizes,
+        },
       );
 
       // Persist to Supabase Storage (retry once before falling back)

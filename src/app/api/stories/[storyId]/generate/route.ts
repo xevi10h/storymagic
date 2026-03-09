@@ -88,6 +88,7 @@ export async function POST(
       senderName: story.sender_name || undefined,
       endingChoice: story.ending_choice || undefined,
       endingNote: (story.story_decisions as Record<string, unknown>)?.endingNote as string | undefined,
+      locale: story.locale || "es",
     };
 
     const characterRef = buildCharacterReference({

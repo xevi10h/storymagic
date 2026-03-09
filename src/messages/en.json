@@ -84,6 +84,20 @@
     "paperTitle": "Paper Texture",
     "paperDescription": "Munken 170g paper with a subtle cream tone to be gentle on the eyes. Naturally textured to the touch."
   },
+  "uniqueEdition": {
+    "badge": "One-of-a-Kind",
+    "titleStart": "No other",
+    "titleHighlight": "book",
+    "titleEnd": "like this exists",
+    "description": "Every story we create is unrepeatable. The plot, the illustrations, the details: everything is generated once, exclusively for your child. No other child in the world will ever have the same book.",
+    "pillar1Title": "Unrepeatable story",
+    "pillar1Description": "Each plot is written from scratch based on your child's interests, dreams, and personality.",
+    "pillar2Title": "Unique illustrations",
+    "pillar2Description": "Each watercolor is created once. These aren't templates: they're original pieces that will never exist again.",
+    "pillar3Title": "Numbered edition",
+    "pillar3Description": "Edition of one. No copies, no replicas. Only this one exists.",
+    "cta": "Create a unique book"
+  },
   "adventurePack": {
     "badge": "Complete Experience",
     "title": "Artisanal Adventure Pack",
@@ -353,7 +367,8 @@
       "eyeColorTitle": "Eye color",
       "andConnector": " and ",
       "nebulaHint": "Fill in the details and we'll bring your character to life",
-      "nebulaHintReady": "When you continue, we'll create {name} just as you describe"
+      "nebulaHintReady": "When you continue, we'll create {name} just as you describe",
+      "recommended": "Recommended"
     },
     "portraitReveal": {
       "generating": "Creating {name}...",

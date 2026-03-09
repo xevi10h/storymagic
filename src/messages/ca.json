@@ -84,6 +84,20 @@
     "paperTitle": "Textura del Paper",
     "paperDescription": "Paper Munken de 170g amb un lleuger to crema per no cansar la vista. Rugositat natural al tacte."
   },
+  "uniqueEdition": {
+    "badge": "Edició Única",
+    "titleStart": "No existeix cap altre",
+    "titleHighlight": "llibre",
+    "titleEnd": "com aquest",
+    "description": "Cada conte que creem és irrepetible. La història, les il·lustracions, els detalls: tot es genera una sola vegada, exclusivament per al teu fill. Cap altre nen al món tindrà mai el mateix llibre.",
+    "pillar1Title": "Història irrepetible",
+    "pillar1Description": "Cada trama s'escriu des de zero a partir dels gustos, somnis i personalitat del teu fill.",
+    "pillar2Title": "Il·lustracions úniques",
+    "pillar2Description": "Cada aquarel·la es crea una sola vegada. No són plantilles: són peces originals que no tornaran a existir.",
+    "pillar3Title": "Exemplar numerat",
+    "pillar3Description": "Edició d'un sol exemplar. No hi ha còpies, no hi ha rèpliques. Només existeix aquest.",
+    "cta": "Crear un llibre únic"
+  },
   "adventurePack": {
     "badge": "Experiència Completa",
     "title": "Pack Aventura Artesanal",
@@ -353,7 +367,8 @@
       "eyeColorTitle": "Color d'ulls",
       "andConnector": " i ",
       "nebulaHint": "Completa les dades i donarem vida al teu personatge",
-      "nebulaHintReady": "Quan avancis, crearem {name} tal com el descrius"
+      "nebulaHintReady": "Quan avancis, crearem {name} tal com el descrius",
+      "recommended": "Recomanat"
     },
     "portraitReveal": {
       "generating": "Creant a {name}...",

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import LocaleSwitcher from "@/components/LocaleSwitcher";
 import BrandLogo from "@/components/BrandLogo";
@@ -112,6 +112,12 @@ export default function Navbar() {
   const t = useTranslations("nav");
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, loading, signOut } = useAuth();
+  const pathname = usePathname();
+
+  // Build login URL with current path as redirect destination
+  const loginHref = pathname && pathname !== "/"
+    ? `/auth/login?next=${encodeURIComponent(pathname)}`
+    : "/auth/login";
 
   const navLinks = [
     { label: t("manifesto"), href: "#manifesto" },
@@ -157,7 +163,7 @@ export default function Navbar() {
           ) : (
             <>
               <Link
-                href="/auth/login"
+                href={loginHref}
                 className="rounded-lg px-4 py-2.5 text-sm font-medium text-text-soft transition-colors hover:text-text-main"
               >
                 {t("signIn")}
@@ -269,7 +275,7 @@ export default function Navbar() {
                   {t("createMyStory")}
                 </Link>
                 <Link
-                  href="/auth/login"
+                  href={loginHref}
                   className="mt-2 block rounded-lg border border-border-light px-5 py-3 text-center text-sm font-medium text-text-soft transition-colors hover:bg-cream"
                   onClick={() => setMobileOpen(false)}
                 >

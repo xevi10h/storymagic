@@ -1,40 +1,10 @@
 import { NextResponse } from "next/server";
-import { headers } from "next/headers";
 import { buildCharacterReference } from "@/lib/ai/character-description";
 import { createStyleFromAvatar, generateWithRetry } from "@/lib/ai/illustrations";
-import { getAgeConfig } from "@/lib/ai/story-generator";
 import { getMockPortraitUrl } from "@/lib/ai/mock-story";
 
 // Portrait generation takes ~5-10s with Recraft
 export const maxDuration = 30;
-
-// --- IP-based rate limiting (in-memory, resets on deploy) ---
-const RATE_LIMIT_MAX = 10; // max portraits per IP
-const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour window
-
-interface RateLimitEntry {
-  count: number;
-  resetAt: number;
-}
-
-const rateLimitMap = new Map<string, RateLimitEntry>();
-
-function checkRateLimit(ip: string): { allowed: boolean; remaining: number } {
-  const now = Date.now();
-  const entry = rateLimitMap.get(ip);
-
-  if (!entry || now > entry.resetAt) {
-    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
-    return { allowed: true, remaining: RATE_LIMIT_MAX - 1 };
-  }
-
-  if (entry.count >= RATE_LIMIT_MAX) {
-    return { allowed: false, remaining: 0 };
-  }
-
-  entry.count++;
-  return { allowed: true, remaining: RATE_LIMIT_MAX - entry.count };
-}
 
 /**
  * POST /api/characters/portrait
@@ -45,7 +15,6 @@ function checkRateLimit(ip: string): { allowed: boolean; remaining: number } {
  * 2. Style reference — used to create a Recraft style_id for visual consistency
  *
  * Portrait style matches the book: child_book for all ages, with age-adapted prompts.
- * Rate limited to 10 generations per IP per hour.
  *
  * Returns: { portraitUrl, recraftStyleId }
  */
@@ -58,23 +27,8 @@ export async function POST(request: Request) {
     const recraftApiToken = process.env.RECRAFT_API_TOKEN?.trim();
     const hasRecraft = !mockMode && recraftApiToken && !recraftApiToken.includes("your_");
 
-    if (hasRecraft) {
-      const headersList = await headers();
-      const ip = headersList.get("x-forwarded-for")?.split(",")[0]?.trim()
-        || headersList.get("x-real-ip")
-        || "unknown";
-      const { allowed } = checkRateLimit(ip);
-
-      if (!allowed) {
-        return NextResponse.json(
-          { error: "Too many portrait generations. Please try again later." },
-          {
-            status: 429,
-            headers: { "Retry-After": "3600", "X-RateLimit-Remaining": "0" },
-          },
-        );
-      }
-    }
+    // Rate limiting disabled during testing phase
+    // TODO: Re-enable before production launch
 
     const {
       gender, age, skinTone, hairColor, eyeColor, hairstyle, childName,
@@ -111,12 +65,15 @@ export async function POST(request: Request) {
       });
     }
 
-    const ageConf = getAgeConfig(age);
+    // Age-adaptive illustration style — driven entirely by the prompt.
+    // Goes from very simple/rounded (toddlers) to more detailed/atmospheric (older kids).
+    // Always non-realistic: digital_illustration/child_book is the fixed base.
+    const ageStylePrompt = age <= 4
+      ? "Very simple rounded shapes, soft pastel watercolor style, large expressive eyes, minimal details, warm dreamy colors."
+      : age <= 7
+        ? "Charming storybook illustration style, warm glowing colors, expressive face, moderate detail, cozy feel."
+        : "Illustrated editorial style, rich warm tones, atmospheric lighting, detailed character design, cinematic mood.";
 
-    // Single image: portrait in the book's age-appropriate style.
-    // Uses portrait composition (close-up, warm lighting) but with the same
-    // illustration style that will appear in the book — ensures visual coherence.
-    // This image also serves as the reference for creating the Recraft style_id.
     const portraitPrompt = [
       characterRef,
       personalityHints,
@@ -124,21 +81,23 @@ export async function POST(request: Request) {
       "Soft gradient background with warm tones.",
       "Three-quarter view, gentle warm lighting from the left.",
       "Expressive eyes, appealing and memorable character.",
-      ageConf.illustrationPromptStyle,
+      ageStylePrompt,
       "No text in image.",
     ].filter(Boolean).join(" ");
 
-    console.log("[Portrait] Age:", age, "Style:", ageConf.illustrationStyle, "/", ageConf.illustrationSubstyle);
+    console.log("[Portrait] Age:", age);
     console.log("[Portrait] Prompt:", portraitPrompt.slice(0, 200), "...");
 
+    // Always use digital_illustration/child_book — no custom styleId so skin/hair colors are respected.
+    // The styleId for book illustrations is created FROM this portrait via createStyleFromAvatar.
     const portraitUrl = await generateWithRetry(
       portraitPrompt,
       recraftApiToken!,
-      { style: ageConf.illustrationStyle, substyle: ageConf.illustrationSubstyle },
+      { style: "digital_illustration", substyle: "child_book" },
     );
 
-    // Create style_id from the portrait for visual consistency across book illustrations
-    const recraftStyleId = await createStyleFromAvatar(portraitUrl, recraftApiToken!);
+    // Create custom style_id from the portrait for visual consistency across all book illustrations
+    const recraftStyleId = await createStyleFromAvatar(portraitUrl, recraftApiToken!, "digital_illustration");
 
     return NextResponse.json({
       portraitUrl,

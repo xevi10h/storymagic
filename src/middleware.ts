@@ -66,7 +66,7 @@ export async function middleware(request: NextRequest) {
   const isResetPage = pathWithoutLocale === "/auth/reset-password";
 
   if (isAuthPage && user && !user.is_anonymous && !isRecoveryPage && !isResetPage) {
-    const next = request.nextUrl.searchParams.get("next") || "/crear";
+    const next = request.nextUrl.searchParams.get("next") || "/dashboard";
     const nextParsed = new URL(next, request.nextUrl.origin);
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = `/${locale}${nextParsed.pathname}`;

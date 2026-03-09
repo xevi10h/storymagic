@@ -6,6 +6,7 @@ import type { Json } from "@/lib/database.types";
 const VALID_TEMPLATE_IDS = ["space", "forest", "superhero", "pirates", "chef", "dinosaurs", "castle", "safari", "inventor", "candy"] as const;
 const VALID_MODES = ["solo", "juntos"] as const;
 const VALID_GENDERS = ["boy", "girl", "neutral"] as const;
+const VALID_LOCALES = ["es", "ca", "en", "fr"] as const;
 
 const storyInputSchema = z.object({
   character: z.object({
@@ -31,6 +32,7 @@ const storyInputSchema = z.object({
   ending: z.string().max(100).optional(),
   portraitUrl: z.string().url().max(2000).nullish(),
   recraftStyleId: z.string().max(100).nullish(),
+  locale: z.enum(VALID_LOCALES).optional().default("es"),
 });
 
 export async function POST(request: Request) {
@@ -60,7 +62,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const { character, templateId, creationMode, decisions, dedication, senderName, ending, portraitUrl, recraftStyleId } = parsed.data;
+  const { character, templateId, creationMode, decisions, dedication, senderName, ending, portraitUrl, recraftStyleId, locale } = parsed.data;
 
   // 1. Upsert character (reuse if same name + user)
   const { data: existingCharacter } = await supabase
@@ -144,6 +146,7 @@ export async function POST(request: Request) {
       sender_name: senderName || null,
       ending_choice: ending || null,
       recraft_style_id: recraftStyleId || null,
+      locale,
       status: "draft",
     })
     .select("id")

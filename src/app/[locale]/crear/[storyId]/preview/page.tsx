@@ -426,9 +426,9 @@ export default function PreviewPage() {
       {isFullyReady && (
         <div className="mx-auto max-w-3xl px-4 pb-6">
           <a
-            href={`/api/stories/${storyId}/pdf`}
+            href={`/api/stories/${storyId}/pdf?force=true`}
             download={pdfFilename}
-            className="group mx-auto flex items-center gap-2.5 rounded-xl border-2 border-border-light bg-white px-6 py-3.5 text-sm font-bold text-secondary transition-all hover:border-create-primary hover:bg-create-primary/5 hover:text-create-primary active:scale-[0.98] shadow-sm"
+            className="group flex w-full items-center justify-center gap-2.5 rounded-xl border-2 border-border-light bg-white px-6 py-3.5 text-sm font-bold text-secondary transition-all hover:border-create-primary hover:bg-create-primary/5 hover:text-create-primary active:scale-[0.98] shadow-sm"
           >
             <span className="material-symbols-outlined text-lg">
               picture_as_pdf
@@ -726,7 +726,7 @@ export default function PreviewPage() {
           <div className="mx-auto max-w-3xl px-4 py-8 text-center">
             <Link
               href="/dashboard"
-              className="inline-flex items-center gap-2 rounded-xl border-2 border-border-light px-6 py-3.5 text-sm font-bold text-secondary transition-all hover:border-create-primary hover:bg-create-primary/5 hover:text-create-primary active:scale-[0.98]"
+              className="inline-flex w-full max-w-md items-center justify-center gap-2 rounded-xl border-2 border-border-light px-6 py-3.5 text-sm font-bold text-secondary transition-all hover:border-create-primary hover:bg-create-primary/5 hover:text-create-primary active:scale-[0.98]"
             >
               <span className="material-symbols-outlined text-lg">library_books</span>
               {t("savedGoToLibrary")}

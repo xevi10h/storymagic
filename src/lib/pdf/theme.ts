@@ -194,14 +194,14 @@ export interface PdfTextConfig {
 export function getPdfTextConfig(age: number): PdfTextConfig {
   if (age <= 4) {
     // 50-80 words/scene → large, spacious text
-    return { body: 15, bodyLeading: 2.0, title: 22, dropCap: 72, bridgeText: 28 };
+    return { body: 15, bodyLeading: 2.0, title: 22, dropCap: 36, bridgeText: 28 };
   }
   if (age <= 7) {
     // 100-140 words/scene → medium
-    return { body: 12.5, bodyLeading: 1.85, title: 20, dropCap: 64, bridgeText: 24 };
+    return { body: 12.5, bodyLeading: 1.85, title: 20, dropCap: 32, bridgeText: 24 };
   }
   // 150-200 words/scene → compact
-  return { body: 10.5, bodyLeading: 1.7, title: 18, dropCap: 56, bridgeText: 22 };
+  return { body: 10.5, bodyLeading: 1.7, title: 18, dropCap: 28, bridgeText: 22 };
 }
 
 // ── Shared colors ──────────────────────────────────────────────────────────
