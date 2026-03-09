@@ -9,6 +9,7 @@ import MobileBookPage from "./MobileBookPage";
 interface FullscreenPageViewerProps {
   pages: BookPage[];
   templateId: string;
+  gender?: string;
   initialPage: number;
   onClose: () => void;
   onPageChange: (pageIndex: number) => void;
@@ -17,6 +18,7 @@ interface FullscreenPageViewerProps {
 export default function FullscreenPageViewer({
   pages,
   templateId,
+  gender,
   initialPage,
   onClose,
   onPageChange,
@@ -104,6 +106,7 @@ export default function FullscreenPageViewer({
           <MobileBookPage
             page={pages[current]}
             templateId={templateId}
+            gender={gender}
             pageNumber={pages[current].type === "scene" ? getBookPageNumber(pages, current) : undefined}
           />
         </div>

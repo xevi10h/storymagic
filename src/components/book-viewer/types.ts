@@ -156,6 +156,8 @@ export function getBookPageNumber(pages: BookPage[], index: number): number {
 export interface BookViewerProps {
   pages: BookPage[];
   templateId: string;
+  /** Character gender — influences color palette tinting */
+  gender?: string;
   currentPage: number;
   onPageChange: (pageIndex: number) => void;
 }

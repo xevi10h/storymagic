@@ -259,6 +259,9 @@ const s = StyleSheet.create({
   },
 });
 
+// Minimum space reserved at the bottom for page numbers so content never overlaps
+const PAGE_NUM_RESERVED = BOOK.bleed + 28; // ~40pt — clears the number + decorative lines
+
 // ── Page number component ─────────────────────────────────────────────────
 
 function PageNumber({ num, color }: { num: number; color?: string }) {
@@ -295,50 +298,45 @@ function FullBleedImage({ imageUrl, sceneNumber }: { imageUrl: string | null; sc
   );
 }
 
-// ── Smooth SVG gradient overlay ──────────────────────────────────────────────
-// Uses @react-pdf's Svg + LinearGradient for a truly smooth gradient (no layers).
-// Matches CSS `bg-linear-to-t from-black/60 via-transparent to-transparent`.
+// ── Bottom gradient overlay ──────────────────────────────────────────────────
+// Rasterised PNG gradient — SVG LinearGradient has id-collision bugs in react-pdf
+// multi-page documents. A PNG image stretched to full width is 100% reliable.
 
-function BottomGradientOverlay({ maxOpacity = 0.6, height = 0.55 }: { maxOpacity?: number; height?: number }) {
-  const h = BOOK.pageHeight * height;
-  const topY = BOOK.pageHeight - h;
-  // Convert maxOpacity to hex alpha: 0.6 → 99, 0.75 → BF, 0.55 → 8C
-  const alphaHex = Math.round(maxOpacity * 255).toString(16).padStart(2, "0");
-  return (
-    <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: h }}>
-      <Svg width={BOOK.pageWidth} height={h} viewBox={`0 0 ${BOOK.pageWidth} ${h}`}>
-        <Defs>
-          <LinearGradient id="botGrad" x1="0" y1="0" x2="0" y2={String(h)}>
-            <Stop offset="0%" stopColor="#000000" stopOpacity={0} />
-            <Stop offset="50%" stopColor="#000000" stopOpacity={maxOpacity * 0.3} />
-            <Stop offset="100%" stopColor="#000000" stopOpacity={maxOpacity} />
-          </LinearGradient>
-        </Defs>
-        <Rect x="0" y="0" width={BOOK.pageWidth} height={h} fill="url(#botGrad)" />
-      </Svg>
-    </View>
-  );
+const _gradientCache = new Map<string, string>();
+
+async function getGradientPng(maxOpacity: number, heightPx: number, rgb: [number, number, number] = [0, 0, 0]): Promise<string> {
+  const key = `${maxOpacity}-${heightPx}-${rgb.join(",")}`;
+  const cached = _gradientCache.get(key);
+  if (cached) return cached;
+
+  const sharp = (await import("sharp")).default;
+  const h = heightPx;
+  // Build a 1px wide × h px tall RGBA raw buffer with a smooth gradient
+  const buf = Buffer.alloc(h * 4);
+  for (let y = 0; y < h; y++) {
+    const t = y / (h - 1); // 0 = top (transparent), 1 = bottom (darkest)
+    // Smooth cubic curve for natural-looking gradient
+    const alpha = Math.round(maxOpacity * 255 * (t * t * t));
+    const idx = y * 4;
+    buf[idx] = rgb[0];     // R
+    buf[idx + 1] = rgb[1]; // G
+    buf[idx + 2] = rgb[2]; // B
+    buf[idx + 3] = Math.min(alpha, 255); // A
+  }
+  const pngBuffer = await sharp(buf, { raw: { width: 1, height: h, channels: 4 } })
+    .png()
+    .toBuffer();
+  const dataUri = `data:image/png;base64,${pngBuffer.toString("base64")}`;
+  _gradientCache.set(key, dataUri);
+  return dataUri;
 }
 
-// ── Scene number badge ──────────────────────────────────────────────────────
-
-function SceneBadge({ num, top, left, right, color }: {
-  num: number; top: number; left?: number; right?: number; color: string;
-}) {
+function BottomGradientOverlay({ gradientUri, height = 0.55 }: { gradientUri?: string; height?: number }) {
+  if (!gradientUri) return null;
+  const h = BOOK.pageHeight * height;
   return (
-    <View style={{
-      position: "absolute",
-      top,
-      left,
-      right,
-      width: 24,
-      height: 24,
-      borderRadius: 12,
-      backgroundColor: "rgba(255,255,255,0.8)",
-      justifyContent: "center",
-      alignItems: "center",
-    }}>
-      <Text style={{ fontFamily: FONTS.display, fontSize: 10, color, fontWeight: 600 }}>{num}</Text>
+    <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: h }}>
+      <Image src={gradientUri} style={{ width: BOOK.pageWidth, height: h }} />
     </View>
   );
 }
@@ -354,6 +352,8 @@ interface ScenePageProps {
   pageNumber: number;
   tc: PdfTextConfig;
   actLabel?: string;
+  /** Pre-rendered gradient PNG data URI for text-over-image pages */
+  gradientUri?: string;
 }
 
 /** Act label overlay — decorative "I", "II", "III" at top of illustration pages */
@@ -371,20 +371,17 @@ function ActLabel({ label, variant }: { label: string; variant: "light" | "dark"
 }
 
 /** immersive — full-bleed image + gradient overlay + title at bottom (matches web SceneImmersive) */
-function PageImmersive({ theme, scene, imageUrl, pageNumber, actLabel }: ScenePageProps) {
+function PageImmersive({ theme, scene, imageUrl, pageNumber, actLabel, gradientUri }: ScenePageProps) {
   return (
     <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={s.page}>
       <FullBleedImage imageUrl={imageUrl} sceneNumber={scene.sceneNumber} />
 
-      <BottomGradientOverlay maxOpacity={0.6} />
+      <BottomGradientOverlay gradientUri={gradientUri} height={0.6} />
 
       {actLabel && <ActLabel label={actLabel} variant="light" />}
 
-      {/* Scene number badge — top-left */}
-      <SceneBadge num={scene.sceneNumber} top={BOOK.contentMargin} left={BOOK.contentMargin} color={theme.accent} />
-
-      {/* Title at bottom */}
-      <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, paddingBottom: BOOK.contentMargin + 10, paddingHorizontal: BOOK.contentMargin }}>
+      {/* Title at bottom — above page number */}
+      <View style={{ position: "absolute", bottom: PAGE_NUM_RESERVED, left: 0, right: 0, paddingBottom: 10, paddingHorizontal: BOOK.contentMargin }}>
         <Text style={{ fontFamily: FONTS.display, fontSize: 20, fontWeight: 600, color: "#ffffff", lineHeight: 1.3 }}>
           {scene.title}
         </Text>
@@ -412,9 +409,6 @@ function PageSplitTop({ theme, scene, imageUrl, pageNumber, actLabel }: ScenePag
       </View>
 
       {actLabel && <ActLabel label={actLabel} variant="light" />}
-
-      {/* Scene badge on image — top-left */}
-      <SceneBadge num={scene.sceneNumber} top={BOOK.contentMargin} left={BOOK.contentMargin} color={theme.accent} />
 
       {/* Title strip below image */}
       <View style={{ height: stripHeight, justifyContent: "center", paddingHorizontal: BOOK.contentMargin }}>
@@ -444,14 +438,9 @@ function PageSplitBottom({ theme, scene, imageUrl, pageNumber, actLabel }: Scene
       <View style={{ height: stripHeight, justifyContent: "center", paddingHorizontal: BOOK.contentMargin }}>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
           <View style={{ width: 2, height: 28, borderRadius: 1, backgroundColor: theme.accent }} />
-          <View>
-            <Text style={{ fontFamily: FONTS.body, fontSize: 7, fontWeight: 600, color: COLORS.textMuted, letterSpacing: 2 }}>
-              {String(scene.sceneNumber).padStart(2, "0")}
-            </Text>
-            <Text style={{ fontFamily: FONTS.display, fontSize: 16, fontWeight: 600, color: theme.titleColor, lineHeight: 1.3 }}>
-              {scene.title}
-            </Text>
-          </View>
+          <Text style={{ fontFamily: FONTS.display, fontSize: 16, fontWeight: 600, color: theme.titleColor, lineHeight: 1.3 }}>
+            {scene.title}
+          </Text>
         </View>
       </View>
 
@@ -469,20 +458,19 @@ function PageSplitBottom({ theme, scene, imageUrl, pageNumber, actLabel }: Scene
   );
 }
 
-/** full_illustration — image fills entire page, badge only (matches web SceneFullIllustration) */
-function PageFullIllustration({ theme, scene, imageUrl, pageNumber, actLabel }: ScenePageProps) {
+/** full_illustration — image fills entire page (matches web SceneFullIllustration) */
+function PageFullIllustration({ scene, imageUrl, pageNumber, actLabel }: ScenePageProps) {
   return (
     <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={s.page}>
       <FullBleedImage imageUrl={imageUrl} sceneNumber={scene.sceneNumber} />
       {actLabel && <ActLabel label={actLabel} variant="light" />}
-      <SceneBadge num={scene.sceneNumber} top={BOOK.contentMargin} left={BOOK.contentMargin} color={theme.accent} />
       <PageNumber num={pageNumber} color="#ffffff88" />
     </Page>
   );
 }
 
 /** spread_left — left half of a panoramic 2:1 image + gradient + title (matches web SceneSpreadLeft) */
-function PageSpreadLeft({ theme, scene, imageUrl, pageNumber, actLabel }: ScenePageProps) {
+function PageSpreadLeft({ theme, scene, imageUrl, pageNumber, actLabel, gradientUri }: ScenePageProps) {
   return (
     <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={s.page}>
       {/* Show left half of panoramic image by using a 2x wide container and clipping */}
@@ -501,15 +489,12 @@ function PageSpreadLeft({ theme, scene, imageUrl, pageNumber, actLabel }: SceneP
         )}
       </View>
 
-      <BottomGradientOverlay maxOpacity={0.55} />
+      <BottomGradientOverlay gradientUri={gradientUri} height={0.6} />
 
       {actLabel && <ActLabel label={actLabel} variant="light" />}
 
-      {/* Badge */}
-      <SceneBadge num={scene.sceneNumber} top={BOOK.contentMargin} left={BOOK.contentMargin} color={theme.accent} />
-
-      {/* Title at bottom */}
-      <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, paddingBottom: BOOK.contentMargin + 10, paddingHorizontal: BOOK.contentMargin }}>
+      {/* Title at bottom — above page number */}
+      <View style={{ position: "absolute", bottom: PAGE_NUM_RESERVED, left: 0, right: 0, paddingBottom: 10, paddingHorizontal: BOOK.contentMargin }}>
         <Text style={{ fontFamily: FONTS.display, fontSize: 18, fontWeight: 600, color: "#ffffff", lineHeight: 1.3 }}>
           {scene.title}
         </Text>
@@ -521,7 +506,7 @@ function PageSpreadLeft({ theme, scene, imageUrl, pageNumber, actLabel }: SceneP
 }
 
 /** spread_right — right half of panoramic image + text overlay at bottom (matches web SceneSpreadRight) */
-function PageSpreadRight({ theme, scene, imageUrl, pageNumber, tc }: ScenePageProps) {
+function PageSpreadRight({ theme, scene, imageUrl, pageNumber, tc, gradientUri }: ScenePageProps) {
   return (
     <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={s.page}>
       {/* Show right half of panoramic image by offsetting 2x wide image to the left */}
@@ -541,11 +526,11 @@ function PageSpreadRight({ theme, scene, imageUrl, pageNumber, tc }: ScenePagePr
         )}
       </View>
 
-      <BottomGradientOverlay maxOpacity={0.6} />
+      <BottomGradientOverlay gradientUri={gradientUri} height={0.65} />
 
-      {/* Text overlay at bottom */}
-      <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, paddingBottom: BOOK.contentMargin + 10, paddingHorizontal: BOOK.contentMargin }}>
-        <Text style={{ fontFamily: FONTS.body, fontSize: tc.body, color: "#ffffffdd", lineHeight: tc.bodyLeading }}>
+      {/* Text overlay at bottom — above page number */}
+      <View style={{ position: "absolute", bottom: PAGE_NUM_RESERVED, left: 0, right: 0, paddingBottom: 10, paddingHorizontal: BOOK.contentMargin }}>
+        <Text style={{ fontFamily: FONTS.body, fontSize: tc.body, color: "#ffffffee", lineHeight: tc.bodyLeading }}>
           {scene.text}
         </Text>
       </View>
@@ -576,7 +561,7 @@ function PageIllustrationText({ theme, scene, imageUrl, pageNumber, tc }: SceneP
       </View>
 
       {/* Body text below — no title (already on facing page), centered editorial style */}
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", paddingHorizontal: BOOK.contentMargin + 6, paddingTop: 8 }}>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", paddingHorizontal: BOOK.contentMargin + 6, paddingTop: 8, paddingBottom: 12 }}>
         <View style={{ alignItems: "center", maxWidth: BOOK.trimWidth * 0.88 }}>
           <OrnamentalDivider color={theme.ornamentColor} width={60} />
 
@@ -605,7 +590,7 @@ function TextPageGaleria({ theme, scene, pageNumber, tc }: ScenePageProps) {
     <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: COLORS.cream }]}>
       <FrameBorder color={theme.ornamentColor} />
 
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", paddingHorizontal: BOOK.contentMargin + 10, paddingVertical: BOOK.contentMargin }}>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", paddingHorizontal: BOOK.contentMargin + 10, paddingTop: BOOK.contentMargin, paddingBottom: PAGE_NUM_RESERVED }}>
         <View style={{ alignItems: "center", maxWidth: BOOK.trimWidth * 0.78 }}>
           {/* Title */}
           <Text style={{ fontFamily: FONTS.display, fontSize: tc.title, fontWeight: 600, color: theme.titleColor, textAlign: "center", lineHeight: 1.3, marginBottom: 12 }}>
@@ -637,7 +622,7 @@ function TextPagePergamino({ theme, scene, pageNumber, tc }: ScenePageProps) {
     <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: theme.accentLight }]}>
       <FrameBorder color={theme.ornamentColor} />
 
-      <View style={{ flex: 1, justifyContent: "center", paddingHorizontal: BOOK.contentMargin + 8, paddingVertical: BOOK.contentMargin }}>
+      <View style={{ flex: 1, justifyContent: "center", paddingHorizontal: BOOK.contentMargin + 8, paddingTop: BOOK.contentMargin, paddingBottom: PAGE_NUM_RESERVED }}>
         {/* Title */}
         <Text style={{ fontFamily: FONTS.display, fontSize: tc.title, fontWeight: 600, color: theme.titleColor, lineHeight: 1.3, marginBottom: 10 }}>
           {scene.title}
@@ -671,7 +656,7 @@ function TextPageVentana({ theme, scene, pageNumber, tc }: ScenePageProps) {
     <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: COLORS.cream }]}>
       <FrameBorder color={theme.ornamentColor} />
 
-      <View style={{ flex: 1, justifyContent: "center", paddingHorizontal: BOOK.contentMargin + 10, paddingVertical: BOOK.contentMargin }}>
+      <View style={{ flex: 1, justifyContent: "center", paddingHorizontal: BOOK.contentMargin + 10, paddingTop: BOOK.contentMargin, paddingBottom: PAGE_NUM_RESERVED }}>
         {/* Scene title */}
         <Text style={{ fontFamily: FONTS.display, fontSize: tc.title, fontWeight: 600, color: theme.titleColor, marginBottom: 14, lineHeight: 1.3 }}>
           {scene.title}
@@ -714,7 +699,7 @@ function TextPagePuente({ theme, scene, pageNumber, tc }: ScenePageProps) {
       <CornerDot color={theme.accent} bottom={BOOK.contentMargin + 4} left={BOOK.contentMargin + 4} />
       <CornerDot color={theme.accent} bottom={BOOK.contentMargin + 4} right={BOOK.contentMargin + 4} />
 
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: BOOK.contentMargin + 30 }}>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", paddingHorizontal: BOOK.contentMargin + 30, paddingTop: BOOK.contentMargin + 30, paddingBottom: PAGE_NUM_RESERVED }}>
         <View style={{ alignItems: "center", maxWidth: BOOK.trimWidth * 0.7 }}>
           <OrnamentalDivider color={theme.ornamentColor} width={60} />
 
@@ -769,8 +754,8 @@ function renderIllustrationPage(layout: ScenePageLayout, props: ScenePageProps):
 // DOCUMENT
 // ══════════════════════════════════════════════════════════════════════════
 
-export function BookPdf({ input, qrDataUrl, logoDataUri, logoMuted }: { input: BookPdfInput; qrDataUrl?: string; logoDataUri?: string; logoMuted?: string }) {
-  const theme = getTheme(input.templateId);
+export function BookPdf({ input, qrDataUrl, logoDataUri, logoMuted, gradientUri, whiteGradientUri }: { input: BookPdfInput; qrDataUrl?: string; logoDataUri?: string; logoMuted?: string; gradientUri?: string; whiteGradientUri?: string }) {
+  const theme = getTheme(input.templateId, input.characterGender);
   const { story } = input;
   const tc = getPdfTextConfig(input.characterAge);
 
@@ -794,7 +779,7 @@ export function BookPdf({ input, qrDataUrl, logoDataUri, logoMuted }: { input: B
     const secondaryImageUrl = secondaryIllustration?.imageUrl ?? null;
 
     const actLabel = getActLabel(scene.sceneNumber);
-    const baseProps: ScenePageProps = { theme, scene, imageUrl, pageNumber: pageCounter, tc, actLabel };
+    const baseProps: ScenePageProps = { theme, scene, imageUrl, pageNumber: pageCounter, tc, actLabel, gradientUri };
 
     if (isBridge) {
       // Bridge: uses SCENE_LAYOUT_PAIRS like regular scenes (matching web)
@@ -883,7 +868,7 @@ export function BookPdf({ input, qrDataUrl, logoDataUri, logoMuted }: { input: B
       {/* 28. Final message */}
       <FinalPage theme={theme} message={story.finalMessage} characterName={input.characterName} />
       {/* 29. About the reader — keepsake page */}
-      <AboutReaderPage theme={theme} input={input} />
+      <AboutReaderPage theme={theme} input={input} gradientUri={whiteGradientUri} />
       {/* 30. Colophon */}
       <ColophonPage theme={theme} storyId={input.storyId} qrDataUrl={qrDataUrl} />
       {/* 31. Back Endpapers */}
@@ -912,15 +897,18 @@ async function generateQrDataUrl(storyId: string, color: string): Promise<string
 
 /** Full 32-page PDF — used for user-facing download */
 export async function renderBookPdf(input: BookPdfInput): Promise<Buffer> {
-  const theme = getTheme(input.templateId);
-  const [qrDataUrl, logoWhite, logoOrnament] = await Promise.all([
+  const theme = getTheme(input.templateId, input.characterGender);
+  const [qrDataUrl, logoWhite, logoOrnament, gradientUri, whiteGradientUri] = await Promise.all([
     generateQrDataUrl(input.storyId, theme.coverGradientStart),
     getBrandLogoPng("#ffffff"),
-    // Title page logo uses the theme ornament color — same as web's var(--bk-ornament)
     getBrandLogoPng(theme.ornamentColor),
+    // Gradient overlay PNG for text-over-image pages (75% max opacity, 200px tall)
+    getGradientPng(0.75, 200),
+    // White gradient for hero card portrait-to-cream fade
+    getGradientPng(0.95, 200, [250, 248, 245]),
   ]);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const element = createElement(BookPdf as any, { input, qrDataUrl, logoDataUri: logoWhite, logoMuted: logoOrnament });
+  const element = createElement(BookPdf as any, { input, qrDataUrl, logoDataUri: logoWhite, logoMuted: logoOrnament, gradientUri, whiteGradientUri });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return renderToBuffer(element as any);
 }
@@ -928,8 +916,8 @@ export async function renderBookPdf(input: BookPdfInput): Promise<Buffer> {
 /**
  * Interior-only PDF for Gelato — pages 2–31 (30 inner pages).
  */
-export function InteriorOnlyPdf({ input, qrDataUrl }: { input: BookPdfInput; qrDataUrl?: string }) {
-  const theme = getTheme(input.templateId);
+export function InteriorOnlyPdf({ input, qrDataUrl, gradientUri, whiteGradientUri }: { input: BookPdfInput; qrDataUrl?: string; gradientUri?: string; whiteGradientUri?: string }) {
+  const theme = getTheme(input.templateId, input.characterGender);
   const { story } = input;
   const tc = getPdfTextConfig(input.characterAge);
 
@@ -951,7 +939,7 @@ export function InteriorOnlyPdf({ input, qrDataUrl }: { input: BookPdfInput; qrD
     const imageUrl = illustration?.imageUrl ?? null;
     const secondaryImageUrl = secondaryIllustration?.imageUrl ?? null;
     const actLabel = getActLabel(scene.sceneNumber);
-    const baseProps: ScenePageProps = { theme, scene, imageUrl, pageNumber: pageCounter, tc, actLabel };
+    const baseProps: ScenePageProps = { theme, scene, imageUrl, pageNumber: pageCounter, tc, actLabel, gradientUri };
 
     if (isBridge) {
       const isSpread = pair[0] === "spread_left";
@@ -1018,7 +1006,7 @@ export function InteriorOnlyPdf({ input, qrDataUrl }: { input: BookPdfInput; qrD
       <TitleDedicationPage theme={theme} title={story.bookTitle} characterName={input.characterName} dedicationText={story.dedication} senderName={input.senderName} />
       {scenePages}
       <FinalPage theme={theme} message={story.finalMessage} characterName={input.characterName} />
-      <AboutReaderPage theme={theme} input={input} />
+      <AboutReaderPage theme={theme} input={input} gradientUri={whiteGradientUri} />
       <ColophonPage theme={theme} storyId={input.storyId} qrDataUrl={qrDataUrl} />
       <EndpapersPage theme={theme} />
     </Document>
@@ -1026,10 +1014,13 @@ export function InteriorOnlyPdf({ input, qrDataUrl }: { input: BookPdfInput; qrD
 }
 
 export async function renderInteriorPdf(input: BookPdfInput): Promise<Buffer> {
-  const theme = getTheme(input.templateId);
-  const qrDataUrl = await generateQrDataUrl(input.storyId, theme.coverGradientStart);
+  const theme = getTheme(input.templateId, input.characterGender);
+  const [qrDataUrl, whiteGradientUri] = await Promise.all([
+    generateQrDataUrl(input.storyId, theme.coverGradientStart),
+    getGradientPng(0.95, 200, [250, 248, 245]),
+  ]);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const element = createElement(InteriorOnlyPdf as any, { input, qrDataUrl });
+  const element = createElement(InteriorOnlyPdf as any, { input, qrDataUrl, whiteGradientUri });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return renderToBuffer(element as any);
 }
@@ -1049,7 +1040,7 @@ export function CoverSpreadPdf({
   coverHeightPt: number;
   spineWidthPt: number;
 }) {
-  const theme = getTheme(input.templateId);
+  const theme = getTheme(input.templateId, input.characterGender);
   const { story } = input;
   const panelWidth = (coverWidthPt - spineWidthPt) / 2;
 
@@ -1200,25 +1191,26 @@ function EndpapersPage({ theme }: { theme: TemplateTheme }) {
   const cols = Math.ceil(W / SPACING) + 1;
   const rows = Math.ceil(H / SPACING) + 1;
 
+  // Dark gradient with subtle dot pattern — matches web's linear-gradient(to bottom right, grad-start, grad-end)
   return (
     <Page size={[W, H]} style={[s.page, { backgroundColor: theme.coverGradientStart }]}>
-      {/* Secondary gradient overlay — matches web's "to bottom right" gradient */}
+      {/* Secondary gradient overlay */}
       <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: theme.coverGradientEnd, opacity: 0.3 }} />
-      {/* White dot grid — PDF needs larger dots + higher opacity than web CSS to be visible */}
+      {/* White dot grid — matches web's radial-gradient dots */}
       <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}>
         <Svg width={W} height={H} viewBox={`0 0 ${W} ${H}`}>
           {Array.from({ length: rows }).map((_, r) =>
             Array.from({ length: cols }).map((_, c) => (
               <Rect
                 key={`${r}-${c}`}
-                x={c * SPACING - 1}
-                y={r * SPACING - 1}
-                width={2.5}
-                height={2.5}
-                rx={1.25}
-                ry={1.25}
+                x={c * SPACING - 0.75}
+                y={r * SPACING - 0.75}
+                width={1.5}
+                height={1.5}
+                rx={0.75}
+                ry={0.75}
                 fill="#ffffff"
-                fillOpacity={0.12}
+                fillOpacity={0.08}
               />
             ))
           )}
@@ -1272,7 +1264,7 @@ function TitleDedicationPage({ theme, title, characterName, dedicationText, send
 
         {/* Dedication */}
         <View style={{ alignItems: "center", maxWidth: BOOK.trimWidth * 0.6 }}>
-          <Text style={{ fontFamily: FONTS.body, fontStyle: "italic", fontSize: 12, color: COLORS.textMedium, textAlign: "center", lineHeight: 1.8 }}>
+          <Text style={{ fontFamily: FONTS.body, fontStyle: "italic", fontSize: 12, color: theme.titleColor, opacity: 0.8, textAlign: "center", lineHeight: 1.8 }}>
             {"\u201C"}{dedicationText}{"\u201D"}
           </Text>
 
@@ -1329,116 +1321,114 @@ function FinalPage({ theme, message, characterName }: { theme: TemplateTheme; me
 
 // ── About the Reader (keepsake) ──────────────────────────────────────────
 
-function AboutReaderPage({ theme, input }: {
-  theme: TemplateTheme; input: BookPdfInput;
+function AboutReaderPage({ theme, input, gradientUri }: {
+  theme: TemplateTheme; input: BookPdfInput; gradientUri?: string;
 }) {
-  const { characterName, characterAge, portraitUrl, characterCity, characterInterests, specialTrait, favoriteCompanion, favoriteFood, futureDream } = input;
+  const { characterName, characterAge, portraitUrl, characterCity, characterInterests, specialTrait, favoriteCompanion, favoriteFood, futureDream, characterGender } = input;
   const hasPortrait = !!portraitUrl;
+  const heroLabel = characterGender === "girl" ? "La Hero\u00EDna" : "El H\u00E9roe";
 
-  // Trait entries to display
-  const traits: { label: string; value: string }[] = [];
-  if (specialTrait) traits.push({ label: "Superpoder", value: specialTrait });
-  if (favoriteCompanion) traits.push({ label: "Compa\u00F1ero", value: favoriteCompanion });
-  if (favoriteFood) traits.push({ label: "Favorito", value: favoriteFood });
-  if (futureDream) traits.push({ label: "Sue\u00F1o", value: futureDream });
+  const traits: { label: string }[] = [];
+  if (specialTrait) traits.push({ label: specialTrait });
+  if (favoriteCompanion) traits.push({ label: favoriteCompanion });
+  if (favoriteFood) traits.push({ label: favoriteFood });
+  if (futureDream) traits.push({ label: futureDream });
 
   return (
-    <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={s.page}>
-      {/* Background: portrait image or gradient fallback */}
+    <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: "#ffffff" }]}>
+      {/* Full-bleed portrait background */}
       {hasPortrait ? (
-        <>
-          <Image src={portraitUrl!} style={{ position: "absolute", top: 0, left: 0, width: BOOK.pageWidth, height: BOOK.pageHeight, objectFit: "cover" }} />
-          <View style={{ position: "absolute", top: BOOK.pageHeight * 0.35, left: 0, right: 0, bottom: 0, backgroundColor: "#ffffff", opacity: 0.85 }} />
-          <View style={{ position: "absolute", top: BOOK.pageHeight * 0.25, left: 0, right: 0, height: BOOK.pageHeight * 0.15, backgroundColor: "#ffffff", opacity: 0.4 }} />
-        </>
+        <Image src={portraitUrl!} style={{ position: "absolute", top: 0, left: 0, width: BOOK.pageWidth, height: BOOK.pageHeight, objectFit: "cover", objectPosition: "top" }} />
       ) : (
-        <>
-          <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: theme.coverGradientStart }} />
+        <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: theme.coverGradientStart }}>
           <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: theme.coverGradientEnd, opacity: 0.3 }} />
-          <View style={{ position: "absolute", top: BOOK.pageHeight * 0.4, left: 0, right: 0, bottom: 0, backgroundColor: "#ffffff", opacity: 0.9 }} />
-        </>
+        </View>
       )}
 
-      {/* "SOBRE EL PROTAGONISTA" header — matching web */}
-      <View style={{ position: "absolute", top: BOOK.contentMargin, left: 0, right: 0, alignItems: "center" }}>
-        <Text style={{ fontFamily: FONTS.display, fontSize: 7, fontWeight: 600, color: COLORS.textMuted, letterSpacing: 2 }}>
-          SOBRE EL PROTAGONISTA
+      {/* Hero badge — top left with frosted look */}
+      <View style={{
+        position: "absolute", top: BOOK.bleed + 12, left: BOOK.bleed + 12,
+        backgroundColor: theme.accent, borderRadius: 12,
+        paddingHorizontal: 12, paddingVertical: 5,
+      }}>
+        <Text style={{ fontFamily: FONTS.body, fontSize: 6.5, fontWeight: 700, color: "#ffffff", letterSpacing: 2 }}>
+          {heroLabel.toUpperCase()}
         </Text>
       </View>
 
-      {/* Character details at bottom */}
-      <View style={{ position: "absolute", bottom: BOOK.contentMargin + 10, left: BOOK.contentMargin + 5, right: BOOK.contentMargin + 5 }}>
-        <View style={{ marginBottom: 8 }}>
-          <OrnamentalDivider color={theme.ornamentColor} width={60} />
+      {/* Dreamy white fade — tall and soft for editorial feel */}
+      {gradientUri && (
+        <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: BOOK.pageHeight * 0.55 }}>
+          <Image src={gradientUri} style={{ width: BOOK.pageWidth, height: BOOK.pageHeight * 0.55 }} />
         </View>
+      )}
 
-        <View style={{ alignItems: "center", marginBottom: 8 }}>
-          <Text style={{ fontFamily: FONTS.display, fontSize: 22, fontWeight: 600, color: theme.titleColor, lineHeight: 1.2, textAlign: "center" }}>
-            {characterName}
-          </Text>
-          <Text style={{ fontFamily: FONTS.body, fontSize: 10, color: COLORS.textMuted, marginTop: 4 }}>
-            {characterAge} a{"\u00F1"}os{characterCity ? ` \u00B7 ${characterCity}` : ""}
-          </Text>
-        </View>
+      {/* ── Character card panel ── */}
+      <View style={{
+        position: "absolute", bottom: BOOK.bleed + 16, left: BOOK.contentMargin,
+        right: BOOK.contentMargin,
+      }}>
+        {/* Name — large editorial display */}
+        <Text style={{
+          fontFamily: FONTS.display, fontSize: 28, fontWeight: 800,
+          color: theme.titleColor, lineHeight: 1.15,
+        }}>
+          {characterName}
+        </Text>
 
-        <View style={{ marginBottom: 8 }}>
-          <OrnamentalDivider color={theme.ornamentColor} width={60} />
-        </View>
+        {/* Accent underline — short decorative bar */}
+        <View style={{
+          width: 32, height: 2.5, borderRadius: 1.25,
+          backgroundColor: theme.accent, marginTop: 6, opacity: 0.8,
+        }} />
 
-        <View style={{ alignItems: "center", marginBottom: 10 }}>
-          <Text style={{ fontFamily: FONTS.body, fontStyle: "italic", fontSize: 10, color: COLORS.textMedium, textAlign: "center", lineHeight: 1.6, maxWidth: BOOK.trimWidth * 0.7 }}>
-            Este libro fue creado especialmente para ti.{"\n"}
-            Recuerda siempre que eres capaz de vivir{"\n"}
-            las aventuras m{"\u00E1"}s incre{"\u00ED"}bles.
-          </Text>
-        </View>
+        {/* Age + city */}
+        <Text style={{
+          fontFamily: FONTS.body, fontSize: 9, color: COLORS.textMuted,
+          marginTop: 8, letterSpacing: 0.3,
+        }}>
+          {characterAge} a{"\u00F1"}os{characterCity ? `  \u00B7  ${characterCity}` : ""}
+        </Text>
 
-        {/* Traits */}
+        {/* Traits with diamond accent markers */}
         {traits.length > 0 && (
-          <View style={{ gap: 4, marginBottom: 8 }}>
-            {traits.map((trait) => (
-              <View key={trait.label} style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-                <View style={{ width: 4, height: 4, borderRadius: 2, backgroundColor: theme.accent }} />
-                <Text style={{ fontFamily: FONTS.body, fontSize: 9, fontWeight: 600, color: theme.titleColor }}>
-                  {trait.value}
+          <View style={{ marginTop: 12, gap: 6 }}>
+            {traits.map((trait, i) => (
+              <View key={i} style={{ flexDirection: "row", alignItems: "center", gap: 7 }}>
+                <View style={{
+                  width: 5, height: 5,
+                  backgroundColor: theme.accent,
+                  transform: "rotate(45deg)",
+                }} />
+                <Text style={{
+                  fontFamily: FONTS.body, fontSize: 9, fontWeight: 600,
+                  color: theme.titleColor, letterSpacing: 0.2,
+                }}>
+                  {trait.label}
                 </Text>
               </View>
             ))}
           </View>
         )}
 
-        {/* Interests */}
+        {/* Interest pills — frosted glass style */}
         {characterInterests && characterInterests.length > 0 && (
-          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 4, marginBottom: 10 }}>
+          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 5, marginTop: 12 }}>
             {characterInterests.map((interest) => (
-              <View key={interest} style={{ borderWidth: 0.5, borderColor: COLORS.textLight, borderRadius: 8, paddingHorizontal: 8, paddingVertical: 3, backgroundColor: "#ffffff99" }}>
-                <Text style={{ fontFamily: FONTS.body, fontSize: 7, color: COLORS.textMedium }}>
+              <View key={interest} style={{
+                backgroundColor: theme.accentLight, borderRadius: 10,
+                paddingHorizontal: 10, paddingVertical: 4,
+              }}>
+                <Text style={{
+                  fontFamily: FONTS.body, fontSize: 7, fontWeight: 600,
+                  color: theme.accent, letterSpacing: 0.3,
+                }}>
                   {interest}
                 </Text>
               </View>
             ))}
           </View>
         )}
-
-        {/* Drawing box — "Dibuja aquí tu momento favorito" (matching web) */}
-        <View style={{ marginTop: 4 }}>
-          <StarCluster color={COLORS.gold} size={20} />
-        </View>
-        <View style={{
-          marginTop: 6,
-          borderWidth: 0.75,
-          borderColor: COLORS.textLight,
-          borderRadius: 6,
-          paddingVertical: 24,
-          paddingHorizontal: 16,
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "#ffffff55",
-        }}>
-          <Text style={{ fontFamily: FONTS.body, fontSize: 8, color: COLORS.textLight, textAlign: "center" }}>
-            Dibuja aqu{"\u00ED"} tu momento favorito
-          </Text>
-        </View>
       </View>
     </Page>
   );
@@ -1491,7 +1481,10 @@ function ColophonPage({ qrDataUrl }: { theme: TemplateTheme; storyId: string; qr
 
 function BackCoverPage({ theme, input, logoDataUri }: { theme: TemplateTheme; input: BookPdfInput; logoDataUri?: string }) {
   const synopsis = input.story.synopsis || `${input.characterName} est\u00E1 a punto de vivir la aventura m\u00E1s extraordinaria de su vida.`;
-  const hasCoverImage = !!input.coverImageUrl;
+  // Use last scene illustration (matching web), fallback to cover image
+  const lastSceneNumber = input.story.scenes.length;
+  const lastIllustration = input.illustrations.find((i) => i.sceneNumber === lastSceneNumber);
+  const bgImageUrl = lastIllustration?.imageUrl || input.coverImageUrl;
 
   return (
     <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={s.page}>
@@ -1499,11 +1492,11 @@ function BackCoverPage({ theme, input, logoDataUri }: { theme: TemplateTheme; in
       <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: theme.coverGradientStart }} />
       <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: theme.coverGradientEnd, opacity: 0.3 }} />
 
-      {/* Cover image as faded background */}
-      {hasCoverImage && (
+      {/* Last scene illustration as faded background */}
+      {bgImageUrl && (
         <>
           <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, opacity: 0.35 }}>
-            <Image src={input.coverImageUrl!} style={{ width: BOOK.pageWidth, height: BOOK.pageHeight, objectFit: "cover" }} />
+            <Image src={bgImageUrl} style={{ width: BOOK.pageWidth, height: BOOK.pageHeight, objectFit: "cover" }} />
           </View>
           <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "#000000", opacity: 0.45 }} />
         </>

@@ -13,44 +13,52 @@ import type { BookPage } from "./types";
 interface MobileBookPageProps {
   page: BookPage;
   templateId: string;
+  /** Character gender — influences color palette tinting */
+  gender?: string;
   /** Real book page number (1-based, only for scene pages) */
   pageNumber?: number;
 }
 
 const MobileBookPage = React.forwardRef<HTMLDivElement, MobileBookPageProps>(
-  function MobileBookPage({ page, templateId, pageNumber }, ref) {
-    const colors = getBookColors(templateId);
+  function MobileBookPage({ page, templateId, gender, pageNumber }, ref) {
+    const colors = getBookColors(templateId, gender);
     return (
       <div
         ref={ref}
         className="book-page h-full w-full bg-white overflow-hidden relative @container"
-        style={{
-          "--bk-accent": colors.accent,
-          "--bk-accent-light": colors.accentLight,
-          "--bk-title": colors.titleColor,
-          "--bk-ornament": colors.ornamentColor,
-          "--bk-tint": colors.pageTint,
-          "--bk-grad-start": colors.gradientStart,
-          "--bk-grad-end": colors.gradientEnd,
-        } as React.CSSProperties}
       >
-        <PageContent page={page} templateId={templateId} pageNumber={pageNumber} />
-        {/* Locked overlay */}
-        {page.type === "scene" && page.locked && (
-          <button
-            type="button"
-            onClick={() => {
-              const el = document.getElementById("checkout-section");
-              if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-            }}
-            className="absolute inset-0 flex flex-col items-center justify-center bg-white/60 backdrop-blur-md z-10 cursor-pointer transition-colors hover:bg-white/50 group"
-          >
-            <span className="material-symbols-outlined text-[clamp(1.5rem,8cqi,2.5rem)] text-create-primary/60 mb-1 group-hover:text-create-primary transition-colors">
-              lock
-            </span>
-            <LockedText />
-          </button>
-        )}
+        {/* Inner wrapper carries CSS custom properties — the outer ref div's
+            inline style gets overwritten by react-pageflip, so vars must live here */}
+        <div
+          className="absolute inset-0"
+          style={{
+            "--bk-accent": colors.accent,
+            "--bk-accent-light": colors.accentLight,
+            "--bk-title": colors.titleColor,
+            "--bk-ornament": colors.ornamentColor,
+            "--bk-tint": colors.pageTint,
+            "--bk-grad-start": colors.gradientStart,
+            "--bk-grad-end": colors.gradientEnd,
+          } as React.CSSProperties}
+        >
+          <PageContent page={page} templateId={templateId} gender={gender} pageNumber={pageNumber} />
+          {/* Locked overlay */}
+          {page.type === "scene" && page.locked && (
+            <button
+              type="button"
+              onClick={() => {
+                const el = document.getElementById("checkout-section");
+                if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
+              className="absolute inset-0 flex flex-col items-center justify-center bg-white/60 backdrop-blur-md z-10 cursor-pointer transition-colors hover:bg-white/50 group"
+            >
+              <span className="material-symbols-outlined text-[clamp(1.5rem,8cqi,2.5rem)] text-create-primary/60 mb-1 group-hover:text-create-primary transition-colors">
+                lock
+              </span>
+              <LockedText />
+            </button>
+          )}
+        </div>
       </div>
     );
   }
@@ -157,13 +165,8 @@ function SceneImmersive({ page, pageNumber }: SceneProps) {
       ) : (
         <div className={`absolute inset-0 bg-cream ${blur}`} />
       )}
-      <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
+      <div className="absolute inset-0 bg-linear-to-t from-black/75 via-black/20 to-transparent" />
       {page.actLabel && <ActLabelOverlay label={page.actLabel} variant="light" />}
-      {!page.locked && (
-        <div className="absolute top-3 left-3 flex h-6 w-6 items-center justify-center rounded-full bg-white/80 shadow-sm">
-          <span className="text-[10px] font-bold" style={{ color: "var(--bk-accent)" }}>{pageNumber ?? page.scene.sceneNumber}</span>
-        </div>
-      )}
       <div className="absolute bottom-0 left-0 right-0 px-5 pb-5">
         <h3 className={`font-display ${tc.titleOverlay} font-bold text-white leading-tight drop-shadow-sm`}>
           {page.scene.title}
@@ -281,13 +284,8 @@ function SceneSpreadLeft({ page, pageNumber }: SceneProps) {
       ) : (
         <div className={`absolute inset-0 bg-cream ${blur}`} />
       )}
-      <div className="absolute inset-0 bg-linear-to-t from-black/50 via-transparent to-transparent" />
+      <div className="absolute inset-0 bg-linear-to-t from-black/75 via-black/20 to-transparent" />
       {page.actLabel && <ActLabelOverlay label={page.actLabel} variant="light" />}
-      {!page.locked && (
-        <div className="absolute top-3 left-3 flex h-6 w-6 items-center justify-center rounded-full bg-white/80 shadow-sm">
-          <span className="text-[10px] font-bold" style={{ color: "var(--bk-accent)" }}>{pageNumber ?? page.scene.sceneNumber}</span>
-        </div>
-      )}
       <div className="absolute bottom-0 left-0 right-0 px-5 pb-5">
         <h3 className="font-display text-sm font-bold text-white leading-tight drop-shadow-sm">
           {page.scene.title}
@@ -311,9 +309,9 @@ function SceneSpreadRight({ page, pageNumber }: SceneProps) {
       ) : (
         <div className={`absolute inset-0 bg-cream ${blur}`} />
       )}
-      <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
+      <div className="absolute inset-0 bg-linear-to-t from-black/75 via-black/25 to-transparent" />
       <div className="absolute bottom-0 left-0 right-0 px-5 pb-5">
-        <p className={`${tc.body} text-white/90 drop-shadow-sm ${tc.clampSpread}`}>
+        <p className={`${tc.body} text-white drop-shadow-sm ${tc.clampSpread}`}>
           {page.scene.text}
         </p>
       </div>
@@ -593,7 +591,7 @@ function ScenePage({ page, templateId, pageNumber }: SceneProps) {
 
 // ── Page content dispatcher ───────────────────────────────────────────────────
 
-function PageContent({ page, templateId, pageNumber }: { page: BookPage; templateId: string; pageNumber?: number }) {
+function PageContent({ page, templateId, gender, pageNumber }: { page: BookPage; templateId: string; gender?: string; pageNumber?: number }) {
   const t = useTranslations("crear.preview");
   const td = useTranslations("data");
   switch (page.type) {
@@ -807,7 +805,7 @@ function PageContent({ page, templateId, pageNumber }: { page: BookPage; templat
               value={bookUrl}
               size={72}
               level="M"
-              fgColor={getBookColors(templateId).gradientStart}
+              fgColor={getBookColors(templateId, gender).gradientStart}
               bgColor="transparent"
             />
             <p className="text-[8px] text-text-muted/60 tracking-wide">meapica.com</p>

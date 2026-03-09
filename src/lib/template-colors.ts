@@ -5,7 +5,12 @@
  * (space = indigo, forest = green, pirates = sky blue, etc.).
  * The web viewer uses these as CSS custom properties; the PDF uses them
  * via the extended TemplateTheme in theme.ts.
+ *
+ * Gender tinting: the character's gender subtly shifts the palette —
+ * girl → warm rose, boy → cool blue, neutral → original colors unchanged.
  */
+
+import type { Gender } from "./create-store";
 
 export interface BookColors {
   /** Primary accent (badges, borders, interactive elements) */
@@ -22,6 +27,63 @@ export interface BookColors {
   gradientStart: string;
   /** Secondary gradient color */
   gradientEnd: string;
+}
+
+// ── Color blending utility ──────────────────────────────────────────────────
+
+function hexToRgb(hex: string): [number, number, number] {
+  const n = parseInt(hex.replace("#", ""), 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+
+function rgbToHex(r: number, g: number, b: number): string {
+  return "#" + [r, g, b].map((c) => c.toString(16).padStart(2, "0")).join("");
+}
+
+/** Linearly blend `base` toward `target` by `ratio` (0 = base, 1 = target). */
+function blendHex(base: string, target: string, ratio: number): string {
+  const [r1, g1, b1] = hexToRgb(base);
+  const [r2, g2, b2] = hexToRgb(target);
+  return rgbToHex(
+    Math.round(r1 + (r2 - r1) * ratio),
+    Math.round(g1 + (g2 - g1) * ratio),
+    Math.round(b1 + (b2 - b1) * ratio),
+  );
+}
+
+// ── Gender tint definitions ─────────────────────────────────────────────────
+
+interface GenderTint {
+  /** Color to blend accents / ornaments toward */
+  accent: string;
+  /** Color to blend light backgrounds toward */
+  light: string;
+  /** Color to blend dark gradients toward */
+  dark: string;
+}
+
+const GENDER_TINTS: Record<string, GenderTint> = {
+  girl: { accent: "#E91E87", light: "#FFF0F5", dark: "#6B1D4A" },
+  boy: { accent: "#2563EB", light: "#EFF6FF", dark: "#1E3A5F" },
+};
+
+/** Blend ratio — subtle enough to preserve template identity. */
+const TINT_RATIO = 0.22;
+
+/** Apply gender tint to a BookColors palette. Neutral returns unchanged. */
+export function applyGenderTint(colors: BookColors, gender?: Gender | string): BookColors {
+  const tint = gender ? GENDER_TINTS[gender] : undefined;
+  if (!tint) return colors;
+
+  return {
+    accent: blendHex(colors.accent, tint.accent, TINT_RATIO),
+    accentLight: blendHex(colors.accentLight, tint.light, TINT_RATIO),
+    titleColor: blendHex(colors.titleColor, tint.dark, TINT_RATIO * 0.6),
+    ornamentColor: blendHex(colors.ornamentColor, tint.accent, TINT_RATIO * 0.7),
+    pageTint: blendHex(colors.pageTint, tint.light, TINT_RATIO * 0.5),
+    gradientStart: blendHex(colors.gradientStart, tint.dark, TINT_RATIO),
+    gradientEnd: blendHex(colors.gradientEnd, tint.dark, TINT_RATIO),
+  };
 }
 
 const PALETTES: Record<string, BookColors> = {
@@ -128,6 +190,7 @@ const DEFAULT_PALETTE: BookColors = {
   gradientEnd: "#4E342E",
 };
 
-export function getBookColors(templateId: string): BookColors {
-  return PALETTES[templateId] ?? DEFAULT_PALETTE;
+export function getBookColors(templateId: string, gender?: Gender | string): BookColors {
+  const base = PALETTES[templateId] ?? DEFAULT_PALETTE;
+  return applyGenderTint(base, gender);
 }

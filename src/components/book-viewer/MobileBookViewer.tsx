@@ -24,6 +24,7 @@ function useIsNarrow(breakpoint = 768) {
 export default function MobileBookViewer({
   pages,
   templateId,
+  gender,
   currentPage,
   onPageChange,
 }: BookViewerProps) {
@@ -99,6 +100,7 @@ export default function MobileBookViewer({
                 key={i}
                 page={page}
                 templateId={templateId}
+                gender={gender}
                 pageNumber={page.type === "scene" ? getBookPageNumber(pages, i) : undefined}
               />
             ))}
@@ -167,6 +169,7 @@ export default function MobileBookViewer({
         <FullscreenPageViewer
           pages={pages}
           templateId={templateId}
+          gender={gender}
           initialPage={fullscreenPage}
           onClose={() => setFullscreenPage(null)}
           onPageChange={(idx) => {

@@ -9,6 +9,8 @@
  * 1mm = 2.83465pt (PDF points)
  */
 
+import { applyGenderTint } from "@/lib/template-colors";
+
 // ── Dimensions (in PDF points) ─────────────────────────────────────────────
 
 const MM_TO_PT = 2.83465;
@@ -150,8 +152,37 @@ export const TEMPLATE_THEMES: Record<string, TemplateTheme> = {
   },
 };
 
-export function getTheme(templateId: string): TemplateTheme {
-  return TEMPLATE_THEMES[templateId] ?? TEMPLATE_THEMES.forest;
+/**
+ * Get the PDF theme for a template, optionally tinted by character gender.
+ * Girl → warm rose shift, boy → cool blue shift, neutral → unchanged.
+ */
+export function getTheme(templateId: string, gender?: string): TemplateTheme {
+  const base = TEMPLATE_THEMES[templateId] ?? TEMPLATE_THEMES.forest;
+  if (!gender || gender === "neutral") return base;
+
+  const tinted = applyGenderTint(
+    {
+      accent: base.accent,
+      accentLight: base.accentLight,
+      titleColor: base.titleColor,
+      ornamentColor: base.ornamentColor,
+      pageTint: base.pageTint,
+      gradientStart: base.coverGradientStart,
+      gradientEnd: base.coverGradientEnd,
+    },
+    gender,
+  );
+
+  return {
+    ...base,
+    accent: tinted.accent,
+    accentLight: tinted.accentLight,
+    titleColor: tinted.titleColor,
+    ornamentColor: tinted.ornamentColor,
+    pageTint: tinted.pageTint,
+    coverGradientStart: tinted.gradientStart,
+    coverGradientEnd: tinted.gradientEnd,
+  };
 }
 
 // ── Typography ─────────────────────────────────────────────────────────────

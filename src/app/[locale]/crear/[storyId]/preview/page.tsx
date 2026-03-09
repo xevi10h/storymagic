@@ -417,6 +417,7 @@ export default function PreviewPage() {
         <BookViewerSwitch
           pages={visiblePages}
           templateId={story.template_id}
+          gender={story.characters.gender}
           currentPage={currentPage}
           onPageChange={setCurrentPage}
         />
