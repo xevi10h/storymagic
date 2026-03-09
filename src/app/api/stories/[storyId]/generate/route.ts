@@ -285,6 +285,9 @@ export async function POST(
     const recraftCount = finalPreviewIllustrations.filter((i) => i.provider === "recraft").length;
     const mockCount = finalPreviewIllustrations.filter((i) => i.provider === "mock").length;
 
+    if (mockCount > 0) {
+      console.error(`[Generate] WARNING: ${mockCount}/${PREVIEW_ILLUSTRATION_COUNT} illustrations fell back to MOCK — Recraft API calls failed`);
+    }
     console.log(`[Generate] DONE — ${finalStatus}, cover=${!!persistedCoverUrl}, recraft=${recraftCount}, mock=${mockCount} [${elapsed(routeStart)}]`);
 
     return NextResponse.json({

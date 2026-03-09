@@ -49,14 +49,24 @@ async function generateWithRecraft(
     }
   }
 
-  const response = await fetch(RECRAFT_GENERATE_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiToken}`,
-    },
-    body: JSON.stringify(body),
-  });
+  // 60s timeout per call — prevents hangs in Vercel serverless (undici)
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 60_000);
+
+  let response: Response;
+  try {
+    response = await fetch(RECRAFT_GENERATE_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiToken}`,
+      },
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
 
   if (!response.ok) {
     const errorBody = await response.text();
@@ -278,15 +288,27 @@ export async function generateIllustrationsForStory(
   // Build per-image Recraft options with correct sizes
   const sizes = options?.imageSizes ?? [];
 
-  // Generate all images in parallel (Recraft allows 100 images/minute)
-  const results = await Promise.allSettled(
-    enhancedPrompts.map((prompt, index) => {
-      const size = sizes[index] || DEFAULT_IMAGE_SIZE;
-      return generateWithRetry(prompt, apiToken, { styleId, size });
-    }),
-  );
+  // Generate images in batches of 3 to avoid overwhelming Vercel's undici connection pool.
+  // Recraft allows 100 images/minute so rate limiting isn't the issue — concurrent fetch
+  // saturation in serverless environments is.
+  const BATCH_SIZE = 3;
+  const results: PromiseSettledResult<string>[] = [];
 
-  return results.map((result, index) => {
+  for (let i = 0; i < enhancedPrompts.length; i += BATCH_SIZE) {
+    const batch = enhancedPrompts.slice(i, i + BATCH_SIZE);
+    const batchResults = await Promise.allSettled(
+      batch.map((prompt, batchIndex) => {
+        const globalIndex = i + batchIndex;
+        const size = sizes[globalIndex] || DEFAULT_IMAGE_SIZE;
+        return generateWithRetry(prompt, apiToken, { styleId, size });
+      }),
+    );
+    results.push(...batchResults);
+  }
+
+  const failedScenes: { scene: number; error: string }[] = [];
+
+  const mapped = results.map((result, index) => {
     if (result.status === "fulfilled") {
       return {
         imageUrl: result.value,
@@ -295,11 +317,19 @@ export async function generateIllustrationsForStory(
       };
     }
 
-    console.error(`[Illustrations] Scene ${index + 1} failed:`, result.reason);
+    const errorMsg = result.reason instanceof Error ? result.reason.message : String(result.reason);
+    failedScenes.push({ scene: index + 1, error: errorMsg });
+    console.error(`[Illustrations] Scene ${index + 1} FAILED (falling back to mock): ${errorMsg}`);
     return {
       imageUrl: getMockIllustrationUrl(index),
       descriptionHash: hashDescription(imagePrompts[index]),
       provider: "mock" as const,
     };
   });
+
+  if (failedScenes.length > 0) {
+    console.error(`[Illustrations] ${failedScenes.length}/${results.length} scenes failed:`, JSON.stringify(failedScenes));
+  }
+
+  return mapped;
 }

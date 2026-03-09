@@ -93,13 +93,15 @@ export async function POST(
       .order("scene_number");
 
     if (pendingIlls && pendingIlls.length > 0) {
-      for (const ill of pendingIlls) {
-        await supabase
-          .from("story_illustrations")
-          .update({ image_url: getMockIllustrationUrl(ill.scene_number - 1), status: "ready" })
-          .eq("story_id", storyId)
-          .eq("scene_number", ill.scene_number);
-      }
+      await Promise.all(
+        pendingIlls.map((ill) =>
+          supabase
+            .from("story_illustrations")
+            .update({ image_url: getMockIllustrationUrl(ill.scene_number - 1), status: "ready" })
+            .eq("story_id", storyId)
+            .eq("scene_number", ill.scene_number)
+        )
+      );
     }
 
     await supabase
@@ -245,14 +247,16 @@ export async function POST(
         }),
       );
 
-      // Update each illustration row
-      for (const ill of persistedIllustrations) {
-        await supabase
-          .from("story_illustrations")
-          .update({ image_url: ill.imageUrl, status: "ready" })
-          .eq("story_id", storyId)
-          .eq("scene_number", ill.sceneNumber);
-      }
+      // Update all illustration rows in parallel (was serial — 200ms×N round-trips)
+      await Promise.all(
+        persistedIllustrations.map((ill) =>
+          supabase
+            .from("story_illustrations")
+            .update({ image_url: ill.imageUrl, status: "ready" })
+            .eq("story_id", storyId)
+            .eq("scene_number", ill.sceneNumber)
+        )
+      );
     }
 
     // Mark story as ready, clear PDF cache
