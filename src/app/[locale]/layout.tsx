@@ -24,9 +24,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: t("title"),
     description: t("description"),
     icons: {
+      shortcut: "/favicon.ico",
       icon: [
-        { url: "/images/favicon-16.png", sizes: "16x16", type: "image/png" },
         { url: "/images/favicon-32.png", sizes: "32x32", type: "image/png" },
+        { url: "/images/favicon-16.png", sizes: "16x16", type: "image/png" },
       ],
       apple: "/images/apple-touch-icon.png",
     },
