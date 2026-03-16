@@ -391,7 +391,8 @@
       "subtitleJuntos": "Tria la teva aventura favorita. Tu decideixes quina història explicarà aquest llibre!",
       "recommendedFor": "Per a {name}",
       "recommended": "Top",
-      "defaultName": "el teu heroi"
+      "defaultName": "el teu heroi",
+      "filterAll": "Totes"
     },
     "step4": {
       "solo": {
@@ -767,6 +768,18 @@
       "spiky": "De punta",
       "buzz": "Rapat",
       "medium": "Mitjà"
+    },
+    "tags": {
+      "dreamers": "Per a somiadors",
+      "brave": "Per a valents",
+      "curious": "Per a curiosos",
+      "creative": "Per a creadors",
+      "nature-lovers": "Per a amants de la natura",
+      "puzzle-solvers": "Per a ments inquietes",
+      "big-hearts": "Per a cors grans",
+      "adventurers": "Per a aventurers",
+      "foodies": "Per a cuiners",
+      "explorers": "Per a exploradors"
     },
     "templates": {
       "space": {

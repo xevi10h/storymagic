@@ -2,13 +2,16 @@
 //
 // PHASE 1 — ARCHITECT (GPT-5.4, single call):
 //   Plans the entire book in one coherent creative vision.
-//   Outputs: skeleton with 12 scene briefs, 12 image prompts, cover prompt,
-//   secondary prompts, titles, dedication, synopsis, final message.
-//   The text for each scene is a SHORT brief (2-3 sentences summarizing what happens).
+//   Outputs: skeleton with 12 rich scene briefs (3-5 sentences each),
+//   12 image prompts, cover prompt, titles, dedication, synopsis, final message.
+//   Each brief includes: what happens, emotional beat, personal detail integration, hook.
 //
-// PHASE 2 — EXPANSION (gpt-5-mini, 12 parallel calls):
-//   Each scene brief gets expanded into full narrative text by a fast, cheap model.
-//   All 12 calls run in parallel → completes in ~10-15s.
+// PHASE 2 — EXPANSION (GPT-5.4, 12 parallel calls):
+//   Each scene brief gets expanded into full literary prose.
+//   The expander receives full context: protagonist details, interests, moral, theme,
+//   narrative tone, surrounding scene briefs for continuity, and craft-oriented
+//   writing instructions adapted to the child's age band.
+//   All 12 calls run in parallel.
 //
 // Both phases use native Node.js https to bypass Next.js undici socket drops.
 
@@ -108,6 +111,74 @@ interface ArchitectOutput {
   synopsis: string;
 }
 
+// ── Template narrative tone ──────────────────────────────────────────────────
+
+interface NarrativeTone {
+  /** Short label for the architect prompt */
+  voice: string;
+  /** Craft directives for the expansion writer */
+  craftDirectives: string;
+  /** Emotional register for this template */
+  emotionalRegister: string;
+}
+
+const TEMPLATE_TONES: Record<string, NarrativeTone> = {
+  space: {
+    voice: "Sense-of-wonder & philosophical",
+    craftDirectives: "Let silence and scale do the emotional work. Pause to describe how small the protagonist feels against the stars — then show how their curiosity makes them feel enormous. Use poetic imagery for cosmic phenomena. The tone is The Little Prince meets a NASA mission log.",
+    emotionalRegister: "awe, loneliness-turned-to-connection, reverence for the unknown",
+  },
+  forest: {
+    voice: "Lyrical & emotionally intimate",
+    craftDirectives: "Write as if the forest itself is a character — it breathes, watches, responds. Favor sensory language: damp moss, the snap of a twig, the smell of rain on leaves. Every creature the protagonist meets mirrors something about their own feelings. The tone is Where the Wild Things Are — the adventure is inward as much as outward.",
+    emotionalRegister: "tenderness, gentle fear, belonging, wonder at nature's cycles",
+  },
+  superhero: {
+    voice: "Adventurous with dry humor",
+    craftDirectives: "Fast pacing and punchy sentences during action. But the heart of the story is in the quiet moments — the doubt before the leap, the choice to help when nobody is watching. Avoid generic 'pow!' energy. The humor should come from the protagonist's inner voice, not from slapstick. Think Pixar's The Incredibles — the powers are fun, but the relationships matter more.",
+    emotionalRegister: "excitement, self-doubt, compassion, earned pride",
+  },
+  pirates: {
+    voice: "Swashbuckling & cleverness-driven",
+    craftDirectives: "Write with the rhythm of the sea — rolling sentences for calm waters, staccato for storms. The protagonist wins through wit, not force. Include moments of genuine wonder at the ocean. Dialogue should feel scrappy and alive. Think Treasure Island — the romance of adventure with a moral compass underneath.",
+    emotionalRegister: "daring, cunning, loyalty, the pull between greed and friendship",
+  },
+  chef: {
+    voice: "Warm, sensory & heartfelt",
+    craftDirectives: "Make the reader TASTE and SMELL the story. Every dish is a metaphor for love or connection. The kitchen is both a workplace and a refuge. When the protagonist creates, something emotional is being worked out too — loneliness, missing someone, wanting to impress. Think Ratatouille — cooking is the language of the heart.",
+    emotionalRegister: "comfort, generosity, creative joy, nostalgia, sharing",
+  },
+  dinosaurs: {
+    voice: "Exciting & awe-struck",
+    craftDirectives: "Ground the prehistoric world with physical detail — feel the earth shake, see the shadow of a wing. The dinosaurs are not cartoons; they have personality, habits, moods. The protagonist earns trust through patience and respect, not bravery. Include moments of genuine scale and danger that resolve through understanding. Think of nature documentaries narrated with a child's heart.",
+    emotionalRegister: "awe, respect for creatures different from us, bravery born from empathy",
+  },
+  castle: {
+    voice: "Mysterious & intellectually playful",
+    craftDirectives: "Build suspense through unanswered questions — what's behind the door, who left that clue, why does the portrait's eyes seem to follow you? The protagonist solves problems by observing and thinking, not by luck. Each revelation should reframe what came before. Think classic whodunit for children — the satisfaction of figuring it out.",
+    emotionalRegister: "curiosity, suspense, the thrill of solving a puzzle, respect for history",
+  },
+  safari: {
+    voice: "Reverent & quietly powerful",
+    craftDirectives: "The savanna is majestic — write it with respect, not as a theme park. Animals are not props; they have agency, families, dignity. The protagonist learns by watching and listening, not by conquering. Include moments of stillness that feel as powerful as the action. Think of David Attenborough narrating a sunrise — quiet authority and deep love for the living world.",
+    emotionalRegister: "reverence, responsibility, quiet courage, interconnection of all life",
+  },
+  inventor: {
+    voice: "Inventive & problem-solving with heart",
+    craftDirectives: "Show the messy process of creation — the failed attempts, the unexpected breakthroughs, the 'what if I try THIS?' moments. The protagonist thinks differently and that's their superpower, not their weakness. Technical details should feel magical, not clinical. Think of a kid's version of The Martian — every problem has a creative solution, and failure is just iteration.",
+    emotionalRegister: "frustration-turned-to-eureka, confidence in one's own way of thinking, pride in building something that helps others",
+  },
+  candy: {
+    voice: "Playful, whimsical & generous",
+    craftDirectives: "The candy world should feel like stepping into a dream — everything edible, everything surprising, everything just a little bit ridiculous. But underneath the sugar is a story about sharing, generosity, and what really makes something sweet. The tone is Charlie and the Chocolate Factory — pure imagination with a moral backbone. Use synesthesia: what does a lollipop sound like? What color is chocolate laughter?",
+    emotionalRegister: "delight, generosity, the difference between sweetness and kindness",
+  },
+};
+
+function getTemplateTone(templateId: string): NarrativeTone {
+  return TEMPLATE_TONES[templateId] || TEMPLATE_TONES.forest;
+}
+
 // ── Age config ───────────────────────────────────────────────────────────────
 
 interface AgeConfig {
@@ -115,6 +186,8 @@ interface AgeConfig {
   bridgeCount: number;
   wordsPerScene: string;
   textStyle: string;
+  /** Narrative voice perspective suited to the age band */
+  narrativeVoice: string;
   /** Recraft community style UUID — pass as style_id in generation requests */
   illustrationStyleId: string;
   /** Base style for custom style creation (POST /v1/styles) — always digital_illustration */
@@ -145,15 +218,20 @@ function getAgeConfig(age: number, locale?: string): AgeConfig {
       sceneCount: 8,
       bridgeCount: 4,
       wordsPerScene: "50-80",
+      narrativeVoice: [
+        "VOICE: Warm, close narrator who speaks directly to the child.",
+        "Use a mix of simple 3rd person ('Marc ran and ran!') and occasional 2nd person asides ('Can you see what he found?').",
+        "The narrator is a loving, playful companion — like a parent reading aloud.",
+        "Exclamations, whispers, and gasps are your tools.",
+      ].join("\n"),
       textStyle: [
-        "Write for a very young child (2-4 years old).",
-        "Use SHORT, simple sentences (max 10 words each). 3-5 sentences per scene.",
-        "Vocabulary must be basic: familiar words a toddler knows.",
-        `Use onomatopoeia (${localeConfig.onomatopoeia}), repetition, and musical rhythm.`,
-        "Include sensory moments: sounds, textures, colors.",
-        "For 'juntos' mode: add spots where the parent can pause with interactive questions.",
-        "Emotions should be simple and clear: happy, scared, surprised, proud.",
-        "No complex metaphors or abstract concepts.",
+        "Write for a very young child (2-4 years old). 3-5 sentences per scene, 50-80 words.",
+        "SHORT sentences (max 10 words). Vocabulary a toddler already knows.",
+        `RHYTHM: Use onomatopoeia (${localeConfig.onomatopoeia}), repetition, and musical patterns. Repeat key phrases across scenes like a refrain.`,
+        "SENSES: Every scene must include something the child can hear, touch, or see. Not abstract — concrete and physical.",
+        "EMOTION: One clear emotion per scene. Name it simply: happy, scared, surprised, proud, safe.",
+        "HOOKS: End every scene with a tiny cliffhanger or question that makes the child want to turn the page.",
+        "SHOW THE MORAL: The lesson is in what the character DOES, never in what they say. A 3-year-old learns by watching, not by being lectured.",
       ].join("\n"),
       illustrationStyleId,
       illustrationBaseStyle,
@@ -166,15 +244,21 @@ function getAgeConfig(age: number, locale?: string): AgeConfig {
       sceneCount: 10,
       bridgeCount: 2,
       wordsPerScene: "100-140",
+      narrativeVoice: [
+        "VOICE: Engaging 3rd person limited — we follow the protagonist's thoughts and feelings closely.",
+        "The narrator has personality: witty, warm, occasionally conspiratorial ('But what Marc didn't know yet was...').",
+        "Short dialogues between characters. Dialogue should sound like real kids talk — not adult speeches in a child's mouth.",
+        "Occasional asides to the reader are welcome ('And THAT, dear reader, is when things got really interesting').",
+      ].join("\n"),
       textStyle: [
-        "Write for a child aged 5-7.",
-        "5-7 sentences per scene (~100-140 words).",
-        "Use lively, playful language with short dialogues between characters.",
-        "Include humor, rhetorical questions, and moments of wonder.",
-        "Sensory details: sounds, smells, textures — but not overwhelming.",
-        "The protagonist should express simple thoughts and emotions out loud.",
-        "Vocabulary is richer than toddler level but still accessible: no abstract words.",
-        "Build small moments of tension and relief — kids this age love suspense with safe resolution.",
+        "Write for a child aged 5-7. 5-7 sentences per scene, 100-140 words.",
+        "PACING: Open each scene with ACTION, not description. Something is happening from the first sentence.",
+        "TENSION: Build small cliffhangers — a noise in the dark, a door that won't open, a friend who's in trouble. Always resolve safely, but let the suspense breathe for a moment.",
+        "HUMOR: Include at least one smile-worthy moment per scene. Physical comedy, funny observations, or unexpected reactions.",
+        "SENSES: Engage two senses per scene. Not just visual — what does this place smell like? What does the ground feel like under their feet?",
+        "EMOTION: The protagonist expresses feelings out loud or through clear physical reactions (stomach flutters, a grin they can't hold back).",
+        "HOOKS: Every scene ends on a small question, surprise, or emotional beat that propels the reader forward.",
+        "SHOW THE MORAL: The lesson lives in the protagonist's CHOICES. Never state the moral. Let the child feel it through the story.",
       ].join("\n"),
       illustrationStyleId,
       illustrationBaseStyle,
@@ -186,16 +270,22 @@ function getAgeConfig(age: number, locale?: string): AgeConfig {
     sceneCount: 12,
     bridgeCount: 0,
     wordsPerScene: "150-200",
+    narrativeVoice: [
+      "VOICE: Literary 3rd person limited. The reader lives inside the protagonist's head.",
+      "Inner monologue is your most powerful tool — let us hear their doubts, hopes, fears, and small triumphs.",
+      "The narrator never intrudes. No 'dear reader' asides. The prose IS the character's perception of the world.",
+      "Dialogue reveals character: what people say (and don't say) matters more than what happens.",
+    ].join("\n"),
     textStyle: [
-      "Write for a child aged 8-12.",
-      "7-10 rich narrative sentences per scene (~150-200 words).",
-      "Use vivid prose with sensory details, inner monologue, metaphors, and emotional depth.",
-      "Include meaningful dialogues that reveal character.",
-      "The protagonist should have internal conflicts, doubts, and growth moments.",
-      "Vocabulary can be sophisticated: the reader is capable and curious.",
-      "Explore complex emotions: loyalty, sacrifice, identity, belonging.",
-      "Build genuine narrative tension — the stakes should feel real.",
-      "Subtle humor and wit are welcome. Avoid being preachy — show the moral through action, not words.",
+      "Write for a child aged 8-12. 7-10 rich sentences per scene, 150-200 words.",
+      "OPENING: Each scene starts in medias res — mid-action, mid-thought, mid-emotion. Never 'It was a sunny day.'",
+      "TENSION: Real stakes. The protagonist can fail, feel afraid, feel alone. Don't rush to comfort — let discomfort teach something before resolving it.",
+      "PROSE CRAFT: Use metaphors and sensory details that EARN their place. One precise image beats three vague ones. 'The cave smelled like wet iron and old secrets.'",
+      "INNER WORLD: This age craves identity exploration. The protagonist should question themselves, make mistakes, and grow through the story — not just go through it.",
+      "DIALOGUE: Meaningful exchanges that reveal relationships. Subtext is welcome — what's unsaid can be as powerful as what's said.",
+      "HUMOR: Subtle wit, irony, unexpected observations. Not slapstick.",
+      "CALLBACKS: Reference details from earlier in the story. Something small from Scene 1 should matter in Scene 9.",
+      "MORAL: NEVER state the lesson. Not even through a wise character's speech. The moral emerges from the protagonist's arc — from what they choose when it costs them something. Show, don't tell. Trust the reader.",
     ].join("\n"),
     illustrationStyleId,
     illustrationBaseStyle,
@@ -272,8 +362,8 @@ function getLocaleConfig(locale?: string): LocaleConfig {
 
 /** Premium model for the architect call — plans the entire book */
 const ARCHITECT_MODEL = process.env.OPENAI_ARCHITECT_MODEL || "gpt-5.4";
-/** Fast model for parallel scene expansion */
-const EXPANSION_MODEL = process.env.OPENAI_EXPANSION_MODEL || "gpt-5-mini";
+/** Premium model for scene expansion — quality over speed */
+const EXPANSION_MODEL = process.env.OPENAI_EXPANSION_MODEL || "gpt-5.4";
 
 function getApiKey(): string {
   const key = process.env.OPENAI_API_KEY?.trim();
@@ -522,9 +612,24 @@ function buildArchitectPrompt(input: StoryInput): string {
     ? `\nPERSONAL DETAILS (make the story unique):\n${personalDetails.join("\n")}`
     : "";
 
-  const modeInstruction = input.creationMode === "juntos"
-    ? "READ TOGETHER by parent and child. Short sentences, playful language, interactive pauses."
-    : "GIFT from a parent. Emotional depth, callbacks to personal details.";
+  const tone = getTemplateTone(input.templateId);
+
+  const juntosInstruction = input.creationMode === "juntos"
+    ? [
+      "MODE: READ TOGETHER — This book will be read aloud by a parent WITH the child.",
+      "Design scenes with INTERACTIVE MOMENTS: pauses where the parent can ask 'What do you think happens next?', or where the child can point at the illustration and name things.",
+      "Include repetitive refrains or catchphrases that the child can join in saying.",
+      "Emotional beats should be shared — moments of awe, laughter, and warmth that parent and child experience together.",
+      "For ages 2-4: add at least one physical interaction cue per scene ('Give Marc a high five!', 'Can you roar like the dinosaur?').",
+      "The pacing should leave room for conversation — not too dense, not too rushed.",
+    ].join("\n")
+    : [
+      "MODE: GIFT — This book is a gift from a parent to their child.",
+      "The story should feel like a love letter disguised as an adventure.",
+      "Weave personal details deeply — the child should feel that this story was made ONLY for them.",
+      "Include at least one moment that will make the parent emotional when reading it aloud.",
+      "The dedication and final message should feel intimate and earned, not generic.",
+    ].join("\n");
 
   const narrativeStructure = buildNarrativeStructure(input, ageConfig);
 
@@ -534,55 +639,125 @@ function buildArchitectPrompt(input: StoryInput): string {
     ? `\nCOLOR PALETTE for ALL image prompts: ${colorDirective}`
     : "";
 
-  return `You are a world-class children's book ARCHITECT. Your job: plan an ENTIRE personalized book in one coherent creative vision.
+  return `You are a world-class children's book ARCHITECT and STORYTELLER. Your job: plan an ENTIRE personalized book that a child will treasure — a story they'll ask to hear again and again.
 
-You produce a SKELETON — for each scene you write a SHORT BRIEF (2-3 sentences summarizing what happens, the emotion, key details) that a writer will later expand. You also produce the FINAL image prompts (ready for the illustrator).
+You produce a SKELETON — for each scene you write a RICH BRIEF (3-5 sentences: what happens, the emotional beat, how personal details appear, how the moral manifests) that a writer will later expand into full prose. You also produce the FINAL image prompts.
 
-RULES:
-- ALL text content (titles, briefs, dedication, finalMessage, synopsis) MUST be written in ${lang}.
-- Image prompts MUST be in ENGLISH (they go to an image generator).
-- Protagonist is ALWAYS the child below.
-- NEVER include text in image prompts.
-- Protagonist visual in EVERY image prompt: "${characterVisual}" — after action/setting.
-- Plan a VISUAL JOURNEY — each imagePrompt uses a DIFFERENT composition:
-  * Vary camera: wide, medium, close-up, bird's-eye, low angle, over-the-shoulder
-  * Vary poses: running, sitting, reaching, crouching, jumping, climbing, hugging
-  * Vary framing: small in landscape, filling frame, interacting with objects/creatures
-  * NEVER repeat "character standing and looking at something"
-${colorInstruction}
-AGE: ${input.age} years old
-MODE: ${modeInstruction}
+═══════════════════════════════════════════════════
+NARRATIVE IDENTITY
+═══════════════════════════════════════════════════
 
-PROTAGONIST:
+TONE & VOICE: ${tone.voice}
+${tone.craftDirectives}
+
+EMOTIONAL REGISTER: ${tone.emotionalRegister}
+
+${ageConfig.narrativeVoice}
+
+═══════════════════════════════════════════════════
+THE CHILD
+═══════════════════════════════════════════════════
+
 - Name: ${input.childName} | Gender: ${genderLabel} | Age: ${input.age}
-- City: ${input.city || "una ciudad mágica"}
+- City: ${input.city || "a magical city"}
 - Interests: ${input.interests.join(", ") || "adventure, imagination"}
 ${personalSection}
 
-TEMPLATE: "${input.templateTitle}" | Theme: ${theme} | Moral: ${moral}
+HOW TO USE PERSONAL DETAILS:
+- These are NOT cameos to drop in randomly. They are NARRATIVE TOOLS.
+- The child's interests should be HOW they solve problems (a kid who loves animals understands a creature's mood; a kid who loves space navigates by the stars).
+- The favorite companion (pet/friend) should have a real role — a confidant, a source of courage, a reason to be brave.
+- The favorite food should appear in a MEANINGFUL moment — comfort, celebration, memory of home.
+- The future dream should connect to the moral — it's the seed of who this child is becoming.
+- The special trait should be the HIDDEN SUPERPOWER that saves the day or unlocks the solution.
+
+═══════════════════════════════════════════════════
+STORY FRAMEWORK
+═══════════════════════════════════════════════════
+
+TEMPLATE: "${input.templateTitle}" | Theme: ${theme}
+MORAL: "${moral}"
+
+HOW TO BUILD THE MORAL:
+- The moral is NEVER stated aloud by any character. Not even in a wise speech.
+- Instead, it is EARNED through the protagonist's arc:
+  * Early scenes: show the protagonist LACKING the quality the moral teaches (e.g., a story about courage starts with a child who is afraid).
+  * Middle scenes: the protagonist faces situations that REQUIRE the quality — and struggles.
+  * Climax: the protagonist CHOOSES the right action even when it costs them something.
+  * Resolution: the reader FEELS the moral because they watched the transformation happen.
+- The finalMessage can gently echo the moral, but the story itself must have already taught it through action.
+
+${juntosInstruction}
+
 ${decisionsContext}
 
 ENDING: ${endingInstruction}
 ${input.dedication ? `DEDICATION from ${input.senderName || "someone special"}: "${input.dedication}"` : ""}
 
+═══════════════════════════════════════════════════
+STORY CRAFT RULES
+═══════════════════════════════════════════════════
+
+HOOKS & PACING:
+- Every scene brief must end with a HOOK — a question, a surprise, an emotional shift that makes the reader want to turn the page.
+- Vary the pacing: action → quiet reflection → tension → wonder → action. Never two scenes with the same energy.
+- The story should feel like a JOURNEY, not a sequence of events.
+
+CALLBACKS & DETAILS:
+- Plant a small detail in Scenes 1-3 that becomes CRUCIAL in Scenes 9-11.
+- Repeat a motif (a phrase, an object, a gesture) at least twice — the repetition creates the feeling of a 'real' story.
+
+EMOTIONAL ARC:
+- The protagonist must CHANGE. Who they are at the end is different from who they were at the beginning.
+- Include at least one QUIET MOMENT — a pause from the adventure where the protagonist reflects, connects with a companion, or misses home.
+- For ages 8-12: include a genuine moment of DOUBT or DARKNESS before the resolution. Don't make everything easy.
+
+═══════════════════════════════════════════════════
+IMAGE PROMPT RULES
+═══════════════════════════════════════════════════
+
+- ALL text content (titles, briefs, dedication, finalMessage, synopsis) MUST be in ${lang}.
+- Image prompts MUST be in ENGLISH (they go to an image generator).
+- Protagonist is ALWAYS the child.
+- NEVER include text in image prompts.
+
+CHARACTER VISUAL CONSISTENCY (CRITICAL):
+- The protagonist looks EXACTLY like this in EVERY image: "${characterVisual}"
+- You MUST include this EXACT description verbatim in every imagePrompt. Do NOT paraphrase, omit, or change any physical trait.
+- The character's skin tone, hair color, hair style, and eye color must be IDENTICAL across all 12 scenes and the cover.
+- Never change the character's appearance to match the scene's theme or setting.
+
+VISUAL JOURNEY — each imagePrompt uses a DIFFERENT composition:
+  * Vary camera: wide, medium, close-up, bird's-eye, low angle, over-the-shoulder
+  * Vary poses: running, sitting, reaching, crouching, jumping, climbing, hugging
+  * Vary framing: small in landscape, filling frame, interacting with objects/creatures
+  * NEVER repeat "character standing and looking at something"
+${colorInstruction}
+
+═══════════════════════════════════════════════════
+OUTPUT SPECIFICATION
+═══════════════════════════════════════════════════
+
+AGE: ${input.age} years old
+
 Generate EXACTLY 12 slots: ${ageConfig.sceneCount} scenes + ${ageConfig.bridgeCount} bridges.
-- "scene": brief = 2-3 sentences describing what happens + emotion + key actions
-- "bridge": brief = 1 atmospheric sentence (max 25 words) — this IS the final text, no expansion needed
+- "scene": brief = 3-5 sentences describing what happens + the emotional beat + how personal details appear + the hook at the end. This will be expanded by a writer who needs RICH context.
+- "bridge": brief = 1 atmospheric sentence (max 25 words) — this IS the final text, no expansion needed.
 
 ${narrativeStructure}
 
 JSON:
 {
-  "bookTitle": "Primary title in ${lang}",
+  "bookTitle": "Primary title in ${lang} — evocative, not generic. Should hint at the personal journey.",
   "titleOptions": ["Title 1", "Title 2", "Title 3", "Title 4"],
   "coverImagePrompt": "ENGLISH. Wide-angle editorial cover. ${characterVisual} as hero, adventurous pose, ${theme} world in background. ${ageConfig.illustrationPromptStyle}",
-  "dedication": "Dedication text in ${lang}",
+  "dedication": "Dedication text in ${lang}. If the parent provided one, enhance it. If not, write a warm, personal one using what you know about the child.",
   "scenes": [
     {
       "sceneNumber": 1,
       "type": "scene",
       "title": "Evocative title in ${lang}",
-      "brief": "2-3 sentences in ${lang}: what happens, the emotion, the key action. This will be expanded by a writer.",
+      "brief": "3-5 sentences in ${lang}: what happens, the emotional beat, how a personal detail appears, the hook. Rich enough for a writer to expand.",
       "imagePrompt": "ENGLISH. Action + setting first, then ${characterVisual} with specific pose. Camera: [angle]. ${ageConfig.illustrationPromptStyle}"
     },
     {
@@ -593,8 +768,8 @@ JSON:
       "imagePrompt": "ENGLISH atmospheric. Mood + environment. ${characterVisual} small/silhouetted. ${ageConfig.illustrationPromptStyle}"
     }
   ],
-  "finalMessage": "Closing message in ${lang}, tied to the moral.",
-  "synopsis": "2-3 sentences in ${lang} for back cover."
+  "finalMessage": "Closing message in ${lang}. Warm, personal, echoes the moral through emotion — not a lecture. Should feel like a parent's whisper at bedtime.",
+  "synopsis": "2-3 sentences in ${lang} for back cover. Should make someone WANT to read this story."
 }
 
 ONLY the JSON, no markdown, no code blocks.`;
@@ -606,29 +781,75 @@ function buildExpansionPrompt(
   scene: ArchitectScene,
   input: StoryInput,
   ageConfig: AgeConfig,
-  globalContext: { bookTitle: string; totalScenes: number },
+  globalContext: {
+    bookTitle: string;
+    totalScenes: number;
+    prevBrief?: string;
+    nextBrief?: string;
+    moral: string;
+    theme: string;
+  },
 ): string {
   const localeConfig = getLocaleConfig(input.locale);
   const lang = localeConfig.language;
   const genderLabel = localeConfig.genderLabels[input.gender];
+  const tone = getTemplateTone(input.templateId);
 
-  return `You are a children's book writer. Expand this scene brief into full narrative text in ${lang}.
+  // Build personal context
+  const personalLines: string[] = [];
+  if (input.interests.length > 0) personalLines.push(`Interests: ${input.interests.join(", ")}`);
+  if (input.specialTrait) personalLines.push(`Special trait: "${input.specialTrait}"`);
+  if (input.favoriteCompanion) personalLines.push(`Favorite companion: "${input.favoriteCompanion}"`);
+  if (input.favoriteFood) personalLines.push(`Favorite food: "${input.favoriteFood}"`);
+  if (input.futureDream) personalLines.push(`Future dream: "${input.futureDream}"`);
+  const personalContext = personalLines.length > 0
+    ? `\nPERSONAL DETAILS (weave naturally — these are narrative tools, not items to mention in passing):\n${personalLines.join("\n")}`
+    : "";
 
+  // Build continuity context
+  const continuity: string[] = [];
+  if (globalContext.prevBrief) continuity.push(`PREVIOUS SCENE: ${globalContext.prevBrief}`);
+  if (globalContext.nextBrief) continuity.push(`NEXT SCENE: ${globalContext.nextBrief}`);
+  const continuitySection = continuity.length > 0
+    ? `\nSTORY CONTINUITY (ensure smooth transitions):\n${continuity.join("\n")}`
+    : "";
+
+  const modeInstruction = input.creationMode === "juntos"
+    ? "MODE: Read-together. Include interactive pauses, questions to the child, or moments where the reader can add voices/sounds."
+    : "MODE: Gift. Emotional depth — this story is a love letter. Personal details should feel deeply woven, not sprinkled.";
+
+  return `You are a world-class children's book WRITER. Expand the scene brief below into full, polished narrative prose in ${lang}.
+
+═══════ BOOK CONTEXT ═══════
 BOOK: "${globalContext.bookTitle}" — scene ${scene.sceneNumber} of ${globalContext.totalScenes}
-SCENE TITLE: "${scene.title}"
-SCENE BRIEF: "${scene.brief}"
+THEME: ${globalContext.theme}
+MORAL: "${globalContext.moral}" — NEVER state this directly. It must emerge from the character's actions and choices.
+TONE: ${tone.voice}
+${tone.craftDirectives}
+${modeInstruction}
 
-PROTAGONIST: ${input.childName}, ${genderLabel}, ${input.age}, ${input.city || "a magical city"}
+═══════ THIS SCENE ═══════
+TITLE: "${scene.title}"
+BRIEF: "${scene.brief}"
+${continuitySection}
 
-WRITING STYLE:
+═══════ PROTAGONIST ═══════
+${input.childName}, ${genderLabel}, ${input.age} years old, from ${input.city || "a magical city"}
+${personalContext}
+
+═══════ WRITING CRAFT ═══════
+${ageConfig.narrativeVoice}
+
 ${ageConfig.textStyle}
 
-RULES:
-- Write ONLY the narrative text for this scene. No title, no scene number.
+═══════ RULES ═══════
+- Write ONLY the narrative text. No title, no scene number, no metadata.
 - Target: ${ageConfig.wordsPerScene} words.
 - Write in ${lang}.
-- Stay faithful to the brief — expand, don't reinvent.
-- Make it vivid, emotional, age-appropriate.
+- Stay faithful to the brief — expand and enrich, don't reinvent the plot.
+- Open with ACTION or EMOTION, never with flat description.
+- End with a HOOK — make the reader want to turn the page.
+- The prose should feel like it belongs in a published book, not a school exercise.
 
 Return a JSON object: { "text": "the full narrative text" }`;
 }
@@ -703,21 +924,34 @@ export async function generateStory(input: StoryInput): Promise<GeneratedStory> 
 
   console.log(`[StoryGen] Phase 1 done: "${architect.bookTitle}" — ${architect.scenes.filter(s => s.type === "scene").length} scenes, ${architect.scenes.filter(s => s.type === "bridge").length} bridges`);
 
-  // ── PHASE 2: Parallel scene expansion (gpt-5-mini × 12) ───────────────────
+  // ── PHASE 2: Parallel scene expansion (GPT-5.4 × 12) ──────────────────────
   console.log(`[StoryGen] Phase 2: Expanding ${architect.scenes.length} scenes in parallel (${EXPANSION_MODEL})...`);
   const phase2Start = Date.now();
 
-  const globalContext = { bookTitle: architect.bookTitle, totalScenes: 12 };
+  const template = getTemplateConfig(input.templateId);
+  const moral = template?.moral || "Being kind matters";
+  const theme = template?.theme || "A magical adventure";
 
   const expansionResults = await Promise.allSettled(
-    architect.scenes.map(async (scene): Promise<{ sceneNumber: number; text: string }> => {
+    architect.scenes.map(async (scene, index): Promise<{ sceneNumber: number; text: string }> => {
       // Bridges already have final text in their brief — no expansion needed
       if (scene.type === "bridge") {
         return { sceneNumber: scene.sceneNumber, text: scene.brief };
       }
 
+      const prevBrief = index > 0 ? architect.scenes[index - 1].brief : undefined;
+      const nextBrief = index < architect.scenes.length - 1 ? architect.scenes[index + 1].brief : undefined;
+      const globalContext = {
+        bookTitle: architect.bookTitle,
+        totalScenes: 12,
+        prevBrief,
+        nextBrief,
+        moral,
+        theme,
+      };
+
       const prompt = buildExpansionPrompt(scene, input, ageConfig, globalContext);
-      const raw = await callLLM(prompt, EXPANSION_MODEL, { timeoutMs: 60_000 });
+      const raw = await callLLM(prompt, EXPANSION_MODEL, { timeoutMs: 120_000 });
       const parsed = parseJsonResponse<{ text: string }>(raw, `${EXPANSION_MODEL}:scene${scene.sceneNumber}`);
       return { sceneNumber: scene.sceneNumber, text: parsed.text || scene.brief };
     }),

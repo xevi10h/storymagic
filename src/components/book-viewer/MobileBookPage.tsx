@@ -165,7 +165,12 @@ function SceneImmersive({ page, pageNumber }: SceneProps) {
       ) : (
         <div className={`absolute inset-0 bg-cream ${blur}`} />
       )}
-      <div className="absolute inset-0 bg-linear-to-t from-black/75 via-black/20 to-transparent" />
+      <div
+        className="absolute inset-0"
+        style={{
+          background: "linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 25%, rgba(0,0,0,0.1) 50%, transparent 100%)",
+        }}
+      />
       {page.actLabel && <ActLabelOverlay label={page.actLabel} variant="light" />}
       <div className="absolute bottom-0 left-0 right-0 px-5 pb-5">
         <h3 className={`font-display ${tc.titleOverlay} font-bold text-white leading-tight drop-shadow-sm`}>
@@ -176,7 +181,8 @@ function SceneImmersive({ page, pageNumber }: SceneProps) {
   );
 }
 
-/** split_top — landscape image top ~78%, compact title strip below.
+/** split_top — 5:4 image top ~78%, compact title strip below.
+ *  Image is 1280×1024 (5:4) — matches 78% height container (1.28:1) with minimal crop.
  *  Full text lives on the paired text_only / illustration_text page. */
 function SceneSplitTop({ page, pageNumber }: SceneProps) {
   const blur = page.locked ? "blur-lg" : "";
@@ -212,7 +218,8 @@ function SceneSplitTop({ page, pageNumber }: SceneProps) {
   );
 }
 
-/** split_bottom — compact title strip top, landscape image bottom ~78%.
+/** split_bottom — compact title strip top, 5:4 image bottom ~78%.
+ *  Image is 1280×1024 (5:4) — matches 78% height container (1.28:1) with minimal crop.
  *  Full text lives on the paired text_only / illustration_text page. */
 function SceneSplitBottom({ page, pageNumber }: SceneProps) {
   const blur = page.locked ? "blur-lg" : "";
@@ -284,7 +291,12 @@ function SceneSpreadLeft({ page, pageNumber }: SceneProps) {
       ) : (
         <div className={`absolute inset-0 bg-cream ${blur}`} />
       )}
-      <div className="absolute inset-0 bg-linear-to-t from-black/75 via-black/20 to-transparent" />
+      <div
+        className="absolute inset-0"
+        style={{
+          background: "linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 25%, rgba(0,0,0,0.1) 50%, transparent 100%)",
+        }}
+      />
       {page.actLabel && <ActLabelOverlay label={page.actLabel} variant="light" />}
       <div className="absolute bottom-0 left-0 right-0 px-5 pb-5">
         <h3 className="font-display text-sm font-bold text-white leading-tight drop-shadow-sm">
@@ -296,7 +308,8 @@ function SceneSpreadLeft({ page, pageNumber }: SceneProps) {
 }
 
 /** spread_right — right half of a panoramic double-page spread.
- *  Uses object-position:right to show the right 50% of the same 2048×1024 image. */
+ *  Uses object-position:right to show the right 50% of the same 2048×1024 image.
+ *  Has body text overlay, so the gradient must cover more area than title-only pages. */
 function SceneSpreadRight({ page, pageNumber }: SceneProps) {
   const blur = page.locked ? "blur-lg" : "";
   const tc = getTextConfig(page.characterAge);
@@ -309,7 +322,13 @@ function SceneSpreadRight({ page, pageNumber }: SceneProps) {
       ) : (
         <div className={`absolute inset-0 bg-cream ${blur}`} />
       )}
-      <div className="absolute inset-0 bg-linear-to-t from-black/75 via-black/25 to-transparent" />
+      {/* Tall gradient — body text can fill 60%+ of the page, so darkness must reach high */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background: "linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.7) 30%, rgba(0,0,0,0.45) 55%, rgba(0,0,0,0.15) 75%, transparent 100%)",
+        }}
+      />
       <div className="absolute bottom-0 left-0 right-0 px-5 pb-5">
         <p className={`${tc.body} text-white drop-shadow-sm ${tc.clampSpread}`}>
           {page.scene.text}
@@ -668,7 +687,7 @@ function PageContent({ page, templateId, gender, pageNumber }: { page: BookPage;
             <OrnamentalDivider width={60} />
           </div>
           <p className="text-[11px] text-text-muted mt-2">
-            Una aventura personalizada para
+            {t("personalizedStory")}
           </p>
           <p className="font-display text-base font-bold mt-1" style={{ color: "var(--bk-accent)" }}>
             {page.characterName}
@@ -708,7 +727,7 @@ function PageContent({ page, templateId, gender, pageNumber }: { page: BookPage;
             <WavyDots color="var(--bk-ornament)" />
           </div>
           <p className="mt-4 text-[10px] text-text-muted">
-            Una historia creada con cariño para {page.characterName}
+            {t("createdFor")} {page.characterName}
           </p>
           <p className="mt-2 font-display text-base font-bold" style={{ color: "var(--bk-accent)" }}>{t("end")}</p>
         </div>

@@ -391,7 +391,8 @@
       "subtitleJuntos": "Choisis ton aventure préférée. C'est toi qui décides quelle histoire racontera ce livre !",
       "recommendedFor": "Pour {name}",
       "recommended": "Top",
-      "defaultName": "votre héros"
+      "defaultName": "votre héros",
+      "filterAll": "Toutes"
     },
     "step4": {
       "solo": {
@@ -767,6 +768,18 @@
       "spiky": "En pointe",
       "buzz": "Rasé",
       "medium": "Mi-long"
+    },
+    "tags": {
+      "dreamers": "Pour les rêveurs",
+      "brave": "Pour les courageux",
+      "curious": "Pour les curieux",
+      "creative": "Pour les créateurs",
+      "nature-lovers": "Pour les amoureux de la nature",
+      "puzzle-solvers": "Pour les esprits malins",
+      "big-hearts": "Pour les grands cœurs",
+      "adventurers": "Pour les aventuriers",
+      "foodies": "Pour les gourmands",
+      "explorers": "Pour les explorateurs"
     },
     "templates": {
       "space": {

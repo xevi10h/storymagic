@@ -127,6 +127,7 @@ export interface BookPdfInput {
   storyId: string;
   coverImageUrl: string | null;
   illustrations: { sceneNumber: number; imageUrl: string | null }[];
+  locale?: string;
   // Hero card / back cover enrichment
   portraitUrl?: string | null;
   characterGender?: string;
@@ -136,6 +137,68 @@ export interface BookPdfInput {
   favoriteCompanion?: string | null;
   favoriteFood?: string | null;
   futureDream?: string | null;
+}
+
+// ── PDF i18n (server-side, no hooks) ──────────────────────────────────────────
+
+const PDF_STRINGS: Record<string, Record<string, string>> = {
+  es: {
+    personalizedStory: "Una historia personalizada para",
+    personalizedAdventure: "Una aventura personalizada para",
+    createdFor: "Una historia creada especialmente para",
+    end: "Fin",
+    hero: "El h\u00E9roe",
+    heroine: "La hero\u00EDna",
+    years: "a\u00F1os",
+    superpower: "Superpoder",
+    companion: "Compa\u00F1ero",
+    interests: "Le encanta",
+    colophonText: "Ilustraciones creadas exclusivamente para este libro.\nDise\u00F1o editorial por Meapica.",
+  },
+  ca: {
+    personalizedStory: "Una hist\u00F2ria personalitzada per a",
+    personalizedAdventure: "Una aventura personalitzada per a",
+    createdFor: "Una hist\u00F2ria creada especialment per a",
+    end: "Fi",
+    hero: "L'heroi",
+    heroine: "L'hero\u00EFna",
+    years: "anys",
+    superpower: "Superpoder",
+    companion: "Company",
+    interests: "Li encanta",
+    colophonText: "Il\u00B7lustracions creades exclusivament per a aquest llibre.\nDisseny editorial per Meapica.",
+  },
+  en: {
+    personalizedStory: "A personalized story for",
+    personalizedAdventure: "A personalized adventure for",
+    createdFor: "A story created especially for",
+    end: "The End",
+    hero: "The hero",
+    heroine: "The heroine",
+    years: "years old",
+    superpower: "Superpower",
+    companion: "Companion",
+    interests: "Loves",
+    colophonText: "Illustrations created exclusively for this book.\nEditorial design by Meapica.",
+  },
+  fr: {
+    personalizedStory: "Une histoire personnalis\u00E9e pour",
+    personalizedAdventure: "Une aventure personnalis\u00E9e pour",
+    createdFor: "Une histoire cr\u00E9\u00E9e sp\u00E9cialement pour",
+    end: "Fin",
+    hero: "Le h\u00E9ros",
+    heroine: "L'h\u00E9ro\u00EFne",
+    years: "ans",
+    superpower: "Super pouvoir",
+    companion: "Compagnon",
+    interests: "Adore",
+    colophonText: "Illustrations cr\u00E9\u00E9es exclusivement pour ce livre.\nDesign \u00E9ditorial par Meapica.",
+  },
+};
+
+function pdfT(locale: string | undefined, key: string): string {
+  const loc = locale && PDF_STRINGS[locale] ? locale : "es";
+  return PDF_STRINGS[loc][key] || PDF_STRINGS.es[key] || key;
 }
 
 // ── Layout system (matching web viewer types.ts) ──────────────────────────
@@ -315,8 +378,9 @@ async function getGradientPng(maxOpacity: number, heightPx: number, rgb: [number
   const buf = Buffer.alloc(h * 4);
   for (let y = 0; y < h; y++) {
     const t = y / (h - 1); // 0 = top (transparent), 1 = bottom (darkest)
-    // Smooth cubic curve for natural-looking gradient
-    const alpha = Math.round(maxOpacity * 255 * (t * t * t));
+    // Quadratic curve — provides more opacity in the mid-section than cubic,
+    // ensuring text is readable even in the upper part of the gradient
+    const alpha = Math.round(maxOpacity * 255 * (t * t));
     const idx = y * 4;
     buf[idx] = rgb[0];     // R
     buf[idx + 1] = rgb[1]; // G
@@ -392,7 +456,7 @@ function PageImmersive({ theme, scene, imageUrl, pageNumber, actLabel, gradientU
   );
 }
 
-/** split_top — image top ~78% + title strip below (matches web SceneSplitTop) */
+/** split_top — 5:4 image top ~78% + title strip below (matches web SceneSplitTop) */
 function PageSplitTop({ theme, scene, imageUrl, pageNumber, actLabel }: ScenePageProps) {
   const imageHeight = BOOK.pageHeight * 0.78;
   const stripHeight = BOOK.pageHeight - imageHeight;
@@ -425,7 +489,7 @@ function PageSplitTop({ theme, scene, imageUrl, pageNumber, actLabel }: ScenePag
   );
 }
 
-/** split_bottom — title strip top + image bottom ~78% (matches web SceneSplitBottom) */
+/** split_bottom — title strip top + 5:4 image bottom ~78% (matches web SceneSplitBottom) */
 function PageSplitBottom({ theme, scene, imageUrl, pageNumber, actLabel }: ScenePageProps) {
   const imageHeight = BOOK.pageHeight * 0.78;
   const stripHeight = BOOK.pageHeight - imageHeight;
@@ -526,7 +590,7 @@ function PageSpreadRight({ theme, scene, imageUrl, pageNumber, tc, gradientUri }
         )}
       </View>
 
-      <BottomGradientOverlay gradientUri={gradientUri} height={0.65} />
+      <BottomGradientOverlay gradientUri={gradientUri} height={0.8} />
 
       {/* Text overlay at bottom — above page number */}
       <View style={{ position: "absolute", bottom: PAGE_NUM_RESERVED, left: 0, right: 0, paddingBottom: 10, paddingHorizontal: BOOK.contentMargin }}>
@@ -858,19 +922,19 @@ export function BookPdf({ input, qrDataUrl, logoDataUri, logoMuted, gradientUri,
       creator="Meapica — meapica.com"
     >
       {/* 1. Cover */}
-      <CoverPage theme={theme} title={story.bookTitle} characterName={input.characterName} coverImageUrl={input.coverImageUrl} logoDataUri={logoDataUri} />
+      <CoverPage theme={theme} title={story.bookTitle} characterName={input.characterName} coverImageUrl={input.coverImageUrl} logoDataUri={logoDataUri} locale={input.locale} />
       {/* 2. Front Endpapers */}
       <EndpapersPage theme={theme} />
       {/* 3. Title + Dedication (merged) */}
-      <TitleDedicationPage theme={theme} title={story.bookTitle} characterName={input.characterName} dedicationText={story.dedication} senderName={input.senderName} logoDataUri={logoMuted} />
+      <TitleDedicationPage theme={theme} title={story.bookTitle} characterName={input.characterName} dedicationText={story.dedication} senderName={input.senderName} logoDataUri={logoMuted} locale={input.locale} />
       {/* 4-27. Scenes */}
       {scenePages}
       {/* 28. Final message */}
-      <FinalPage theme={theme} message={story.finalMessage} characterName={input.characterName} />
+      <FinalPage theme={theme} message={story.finalMessage} characterName={input.characterName} locale={input.locale} />
       {/* 29. About the reader — keepsake page */}
       <AboutReaderPage theme={theme} input={input} gradientUri={whiteGradientUri} />
       {/* 30. Colophon */}
-      <ColophonPage theme={theme} storyId={input.storyId} qrDataUrl={qrDataUrl} />
+      <ColophonPage theme={theme} storyId={input.storyId} qrDataUrl={qrDataUrl} locale={input.locale} />
       {/* 31. Back Endpapers */}
       <EndpapersPage theme={theme} />
       {/* 32. Back cover */}
@@ -902,8 +966,8 @@ export async function renderBookPdf(input: BookPdfInput): Promise<Buffer> {
     generateQrDataUrl(input.storyId, theme.coverGradientStart),
     getBrandLogoPng("#ffffff"),
     getBrandLogoPng(theme.ornamentColor),
-    // Gradient overlay PNG for text-over-image pages (75% max opacity, 200px tall)
-    getGradientPng(0.75, 200),
+    // Gradient overlay PNG for text-over-image pages (85% max opacity, 200px tall)
+    getGradientPng(0.85, 200),
     // White gradient for hero card portrait-to-cream fade
     getGradientPng(0.95, 200, [250, 248, 245]),
   ]);
@@ -1003,11 +1067,11 @@ export function InteriorOnlyPdf({ input, qrDataUrl, gradientUri, whiteGradientUr
   return (
     <Document creator="Meapica — meapica.com">
       <EndpapersPage theme={theme} />
-      <TitleDedicationPage theme={theme} title={story.bookTitle} characterName={input.characterName} dedicationText={story.dedication} senderName={input.senderName} />
+      <TitleDedicationPage theme={theme} title={story.bookTitle} characterName={input.characterName} dedicationText={story.dedication} senderName={input.senderName} locale={input.locale} />
       {scenePages}
-      <FinalPage theme={theme} message={story.finalMessage} characterName={input.characterName} />
+      <FinalPage theme={theme} message={story.finalMessage} characterName={input.characterName} locale={input.locale} />
       <AboutReaderPage theme={theme} input={input} gradientUri={whiteGradientUri} />
-      <ColophonPage theme={theme} storyId={input.storyId} qrDataUrl={qrDataUrl} />
+      <ColophonPage theme={theme} storyId={input.storyId} qrDataUrl={qrDataUrl} locale={input.locale} />
       <EndpapersPage theme={theme} />
     </Document>
   );
@@ -1097,7 +1161,7 @@ export function CoverSpreadPdf({
             </Text>
             <View style={{ width: 40, height: 1, backgroundColor: "#ffffff44", marginVertical: 16 }} />
             <Text style={{ fontFamily: FONTS.body, fontSize: 11, color: "#ffffffcc", textAlign: "center" }}>
-              Una historia personalizada para
+              {pdfT(input.locale, "personalizedStory")}
             </Text>
             <Text style={{ fontFamily: FONTS.display, fontSize: 20, fontWeight: 600, color: "#ffffff", marginTop: 6, textAlign: "center" }}>
               {input.characterName}
@@ -1133,7 +1197,7 @@ export async function renderCoverSpreadPdf(
 
 // ── Cover Page ──────────────────────────────────────────────────────────
 
-function CoverPage({ theme, title, characterName, coverImageUrl, logoDataUri }: { theme: TemplateTheme; title: string; characterName: string; coverImageUrl: string | null; logoDataUri?: string }) {
+function CoverPage({ theme, title, characterName, coverImageUrl, logoDataUri, locale }: { theme: TemplateTheme; title: string; characterName: string; coverImageUrl: string | null; logoDataUri?: string; locale?: string }) {
   return (
     <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={s.page}>
       {coverImageUrl ? (
@@ -1171,7 +1235,7 @@ function CoverPage({ theme, title, characterName, coverImageUrl, logoDataUri }: 
       {/* Title + character at bottom — matching web order */}
       <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, paddingHorizontal: BOOK.contentMargin + 5, paddingBottom: BOOK.contentMargin + 15, alignItems: "center" }}>
         <Text style={{ fontFamily: FONTS.body, fontSize: 11, color: "#ffffffbb", marginBottom: 6, letterSpacing: 0.5, textAlign: "center" }}>
-          Una historia personalizada para{" "}
+          {pdfT(locale, "personalizedStory")}{" "}
           <Text style={{ fontWeight: 600, color: "#ffffff" }}>{characterName}</Text>
         </Text>
         <Text style={{ fontFamily: FONTS.display, fontSize: 28, fontWeight: 600, color: "#ffffff", lineHeight: 1.2, textAlign: "center" }}>
@@ -1222,8 +1286,8 @@ function EndpapersPage({ theme }: { theme: TemplateTheme }) {
 
 // ── Title + Dedication Page (merged) ─────────────────────────────────────
 
-function TitleDedicationPage({ theme, title, characterName, dedicationText, senderName, logoDataUri }: {
-  theme: TemplateTheme; title: string; characterName: string; dedicationText: string; senderName: string | null; logoDataUri?: string;
+function TitleDedicationPage({ theme, title, characterName, dedicationText, senderName, logoDataUri, locale }: {
+  theme: TemplateTheme; title: string; characterName: string; dedicationText: string; senderName: string | null; logoDataUri?: string; locale?: string;
 }) {
   return (
     <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: COLORS.cream }]}>
@@ -1249,7 +1313,7 @@ function TitleDedicationPage({ theme, title, characterName, dedicationText, send
         </View>
 
         <Text style={{ fontFamily: FONTS.body, fontSize: 11, color: COLORS.textMedium, textAlign: "center" }}>
-          Una aventura personalizada para
+          {pdfT(locale, "personalizedAdventure")}
         </Text>
         <Text style={{ fontFamily: FONTS.display, fontSize: 18, fontWeight: 600, color: theme.accent, marginTop: 4, textAlign: "center" }}>
           {characterName}
@@ -1289,7 +1353,7 @@ function TitleDedicationPage({ theme, title, characterName, dedicationText, send
 
 // ── Final Message ───────────────────────────────────────────────────────
 
-function FinalPage({ theme, message, characterName }: { theme: TemplateTheme; message: string; characterName: string }) {
+function FinalPage({ theme, message, characterName, locale }: { theme: TemplateTheme; message: string; characterName: string; locale?: string }) {
   return (
     <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: COLORS.cream }]}>
       <FrameBorder color={theme.ornamentColor} />
@@ -1309,10 +1373,10 @@ function FinalPage({ theme, message, characterName }: { theme: TemplateTheme; me
           </View>
 
           <Text style={{ fontFamily: FONTS.body, fontSize: 9, color: COLORS.textMuted, marginTop: 28, textAlign: "center" }}>
-            Una historia creada con cari{"\u00F1"}o para {characterName}
+            {pdfT(locale, "createdFor")} {characterName}
           </Text>
 
-          <Text style={{ fontFamily: FONTS.display, fontSize: 16, fontWeight: 600, color: theme.accent, marginTop: 8 }}>Fin</Text>
+          <Text style={{ fontFamily: FONTS.display, fontSize: 16, fontWeight: 600, color: theme.accent, marginTop: 8 }}>{pdfT(locale, "end")}</Text>
         </View>
       </View>
     </Page>
@@ -1326,7 +1390,7 @@ function AboutReaderPage({ theme, input, gradientUri }: {
 }) {
   const { characterName, characterAge, portraitUrl, characterCity, characterInterests, specialTrait, favoriteCompanion, favoriteFood, futureDream, characterGender } = input;
   const hasPortrait = !!portraitUrl;
-  const heroLabel = characterGender === "girl" ? "La Hero\u00EDna" : "El H\u00E9roe";
+  const heroLabel = characterGender === "girl" ? pdfT(input.locale, "heroine") : pdfT(input.locale, "hero");
 
   const traits: { label: string }[] = [];
   if (specialTrait) traits.push({ label: specialTrait });
@@ -1436,16 +1500,14 @@ function AboutReaderPage({ theme, input, gradientUri }: {
 
 // ── Colophon Page ──────────────────────────────────────────────────────
 
-function ColophonPage({ qrDataUrl }: { theme: TemplateTheme; storyId: string; qrDataUrl?: string }) {
+function ColophonPage({ qrDataUrl, locale }: { theme: TemplateTheme; storyId: string; qrDataUrl?: string; locale?: string }) {
   return (
     <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: COLORS.cream }]}>
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: BOOK.contentMargin + 30 }}>
         <View style={{ alignItems: "center", maxWidth: BOOK.trimWidth * 0.65 }}>
           {/* Colophon text */}
           <Text style={{ fontFamily: FONTS.body, fontSize: 10, color: COLORS.textMuted, textAlign: "center", lineHeight: 1.8 }}>
-            Texto generado mediante inteligencia artificial.{"\n"}
-            Ilustraciones creadas exclusivamente para este libro.{"\n"}
-            Dise{"\u00F1"}o editorial por Meapica.
+            {pdfT(locale, "colophonText")}
           </Text>
 
           {/* QR code */}
@@ -1519,7 +1581,7 @@ function BackCoverPage({ theme, input, logoDataUri }: { theme: TemplateTheme; in
             {input.story.bookTitle}
           </Text>
           <Text style={{ fontFamily: FONTS.body, fontSize: 9, color: "#ffffff77", marginTop: 4, letterSpacing: 0.5 }}>
-            Una historia personalizada para {input.characterName}
+            {pdfT(input.locale, "personalizedStory")} {input.characterName}
           </Text>
         </View>
 

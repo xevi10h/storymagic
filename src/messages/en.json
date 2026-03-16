@@ -391,7 +391,8 @@
       "subtitleJuntos": "Choose your favourite adventure. You decide what story this book will tell!",
       "recommendedFor": "For {name}",
       "recommended": "Top",
-      "defaultName": "your hero"
+      "defaultName": "your hero",
+      "filterAll": "All"
     },
     "step4": {
       "solo": {
@@ -767,6 +768,18 @@
       "spiky": "Spiky",
       "buzz": "Buzz cut",
       "medium": "Medium"
+    },
+    "tags": {
+      "dreamers": "For dreamers",
+      "brave": "For the brave",
+      "curious": "For the curious",
+      "creative": "For creators",
+      "nature-lovers": "For nature lovers",
+      "puzzle-solvers": "For puzzle solvers",
+      "big-hearts": "For big hearts",
+      "adventurers": "For adventurers",
+      "foodies": "For foodies",
+      "explorers": "For explorers"
     },
     "templates": {
       "space": {

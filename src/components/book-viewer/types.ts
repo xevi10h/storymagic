@@ -44,14 +44,20 @@ export function getSpreadType(sceneType: string, sceneOnlyIndex: number): Spread
  * Recraft V3 image size for each layout that generates an illustration.
  * Sizes chosen to match the aspect ratio of the image container within a square page,
  * so `object-cover` causes minimal or zero cropping.
+ *
+ * Container ratios (square page = 1:1):
+ *   immersive / full_illustration: 100% × 100% → 1:1
+ *   split_top / split_bottom:      100% × 78%  → 1.28:1
+ *   illustration_text:              100% × 56%  → 1.79:1
+ *   spread_left/right:              200% × 100% → 2:1
  */
 export const LAYOUT_IMAGE_SIZE: Partial<Record<ScenePageLayout, string>> = {
-  immersive: "1024x1024",        // Full square page
-  split_top: "1820x1024",        // Landscape — fills top 55% of square page (ratio ~1.82:1)
-  split_bottom: "1820x1024",     // Landscape — fills bottom 55% of square page
-  full_illustration: "1024x1024", // Full square page
-  illustration_text: "1820x1024", // Landscape — secondary illustration (~56% of square page)
-  spread_left: "2048x1024",      // Panoramic — spans two square pages (2:1)
+  immersive: "1024x1024",        // 1:1 — full square page, zero crop
+  split_top: "1280x1024",        // 5:4 (1.25:1) — matches 78% height container (1.28:1), minimal crop
+  split_bottom: "1280x1024",     // 5:4 (1.25:1) — matches 78% height container (1.28:1), minimal crop
+  full_illustration: "1024x1024", // 1:1 — full square page, zero crop
+  illustration_text: "1820x1024", // ~16:9 (1.78:1) — matches 56% height container (1.79:1), minimal crop
+  spread_left: "2048x1024",      // 2:1 — panoramic spanning two square pages, zero crop
   // spread_right: uses same image as spread_left
   // text_only: no image
 };

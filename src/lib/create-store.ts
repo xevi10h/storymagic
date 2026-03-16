@@ -97,6 +97,19 @@ export interface EndingOption {
   narrativeContext: string;
 }
 
+/** Emotional tag IDs — translated via i18n `data.tags.<id>` */
+export type StoryTag =
+  | "dreamers"
+  | "brave"
+  | "curious"
+  | "creative"
+  | "nature-lovers"
+  | "puzzle-solvers"
+  | "big-hearts"
+  | "adventurers"
+  | "foodies"
+  | "explorers";
+
 export interface StoryTemplateConfig {
   id: string;
   title: string;
@@ -108,6 +121,8 @@ export interface StoryTemplateConfig {
   theme: string;
   moral: string;
   relatedInterests: string[];
+  /** Emotional tags for filtering & display (max 3 per template) */
+  tags: StoryTag[];
   themeColor: string;
   themeGradient: string;
   previewChapterTitle: string;
@@ -245,6 +260,7 @@ export const STORY_TEMPLATES: StoryTemplateConfig[] = [
     theme: "Space travel, exploring unknown planets, making alien friends",
     moral: "Curiosity takes you far",
     relatedInterests: ["space"],
+    tags: ["dreamers", "curious", "adventurers"],
     themeColor: "#1a237e",
     themeGradient: "from-indigo-900 to-purple-800",
     previewChapterTitle: "La Nave de los Sueños",
@@ -435,6 +451,7 @@ export const STORY_TEMPLATES: StoryTemplateConfig[] = [
     theme: "Enchanted forest, fantastic animals, ancient trees with secrets",
     moral: "Taking care of our world matters",
     relatedInterests: ["animals", "dinosaurs"],
+    tags: ["nature-lovers", "big-hearts", "dreamers"],
     themeColor: "#2e7d32",
     themeGradient: "from-green-800 to-emerald-700",
     previewChapterTitle: "El Bosque de los Susurros",
@@ -625,6 +642,7 @@ export const STORY_TEMPLATES: StoryTemplateConfig[] = [
     theme: "Discovering hidden superpowers, saving the city with courage",
     moral: "True power is kindness",
     relatedInterests: ["sports"],
+    tags: ["brave", "big-hearts", "adventurers"],
     themeColor: "#c62828",
     themeGradient: "from-red-700 to-orange-600",
     previewChapterTitle: "El Despertar del Héroe",
@@ -815,6 +833,7 @@ export const STORY_TEMPLATES: StoryTemplateConfig[] = [
     theme: "Pirate adventure on the high seas, treasure hunting with a fun crew",
     moral: "The best treasures are friends",
     relatedInterests: ["castles"],
+    tags: ["adventurers", "brave", "explorers"],
     themeColor: "#00695c",
     themeGradient: "from-teal-800 to-cyan-700",
     previewChapterTitle: "La Isla del Capitán",
@@ -1005,6 +1024,7 @@ export const STORY_TEMPLATES: StoryTemplateConfig[] = [
     theme: "Magical kitchen where ingredients come alive, cooking with imagination",
     moral: "Creating with your hands is magic",
     relatedInterests: ["music"],
+    tags: ["creative", "foodies", "big-hearts"],
     themeColor: "#e65100",
     themeGradient: "from-orange-700 to-amber-500",
     previewChapterTitle: "La Cocina Encantada",
@@ -1195,6 +1215,7 @@ export const STORY_TEMPLATES: StoryTemplateConfig[] = [
     theme: "Time travel to the dinosaur era, befriending prehistoric creatures",
     moral: "Bravery means helping those who are different from you",
     relatedInterests: ["dinosaurs", "animals"],
+    tags: ["brave", "nature-lovers", "curious"],
     themeColor: "#33691e",
     themeGradient: "from-lime-900 to-green-700",
     previewChapterTitle: "El Portal del Tiempo",
@@ -1385,6 +1406,7 @@ export const STORY_TEMPLATES: StoryTemplateConfig[] = [
     theme: "Enchanted castle, dream world, medieval fantasy with friendly dragons",
     moral: "Imagination is the greatest power of all",
     relatedInterests: ["castles"],
+    tags: ["puzzle-solvers", "curious", "brave"],
     themeColor: "#4a148c",
     themeGradient: "from-purple-900 to-violet-700",
     previewChapterTitle: "Las Puertas del Castillo",
@@ -1575,6 +1597,7 @@ export const STORY_TEMPLATES: StoryTemplateConfig[] = [
     theme: "African savanna adventure, wild animals, nature and conservation",
     moral: "Every creature, big or small, matters",
     relatedInterests: ["animals"],
+    tags: ["nature-lovers", "big-hearts", "explorers"],
     themeColor: "#e65100",
     themeGradient: "from-orange-800 to-amber-600",
     previewChapterTitle: "El Amanecer en la Sabana",
@@ -1765,6 +1788,7 @@ export const STORY_TEMPLATES: StoryTemplateConfig[] = [
     theme: "Invention workshop, science and creativity, building fantastical machines",
     moral: "Mistakes are the best inventions waiting to happen",
     relatedInterests: ["space", "music"],
+    tags: ["creative", "puzzle-solvers", "curious"],
     themeColor: "#0277bd",
     themeGradient: "from-cyan-800 to-blue-600",
     previewChapterTitle: "El Taller Secreto",
@@ -1955,6 +1979,7 @@ export const STORY_TEMPLATES: StoryTemplateConfig[] = [
     theme: "Candy world, sweet fantasy land, learning about balance and sharing",
     moral: "The sweetest things in life are shared with friends",
     relatedInterests: ["music", "animals"],
+    tags: ["dreamers", "big-hearts", "foodies"],
     themeColor: "#d81b60",
     themeGradient: "from-pink-700 to-rose-500",
     previewChapterTitle: "La Puerta de Caramelo",
@@ -2140,6 +2165,21 @@ export const STORY_TEMPLATES: StoryTemplateConfig[] = [
 /** Find a template config by its ID */
 export function getTemplateConfig(templateId: string): StoryTemplateConfig | undefined {
   return STORY_TEMPLATES.find((t) => t.id === templateId);
+}
+
+/** Get all unique tags used across templates, in a stable order */
+export function getAllTemplateTags(): StoryTag[] {
+  const seen = new Set<StoryTag>();
+  const tags: StoryTag[] = [];
+  for (const t of STORY_TEMPLATES) {
+    for (const tag of t.tags) {
+      if (!seen.has(tag)) {
+        seen.add(tag);
+        tags.push(tag);
+      }
+    }
+  }
+  return tags;
 }
 
 /** Score and sort templates based on child's age and interests */

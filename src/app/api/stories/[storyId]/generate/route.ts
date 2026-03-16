@@ -10,6 +10,7 @@ import {
   getSecondaryScenes,
   getGenderColorDirective,
 } from "@/lib/ai/illustrations";
+import { buildColorAnchor, buildRecraftControls } from "@/lib/ai/character-description";
 import { uploadIllustrationFromUrl, uploadCoverFromUrl } from "@/lib/supabase/storage";
 import { getMockIllustrationUrl, getMockCoverUrl, getMockPortraitUrl, getMockSecondaryIllustrationUrl } from "@/lib/ai/mock-story";
 import { STORY_TEMPLATES } from "@/lib/create-store";
@@ -92,7 +93,7 @@ export async function POST(
       locale: story.locale || "es",
     };
 
-    const characterRef = buildCharacterReference({
+    const charDescInput = {
       gender: input.gender,
       age: input.age,
       skinTone: input.skinTone,
@@ -101,7 +102,8 @@ export async function POST(
       hairstyle: input.hairstyle,
       childName: input.childName,
       interests: input.interests,
-    });
+    };
+    const characterRef = buildCharacterReference(charDescInput);
 
     const mockMode = process.env.MOCK_MODE === "true";
     const recraftApiToken = process.env.RECRAFT_API_TOKEN?.trim();
@@ -174,9 +176,14 @@ export async function POST(
         if (mockMode || !hasRecraft) return mockMode ? getMockCoverUrl() : null;
         try {
           const genderColor = getGenderColorDirective(input.gender);
-          let coverPrompt = `${generatedStory.coverImagePrompt} Children's book illustration, soft warm palette, gentle lighting, no text in image.${genderColor ? ` ${genderColor}` : ""}`;
+          const coverColorAnchor = buildColorAnchor(charDescInput);
+          let coverPrompt = `The protagonist: ${characterRef}. ${generatedStory.coverImagePrompt} Children's book illustration, soft warm palette, gentle natural lighting, no text in image.${genderColor ? ` ${genderColor}` : ""}${coverColorAnchor ? ` ${coverColorAnchor}` : ""}`;
           if (coverPrompt.length > 1000) coverPrompt = coverPrompt.slice(0, 999) + "…";
-          const coverUrl = await generateWithRetry(coverPrompt, recraftApiToken!, styleId ? { styleId } : undefined);
+          const coverControls = buildRecraftControls(charDescInput, { isPortrait: false });
+          const coverUrl = await generateWithRetry(coverPrompt, recraftApiToken!, {
+            ...(styleId ? { styleId } : {}),
+            controls: coverControls,
+          });
           return await uploadCoverFromUrl(supabase, storyId, coverUrl);
         } catch (coverError) {
           console.error("[Generate] Cover failed (non-fatal):", coverError);
@@ -189,6 +196,7 @@ export async function POST(
         childAge: input.age,
         gender: input.gender,
         imageSizes: previewSizes,
+        characterInput: charDescInput,
       }),
     ]);
 

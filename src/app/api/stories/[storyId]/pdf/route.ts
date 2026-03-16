@@ -165,6 +165,7 @@ export async function GET(
     storyId,
     coverImageUrl,
     illustrations: prefetchedIllustrations,
+    locale: (story as Record<string, unknown>).locale as string | undefined,
     portraitUrl,
     characterGender: character.gender,
     characterCity: character.city,

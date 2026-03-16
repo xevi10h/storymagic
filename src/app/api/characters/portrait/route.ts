@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
-import { buildCharacterReference } from "@/lib/ai/character-description";
+import {
+  buildPortraitCharacterReference,
+  buildColorAnchor,
+  buildRecraftControls,
+  type PortraitPersonalityInput,
+} from "@/lib/ai/character-description";
 import { createStyleFromAvatar, generateWithRetry } from "@/lib/ai/illustrations";
 import { getMockPortraitUrl } from "@/lib/ai/mock-story";
 
@@ -42,21 +47,16 @@ export async function POST(request: Request) {
       );
     }
 
-    // Build the character reference text (same one used for all book illustrations)
-    const characterRef = buildCharacterReference({
-      gender,
-      age,
-      skinTone,
-      hairColor,
-      eyeColor,
-      hairstyle,
-      childName,
-    });
-
-    // Build personality context to enrich the portrait beyond physical traits
-    const personalityHints = buildPortraitPersonalityHints({
+    const charInput = { gender, age, skinTone, hairColor, eyeColor, hairstyle, childName };
+    const personality: PortraitPersonalityInput = {
       interests, specialTrait, favoriteCompanion, favoriteFood, futureDream, city,
-    });
+    };
+
+    // Build portrait using the standardized layered system:
+    // Layer 1 (physical) + Layer 2 (outfit) + Layer 3 (props) + Layer 4 (expression)
+    const portraitCharRef = buildPortraitCharacterReference(charInput, personality);
+    // Layer 5 — color protection
+    const colorAnchor = buildColorAnchor(charInput);
 
     if (!hasRecraft) {
       return NextResponse.json({
@@ -66,34 +66,44 @@ export async function POST(request: Request) {
     }
 
     // Age-adaptive illustration style — driven entirely by the prompt.
-    // Goes from very simple/rounded (toddlers) to more detailed/atmospheric (older kids).
+    // Goes from very simple/rounded (toddlers) to more detailed (older kids).
     // Always non-realistic: digital_illustration/child_book is the fixed base.
     const ageStylePrompt = age <= 4
-      ? "Very simple rounded shapes, soft pastel watercolor style, large expressive eyes, minimal details, warm dreamy colors."
+      ? "Very simple rounded shapes, soft pastel watercolor style, large expressive eyes, minimal details, warm cozy colors."
       : age <= 7
-        ? "Charming storybook illustration style, warm glowing colors, expressive face, moderate detail, cozy feel."
-        : "Illustrated editorial style, rich warm tones, atmospheric lighting, detailed character design, cinematic mood.";
+        ? "Charming storybook illustration style, warm natural colors, expressive face, moderate detail, cozy feel."
+        : "Detailed children's book illustration style, warm natural lighting, expressive character design, clean colors.";
 
     const portraitPrompt = [
-      characterRef,
-      personalityHints,
-      "Close-up character portrait, centered in frame, looking at the viewer with a warm natural smile.",
-      "Soft gradient background with warm tones.",
-      "Three-quarter view, gentle warm lighting from the left.",
-      "Expressive eyes, appealing and memorable character.",
+      portraitCharRef + ".",
+      "Close-up character portrait, centered, three-quarter view, warm smile.",
+      "Clean soft-colored background, gentle natural lighting.",
       ageStylePrompt,
+      colorAnchor,
       "No text in image.",
     ].filter(Boolean).join(" ");
 
+    // Build Recraft controls — passes skin/hair/eye colors as actual RGB values
+    const controls = buildRecraftControls(charInput, { isPortrait: true });
+
+    // Pre-baked portrait style: ensures all portraits share the same art style.
+    // Created once via: npx tsx scripts/create-portrait-style.ts <url1> [url2] ...
+    const portraitStyleId = process.env.RECRAFT_PORTRAIT_STYLE_ID?.trim();
+
     console.log("[Portrait] Age:", age);
     console.log("[Portrait] Prompt:", portraitPrompt.slice(0, 200), "...");
+    console.log("[Portrait] Prompt length:", portraitPrompt.length);
+    console.log("[Portrait] Controls:", JSON.stringify(controls));
+    console.log("[Portrait] Style:", portraitStyleId ? `pre-baked (${portraitStyleId.slice(0, 8)}...)` : "digital_illustration/child_book");
 
-    // Always use digital_illustration/child_book — no custom styleId so skin/hair colors are respected.
-    // The styleId for book illustrations is created FROM this portrait via createStyleFromAvatar.
+    // If a pre-baked style exists, use it (style_id); otherwise fall back to digital_illustration/child_book.
+    // Pre-baked style guarantees identical art style across ALL portraits.
     const portraitUrl = await generateWithRetry(
       portraitPrompt,
       recraftApiToken!,
-      { style: "digital_illustration", substyle: "child_book" },
+      portraitStyleId
+        ? { styleId: portraitStyleId, controls }
+        : { style: "digital_illustration", substyle: "child_book", controls },
     );
 
     // Create custom style_id from the portrait for visual consistency across all book illustrations
@@ -113,86 +123,4 @@ export async function POST(request: Request) {
       { status: 500 },
     );
   }
-}
-
-// --- Personality-to-visual mapping for portrait enrichment ---
-
-interface PersonalityInput {
-  interests?: string[];
-  specialTrait?: string;
-  favoriteCompanion?: string;
-  favoriteFood?: string;
-  futureDream?: string;
-  city?: string;
-}
-
-/** Maps interests to subtle visual elements for the portrait */
-const INTEREST_VISUALS: Record<string, string> = {
-  sports: "wearing athletic clothing",
-  music: "with a small musical instrument nearby",
-  animals: "with a gentle, caring expression and a small animal nearby",
-  space: "with stars and cosmic elements in the background",
-  castles: "with a castle turret in the background",
-  dinosaurs: "with a small toy dinosaur nearby",
-};
-
-/** Maps future dreams to clothing/prop hints */
-const DREAM_VISUALS: Record<string, string> = {
-  astronaut: "wearing a space-themed outfit, stars in the background",
-  doctor: "wearing a small lab coat or stethoscope",
-  chef: "wearing a chef's hat",
-  teacher: "holding a book, studious look",
-  artist: "wearing a beret, creative outfit with paint splashes",
-  athlete: "wearing sporty athletic gear",
-  musician: "with a musical instrument",
-  scientist: "wearing goggles or a lab coat",
-  firefighter: "wearing a small red firefighter helmet",
-  pilot: "wearing aviator goggles",
-  vet: "surrounded by small animals",
-  dancer: "in ballet or dance outfit",
-};
-
-/**
- * Builds subtle visual hints from the child's personality to enrich the portrait.
- * Returns a short sentence or empty string if no personality data is available.
- */
-function buildPortraitPersonalityHints(input: PersonalityInput): string {
-  const hints: string[] = [];
-
-  // Future dream — strongest visual influence (clothing/props)
-  if (input.futureDream) {
-    const dreamKey = input.futureDream.toLowerCase();
-    // Check exact match first, then partial match
-    const match = DREAM_VISUALS[dreamKey]
-      || Object.entries(DREAM_VISUALS).find(([k]) => dreamKey.includes(k))?.[1];
-    if (match) {
-      hints.push(match);
-    } else {
-      // Free-text dream: let the model interpret it
-      hints.push(`dressed as if dreaming of becoming a ${input.futureDream}`);
-    }
-  }
-
-  // Interests — pick up to 2 for subtle visual elements
-  if (input.interests?.length) {
-    const visualInterests = input.interests
-      .map((i) => INTEREST_VISUALS[i])
-      .filter(Boolean)
-      .slice(0, 2);
-    hints.push(...visualInterests);
-  }
-
-  // Companion — if they have a pet/companion, hint at it in the background
-  if (input.favoriteCompanion) {
-    hints.push(`with a small ${input.favoriteCompanion} companion peeking from behind`);
-  }
-
-  // Special trait — use as expression/mood modifier
-  if (input.specialTrait) {
-    hints.push(`radiating a sense of ${input.specialTrait}`);
-  }
-
-  if (hints.length === 0) return "";
-
-  return hints.join(", ") + ".";
 }

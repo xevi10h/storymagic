@@ -391,7 +391,8 @@
       "subtitleJuntos": "Elige tu aventura favorita. ¡Tú decides qué historia contará este libro!",
       "recommendedFor": "Para {name}",
       "recommended": "Top",
-      "defaultName": "tu héroe"
+      "defaultName": "tu héroe",
+      "filterAll": "Todas"
     },
     "step4": {
       "solo": {
@@ -765,6 +766,18 @@
       "spiky": "De punta",
       "buzz": "Rapado",
       "medium": "Medio"
+    },
+    "tags": {
+      "dreamers": "Para soñadores",
+      "brave": "Para valientes",
+      "curious": "Para curiosos",
+      "creative": "Para creadores",
+      "nature-lovers": "Para amantes de la naturaleza",
+      "puzzle-solvers": "Para mentes inquietas",
+      "big-hearts": "Para corazones grandes",
+      "adventurers": "Para aventureros",
+      "foodies": "Para cocinillas",
+      "explorers": "Para exploradores"
     },
     "templates": {
       "space": {

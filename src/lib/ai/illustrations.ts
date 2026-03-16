@@ -12,7 +12,7 @@ import crypto from "crypto";
 import { getMockIllustrationUrl } from "./mock-story";
 import { getAgeConfig } from "./story-generator";
 export { buildCharacterReference, getGenderColorDirective } from "./character-description";
-import { getGenderColorDirective } from "./character-description";
+import { getGenderColorDirective, buildColorAnchor, buildRecraftControls, type CharacterDescriptionInput, type RecraftControls } from "./character-description";
 
 const RECRAFT_BASE = "https://external.api.recraft.ai/v1";
 const RECRAFT_GENERATE_URL = `${RECRAFT_BASE}/images/generations`;
@@ -27,10 +27,20 @@ interface RecraftResponse {
   data: { url: string }[];
 }
 
+export { type RecraftControls } from "./character-description";
+
+export interface RecraftGenerateOptions {
+  styleId?: string;
+  style?: string;
+  substyle?: string | null;
+  size?: string;
+  controls?: RecraftControls;
+}
+
 async function generateWithRecraft(
   prompt: string,
   apiToken: string,
-  options?: { styleId?: string; style?: string; substyle?: string | null; size?: string },
+  options?: RecraftGenerateOptions,
 ): Promise<string> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const body: Record<string, any> = {
@@ -48,6 +58,11 @@ async function generateWithRecraft(
     if (options?.substyle) {
       body.substyle = options.substyle;
     }
+  }
+
+  // Recraft V3 controls — color guidance, artistic level, no-text
+  if (options?.controls) {
+    body.controls = options.controls;
   }
 
   // 60s timeout per call — prevents hangs in Vercel serverless (undici)
@@ -86,7 +101,7 @@ async function generateWithRecraft(
 export async function generateWithRetry(
   prompt: string,
   apiToken: string,
-  options?: { styleId?: string; style?: string; substyle?: string | null; size?: string },
+  options?: RecraftGenerateOptions,
   maxRetries = 2,
 ): Promise<string> {
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
@@ -259,6 +274,8 @@ export async function generateIllustrationsForStory(
     gender?: string;
     /** Per-image Recraft size (e.g. "1024x1024", "1820x1024", "2048x1024"). Falls back to DEFAULT_IMAGE_SIZE. */
     imageSizes?: string[];
+    /** Character input — used to build color anchor for skin/hair/eye realism */
+    characterInput?: CharacterDescriptionInput;
   },
 ): Promise<IllustrationResult[]> {
   const mockMode = process.env.MOCK_MODE === "true";
@@ -280,26 +297,52 @@ export async function generateIllustrationsForStory(
   // Custom style_id from portrait takes precedence; fall back to age-based community style UUID
   const styleId = options?.styleId ?? ageConf.illustrationStyleId;
 
-  // Gender color directive — appended to every prompt so illustrations match the book palette
+  // Gender color directive — applied ONLY to backgrounds, not the character
   const colorDirective = getGenderColorDirective(options?.gender);
 
-  console.log(`[Illustrations] Generating ${imagePrompts.length} images via Recraft V3 (styleId: ${styleId.slice(0, 8)}..., gender: ${options?.gender ?? "neutral"})`);
+  // Color anchor — explicit skin/hair/eye realism enforcement (text-based)
+  const colorAnchor = options?.characterInput ? buildColorAnchor(options.characterInput) : "";
 
-  // Enhance each prompt: the LLM-generated imagePrompt already includes character
-  // description + style (from the architect template). We append extras only if missing,
-  // then TRUNCATE to Recraft's 1000-char limit to avoid 400 errors.
+  // Recraft controls — RGB color guidance (API-level, much more reliable than text)
+  const controls: RecraftControls | undefined = options?.characterInput
+    ? buildRecraftControls(options.characterInput, { isPortrait: false })
+    : undefined;
+
+  console.log(`[Illustrations] Generating ${imagePrompts.length} images via Recraft V3 (styleId: ${styleId.slice(0, 8)}..., gender: ${options?.gender ?? "neutral"}, controls: ${!!controls})`);
+
+  // Build enhanced prompts with character consistency.
+  //
+  // Strategy: CHARACTER REF FIRST, then scene, then style, then color anchor LAST.
+  // The color anchor at the end acts as a final override to protect skin/hair colors.
+  // This ensures character description survives even if truncation occurs (scene gets cut, not character).
   const RECRAFT_MAX_PROMPT = 1000;
   const enhancedPrompts = imagePrompts.map((scenePrompt) => {
-    const hasCharRef = scenePrompt.toLowerCase().includes(characterRef.toLowerCase().slice(0, 20));
+    // Build prompt in priority order: character → scene → style → color protection
+    const parts: string[] = [];
+
+    // 1. Character reference ALWAYS included at the start for maximum weight
+    parts.push(`The protagonist: ${characterRef}.`);
+
+    // 2. Scene description (from architect LLM — may already contain a short character ref)
+    parts.push(scenePrompt);
+
+    // 3. Illustration style (if not already in the scene prompt)
     const hasStyle = scenePrompt.toLowerCase().includes(ageConf.illustrationPromptStyle.toLowerCase().slice(0, 30));
-    let prompt = scenePrompt;
-    if (!hasCharRef) prompt += ` The protagonist: ${characterRef}.`;
-    if (!hasStyle) prompt += ` ${ageConf.illustrationPromptStyle}`;
-    if (colorDirective) prompt += ` ${colorDirective}`;
-    // Truncate to Recraft's limit — scene description is always first, so important content survives
+    if (!hasStyle) parts.push(ageConf.illustrationPromptStyle);
+
+    // 4. Gender color directive — only if no RGB controls (fallback for scenes without characterInput)
+    if (!controls && colorDirective) parts.push(colorDirective);
+
+    // 5. Color anchor LAST — explicit skin/hair/eye protection (highest priority position)
+    if (colorAnchor) parts.push(colorAnchor);
+
+    let prompt = parts.join(" ");
+
+    // Truncate to Recraft's limit — character ref is FIRST so it survives,
+    // color anchor may get cut but the strong character ref at the start compensates.
     if (prompt.length > RECRAFT_MAX_PROMPT) {
+      console.warn(`[Illustrations] Prompt truncated from ${prompt.length} to ${RECRAFT_MAX_PROMPT} chars`);
       prompt = prompt.slice(0, RECRAFT_MAX_PROMPT - 1) + "…";
-      console.warn(`[Illustrations] Prompt truncated from ${scenePrompt.length + (prompt.length - scenePrompt.length)} to ${RECRAFT_MAX_PROMPT} chars`);
     }
     return prompt;
   });
@@ -319,7 +362,7 @@ export async function generateIllustrationsForStory(
       batch.map((prompt, batchIndex) => {
         const globalIndex = i + batchIndex;
         const size = sizes[globalIndex] || DEFAULT_IMAGE_SIZE;
-        return generateWithRetry(prompt, apiToken, { styleId, size });
+        return generateWithRetry(prompt, apiToken, { styleId, size, controls });
       }),
     );
     results.push(...batchResults);

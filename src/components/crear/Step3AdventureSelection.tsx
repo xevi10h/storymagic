@@ -1,7 +1,8 @@
 "use client";
 
+import { useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { getRecommendedTemplates, type CreationMode } from "@/lib/create-store";
+import { getRecommendedTemplates, getAllTemplateTags, type CreationMode, type StoryTag } from "@/lib/create-store";
 import CreationHeader from "./CreationHeader";
 import CreationFooterNav from "./CreationFooterNav";
 
@@ -36,6 +37,15 @@ export default function Step3AdventureSelection({
   const displayName = characterName || t("defaultName");
   const sortedTemplates = getRecommendedTemplates(characterAge, characterInterests);
 
+  // ── Tag filter state ──────────────────────────────────────
+  const [activeTag, setActiveTag] = useState<StoryTag | null>(null);
+  const allTags = useMemo(() => getAllTemplateTags(), []);
+
+  const filteredTemplates = useMemo(() => {
+    if (!activeTag) return sortedTemplates;
+    return sortedTemplates.filter((t) => t.tags.includes(activeTag));
+  }, [sortedTemplates, activeTag]);
+
   return (
     <div className="flex flex-col min-h-screen w-full bg-create-bg">
       <CreationHeader currentStep={3} rightAction="save" portraitUrl={portraitUrl} characterName={characterName} characterAge={characterAge} onRegeneratePortrait={onRegeneratePortrait} />
@@ -54,11 +64,38 @@ export default function Step3AdventureSelection({
             </p>
           </div>
 
+          {/* Tag filter bar */}
+          <div className="flex flex-wrap justify-center gap-2 px-2">
+            <button
+              onClick={() => setActiveTag(null)}
+              className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ${
+                activeTag === null
+                  ? "bg-create-primary text-white shadow-sm"
+                  : "bg-white/70 text-create-text-body hover:bg-white hover:text-create-primary border border-create-primary/10"
+              }`}
+            >
+              {t("filterAll")}
+            </button>
+            {allTags.map((tag) => (
+              <button
+                key={tag}
+                onClick={() => setActiveTag(activeTag === tag ? null : tag)}
+                className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ${
+                  activeTag === tag
+                    ? "bg-create-primary text-white shadow-sm"
+                    : "bg-white/70 text-create-text-body hover:bg-white hover:text-create-primary border border-create-primary/10"
+                }`}
+              >
+                {td(`tags.${tag}`)}
+              </button>
+            ))}
+          </div>
+
           {/* Adventure grid — vertical on mobile, horizontal scroll on desktop */}
           <div className="relative md:-mx-10 md:px-10">
             {/* Mobile: vertical list */}
             <div className="flex flex-col gap-3 md:hidden">
-              {sortedTemplates.map((template) => {
+              {filteredTemplates.map((template) => {
                 const isSelected = selectedTemplate === template.id;
                 return (
                   <div
@@ -104,6 +141,17 @@ export default function Step3AdventureSelection({
                       <p className="text-xs text-create-text-body line-clamp-2">
                         {td(`templates.${template.id}.description`)}
                       </p>
+                      {/* Tags */}
+                      <div className="flex flex-wrap gap-1 mt-0.5">
+                        {template.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="text-[9px] font-medium text-create-text-sub bg-create-primary/5 px-1.5 py-0.5 rounded-full"
+                          >
+                            {td(`tags.${tag}`)}
+                          </span>
+                        ))}
+                      </div>
                       {template.isRecommended && !isSelected && (
                         <span className="text-[10px] font-bold text-create-primary">
                           {t("recommendedFor", { name: displayName })}
@@ -120,7 +168,7 @@ export default function Step3AdventureSelection({
               className="hidden md:flex gap-4 overflow-x-auto pt-4 pb-4 snap-x snap-mandatory scrollbar-thin scrollbar-thumb-create-primary/20 scrollbar-track-transparent"
               style={{ scrollbarWidth: "thin" }}
             >
-              {sortedTemplates.map((template) => {
+              {filteredTemplates.map((template) => {
                 const isSelected = selectedTemplate === template.id;
                 return (
                   <div
@@ -168,6 +216,17 @@ export default function Step3AdventureSelection({
                       <p className="text-xs text-create-text-body line-clamp-2">
                         {td(`templates.${template.id}.description`)}
                       </p>
+                      {/* Tags */}
+                      <div className="flex flex-wrap gap-1 mt-auto pt-1">
+                        {template.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="text-[10px] font-medium text-create-text-sub bg-create-primary/5 px-2 py-0.5 rounded-full"
+                          >
+                            {td(`tags.${tag}`)}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 );

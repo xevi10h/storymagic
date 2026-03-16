@@ -70,6 +70,7 @@ export async function GET(
     storyId,
     coverImageUrl: story.cover_image_url ?? null,
     illustrations,
+    locale: (story as Record<string, unknown>).locale as string | undefined,
   };
 
   try {

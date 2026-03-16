@@ -183,7 +183,7 @@ export async function POST(
       .order("scene_number");
 
     if (pendingIllustrations && pendingIllustrations.length > 0) {
-      const characterRef = buildCharacterReference({
+      const charDescInput = {
         gender: character.gender as "boy" | "girl" | "neutral",
         age: character.age,
         skinTone: character.skin_tone,
@@ -192,7 +192,8 @@ export async function POST(
         hairstyle: character.hairstyle || undefined,
         childName: character.name,
         interests: character.interests || [],
-      });
+      };
+      const characterRef = buildCharacterReference(charDescInput);
 
       const remainingPrompts = pendingIllustrations.map((ill) => ill.prompt_used);
 
@@ -216,6 +217,7 @@ export async function POST(
           childAge: character.age,
           gender: character.gender,
           imageSizes: remainingSizes,
+          characterInput: charDescInput,
         },
       );
 
