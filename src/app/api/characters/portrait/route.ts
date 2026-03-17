@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 import {
   buildPortraitCharacterReference,
   buildColorAnchor,
@@ -10,6 +11,22 @@ import { getMockPortraitUrl } from "@/lib/ai/mock-story";
 
 // Portrait generation takes ~5-10s with Recraft
 export const maxDuration = 30;
+
+const portraitInputSchema = z.object({
+  childName: z.string().min(1).max(50),
+  gender: z.enum(["boy", "girl", "neutral"]),
+  age: z.number().int().min(1).max(12),
+  skinTone: z.string().max(20).optional(),
+  hairColor: z.string().max(20).optional(),
+  eyeColor: z.string().max(20).optional(),
+  hairstyle: z.string().max(30).optional(),
+  interests: z.array(z.string().max(50)).max(4).optional(),
+  specialTrait: z.string().max(200).optional(),
+  favoriteCompanion: z.string().max(100).optional(),
+  favoriteFood: z.string().max(100).optional(),
+  futureDream: z.string().max(150).optional(),
+  city: z.string().max(100).optional(),
+});
 
 /**
  * POST /api/characters/portrait
@@ -25,27 +42,30 @@ export const maxDuration = 30;
  */
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    let rawBody: unknown;
+    try {
+      rawBody = await request.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    }
+
+    const parsed = portraitInputSchema.safeParse(rawBody);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Invalid input", details: parsed.error.flatten().fieldErrors },
+        { status: 400 },
+      );
+    }
 
     // Skip rate limiting in mock/dev mode — only enforce with real Recraft API
     const mockMode = process.env.MOCK_MODE === "true";
     const recraftApiToken = process.env.RECRAFT_API_TOKEN?.trim();
     const hasRecraft = !mockMode && recraftApiToken && !recraftApiToken.includes("your_");
 
-    // Rate limiting disabled during testing phase
-    // TODO: Re-enable before production launch
-
     const {
       gender, age, skinTone, hairColor, eyeColor, hairstyle, childName,
       interests, specialTrait, favoriteCompanion, favoriteFood, futureDream, city,
-    } = body;
-
-    if (!childName || !gender || !age) {
-      return NextResponse.json(
-        { error: "Missing required fields: childName, gender, age" },
-        { status: 400 },
-      );
-    }
+    } = parsed.data;
 
     const charInput = { gender, age, skinTone, hairColor, eyeColor, hairstyle, childName };
     const personality: PortraitPersonalityInput = {
@@ -70,9 +90,11 @@ export async function POST(request: Request) {
     // Always non-realistic: digital_illustration/child_book is the fixed base.
     const ageStylePrompt = age <= 4
       ? "Very simple rounded shapes, soft pastel watercolor style, large expressive eyes, minimal details, warm cozy colors."
-      : age <= 7
+      : age <= 6
         ? "Charming storybook illustration style, warm natural colors, expressive face, moderate detail, cozy feel."
-        : "Detailed children's book illustration style, warm natural lighting, expressive character design, clean colors.";
+        : age <= 9
+          ? "Warm storytelling illustration style, balanced detail and expression, rich atmospheric quality, expressive character design."
+          : "Detailed children's book illustration style, warm natural lighting, expressive character design, clean colors.";
 
     const portraitPrompt = [
       portraitCharRef + ".",
@@ -109,9 +131,14 @@ export async function POST(request: Request) {
     // Create custom style_id from the portrait for visual consistency across all book illustrations
     const recraftStyleId = await createStyleFromAvatar(portraitUrl, recraftApiToken!, "digital_illustration");
 
+    if (!recraftStyleId) {
+      console.warn("[Portrait] Style creation returned null — illustrations will use age-based community style");
+    }
+
     return NextResponse.json({
       portraitUrl,
       recraftStyleId,
+      styleWarning: recraftStyleId ? undefined : "custom_style_failed",
     });
   } catch (error: unknown) {
     console.error("[Portrait] Generation failed:", error);

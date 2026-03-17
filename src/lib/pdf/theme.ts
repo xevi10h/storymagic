@@ -227,9 +227,13 @@ export function getPdfTextConfig(age: number): PdfTextConfig {
     // 50-80 words/scene → large, spacious text
     return { body: 15, bodyLeading: 2.0, title: 22, dropCap: 36, bridgeText: 28 };
   }
-  if (age <= 7) {
-    // 100-140 words/scene → medium
-    return { body: 12.5, bodyLeading: 1.85, title: 20, dropCap: 32, bridgeText: 24 };
+  if (age <= 6) {
+    // 70-100 words/scene → medium-large, still easy to read
+    return { body: 13.5, bodyLeading: 1.9, title: 21, dropCap: 34, bridgeText: 26 };
+  }
+  if (age <= 9) {
+    // 110-150 words/scene → medium
+    return { body: 11.5, bodyLeading: 1.8, title: 19, dropCap: 30, bridgeText: 23 };
   }
   // 150-200 words/scene → compact
   return { body: 10.5, bodyLeading: 1.7, title: 18, dropCap: 28, bridgeText: 22 };

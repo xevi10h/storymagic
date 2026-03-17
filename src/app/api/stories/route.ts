@@ -10,17 +10,17 @@ const VALID_LOCALES = ["es", "ca", "en", "fr"] as const;
 
 const storyInputSchema = z.object({
   character: z.object({
-    name: z.string().min(1).max(100),
+    name: z.string().min(1).max(50),
     gender: z.enum(VALID_GENDERS),
     age: z.number().int().min(1).max(12),
     hairColor: z.string().max(20).optional(),
     eyeColor: z.string().max(20).optional(),
     skinTone: z.string().max(20).optional(),
     hairstyle: z.string().max(30).optional(),
-    interests: z.array(z.string().max(50)).max(10).optional(),
+    interests: z.array(z.string().max(50)).max(4).optional(),
     city: z.string().max(100).optional(),
-    specialTrait: z.string().max(300).optional(),
-    favoriteCompanion: z.string().max(200).optional(),
+    specialTrait: z.string().max(200).optional(),
+    favoriteCompanion: z.string().max(100).optional(),
     favoriteFood: z.string().max(100).optional(),
     futureDream: z.string().max(150).optional(),
   }),

@@ -241,12 +241,12 @@ export async function POST(
                 console.warn(`[Storage] Upload attempt 1 failed for scene ${sceneNumber}, retrying...`);
                 await new Promise((r) => setTimeout(r, 1000));
               } else {
-                console.error(`[Storage] Failed to persist scene ${sceneNumber} after 2 attempts:`, uploadError);
-                return { ...ill, sceneNumber };
+                // Throw instead of storing temp Recraft URL — it expires after ~24h
+                throw new Error(`Failed to persist scene ${sceneNumber} after 2 attempts: ${uploadError instanceof Error ? uploadError.message : "Unknown"}`);
               }
             }
           }
-          return { ...ill, sceneNumber };
+          throw new Error(`Unreachable: upload loop for scene ${sceneNumber}`);
         }),
       );
 

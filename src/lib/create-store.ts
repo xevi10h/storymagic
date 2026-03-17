@@ -191,7 +191,7 @@ export const EYE_COLORS = [
 export const SKIN_TONES = [
   { id: "light", color: "#fce4d6" },
   { id: "medium-light", color: "#eebb99" },
-  { id: "medium-dark", color: "#c68642" },
+  { id: "medium", color: "#d4a574" },
   { id: "dark", color: "#8d5524" },
   { id: "very-dark", color: "#523218" },
 ];

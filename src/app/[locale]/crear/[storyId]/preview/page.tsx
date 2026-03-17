@@ -93,7 +93,7 @@ function buildPages(story: StoryData): BookPage[] {
       title: story.title ?? generated.bookTitle,
       characterName: story.characters.name,
       templateId: story.template_id,
-      dedicationText: generated.dedication,
+      dedicationText: story.dedication_text ?? generated.dedication,
       senderName: story.sender_name,
     },
   ];
@@ -427,7 +427,7 @@ export default function PreviewPage() {
       {isFullyReady && (
         <div className="mx-auto max-w-3xl px-4 pb-6">
           <a
-            href={`/api/stories/${storyId}/pdf?force=true`}
+            href={`/api/stories/${storyId}/pdf${process.env.NEXT_PUBLIC_MOCK_MODE === "true" ? "?force=true" : ""}`}
             download={pdfFilename}
             className="group mx-auto flex w-full max-w-md items-center justify-center gap-2.5 rounded-xl border-2 border-border-light bg-white px-6 py-3.5 text-sm font-bold text-secondary transition-all hover:border-create-primary hover:bg-create-primary/5 hover:text-create-primary active:scale-[0.98] shadow-sm"
           >

@@ -179,21 +179,30 @@ export async function GET(
   try {
     const buffer = await renderBookPdf(pdfInput);
 
-    // Upload to Supabase Storage for persistence
-    try {
-      const storagePath = await uploadBookPdf(
-        supabase as unknown as Awaited<ReturnType<typeof createClient>>,
-        user?.id ?? "guest",
-        storyId,
-        buffer,
-      );
+    // Upload to Supabase Storage for caching — retry once before giving up
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        const storagePath = await uploadBookPdf(
+          supabase as unknown as Awaited<ReturnType<typeof createClient>>,
+          user?.id ?? "guest",
+          storyId,
+          buffer,
+        );
 
-      await supabase
-        .from("stories")
-        .update({ pdf_url: storagePath })
-        .eq("id", storyId);
-    } catch (uploadError) {
-      console.warn("[PDF] Failed to persist PDF to storage:", uploadError);
+        await supabase
+          .from("stories")
+          .update({ pdf_url: storagePath })
+          .eq("id", storyId);
+        break; // success
+      } catch (uploadError) {
+        if (attempt === 0) {
+          console.warn("[PDF] Upload attempt 1 failed, retrying...", uploadError);
+          await new Promise((r) => setTimeout(r, 1000));
+        } else {
+          // Non-fatal: PDF is still returned to user, just won't be cached
+          console.error("[PDF] Failed to persist PDF after 2 attempts:", uploadError);
+        }
+      }
     }
 
     // Return the PDF directly

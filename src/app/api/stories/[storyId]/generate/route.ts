@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { generateStory, type StoryInput } from "@/lib/ai/story-generator";
+import { generateArchitect, expandScenes, type StoryInput } from "@/lib/ai/story-generator";
 import {
   generateIllustrationsForStory,
   buildCharacterReference,
@@ -49,13 +49,38 @@ export async function POST(
   // Atomic claim: only transition draft → generating
   const { data: claimedStories, error: claimError } = await supabase
     .from("stories")
-    .update({ status: "generating" })
+    .update({ status: "generating", updated_at: new Date().toISOString() })
     .eq("id", storyId)
     .eq("user_id", user.id)
     .eq("status", "draft")
     .select("*, characters(*)");
 
   if (claimError || !claimedStories || claimedStories.length === 0) {
+    // ── Stuck-status recovery ────────────────────────────────────────────────
+    // Claim failed — maybe the story is stuck in "generating" from a previous
+    // crashed attempt.  Check if it's been stuck for >10 min and auto-recover.
+    // This only runs when claim fails (rare), not on every request.
+    const STUCK_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
+    const { data: stuckStory } = await supabase
+      .from("stories")
+      .select("id, updated_at")
+      .eq("id", storyId)
+      .eq("user_id", user.id)
+      .eq("status", "generating")
+      .single();
+
+    if (stuckStory) {
+      const updatedAt = new Date(stuckStory.updated_at).getTime();
+      if (Date.now() - updatedAt > STUCK_TIMEOUT_MS) {
+        console.warn(`[Generate] Recovering stuck story ${storyId} — was generating since ${stuckStory.updated_at}`);
+        await supabase.from("stories").update({ status: "draft" }).eq("id", storyId);
+        return NextResponse.json(
+          { error: "Story was stuck — recovered to draft. Please retry." },
+          { status: 409 },
+        );
+      }
+    }
+
     return NextResponse.json(
       { error: "Story not found or already generated" },
       { status: 400 }
@@ -109,15 +134,25 @@ export async function POST(
     const recraftApiToken = process.env.RECRAFT_API_TOKEN?.trim();
     const hasRecraft = !mockMode && recraftApiToken && !recraftApiToken.includes("your_");
 
-    // ── Phase 1: Story text + style resolution IN PARALLEL ───────────────────
-    // generateStory internally does: architect (GPT-5.4) → parallel expansion (gpt-5-mini × 12)
-    // Meanwhile we resolve the Recraft style_id (if needed) — no reason to wait.
-    console.log(`[Generate] Starting text generation + style resolution in parallel... [${elapsed(routeStart)}]`);
+    // ══════════════════════════════════════════════════════════════════════════
+    // OPTIMIZED PIPELINE — overlaps expansion with illustration generation
+    //
+    //   Phase 1: Architect + Style Creation    (parallel, ~15s)
+    //   Phase 2: Expansion + Cover + Previews  (parallel, ~15-20s)
+    //   Phase 3: Upload + Save                 (sequential, ~5s)
+    //
+    // KEY INSIGHT: Illustrations only need the architect's imagePrompt,
+    // NOT the expanded scene text.  So we start them immediately after
+    // the architect completes, in parallel with expansion.
+    // ══════════════════════════════════════════════════════════════════════════
 
     const styleIdFromStory: string | null = (story as { recraft_style_id?: string }).recraft_style_id ?? null;
 
-    const [generatedStory, resolvedStyleId] = await Promise.all([
-      generateStory(input),
+    // ── Phase 1: Architect + Style resolution IN PARALLEL ───────────────────
+    console.log(`[Generate] Phase 1: Architect + style in parallel... [${elapsed(routeStart)}]`);
+
+    const [architectResult, resolvedStyleId] = await Promise.all([
+      generateArchitect(input),
       (async (): Promise<string | null> => {
         if (styleIdFromStory) return styleIdFromStory;
         if (!hasRecraft || !character.avatar_url) return null;
@@ -131,9 +166,113 @@ export async function POST(
     ]);
 
     const styleId = resolvedStyleId;
-    console.log(`[Generate] Text done (${generatedStory.scenes.length} scenes), styleId=${styleId ? styleId.slice(0, 8) + "..." : "null"} [${elapsed(routeStart)}]`);
 
-    // ── Phase 2: Save text immediately (client shows title picker) ───────────
+    // Mock mode shortcut — return immediately
+    if (architectResult.isMock && architectResult.mockStory) {
+      const generatedStory = architectResult.mockStory;
+      console.log(`[Generate] Mock mode — saving and finishing [${elapsed(routeStart)}]`);
+      await supabase.from("stories").update({
+        generated_text: JSON.parse(JSON.stringify(generatedStory)),
+        title: generatedStory.titleOptions[0] ?? generatedStory.bookTitle,
+        pdf_url: null,
+      }).eq("id", storyId);
+
+      // Insert mock illustration rows
+      const mockIllRows = generatedStory.scenes.map((scene, index) => ({
+        story_id: storyId,
+        scene_number: scene.sceneNumber,
+        prompt_used: scene.imagePrompt,
+        image_url: getMockIllustrationUrl(index),
+        status: "ready" as const,
+      }));
+      const secondaryScenes = getSecondaryScenes(input.age);
+      const mockSecRows = generatedStory.scenes
+        .filter((scene) => secondaryScenes.includes(scene.sceneNumber))
+        .map((scene, index) => ({
+          story_id: storyId,
+          scene_number: scene.sceneNumber + 12,
+          prompt_used: buildSecondaryPrompt(scene.imagePrompt, scene.title, characterRef, index),
+          image_url: getMockSecondaryIllustrationUrl(scene.sceneNumber - 1),
+          status: "ready" as const,
+        }));
+      await supabase.from("story_illustrations").delete().eq("story_id", storyId);
+      await supabase.from("story_illustrations").insert([...mockIllRows, ...mockSecRows]);
+      await supabase.from("stories").update({
+        cover_image_url: getMockCoverUrl(),
+        character_portrait_url: character.avatar_url || getMockPortraitUrl(),
+        status: "ready",
+      }).eq("id", storyId);
+
+      return NextResponse.json({
+        status: "ready",
+        bookTitle: generatedStory.titleOptions[0] ?? generatedStory.bookTitle,
+        titleOptions: generatedStory.titleOptions,
+        scenesCount: generatedStory.scenes.length,
+        previewIllustrations: generatedStory.scenes.length,
+        coverGenerated: true,
+        illustrations: { total: generatedStory.scenes.length, recraft: 0, mock: generatedStory.scenes.length },
+      });
+    }
+
+    const { architect, ageConfig } = architectResult;
+    console.log(`[Generate] Phase 1 done — "${architect.bookTitle}", styleId=${styleId ? styleId.slice(0, 8) + "..." : "null"} [${elapsed(routeStart)}]`);
+
+    // Extract illustration prompts + sizes from the architect (available NOW, before expansion)
+    const previewPrompts = architect.scenes
+      .slice(0, PREVIEW_ILLUSTRATION_COUNT)
+      .map((s) => s.imagePrompt);
+    const previewSizes = architect.scenes
+      .slice(0, PREVIEW_ILLUSTRATION_COUNT)
+      .map((s) => {
+        const pair = SCENE_LAYOUT_PAIRS[(s.sceneNumber - 1) % SCENE_LAYOUT_PAIRS.length];
+        return LAYOUT_IMAGE_SIZE[pair[0]] || "1024x1024";
+      });
+
+    // ── Phase 2: Expansion + Cover + Preview illustrations IN PARALLEL ──────
+    // This is the KEY optimization: expansion and illustrations don't depend
+    // on each other.  Illustrations need imagePrompt (from architect).
+    // Expansion needs scene briefs (from architect).  Both are ready now.
+    console.log(`[Generate] Phase 2: Expansion(${architect.scenes.length}) + Cover + ${PREVIEW_ILLUSTRATION_COUNT} previews — ALL IN PARALLEL [${elapsed(routeStart)}]`);
+
+    const [generatedStory, coverResult, previewIllustrations] = await Promise.all([
+      // A) Scene expansion (12 parallel LLM calls inside)
+      expandScenes(architect, input, ageConfig),
+
+      // B) Cover illustration
+      (async (): Promise<string | null> => {
+        if (!hasRecraft) return null;
+        try {
+          const genderColor = getGenderColorDirective(input.gender);
+          const coverColorAnchor = buildColorAnchor(charDescInput);
+          const coverPromptFromArchitect = architect.coverImagePrompt || `${characterRef} in a triumphant hero pose, cinematic children's book cover`;
+          let coverPrompt = `The protagonist: ${characterRef}. ${coverPromptFromArchitect} Children's book illustration, soft warm palette, gentle natural lighting, no text in image.${genderColor ? ` ${genderColor}` : ""}${coverColorAnchor ? ` ${coverColorAnchor}` : ""}`;
+          if (coverPrompt.length > 1000) coverPrompt = coverPrompt.slice(0, 999) + "…";
+          const coverControls = buildRecraftControls(charDescInput, { isPortrait: false });
+          const coverUrl = await generateWithRetry(coverPrompt, recraftApiToken!, {
+            ...(styleId ? { styleId } : {}),
+            controls: coverControls,
+          });
+          return await uploadCoverFromUrl(supabase, storyId, coverUrl);
+        } catch (coverError) {
+          console.error("[Generate] Cover failed (non-fatal):", coverError);
+          return null;
+        }
+      })(),
+
+      // C) Preview illustrations (batched Recraft calls)
+      generateIllustrationsForStory(previewPrompts, characterRef, {
+        styleId,
+        childAge: input.age,
+        gender: input.gender,
+        imageSizes: previewSizes,
+        characterInput: charDescInput,
+      }),
+    ]);
+
+    const persistedCoverUrl = coverResult;
+    console.log(`[Generate] Phase 2 done — cover=${!!persistedCoverUrl}, previews=${previewIllustrations.length} [${elapsed(routeStart)}]`);
+
+    // ── Phase 3: Save text to DB immediately ────────────────────────────────
     const { error: textSaveError } = await supabase
       .from("stories")
       .update({
@@ -148,62 +287,12 @@ export async function POST(
     }
     console.log(`[Generate] Text saved to DB [${elapsed(routeStart)}]`);
 
-    // ── Phase 3: Portrait (reuse existing) ───────────────────────────────────
+    // Portrait: reuse existing
     let persistedPortraitUrl: string | null = character.avatar_url || null;
-    if (!persistedPortraitUrl && mockMode) {
-      persistedPortraitUrl = getMockPortraitUrl();
-    }
-
-    // ── Phase 4: Cover + preview illustrations IN PARALLEL ───────────────────
-    console.log(`[Generate] Starting cover + ${PREVIEW_ILLUSTRATION_COUNT} previews in parallel... [${elapsed(routeStart)}]`);
-
-    const previewPrompts = generatedStory.scenes
-      .slice(0, PREVIEW_ILLUSTRATION_COUNT)
-      .map((s) => s.imagePrompt);
-
-    // Compute per-image sizes from layout pairs (each scene's primary illustration
-    // needs the correct aspect ratio for its layout — landscape for splits, panoramic for spreads)
-    const previewSizes = generatedStory.scenes
-      .slice(0, PREVIEW_ILLUSTRATION_COUNT)
-      .map((s) => {
-        const pair = SCENE_LAYOUT_PAIRS[(s.sceneNumber - 1) % SCENE_LAYOUT_PAIRS.length];
-        return LAYOUT_IMAGE_SIZE[pair[0]] || "1024x1024";
-      });
-
-    const [coverResult, previewIllustrations] = await Promise.all([
-      // Cover
-      (async (): Promise<string | null> => {
-        if (mockMode || !hasRecraft) return mockMode ? getMockCoverUrl() : null;
-        try {
-          const genderColor = getGenderColorDirective(input.gender);
-          const coverColorAnchor = buildColorAnchor(charDescInput);
-          let coverPrompt = `The protagonist: ${characterRef}. ${generatedStory.coverImagePrompt} Children's book illustration, soft warm palette, gentle natural lighting, no text in image.${genderColor ? ` ${genderColor}` : ""}${coverColorAnchor ? ` ${coverColorAnchor}` : ""}`;
-          if (coverPrompt.length > 1000) coverPrompt = coverPrompt.slice(0, 999) + "…";
-          const coverControls = buildRecraftControls(charDescInput, { isPortrait: false });
-          const coverUrl = await generateWithRetry(coverPrompt, recraftApiToken!, {
-            ...(styleId ? { styleId } : {}),
-            controls: coverControls,
-          });
-          return await uploadCoverFromUrl(supabase, storyId, coverUrl);
-        } catch (coverError) {
-          console.error("[Generate] Cover failed (non-fatal):", coverError);
-          return null;
-        }
-      })(),
-      // Preview illustrations with correct sizes per layout
-      generateIllustrationsForStory(previewPrompts, characterRef, {
-        styleId,
-        childAge: input.age,
-        gender: input.gender,
-        imageSizes: previewSizes,
-        characterInput: charDescInput,
-      }),
-    ]);
-
-    const persistedCoverUrl = coverResult;
-    console.log(`[Generate] Illustrations done: cover=${!!persistedCoverUrl}, previews=${previewIllustrations.length} [${elapsed(routeStart)}]`);
 
     // ── Phase 5: Upload illustrations to storage ─────────────────────────────
+    // CRITICAL: If upload fails after 2 attempts, throw instead of storing the
+    // temporary Recraft URL — those expire after ~24h, breaking the book.
     const finalPreviewIllustrations = await Promise.all(
       previewIllustrations.map(async (ill, index) => {
         if (ill.provider !== "recraft") return ill;
@@ -213,10 +302,10 @@ export async function POST(
             return { ...ill, imageUrl: permanentUrl };
           } catch (uploadError) {
             if (attempt === 0) {
+              console.warn(`[Storage] Upload attempt 1 failed for scene ${index + 1}, retrying...`);
               await new Promise((r) => setTimeout(r, 1000));
             } else {
-              console.error(`[Storage] Failed scene ${index + 1}:`, uploadError);
-              return ill;
+              throw new Error(`Failed to persist illustration for scene ${index + 1} after 2 attempts: ${uploadError instanceof Error ? uploadError.message : "Unknown"}`);
             }
           }
         }
@@ -232,17 +321,9 @@ export async function POST(
       .eq("story_id", storyId);
     if (deleteError) throw new Error(`Failed to delete old illustrations: ${deleteError.message}`);
 
+    // Mock mode is handled early (returned above), so this is always real Recraft
     const illustrationRows = generatedStory.scenes.map((scene, index) => {
       const isPreview = index < PREVIEW_ILLUSTRATION_COUNT;
-      if (mockMode) {
-        return {
-          story_id: storyId,
-          scene_number: scene.sceneNumber,
-          prompt_used: scene.imagePrompt,
-          image_url: getMockIllustrationUrl(index),
-          status: "ready" as const,
-        };
-      }
       return {
         story_id: storyId,
         scene_number: scene.sceneNumber,
@@ -257,15 +338,6 @@ export async function POST(
       .filter((scene) => secondaryScenes.includes(scene.sceneNumber))
       .map((scene, index) => {
         const secondaryPrompt = buildSecondaryPrompt(scene.imagePrompt, scene.title, characterRef, index);
-        if (mockMode) {
-          return {
-            story_id: storyId,
-            scene_number: scene.sceneNumber + 12,
-            prompt_used: secondaryPrompt,
-            image_url: getMockSecondaryIllustrationUrl(scene.sceneNumber - 1),
-            status: "ready" as const,
-          };
-        }
         return {
           story_id: storyId,
           scene_number: scene.sceneNumber + 12,
@@ -281,15 +353,17 @@ export async function POST(
     if (insertError) throw new Error(`Failed to insert illustrations: ${insertError.message}`);
 
     // ── Phase 7: Final status ────────────────────────────────────────────────
-    const finalStatus = mockMode ? "ready" : "preview";
+    // Only overwrite cover/portrait/style if we actually have new values —
+    // avoid nullifying a previously generated cover when cover generation fails.
+    const finalStatus = "preview"; // mock mode is handled early
+    const finalUpdate: Record<string, unknown> = { status: finalStatus };
+    if (persistedCoverUrl) finalUpdate.cover_image_url = persistedCoverUrl;
+    if (persistedPortraitUrl) finalUpdate.character_portrait_url = persistedPortraitUrl;
+    if (styleId) finalUpdate.recraft_style_id = styleId;
+
     const { error: finalUpdateError } = await supabase
       .from("stories")
-      .update({
-        cover_image_url: persistedCoverUrl,
-        character_portrait_url: persistedPortraitUrl,
-        recraft_style_id: styleId,
-        status: finalStatus,
-      })
+      .update(finalUpdate)
       .eq("id", storyId);
 
     if (finalUpdateError) throw new Error(`Failed to finalize: ${finalUpdateError.message}`);

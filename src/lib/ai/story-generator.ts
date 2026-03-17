@@ -43,7 +43,10 @@ function nativeFetch(
         port: parsed.port || (parsed.protocol === "https:" ? 443 : 80),
         path: parsed.pathname + parsed.search,
         method: options.method,
-        headers: options.headers,
+        headers: {
+          ...options.headers,
+          Connection: "keep-alive",
+        },
         timeout: timeoutMs,
       },
       (res) => {
@@ -63,6 +66,11 @@ function nativeFetch(
       },
     );
 
+    // Keep TCP connection alive to prevent OS/proxy from closing idle sockets
+    // during long LLM generation (GPT-5.4 can take 60-120s)
+    req.on("socket", (socket) => {
+      socket.setKeepAlive(true, 30_000); // send TCP keepalive every 30s
+    });
     req.on("timeout", () => {
       req.destroy(new Error(`Request timed out after ${timeoutMs}ms`));
     });
@@ -213,6 +221,7 @@ function getAgeConfig(age: number, locale?: string): AgeConfig {
   const illustrationBaseStyle = "digital_illustration";
   const illustrationPromptStyle = null;
 
+  // ── Band 1: Toddlers (2-4) ──────────────────────────────────────────────
   if (age <= 4) {
     return {
       sceneCount: 8,
@@ -239,11 +248,41 @@ function getAgeConfig(age: number, locale?: string): AgeConfig {
     };
   }
 
-  if (age <= 7) {
+  // ── Band 2: Early readers (5-6) ───────────────────────────────────────────
+  if (age <= 6) {
+    return {
+      sceneCount: 9,
+      bridgeCount: 3,
+      wordsPerScene: "70-100",
+      narrativeVoice: [
+        "VOICE: Warm, playful 3rd person narrator — close to the child but with a storytelling cadence.",
+        "The narrator is enthusiastic and encouraging, like a favourite teacher reading aloud.",
+        "Short, punchy dialogues — one or two lines at a time. Characters speak the way real 5-year-olds do.",
+        "Occasional gentle asides to the reader ('And guess what happened next?').",
+      ].join("\n"),
+      textStyle: [
+        "Write for a child aged 5-6. 4-6 sentences per scene, 70-100 words.",
+        "SENTENCES: Keep them short (max 12-15 words). One idea per sentence.",
+        "VOCABULARY: Use everyday words a 5-year-old knows. Introduce ONE new word per scene at most — and make its meaning clear from context.",
+        `RHYTHM: Use onomatopoeia (${localeConfig.onomatopoeia}), repetition, and playful patterns. Repeated phrases across scenes create comfort.`,
+        "PACING: Start each scene with something happening — action first, description later.",
+        "SENSES: Every scene includes something concrete the child can hear, touch, smell, or see.",
+        "EMOTION: Name feelings clearly (excited, worried, brave, proud) through the character's actions and expressions.",
+        "HOOKS: End every scene with a small surprise or question that makes the child want to turn the page.",
+        "SHOW THE MORAL: The lesson is in what the character DOES, never in what they say. Show, don't lecture.",
+      ].join("\n"),
+      illustrationStyleId,
+      illustrationBaseStyle,
+      illustrationPromptStyle: illustrationPromptStyle ?? "Whimsical nook illumination children's book illustration, warm glowing light, intricate charming details, cozy storybook atmosphere, expressive characters, rich textures, no text in image.",
+    };
+  }
+
+  // ── Band 3: Confident readers (7-9) ───────────────────────────────────────
+  if (age <= 9) {
     return {
       sceneCount: 10,
       bridgeCount: 2,
-      wordsPerScene: "100-140",
+      wordsPerScene: "110-150",
       narrativeVoice: [
         "VOICE: Engaging 3rd person limited — we follow the protagonist's thoughts and feelings closely.",
         "The narrator has personality: witty, warm, occasionally conspiratorial ('But what Marc didn't know yet was...').",
@@ -251,7 +290,7 @@ function getAgeConfig(age: number, locale?: string): AgeConfig {
         "Occasional asides to the reader are welcome ('And THAT, dear reader, is when things got really interesting').",
       ].join("\n"),
       textStyle: [
-        "Write for a child aged 5-7. 5-7 sentences per scene, 100-140 words.",
+        "Write for a child aged 7-9. 5-8 sentences per scene, 110-150 words.",
         "PACING: Open each scene with ACTION, not description. Something is happening from the first sentence.",
         "TENSION: Build small cliffhangers — a noise in the dark, a door that won't open, a friend who's in trouble. Always resolve safely, but let the suspense breathe for a moment.",
         "HUMOR: Include at least one smile-worthy moment per scene. Physical comedy, funny observations, or unexpected reactions.",
@@ -262,10 +301,11 @@ function getAgeConfig(age: number, locale?: string): AgeConfig {
       ].join("\n"),
       illustrationStyleId,
       illustrationBaseStyle,
-      illustrationPromptStyle: illustrationPromptStyle ?? "Whimsical nook illumination children's book illustration, warm glowing light, intricate charming details, cozy storybook atmosphere, expressive characters, rich textures, no text in image.",
+      illustrationPromptStyle: illustrationPromptStyle ?? "Warm storytelling children's book illustration, balanced detail and expression, rich atmospheric scenes, expressive characters, warm color palette, no text in image.",
     };
   }
 
+  // ── Band 4: Pre-teens (10-12) ─────────────────────────────────────────────
   return {
     sceneCount: 12,
     bridgeCount: 0,
@@ -277,7 +317,7 @@ function getAgeConfig(age: number, locale?: string): AgeConfig {
       "Dialogue reveals character: what people say (and don't say) matters more than what happens.",
     ].join("\n"),
     textStyle: [
-      "Write for a child aged 8-12. 7-10 rich sentences per scene, 150-200 words.",
+      "Write for a child aged 10-12. 7-10 rich sentences per scene, 150-200 words.",
       "OPENING: Each scene starts in medias res — mid-action, mid-thought, mid-emotion. Never 'It was a sunny day.'",
       "TENSION: Real stakes. The protagonist can fail, feel afraid, feel alone. Don't rush to comfort — let discomfort teach something before resolving it.",
       "PROSE CRAFT: Use metaphors and sensory details that EARN their place. One precise image beats three vague ones. 'The cave smelled like wet iron and old secrets.'",
@@ -360,10 +400,12 @@ function getLocaleConfig(locale?: string): LocaleConfig {
 
 // ── Model config ─────────────────────────────────────────────────────────────
 
-/** Premium model for the architect call — plans the entire book */
-const ARCHITECT_MODEL = process.env.OPENAI_ARCHITECT_MODEL || "gpt-5.4";
-/** Premium model for scene expansion — quality over speed */
-const EXPANSION_MODEL = process.env.OPENAI_EXPANSION_MODEL || "gpt-5.4";
+/** Model for the architect call — plans the entire book skeleton.
+ *  gpt-5.4-mini is 6x faster than gpt-5.4 with equivalent JSON quality. */
+const ARCHITECT_MODEL = process.env.OPENAI_ARCHITECT_MODEL || "gpt-5.4-mini";
+/** Model for scene expansion — generates the final narrative text.
+ *  gpt-5.4-mini balances quality and speed (~8s vs ~54s for gpt-5.4). */
+const EXPANSION_MODEL = process.env.OPENAI_EXPANSION_MODEL || "gpt-5.4-mini";
 
 function getApiKey(): string {
   const key = process.env.OPENAI_API_KEY?.trim();
@@ -402,29 +444,53 @@ async function callLLM(
     payload.response_format = { type: "json_object" };
   }
 
-  const body = JSON.stringify(payload);
+  let body = JSON.stringify(payload);
   const start = Date.now();
 
-  const MAX_RETRIES = 2;
+  const MAX_RETRIES = 1; // 1 retry with same model, then fallback to faster model
   let response: Awaited<ReturnType<typeof nativeFetch>> | undefined;
+  let usedModel = model;
+  let lastError: unknown;
 
-  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+  for (let attempt = 0; attempt <= MAX_RETRIES + 1; attempt++) {
+    // After MAX_RETRIES with the original model, try a faster fallback model
+    if (attempt > MAX_RETRIES) {
+      const FALLBACK_MAP: Record<string, string> = {
+        "gpt-5.4": "gpt-5.4-mini",
+        "gpt-5.4-mini": "gpt-5.4-nano",
+        "gpt-5.3": "gpt-5.4-mini",
+        "gpt-5": "gpt-5-mini",
+      };
+      const fallback = FALLBACK_MAP[model];
+      if (!fallback) throw lastError!; // no fallback available
+      usedModel = fallback;
+      // Rebuild payload with fallback model
+      payload.model = usedModel;
+      body = JSON.stringify(payload);
+      console.warn(`[LLM] Falling back to ${usedModel} after ${MAX_RETRIES + 1} failures with ${model}`);
+    }
+
     try {
-      response = await nativeFetch(url, { method: "POST", headers, body, timeoutMs });
+      response = await nativeFetch(url, { method: "POST", headers, body: body, timeoutMs });
+      if (usedModel !== model) {
+        console.log(`[LLM] Fallback ${usedModel} succeeded`);
+      }
       break;
     } catch (err) {
+      lastError = err;
       const isTransient = err instanceof Error && (
         err.message.includes("socket") ||
         err.message.includes("timed out") ||
         err.message.includes("ECONNRESET") ||
         err.message.includes("EPIPE")
       );
-      if (isTransient && attempt < MAX_RETRIES) {
-        console.warn(`[LLM] ${model} attempt ${attempt + 1} failed: ${err instanceof Error ? err.message : err}`);
-        await new Promise((r) => setTimeout(r, 1500));
+      if (isTransient && attempt <= MAX_RETRIES) {
+        const delay = 2000 * Math.pow(2, attempt); // 2s, 4s
+        console.warn(`[LLM] ${usedModel} attempt ${attempt + 1} failed: ${err instanceof Error ? err.message : err}. Retrying in ${delay / 1000}s...`);
+        await new Promise((r) => setTimeout(r, delay));
         continue;
       }
-      throw err;
+      if (attempt > MAX_RETRIES) throw err; // fallback also failed
     }
   }
 
@@ -882,28 +948,48 @@ function getFallbackSynopsis(childName: string, locale?: string): string {
   }
 }
 
-// ── Main entry point ─────────────────────────────────────────────────────────
+// ── Exported phases (allow route to parallelize expansion + illustrations) ───
 
-export async function generateStory(input: StoryInput): Promise<GeneratedStory> {
+export interface ArchitectResult {
+  architect: ArchitectOutput;
+  ageConfig: AgeConfig;
+  characterVisual: string;
+  isMock: boolean;
+  /** If mock, the full story is available immediately */
+  mockStory?: GeneratedStory;
+}
+
+/**
+ * Phase 1: Architect — plans the full book skeleton.
+ * Returns the blueprint with imagePrompts for each scene.
+ * The route can start illustration generation immediately after this,
+ * WITHOUT waiting for scene expansion.
+ */
+export async function generateArchitect(input: StoryInput): Promise<ArchitectResult> {
   const mockMode = process.env.MOCK_MODE === "true";
 
   if (mockMode || !hasAnyProvider()) {
     const reason = mockMode ? "MOCK_MODE=true" : "no LLM API key";
     console.log(`[StoryGen] MOCK MODE — ${reason}`);
     await new Promise((resolve) => setTimeout(resolve, 1500));
-    return generateMockStory(input);
+    return {
+      architect: {} as ArchitectOutput,
+      ageConfig: getAgeConfig(input.age, input.locale),
+      characterVisual: "",
+      isMock: true,
+      mockStory: generateMockStory(input),
+    };
   }
 
   const ageConfig = getAgeConfig(input.age, input.locale);
   const characterVisual = buildCharacterVisualDescription(input);
 
-  // ── PHASE 1: Architect call (GPT-5.4) ──────────────────────────────────────
   console.log(`[StoryGen] Phase 1: Architect (${ARCHITECT_MODEL})...`);
   const architectPrompt = buildArchitectPrompt(input);
   const architectRaw = await callLLM(architectPrompt, ARCHITECT_MODEL, { timeoutMs: 120_000 });
   const architect = parseJsonResponse<ArchitectOutput>(architectRaw, ARCHITECT_MODEL);
 
-  // Validate architect output
+  // Validate
   if (!architect.bookTitle || !architect.scenes || !Array.isArray(architect.scenes)) {
     throw new Error(`${ARCHITECT_MODEL} returned invalid skeleton: missing bookTitle or scenes`);
   }
@@ -924,7 +1010,19 @@ export async function generateStory(input: StoryInput): Promise<GeneratedStory> 
 
   console.log(`[StoryGen] Phase 1 done: "${architect.bookTitle}" — ${architect.scenes.filter(s => s.type === "scene").length} scenes, ${architect.scenes.filter(s => s.type === "bridge").length} bridges`);
 
-  // ── PHASE 2: Parallel scene expansion (GPT-5.4 × 12) ──────────────────────
+  return { architect, ageConfig, characterVisual, isMock: false };
+}
+
+/**
+ * Phase 2: Expansion — expands each scene brief into full text.
+ * Can run IN PARALLEL with illustration generation since illustrations
+ * only need the architect's imagePrompt, not the expanded text.
+ */
+export async function expandScenes(
+  architect: ArchitectOutput,
+  input: StoryInput,
+  ageConfig: AgeConfig,
+): Promise<GeneratedStory> {
   console.log(`[StoryGen] Phase 2: Expanding ${architect.scenes.length} scenes in parallel (${EXPANSION_MODEL})...`);
   const phase2Start = Date.now();
 
@@ -934,7 +1032,6 @@ export async function generateStory(input: StoryInput): Promise<GeneratedStory> 
 
   const expansionResults = await Promise.allSettled(
     architect.scenes.map(async (scene, index): Promise<{ sceneNumber: number; text: string }> => {
-      // Bridges already have final text in their brief — no expansion needed
       if (scene.type === "bridge") {
         return { sceneNumber: scene.sceneNumber, text: scene.brief };
       }
@@ -962,7 +1059,7 @@ export async function generateStory(input: StoryInput): Promise<GeneratedStory> 
   const failed = expansionResults.filter(r => r.status === "rejected").length;
   console.log(`[StoryGen] Phase 2 done in ${phase2Elapsed}s — ${succeeded} ok, ${failed} failed`);
 
-  // ── Merge architect skeleton + expanded texts ──────────────────────────────
+  // Merge architect skeleton + expanded texts
   const scenes: GeneratedScene[] = architect.scenes.map((archScene, index) => {
     const result = expansionResults[index];
     let text: string;
@@ -970,7 +1067,6 @@ export async function generateStory(input: StoryInput): Promise<GeneratedStory> 
     if (result.status === "fulfilled") {
       text = result.value.text;
     } else {
-      // Fallback: use the architect brief as-is
       console.warn(`[StoryGen] Scene ${archScene.sceneNumber} expansion failed, using brief as fallback`);
       text = archScene.brief;
     }
@@ -984,20 +1080,17 @@ export async function generateStory(input: StoryInput): Promise<GeneratedStory> 
     };
   });
 
-  // ── Post-processing ────────────────────────────────────────────────────────
+  const characterVisual = buildCharacterVisualDescription(input);
 
-  // Title options
   let titleOptions = architect.titleOptions;
   if (!Array.isArray(titleOptions) || titleOptions.length < 1) {
     titleOptions = [architect.bookTitle, ...getFallbackTitles(input.childName, input.locale)];
   }
   titleOptions = titleOptions.slice(0, 4);
 
-  // Cover prompt fallback
   const coverImagePrompt = architect.coverImagePrompt
     || `${characterVisual} as a hero in a triumphant pose, wide cinematic composition, the adventure world filling the background, children's book cover art, vivid colors, no text.`;
 
-  // Synopsis fallback
   const synopsis = architect.synopsis || getFallbackSynopsis(input.childName, input.locale);
 
   return {
@@ -1009,4 +1102,11 @@ export async function generateStory(input: StoryInput): Promise<GeneratedStory> 
     finalMessage: architect.finalMessage || "",
     synopsis,
   };
+}
+
+/** Legacy wrapper — calls architect + expansion sequentially. */
+export async function generateStory(input: StoryInput): Promise<GeneratedStory> {
+  const result = await generateArchitect(input);
+  if (result.isMock && result.mockStory) return result.mockStory;
+  return expandScenes(result.architect, input, result.ageConfig);
 }

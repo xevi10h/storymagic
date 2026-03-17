@@ -126,7 +126,9 @@ export default function GenerarPage() {
     hasText: boolean;
     data: Record<string, unknown>;
   }> => {
-    const res = await fetch(`/api/stories/${storyId}`);
+    // Use ?light=true to skip expensive JOINs (characters, illustrations).
+    // Polling only needs status + generated_text presence.
+    const res = await fetch(`/api/stories/${storyId}?light=true`);
     if (!res.ok) throw new Error("Failed to fetch story status");
     const data = await res.json();
     return {
@@ -195,6 +197,17 @@ export default function GenerarPage() {
           return;
         }
 
+        // Status reverted to "draft" = generation failed on the backend
+        // (catch handler reverts status to "draft" on error)
+        if (status === "draft") {
+          stopPolling();
+          if (mountedRef.current) {
+            setErrorMessage(t("errorDefault"));
+            setPhase("error");
+          }
+          return;
+        }
+
         // Stuck detection: 3 minutes with no text
         if (Date.now() - phaseStartedAt.current > STUCK_TIMEOUT_MS) {
           stopPolling();
@@ -231,7 +244,7 @@ export default function GenerarPage() {
         return;
       }
 
-      // Generating but no text — POST may still be running on serverless, just poll
+      // Generating but no text — POST may still be running, or stuck from a previous crash.
       if (status === "generating" && !hasText) {
         setPhase("generating_text");
         startPollingForText();

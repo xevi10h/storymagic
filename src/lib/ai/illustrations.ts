@@ -108,7 +108,11 @@ export async function generateWithRetry(
     try {
       return await generateWithRecraft(prompt, apiToken, options);
     } catch (error) {
-      if (attempt === maxRetries) throw error;
+      // Don't retry client errors (400, 401, 403, 422) — they won't succeed on retry
+      const msg = error instanceof Error ? error.message : "";
+      const isClientError = /\b(400|401|403|422)\b/.test(msg) || /bad request|unauthorized|forbidden|validation/i.test(msg);
+      if (isClientError || attempt === maxRetries) throw error;
+
       const delay = 1000 * Math.pow(2, attempt); // 1s, 2s, 4s
       console.warn(`[Illustrations] Retry ${attempt + 1} after ${delay}ms for prompt: ${prompt.slice(0, 60)}...`);
       await new Promise((resolve) => setTimeout(resolve, delay));
@@ -196,15 +200,20 @@ export async function createStyleFromAvatar(
  * Count is age-dependent: young kids get more visual pages, older kids more text.
  *
  *   Ages 2-4:  10 secondaries → 0 text_only pages (pure picture book)
- *   Ages 5-7:   6 secondaries → 4 text_only pages (balanced)
- *   Ages 8-12:  4 secondaries → 6 text_only pages (text-heavy)
+ *   Ages 5-6:   8 secondaries → 2 text_only pages (mostly visual)
+ *   Ages 7-9:   6 secondaries → 4 text_only pages (balanced)
+ *   Ages 10-12:  4 secondaries → 6 text_only pages (text-heavy)
  */
 export function getSecondaryScenes(age: number): number[] {
   if (age <= 4) {
-    // All non-spread scenes — every page is visual
+    // All non-spread scenes — every page is visual (pure picture book)
     return [1, 2, 4, 5, 6, 7, 9, 10, 11, 12];
   }
-  if (age <= 7) {
+  if (age <= 6) {
+    // Mostly visual — early readers still need lots of illustrations
+    return [1, 2, 5, 6, 9, 10, 11, 12];
+  }
+  if (age <= 9) {
     // Balanced — key narrative beats get secondaries
     return [1, 5, 6, 9, 11, 12];
   }
@@ -350,10 +359,10 @@ export async function generateIllustrationsForStory(
   // Build per-image Recraft options with correct sizes
   const sizes = options?.imageSizes ?? [];
 
-  // Generate images in batches of 3 to avoid overwhelming Vercel's undici connection pool.
-  // Recraft allows 100 images/minute so rate limiting isn't the issue — concurrent fetch
-  // saturation in serverless environments is.
-  const BATCH_SIZE = 3;
+  // Generate images in batches of 5.  Recraft allows 100 images/minute so rate
+  // limiting isn't the issue.  We use native HTTPS (not undici) for LLM calls,
+  // so connection pool pressure is lower than before.
+  const BATCH_SIZE = 5;
   const results: PromiseSettledResult<string>[] = [];
 
   for (let i = 0; i < enhancedPrompts.length; i += BATCH_SIZE) {

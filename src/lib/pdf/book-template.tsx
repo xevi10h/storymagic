@@ -45,6 +45,8 @@ import {
   StyleSheet,
   Svg,
   Rect,
+  Path,
+  Circle,
   Defs,
   LinearGradient,
   Stop,
@@ -324,6 +326,39 @@ const s = StyleSheet.create({
 
 // Minimum space reserved at the bottom for page numbers so content never overlaps
 const PAGE_NUM_RESERVED = BOOK.bleed + 28; // ~40pt — clears the number + decorative lines
+
+// ── Text fitting for PDF ────────────────────────────────────────────────────
+// @react-pdf has no DOM measurement, so we estimate capacity from page geometry
+// and truncate text that won't fit.  Uses average char width ≈ 0.5×fontSize
+// (conservative for proportional fonts) and accounts for line wrapping.
+
+function fitSceneText(
+  text: string,
+  tc: PdfTextConfig,
+  /** Available width for text in pt (after margins, padding) */
+  availableWidth: number,
+  /** Available height for text in pt (after title, ornaments, margins) */
+  availableHeight: number,
+): string {
+  const avgCharWidth = tc.body * 0.48; // conservative for Plus Jakarta Sans
+  const lineHeightPt = tc.body * tc.bodyLeading;
+  const charsPerLine = Math.floor(availableWidth / avgCharWidth);
+  const maxLines = Math.floor(availableHeight / lineHeightPt);
+  const maxChars = charsPerLine * maxLines;
+
+  if (text.length <= maxChars) return text;
+
+  // Truncate at the last word boundary before the limit
+  const truncated = text.slice(0, maxChars - 1);
+  const lastSpace = truncated.lastIndexOf(" ");
+  return (lastSpace > 0 ? truncated.slice(0, lastSpace) : truncated) + "…";
+}
+
+// Pre-computed available dimensions for each text page type (in PDF points)
+const TEXT_PAGE_AVAIL_WIDTH = BOOK.trimWidth * 0.78 - 20; // maxWidth constraint + padding
+const TEXT_PAGE_AVAIL_HEIGHT = BOOK.pageHeight - BOOK.contentMargin * 2 - PAGE_NUM_RESERVED - 80; // minus title, ornaments, padding
+const ILLTEXT_AVAIL_WIDTH = BOOK.trimWidth * 0.88;
+const ILLTEXT_AVAIL_HEIGHT = BOOK.pageHeight * 0.44 - 60; // 56% image, rest for text minus ornaments
 
 // ── Page number component ─────────────────────────────────────────────────
 
@@ -610,6 +645,8 @@ function PageIllustrationText({ theme, scene, imageUrl, pageNumber, tc }: SceneP
   const imageHeight = BOOK.pageHeight * 0.40;
   // Slightly smaller font so text fits under the illustration
   const fontSize = Math.max(tc.body - 1, 9);
+  const illtextTc = { ...tc, body: fontSize };
+  const fittedText = fitSceneText(scene.text, illtextTc, ILLTEXT_AVAIL_WIDTH, ILLTEXT_AVAIL_HEIGHT);
 
   return (
     <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: COLORS.cream }]}>
@@ -630,7 +667,7 @@ function PageIllustrationText({ theme, scene, imageUrl, pageNumber, tc }: SceneP
           <OrnamentalDivider color={theme.ornamentColor} width={60} />
 
           <Text style={{ fontFamily: FONTS.body, fontSize, color: COLORS.textDark, lineHeight: tc.bodyLeading, textAlign: "center", marginTop: 8 }}>
-            {scene.text}
+            {fittedText}
           </Text>
 
           <View style={{ marginTop: 6 }}>
@@ -650,6 +687,7 @@ function PageIllustrationText({ theme, scene, imageUrl, pageNumber, tc }: SceneP
 
 /** Galeria text — centered text with ornamental divider, star cluster. Paper white bg, frame border. */
 function TextPageGaleria({ theme, scene, pageNumber, tc }: ScenePageProps) {
+  const fittedText = fitSceneText(scene.text, tc, TEXT_PAGE_AVAIL_WIDTH, TEXT_PAGE_AVAIL_HEIGHT);
   return (
     <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: COLORS.cream }]}>
       <FrameBorder color={theme.ornamentColor} />
@@ -665,7 +703,7 @@ function TextPageGaleria({ theme, scene, pageNumber, tc }: ScenePageProps) {
 
           {/* Text */}
           <Text style={{ fontFamily: FONTS.body, fontSize: tc.body, color: COLORS.textDark, lineHeight: tc.bodyLeading, textAlign: "center", marginTop: 12 }}>
-            {scene.text}
+            {fittedText}
           </Text>
 
           {/* Bottom ornament */}
@@ -682,6 +720,7 @@ function TextPageGaleria({ theme, scene, pageNumber, tc }: ScenePageProps) {
 
 /** Pergamino text — left-aligned with accent rule, on colored background. */
 function TextPagePergamino({ theme, scene, pageNumber, tc }: ScenePageProps) {
+  const fittedText = fitSceneText(scene.text, tc, TEXT_PAGE_AVAIL_WIDTH, TEXT_PAGE_AVAIL_HEIGHT);
   return (
     <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: theme.accentLight }]}>
       <FrameBorder color={theme.ornamentColor} />
@@ -697,7 +736,7 @@ function TextPagePergamino({ theme, scene, pageNumber, tc }: ScenePageProps) {
 
         {/* Text */}
         <Text style={{ fontFamily: FONTS.body, fontSize: tc.body, color: COLORS.textDark, lineHeight: tc.bodyLeading }}>
-          {scene.text}
+          {fittedText}
         </Text>
 
         {/* Bottom dots */}
@@ -713,8 +752,9 @@ function TextPagePergamino({ theme, scene, pageNumber, tc }: ScenePageProps) {
 
 /** Ventana text — drop cap style, paper white background. */
 function TextPageVentana({ theme, scene, pageNumber, tc }: ScenePageProps) {
-  const firstChar = scene.text.charAt(0);
-  const restText = scene.text.slice(1);
+  const fittedText = fitSceneText(scene.text, tc, TEXT_PAGE_AVAIL_WIDTH - tc.dropCap * 1.2, TEXT_PAGE_AVAIL_HEIGHT);
+  const firstChar = fittedText.charAt(0);
+  const restText = fittedText.slice(1);
 
   return (
     <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: COLORS.cream }]}>
@@ -1383,6 +1423,58 @@ function FinalPage({ theme, message, characterName, locale }: { theme: TemplateT
   );
 }
 
+// ── Trait SVG icons (matching web Material Symbols) ─────────────────────────
+
+/** Small SVG icon wrapper for trait icons in the hero card */
+function TraitIcon({ children, size = 14 }: { children: React.ReactNode; color: string; size?: number }) {
+  // @react-pdf requires width/height as direct Svg props, NOT in style
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      {children}
+    </Svg>
+  );
+}
+
+/** Bolt icon — for special trait (matches Material Symbols "bolt") */
+function BoltIcon({ color, size }: { color: string; size?: number }) {
+  return (
+    <TraitIcon color={color} size={size}>
+      <Path d="M11 21h-1l1-7H7.5c-.88 0-.33-.75-.31-.78C8.48 10.94 10.42 7.54 13.01 3h1l-1 7h3.51c.4 0 .62.19.4.66C12.97 17.55 11 21 11 21z" fill={color} />
+    </TraitIcon>
+  );
+}
+
+/** Pets icon — for favorite companion (matches Material Symbols "pets") */
+function PetsIcon({ color, size }: { color: string; size?: number }) {
+  return (
+    <TraitIcon color={color} size={size}>
+      <Circle cx="4.5" cy="9.5" r="2.5" fill={color} />
+      <Circle cx="9" cy="5.5" r="2.5" fill={color} />
+      <Circle cx="15" cy="5.5" r="2.5" fill={color} />
+      <Circle cx="19.5" cy="9.5" r="2.5" fill={color} />
+      <Path d="M17.34 14.86c-.87-1.02-1.6-1.89-2.48-2.91-.46-.54-1.17-.86-1.86-.86-.69 0-1.39.32-1.85.86-.87 1.02-1.61 1.89-2.48 2.91-1.31 1.31-2.92 2.76-2.62 4.79.29 1.02 1.02 2.0 2.09 2.35.75.29 1.57.0 2.36-.23.56-.16 1.14-.34 1.64-.34.49 0 1.09.19 1.65.35.79.23 1.61.52 2.36.23 1.07-.35 1.8-1.32 2.09-2.35.3-2.03-1.31-3.48-2.62-4.79z" fill={color} />
+    </TraitIcon>
+  );
+}
+
+/** Restaurant/fork-knife icon — for favorite food (matches Material Symbols "restaurant") */
+function RestaurantIcon({ color, size }: { color: string; size?: number }) {
+  return (
+    <TraitIcon color={color} size={size}>
+      <Path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z" fill={color} />
+    </TraitIcon>
+  );
+}
+
+/** Rocket icon — for future dream (matches Material Symbols "rocket_launch") */
+function RocketIcon({ color, size }: { color: string; size?: number }) {
+  return (
+    <TraitIcon color={color} size={size}>
+      <Path d="M9.19 6.35c-2.04 2.29-3.44 5.58-3.57 5.89L2 10.69l4.05-4.05c.47-.47 1.15-.68 1.81-.55l1.33.26zM11.17 17s3.74-1.55 5.89-3.7c5.4-5.4 4.5-9.62 4.21-10.57-.95-.3-5.17-1.19-10.57 4.21C8.55 9.09 7 12.83 7 12.83L11.17 17zM14.76 14.39c2.29-2.04 5.58-3.44 5.89-3.57L19.1 14.44c-.26.67-.47 1.34-.94 1.81L14.11 20.3l-1.45-3.62c.3-.13 3.6-1.53 5.89-3.57-.43.43-.96.76-1.55.99L14.76 14.39zM15.5 9c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5.67 1.5 1.5 1.5 1.5-.67 1.5-1.5zM2 19.59l2.12-2.12c.59-.59 1.54-.59 2.12 0 .59.59.59 1.54 0 2.12L4.12 21.71c-.59.59-1.54.59-2.12 0-.59-.59-.59-1.54 0-2.12z" fill={color} />
+    </TraitIcon>
+  );
+}
+
 // ── About the Reader (keepsake) ──────────────────────────────────────────
 
 function AboutReaderPage({ theme, input, gradientUri }: {
@@ -1392,11 +1484,11 @@ function AboutReaderPage({ theme, input, gradientUri }: {
   const hasPortrait = !!portraitUrl;
   const heroLabel = characterGender === "girl" ? pdfT(input.locale, "heroine") : pdfT(input.locale, "hero");
 
-  const traits: { label: string }[] = [];
-  if (specialTrait) traits.push({ label: specialTrait });
-  if (favoriteCompanion) traits.push({ label: favoriteCompanion });
-  if (favoriteFood) traits.push({ label: favoriteFood });
-  if (futureDream) traits.push({ label: futureDream });
+  const traits: { label: string; icon: "bolt" | "pets" | "restaurant" | "rocket" }[] = [];
+  if (specialTrait) traits.push({ label: specialTrait, icon: "bolt" });
+  if (favoriteCompanion) traits.push({ label: favoriteCompanion, icon: "pets" });
+  if (favoriteFood) traits.push({ label: favoriteFood, icon: "restaurant" });
+  if (futureDream) traits.push({ label: futureDream, icon: "rocket" });
 
   return (
     <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: "#ffffff" }]}>
@@ -1454,16 +1546,15 @@ function AboutReaderPage({ theme, input, gradientUri }: {
           {characterAge} a{"\u00F1"}os{characterCity ? `  \u00B7  ${characterCity}` : ""}
         </Text>
 
-        {/* Traits with diamond accent markers */}
+        {/* Traits with themed icons (matching web hero card) */}
         {traits.length > 0 && (
-          <View style={{ marginTop: 12, gap: 6 }}>
+          <View style={{ marginTop: 12, gap: 7 }}>
             {traits.map((trait, i) => (
               <View key={i} style={{ flexDirection: "row", alignItems: "center", gap: 7 }}>
-                <View style={{
-                  width: 5, height: 5,
-                  backgroundColor: theme.accent,
-                  transform: "rotate(45deg)",
-                }} />
+                {trait.icon === "bolt" && <BoltIcon color={theme.accent} size={13} />}
+                {trait.icon === "pets" && <PetsIcon color={theme.accent} size={13} />}
+                {trait.icon === "restaurant" && <RestaurantIcon color={theme.accent} size={13} />}
+                {trait.icon === "rocket" && <RocketIcon color={theme.accent} size={13} />}
                 <Text style={{
                   fontFamily: FONTS.body, fontSize: 9, fontWeight: 600,
                   color: theme.titleColor, letterSpacing: 0.2,

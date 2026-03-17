@@ -66,11 +66,12 @@ export interface PortraitPersonalityInput {
 // These descriptions use real-world analogues for maximum Recraft accuracy.
 
 const SKIN_MAP: Record<string, string> = {
-  "#fce4d6": "very light pale pink-beige skin",
-  "#eebb99": "light golden-tan skin",
-  "#c68642": "medium warm brown skin",
-  "#8d5524": "dark brown skin",
-  "#523218": "very dark brown skin",
+  "#fce4d6": "very fair pale pinkish-white skin, typical of Nordic countries like Finland or Russia",
+  "#eebb99": "light warm beige skin, typical of Central European countries like Germany or France",
+  "#d4a574": "warm golden olive-tan skin, typical of Mediterranean countries like Spain or Italy",
+  "#c68642": "warm golden olive-tan skin, typical of Mediterranean countries like Spain or Italy", // legacy fallback
+  "#8d5524": "rich dark brown skin, typical of countries like Morocco, Brazil or Peru",
+  "#523218": "deep very dark brown skin, typical of West African countries like Senegal or Gambia",
 };
 
 const HAIR_COLOR_MAP: Record<string, string> = {
@@ -414,10 +415,10 @@ export function buildRecraftControls(
   // Lower = more restrained/predictable, higher = more creative
   if (options?.isPortrait) {
     // Portraits: moderate artistic level for clean, consistent character shots
-    controls.artistic_level = input.age <= 4 ? 4 : input.age <= 7 ? 3 : 2;
+    controls.artistic_level = input.age <= 4 ? 4 : input.age <= 6 ? 3 : input.age <= 9 ? 3 : 2;
   } else {
     // Book illustrations: slightly more creative for scene richness
-    controls.artistic_level = input.age <= 4 ? 5 : input.age <= 7 ? 4 : 3;
+    controls.artistic_level = input.age <= 4 ? 5 : input.age <= 6 ? 4 : input.age <= 9 ? 4 : 3;
   }
 
   return controls;

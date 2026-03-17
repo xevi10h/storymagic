@@ -1,11 +1,125 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { QRCodeSVG } from "qrcode.react";
 import BrandLogo from "@/components/BrandLogo";
 import { getBookColors } from "@/lib/template-colors";
 import type { BookPage } from "./types";
+
+// ── Auto-fit text ───────────────────────────────────────────────────────────
+//
+// Pure-math approach: calculates the right font size at RENDER TIME.
+// Zero dependency on DOM measurement, zero timing issues with react-pageflip.
+//
+// Uses a media query hook to match the actual book viewer size:
+//   - Desktop (≥768px): 420px pages → more room → larger font
+//   - Mobile  (<768px): 350px pages → less room → may shrink font
+//
+// Binary search finds the LARGEST font where all text fits on the page.
+// CSS line-clamp is the absolute last-resort safety net.
+
+const MIN_FONT_SIZE_PX = 7;
+
+/** Hook: returns the book page size matching MobileBookViewer's breakpoint. */
+function usePageSize(): number {
+  const [size, setSize] = useState(420); // SSR default = desktop
+  useEffect(() => {
+    const mql = window.matchMedia("(max-width: 767px)");
+    setSize(mql.matches ? 350 : 420);
+    const handler = (e: MediaQueryListEvent) => setSize(e.matches ? 350 : 420);
+    mql.addEventListener("change", handler);
+    return () => mql.removeEventListener("change", handler);
+  }, []);
+  return size;
+}
+
+/** Estimate how many lines `text` needs at given font metrics. */
+function estimateLines(text: string, fontPx: number, containerWidthPx: number): number {
+  const avgCharW = fontPx * 0.47;
+  const charsPerLine = Math.max(1, Math.floor(containerWidthPx / avgCharW));
+  const words = text.split(/\s+/);
+  let lines = 1;
+  let lineLen = 0;
+  for (const word of words) {
+    const wordLen = word.length + (lineLen > 0 ? 1 : 0);
+    if (lineLen + wordLen > charsPerLine) {
+      lines++;
+      lineLen = word.length;
+    } else {
+      lineLen += wordLen;
+    }
+  }
+  return lines;
+}
+
+/** Find the largest font size where `text` fits the available height. */
+function calcFittedFontSize(
+  text: string,
+  basePx: number,
+  leading: number,
+  pageSizePx: number,
+  availableRatio: number,
+  widthRatio: number,
+): number {
+  const availH = pageSizePx * availableRatio;
+  const contentW = pageSizePx * widthRatio;
+
+  // Check if text fits at base size
+  const baseLinesNeeded = estimateLines(text, basePx, contentW);
+  const baseLinesAvailable = Math.floor(availH / (basePx * leading));
+  if (baseLinesNeeded <= baseLinesAvailable) return basePx;
+
+  // Binary search for the largest font that fits
+  let lo = MIN_FONT_SIZE_PX;
+  let hi = basePx;
+  for (let i = 0; i < 20; i++) {
+    const mid = (lo + hi) / 2;
+    const linesAvail = Math.floor(availH / (mid * leading));
+    const linesNeeded = estimateLines(text, mid, contentW);
+    if (linesNeeded <= linesAvail) lo = mid;
+    else hi = mid;
+  }
+  return Math.max(MIN_FONT_SIZE_PX, Math.floor(lo * 2) / 2);
+}
+
+interface FittedTextProps {
+  children: React.ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+  basePx: number;
+  leading: number;
+  availableRatio: number;
+  widthRatio?: number;
+}
+
+function FittedText({ children, className, style, basePx, leading, availableRatio, widthRatio = 0.72 }: FittedTextProps) {
+  const pageSizePx = usePageSize();
+  const text = typeof children === "string" ? children : String(children ?? "");
+  const fittedPx = calcFittedFontSize(text, basePx, leading, pageSizePx, availableRatio, widthRatio);
+
+  // CSS line-clamp as safety net
+  const availH = pageSizePx * availableRatio;
+  const maxLines = Math.max(2, Math.floor(availH / (fittedPx * leading)));
+
+  return (
+    <div className="flex-1 min-h-0 overflow-hidden self-stretch">
+      <p
+        className={className}
+        style={{
+          ...style,
+          fontSize: `${fittedPx}px`,
+          display: "-webkit-box",
+          WebkitLineClamp: maxLines,
+          WebkitBoxOrient: "vertical" as const,
+          overflow: "hidden",
+        }}
+      >
+        {children}
+      </p>
+    </div>
+  );
+}
 
 
 // ── Main component ────────────────────────────────────────────────────────────
@@ -116,6 +230,11 @@ interface TextConfig {
   title: string;          // Scene title in text areas
   titleOverlay: string;   // Scene title overlaid on images
   clampSpread: string;    // Line clamp for spread_right overlay
+  // Numeric values for FittedText pre-calculation
+  bodySizePx: number;
+  bodyLeading: number;
+  bodyTextOnlySizePx: number;
+  bodyTextOnlyLeading: number;
 }
 
 function getTextConfig(age: number): TextConfig {
@@ -126,15 +245,30 @@ function getTextConfig(age: number): TextConfig {
       title: "text-base",
       titleOverlay: "text-base",
       clampSpread: "line-clamp-3",
+      bodySizePx: 14, bodyLeading: 1.9,
+      bodyTextOnlySizePx: 16, bodyTextOnlyLeading: 2.0,
     };
   }
-  if (age <= 7) {
+  if (age <= 6) {
     return {
-      body: "text-[12px] leading-[1.75]",
-      bodyTextOnly: "text-[13px] leading-[1.85]",
+      body: "text-[13px] leading-[1.85]",
+      bodyTextOnly: "text-[14px] leading-[1.9]",
+      title: "text-base",
+      titleOverlay: "text-base",
+      clampSpread: "line-clamp-4",
+      bodySizePx: 13, bodyLeading: 1.85,
+      bodyTextOnlySizePx: 14, bodyTextOnlyLeading: 1.9,
+    };
+  }
+  if (age <= 9) {
+    return {
+      body: "text-[11px] leading-[1.75]",
+      bodyTextOnly: "text-[12px] leading-[1.8]",
       title: "text-sm",
       titleOverlay: "text-sm",
       clampSpread: "line-clamp-5",
+      bodySizePx: 11, bodyLeading: 1.75,
+      bodyTextOnlySizePx: 12, bodyTextOnlyLeading: 1.8,
     };
   }
   return {
@@ -143,6 +277,8 @@ function getTextConfig(age: number): TextConfig {
     title: "text-[13px]",
     titleOverlay: "text-sm",
     clampSpread: "line-clamp-6",
+    bodySizePx: 10, bodyLeading: 1.6,
+    bodyTextOnlySizePx: 10, bodyTextOnlyLeading: 1.65,
   };
 }
 
@@ -413,16 +549,17 @@ function TextGaleriaB({ page, pageNumber }: SceneProps) {
   return (
     <div className={`absolute inset-0 flex flex-col bg-cream overflow-hidden ${page.locked ? "select-none blur-md" : ""}`}>
       <FrameBorder />
-      <div className="relative flex-1 flex flex-col items-center overflow-hidden px-7 pt-6 pb-2">
+      <div className="relative flex-1 min-h-0 flex flex-col items-center overflow-hidden px-7 pt-6 pb-2">
         {/* Title */}
         <h3 className={`font-display ${tc.title} font-bold text-center leading-tight mb-3 shrink-0`} style={{ color: "var(--bk-title)" }}>
           {page.scene.title}
         </h3>
         <div className="shrink-0"><OrnamentalDivider /></div>
-        {/* Body text — flex-1 to fill remaining space */}
-        <p className={`${tc.bodyTextOnly} text-text-soft text-center mt-3 flex-1 overflow-hidden min-h-0`}>
+        {/* Body text — auto-fit shrinks font if text is too long for the page */}
+        <FittedText className={`${tc.bodyTextOnly} text-text-soft text-center mt-3`}
+          basePx={tc.bodyTextOnlySizePx} leading={tc.bodyTextOnlyLeading} availableRatio={0.67}>
           {page.scene.text}
-        </p>
+        </FittedText>
         {/* Bottom ornament */}
         <div className="mt-2 shrink-0">
           <StarCluster />
@@ -442,17 +579,18 @@ function TextPergaminoA({ page, pageNumber }: SceneProps) {
     <div className={`absolute inset-0 flex flex-col overflow-hidden ${page.locked ? "select-none blur-md" : ""}`}
       style={{ backgroundColor: "var(--bk-accent-light)" }}>
       <FrameBorder />
-      <div className="relative flex-1 flex flex-col overflow-hidden px-7 pt-6 pb-2">
+      <div className="relative flex-1 min-h-0 flex flex-col overflow-hidden px-7 pt-6 pb-2">
         {/* Title */}
         <h3 className={`font-display ${tc.title} font-bold leading-tight mb-3 shrink-0`} style={{ color: "var(--bk-title)" }}>
           {page.scene.title}
         </h3>
         {/* Thick accent rule */}
         <div className="h-0.5 w-[35%] rounded-full mb-4 shrink-0" style={{ backgroundColor: "var(--bk-accent)", opacity: 0.8 }} />
-        {/* Body text — flex-1 to fill remaining space */}
-        <p className={`${tc.bodyTextOnly} text-text-soft flex-1 overflow-hidden min-h-0`}>
+        {/* Body text — auto-fit shrinks font if text is too long for the page */}
+        <FittedText className={`${tc.bodyTextOnly} text-text-soft`}
+          basePx={tc.bodyTextOnlySizePx} leading={tc.bodyTextOnlyLeading} availableRatio={0.66}>
           {page.scene.text}
-        </p>
+        </FittedText>
         {/* Bottom wavy dots */}
         <div className="mt-2 shrink-0">
           <WavyDots />
@@ -472,24 +610,25 @@ function TextVentanaA({ page, pageNumber }: SceneProps) {
   const firstChar = page.scene.text.charAt(0);
   const restText = page.scene.text.slice(1);
   // Drop cap size adapts to age
-  const dropCapSize = page.characterAge <= 4 ? "text-[36px]" : page.characterAge <= 7 ? "text-[32px]" : "text-[28px]";
+  const dropCapSize = page.characterAge <= 4 ? "text-[36px]" : page.characterAge <= 6 ? "text-[32px]" : page.characterAge <= 9 ? "text-[30px]" : "text-[28px]";
   return (
     <div className={`absolute inset-0 flex flex-col bg-cream overflow-hidden ${page.locked ? "select-none blur-md" : ""}`}>
       <FrameBorder />
-      <div className="relative flex-1 flex flex-col overflow-hidden px-7 pt-6 pb-2">
+      <div className="relative flex-1 min-h-0 flex flex-col overflow-hidden px-7 pt-6 pb-2">
         {/* Title */}
         <h3 className={`font-display ${tc.title} font-bold leading-tight mb-4 shrink-0`} style={{ color: "var(--bk-title)" }}>
           {page.scene.title}
         </h3>
         {/* Drop cap + text — flex-1 to fill remaining space */}
-        <div className="flex items-start gap-1.5 flex-1 overflow-hidden min-h-0">
+        <div className="flex items-start gap-1.5 flex-1 min-h-0">
           <span className={`font-display ${dropCapSize} font-bold leading-none shrink-0`}
             style={{ color: "var(--bk-accent)", marginTop: "0.05em" }}>
             {firstChar}
           </span>
-          <p className={`${tc.bodyTextOnly} text-text-soft overflow-hidden flex-1`}>
+          <FittedText className={`${tc.bodyTextOnly} text-text-soft`}
+            basePx={tc.bodyTextOnlySizePx} leading={tc.bodyTextOnlyLeading} availableRatio={0.70} widthRatio={0.68}>
             {restText}
-          </p>
+          </FittedText>
         </div>
         {/* Bottom ornament */}
         <div className="mt-2 shrink-0">
@@ -544,7 +683,8 @@ function SceneTextOnly({ page, pageNumber }: SceneProps) {
 }
 
 /** illustration_text — full-width landscape illustration + body text below.
- *  New images are 1820×1024 (~1.78:1 landscape), taking ~56% of square page at full width.
+ *  New images are 1820×1024 (~1.78:1 landscape). Image takes ~46% of the square page
+ *  to leave enough room for the scene text below (PDF uses 40%).
  *  Legacy square images (1024×1024) use object-cover at the same height — acceptable crop.
  *  The facing page already shows the title, so this page skips it. */
 function SceneIllustrationText({ page, pageNumber }: SceneProps) {
@@ -554,8 +694,8 @@ function SceneIllustrationText({ page, pageNumber }: SceneProps) {
   return (
     <div className={`absolute inset-0 flex flex-col bg-cream overflow-hidden ${page.locked ? "select-none" : ""}`}>
       <FrameBorder />
-      {/* Secondary illustration — full width, landscape ratio (~56% of square page) */}
-      <div className="relative shrink-0 w-full overflow-hidden" style={{ height: "56%" }}>
+      {/* Secondary illustration — full width, landscape ratio (~46% of square page) */}
+      <div className="relative shrink-0 w-full overflow-hidden" style={{ height: "46%" }}>
         {page.imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={page.imageUrl} alt={page.scene.title}
@@ -567,12 +707,13 @@ function SceneIllustrationText({ page, pageNumber }: SceneProps) {
         <div className="absolute bottom-0 left-0 right-0 h-6 bg-linear-to-t from-cream to-transparent" />
       </div>
       {/* Body text — no title (already on facing page), centered editorial style */}
-      <div className="relative flex-1 flex flex-col items-center overflow-hidden px-7 pb-1 pt-2">
-        <div className="flex flex-col items-center max-w-[90%] h-full">
+      <div className="relative flex-1 min-h-0 flex flex-col items-center overflow-hidden px-7 pb-1 pt-2">
+        <div className="flex flex-col items-center max-w-[90%] h-full min-h-0">
           <OrnamentalDivider width={60} />
-          <p className={`${tc.body} text-text-soft text-center mt-2 overflow-hidden flex-1`}>
+          <FittedText className={`${tc.body} text-text-soft text-center mt-2`}
+            basePx={tc.bodySizePx} leading={tc.bodyLeading} availableRatio={0.40} widthRatio={0.65}>
             {page.scene.text}
-          </p>
+          </FittedText>
           <div className="mt-1 shrink-0">
             <WavyDots />
           </div>
