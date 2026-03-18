@@ -254,6 +254,8 @@ export async function POST(
           });
           return await uploadCoverFromUrl(supabase, storyId, coverUrl);
         } catch (coverError) {
+          // Billing errors must propagate — don't swallow them silently
+          if (coverError instanceof Error && coverError.message.startsWith("RECRAFT_NO_CREDITS")) throw coverError;
           console.error("[Generate] Cover failed (non-fatal):", coverError);
           return null;
         }

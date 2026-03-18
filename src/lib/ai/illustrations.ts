@@ -86,6 +86,10 @@ async function generateWithRecraft(
 
   if (!response.ok) {
     const errorBody = await response.text();
+    // Surface billing errors loudly so they don't silently fall back to mock
+    if (errorBody.includes("not_enough_credits")) {
+      throw new Error("RECRAFT_NO_CREDITS: Recraft account has 0 credits — top up at recraft.ai");
+    }
     throw new Error(`Recraft error (${response.status}): ${errorBody}`);
   }
 
@@ -108,8 +112,10 @@ export async function generateWithRetry(
     try {
       return await generateWithRecraft(prompt, apiToken, options);
     } catch (error) {
-      // Don't retry client errors (400, 401, 403, 422) — they won't succeed on retry
       const msg = error instanceof Error ? error.message : "";
+      // Billing errors: never retry, propagate immediately so callers can surface them
+      if (msg.startsWith("RECRAFT_NO_CREDITS")) throw error;
+      // Don't retry other client errors (400, 401, 403, 422) — they won't succeed on retry
       const isClientError = /\b(400|401|403|422)\b/.test(msg) || /bad request|unauthorized|forbidden|validation/i.test(msg);
       if (isClientError || attempt === maxRetries) throw error;
 
@@ -386,6 +392,15 @@ export async function generateIllustrationsForStory(
       }),
     );
     results.push(...batchResults);
+  }
+
+  // Billing check: if any scene hit a no-credits error, propagate immediately.
+  // This prevents silently saving mock images when the account is out of credits.
+  for (const result of results) {
+    if (result.status === "rejected") {
+      const msg = result.reason instanceof Error ? result.reason.message : String(result.reason);
+      if (msg.startsWith("RECRAFT_NO_CREDITS")) throw new Error(msg);
+    }
   }
 
   const failedScenes: { scene: number; error: string }[] = [];
