@@ -183,8 +183,91 @@ const TEMPLATE_TONES: Record<string, NarrativeTone> = {
   },
 };
 
-function getTemplateTone(templateId: string): NarrativeTone {
-  return TEMPLATE_TONES[templateId] || TEMPLATE_TONES.forest;
+function getTemplateTone(templateId: string, age: number): NarrativeTone {
+  const base = TEMPLATE_TONES[templateId] || TEMPLATE_TONES.forest;
+
+  // ── Ages 2-4: Override complex tones with age-appropriate equivalents ────
+  // The original tones reference adult films and complex narratives. For toddlers,
+  // every template needs a completely different emotional register.
+  if (age <= 4) {
+    const toddlerOverrides: Partial<Record<string, NarrativeTone>> = {
+      chef: {
+        voice: "Playful, sensory, and joyful",
+        craftDirectives: "The kitchen is a wonderland of colours, smells, and funny sounds. Ingredients are little friends who want to help. Everything is simple, warm, and delicious. The cooking is an act of love and fun — mixing, stirring, tasting. Think of a toddler proudly handing a biscuit to a friend. No complexity, no metaphor — just pure sensory delight and the joy of making something for someone you love.",
+        emotionalRegister: "joy, sensory delight, pride in making something, love through sharing",
+      },
+      candy: {
+        voice: "Pure wonder and sweetness",
+        craftDirectives: "The candy world is a dream made real — everything is beautiful, colourful, and slightly ridiculous in the best way. A river of chocolate, a path made of biscuits, trees that grow lollipops. No darkness, no greed, no complexity. Just the pure childlike joy of impossible sweets and the happiness of sharing them. Think of a toddler's face when they see a birthday cake — that is the entire emotional register of this book.",
+        emotionalRegister: "wonder, delight, sweetness, the pure joy of sharing something beautiful",
+      },
+      space: {
+        voice: "Wonder and magical simplicity",
+        craftDirectives: "Space is big and sparkly and full of friendly surprises. Stars twinkle and wave. Planets are round and colourful like giant balls. Aliens are funny and kind and want to play. The universe is not vast and lonely — it is cosy and full of new friends waiting to meet our protagonist. Think of a child's drawing of space: bright, simple, and full of joy.",
+        emotionalRegister: "wonder, friendliness, the joy of exploring somewhere new, warmth",
+      },
+      forest: {
+        voice: "Warm, gentle, and full of friendly creatures",
+        craftDirectives: "The forest is a safe and magical place full of curious animals and soft mossy hiding spots. Every creature is kind and wants to help. The trees are friendly giants. The sounds are funny — hoots and rustles and splashes. The forest feels like a hug. No fear, no darkness — just the warm wonder of nature and the animals who live in it.",
+        emotionalRegister: "warmth, gentle wonder, belonging, the joy of animal friends",
+      },
+      dinosaurs: {
+        voice: "Big, exciting, and surprisingly gentle",
+        craftDirectives: "Dinosaurs are enormous and amazing, but our protagonist is not afraid — they are FASCINATED. The dinosaurs are curious, a little clumsy, and very friendly. They make big sounds and leave big footprints. The wonder is in the SIZE — everything is enormous — but the feelings are small and warm. Think of a toddler delightedly roaring like a dinosaur.",
+        emotionalRegister: "excitement, awe at size, gentle bravery, the joy of making a giant friend",
+      },
+      safari: {
+        voice: "Warm, reverent, and wonderstruck",
+        craftDirectives: "The animals are magnificent and kind. Lions have sleepy eyes. Elephants walk slowly and let you touch their trunks. Giraffes eat leaves from the very top of trees. Everything is big and gentle and real. The wonder is in the animals themselves — their sounds, their movements, their size. Keep it simple: see the animal, feel the wonder, share the moment.",
+        emotionalRegister: "wonder, gentleness, the joy of being close to something magnificent",
+      },
+      superhero: {
+        voice: "Exciting, funny, and warmly encouraging",
+        craftDirectives: "Being a superhero at age 3 means running fast, jumping high, and helping friends when they fall. Powers are simple and fun — maybe flying, maybe being super-strong, maybe just being VERY good at giving hugs. The adventure is playful and the stakes are small. Think of children playing in capes in a garden. Pure physical delight and the pride of helping someone.",
+        emotionalRegister: "excitement, pride, the joy of helping, playful bravery",
+      },
+      pirates: {
+        voice: "Adventurous, silly, and full of treasure",
+        craftDirectives: "Pirates say ARRRR and sail on blue waves and look for treasure with big old maps. Everything about pirates is funny and exciting to a toddler: the hats, the swords (that we never use to hurt anyone), the big ship going up and down on the waves, the TREASURE CHEST full of shiny things. Keep it physical and playful — the adventure is in the silliness, the movement, the discovery.",
+        emotionalRegister: "silly excitement, the joy of treasure, the fun of adventure, friendship on the ship",
+      },
+      castle: {
+        voice: "Magical, warm, and full of friendly surprises",
+        craftDirectives: "The castle is a magical place full of winding staircases and secret doors and rooms that go on forever. There are friendly dragons who breathe colourful smoke, not fire. Knights in shiny armour who love to dance. Princesses who know how to fix things. The mystery is always gentle and the surprises are always warm. Think of a toddler discovering a new room — that sense of excited possibility.",
+        emotionalRegister: "magical wonder, gentle mystery, the joy of discovery, warm fantasy",
+      },
+      inventor: {
+        voice: "Playful, creative, and joyfully experimental",
+        craftDirectives: "Inventing for a toddler means banging things together to see what happens, putting the square peg in the round hole (it doesn't fit but it's funny), and pressing every single button. The workshop is full of funny gadgets that make silly sounds. The inventions do unexpected things. Everything is safe and colourful. The message is simple: trying things is FUN, and mistakes are funny, not bad.",
+        emotionalRegister: "playful curiosity, the joy of making things, delight in silly surprises",
+      },
+    };
+    return toddlerOverrides[templateId] || {
+      voice: "Warm, playful, and full of wonder",
+      craftDirectives: "Keep everything simple, physical, and joyful. The world is big and friendly. The protagonist is curious and brave in small, sweet ways. Every moment should feel like a gift. Think of the warmest, most delightful picture book you have ever read — that is the tone.",
+      emotionalRegister: "warmth, wonder, joy, safety, love",
+    };
+  }
+
+  // ── Ages 5-6: Simplify complex references, keep the spirit ───────────────
+  if (age <= 6) {
+    const earlyReaderOverrides: Partial<Record<string, NarrativeTone>> = {
+      chef: {
+        voice: "Warm, sensory, and joyfully creative",
+        craftDirectives: "The kitchen is a magical place where making food is an act of love. Ingredients have personalities. The cooking process is full of funny moments (the flour cloud, the wobbly tower of pancakes). But underneath the fun is a warm truth: when we make something for someone we love, the food tastes better. Keep it physical and sensory — every dish should make the reader's mouth water.",
+        emotionalRegister: "comfort, creative joy, the pleasure of making something, love through food",
+      },
+      candy: {
+        voice: "Playful, whimsical, and generously sweet",
+        craftDirectives: "The candy world is full of impossible wonders: chocolate rivers, lollipop forests, clouds made of candyfloss. But the real sweetness comes from sharing. Each amazing thing the protagonist discovers is better when shared with a friend. Keep the tone light and fun — pure imagination — with a warm current of generosity running underneath everything.",
+        emotionalRegister: "delight, wonder, generosity, the joy of sharing something magical",
+      },
+    };
+    return earlyReaderOverrides[templateId] || base;
+  }
+
+  // ── Ages 7+: Use the full, original tone directives ───────────────────────
+  return base;
 }
 
 // ── Age config ───────────────────────────────────────────────────────────────
@@ -226,21 +309,41 @@ function getAgeConfig(age: number, locale?: string): AgeConfig {
     return {
       sceneCount: 8,
       bridgeCount: 4,
-      wordsPerScene: "50-80",
+      wordsPerScene: "40-60",
       narrativeVoice: [
-        "VOICE: Warm, close narrator who speaks directly to the child.",
-        "Use a mix of simple 3rd person ('Marc ran and ran!') and occasional 2nd person asides ('Can you see what he found?').",
-        "The narrator is a loving, playful companion — like a parent reading aloud.",
-        "Exclamations, whispers, and gasps are your tools.",
+        "VOICE: Warm, joyful narrator who is right there beside the child — like a beloved parent reading at bedtime.",
+        "Write in close 3rd person with occasional direct invitations to the child: 'And do you know what happened next?' or 'Can you guess what she found?'",
+        "The narrator is gentle, enthusiastic, and always reassuring. This child should feel safe, seen, and delighted at every page turn.",
+        "Write with rhythm and musical sound — sentences should beg to be read aloud. Short, bouncy, predictable patterns.",
       ].join("\n"),
       textStyle: [
-        "Write for a very young child (2-4 years old). 3-5 sentences per scene, 50-80 words.",
-        "SHORT sentences (max 10 words). Vocabulary a toddler already knows.",
-        `RHYTHM: Use onomatopoeia (${localeConfig.onomatopoeia}), repetition, and musical patterns. Repeat key phrases across scenes like a refrain.`,
-        "SENSES: Every scene must include something the child can hear, touch, or see. Not abstract — concrete and physical.",
-        "EMOTION: One clear emotion per scene. Name it simply: happy, scared, surprised, proud, safe.",
-        "HOOKS: End every scene with a tiny cliffhanger or question that makes the child want to turn the page.",
-        "SHOW THE MORAL: The lesson is in what the character DOES, never in what they say. A 3-year-old learns by watching, not by being lectured.",
+        "Write for a very young child aged 2-4. 3-5 sentences per scene, MAXIMUM 40-60 words.",
+        "",
+        "SENTENCE LENGTH: Maximum 6-7 words per sentence. Hard limit. Never longer.",
+        "CORRECT: 'Marc ran to the big tree.'",
+        "CORRECT: 'She hugged the puppy tight.'",
+        "WRONG: 'Marc ran as fast as he could all the way to the big tree at the edge of the garden.'",
+        "",
+        "VOCABULARY — only words a 2-4 year old already knows and uses:",
+        "✓ USE: run, jump, big, small, red, blue, happy, sad, scared, hungry, friend, home, tree, sun, dog, cat, mum, dad, play, eat, sleep, find, see, hear, touch, love, hug, cry, laugh, help, warm, soft, loud, shiny, funny, fast",
+        "✗ NEVER USE: mysterious, incredible, breathtaking, ancient, magnificent, realised, extraordinary, peculiar, extraordinary, venture, peculiar, solitude, melancholy, anxiety, treacherous, contemplated, or ANY word a 3-year-old cannot say aloud",
+        "",
+        `RHYTHM AND REPETITION: Use onomatopoeia (${localeConfig.onomatopoeia}), repetition, and musical patterns throughout. Repeat key phrases across different scenes like a refrain — toddlers love and need repetition; it builds confidence and delight.`,
+        "GOOD RHYTHM: 'Stomp, stomp, stomp. Marc stamped his feet. Stomp, stomp, stomp!'",
+        "",
+        "SENSES: Every scene must include one concrete sensory detail — something the child can hear, touch, smell, or see. Never abstract. Always physical and immediate.",
+        "",
+        "EMOTION: State exactly ONE clear emotion per scene, and name it directly and simply.",
+        "CORRECT: 'Marc was SO happy.' or 'Sofia felt scared.' or 'He was very proud.'",
+        "Do NOT leave emotions implicit for this age — toddlers need explicit emotional labels to develop their vocabulary.",
+        "",
+        "WONDER INVITATIONS — NOT cliffhangers: End each scene with gentle, warm anticipation. Never anxiety, never fear, never unresolved danger.",
+        "✓ CORRECT: 'And then... something wonderful was waiting!' or 'What do you think was inside?'",
+        "✗ WRONG: 'Something moved in the dark.' or 'He didn't know what was coming.'",
+        "",
+        "MORAL — MUST BE EXPLICIT: For ages 2-4, the lesson MUST be stated simply and warmly at the end. Young children at this developmental stage CANNOT infer implicit morals. The final scene or narrator must say it clearly: 'And Marc learned that sharing makes everyone happy.' Simple, direct, warm — never a lecture, just a gentle truth.",
+        "",
+        "CIRCULAR STRUCTURE — ESSENTIAL: The story MUST start and end at home or in a safe, familiar place. This circular structure is psychologically essential for toddlers. The adventure happens in the middle, but the child always returns safely home. Never end on the adventure — always on safety and warmth.",
       ].join("\n"),
       illustrationStyleId,
       illustrationBaseStyle,
@@ -253,23 +356,40 @@ function getAgeConfig(age: number, locale?: string): AgeConfig {
     return {
       sceneCount: 9,
       bridgeCount: 3,
-      wordsPerScene: "70-100",
+      wordsPerScene: "80-110",
       narrativeVoice: [
-        "VOICE: Warm, playful 3rd person narrator — close to the child but with a storytelling cadence.",
-        "The narrator is enthusiastic and encouraging, like a favourite teacher reading aloud.",
-        "Short, punchy dialogues — one or two lines at a time. Characters speak the way real 5-year-olds do.",
-        "Occasional gentle asides to the reader ('And guess what happened next?').",
+        "VOICE: Warm, playful 3rd person narrator — close to the child but with a clear storytelling voice.",
+        "The narrator is enthusiastic and encouraging, like a favourite teacher reading aloud with real feeling.",
+        "Short dialogues — one or two lines at a time. Characters speak the way real 5-6 year olds do: direct, simple, expressive.",
+        "Occasional gentle asides to the reader ('And guess what happened next?') — these create shared excitement between the reader and the child.",
       ].join("\n"),
       textStyle: [
-        "Write for a child aged 5-6. 4-6 sentences per scene, 70-100 words.",
-        "SENTENCES: Keep them short (max 12-15 words). One idea per sentence.",
-        "VOCABULARY: Use everyday words a 5-year-old knows. Introduce ONE new word per scene at most — and make its meaning clear from context.",
-        `RHYTHM: Use onomatopoeia (${localeConfig.onomatopoeia}), repetition, and playful patterns. Repeated phrases across scenes create comfort.`,
-        "PACING: Start each scene with something happening — action first, description later.",
-        "SENSES: Every scene includes something concrete the child can hear, touch, smell, or see.",
-        "EMOTION: Name feelings clearly (excited, worried, brave, proud) through the character's actions and expressions.",
-        "HOOKS: End every scene with a small surprise or question that makes the child want to turn the page.",
-        "SHOW THE MORAL: The lesson is in what the character DOES, never in what they say. Show, don't lecture.",
+        "Write for a child aged 5-6. 4-6 sentences per scene, 80-110 words.",
+        "",
+        "SENTENCE LENGTH: Maximum 10-12 words per sentence. One clear idea per sentence.",
+        "CORRECT: 'She opened the box and found something amazing.'",
+        "CORRECT: 'Marc looked at his friend. He knew what to do.'",
+        "WRONG: 'She opened the old wooden box that her grandmother had given her and inside there was something she had never seen before in her entire life.'",
+        "",
+        "VOCABULARY: Use everyday words a 5-6 year old knows confidently. You may introduce ONE new word per scene — but immediately reveal its meaning through the action or context around it.",
+        "✓ ALLOWED stretch words: brave, gentle, curious, excited, worried, magical, surprising, friendship, challenge, careful, helpful, proud, discover, adventure",
+        "✗ NEVER USE: melancholy, treacherous, extraordinary, magnificent, solitude, anxiety, contemplated, peculiar, shrieked, bewildered — if a 6-year-old reader cannot sound it out and understand it, do not use it",
+        "",
+        `RHYTHM: Use onomatopoeia (${localeConfig.onomatopoeia}), repetition, and playful patterns. A repeated phrase or refrain across scenes creates comfort and delight for this age group.`,
+        "",
+        "CAUSE AND EFFECT: Every scene must show clear cause → consequence logic. Something happens, and BECAUSE of it, something else follows. Children aged 5-6 are developing causal reasoning and it deeply satisfies them when stories reflect this.",
+        "GOOD: 'Marc shared his biscuit. Now he had a new friend.'",
+        "GOOD: 'She practised every day. That's why she was ready.'",
+        "",
+        "PACING: Start each scene with something happening — action first, description second. Never open with 'It was a sunny day.'",
+        "",
+        "SENSES: Every scene includes one concrete sensory detail the child can hear, touch, smell, or see.",
+        "",
+        "EMOTION: Name feelings clearly (excited, worried, brave, proud) AND show them through physical reactions: 'Sofia felt worried. Her hands shook a little.'",
+        "",
+        "HOOKS: End every scene with a small surprise, discovery, or warm question that creates anticipation. The tone is wonder, not fear.",
+        "",
+        "MORAL: The lesson lives in what the protagonist DOES and CHOOSES. However, at the end of the story, it is appropriate for the narrator or a character to gently name the lesson in simple words: 'And that day, Mia learned that asking for help is brave.' Children aged 5-6 benefit from both experiencing AND hearing the lesson stated.",
       ].join("\n"),
       illustrationStyleId,
       illustrationBaseStyle,
@@ -282,22 +402,32 @@ function getAgeConfig(age: number, locale?: string): AgeConfig {
     return {
       sceneCount: 10,
       bridgeCount: 2,
-      wordsPerScene: "110-150",
+      wordsPerScene: "120-160",
       narrativeVoice: [
-        "VOICE: Engaging 3rd person limited — we follow the protagonist's thoughts and feelings closely.",
+        "VOICE: Engaging 3rd person limited — we are inside the protagonist's head, following their thoughts and feelings moment to moment.",
         "The narrator has personality: witty, warm, occasionally conspiratorial ('But what Marc didn't know yet was...').",
-        "Short dialogues between characters. Dialogue should sound like real kids talk — not adult speeches in a child's mouth.",
-        "Occasional asides to the reader are welcome ('And THAT, dear reader, is when things got really interesting').",
+        "INNER MONOLOGUE: Show the protagonist's thoughts directly and briefly. 'His stomach dropped. Could he really do this?' — these flashes of interiority make the reader feel they ARE the protagonist.",
+        "DIALOGUE: Short, natural exchanges — the way real 7-9 year olds actually talk. Characters say too little, interrupt, hesitate. No speeches.",
+        "Occasional asides to the reader are welcome — used sparingly, they create intimacy ('And THAT, dear reader, is when things got really interesting.').",
       ].join("\n"),
       textStyle: [
-        "Write for a child aged 7-9. 5-8 sentences per scene, 110-150 words.",
-        "PACING: Open each scene with ACTION, not description. Something is happening from the first sentence.",
-        "TENSION: Build small cliffhangers — a noise in the dark, a door that won't open, a friend who's in trouble. Always resolve safely, but let the suspense breathe for a moment.",
-        "HUMOR: Include at least one smile-worthy moment per scene. Physical comedy, funny observations, or unexpected reactions.",
-        "SENSES: Engage two senses per scene. Not just visual — what does this place smell like? What does the ground feel like under their feet?",
-        "EMOTION: The protagonist expresses feelings out loud or through clear physical reactions (stomach flutters, a grin they can't hold back).",
-        "HOOKS: Every scene ends on a small question, surprise, or emotional beat that propels the reader forward.",
-        "SHOW THE MORAL: The lesson lives in the protagonist's CHOICES. Never state the moral. Let the child feel it through the story.",
+        "Write for a child aged 7-9. 6-9 sentences per scene, 120-160 words.",
+        "",
+        "OPENING: Start every scene mid-action or mid-emotion. Never with flat description ('It was a bright morning'). Pull the reader in from the very first word.",
+        "",
+        "INNER WORLD: At least once per scene, show the protagonist's thoughts or emotions through their body — a racing heart, sweaty palms, a grin they can't hold back, a stomach that tightens. This is what makes the reader feel they are living the story, not watching it.",
+        "",
+        "TENSION: Build genuine, child-safe suspense — a strange sound with no explanation, a problem with no obvious solution, a misunderstanding with a friend. Let the tension breathe for 2-3 sentences before resolving. Do NOT rush to comfort — the brief discomfort is developmentally appropriate and emotionally satisfying when it resolves.",
+        "",
+        "HUMOR: At least one moment per scene that earns a real smile — a funny observation, a small physical comedy, an unexpected reaction from a character. Earned and natural, never forced.",
+        "",
+        "SENSES: Engage at least two different senses per scene. Not just visual — what does this place smell like? What does the ground feel like? What unexpected sound does the protagonist notice? Precise sensory detail makes fiction feel real.",
+        "",
+        "VOCABULARY: Stretch the reader just beyond their comfort zone with one or two vivid, precise words whose meaning is clear from context. This is how children grow their language. 'The cave smelled of damp stone and something sweet he couldn't name.'",
+        "",
+        "HOOKS: Every scene ends with a small cliffhanger, an unanswered question, or an emotional beat that makes it genuinely difficult to put the book down.",
+        "",
+        "MORAL — SHOW NEVER TELL: The lesson lives entirely in the protagonist's CHOICES and their consequences. Never have a character state the moral. Never summarize it. Trust the 8-year-old reader to feel and absorb it through the story.",
       ].join("\n"),
       illustrationStyleId,
       illustrationBaseStyle,
@@ -309,23 +439,34 @@ function getAgeConfig(age: number, locale?: string): AgeConfig {
   return {
     sceneCount: 12,
     bridgeCount: 0,
-    wordsPerScene: "150-200",
+    wordsPerScene: "250-350",
     narrativeVoice: [
-      "VOICE: Literary 3rd person limited. The reader lives inside the protagonist's head.",
-      "Inner monologue is your most powerful tool — let us hear their doubts, hopes, fears, and small triumphs.",
-      "The narrator never intrudes. No 'dear reader' asides. The prose IS the character's perception of the world.",
-      "Dialogue reveals character: what people say (and don't say) matters more than what happens.",
+      "VOICE: Literary 3rd person limited. The reader lives completely inside the protagonist's head.",
+      "Inner monologue is your most powerful tool — let us hear their doubts, contradictions, private hopes, and small triumphs. The protagonist thinks in full, complex sentences.",
+      "The narrator never intrudes. No 'dear reader' asides. The prose IS the character's perception of the world — filtered through their age, their fears, their specific way of seeing.",
+      "Dialogue reveals character through subtext: what people say and what they mean are often different. Silence, pauses, and unfinished sentences carry as much weight as the words.",
     ].join("\n"),
     textStyle: [
-      "Write for a child aged 10-12. 7-10 rich sentences per scene, 150-200 words.",
-      "OPENING: Each scene starts in medias res — mid-action, mid-thought, mid-emotion. Never 'It was a sunny day.'",
-      "TENSION: Real stakes. The protagonist can fail, feel afraid, feel alone. Don't rush to comfort — let discomfort teach something before resolving it.",
-      "PROSE CRAFT: Use metaphors and sensory details that EARN their place. One precise image beats three vague ones. 'The cave smelled like wet iron and old secrets.'",
-      "INNER WORLD: This age craves identity exploration. The protagonist should question themselves, make mistakes, and grow through the story — not just go through it.",
-      "DIALOGUE: Meaningful exchanges that reveal relationships. Subtext is welcome — what's unsaid can be as powerful as what's said.",
-      "HUMOR: Subtle wit, irony, unexpected observations. Not slapstick.",
-      "CALLBACKS: Reference details from earlier in the story. Something small from Scene 1 should matter in Scene 9.",
-      "MORAL: NEVER state the lesson. Not even through a wise character's speech. The moral emerges from the protagonist's arc — from what they choose when it costs them something. Show, don't tell. Trust the reader.",
+      "Write for a child aged 10-12. 12-18 rich sentences per scene, 250-350 words.",
+      "",
+      "OPENING: Every scene starts in medias res — mid-action, mid-thought, or mid-emotion. Never 'It was a sunny day.' Never with flat scene-setting. Immerse immediately.",
+      "",
+      "IDENTITY AND INTERIORITY: This age group is navigating who they are. The protagonist should actively question themselves, doubt their choices, contradict themselves, and grow through the story — not just move through it. Include moments where the protagonist wonders if they're good enough, brave enough, or doing the right thing. This resonates deeply with 10-12 year old readers.",
+      "",
+      "REAL STAKES AND GENUINE DARKNESS: The protagonist can fail, feel afraid, feel alone, feel misunderstood. Do not rush to comfort. Let discomfort sit for several sentences before beginning to resolve — this emotional honesty is what makes books memorable at this age. The resolution must be EARNED, not given.",
+      "",
+      "PROSE CRAFT: Every metaphor and sensory detail must earn its place. One precise image beats three vague ones. Favour the specific over the general.",
+      "GOOD: 'The cave smelled like wet iron and old secrets.'",
+      "GOOD: 'Her hands were steady but her thoughts were not.'",
+      "BAD: 'It was a beautiful and mysterious place that felt both strange and exciting.'",
+      "",
+      "DIALOGUE WITH SUBTEXT: Meaningful exchanges that reveal relationship dynamics. Characters talk around things, interrupt each other, say the opposite of what they feel. What is NOT said is often more powerful than what is said.",
+      "",
+      "HUMOR: Subtle wit, dry irony, and unexpected observations. This age group appreciates intelligence in humor. Never slapstick, never forced.",
+      "",
+      "CALLBACKS: Plant a small specific detail in the first three scenes that becomes meaningful or even crucial in scenes 9-12. This creates the satisfying feeling of a 'real' book.",
+      "",
+      "MORAL — NEVER STATE IT: The lesson must never be stated, explained, summarized, or hinted at through any character's speech — not even a wise mentor. The moral emerges purely from the protagonist's arc: from who they were in Scene 1 vs. who they choose to be in Scene 11. Trust the 11-year-old reader completely. They are intelligent and will feel it without being told.",
     ].join("\n"),
     illustrationStyleId,
     illustrationBaseStyle,
@@ -380,7 +521,7 @@ const LOCALE_CONFIGS: Record<string, LocaleConfig> = {
   ca: {
     language: "Catalan",
     genderLabels: { boy: "nen", girl: "nena", neutral: "infant" },
-    onomatopoeia: "¡SPLASH! ¡BUM! ¡FIUUU!",
+    onomatopoeia: "SPLASH! BUM! FIUUU!",
   },
   en: {
     language: "English",
@@ -438,7 +579,14 @@ async function callLLM(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const payload: any = {
     model,
-    messages: [{ role: "user", content: prompt }],
+    temperature: 0.8,
+    messages: [
+      {
+        role: "system",
+        content: "You are a world-class children's book author and editor with deep expertise in child development psychology, linguistics, and age-appropriate storytelling. You write with the precision of a published author and the warmth of a gifted parent. Your prose is always calibrated exactly to the cognitive, emotional, and linguistic development stage of the target child — never above it, never below it. You have written hundreds of acclaimed children's books across all age groups.",
+      },
+      { role: "user", content: prompt },
+    ],
   };
   if (useJson) {
     payload.response_format = { type: "json_object" };
@@ -568,82 +716,115 @@ function buildNarrativeStructure(input: StoryInput, ageConfig: AgeConfig): strin
   const name = input.childName;
   const city = input.city || "their city";
 
+  // ── Ages 2-4: Circular structure (8 scenes + 4 bridges) ─────────────────
+  // Children this age need safety and closure. The adventure MUST begin and end at home.
   if (ageConfig.bridgeCount === 4) {
     return `
-NARRATIVE STRUCTURE — 8 scenes + 4 bridges:
+NARRATIVE STRUCTURE — 8 scenes + 4 bridges (CIRCULAR — starts and ends at home):
 
-BLOCK 1 — "MI MUNDO"
-  Slot 1 [scene]: ${name} in ${city}. Personality through actions.
-  Slot 2 [scene]: What ${name} loves. Use interests naturally.
-  Slot 3 [bridge]: Something changes. Anticipation.
+BLOCK 1 — "HOME AND WHO I AM"
+  Slot 1 [scene]: ${name} at home in ${city}. Show personality through play and routine — what they love, how they move, what makes them laugh.
+  Slot 2 [scene]: ${name} notices something surprising nearby. Pure curiosity and wonder. No danger.
+  Slot 3 [bridge]: A simple warm transition — something magical beckons. "And then... something wonderful appeared!"
 
-BLOCK 2 — "LA LLAMADA"
-  Slot 4 [scene]: Adventure world opens. Template theme.
-  Slot 5 [scene]: First ally appears. Bond through action.
-  Slot 6 [bridge]: Wonder and excitement.
+BLOCK 2 — "THE MAGICAL DISCOVERY"
+  Slot 4 [scene]: A new magical place or friendly creature appears. Complete wonder. Everything is safe and beautiful.
+  Slot 5 [scene]: ${name} meets a kind friend or finds a special object. Joy, warmth, connection.
+  Slot 6 [bridge]: A small, gentle problem appears. Never scary — just a little puzzle. "Oh! Something needed help."
 
-BLOCK 3 — "EL CAMINO"
-  Slot 7 [scene]: Exploring. Interests as tools/skills.
-  Slot 8 [scene]: Small challenge — overcome with help.
-  Slot 9 [bridge]: Tension builds.
+BLOCK 3 — "HELPING AND TRYING"
+  Slot 7 [scene]: ${name} tries to help or solve the puzzle. First try doesn't quite work — but that's okay! They keep going.
+  Slot 8 [scene]: ${name} tries again with kindness, sharing, or a new idea. It works! Everyone is happy.
+  Slot 9 [bridge]: Warm celebration. Everything is right. "Hooray! They did it!"
 
-BLOCK 4 — "LA PRUEBA Y EL REGRESO"
-  Slot 10 [scene]: Big challenge arrives.
-  Slot 11 [scene]: Inner strength. Moral through action.
-  Slot 12 [bridge]: Coming home transformed.`;
+BLOCK 4 — "HOME AGAIN, HAPPY"
+  Slot 10 [scene]: Celebration together. The moral is stated warmly and simply by the narrator or a character.
+  Slot 11 [scene]: ${name} returns home. The safe, familiar place feels even more wonderful now.
+  Slot 12 [bridge]: The warmest, softest closing line. The child should feel completely safe and loved.
+
+CRITICAL RULE FOR TODDLERS: Slots 3, 6, 9, 12 are bridges — each is ONE simple, playful sentence (max 15 words). No atmosphere. No complexity. Just warmth and forward motion.`;
   }
 
+  // ── Ages 5-6: Cause-effect structure (9 scenes + 3 bridges) ─────────────
+  // Children this age understand causality and love seeing it play out clearly.
+  if (ageConfig.bridgeCount === 3) {
+    return `
+NARRATIVE STRUCTURE — 9 scenes + 3 bridges (CAUSE-EFFECT — want → try → problem → solve → celebrate):
+
+BLOCK 1 — "MY WORLD"
+  Slot 1 [scene]: ${name} in ${city}. Show their personality, what they love, what makes them them.
+  Slot 2 [scene]: A wish or goal sparks in ${name}'s heart. They want something or want to help someone. Clear motivation.
+  Slot 3 [bridge]: The adventure begins — a door opens, a path appears, something new is just around the corner.
+
+BLOCK 2 — "THE ADVENTURE BEGINS"
+  Slot 4 [scene]: ${name} steps into the new world or begins the quest. Excitement, wonder, a little nervousness.
+  Slot 5 [scene]: A new friend or ally appears. They team up. Show WHY they make a good team.
+
+BLOCK 3 — "THE PROBLEM"
+  Slot 6 [scene]: A clear problem arises — because of something specific (cause → effect). Something doesn't work. Show the consequence immediately.
+  Slot 7 [scene]: First attempt to fix it. Partial progress, but something is still wrong. ${name} feels a little worried.
+  Slot 8 [scene]: A quiet moment — ${name} thinks, feels, perhaps misses home a little. Then a small idea sparks.
+  Slot 9 [bridge]: Something shifts. Hope arrives. "Wait... what if...?"
+
+BLOCK 4 — "THE SOLUTION AND HOME"
+  Slot 10 [scene]: ${name} tries the new approach — with friends, with kindness, with the right choice. It works! Show the positive consequence clearly.
+  Slot 11 [scene]: Celebration and gratitude. The lesson is gently named by the narrator or a character in simple words.
+  Slot 12 [scene]: ${name} returns home, happy and changed. Warm circular closure — back where we started, but better.`;
+  }
+
+  // ── Ages 7-9: Simplified hero's journey (10 scenes + 2 bridges) ──────────
   if (ageConfig.bridgeCount === 2) {
     return `
-NARRATIVE STRUCTURE — 10 scenes + 2 bridges:
+NARRATIVE STRUCTURE — 10 scenes + 2 bridges (HERO'S JOURNEY — simplified):
 
-BLOCK 1 — "MI MUNDO"
-  Slot 1 [scene]: ${name} in ${city}. Personality through routine.
-  Slot 2 [scene]: First hint of adventure.
-  Slot 3 [bridge]: Threshold between ordinary and extraordinary.
+BLOCK 1 — "MY WORLD"
+  Slot 1 [scene]: ${name} in ${city}. Personality through routine and inner world. Plant a small detail that will matter later.
+  Slot 2 [scene]: First hint of adventure — something is different today. Curiosity mixed with a little fear.
+  Slot 3 [bridge]: The threshold between the ordinary world and the adventure. One atmospheric sentence of transition.
 
-BLOCK 2 — "LA LLAMADA"
-  Slot 4 [scene]: Adventure world opens.
-  Slot 5 [scene]: Meeting ally/companion.
+BLOCK 2 — "THE CALL"
+  Slot 4 [scene]: The adventure world opens fully. The rules here are different. ${name} must adapt.
+  Slot 5 [scene]: Meeting the key ally or companion. They bond through a shared moment — not through a speech.
 
-BLOCK 3 — "EL CAMINO"
-  Slot 6 [scene]: Wonders of new world.
-  Slot 7 [scene]: First test.
-  Slot 8 [scene]: Emotional moment, deepening bonds.
-  Slot 9 [bridge]: Calm before the storm.
+BLOCK 3 — "THE JOURNEY"
+  Slot 6 [scene]: The wonders and strangeness of the new world. ${name}'s interests become real tools here.
+  Slot 7 [scene]: A first real test. ${name} discovers a hidden strength — or a hidden weakness.
+  Slot 8 [scene]: A quiet, intimate moment. Deepening bonds. Calm before the storm. ${name} reflects on who they are.
+  Slot 9 [bridge]: The calm shatters. Something is coming. One sentence of dread or urgency.
 
-BLOCK 4 — "LA PRUEBA"
-  Slot 10 [scene]: Great challenge.
-  Slot 11 [scene]: Breakthrough, courage.
+BLOCK 4 — "THE CHALLENGE"
+  Slot 10 [scene]: The great challenge arrives. Real stakes. ${name} is not ready — or thinks they aren't.
+  Slot 11 [scene]: Breakthrough. ${name} finds courage, makes the right choice, uses what they've learned. The moral lives here — in the action, never stated.
 
-BLOCK 5 — "VOLVER A CASA"
-  Slot 12 [scene]: Returning transformed.`;
+BLOCK 5 — "COMING HOME"
+  Slot 12 [scene]: Returning home transformed. The small detail planted in Slot 1 now matters in a new way. Who ${name} is now is different from who they were at the start.`;
   }
 
+  // ── Ages 10-12: Full hero's journey (12 scenes, no bridges) ─────────────
   return `
-NARRATIVE STRUCTURE — 12 scenes, no bridges:
+NARRATIVE STRUCTURE — 12 scenes, no bridges (FULL HERO'S JOURNEY — literary depth):
 
-BLOCK 1 — "MI MUNDO"
-  Slot 1 [scene]: ${name} in ${city}. Personality, routine, inner world.
-  Slot 2 [scene]: Anomaly. The ordinary cracks.
+BLOCK 1 — "THE ORDINARY WORLD"
+  Slot 1 [scene]: ${name} in ${city}. Personality, routine, inner world. Plant a SPECIFIC small detail that will become significant in Scenes 9-11.
+  Slot 2 [scene]: A crack in the ordinary. Something is wrong, different, or impossible to ignore. The world shifts slightly.
 
-BLOCK 2 — "LA LLAMADA"
-  Slot 3 [scene]: Entering the unknown. Fear vs curiosity.
-  Slot 4 [scene]: First encounter — unexpected shift.
-  Slot 5 [scene]: Meeting ally. Bonding through vulnerability.
+BLOCK 2 — "THE CALL AND CROSSING"
+  Slot 3 [scene]: Entering the unknown. The choice to step forward — despite fear, despite doubt. This moment should cost ${name} something small.
+  Slot 4 [scene]: First unexpected encounter. Everything ${name} assumed is challenged.
+  Slot 5 [scene]: Meeting the key ally. Bonding through vulnerability, not through convenience. What they share or confess matters.
 
-BLOCK 3 — "EL CAMINO"
-  Slot 6 [scene]: New world's wonders. Interests in unexpected ways.
-  Slot 7 [scene]: Test reveals hidden strengths.
-  Slot 8 [scene]: Quiet intimate moment. Calm before the storm.
+BLOCK 3 — "THE ROAD OF TRIALS"
+  Slot 6 [scene]: The new world's wonders and rules. ${name}'s interests and traits appear in unexpected, meaningful ways.
+  Slot 7 [scene]: A test that reveals a hidden strength — or exposes a flaw ${name} didn't know they had.
+  Slot 8 [scene]: A quiet, intimate moment. The calm before the storm. A conversation, a memory, a moment of doubt. Stakes become personal.
 
-BLOCK 4 — "LA PRUEBA"
-  Slot 9 [scene]: Main obstacle. Stakes are real.
-  Slot 10 [scene]: Darkest moment. Doubt, fear.
-  Slot 11 [scene]: Breakthrough. True courage.
+BLOCK 4 — "THE ORDEAL"
+  Slot 9 [scene]: The main obstacle. Real stakes. Something could genuinely go wrong. Callback to the detail from Slot 1.
+  Slot 10 [scene]: The darkest moment. ${name} doubts, fears, considers giving up. Do not rush past this — it must breathe.
+  Slot 11 [scene]: Breakthrough. Not through luck or rescue — through a choice ${name} makes that costs them something real. This is where the moral lives. Never state it.
 
-BLOCK 5 — "VOLVER A CASA"
-  Slot 12 [scene]: Home transformed. Carry the lesson.`;
+BLOCK 5 — "THE RETURN"
+  Slot 12 [scene]: Coming home transformed. The Slot 1 detail now carries new meaning. The reader understands what changed — not because it was explained, but because they felt it happen.`;
 }
 
 // ── PHASE 1: Architect prompt ────────────────────────────────────────────────
@@ -678,7 +859,7 @@ function buildArchitectPrompt(input: StoryInput): string {
     ? `\nPERSONAL DETAILS (make the story unique):\n${personalDetails.join("\n")}`
     : "";
 
-  const tone = getTemplateTone(input.templateId);
+  const tone = getTemplateTone(input.templateId, input.age);
 
   const juntosInstruction = input.creationMode === "juntos"
     ? [
@@ -779,6 +960,35 @@ EMOTIONAL ARC:
 - For ages 8-12: include a genuine moment of DOUBT or DARKNESS before the resolution. Don't make everything easy.
 
 ═══════════════════════════════════════════════════
+LANGUAGE AND VOCABULARY — AGE ${input.age}
+═══════════════════════════════════════════════════
+
+${input.age <= 4 ? `TODDLER VOCABULARY RULES (CRITICAL — non-negotiable):
+- Every sentence in the briefs must reflect toddler-appropriate language. The expanding writer will follow your vocabulary choices.
+- MAXIMUM sentence length in scene briefs: 6-7 words.
+- USE ONLY: simple, concrete, everyday words. Anything a 2-4 year old says out loud.
+- NEVER use in ANY brief, title, or text: mysterious, extraordinary, magnificent, realised, peculiar, melancholy, venture, solitude, anxious, treacherous, contemplated, ancient, incredible, breathtaking, or any abstract concept.
+- Name emotions explicitly and simply: "happy", "scared", "proud", "safe", "sad", "excited". Never leave them implicit.
+- CIRCULAR ENDING MANDATORY: The final scene must return ${input.childName} home. This is not optional.
+- BRIDGES for this age: Each bridge must be ONE warm, playful sentence of max 15 words. No atmosphere. Just warmth and forward motion. Example: "And then, just around the corner, something magical was waiting!"` : ""}
+${input.age >= 5 && input.age <= 6 ? `EARLY READER VOCABULARY RULES:
+- MAXIMUM sentence length in scene briefs: 10-12 words.
+- Vocabulary must be familiar to a 5-6 year old reader. You may include one new word per scene if its meaning is immediately clear from context.
+- NEVER use: melancholy, treacherous, extraordinary, magnificent, solitude, anxiety, contemplated, bewildered, or any word a 6-year-old cannot read independently.
+- CAUSE AND EFFECT: Every scene brief must show a clear cause → consequence. This age group is mastering causal reasoning.
+- MORAL AT THE END: In the final scene brief, include a note that the narrator or character will gently name the lesson in simple words.` : ""}
+${input.age >= 7 && input.age <= 9 ? `CONFIDENT READER VOCABULARY RULES:
+- Sentence length is flexible, but prioritise punchy, active sentences. Mix short and medium.
+- You may include vivid, precise words that stretch the reader slightly — as long as meaning is clear from context.
+- INNER MONOLOGUE: Every scene brief should note one moment where we are inside ${input.childName}'s thoughts.
+- MORAL: Never named. Never summarised. Lives in the protagonist's choices only.` : ""}
+${input.age >= 10 ? `PRE-TEEN VOCABULARY RULES:
+- Full literary vocabulary permitted. Metaphor, subtext, irony all encouraged.
+- Scene briefs should be rich and complex — the expanding writer needs dense context.
+- IDENTITY EXPLORATION: Every scene brief should note something about the protagonist's inner conflict or self-questioning.
+- MORAL: Strictly implicit. Emerges from arc only. No character may name it.` : ""}
+
+═══════════════════════════════════════════════════
 IMAGE PROMPT RULES
 ═══════════════════════════════════════════════════
 
@@ -808,7 +1018,12 @@ AGE: ${input.age} years old
 
 Generate EXACTLY 12 slots: ${ageConfig.sceneCount} scenes + ${ageConfig.bridgeCount} bridges.
 - "scene": brief = 3-5 sentences describing what happens + the emotional beat + how personal details appear + the hook at the end. This will be expanded by a writer who needs RICH context.
-- "bridge": brief = 1 atmospheric sentence (max 25 words) — this IS the final text, no expansion needed.
+${input.age <= 4
+  ? '- "bridge": brief = 1 SIMPLE, WARM, PLAYFUL transition sentence (max 15 words). NOT atmospheric prose. Just gentle forward motion. This IS the final text. Example: "And then, just around the corner, something wonderful was waiting!" or "Hooray! They did it together!"'
+  : input.age <= 6
+  ? '- "bridge": brief = 1 short, warm transition sentence (max 20 words). Conversational and forward-moving. This IS the final text. It should feel like a storyteller leaning in: "But wait — something was about to change everything..."'
+  : '- "bridge": brief = 1 atmospheric sentence (max 25 words) — this IS the final text, no expansion needed. Rich with mood and tension appropriate to the moment in the story.'
+}
 
 ${narrativeStructure}
 
@@ -859,7 +1074,7 @@ function buildExpansionPrompt(
   const localeConfig = getLocaleConfig(input.locale);
   const lang = localeConfig.language;
   const genderLabel = localeConfig.genderLabels[input.gender];
-  const tone = getTemplateTone(input.templateId);
+  const tone = getTemplateTone(input.templateId, input.age);
 
   // Build personal context
   const personalLines: string[] = [];
