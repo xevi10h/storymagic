@@ -519,6 +519,8 @@ interface LocaleConfig {
   genderLabels: { boy: string; girl: string; neutral: string };
   /** Onomatopoeia examples for toddler text */
   onomatopoeia: string;
+  /** Language-specific grammar rules injected into every prompt (e.g. personal articles in Catalan) */
+  grammarNotes?: string;
 }
 
 const LOCALE_CONFIGS: Record<string, LocaleConfig> = {
@@ -531,6 +533,12 @@ const LOCALE_CONFIGS: Record<string, LocaleConfig> = {
     language: "Catalan",
     genderLabels: { boy: "nen", girl: "nena", neutral: "infant" },
     onomatopoeia: "SPLASH! BUM! FIUUU!",
+    grammarNotes: `CATALAN GRAMMAR — PERSONAL ARTICLE (mandatory, no exceptions):
+- Masculine names: ALWAYS write "en [Name]" → "en Pau", "en Marc", "en Jordi"
+- Feminine names: ALWAYS write "la [Name]" → "la Maria", "la Laia"
+- Names starting with a vowel: ALWAYS write "l'[Name]" → "l'Anna", "l'Artur", "l'Irene"
+- NEVER write a bare name without its personal article: ✗ "Pau va córrer" → ✓ "En Pau va córrer"
+- The article is also required after conjunctions: "i en Pau", "però la Maria", "quan l'Anna"`,
   },
   en: {
     language: "English",
@@ -974,6 +982,7 @@ EMOTIONAL ARC:
 ═══════════════════════════════════════════════════
 LANGUAGE AND VOCABULARY — AGE ${input.age}
 ═══════════════════════════════════════════════════
+${localeConfig.grammarNotes ? `\n${localeConfig.grammarNotes}\n` : ""}
 
 ${input.age <= 4 ? `TODDLER VOCABULARY RULES (CRITICAL — non-negotiable):
 - Every sentence in the briefs must reflect toddler-appropriate language. The expanding writer will follow your vocabulary choices.
@@ -1169,6 +1178,7 @@ ${ageConfig.textStyle}
 - Open with ACTION or EMOTION, never with flat description.
 - End with a HOOK — make the reader want to turn the page.
 - The prose should feel like it belongs in a published book, not a school exercise.
+${localeConfig.grammarNotes ? `\n${localeConfig.grammarNotes}` : ""}
 
 Return a JSON object: { "text": "the full narrative text" }`;
 }
@@ -1445,6 +1455,7 @@ Read all ${story.scenes.length} scenes carefully. Flag ONLY scenes with these ge
    - Vocabulary far outside the expected range for age ${input.age}
    ${input.age >= 7 ? `- A character explicitly states the moral ("the lesson is..." / "I learned that...") — for age ${input.age} the moral must be implicit, shown through action only` : ""}
    ${input.age <= 4 ? "- The story does not end with the protagonist back at home (circular structure is mandatory for this age)" : ""}
+${localeConfig.grammarNotes ? `\n4. GRAMMAR — fix every instance found:\n${localeConfig.grammarNotes}` : ""}
 
 DO NOT FLAG:
 - Good scenes (be very conservative — the bar is genuine narrative damage)
