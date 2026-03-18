@@ -242,9 +242,16 @@ export function buildSecondaryPrompt(
   sceneTitle: string,
   characterRef: string,
   sceneIndex: number = 0,
+  sceneFirstLine?: string,
 ): string {
   const composition = SECONDARY_COMPOSITIONS[sceneIndex % SECONDARY_COMPOSITIONS.length];
-  let prompt = `${sceneTitle}. ${composition} ${characterRef}. Children's book illustration, rich textures, no text in image.`;
+  // Use the first sentence of expanded scene text when available — it contains the specific
+  // action and setting of the scene, giving far better context than just the generic title.
+  // Fall back to sceneTitle only if no text is available (e.g., bridge scenes).
+  const sceneContext = sceneFirstLine
+    ? sceneFirstLine.replace(/[.!?]\s*$/, "").trim() + ". "
+    : `${sceneTitle}. `;
+  let prompt = `${sceneContext}${composition} ${characterRef}. Children's book illustration, rich textures, no text in image.`;
   if (prompt.length > 1000) prompt = prompt.slice(0, 999) + "…";
   return prompt;
 }

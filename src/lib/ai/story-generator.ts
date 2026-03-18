@@ -1003,6 +1003,21 @@ CHARACTER VISUAL CONSISTENCY (CRITICAL):
 - The character's skin tone, hair color, hair style, and eye color must be IDENTICAL across all 12 scenes and the cover.
 - Never change the character's appearance to match the scene's theme or setting.
 
+KEY VISUAL MOMENT (the most important rule for imagePrompts):
+Each imagePrompt must capture THE SINGLE CLIMACTIC ACTION or PEAK EMOTIONAL MOMENT of that specific scene — not the setup, not the aftermath, but the moment ITSELF.
+
+✗ WRONG (before the action): "Marc standing near a bridge looking nervous"
+✗ WRONG (after the action): "Marc and his friend celebrating on the other side"
+✓ CORRECT (the moment itself): "Marc leaping across a broken rope bridge over a rushing river, arms outstretched, teeth clenched with effort, spray rising below"
+
+The scene brief and the imagePrompt MUST share this exact moment as their core anchor.
+The imagePrompt will be given to the scene writer — they will use it to know WHICH PRECISE VISUAL MOMENT to describe in the prose.
+Both the illustration and the expanded text must depict THE SAME INSTANT.
+
+SPECIFICITY is mandatory. Name the exact object, exact action, exact emotion:
+✗ VAGUE: "Marc in the forest"
+✓ SPECIFIC: "Marc kneeling down to pick up a small glowing golden key half-buried in autumn leaves, his eyes wide, a warm golden shaft of light falling through oak branches above him"
+
 VISUAL JOURNEY — each imagePrompt uses a DIFFERENT composition:
   * Vary camera: wide, medium, close-up, bird's-eye, low angle, over-the-shoulder
   * Vary poses: running, sitting, reaching, crouching, jumping, climbing, hugging
@@ -1039,14 +1054,14 @@ JSON:
       "type": "scene",
       "title": "Evocative title in ${lang}",
       "brief": "3-5 sentences in ${lang}: what happens, the emotional beat, how a personal detail appears, the hook. Rich enough for a writer to expand.",
-      "imagePrompt": "ENGLISH. Action + setting first, then ${characterVisual} with specific pose. Camera: [angle]. ${ageConfig.illustrationPromptStyle}"
+      "imagePrompt": "ENGLISH. START with THE KEY MOMENT: [exact verb] + [exact object/creature being interacted with] + [exact location detail]. Example: 'Marc kneeling to lift a glowing golden key from autumn leaves, warm shaft of light through oak branches.' Then: ${characterVisual} in [exact pose that matches this specific action — never generic]. Camera: [angle chosen to maximise emotional impact of THIS moment]. End with: ${ageConfig.illustrationPromptStyle}. CRITICAL: This exact moment MUST also appear in the scene brief as the core action."
     },
     {
       "sceneNumber": 3,
       "type": "bridge",
       "brief": "One atmospheric sentence in ${lang} (max 25 words). This IS the final text.",
       "title": "Short evocative title",
-      "imagePrompt": "ENGLISH atmospheric. Mood + environment. ${characterVisual} small/silhouetted. ${ageConfig.illustrationPromptStyle}"
+      "imagePrompt": "ENGLISH. Atmospheric transition: [specific mood + specific environment detail that matches this bridge's narrative moment]. ${characterVisual} small or silhouetted in the scene. Camera: [angle that conveys transition/movement]. ${ageConfig.illustrationPromptStyle}"
     }
   ],
   "finalMessage": "Closing message in ${lang}. Warm, personal, echoes the moral through emotion — not a lecture. Should feel like a parent's whisper at bedtime.",
@@ -1113,6 +1128,17 @@ ${modeInstruction}
 TITLE: "${scene.title}"
 BRIEF: "${scene.brief}"
 ${continuitySection}
+
+═══════ ILLUSTRATION ANCHOR (CRITICAL — read before writing) ═══════
+The illustration for this scene has already been generated and depicts this exact moment:
+"${scene.imagePrompt}"
+
+Your prose MUST align with this image. Rules:
+- This illustrated moment must be PRESENT and RECOGNISABLE in your narrative — same action, same setting, same emotional state.
+- This moment should be the VISUAL PEAK of your scene: build toward it, or expand outward from it.
+- Do NOT contradict the image: do not introduce objects, locations, or character actions that conflict with what is depicted.
+- When the child looks at the illustration and reads the text, they must feel they are looking at the SAME scene.
+- You are not constrained to only describe the image — you can add context, emotion, and story — but the illustrated moment must anchor your prose.
 
 ═══════ PROTAGONIST ═══════
 ${input.childName}, ${genderLabel}, ${input.age} years old, from ${input.city || "a magical city"}

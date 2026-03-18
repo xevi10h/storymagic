@@ -337,7 +337,12 @@ export async function POST(
     const secondaryRows = generatedStory.scenes
       .filter((scene) => secondaryScenes.includes(scene.sceneNumber))
       .map((scene, index) => {
-        const secondaryPrompt = buildSecondaryPrompt(scene.imagePrompt, scene.title, characterRef, index);
+        // Extract the first sentence of the expanded text to ground the secondary illustration
+        // in the actual scene content rather than the generic title.
+        const firstSentence = scene.text
+          ? scene.text.split(/(?<=[.!?])\s+/)[0]?.trim()
+          : undefined;
+        const secondaryPrompt = buildSecondaryPrompt(scene.imagePrompt, scene.title, characterRef, index, firstSentence);
         return {
           story_id: storyId,
           scene_number: scene.sceneNumber + 12,
