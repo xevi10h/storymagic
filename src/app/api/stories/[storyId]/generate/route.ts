@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { generateArchitect, expandScenes, type StoryInput } from "@/lib/ai/story-generator";
+import { generateArchitect, expandScenes, reviewAndRefineStory, type StoryInput } from "@/lib/ai/story-generator";
 import {
   generateIllustrationsForStory,
   buildCharacterReference,
@@ -272,12 +272,50 @@ export async function POST(
     const persistedCoverUrl = coverResult;
     console.log(`[Generate] Phase 2 done — cover=${!!persistedCoverUrl}, previews=${previewIllustrations.length} [${elapsed(routeStart)}]`);
 
-    // ── Phase 3: Save text to DB immediately ────────────────────────────────
+    // ── Phase 3: Editorial review + Illustration uploads (IN PARALLEL) ───────
+    // The editorial review reads all 12 scene texts in a single LLM call and applies
+    // targeted fixes for narrative coherence, illustration-text alignment, and
+    // age-appropriateness. Running it in parallel with uploads adds zero latency.
+    console.log(`[Generate] Phase 3: Editorial review + uploads in parallel [${elapsed(routeStart)}]`);
+
+    const [refinedStory, finalPreviewIllustrations] = await Promise.all([
+      // A) Editorial review — single LLM call over the full manuscript
+      reviewAndRefineStory(generatedStory, input, ageConfig),
+
+      // B) Upload illustrations to permanent Supabase Storage.
+      // CRITICAL: If upload fails after 2 attempts, throw instead of storing the
+      // temporary Recraft URL — those expire after ~24h, breaking the book.
+      Promise.all(
+        previewIllustrations.map(async (ill, index) => {
+          if (ill.provider !== "recraft") return ill;
+          for (let attempt = 0; attempt < 2; attempt++) {
+            try {
+              const permanentUrl = await uploadIllustrationFromUrl(supabase, storyId, index + 1, ill.imageUrl);
+              return { ...ill, imageUrl: permanentUrl };
+            } catch (uploadError) {
+              if (attempt === 0) {
+                console.warn(`[Storage] Upload attempt 1 failed for scene ${index + 1}, retrying...`);
+                await new Promise((r) => setTimeout(r, 1000));
+              } else {
+                throw new Error(`Failed to persist illustration for scene ${index + 1} after 2 attempts: ${uploadError instanceof Error ? uploadError.message : "Unknown"}`);
+              }
+            }
+          }
+          return ill;
+        }),
+      ),
+    ]);
+    console.log(`[Generate] Phase 3 done — ${refinedStory.scenes.length} scenes refined, uploads complete [${elapsed(routeStart)}]`);
+
+    // Portrait: reuse existing
+    let persistedPortraitUrl: string | null = character.avatar_url || null;
+
+    // ── Phase 4: Save refined text to DB ─────────────────────────────────────
     const { error: textSaveError } = await supabase
       .from("stories")
       .update({
-        generated_text: JSON.parse(JSON.stringify(generatedStory)),
-        title: generatedStory.titleOptions[0] ?? generatedStory.bookTitle,
+        generated_text: JSON.parse(JSON.stringify(refinedStory)),
+        title: refinedStory.titleOptions[0] ?? refinedStory.bookTitle,
         pdf_url: null,
       })
       .eq("id", storyId);
@@ -285,44 +323,18 @@ export async function POST(
     if (textSaveError) {
       throw new Error(`Failed to save story text: ${textSaveError.message}`);
     }
-    console.log(`[Generate] Text saved to DB [${elapsed(routeStart)}]`);
+    console.log(`[Generate] Refined text saved to DB [${elapsed(routeStart)}]`);
 
-    // Portrait: reuse existing
-    let persistedPortraitUrl: string | null = character.avatar_url || null;
-
-    // ── Phase 5: Upload illustrations to storage ─────────────────────────────
-    // CRITICAL: If upload fails after 2 attempts, throw instead of storing the
-    // temporary Recraft URL — those expire after ~24h, breaking the book.
-    const finalPreviewIllustrations = await Promise.all(
-      previewIllustrations.map(async (ill, index) => {
-        if (ill.provider !== "recraft") return ill;
-        for (let attempt = 0; attempt < 2; attempt++) {
-          try {
-            const permanentUrl = await uploadIllustrationFromUrl(supabase, storyId, index + 1, ill.imageUrl);
-            return { ...ill, imageUrl: permanentUrl };
-          } catch (uploadError) {
-            if (attempt === 0) {
-              console.warn(`[Storage] Upload attempt 1 failed for scene ${index + 1}, retrying...`);
-              await new Promise((r) => setTimeout(r, 1000));
-            } else {
-              throw new Error(`Failed to persist illustration for scene ${index + 1} after 2 attempts: ${uploadError instanceof Error ? uploadError.message : "Unknown"}`);
-            }
-          }
-        }
-        return ill;
-      }),
-    );
-    console.log(`[Generate] Uploads done [${elapsed(routeStart)}]`);
-
-    // ── Phase 6: Insert illustration rows ────────────────────────────────────
+    // ── Phase 5: Insert illustration rows ────────────────────────────────────
     const { error: deleteError } = await supabase
       .from("story_illustrations")
       .delete()
       .eq("story_id", storyId);
     if (deleteError) throw new Error(`Failed to delete old illustrations: ${deleteError.message}`);
 
-    // Mock mode is handled early (returned above), so this is always real Recraft
-    const illustrationRows = generatedStory.scenes.map((scene, index) => {
+    // Use refinedStory scenes — imagePrompts may have been updated by editorial review.
+    // Updated prompts for pending scenes ensure secondary illustrations align with text.
+    const illustrationRows = refinedStory.scenes.map((scene, index) => {
       const isPreview = index < PREVIEW_ILLUSTRATION_COUNT;
       return {
         story_id: storyId,
@@ -334,11 +346,10 @@ export async function POST(
     });
 
     const secondaryScenes = getSecondaryScenes(input.age);
-    const secondaryRows = generatedStory.scenes
+    const secondaryRows = refinedStory.scenes
       .filter((scene) => secondaryScenes.includes(scene.sceneNumber))
       .map((scene, index) => {
-        // Extract the first sentence of the expanded text to ground the secondary illustration
-        // in the actual scene content rather than the generic title.
+        // Extract the first sentence of expanded text for better secondary illustration context.
         const firstSentence = scene.text
           ? scene.text.split(/(?<=[.!?])\s+/)[0]?.trim()
           : undefined;

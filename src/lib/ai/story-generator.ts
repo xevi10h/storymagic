@@ -1,19 +1,28 @@
-// Two-tier story generation architecture
+// Three-phase story generation architecture
 //
-// PHASE 1 — ARCHITECT (GPT-5.4, single call):
+// PHASE 1 — ARCHITECT (single LLM call):
 //   Plans the entire book in one coherent creative vision.
-//   Outputs: skeleton with 12 rich scene briefs (3-5 sentences each),
-//   12 image prompts, cover prompt, titles, dedication, synopsis, final message.
+//   Outputs: 12 rich scene briefs (3-5 sentences each), 12 image prompts,
+//   cover prompt, titles, dedication, synopsis, final message.
 //   Each brief includes: what happens, emotional beat, personal detail integration, hook.
 //
-// PHASE 2 — EXPANSION (GPT-5.4, 12 parallel calls):
+// PHASE 2 — EXPANSION (12 parallel LLM calls):
 //   Each scene brief gets expanded into full literary prose.
-//   The expander receives full context: protagonist details, interests, moral, theme,
-//   narrative tone, surrounding scene briefs for continuity, and craft-oriented
-//   writing instructions adapted to the child's age band.
+//   The expander receives: protagonist details, interests, moral, theme, narrative tone,
+//   surrounding briefs for continuity, age-band craft instructions, and — critically —
+//   the pre-generated imagePrompt as an ILLUSTRATION ANCHOR so the text and image
+//   describe the same visual moment.
 //   All 12 calls run in parallel.
 //
-// Both phases use native Node.js https to bypass Next.js undici socket drops.
+// PHASE 3 — EDITORIAL REVIEW (single LLM call, parallel with illustration uploads):
+//   Reads the complete manuscript and applies targeted fixes:
+//     - Narrative coherence (contradictions, logic gaps, continuity breaks, name changes)
+//     - Illustration-text alignment (imagePrompt depicts moment absent from scene text)
+//     - Age-appropriateness (vocabulary, implicit vs explicit moral)
+//   Returns a JSON diff of only the problem scenes — original story preserved otherwise.
+//   Non-fatal: if the review fails, the original story is used unchanged.
+//
+// Uses native Node.js https to bypass Next.js undici socket drops.
 
 import * as https from "node:https";
 import * as http from "node:http";
@@ -547,6 +556,9 @@ const ARCHITECT_MODEL = process.env.OPENAI_ARCHITECT_MODEL || "gpt-5.4-mini";
 /** Model for scene expansion — generates the final narrative text.
  *  gpt-5.4-mini balances quality and speed (~8s vs ~54s for gpt-5.4). */
 const EXPANSION_MODEL = process.env.OPENAI_EXPANSION_MODEL || "gpt-5.4-mini";
+/** Model for the editorial review — reads the full manuscript and applies targeted fixes.
+ *  Shares the expansion model by default; can be overridden to a stronger model if needed. */
+const REVIEW_MODEL = process.env.OPENAI_REVIEW_MODEL || EXPANSION_MODEL;
 
 function getApiKey(): string {
   const key = process.env.OPENAI_API_KEY?.trim();
@@ -1350,4 +1362,154 @@ export async function generateStory(input: StoryInput): Promise<GeneratedStory> 
   const result = await generateArchitect(input);
   if (result.isMock && result.mockStory) return result.mockStory;
   return expandScenes(result.architect, input, result.ageConfig);
+}
+
+// ── PHASE 3: Editorial review ─────────────────────────────────────────────────
+
+interface StoryFix {
+  sceneNumber: number;
+  issue: string;
+  fixedText?: string;
+  fixedImagePrompt?: string;
+}
+
+/**
+ * Phase 3: Editorial review — reads the complete manuscript and applies targeted fixes.
+ *
+ * A single LLM call over all 12 scene texts checks for:
+ *   1. Narrative coherence: contradictions, logic gaps, character name changes,
+ *      setting inconsistencies, emotional arc breaks, missing personal details
+ *   2. Illustration-text mismatch: imagePrompt depicts action absent from the text
+ *   3. Age-appropriateness: vocabulary, implicit vs explicit moral
+ *
+ * Returns ONLY a JSON diff of problem scenes — original story preserved otherwise.
+ * Designed to run IN PARALLEL with illustration uploads → zero added latency.
+ * Non-fatal: if the review call fails, the original story is returned unchanged.
+ */
+export async function reviewAndRefineStory(
+  story: GeneratedStory,
+  input: StoryInput,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _ageConfig: AgeConfig,
+): Promise<GeneratedStory> {
+  const localeConfig = getLocaleConfig(input.locale);
+  const lang = localeConfig.language;
+  const template = getTemplateConfig(input.templateId);
+  const moral = template?.moral || "Being kind matters";
+
+  // Build the full manuscript for the editor — one block per scene
+  const manuscript = story.scenes
+    .map((scene) => {
+      const type = scene.type === "bridge" ? "BRIDGE" : "SCENE";
+      return [
+        `[${type} ${scene.sceneNumber}: "${scene.title}"]`,
+        `TEXT: ${scene.text}`,
+        `IMAGE PROMPT: ${scene.imagePrompt}`,
+      ].join("\n");
+    })
+    .join("\n\n---\n\n");
+
+  const prompt = `You are a senior children's book editor with 20 years of experience. Read this complete manuscript and return ONLY scenes with genuine problems — most scenes should be fine.
+
+BOOK: "${story.bookTitle}"
+PROTAGONIST: ${input.childName}, ${input.age} years old, from ${input.city || "their city"}
+MORAL: "${moral}"
+LANGUAGE: ${lang}
+
+═══════════════════
+COMPLETE MANUSCRIPT
+═══════════════════
+
+${manuscript}
+
+═══════════════════
+YOUR TASK
+═══════════════════
+
+Read all ${story.scenes.length} scenes carefully. Flag ONLY scenes with these genuine problems:
+
+1. COHERENCE — always fix if found:
+   - A character knows something they were never told (information leak between scenes)
+   - An object, place, or character is used before being introduced in the story
+   - A character's name changes between scenes (e.g. "Luna" → "Lena")
+   - The setting contradicts itself (story set in Barcelona, scene mentions mountains with no travel)
+   - An emotional event in one scene is completely ignored in the next (reset without cause)
+   - A personal detail (companion, favourite food, dream) was mentioned early but never appeared
+   - The story's ending does not reflect the moral arc established in the middle scenes
+
+2. ILLUSTRATION MISMATCH — update imagePrompt only (do not change text):
+   - The IMAGE PROMPT describes an action, object, or location completely absent from the TEXT
+   - The IMAGE PROMPT shows the character doing something that directly contradicts the text
+
+3. AGE-APPROPRIATENESS — fix only if significantly off:
+   - Vocabulary far outside the expected range for age ${input.age}
+   ${input.age >= 7 ? `- A character explicitly states the moral ("the lesson is..." / "I learned that...") — for age ${input.age} the moral must be implicit, shown through action only` : ""}
+   ${input.age <= 4 ? "- The story does not end with the protagonist back at home (circular structure is mandatory for this age)" : ""}
+
+DO NOT FLAG:
+- Good scenes (be very conservative — the bar is genuine narrative damage)
+- Minor stylistic preferences or wording choices
+- Scenes that focus on a different moment than the image, as long as the image moment appears somewhere in the text
+
+Return a JSON array. If the story is coherent, return [].
+Each element is a scene that needs changing:
+{
+  "sceneNumber": number,
+  "issue": "One sentence: the specific problem",
+  "fixedText": "Complete replacement text in ${lang} — same length, same tone, same age-appropriate vocabulary. Include ONLY if the TEXT needs to change.",
+  "fixedImagePrompt": "Corrected image prompt in English. Include ONLY if the IMAGE PROMPT needs to change."
+}
+
+ONLY the JSON array. No markdown. No explanation.`;
+
+  try {
+    const raw = await callLLM(prompt, REVIEW_MODEL, { json: true, timeoutMs: 90_000 });
+    const fixes = parseJsonResponse<StoryFix[]>(raw, "editorial-review");
+
+    if (!Array.isArray(fixes) || fixes.length === 0) {
+      console.log("[StoryGen] Editorial review: story is coherent — no fixes needed");
+      return story;
+    }
+
+    // Validate fixes: only apply for known scene numbers with actual non-empty content
+    const validSceneNumbers = new Set(story.scenes.map((s) => s.sceneNumber));
+    const validFixes = fixes.filter(
+      (f) =>
+        typeof f.sceneNumber === "number" &&
+        validSceneNumbers.has(f.sceneNumber) &&
+        (f.fixedText?.trim() || f.fixedImagePrompt?.trim()),
+    );
+
+    if (validFixes.length === 0) {
+      console.log("[StoryGen] Editorial review: suggested fixes were invalid — keeping original story");
+      return story;
+    }
+
+    console.log(
+      `[StoryGen] Editorial review: applying ${validFixes.length} fix(es) to scenes [${validFixes.map((f) => f.sceneNumber).join(", ")}]`,
+    );
+    for (const fix of validFixes) {
+      console.log(`  Scene ${fix.sceneNumber}: ${fix.issue}`);
+    }
+
+    const refinedScenes = story.scenes.map((scene) => {
+      const fix = validFixes.find((f) => f.sceneNumber === scene.sceneNumber);
+      if (!fix) return scene;
+      return {
+        ...scene,
+        ...(fix.fixedText?.trim() ? { text: fix.fixedText.trim() } : {}),
+        ...(fix.fixedImagePrompt?.trim() ? { imagePrompt: fix.fixedImagePrompt.trim() } : {}),
+      };
+    });
+
+    return { ...story, scenes: refinedScenes };
+  } catch (err) {
+    // Non-fatal: editorial review is a quality enhancement, not a hard requirement.
+    // If it fails for any reason, the original story is used unchanged.
+    console.warn(
+      "[StoryGen] Editorial review failed (non-fatal) — using original story:",
+      err instanceof Error ? err.message : err,
+    );
+    return story;
+  }
 }
