@@ -872,11 +872,11 @@ function buildArchitectPrompt(input: StoryInput): string {
 
   const personalDetails: string[] = [];
   if (input.specialTrait) personalDetails.push(`- Special trait: "${input.specialTrait}"`);
-  if (input.favoriteCompanion) personalDetails.push(`- Favorite companion: "${input.favoriteCompanion}" — should appear in the story`);
-  if (input.favoriteFood) personalDetails.push(`- Favorite food: "${input.favoriteFood}" — mention at a natural moment`);
-  if (input.futureDream) personalDetails.push(`- Future dream: "${input.futureDream}" — weave into motivation`);
+  if (input.favoriteCompanion) personalDetails.push(`- Favorite companion: "${input.favoriteCompanion}"`);
+  if (input.favoriteFood) personalDetails.push(`- Favorite food: "${input.favoriteFood}"`);
+  if (input.futureDream) personalDetails.push(`- Future dream: "${input.futureDream}"`);
   const personalSection = personalDetails.length > 0
-    ? `\nPERSONAL DETAILS (make the story unique):\n${personalDetails.join("\n")}`
+    ? `\nPERSONAL DETAILS:\n${personalDetails.join("\n")}`
     : "";
 
   const tone = getTemplateTone(input.templateId, input.age);
@@ -893,7 +893,7 @@ function buildArchitectPrompt(input: StoryInput): string {
     : [
       "MODE: GIFT — This book is a gift from a parent to their child.",
       "The story should feel like a love letter disguised as an adventure.",
-      "Weave personal details deeply — the child should feel that this story was made ONLY for them.",
+      "The child should feel recognised through the story's warmth and the world it creates around them — NOT through cramming their favourite things into every page.",
       "Include at least one moment that will make the parent emotional when reading it aloud.",
       "The dedication and final message should feel intimate and earned, not generic.",
     ].join("\n");
@@ -930,13 +930,18 @@ THE CHILD
 - Interests: ${input.interests.join(", ") || "adventure, imagination"}
 ${personalSection}
 
-HOW TO USE PERSONAL DETAILS:
-- These are NOT cameos to drop in randomly. They are NARRATIVE TOOLS.
-- The child's interests should be HOW they solve problems (a kid who loves animals understands a creature's mood; a kid who loves space navigates by the stars).
-- The favorite companion (pet/friend) should have a real role — a confidant, a source of courage, a reason to be brave.
-- The favorite food should appear in a MEANINGFUL moment — comfort, celebration, memory of home.
-- The future dream should connect to the moral — it's the seed of who this child is becoming.
-- The special trait should be the HIDDEN SUPERPOWER that saves the day or unlocks the solution.
+HOW TO USE PERSONAL DETAILS (CRITICAL — read carefully):
+
+GOLDEN RULE: Personal details make the child feel recognised. They are NOT mandatory plot devices.
+DISTRIBUTE them across the ENTIRE book. Each detail should appear in 1-2 scenes maximum, never more.
+NEVER cram multiple personal details into the same sentence or paragraph.
+${input.age <= 6 ? `For age ${input.age}: use AT MOST 1 personal detail per scene. Many scenes should have ZERO.` : `For age ${input.age}: use AT MOST 2 personal details per scene. Several scenes should have ZERO.`}
+
+- INTERESTS: These colour the child's PERSONALITY — they are part of who the child is. A child who loves music might hum when nervous or tap a rhythm on a table. A child who loves animals might notice a bird others miss. Do NOT turn interests into literal problem-solving tools or magic powers.
+- FAVORITE COMPANION: If provided, it is the child's real pet or friend. It may appear in real-world scenes (home, opening, closing). It does NOT need to join the fantasy adventure — the STORY COMPANION from decisions fills that role. If you DO include the personal companion in the adventure, describe what it IS (cat, dog, hamster, etc.) every time — never just the name.
+- FAVORITE FOOD: Only mention if a scene naturally involves eating, cooking, or comfort. If no scene calls for food, SKIP IT. Never force food into a scene where nobody is eating.
+- FUTURE DREAM: Treat as background character colour — a passing thought, a comparison, a simile. If the dream aligns with the story theme (e.g., "chef" dream in a chef story), weave it naturally. If it CONFLICTS with the theme (e.g., "firefighter" dream in a pirates story), use it as a fleeting reference at most: "This adventure felt even braver than putting out fires."
+- SPECIAL TRAIT: Can shine in a key moment, but does not need to be a literal superpower. A child who is "very patient" simply waits when others rush. A child who "loves to laugh" lightens a tense moment.
 
 ═══════════════════════════════════════════════════
 STORY FRAMEWORK
@@ -944,6 +949,21 @@ STORY FRAMEWORK
 
 TEMPLATE: "${input.templateTitle}" | Theme: ${theme}
 MORAL: "${moral}"
+
+GEOGRAPHIC COHERENCE (CRITICAL — the parent will notice errors):
+- The child lives in ${input.city || "their city"}. Opening scenes (Slots 1-2) are set THERE. Describe the REAL city faithfully — its streets, its feel, its weather.
+- The fantasy world (${theme}) is a SEPARATE realm. The child ENTERS it through an explicit magical transition (a portal, a dream, a magic object, a wish, a book that pulls them in). NEVER imply the child physically traveled across the globe.
+- NEVER describe elements of the fantasy world in real-world scenes. No ocean waves in an inland city. No jungle sounds in a European bedroom. No snow in a Mediterranean summer. The real world is REAL until the transition happens.
+- After the transition, the fantasy world has its own geography and rules. The child's city does NOT exist there.
+- In the final scene(s), the child returns home to their REAL city. The magic stays behind.
+
+FORESHADOWING RULE:
+- Foreshadowing must use CONCRETE objects and actions, never forced metaphors or similes.
+  ✗ WRONG: "The spoon tapped the bowl like a sea shanty" (forced theme connection in a real-world scene)
+  ✗ WRONG: "The wind smelled of adventure" (vague, means nothing)
+  ✓ CORRECT: "Pau found an old rolled-up paper behind the bookshelf" (concrete object that creates curiosity)
+  ✓ CORRECT: "Something glinted at the bottom of the toy box — something that hadn't been there yesterday" (concrete discovery)
+- Foreshadowing creates CURIOSITY. It does NOT pre-announce the theme.
 
 HOW TO BUILD THE MORAL:
 - The moral is NEVER stated aloud by any character. Not even in a wise speech.
@@ -957,6 +977,7 @@ HOW TO BUILD THE MORAL:
 ${juntosInstruction}
 
 ${decisionsContext}
+${input.favoriteCompanion ? `\nCOMPANION CLARITY: The story decisions above may include a STORY COMPANION (a character the child meets during the adventure — an alien, a fox, a robot, etc.). The child also has a PERSONAL COMPANION: "${input.favoriteCompanion}". These are DIFFERENT characters. The personal companion belongs to the child's real world. The story companion belongs to the fantasy world. Do NOT merge them. Do NOT have the personal companion replace the story companion.` : ""}
 
 ENDING: ${endingInstruction}
 ${input.dedication ? `DEDICATION from ${input.senderName || "someone special"}: "${input.dedication}"` : ""}
@@ -971,8 +992,14 @@ HOOKS & PACING:
 - The story should feel like a JOURNEY, not a sequence of events.
 
 CALLBACKS & DETAILS:
-- Plant a small detail in Scenes 1-3 that becomes CRUCIAL in Scenes 9-11.
+- Plant a small CONCRETE detail in Scenes 1-3 that becomes CRUCIAL in Scenes 9-11. This must be a physical object, a specific action, or a real observation — NOT a vague feeling or theme echo.
 - Repeat a motif (a phrase, an object, a gesture) at least twice — the repetition creates the feeling of a 'real' story.
+
+COHERENCE & LOGIC (the parent reads this book — they WILL notice errors):
+- Every reference must make sense. If the character picks up an object, say WHERE it came from. If there is water, say WHICH water (a fountain, a river, a glass). Never leave the reader asking "wait, why is there X here?"
+- Cause and effect must be airtight. If a character hears a sound, the source must exist in the scene. If something is described (blue water, a strange melody), the reader must understand what it is within the same scene.
+- The story happens to a REAL CHILD in a REAL CITY. Everything before the magical transition must be physically plausible in that city. Everything after must be consistent within the fantasy world's own rules.
+- NEVER describe the child doing two unrelated things simultaneously to cram in personal details. One action per moment.
 
 EMOTIONAL ARC:
 - The protagonist must CHANGE. Who they are at the end is different from who they were at the beginning.
@@ -1023,6 +1050,7 @@ CHARACTER VISUAL CONSISTENCY (CRITICAL):
 - You MUST include this EXACT description verbatim in every imagePrompt. Do NOT paraphrase, omit, or change any physical trait.
 - The character's skin tone, hair color, hair style, and eye color must be IDENTICAL across all 12 scenes and the cover.
 - Never change the character's appearance to match the scene's theme or setting.
+${input.favoriteCompanion ? `\nCOMPANION IN IMAGES: When the personal companion "${input.favoriteCompanion}" appears in a scene, you MUST describe it clearly in the imagePrompt with its SPECIES and APPEARANCE (e.g., "a small orange tabby cat", "a golden retriever puppy", "a brown hamster"). NEVER use just the companion's name — the image generator does not know what "${input.favoriteCompanion}" looks like. If the companion's species is unclear from the name, describe it as a small friendly pet.` : ""}
 
 KEY VISUAL MOMENT (the most important rule for imagePrompts):
 Each imagePrompt must capture THE SINGLE CLIMACTIC ACTION or PEAK EMOTIONAL MOMENT of that specific scene — not the setup, not the aftermath, but the moment ITSELF.
@@ -1112,7 +1140,7 @@ function buildExpansionPrompt(
   const genderLabel = localeConfig.genderLabels[input.gender];
   const tone = getTemplateTone(input.templateId, input.age);
 
-  // Build personal context
+  // Build personal context — listed for reference ONLY, not as a checklist
   const personalLines: string[] = [];
   if (input.interests.length > 0) personalLines.push(`Interests: ${input.interests.join(", ")}`);
   if (input.specialTrait) personalLines.push(`Special trait: "${input.specialTrait}"`);
@@ -1120,7 +1148,7 @@ function buildExpansionPrompt(
   if (input.favoriteFood) personalLines.push(`Favorite food: "${input.favoriteFood}"`);
   if (input.futureDream) personalLines.push(`Future dream: "${input.futureDream}"`);
   const personalContext = personalLines.length > 0
-    ? `\nPERSONAL DETAILS (weave naturally — these are narrative tools, not items to mention in passing):\n${personalLines.join("\n")}`
+    ? `\nPERSONAL DETAILS (context only — do NOT force any of these into this scene unless the brief specifically references them):\n${personalLines.join("\n")}`
     : "";
 
   // Build continuity context
@@ -1133,7 +1161,7 @@ function buildExpansionPrompt(
 
   const modeInstruction = input.creationMode === "juntos"
     ? "MODE: Read-together. Include interactive pauses, questions to the child, or moments where the reader can add voices/sounds."
-    : "MODE: Gift. Emotional depth — this story is a love letter. Personal details should feel deeply woven, not sprinkled.";
+    : "MODE: Gift. Emotional depth — this story is a love letter. The child should feel recognised through the story's warmth and specificity, not through a checklist of their favourite things.";
 
   return `You are a world-class children's book WRITER. Expand the scene brief below into full, polished narrative prose in ${lang}.
 
@@ -1178,6 +1206,9 @@ ${ageConfig.textStyle}
 - Open with ACTION or EMOTION, never with flat description.
 - End with a HOOK — make the reader want to turn the page.
 - The prose should feel like it belongs in a published book, not a school exercise.
+- COHERENCE: Every object, sound, smell, and reference must have a clear physical source in the scene. If you mention water, say WHICH water. If you mention a sound, say WHERE it comes from. The parent reads this aloud — they will notice nonsensical references.
+- PERSONAL DETAILS: Only include if the brief mentions them. Do NOT add personal details (food, dream, companion, interests) that the brief does not reference. The architect already distributed them across the book.
+- NO FORCED METAPHORS: Never write similes that link the real world to the fantasy theme before the transition happens. Never describe mundane objects with adventure-themed comparisons unless it's clearly the child's imagination at work.
 ${localeConfig.grammarNotes ? `\n${localeConfig.grammarNotes}` : ""}
 
 Return a JSON object: { "text": "the full narrative text" }`;
@@ -1442,10 +1473,13 @@ Read all ${story.scenes.length} scenes carefully. Flag ONLY scenes with these ge
    - A character knows something they were never told (information leak between scenes)
    - An object, place, or character is used before being introduced in the story
    - A character's name changes between scenes (e.g. "Luna" → "Lena")
-   - The setting contradicts itself (story set in Barcelona, scene mentions mountains with no travel)
+   - The setting contradicts itself (story set in ${input.city || "their city"}, scene mentions geographic features that don't exist there — e.g., ocean in an inland city, mountains in a coastal plain)
+   - GEOGRAPHIC ERROR: Real-world scenes (before the magical transition) describe elements that don't belong in ${input.city || "their city"} — waves, jungle, snow, desert, etc. The real city must be accurate.
    - An emotional event in one scene is completely ignored in the next (reset without cause)
-   - A personal detail (companion, favourite food, dream) was mentioned early but never appeared
    - The story's ending does not reflect the moral arc established in the middle scenes
+   - A sound, smell, or object is mentioned without a clear physical source ("blue water" with no river/sea/fountain; "a melody" with no instrument or singer)
+   - Multiple personal details (food, dream, companion, interests) are crammed into the same sentence or paragraph — they should be spread across separate scenes
+   - A forced metaphor connects the real world to the fantasy theme before the transition (e.g., "the spoon sounded like a sea shanty" in a kitchen scene before the pirate adventure begins)
 
 2. ILLUSTRATION MISMATCH — update imagePrompt only (do not change text):
    - The IMAGE PROMPT describes an action, object, or location completely absent from the TEXT
