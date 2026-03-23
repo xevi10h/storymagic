@@ -1,7 +1,4 @@
 import { ImageResponse } from "next/og";
-import { routing } from "@/i18n/routing";
-
-export const runtime = "edge";
 
 export const alt = "Meapica — Personalized Children's Books";
 export const size = { width: 1200, height: 630 };
@@ -142,6 +139,3 @@ export default async function OgImage({
   );
 }
 
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }));
-}

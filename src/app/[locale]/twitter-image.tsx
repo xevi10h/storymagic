@@ -4,7 +4,4 @@ export {
   alt,
   size,
   contentType,
-  generateStaticParams,
 } from "./opengraph-image";
-
-export const runtime = "edge";
