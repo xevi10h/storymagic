@@ -28,7 +28,7 @@ export default function HowItWorks() {
 
           {/* Step 1 */}
           <div className="group flex flex-col items-center text-center">
-            <div className="relative z-10 mb-6 flex h-24 w-24 items-center justify-center rounded-full border-4 border-white bg-sand shadow-md">
+            <div className="relative z-10 mb-6 flex h-24 w-24 items-center justify-center rounded-full border-4 border-white bg-sand shadow-md transition-transform group-hover:scale-105">
               <span className="material-symbols-outlined text-4xl text-primary">auto_stories</span>
             </div>
             <h3 className="mb-3 font-display text-xl font-bold text-secondary">{t("step1Title")}</h3>
@@ -39,7 +39,7 @@ export default function HowItWorks() {
 
           {/* Step 2 */}
           <div className="group flex flex-col items-center text-center">
-            <div className="relative z-10 mb-6 flex h-24 w-24 items-center justify-center rounded-full border-4 border-white bg-earth shadow-md">
+            <div className="relative z-10 mb-6 flex h-24 w-24 items-center justify-center rounded-full border-4 border-white bg-earth shadow-md transition-transform group-hover:scale-105">
               <span className="material-symbols-outlined text-4xl text-secondary">brush</span>
             </div>
             <h3 className="mb-3 font-display text-xl font-bold text-secondary">{t("step2Title")}</h3>
@@ -50,7 +50,7 @@ export default function HowItWorks() {
 
           {/* Step 3 */}
           <div className="group flex flex-col items-center text-center">
-            <div className="relative z-10 mb-6 flex h-24 w-24 items-center justify-center rounded-full border-4 border-white bg-sage shadow-md">
+            <div className="relative z-10 mb-6 flex h-24 w-24 items-center justify-center rounded-full border-4 border-white bg-sage shadow-md transition-transform group-hover:scale-105">
               <span className="material-symbols-outlined text-4xl text-success">inventory_2</span>
             </div>
             <h3 className="mb-3 font-display text-xl font-bold text-secondary">{t("step3Title")}</h3>

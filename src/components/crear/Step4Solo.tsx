@@ -231,6 +231,30 @@ export default function Step4Solo({
                 })}
               </div>
 
+              {/* Mobile decisions summary (visible only on mobile when at least one choice is made) */}
+              {(decisions.companion || atmosphereValue || decisions.challenge) && (
+                <div className="flex flex-wrap gap-2 px-4 pt-3 lg:hidden">
+                  {selectedCompanion && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-create-primary/10 px-2.5 py-1 text-xs font-medium text-create-primary">
+                      <span className="material-symbols-outlined text-[14px]">group</span>
+                      {td(`${tpl}.decisions.companion.${selectedCompanion.id}.title`)}
+                    </span>
+                  )}
+                  {atmosphereValue && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-create-primary/10 px-2.5 py-1 text-xs font-medium text-create-primary">
+                      <span className="material-symbols-outlined text-[14px]">landscape</span>
+                      {atmosphereValue}
+                    </span>
+                  )}
+                  {selectedChallenge && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-create-primary/10 px-2.5 py-1 text-xs font-medium text-create-primary">
+                      <span className="material-symbols-outlined text-[14px]">alt_route</span>
+                      {td(`${tpl}.decisions.challenge.${selectedChallenge.id}.title`)}
+                    </span>
+                  )}
+                </div>
+              )}
+
               {/* Tab content */}
               <div className="px-4 pt-3 pb-4 flex flex-col gap-3">
 
@@ -255,7 +279,7 @@ export default function Step4Solo({
                             key={option.id}
                             onClick={() => {
                               onUpdateDecisions({ companion: option.id });
-                              setTimeout(() => setActiveTab("atmosphere"), 300);
+                              setTimeout(() => setActiveTab("atmosphere"), 600);
                             }}
                             className={`flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all text-center ${
                               isActive
@@ -340,7 +364,7 @@ export default function Step4Solo({
                               onClick={() => {
                                 onUpdateDecisions({ setting: s.id });
                                 if (decisions.timeOfDay) {
-                                  setTimeout(() => setActiveTab("twist"), 300);
+                                  setTimeout(() => setActiveTab("twist"), 600);
                                 }
                               }}
                               className={`flex items-center gap-3 p-3 rounded-xl border transition-all text-left ${

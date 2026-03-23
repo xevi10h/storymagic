@@ -293,6 +293,43 @@ function SignupPageContent() {
                   </span>
                 </button>
               </div>
+              {/* Password strength indicator */}
+              {password.length > 0 && (
+                <div className="mt-2">
+                  <div className="flex gap-1">
+                    {[0, 1, 2].map((i) => {
+                      const strength =
+                        password.length >= 10 && /(?=.*[a-z])(?=.*[A-Z0-9])/.test(password)
+                          ? 3
+                          : password.length >= 6
+                            ? 2
+                            : 1;
+                      const colors = ["bg-red-400", "bg-yellow-400", "bg-green-400"];
+                      return (
+                        <div
+                          key={i}
+                          className={`h-1 flex-1 rounded-full transition-colors ${
+                            i < strength ? colors[strength - 1] : "bg-border-light"
+                          }`}
+                        />
+                      );
+                    })}
+                  </div>
+                  <p className={`mt-1 text-xs ${
+                    password.length >= 10 && /(?=.*[a-z])(?=.*[A-Z0-9])/.test(password)
+                      ? "text-green-600"
+                      : password.length >= 6
+                        ? "text-yellow-600"
+                        : "text-red-500"
+                  }`}>
+                    {password.length >= 10 && /(?=.*[a-z])(?=.*[A-Z0-9])/.test(password)
+                      ? t("passwordStrong")
+                      : password.length >= 6
+                        ? t("passwordMedium")
+                        : t("passwordWeak")}
+                  </p>
+                </div>
+              )}
             </div>
 
             {error && (

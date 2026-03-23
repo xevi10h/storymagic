@@ -37,7 +37,7 @@ export default function Testimonials() {
               key={testimonial.key}
               className={`relative rounded-lg border-l-4 bg-white p-8 shadow-sm ${testimonial.borderColor}`}
             >
-              <div className="mb-4 text-xs tracking-widest text-gold">★★★★★</div>
+              <div className="mb-4 text-xs tracking-widest text-gold" role="img" aria-label="5 stars">★★★★★</div>
               <p className="relative z-10 mb-6 font-serif text-lg italic text-text-main">
                 &ldquo;{t(`reviews.${testimonial.key}.text`)}&rdquo;
               </p>

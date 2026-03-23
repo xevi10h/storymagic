@@ -145,7 +145,7 @@ export default function BookCollection() {
           {/* Scrollable row */}
           <div
             ref={scrollRef}
-            className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory scroll-smooth px-1"
+            className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory scroll-smooth pl-4 pr-8 md:px-1"
             style={{ scrollbarWidth: "none" }}
           >
             {/* Showcase books from DB */}
@@ -214,7 +214,7 @@ export default function BookCollection() {
                     {/* CTA */}
                     <Link
                       href={`/crear?template=${book.templateId}&from=catalog`}
-                      className="mt-auto flex items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-xs font-bold text-white whitespace-nowrap shadow-sm transition-all hover:bg-primary-hover hover:shadow-md"
+                      className="mt-auto flex items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-sm font-bold text-white whitespace-nowrap shadow-sm transition-all hover:bg-primary-hover hover:shadow-md min-h-[36px]"
                     >
                       <span className="material-symbols-outlined text-sm">
                         child_care
@@ -270,7 +270,7 @@ export default function BookCollection() {
                     {/* CTA */}
                     <Link
                       href={`/crear?template=${template.id}&from=catalog`}
-                      className="mt-auto flex items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-xs font-bold text-white whitespace-nowrap shadow-sm transition-all hover:bg-primary-hover hover:shadow-md"
+                      className="mt-auto flex items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-sm font-bold text-white whitespace-nowrap shadow-sm transition-all hover:bg-primary-hover hover:shadow-md min-h-[36px]"
                     >
                       <span className="material-symbols-outlined text-sm">
                         child_care
