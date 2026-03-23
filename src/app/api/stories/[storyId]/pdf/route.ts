@@ -48,12 +48,12 @@ export async function GET(
   }
 
   // Query story (scoped to user if authenticated)
-  const storyQuery = supabase
+  let storyQuery = supabase
     .from("stories")
     .select("*, characters(*), story_illustrations(*)")
     .eq("id", storyId);
 
-  if (user) storyQuery.eq("user_id", user.id);
+  if (user) storyQuery = storyQuery.eq("user_id", user.id);
 
   const { data: story, error } = await storyQuery.single();
 

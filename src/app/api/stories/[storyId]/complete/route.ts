@@ -67,12 +67,12 @@ export async function POST(
   }
 
   // Verify story exists (scoped to user if authenticated)
-  const storyQuery = supabase
+  let storyQuery = supabase
     .from("stories")
     .select("*, characters(*)")
     .eq("id", storyId);
 
-  if (user) storyQuery.eq("user_id", user.id);
+  if (user) storyQuery = storyQuery.eq("user_id", user.id);
 
   const { data: story, error: storyError } = await storyQuery.single();
 
@@ -126,14 +126,14 @@ export async function POST(
   }
 
   // Verify there is a paid order for this story
-  const paidOrderQuery = supabase
+  let paidOrderQuery = supabase
     .from("orders")
     .select("id, status, format, shipping_name, shipping_address, addons")
     .eq("story_id", storyId)
     .eq("status", "paid")
     .limit(1);
 
-  if (user) paidOrderQuery.eq("user_id", user.id);
+  if (user) paidOrderQuery = paidOrderQuery.eq("user_id", user.id);
 
   const { data: paidOrder } = await paidOrderQuery.single();
 

@@ -219,7 +219,7 @@ export default function PreviewPage() {
 
   // PDF download filename built from book title
   const pdfFilename = story?.generated_text?.bookTitle
-    ? `${story.generated_text.bookTitle.replace(/[^a-zA-Z0-9áéíóúñüÁÉÍÓÚÑÜ\s-]/g, "").replace(/\s+/g, "-").toLowerCase().slice(0, 60)}-meapica.pdf`
+    ? `${story.generated_text.bookTitle.replace(/[^a-zA-Z0-9áéíóúñüàèòïçÁÉÍÓÚÑÜÀÈÒÏÇ\s-]/g, "").replace(/\s+/g, "-").toLowerCase().slice(0, 60)}-meapica.pdf`
     : `${storyId}.pdf`;
 
   // Dev bypass: instant unlock without checkout (MOCK_MODE only)

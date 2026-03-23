@@ -205,6 +205,7 @@ export default function ShowcasePage() {
   }
 
   const bookTitle = story.title ?? story.generated_text.bookTitle;
+  const digitalPrice = (PRICING.digital_pdf.price / 100).toFixed(2);
   const softcoverPrice = (PRICING.softcover.price / 100).toFixed(2);
   const hardcoverPrice = (PRICING.hardcover.price / 100).toFixed(2);
 
@@ -257,6 +258,11 @@ export default function ShowcasePage() {
       <div className="sticky bottom-0 z-50 border-t border-border-light bg-white/95 backdrop-blur-md">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-4 py-3">
           {/* Left: pricing info */}
+          <div className="sm:hidden">
+            <p className="text-xs font-bold text-secondary">
+              {t("fromPrice", { price: digitalPrice })}
+            </p>
+          </div>
           <div className="hidden sm:block">
             <p className="text-xs text-text-muted">
               {t("softcover")} <span className="font-bold text-secondary">{softcoverPrice}€</span>

@@ -53,7 +53,9 @@ export default function NewsletterForm() {
         disabled={status === "loading"}
         className="rounded bg-primary px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-primary-hover disabled:opacity-60"
       >
-        {status === "loading" ? "..." : t("joinClub")}
+        {status === "loading" ? (
+          <span className="material-symbols-outlined animate-spin text-base">progress_activity</span>
+        ) : t("joinClub")}
       </button>
       {status === "error" && (
         <p className="text-xs text-red-400">{t("subscribeError")}</p>

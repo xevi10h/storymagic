@@ -1442,6 +1442,7 @@
     "pageCount": "{count} pàgines",
     "downloadPdf": "Descarregar PDF de mostra",
     "generatingPdf": "Generant PDF...",
+    "fromPrice": "Des de {price}€",
     "createYourOwn": "Crear el meu propi conte",
     "createYourVersion": "Crea la teva pròpia versió",
     "createYourVersionHint": "Personalitza el protagonista, tria l'aventura i rep un llibre únic a casa teva.",

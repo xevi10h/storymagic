@@ -160,7 +160,7 @@ export default function CreationHeader({
               href="/"
               className="flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold text-create-text-sub transition-colors hover:bg-create-neutral hover:text-create-text"
             >
-              <span className="material-symbols-outlined text-base">logout</span>
+              <span className="material-symbols-outlined text-base">exit_to_app</span>
               <span className="hidden sm:inline">{t("exit")}</span>
             </Link>
           )}

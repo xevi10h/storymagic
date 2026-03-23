@@ -1442,6 +1442,7 @@
     "pageCount": "{count} pages",
     "downloadPdf": "Download sample PDF",
     "generatingPdf": "Generating PDF...",
+    "fromPrice": "From {price}€",
     "createYourOwn": "Create my own story",
     "createYourVersion": "Create your own version",
     "createYourVersionHint": "Customize the character, choose the adventure, and receive a unique book at home.",

@@ -1260,6 +1260,7 @@
     "pageCount": "{count} páginas",
     "downloadPdf": "Descargar PDF de muestra",
     "generatingPdf": "Generando PDF...",
+    "fromPrice": "Desde {price}€",
     "createYourOwn": "Crear mi propio cuento",
     "createYourVersion": "Crea tu propia versión",
     "createYourVersionHint": "Personaliza al protagonista, elige la aventura y recibe un libro único en casa.",

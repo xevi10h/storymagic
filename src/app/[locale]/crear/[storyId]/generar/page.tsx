@@ -59,6 +59,7 @@ export default function GenerarPage() {
   const [titleConfirmed, setTitleConfirmed] = useState(false);
   const [illustrationsDone, setIllustrationsDone] = useState(false);
   const [autoConfirmSeconds, setAutoConfirmSeconds] = useState(AUTO_CONFIRM_SECONDS);
+  const [autoConfirmPaused, setAutoConfirmPaused] = useState(false);
 
   // Refs for cleanup + guards
   const postFired = useRef(false);
@@ -330,7 +331,7 @@ export default function GenerarPage() {
   // ── Auto-confirm countdown (during picking_title) ────────────────────────
 
   useEffect(() => {
-    if (phase !== "picking_title" || titleConfirmed) return;
+    if (phase !== "picking_title" || titleConfirmed || autoConfirmPaused) return;
 
     autoConfirmIntervalRef.current = setInterval(() => {
       setAutoConfirmSeconds((prev) => {
@@ -345,7 +346,7 @@ export default function GenerarPage() {
     }, 1000);
 
     return () => stopAutoConfirm();
-  }, [phase, titleConfirmed, confirmTitle, customTitle, selectedTitle, stopAutoConfirm]);
+  }, [phase, titleConfirmed, autoConfirmPaused, confirmTitle, customTitle, selectedTitle, stopAutoConfirm]);
 
   // ── Redirect when illustrations done + title confirmed ───────────────────
 
@@ -471,6 +472,14 @@ export default function GenerarPage() {
                     setCustomTitle(e.target.value);
                     setSelectedTitle("");
                     resetAutoConfirm();
+                  }}
+                  onFocus={() => setAutoConfirmPaused(true)}
+                  onBlur={() => {
+                    // Only resume countdown if user left the input empty
+                    if (!customTitle.trim()) {
+                      setAutoConfirmPaused(false);
+                      resetAutoConfirm();
+                    }
                   }}
                   placeholder={t("titlePickerCustomPlaceholder")}
                   maxLength={120}

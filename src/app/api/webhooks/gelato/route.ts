@@ -28,7 +28,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
   } else {
-    console.warn("[Gelato webhook] GELATO_WEBHOOK_SECRET not configured — skipping auth check");
+    console.error("[Gelato webhook] GELATO_WEBHOOK_SECRET not configured — rejecting request");
+    return NextResponse.json({ error: "Webhook secret not configured" }, { status: 401 });
   }
 
   let event: GelatoWebhookEvent;

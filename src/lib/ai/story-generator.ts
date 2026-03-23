@@ -311,7 +311,7 @@ function getAgeConfig(age: number, locale?: string): AgeConfig {
 
   const illustrationStyleId = defaultStyleId;
   const illustrationBaseStyle = "digital_illustration";
-  const illustrationPromptStyle = null;
+  const illustrationPromptStyle = "";
 
   // ── Band 1: Toddlers (2-4) ──────────────────────────────────────────────
   if (age <= 4) {
@@ -356,7 +356,7 @@ function getAgeConfig(age: number, locale?: string): AgeConfig {
       ].join("\n"),
       illustrationStyleId,
       illustrationBaseStyle,
-      illustrationPromptStyle: illustrationPromptStyle ?? "Whimsical pastel children's book illustration for toddlers, soft dreamy colors, big rounded shapes, exaggerated friendly expressions, simple compositions, gentle lighting, no text in image.",
+      illustrationPromptStyle: illustrationPromptStyle || "Whimsical pastel children's book illustration for toddlers, soft dreamy colors, big rounded shapes, exaggerated friendly expressions, simple compositions, gentle lighting, no text in image.",
     };
   }
 
@@ -402,7 +402,7 @@ function getAgeConfig(age: number, locale?: string): AgeConfig {
       ].join("\n"),
       illustrationStyleId,
       illustrationBaseStyle,
-      illustrationPromptStyle: illustrationPromptStyle ?? "Whimsical nook illumination children's book illustration, warm glowing light, intricate charming details, cozy storybook atmosphere, expressive characters, rich textures, no text in image.",
+      illustrationPromptStyle: illustrationPromptStyle || "Whimsical nook illumination children's book illustration, warm glowing light, intricate charming details, cozy storybook atmosphere, expressive characters, rich textures, no text in image.",
     };
   }
 
@@ -440,7 +440,7 @@ function getAgeConfig(age: number, locale?: string): AgeConfig {
       ].join("\n"),
       illustrationStyleId,
       illustrationBaseStyle,
-      illustrationPromptStyle: illustrationPromptStyle ?? "Warm storytelling children's book illustration, balanced detail and expression, rich atmospheric scenes, expressive characters, warm color palette, no text in image.",
+      illustrationPromptStyle: illustrationPromptStyle || "Warm storytelling children's book illustration, balanced detail and expression, rich atmospheric scenes, expressive characters, warm color palette, no text in image.",
     };
   }
 
@@ -479,7 +479,7 @@ function getAgeConfig(age: number, locale?: string): AgeConfig {
     ].join("\n"),
     illustrationStyleId,
     illustrationBaseStyle,
-    illustrationPromptStyle: illustrationPromptStyle ?? "Warm nostalgic Aesopus illustration style, timeless classic book aesthetic, elegant detailed linework, warm earthy tones, sophisticated cinematic compositions, no text in image.",
+    illustrationPromptStyle: illustrationPromptStyle || "Warm nostalgic Aesopus illustration style, timeless classic book aesthetic, elegant detailed linework, warm earthy tones, sophisticated cinematic compositions, no text in image.",
   };
 }
 
