@@ -410,6 +410,7 @@
       "generating": "Creant a {name}...",
       "generatingSubtitle": "Estem donant vida al teu personatge tal com l'has descrit",
       "revealTitle": "Aquest és {name}",
+      "revealTitleFemale": "Aquesta és {name}",
       "revealSubtitle": "Tal com l'has descrit. Ara tria la seva aventura.",
       "continueButton": "Triar aventura",
       "errorTitle": "No hem pogut crear el personatge",

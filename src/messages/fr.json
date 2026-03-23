@@ -410,6 +410,7 @@
       "generating": "Création de {name}...",
       "generatingSubtitle": "Nous donnons vie à ton personnage tel que tu l'as décrit",
       "revealTitle": "Voici {name}",
+      "revealTitleFemale": "Voici {name}",
       "revealSubtitle": "Tel que tu l'as décrit. Maintenant, choisis son aventure.",
       "continueButton": "Choisir l'aventure",
       "errorTitle": "Nous n'avons pas pu créer le personnage",

@@ -172,7 +172,7 @@ export default function PortraitReveal({
                 phase === "revealed" ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
               }`}>
                 <h2 className="text-2xl md:text-3xl font-display font-bold text-create-text">
-                  {t("revealTitle", { name: character.name })}
+                  {t(character.gender === "girl" ? "revealTitleFemale" : "revealTitle", { name: character.name })}
                 </h2>
                 <p className="text-create-text-sub text-sm max-w-xs">
                   {t("revealSubtitle")}

@@ -410,6 +410,7 @@
       "generating": "Creating {name}...",
       "generatingSubtitle": "We're bringing your character to life, just as you described",
       "revealTitle": "Meet {name}",
+      "revealTitleFemale": "Meet {name}",
       "revealSubtitle": "Just as you described. Now choose their adventure.",
       "continueButton": "Choose adventure",
       "errorTitle": "We couldn't create the character",
