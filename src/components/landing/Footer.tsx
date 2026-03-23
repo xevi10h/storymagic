@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import BrandLogo from "@/components/BrandLogo";
+import NewsletterForm from "@/components/landing/NewsletterForm";
 
 export default function Footer() {
   const t = useTranslations("footer");
@@ -69,16 +70,7 @@ export default function Footer() {
             <p className="mb-4 text-sm text-footer-muted">
               {t("readingClubDescription")}
             </p>
-            <div className="flex flex-col gap-3">
-              <input
-                className="rounded border border-footer-border bg-white/5 px-4 py-3 text-sm text-white placeholder-footer-border focus:border-primary focus:outline-none"
-                placeholder={t("emailPlaceholder")}
-                type="email"
-              />
-              <button className="rounded bg-primary px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-primary-hover">
-                {t("joinClub")}
-              </button>
-            </div>
+            <NewsletterForm />
           </div>
         </div>
 

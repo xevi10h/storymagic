@@ -148,6 +148,8 @@
     "readingClubDescription": "Conseils pour encourager la lecture sans écrans.",
     "emailPlaceholder": "Votre adresse email",
     "joinClub": "Rejoindre le club",
+    "subscribed": "Merci ! Nous vous tiendrons informé.",
+    "subscribeError": "Impossible de s'abonner. Veuillez réessayer.",
     "copyright": "© 2026 Meapica. Fait avec amour.",
     "legalNotice": "Mentions Légales",
     "privacy": "Confidentialité",

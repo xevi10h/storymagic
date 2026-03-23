@@ -148,6 +148,8 @@
     "readingClubDescription": "Consells per fomentar la lectura sense pantalles.",
     "emailPlaceholder": "El teu correu electrònic",
     "joinClub": "Unir-me al club",
+    "subscribed": "Gràcies! Et mantindrem informat.",
+    "subscribeError": "No s'ha pogut subscriure. Torna-ho a provar.",
     "copyright": "© 2026 Meapica. Fet amb amor.",
     "legalNotice": "Avís Legal",
     "privacy": "Privacitat",

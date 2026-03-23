@@ -148,6 +148,8 @@
     "readingClubDescription": "Tips for encouraging screen-free reading.",
     "emailPlaceholder": "Your email address",
     "joinClub": "Join the club",
+    "subscribed": "Thanks! We'll keep you in the loop.",
+    "subscribeError": "Couldn't subscribe. Please try again.",
     "copyright": "© 2026 Meapica. Made with love.",
     "legalNotice": "Legal Notice",
     "privacy": "Privacy",
