@@ -66,6 +66,18 @@ export async function POST(
     supabase = adminClient;
   }
 
+  // Rate limit: max 3 completions per 5 minutes
+  if (user) {
+    const { checkRateLimit } = await import("@/lib/rate-limit");
+    const rl = await checkRateLimit(user.id, "complete_story");
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { error: "Too many requests. Please wait." },
+        { status: 429, headers: { "Retry-After": String(rl.retryAfterSeconds ?? 300) } },
+      );
+    }
+  }
+
   // Verify story exists (scoped to user if authenticated)
   let storyQuery = supabase
     .from("stories")

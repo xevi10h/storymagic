@@ -46,6 +46,16 @@ export async function POST(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // Rate limit: max 3 generations per 5 minutes
+  const { checkRateLimit } = await import("@/lib/rate-limit");
+  const rl = await checkRateLimit(user.id, "generate_story");
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: "Too many requests. Please wait a few minutes." },
+      { status: 429, headers: { "Retry-After": String(rl.retryAfterSeconds ?? 300) } },
+    );
+  }
+
   // Atomic claim: only transition draft → generating
   const { data: claimedStories, error: claimError } = await supabase
     .from("stories")

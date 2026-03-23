@@ -22,6 +22,20 @@ export async function GET(
 ) {
   const { storyId } = await params;
 
+  // Rate limit: max 5 PDF generations per minute
+  const userSupabaseForRL = await createClient();
+  const { data: { user: rlUser } } = await userSupabaseForRL.auth.getUser();
+  if (rlUser) {
+    const { checkRateLimit } = await import("@/lib/rate-limit");
+    const rl = await checkRateLimit(rlUser.id, "generate_pdf");
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { error: "Too many requests. Please wait." },
+        { status: 429, headers: { "Retry-After": String(rl.retryAfterSeconds ?? 60) } },
+      );
+    }
+  }
+
   // Try user session first, fall back to service role for guest users
   const userSupabase = await createClient();
   const { data: { user } } = await userSupabase.auth.getUser();
