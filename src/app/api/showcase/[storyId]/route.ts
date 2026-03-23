@@ -41,6 +41,15 @@ export async function GET(
     return NextResponse.json({ error: "Story not found" }, { status: 404 });
   }
 
+  // Normalize generated_text: DB column may be text (string) or jsonb (object)
+  if (typeof story.generated_text === "string") {
+    try {
+      (story as Record<string, unknown>).generated_text = JSON.parse(story.generated_text as string);
+    } catch {
+      return NextResponse.json({ error: "Invalid story data" }, { status: 500 });
+    }
+  }
+
   return NextResponse.json(story, {
     headers: {
       "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600",

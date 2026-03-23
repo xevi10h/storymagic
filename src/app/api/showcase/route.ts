@@ -49,10 +49,14 @@ export async function GET(request: Request) {
 
   // Transform data to only expose what the landing page needs
   const showcase = (stories ?? []).map((story) => {
-    const generated = story.generated_text as unknown as {
+    // Normalize: generated_text may be string (text column) or object (jsonb)
+    let generated = story.generated_text as unknown as {
       bookTitle: string;
       scenes: { sceneNumber: number }[];
     } | null;
+    if (typeof generated === "string") {
+      try { generated = JSON.parse(generated); } catch { generated = null; }
+    }
 
     const illustrations = (
       story.story_illustrations as unknown as {
