@@ -22,6 +22,12 @@ export async function POST(request: Request) {
       addons: AddonId[];
     };
 
+    // Validate storyId is a valid UUID
+    const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!storyId || !UUID_RE.test(storyId)) {
+      return NextResponse.json({ error: "Invalid story ID" }, { status: 400 });
+    }
+
     // Validate format
     if (!PRICING[format]) {
       return NextResponse.json({ error: "Invalid format" }, { status: 400 });

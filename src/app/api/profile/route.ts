@@ -48,6 +48,13 @@ export async function PATCH(request: Request) {
   const body = await request.json();
   const { name } = body as { name?: string };
 
+  if (name !== undefined && (typeof name !== "string" || name.length > 100)) {
+    return NextResponse.json(
+      { error: "Invalid name: must be a string of at most 100 characters" },
+      { status: 400 }
+    );
+  }
+
   if (name !== undefined) {
     // Update profiles table
     const { error: profileError } = await supabase

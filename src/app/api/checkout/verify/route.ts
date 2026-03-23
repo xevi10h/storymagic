@@ -56,48 +56,62 @@ export async function GET(request: NextRequest) {
       const stripeSession = await getStripe().checkout.sessions.retrieve(sessionId);
 
       if (stripeSession.payment_status === "paid") {
-        // Payment confirmed by Stripe — update order directly
-        // Extract shipping details (Basil API + legacy fallback)
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const rawSession = stripeSession as any;
-        const shipping: { name?: string; address?: Record<string, string> } | undefined =
-          rawSession.collected_information?.shipping_details ??
-          rawSession.shipping_details ??
-          undefined;
-
-        const shippingAddress = shipping?.address
-          ? {
-              line1: shipping.address.line1 ?? "",
-              line2: shipping.address.line2 ?? "",
-              city: shipping.address.city ?? "",
-              state: shipping.address.state ?? "",
-              postal_code: shipping.address.postal_code ?? "",
-              country: shipping.address.country ?? "",
-            }
-          : null;
-
-        // Always use service client for order updates — user's RLS may not allow status changes
-        const adminClient = createServiceClient();
-        const { error: updateError } = await adminClient
+        // Idempotency guard: re-read current status to avoid double-update
+        // (race between webhook and verify endpoint)
+        const adminForCheck = createServiceClient();
+        const { data: freshOrder } = await adminForCheck
           .from("orders")
-          .update({
-            status: "paid",
-            stripe_payment_id: (typeof stripeSession.payment_intent === "string"
-              ? stripeSession.payment_intent
-              : stripeSession.payment_intent?.id) ?? null,
-            shipping_name: shipping?.name ?? null,
-            shipping_address: shippingAddress
-              ? JSON.parse(JSON.stringify(shippingAddress))
-              : null,
-          })
-          .eq("id", order.id);
+          .select("status")
+          .eq("id", order.id)
+          .single();
 
-        if (updateError) {
-          console.error(`[verify] Failed to update order ${order.id}:`, updateError.message);
-          return NextResponse.json({ error: "Order not yet paid" }, { status: 402 });
+        if (freshOrder?.status === "paid") {
+          // Already paid (e.g. webhook arrived first) — skip update, return order data
+          console.log(`[verify] Order ${order.id} already paid, skipping update`);
+        } else {
+          // Payment confirmed by Stripe — update order directly
+          // Extract shipping details (Basil API + legacy fallback)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const rawSession = stripeSession as any;
+          const shipping: { name?: string; address?: Record<string, string> } | undefined =
+            rawSession.collected_information?.shipping_details ??
+            rawSession.shipping_details ??
+            undefined;
+
+          const shippingAddress = shipping?.address
+            ? {
+                line1: shipping.address.line1 ?? "",
+                line2: shipping.address.line2 ?? "",
+                city: shipping.address.city ?? "",
+                state: shipping.address.state ?? "",
+                postal_code: shipping.address.postal_code ?? "",
+                country: shipping.address.country ?? "",
+              }
+            : null;
+
+          // Always use service client for order updates — user's RLS may not allow status changes
+          const adminClient = createServiceClient();
+          const { error: updateError } = await adminClient
+            .from("orders")
+            .update({
+              status: "paid",
+              stripe_payment_id: (typeof stripeSession.payment_intent === "string"
+                ? stripeSession.payment_intent
+                : stripeSession.payment_intent?.id) ?? null,
+              shipping_name: shipping?.name ?? null,
+              shipping_address: shippingAddress
+                ? JSON.parse(JSON.stringify(shippingAddress))
+                : null,
+            })
+            .eq("id", order.id);
+
+          if (updateError) {
+            console.error(`[verify] Failed to update order ${order.id}:`, updateError.message);
+            return NextResponse.json({ error: "Order not yet paid" }, { status: 402 });
+          }
+
+          console.log(`[verify] Order ${order.id} marked paid via direct Stripe check (session ${sessionId})`);
         }
-
-        console.log(`[verify] Order ${order.id} marked paid via direct Stripe check (session ${sessionId})`);
         // Fall through to return order data below
       } else {
         // Stripe confirms payment is not complete

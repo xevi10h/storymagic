@@ -68,7 +68,13 @@ function nativeFetch(
             ok: status >= 200 && status < 300,
             status,
             text: () => Promise.resolve(body),
-            json: () => Promise.resolve(JSON.parse(body)),
+            json: () => {
+              try {
+                return Promise.resolve(JSON.parse(body));
+              } catch {
+                return Promise.reject(new Error(`Non-JSON response from LLM API: ${body.slice(0, 200)}`));
+              }
+            },
           });
         });
         res.on("error", reject);

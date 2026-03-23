@@ -84,6 +84,6 @@ export async function prefetchAllIllustrations(
   );
 
   return results.map((r, i) =>
-    r.status === "fulfilled" ? r.value : illustrations[i],
+    r.status === "fulfilled" ? r.value : { ...illustrations[i], imageUrl: null },
   );
 }
