@@ -8,10 +8,19 @@ import AdventurePack from "@/components/landing/AdventurePack";
 import Testimonials from "@/components/landing/Testimonials";
 import CollectionOffer from "@/components/landing/CollectionOffer";
 import Footer from "@/components/landing/Footer";
+import { OrganizationJsonLd, ProductJsonLd } from "@/components/seo/JsonLd";
 
-export default function Home() {
+type Props = {
+  params: Promise<{ locale: string }>;
+};
+
+export default async function Home({ params }: Props) {
+  const { locale } = await params;
+
   return (
     <>
+      <OrganizationJsonLd locale={locale} />
+      <ProductJsonLd locale={locale} />
       <Navbar />
       <main>
         <Hero />

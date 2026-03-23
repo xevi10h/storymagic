@@ -17,5 +17,6 @@ export default function robots(): MetadataRoute.Robots {
       },
     ],
     sitemap: "https://meapica.com/sitemap.xml",
+    host: "https://meapica.com",
   };
 }

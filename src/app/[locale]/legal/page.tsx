@@ -3,10 +3,44 @@ import { Link } from "@/i18n/navigation";
 import Navbar from "@/components/landing/Navbar";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { routing } from "@/i18n/routing";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("legal.terms");
-  return { title: t("title") };
+const BASE_URL = "https://meapica.com";
+
+type PageProps = {
+  params: Promise<{ locale: string }>;
+};
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "legal.terms" });
+  const canonicalUrl = `${BASE_URL}/${locale}/legal`;
+
+  const languages: Record<string, string> = {};
+  for (const loc of routing.locales) {
+    languages[loc] = `${BASE_URL}/${loc}/legal`;
+  }
+  languages["x-default"] = `${BASE_URL}/${routing.defaultLocale}/legal`;
+
+  const descriptionMap: Record<string, string> = {
+    es: "Política de privacidad, condiciones de uso, cookies, preguntas frecuentes y envíos de Meapica.",
+    ca: "Política de privadesa, condicions d'ús, cookies, preguntes freqüents i enviaments de Meapica.",
+    en: "Privacy policy, terms of use, cookies, FAQ and shipping information for Meapica.",
+    fr: "Politique de confidentialité, conditions d'utilisation, cookies, FAQ et informations de livraison de Meapica.",
+  };
+
+  return {
+    title: t("title"),
+    description: descriptionMap[locale] || descriptionMap.es,
+    alternates: {
+      canonical: canonicalUrl,
+      languages,
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+  };
 }
 
 // Reusable section renderer
