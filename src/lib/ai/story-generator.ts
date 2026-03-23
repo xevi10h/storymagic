@@ -521,6 +521,8 @@ interface LocaleConfig {
   onomatopoeia: string;
   /** Language-specific grammar rules injected into every prompt (e.g. personal articles in Catalan) */
   grammarNotes?: string;
+  /** Sentence length adjustment for Romance languages (more function words than English) */
+  sentenceLengthAdjustment?: string;
 }
 
 const LOCALE_CONFIGS: Record<string, LocaleConfig> = {
@@ -528,6 +530,7 @@ const LOCALE_CONFIGS: Record<string, LocaleConfig> = {
     language: "Spanish (Spain)",
     genderLabels: { boy: "niño", girl: "niña", neutral: "niñe" },
     onomatopoeia: "¡SPLASH! ¡BUM! ¡FIUUU!",
+    sentenceLengthAdjustment: "SENTENCE LENGTH ADJUSTMENT: Spanish uses more function words (articles, prepositions, pronouns) than English. When the word-count target says '10-12 words', apply '12-15 words' for Spanish. When it says '6-7 words', apply '8-10 words'. NEVER exceed 16 words in a single sentence for young children. Split compound sentences using periods instead of commas.",
   },
   ca: {
     language: "Catalan",
@@ -539,6 +542,7 @@ const LOCALE_CONFIGS: Record<string, LocaleConfig> = {
 - Names starting with a vowel: ALWAYS write "l'[Name]" → "l'Anna", "l'Artur", "l'Irene"
 - NEVER write a bare name without its personal article: ✗ "Pau va córrer" → ✓ "En Pau va córrer"
 - The article is also required after conjunctions: "i en Pau", "però la Maria", "quan l'Anna"`,
+    sentenceLengthAdjustment: "SENTENCE LENGTH ADJUSTMENT: Catalan uses more function words (articles, prepositions, pronouns) than English. When the word-count target says '10-12 words', apply '12-15 words' for Catalan. When it says '6-7 words', apply '8-10 words'. NEVER exceed 16 words in a single sentence for young children. Split compound sentences using periods instead of commas.",
   },
   en: {
     language: "English",
@@ -549,6 +553,7 @@ const LOCALE_CONFIGS: Record<string, LocaleConfig> = {
     language: "French",
     genderLabels: { boy: "garçon", girl: "fille", neutral: "enfant" },
     onomatopoeia: "SPLASH ! BOUM ! WHOUSH !",
+    sentenceLengthAdjustment: "SENTENCE LENGTH ADJUSTMENT: French uses more function words (articles, prepositions, pronouns) than English. When the word-count target says '10-12 words', apply '12-15 words' for French. When it says '6-7 words', apply '8-10 words'. NEVER exceed 16 words in a single sentence for young children. Split compound sentences using periods instead of commas.",
   },
 };
 
@@ -1010,7 +1015,7 @@ EMOTIONAL ARC:
 LANGUAGE AND VOCABULARY — AGE ${input.age}
 ═══════════════════════════════════════════════════
 ${localeConfig.grammarNotes ? `\n${localeConfig.grammarNotes}\n` : ""}
-
+${localeConfig.sentenceLengthAdjustment ? `\n${localeConfig.sentenceLengthAdjustment}\n` : ""}
 ${input.age <= 4 ? `TODDLER VOCABULARY RULES (CRITICAL — non-negotiable):
 - Every sentence in the briefs must reflect toddler-appropriate language. The expanding writer will follow your vocabulary choices.
 - MAXIMUM sentence length in scene briefs: 6-7 words.
@@ -1210,6 +1215,7 @@ ${ageConfig.textStyle}
 - PERSONAL DETAILS: Only include if the brief mentions them. Do NOT add personal details (food, dream, companion, interests) that the brief does not reference. The architect already distributed them across the book.
 - NO FORCED METAPHORS: Never write similes that link the real world to the fantasy theme before the transition happens. Never describe mundane objects with adventure-themed comparisons unless it's clearly the child's imagination at work.
 ${localeConfig.grammarNotes ? `\n${localeConfig.grammarNotes}` : ""}
+${localeConfig.sentenceLengthAdjustment ? `\n${localeConfig.sentenceLengthAdjustment}` : ""}
 
 Return a JSON object: { "text": "the full narrative text" }`;
 }
@@ -1490,6 +1496,7 @@ Read all ${story.scenes.length} scenes carefully. Flag ONLY scenes with these ge
    ${input.age >= 7 ? `- A character explicitly states the moral ("the lesson is..." / "I learned that...") — for age ${input.age} the moral must be implicit, shown through action only` : ""}
    ${input.age <= 4 ? "- The story does not end with the protagonist back at home (circular structure is mandatory for this age)" : ""}
 ${localeConfig.grammarNotes ? `\n4. GRAMMAR — fix every instance found:\n${localeConfig.grammarNotes}` : ""}
+${localeConfig.sentenceLengthAdjustment ? `\n5. SENTENCE LENGTH — split any sentence exceeding 16 words into two shorter ones:\n${localeConfig.sentenceLengthAdjustment}` : ""}
 
 DO NOT FLAG:
 - Good scenes (be very conservative — the bar is genuine narrative damage)
