@@ -201,6 +201,34 @@
       "section3Text": "Stripe (processador de pagaments) pot establir les seves pròpies cookies durant el procés de checkout. Consulta la política de cookies de Stripe per a més informació.",
       "section4Title": "4. Gestió de cookies",
       "section4Text": "Pots configurar el teu navegador per rebutjar cookies, tot i que això pot afectar el funcionament del servei."
+    },
+    "faq": {
+      "title": "Preguntes Freqüents",
+      "intro": "Tot el que necessites saber sobre els contes personalitzats de Meapica.",
+      "section1Title": "Com es crea el meu conte?",
+      "section1Text": "Tu tries l'aventura, personalitzes el personatge amb el nom, l'edat i les característiques del teu fill, i la nostra tecnologia escriu una història única amb il·lustracions originals. Cap altre nen al món tindrà mai el mateix llibre.",
+      "section2Title": "Quant triga l'enviament?",
+      "section2Text": "Un cop feta la comanda, el llibre s'imprimeix i s'envia en 7-12 dies laborables dins d'Espanya, i 10-15 dies laborables a la resta d'Europa. Rebràs un correu amb el número de seguiment quan el teu paquet surti del taller.",
+      "section3Title": "Puc personalitzar el personatge?",
+      "section3Text": "Sí! Pots triar el nom, l'edat, el color de cabell, ulls i pell, el pentinat, el gènere, i fins i tot afegir la seva mascota, menjar preferit o somni de futur. Tot apareix a la història i a les il·lustracions.",
+      "section4Title": "Quin paper utilitzeu?",
+      "section4Text": "Utilitzem paper Munken de 170g amb certificació FSC, amb un to crema suau que no cansa la vista. L'enquadernació és cosida al fil amb tapes reforçades, feta per resistir anys de lectures.",
+      "section5Title": "Puc demanar canvis després de la compra?",
+      "section5Text": "Com que cada llibre és una edició única generada en el moment, no és possible modificar-lo un cop creat. Per això et mostrem una previsualització completa abans de comprar, perquè puguis revisar la història i les il·lustracions.",
+      "section6Title": "Quina mida té el llibre?",
+      "section6Text": "El llibre mesura 20×20 cm, el format ideal per a mans petites. Conté 32 pàgines interiors amb 12 escenes il·lustrades a doble pàgina, portada, dedicatòria personalitzada i contraportada."
+    },
+    "shipping": {
+      "title": "Enviaments i Embalatge",
+      "intro": "Cada llibre de Meapica és un regal. Per això, l'experiència de rebre'l a casa ha de ser tan especial com obrir-lo.",
+      "section1Title": "Terminis d'enviament",
+      "section1Text": "Espanya peninsular: 7-12 dies laborables. Balears i Canàries: 10-15 dies laborables. Resta d'Europa: 10-15 dies laborables. Cada llibre s'imprimeix sota demanda, per això el termini inclou la producció artesanal.",
+      "section2Title": "Cost d'enviament",
+      "section2Text": "L'enviament estàndard està inclòs en el preu del llibre. No hi ha costos ocults ni sorpreses a la caixa.",
+      "section3Title": "Embalatge sostenible",
+      "section3Text": "El teu llibre arriba protegit en una caixa de cartró reciclat, sense plàstics. Utilitzem materials respectuosos amb el medi ambient perquè el teu regal sigui coherent amb els valors que ensenyem als nostres fills.",
+      "section4Title": "Seguiment de la comanda",
+      "section4Text": "Un cop el llibre surti del taller, rebràs un correu electrònic amb el número de seguiment. També pots consultar l'estat de les teves comandes des del teu panell d'usuari a meapica.com."
     }
   },
   "notFound": {

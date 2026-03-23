@@ -201,6 +201,34 @@
       "section3Text": "Stripe (payment processor) may set its own cookies during the checkout process. Please refer to Stripe's cookie policy for more information.",
       "section4Title": "4. Cookie management",
       "section4Text": "You can configure your browser to reject cookies, although this may affect the operation of the service."
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "intro": "Everything you need to know about Meapica's personalized storybooks.",
+      "section1Title": "How is my book created?",
+      "section1Text": "You choose the adventure, customize the character with your child's name, age and features, and our technology writes a unique story with original illustrations. No other child in the world will ever have the same book.",
+      "section2Title": "How long does shipping take?",
+      "section2Text": "Once the order is placed, the book is printed and shipped within 7-12 business days in Spain, and 10-15 business days in the rest of Europe. You'll receive an email with the tracking number when your package leaves the workshop.",
+      "section3Title": "Can I customize the character?",
+      "section3Text": "Yes! You can choose the name, age, hair/eye/skin color, hairstyle, gender, and even add their pet, favorite food, or future dream. Everything appears in the story and illustrations.",
+      "section4Title": "What paper do you use?",
+      "section4Text": "We use FSC-certified Munken 170g paper with a soft cream tone that's easy on the eyes. The binding is thread-sewn with reinforced covers, built to withstand years of readings.",
+      "section5Title": "Can I request changes after purchase?",
+      "section5Text": "Since each book is a unique edition generated on the spot, it cannot be modified once created. That's why we show you a full preview before purchase, so you can review the story and illustrations.",
+      "section6Title": "What size is the book?",
+      "section6Text": "The book measures 20×20 cm (8×8 inches), the ideal format for little hands. It contains 32 inner pages with 12 illustrated double-page scenes, cover, personalized dedication, and back cover."
+    },
+    "shipping": {
+      "title": "Shipping & Packaging",
+      "intro": "Every Meapica book is a gift. That's why the experience of receiving it at home should be as special as opening it.",
+      "section1Title": "Shipping times",
+      "section1Text": "Mainland Spain: 7-12 business days. Balearic & Canary Islands: 10-15 business days. Rest of Europe: 10-15 business days. Each book is printed on demand, which is why the timeframe includes artisanal production.",
+      "section2Title": "Shipping cost",
+      "section2Text": "Standard shipping is included in the book price. No hidden costs or surprises in the box.",
+      "section3Title": "Sustainable packaging",
+      "section3Text": "Your book arrives protected in a recycled cardboard box, plastic-free. We use environmentally friendly materials so your gift is consistent with the values we teach our children.",
+      "section4Title": "Order tracking",
+      "section4Text": "Once the book leaves the workshop, you'll receive an email with the tracking number. You can also check your order status from your user dashboard at meapica.com."
     }
   },
   "notFound": {

@@ -34,7 +34,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link className="transition-colors hover:text-primary" href="/legal#terms">
+                <Link className="transition-colors hover:text-primary" href="/legal#shipping">
                   {t("shippingPackaging")}
                 </Link>
               </li>
@@ -46,7 +46,7 @@ export default function Footer() {
             <h4 className="mb-6 font-display text-lg font-bold text-white">{t("support")}</h4>
             <ul className="space-y-3 text-sm text-footer-muted">
               <li>
-                <Link className="transition-colors hover:text-primary" href="/legal#terms">
+                <Link className="transition-colors hover:text-primary" href="/legal#faq">
                   {t("faq")}
                 </Link>
               </li>

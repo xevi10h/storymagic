@@ -201,6 +201,34 @@
       "section3Text": "Stripe (processeur de paiement) peut définir ses propres cookies pendant le processus de paiement. Consultez la politique de cookies de Stripe pour plus d'informations.",
       "section4Title": "4. Gestion des cookies",
       "section4Text": "Vous pouvez configurer votre navigateur pour refuser les cookies, bien que cela puisse affecter le fonctionnement du service."
+    },
+    "faq": {
+      "title": "Questions Fréquentes",
+      "intro": "Tout ce que vous devez savoir sur les contes personnalisés de Meapica.",
+      "section1Title": "Comment mon livre est-il créé ?",
+      "section1Text": "Vous choisissez l'aventure, personnalisez le personnage avec le nom, l'âge et les caractéristiques de votre enfant, et notre technologie écrit une histoire unique avec des illustrations originales. Aucun autre enfant au monde n'aura jamais le même livre.",
+      "section2Title": "Combien de temps prend la livraison ?",
+      "section2Text": "Une fois la commande passée, le livre est imprimé et expédié sous 7-12 jours ouvrés en Espagne, et 10-15 jours ouvrés dans le reste de l'Europe. Vous recevrez un e-mail avec le numéro de suivi lorsque votre colis quittera l'atelier.",
+      "section3Title": "Puis-je personnaliser le personnage ?",
+      "section3Text": "Oui ! Vous pouvez choisir le nom, l'âge, la couleur des cheveux, des yeux et de la peau, la coiffure, le genre, et même ajouter son animal de compagnie, son plat préféré ou son rêve d'avenir. Tout apparaît dans l'histoire et les illustrations.",
+      "section4Title": "Quel papier utilisez-vous ?",
+      "section4Text": "Nous utilisons du papier Munken 170g certifié FSC, avec un ton crème doux qui ne fatigue pas les yeux. La reliure est cousue au fil avec des couvertures renforcées, conçue pour résister à des années de lectures.",
+      "section5Title": "Puis-je demander des modifications après l'achat ?",
+      "section5Text": "Comme chaque livre est une édition unique générée sur le moment, il n'est pas possible de le modifier une fois créé. C'est pourquoi nous vous montrons un aperçu complet avant l'achat, pour que vous puissiez vérifier l'histoire et les illustrations.",
+      "section6Title": "Quelle taille fait le livre ?",
+      "section6Text": "Le livre mesure 20×20 cm, le format idéal pour les petites mains. Il contient 32 pages intérieures avec 12 scènes illustrées en double page, couverture, dédicace personnalisée et quatrième de couverture."
+    },
+    "shipping": {
+      "title": "Livraison et Emballage",
+      "intro": "Chaque livre Meapica est un cadeau. C'est pourquoi l'expérience de le recevoir chez soi doit être aussi spéciale que de l'ouvrir.",
+      "section1Title": "Délais de livraison",
+      "section1Text": "Espagne péninsulaire : 7-12 jours ouvrés. Baléares et Canaries : 10-15 jours ouvrés. Reste de l'Europe : 10-15 jours ouvrés. Chaque livre est imprimé à la demande, c'est pourquoi le délai inclut la production artisanale.",
+      "section2Title": "Frais de livraison",
+      "section2Text": "La livraison standard est incluse dans le prix du livre. Pas de frais cachés ni de surprises dans le colis.",
+      "section3Title": "Emballage durable",
+      "section3Text": "Votre livre arrive protégé dans une boîte en carton recyclé, sans plastique. Nous utilisons des matériaux respectueux de l'environnement pour que votre cadeau soit cohérent avec les valeurs que nous enseignons à nos enfants.",
+      "section4Title": "Suivi de commande",
+      "section4Text": "Une fois que le livre quitte l'atelier, vous recevrez un e-mail avec le numéro de suivi. Vous pouvez également consulter l'état de vos commandes depuis votre espace utilisateur sur meapica.com."
     }
   },
   "notFound": {

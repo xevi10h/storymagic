@@ -201,6 +201,34 @@
       "section3Text": "Stripe (procesador de pagos) puede establecer sus propias cookies durante el proceso de checkout. Consulta la política de cookies de Stripe para más información.",
       "section4Title": "4. Gestión de cookies",
       "section4Text": "Puedes configurar tu navegador para rechazar cookies, aunque esto puede afectar al funcionamiento del servicio."
+    },
+    "faq": {
+      "title": "Preguntas Frecuentes",
+      "intro": "Todo lo que necesitas saber sobre los cuentos personalizados de Meapica.",
+      "section1Title": "¿Cómo se crea mi cuento?",
+      "section1Text": "Tú eliges la aventura, personalizas al protagonista con el nombre, la edad y las características de tu hijo, y nuestra tecnología escribe una historia única con ilustraciones originales. Ningún otro niño en el mundo tendrá jamás el mismo libro.",
+      "section2Title": "¿Cuánto tarda el envío?",
+      "section2Text": "Una vez realizado el pedido, el libro se imprime y se envía en 7-12 días laborables dentro de España, y 10-15 días laborables en el resto de Europa. Recibirás un correo con el número de seguimiento cuando tu paquete salga del taller.",
+      "section3Title": "¿Puedo personalizar el personaje?",
+      "section3Text": "¡Sí! Puedes elegir el nombre, la edad, el color de pelo, ojos y piel, el peinado, el género, e incluso añadir su mascota, comida favorita o sueño de futuro. Todo aparece en la historia y en las ilustraciones.",
+      "section4Title": "¿Qué papel utilizáis?",
+      "section4Text": "Utilizamos papel Munken de 170g con certificación FSC, con un tono crema suave que no cansa la vista. La encuadernación es cosida al hilo con tapas reforzadas, hecha para resistir años de lecturas.",
+      "section5Title": "¿Puedo pedir cambios después de la compra?",
+      "section5Text": "Como cada libro es una edición única generada en el momento, no es posible modificarlo una vez creado. Por eso te mostramos una previsualización completa antes de comprar, para que puedas revisar la historia y las ilustraciones.",
+      "section6Title": "¿Qué tamaño tiene el libro?",
+      "section6Text": "El libro mide 20×20 cm, el formato ideal para manos pequeñas. Contiene 32 páginas interiores con 12 escenas ilustradas a doble página, portada, dedicatoria personalizada y contraportada."
+    },
+    "shipping": {
+      "title": "Envíos y Empaquetado",
+      "intro": "Cada libro de Meapica es un regalo. Por eso, la experiencia de recibirlo en casa tiene que ser tan especial como abrirlo.",
+      "section1Title": "Plazos de envío",
+      "section1Text": "España peninsular: 7-12 días laborables. Baleares y Canarias: 10-15 días laborables. Resto de Europa: 10-15 días laborables. Cada libro se imprime bajo demanda, por eso el plazo incluye la producción artesanal.",
+      "section2Title": "Coste de envío",
+      "section2Text": "El envío estándar está incluido en el precio del libro. No hay costes ocultos ni sorpresas en la caja.",
+      "section3Title": "Empaquetado sostenible",
+      "section3Text": "Tu libro llega protegido en una caja de cartón reciclado, sin plásticos. Utilizamos materiales respetuosos con el medio ambiente para que tu regalo sea coherente con los valores que enseñamos a nuestros hijos.",
+      "section4Title": "Seguimiento del pedido",
+      "section4Text": "Una vez que el libro salga del taller, recibirás un correo electrónico con el número de seguimiento. También puedes consultar el estado de tus pedidos desde tu panel de usuario en meapica.com."
     }
   },
   "notFound": {

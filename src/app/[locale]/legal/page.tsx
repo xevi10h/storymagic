@@ -43,6 +43,8 @@ export default function LegalPage() {
     { id: "privacy", sectionCount: 7 },
     { id: "terms", sectionCount: 6 },
     { id: "cookies", sectionCount: 4 },
+    { id: "faq", sectionCount: 6 },
+    { id: "shipping", sectionCount: 4 },
   ] as const;
 
   return (
