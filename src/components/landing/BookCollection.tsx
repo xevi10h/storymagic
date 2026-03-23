@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { PRICING } from "@/lib/pricing";
 import { STORY_TEMPLATES } from "@/lib/create-store";
@@ -44,10 +44,22 @@ export default function BookCollection() {
   const [loaded, setLoaded] = useState(false);
   const [activeFilter, setActiveFilter] = useState<AgeFilter>("all");
   const scrollRef = useRef<HTMLDivElement>(null);
+  const locale = useLocale();
 
   useEffect(() => {
     async function fetchShowcase() {
       try {
+        // Try locale-specific showcase first, fall back to all
+        const localeRes = await fetch(`/api/showcase?locale=${locale}`);
+        if (localeRes.ok) {
+          const data: ShowcaseBook[] = await localeRes.json();
+          if (data.length > 0) {
+            setShowcaseBooks(data);
+            setLoaded(true);
+            return;
+          }
+        }
+        // Fallback: fetch all showcase stories regardless of locale
         const res = await fetch("/api/showcase");
         if (res.ok) {
           const data: ShowcaseBook[] = await res.json();
@@ -60,7 +72,7 @@ export default function BookCollection() {
       }
     }
     fetchShowcase();
-  }, []);
+  }, [locale]);
 
   const hasShowcase = showcaseBooks.length > 0;
 

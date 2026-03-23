@@ -8,9 +8,7 @@ import { PRICING } from "@/lib/pricing";
 import BookViewerSwitch from "@/components/book-viewer/BookViewerSwitch";
 import type { BookPage } from "@/components/book-viewer/types";
 import { SCENE_LAYOUT_PAIRS, getActLabel, getSpreadType } from "@/components/book-viewer/types";
-import type { GeneratedStory, GeneratedScene } from "@/lib/ai/story-generator";
-import Navbar from "@/components/landing/Navbar";
-import Footer from "@/components/landing/Footer";
+import type { GeneratedStory } from "@/lib/ai/story-generator";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -140,8 +138,8 @@ export default function ShowcasePage() {
   const [story, setStory] = useState<ShowcaseStoryData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [downloadingPdf, setDownloadingPdf] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
 
   useEffect(() => {
     async function fetchStory() {
@@ -189,58 +187,63 @@ export default function ShowcasePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-cream">
-        <Navbar />
-        <div className="flex min-h-[60vh] flex-col items-center justify-center">
-          <span className="material-symbols-outlined animate-spin text-4xl text-primary">progress_activity</span>
-          <p className="mt-4 text-sm text-text-muted">{t("loading")}</p>
-        </div>
-        <Footer />
+      <div className="flex min-h-screen flex-col items-center justify-center bg-cream">
+        <span className="material-symbols-outlined animate-spin text-4xl text-primary">progress_activity</span>
+        <p className="mt-4 text-sm text-text-muted">{t("loading")}</p>
       </div>
     );
   }
 
   if (error || !story) {
     return (
-      <div className="min-h-screen bg-cream">
-        <Navbar />
-        <div className="flex min-h-[60vh] flex-col items-center justify-center px-4">
-          <span className="material-symbols-outlined text-5xl text-red-400">error</span>
-          <p className="mt-4 text-base text-text-main">{error}</p>
-          <Link href="/" className="mt-6 text-sm text-primary hover:underline">{t("backToHome")}</Link>
-        </div>
-        <Footer />
+      <div className="flex min-h-screen flex-col items-center justify-center bg-cream px-4">
+        <span className="material-symbols-outlined text-5xl text-red-400">error</span>
+        <p className="mt-4 text-base text-text-main">{error}</p>
+        <Link href="/" className="mt-6 text-sm text-primary hover:underline">{t("backToHome")}</Link>
       </div>
     );
   }
 
+  const bookTitle = story.title ?? story.generated_text.bookTitle;
   const softcoverPrice = (PRICING.softcover.price / 100).toFixed(2);
   const hardcoverPrice = (PRICING.hardcover.price / 100).toFixed(2);
 
   return (
-    <div className="min-h-screen bg-cream">
-      <Navbar />
-
-      <main className="mx-auto max-w-5xl px-4 py-8">
-        {/* Header */}
-        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <div className="mb-2 flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
-                <span className="material-symbols-outlined text-sm">visibility</span>
-                {t("sampleBadge")}
-              </span>
-            </div>
-            <h1 className="font-display text-2xl font-bold text-secondary">
-              {story.title ?? story.generated_text.bookTitle}
-            </h1>
-            <p className="mt-1 text-sm text-text-muted">
-              {t("personalizedFor", { name: story.characters.name })} · {totalPages} {t("pages")}
-            </p>
+    <div className="flex min-h-screen flex-col bg-cream">
+      {/* ── Immersive header (same style as preview) ─────────────────────── */}
+      <header className="sticky top-0 z-50 border-b border-border-light bg-white/95 backdrop-blur-md">
+        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
+          <div className="flex items-center gap-3">
+            <Link href="/" className="text-text-muted transition-colors hover:text-primary">
+              <span className="material-symbols-outlined text-xl">arrow_back</span>
+            </Link>
+            <Link href="/">
+              <img src="/images/meapica-logo.svg" alt="Meapica" className="h-5" />
+            </Link>
           </div>
-        </div>
 
-        {/* Book Viewer — same as preview */}
+          <div className="flex items-center gap-3">
+            <span className="hidden text-sm font-medium text-secondary sm:inline">{bookTitle}</span>
+            <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-bold text-primary">
+              <span className="material-symbols-outlined text-xs">visibility</span>
+              {t("sampleBadge")}
+            </span>
+            <span className="text-xs tabular-nums text-text-muted">
+              {currentPage + 1} / {totalPages}
+            </span>
+          </div>
+
+          <Link
+            href="/"
+            className="text-text-muted transition-colors hover:text-primary"
+          >
+            <span className="material-symbols-outlined text-xl">close</span>
+          </Link>
+        </div>
+      </header>
+
+      {/* ── Book Viewer (centered, full-width like preview) ──────────────── */}
+      <main className="flex-1">
         <BookViewerSwitch
           pages={pages}
           templateId={story.template_id}
@@ -248,61 +251,43 @@ export default function ShowcasePage() {
           currentPage={currentPage}
           onPageChange={setCurrentPage}
         />
-
-        {/* CTA section below the book */}
-        <div className="mt-10 mx-auto max-w-lg space-y-4">
-          {/* Pricing card */}
-          <div className="rounded-xl border border-border-light bg-white p-6 shadow-sm">
-            <h2 className="font-display text-lg font-bold text-secondary">
-              {t("createYourVersion")}
-            </h2>
-            <p className="mt-1 text-sm text-text-soft">
-              {t("createYourVersionHint")}
-            </p>
-            <div className="mt-4 flex flex-col gap-2 border-t border-border-light pt-4">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-text-muted">{t("softcover")}</span>
-                <span className="font-bold text-secondary">{softcoverPrice} &euro;</span>
-              </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-text-muted">{t("hardcover")}</span>
-                <span className="font-bold text-primary">{hardcoverPrice} &euro;</span>
-              </div>
-            </div>
-          </div>
-
-          {/* PDF download */}
-          <button
-            onClick={handleDownloadPdf}
-            disabled={downloadingPdf}
-            className="group flex w-full items-center justify-center gap-2.5 rounded-xl border-2 border-border-light bg-white px-6 py-3.5 text-sm font-bold text-secondary shadow-sm transition-all hover:border-primary hover:bg-primary/5 hover:text-primary active:scale-[0.98] disabled:opacity-60"
-          >
-            {downloadingPdf ? (
-              <>
-                <span className="material-symbols-outlined animate-spin text-lg">progress_activity</span>
-                {t("generatingPdf")}
-              </>
-            ) : (
-              <>
-                <span className="material-symbols-outlined text-lg">picture_as_pdf</span>
-                {t("downloadPdf")}
-              </>
-            )}
-          </button>
-
-          {/* Main CTA */}
-          <Link
-            href="/crear"
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-4 text-base font-bold text-white shadow-lg shadow-primary/20 transition-all hover:bg-primary-hover active:scale-[0.98]"
-          >
-            <span className="material-symbols-outlined text-lg">edit</span>
-            {t("createYourOwn")}
-          </Link>
-          <p className="text-center text-xs text-text-muted">{t("createHint")}</p>
-        </div>
       </main>
 
-      <Footer />
+      {/* ── Bottom CTA bar (sticky, always visible) ─────────────────────── */}
+      <div className="sticky bottom-0 z-50 border-t border-border-light bg-white/95 backdrop-blur-md">
+        <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-4 py-3">
+          {/* Left: pricing info */}
+          <div className="hidden sm:block">
+            <p className="text-xs text-text-muted">
+              {t("softcover")} <span className="font-bold text-secondary">{softcoverPrice}€</span>
+              <span className="mx-2 text-border-light">|</span>
+              {t("hardcover")} <span className="font-bold text-primary">{hardcoverPrice}€</span>
+            </p>
+          </div>
+
+          {/* Right: action buttons */}
+          <div className="flex flex-1 items-center justify-end gap-3">
+            <button
+              onClick={handleDownloadPdf}
+              disabled={downloadingPdf}
+              className="flex items-center gap-1.5 rounded-lg border border-border-light bg-white px-3 py-2 text-xs font-medium text-secondary transition-all hover:border-primary hover:text-primary disabled:opacity-50"
+            >
+              <span className="material-symbols-outlined text-base">
+                {downloadingPdf ? "progress_activity" : "picture_as_pdf"}
+              </span>
+              <span className="hidden sm:inline">{downloadingPdf ? t("generatingPdf") : t("downloadPdf")}</span>
+            </button>
+
+            <Link
+              href="/crear"
+              className="flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-bold text-white shadow-md shadow-primary/20 transition-all hover:bg-primary-hover active:scale-[0.98]"
+            >
+              <span className="material-symbols-outlined text-base">edit</span>
+              {t("createYourOwn")}
+            </Link>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
