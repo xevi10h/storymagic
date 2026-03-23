@@ -113,13 +113,18 @@
     "reviews": {
       "laura": {
         "name": "Laura M.",
-        "subtitle": "Compró \"El Bosque Encantado\"",
+        "subtitle": "Compró \"El Bosque Mágico\"",
         "text": "Por fin algo que no necesita cargador. La calidad del libro es impresionante, parece sacado de una librería antigua pero con mi hijo dentro."
       },
       "carlos": {
         "name": "Carlos R.",
         "subtitle": "Compró Pack Premium",
         "text": "El olor a libro nuevo cuando abrimos la caja fue increíble. Los detalles físicos como la carta extra le dieron un toque mágico real."
+      },
+      "marta": {
+        "name": "Marta P.",
+        "subtitle": "Compró \"Piratas del Mar\"",
+        "text": "Mi hija de 4 años me lo pide cada noche. Ver su nombre y su cara en cada página le hizo una ilusión que ningún juguete digital ha conseguido jamás."
       }
     }
   },
@@ -143,7 +148,7 @@
     "readingClubDescription": "Consejos para fomentar la lectura sin pantallas.",
     "emailPlaceholder": "Tu correo electrónico",
     "joinClub": "Unirme al club",
-    "copyright": "© 2025 Meapica. Hecho con amor.",
+    "copyright": "© 2026 Meapica. Hecho con amor.",
     "legalNotice": "Aviso Legal",
     "privacy": "Privacidad",
     "cookies": "Cookies"

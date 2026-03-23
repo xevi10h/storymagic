@@ -24,19 +24,19 @@ export default function Footer() {
             <h4 className="mb-6 font-display text-lg font-bold text-white">{t("workshop")}</h4>
             <ul className="space-y-3 text-sm text-footer-muted">
               <li>
-                <a className="transition-colors hover:text-primary" href="#">
+                <Link className="transition-colors hover:text-primary" href="/#artisanal">
                   {t("ourPapers")}
-                </a>
+                </Link>
               </li>
               <li>
-                <a className="transition-colors hover:text-primary" href="#">
+                <Link className="transition-colors hover:text-primary" href="/#artisanal">
                   {t("artisanalProcess")}
-                </a>
+                </Link>
               </li>
               <li>
-                <a className="transition-colors hover:text-primary" href="#">
+                <Link className="transition-colors hover:text-primary" href="/legal#terms">
                   {t("shippingPackaging")}
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -46,19 +46,19 @@ export default function Footer() {
             <h4 className="mb-6 font-display text-lg font-bold text-white">{t("support")}</h4>
             <ul className="space-y-3 text-sm text-footer-muted">
               <li>
-                <a className="transition-colors hover:text-primary" href="#">
+                <Link className="transition-colors hover:text-primary" href="/legal#terms">
                   {t("faq")}
-                </a>
+                </Link>
               </li>
               <li>
-                <a className="transition-colors hover:text-primary" href="#">
+                <Link className="transition-colors hover:text-primary" href="/dashboard">
                   {t("trackOrder")}
-                </a>
+                </Link>
               </li>
               <li>
-                <a className="transition-colors hover:text-primary" href="#">
+                <Link className="transition-colors hover:text-primary" href="/#artisanal">
                   {t("qualityGuarantee")}
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

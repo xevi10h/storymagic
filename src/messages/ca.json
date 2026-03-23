@@ -113,13 +113,18 @@
     "reviews": {
       "laura": {
         "name": "Laura M.",
-        "subtitle": "Va comprar \"El Bosc Encantat\"",
+        "subtitle": "Va comprar \"El Bosc Màgic\"",
         "text": "Per fi alguna cosa que no necessita carregador. La qualitat del llibre és impressionant, sembla tret d'una llibreria antiga però amb el meu fill a dins."
       },
       "carlos": {
         "name": "Carlos R.",
         "subtitle": "Va comprar Pack Premium",
         "text": "L'olor a llibre nou quan vam obrir la caixa va ser increïble. Els detalls físics com la carta extra li van donar un toc màgic real."
+      },
+      "marta": {
+        "name": "Marta P.",
+        "subtitle": "Va comprar \"Pirates del Mar\"",
+        "text": "La meva filla de 4 anys me'l demana cada nit. Veure el seu nom i la seva cara a cada pàgina li va fer una il·lusió que cap joguina digital ha aconseguit mai."
       }
     }
   },
@@ -143,7 +148,7 @@
     "readingClubDescription": "Consells per fomentar la lectura sense pantalles.",
     "emailPlaceholder": "El teu correu electrònic",
     "joinClub": "Unir-me al club",
-    "copyright": "© 2025 Meapica. Fet amb amor.",
+    "copyright": "© 2026 Meapica. Fet amb amor.",
     "legalNotice": "Avís Legal",
     "privacy": "Privacitat",
     "cookies": "Cookies"

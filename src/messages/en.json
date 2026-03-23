@@ -113,13 +113,18 @@
     "reviews": {
       "laura": {
         "name": "Laura M.",
-        "subtitle": "Purchased \"The Enchanted Forest\"",
+        "subtitle": "Purchased \"The Magical Forest\"",
         "text": "Finally something that doesn't need a charger. The book quality is stunning — it looks like it came from an antique bookshop, but with my son inside."
       },
       "carlos": {
         "name": "Carlos R.",
         "subtitle": "Purchased Premium Pack",
         "text": "The new-book smell when we opened the box was incredible. Physical details like the extra letter gave it a truly magical touch."
+      },
+      "marta": {
+        "name": "Marta P.",
+        "subtitle": "Purchased \"Sea Pirates\"",
+        "text": "My 4-year-old asks for it every night. Seeing her name and her face on every page gave her a thrill that no digital toy has ever matched."
       }
     }
   },
@@ -143,7 +148,7 @@
     "readingClubDescription": "Tips for encouraging screen-free reading.",
     "emailPlaceholder": "Your email address",
     "joinClub": "Join the club",
-    "copyright": "© 2025 Meapica. Made with love.",
+    "copyright": "© 2026 Meapica. Made with love.",
     "legalNotice": "Legal Notice",
     "privacy": "Privacy",
     "cookies": "Cookies"

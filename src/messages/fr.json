@@ -113,13 +113,18 @@
     "reviews": {
       "laura": {
         "name": "Laura M.",
-        "subtitle": "A acheté \"La Forêt Enchantée\"",
+        "subtitle": "A acheté \"La Forêt Magique\"",
         "text": "Enfin quelque chose qui n'a pas besoin de chargeur. La qualité du livre est impressionnante, on dirait qu'il sort d'une librairie ancienne mais avec mon fils dedans."
       },
       "carlos": {
         "name": "Carlos R.",
         "subtitle": "A acheté le Pack Premium",
         "text": "L'odeur du livre neuf en ouvrant le colis était incroyable. Les détails physiques comme la lettre supplémentaire ont apporté une touche véritablement magique."
+      },
+      "marta": {
+        "name": "Marta P.",
+        "subtitle": "A acheté \"Pirates de la Mer\"",
+        "text": "Ma fille de 4 ans me le demande chaque soir. Voir son nom et son visage à chaque page lui a donné une joie qu'aucun jouet numérique n'a jamais égalée."
       }
     }
   },
@@ -143,7 +148,7 @@
     "readingClubDescription": "Conseils pour encourager la lecture sans écrans.",
     "emailPlaceholder": "Votre adresse email",
     "joinClub": "Rejoindre le club",
-    "copyright": "© 2025 Meapica. Fait avec amour.",
+    "copyright": "© 2026 Meapica. Fait avec amour.",
     "legalNotice": "Mentions Légales",
     "privacy": "Confidentialité",
     "cookies": "Cookies"

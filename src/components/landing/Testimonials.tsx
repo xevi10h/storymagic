@@ -11,6 +11,11 @@ const TESTIMONIALS = [
     initials: "CR",
     borderColor: "border-l-secondary",
   },
+  {
+    key: "marta" as const,
+    initials: "MP",
+    borderColor: "border-l-gold",
+  },
 ];
 
 export default function Testimonials() {
@@ -26,7 +31,7 @@ export default function Testimonials() {
           {t("subtitle")}
         </p>
 
-        <div className="grid grid-cols-1 gap-8 text-left md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-8 text-left md:grid-cols-3">
           {TESTIMONIALS.map((testimonial) => (
             <div
               key={testimonial.key}
