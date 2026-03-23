@@ -11,22 +11,33 @@ function createPublicClient() {
   );
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   const supabase = createPublicClient();
 
-  const { data: stories, error } = await supabase
+  // Optional locale filter from query param
+  const { searchParams } = new URL(request.url);
+  const locale = searchParams.get("locale");
+
+  let query = supabase
     .from("stories")
     .select(`
       id,
       template_id,
       generated_text,
+      locale,
       characters (name, age, gender),
       story_illustrations (scene_number, image_url)
     `)
     .eq("is_showcase", true)
     .eq("status", "ready")
     .order("created_at", { ascending: false })
-    .limit(6);
+    .limit(10);
+
+  if (locale) {
+    query = query.eq("locale", locale);
+  }
+
+  const { data: stories, error } = await query;
 
   if (error) {
     console.error("[Showcase] Error fetching showcase stories:", error);

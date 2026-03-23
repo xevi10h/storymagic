@@ -25,8 +25,12 @@ export async function GET(
       dedication_text,
       sender_name,
       status,
-      characters (name, age, gender, city),
-      story_illustrations (scene_number, image_url)
+      title,
+      cover_image_url,
+      character_portrait_url,
+      locale,
+      characters (name, age, gender, city, interests, special_trait, favorite_companion, favorite_food, future_dream, avatar_url),
+      story_illustrations (scene_number, image_url, status)
     `)
     .eq("id", storyId)
     .eq("is_showcase", true)
