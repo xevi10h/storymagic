@@ -494,7 +494,8 @@
       "loginAndSave": "Se connecter et enregistrer dans ma bibliothèque",
       "continueAsGuest": "Continuer en tant qu'invité",
       "preparingStory": "Préparation de votre conte...",
-      "guestNote": "En tant qu'invité, vous pourrez acheter votre livre, mais il ne sera pas sauvegardé dans une bibliothèque personnelle."
+      "guestNote": "En tant qu'invité, vous pourrez acheter votre livre, mais il ne sera pas sauvegardé dans une bibliothèque personnelle.",
+      "close": "Fermer"
     },
     "generar": {
       "creatingStory": "Création de votre histoire...",
@@ -627,6 +628,7 @@
       "characters": "Mes personnages"
     },
     "backHome": "Retour à l'accueil",
+    "loadError": "Impossible de charger votre biblioth\u00e8que",
     "storyStatus": {
       "draft": "Brouillon",
       "generating": "Génération...",
@@ -805,6 +807,27 @@
       "spiky": "En pointe",
       "buzz": "Rasé",
       "medium": "Mi-long"
+    },
+    "hairColors": {
+      "black": "Noir",
+      "brown-dark": "Brun foncé",
+      "brown": "Brun",
+      "blonde": "Blond",
+      "red": "Roux"
+    },
+    "eyeColors": {
+      "brown-dark": "Marron foncé",
+      "brown": "Marron",
+      "green": "Vert",
+      "blue": "Bleu",
+      "hazel": "Noisette"
+    },
+    "skinTones": {
+      "light": "Clair",
+      "medium-light": "Moyen clair",
+      "medium": "Moyen",
+      "dark": "Foncé",
+      "very-dark": "Très foncé"
     },
     "tags": {
       "dreamers": "Pour les rêveurs",

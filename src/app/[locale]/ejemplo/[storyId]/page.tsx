@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { PRICING } from "@/lib/pricing";
 import BookViewerSwitch from "@/components/book-viewer/BookViewerSwitch";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import type { BookPage } from "@/components/book-viewer/types";
 import { SCENE_LAYOUT_PAIRS, getActLabel, getSpreadType } from "@/components/book-viewer/types";
 import type { GeneratedStory } from "@/lib/ai/story-generator";
@@ -245,13 +246,15 @@ export default function ShowcasePage() {
 
       {/* ── Book Viewer (centered, full-width like preview) ──────────────── */}
       <main className="flex-1">
-        <BookViewerSwitch
-          pages={pages}
-          templateId={story.template_id}
-          gender={story.characters.gender}
-          currentPage={currentPage}
-          onPageChange={setCurrentPage}
-        />
+        <ErrorBoundary>
+          <BookViewerSwitch
+            pages={pages}
+            templateId={story.template_id}
+            gender={story.characters.gender}
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+          />
+        </ErrorBoundary>
       </main>
 
       {/* ── Bottom CTA bar (sticky, always visible) ─────────────────────── */}

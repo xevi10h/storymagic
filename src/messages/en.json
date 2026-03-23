@@ -494,7 +494,8 @@
       "loginAndSave": "Sign in and save to my library",
       "continueAsGuest": "Continue as guest",
       "preparingStory": "Preparing your story...",
-      "guestNote": "As a guest you can purchase your book, but it won't be saved to a personal library."
+      "guestNote": "As a guest you can purchase your book, but it won't be saved to a personal library.",
+      "close": "Close"
     },
     "generar": {
       "creatingStory": "Creating your story...",
@@ -627,6 +628,7 @@
       "characters": "My characters"
     },
     "backHome": "Back to home",
+    "loadError": "Could not load your library",
     "storyStatus": {
       "draft": "Draft",
       "generating": "Generating...",
@@ -805,6 +807,27 @@
       "spiky": "Spiky",
       "buzz": "Buzz cut",
       "medium": "Medium"
+    },
+    "hairColors": {
+      "black": "Black",
+      "brown-dark": "Dark brown",
+      "brown": "Brown",
+      "blonde": "Blonde",
+      "red": "Red"
+    },
+    "eyeColors": {
+      "brown-dark": "Dark brown",
+      "brown": "Brown",
+      "green": "Green",
+      "blue": "Blue",
+      "hazel": "Hazel"
+    },
+    "skinTones": {
+      "light": "Light",
+      "medium-light": "Medium light",
+      "medium": "Medium",
+      "dark": "Dark",
+      "very-dark": "Very dark"
     },
     "tags": {
       "dreamers": "For dreamers",

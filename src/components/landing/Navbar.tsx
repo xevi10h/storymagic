@@ -191,8 +191,19 @@ export default function Navbar() {
         </button>
       </div>
 
+      {/* Mobile backdrop */}
       {mobileOpen && (
-        <div className="mx-auto mt-2 max-w-6xl rounded-lg border border-border-light bg-white p-4 shadow-lg md:hidden">
+        <div
+          className="fixed inset-0 z-40 bg-black/20 md:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
+      <div
+        className={`mx-auto mt-2 max-w-6xl rounded-lg border border-border-light bg-white p-4 shadow-lg md:hidden z-50 relative transition-all duration-200 origin-top ${
+          mobileOpen ? "scale-y-100 opacity-100" : "scale-y-0 opacity-0 pointer-events-none"
+        }`}
+      >
           {navLinks.map((link) => (
             <a
               key={link.href}
@@ -284,8 +295,7 @@ export default function Navbar() {
               </>
             )}
           </div>
-        </div>
-      )}
+      </div>
     </nav>
   );
 }

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 
@@ -9,8 +10,7 @@ export default function AdventurePack() {
       <div
         className="absolute inset-0 opacity-10"
         style={{
-          backgroundImage:
-            "url('https://lh3.googleusercontent.com/aida-public/AB6AXuC7hINU9mwp25NrO_Iq3UCLpiX6Nz0XiawzNamGSrZh0kL8fDqnwIFgpNn_-GLdb1ldzSzlqpQJWQamAikyN8afx0SbRSFTZKd45IQ5zShVrJ6BMYJW1K5NYi-eH8Wq08tm2Crw0ChGQ-KMxUz9PW6b4o_QMCYnx7udmk-sOx_YlaG-NZjOL8fdNZDUIhfhLWFE3NZWRUga1qVlZLMAS0_FU_n9IXNxCAQDN8Vusne4x9wB2bYW4MKaZPscIsRrBapgRX5ccWoNCkVg')",
+          backgroundImage: "url('/images/adventure-pack-bg.png')",
         }}
       />
       <div className="relative z-10 mx-auto max-w-6xl px-4">
@@ -39,11 +39,12 @@ export default function AdventurePack() {
           {/* Right — Polaroid image */}
           <div className="relative flex-1">
             <div className="rotate-2 bg-white p-3 shadow-xl transition-transform duration-300 hover:rotate-0">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 alt="Gift set with book, stickers and coloring pencils on a table"
                 className="h-auto w-full sepia-[0.2]"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgbajYrzRnL4XE3sG513pFRed1tLDRzw7P8yVbC5sDY73010Q_cVzcHERjGVa6VzLC4Z9qu0I_XX4KvYoRWWWLBnXXkUsEEujruWJSzvjfQRR2ZIkwL2aUwbrGMC3F53ujhJ5PhWwNN3IIQwOv8WWB2U7XNvI3vhM8u1T-f8OHfEElGy9sA0VwMZOgh3eafeYSg5vCL3W2yXYNqFPyjsOs8kjxP4P0DSaY_lmJ2rs-TNU6rOJJHIAiyreOJ_kTK1Z8ndJ_Cg4WpdmS"
+                src="/images/gift-set.png"
+                width={512}
+                height={512}
               />
               <div className="pt-3 pb-1 text-center font-display text-gray-500">
                 {t("imageCaption")}

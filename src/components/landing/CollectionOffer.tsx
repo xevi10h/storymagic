@@ -5,7 +5,7 @@ export default function CollectionOffer() {
   const t = useTranslations("collectionOffer");
 
   return (
-    <section className="px-4 py-20">
+    <section className="overflow-x-hidden px-4 py-20">
       <div className="relative mx-auto max-w-5xl rotate-1 border-2 border-border-light bg-white p-2 shadow-2xl">
         <div
           className="relative overflow-hidden border border-border-medium p-8 text-center md:p-16"

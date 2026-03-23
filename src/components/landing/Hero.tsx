@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 
@@ -63,11 +64,13 @@ export default function Hero() {
           <div className="relative w-full transform rotate-1 bg-white p-3 shadow-xl transition-transform duration-500 aspect-[4/5] group-hover:rotate-0">
             <div className="pointer-events-none absolute inset-0 z-20 m-2 border-2 border-cream" />
             <div className="relative h-full w-full overflow-hidden bg-cream">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 alt="Child reading a physical book in a cozy nook with warm lighting"
                 className="h-full w-full object-cover sepia-[0.1] contrast-[1.1]"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfCPK8JPwKzIIoyvLEF3y03_9KevY3CktOtdAPpyoe4BrjDbeOszy7x8vdCCEbD4ujCalI1xDywwTe1r5ZE9yjQaEJsPRWB4eyH8quKkGxgf23seqlqDcj1sfzX6TR7S05gGCpwjv9TXm14tAWzAC7Iog_-pTkkcVLgzLu5VHNoIkMSfuKoPDqmPmYO0O5uEy0lU-PwlLvv5z5jfiVWwwEGpgy3HMuZOp-irLdzeYJvSloVC-FiFrw-bL9kaC25rb6Q2dh47J6L4DU"
+                src="/images/hero-child-reading.png"
+                width={512}
+                height={512}
+                priority
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-80" />
             </div>

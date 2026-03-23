@@ -227,6 +227,8 @@ export default function Step2CharacterCreation({
                       max={12}
                       value={character.age}
                       onChange={(e) => onUpdateCharacter({ age: parseInt(e.target.value) })}
+                      aria-label={t("ageLabel")}
+                      aria-valuetext={`${character.age} ${character.age === 1 ? t("year") : t("years")}`}
                       className="create-slider flex-1"
                     />
                     <span className="text-create-primary font-display text-base font-bold tabular-nums min-w-[52px] text-right">
@@ -336,6 +338,7 @@ export default function Step2CharacterCreation({
                         <button
                           key={h.id}
                           onClick={() => onUpdateCharacter({ hairColor: h.color })}
+                          aria-label={td(`hairColors.${h.id}`)}
                           className={`w-9 h-9 rounded-full transition-all ${
                             isSelected
                               ? "ring-[3px] ring-create-primary ring-offset-2 shadow-md scale-110"
@@ -367,6 +370,7 @@ export default function Step2CharacterCreation({
                         <button
                           key={e.id}
                           onClick={() => onUpdateCharacter({ eyeColor: e.color })}
+                          aria-label={td(`eyeColors.${e.id}`)}
                           className={`w-9 h-9 rounded-full transition-all ${
                             isSelected
                               ? "ring-[3px] ring-create-primary ring-offset-2 shadow-md scale-110"
@@ -401,6 +405,7 @@ export default function Step2CharacterCreation({
                         <button
                           key={s.id}
                           onClick={() => onUpdateCharacter({ skinTone: s.color })}
+                          aria-label={td(`skinTones.${s.id}`)}
                           className={`w-9 h-9 rounded-full transition-all ${
                             isSelected
                               ? "ring-[3px] ring-create-primary ring-offset-2 shadow-md scale-110"

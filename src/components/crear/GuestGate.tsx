@@ -18,13 +18,14 @@ export default function GuestGate({
   const t = useTranslations("crear.guestGate");
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4" role="dialog" aria-modal="true" aria-labelledby="guest-gate-title">
       <div className="relative w-full max-w-md rounded-2xl border border-create-neutral bg-white p-8 shadow-xl">
         {/* Close button */}
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-4 top-4 text-text-muted hover:text-text-main"
+          aria-label={t("close")}
+          className="absolute right-4 top-4 h-10 w-10 flex items-center justify-center rounded-full text-text-muted hover:text-text-main"
         >
           <span className="material-symbols-outlined">close</span>
         </button>
@@ -39,7 +40,7 @@ export default function GuestGate({
         </div>
 
         {/* Title */}
-        <h2 className="text-center font-display text-2xl font-bold text-secondary">
+        <h2 id="guest-gate-title" className="text-center font-display text-2xl font-bold text-secondary">
           {t("title")}
         </h2>
         <p className="mt-3 text-center text-sm leading-relaxed text-text-muted">

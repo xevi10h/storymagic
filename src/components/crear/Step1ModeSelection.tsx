@@ -52,14 +52,17 @@ export default function Step1ModeSelection({
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full max-w-5xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full max-w-5xl" role="radiogroup" aria-label={t("title")}>
           {MODES.map((m) => {
             const isSelected = mode === m.id;
             return (
-              <div
+              <button
+                type="button"
                 key={m.id}
                 onClick={() => onSelectMode(m.id)}
-                className={`group relative cursor-pointer flex flex-col rounded-[24px] border-2 transition-all duration-300 hover:-translate-y-1 p-4 md:p-5 h-full ${
+                aria-checked={isSelected}
+                role="radio"
+                className={`group relative cursor-pointer flex flex-col rounded-[24px] border-2 transition-all duration-300 hover:-translate-y-1 p-4 md:p-5 h-full text-left ${
                   isSelected
                     ? "create-card-selected ring-4 ring-create-primary/10"
                     : "bg-white border-transparent hover:border-create-primary/40 create-card-shadow"
@@ -112,7 +115,7 @@ export default function Step1ModeSelection({
                     {m.description}
                   </p>
                 </div>
-              </div>
+              </button>
             );
           })}
         </div>

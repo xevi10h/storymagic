@@ -494,7 +494,8 @@
       "loginAndSave": "Iniciar sessió i desar a la meva biblioteca",
       "continueAsGuest": "Continuar com a convidat",
       "preparingStory": "Preparant el teu conte...",
-      "guestNote": "Com a convidat podràs comprar el teu llibre, però no es desarà en una biblioteca personal."
+      "guestNote": "Com a convidat podràs comprar el teu llibre, però no es desarà en una biblioteca personal.",
+      "close": "Tancar"
     },
     "generar": {
       "creatingStory": "Creant la teva història...",
@@ -627,6 +628,7 @@
       "characters": "Els meus personatges"
     },
     "backHome": "Tornar a l'inici",
+    "loadError": "No s'ha pogut carregar la teva biblioteca",
     "storyStatus": {
       "draft": "Esborrany",
       "generating": "Generant...",
@@ -805,6 +807,27 @@
       "spiky": "De punta",
       "buzz": "Rapat",
       "medium": "Mitjà"
+    },
+    "hairColors": {
+      "black": "Negre",
+      "brown-dark": "Castany fosc",
+      "brown": "Castany",
+      "blonde": "Ros",
+      "red": "Pèl-roig"
+    },
+    "eyeColors": {
+      "brown-dark": "Marró fosc",
+      "brown": "Marró",
+      "green": "Verd",
+      "blue": "Blau",
+      "hazel": "Avellana"
+    },
+    "skinTones": {
+      "light": "Clar",
+      "medium-light": "Mig clar",
+      "medium": "Mig",
+      "dark": "Fosc",
+      "very-dark": "Molt fosc"
     },
     "tags": {
       "dreamers": "Per a somiadors",

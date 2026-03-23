@@ -8,6 +8,7 @@ import { PRICING, ADDONS, type BookFormat, type AddonId } from "@/lib/pricing";
 import { useAuth } from "@/hooks/useAuth";
 import CreationHeader from "@/components/crear/CreationHeader";
 import BookViewerSwitch from "@/components/book-viewer/BookViewerSwitch";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import type { BookPage } from "@/components/book-viewer/types";
 import { SCENE_LAYOUT_PAIRS, getActLabel, getSpreadType } from "@/components/book-viewer/types";
 import type { GeneratedStory } from "@/lib/ai/story-generator";
@@ -414,13 +415,15 @@ export default function PreviewPage() {
 
       {/* Book viewer */}
       <section className="mx-auto max-w-4xl px-4 py-6 sm:py-8">
-        <BookViewerSwitch
-          pages={visiblePages}
-          templateId={story.template_id}
-          gender={story.characters.gender}
-          currentPage={currentPage}
-          onPageChange={setCurrentPage}
-        />
+        <ErrorBoundary>
+          <BookViewerSwitch
+            pages={visiblePages}
+            templateId={story.template_id}
+            gender={story.characters.gender}
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+          />
+        </ErrorBoundary>
       </section>
 
       {/* PDF Download — only for fully ready stories */}

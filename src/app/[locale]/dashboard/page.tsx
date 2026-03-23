@@ -156,11 +156,13 @@ export default function DashboardPage() {
     );
   }
 
-  if (error) {
+  if (error || (!loading && data === null)) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-cream px-4">
         <span className="material-symbols-outlined text-5xl text-red-400">error</span>
-        <p className="mt-4 text-base text-text-main">{error}</p>
+        <p className="mt-4 text-base text-text-main">
+          {error ?? t("loadError")}
+        </p>
         <Link href="/" className="mt-6 text-sm text-primary hover:underline">
           {t("backHome")}
         </Link>
