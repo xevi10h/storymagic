@@ -128,7 +128,7 @@ export default function MobileBookViewer({
           }}
           disabled={isOnCover}
           className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border-light bg-white text-text-muted transition-all hover:border-create-primary hover:text-create-primary disabled:opacity-30 disabled:hover:border-border-light disabled:hover:text-text-muted"
-          aria-label="Previous page"
+          aria-label={t("previous")}
         >
           <span className="material-symbols-outlined text-lg">chevron_left</span>
         </button>
@@ -153,7 +153,7 @@ export default function MobileBookViewer({
           }}
           disabled={isOnBack}
           className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border-light bg-white text-text-muted transition-all hover:border-create-primary hover:text-create-primary disabled:opacity-30 disabled:hover:border-border-light disabled:hover:text-text-muted"
-          aria-label="Next page"
+          aria-label={t("next")}
         >
           <span className="material-symbols-outlined text-lg">chevron_right</span>
         </button>
