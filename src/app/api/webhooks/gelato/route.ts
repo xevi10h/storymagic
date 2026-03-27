@@ -18,11 +18,11 @@ export const runtime = "nodejs";
 export async function POST(request: Request) {
   // Verify webhook secret — configured as Authorization header in Gelato dashboard.
   // Without this, anyone who discovers the endpoint URL can spoof order updates.
-  const webhookSecret = process.env.GELATO_WEBHOOK_SECRET;
+  const webhookSecret = process.env.GELATO_WEBHOOK_SECRET?.trim();
   if (webhookSecret) {
     const authHeader = request.headers.get("authorization");
     const secretParam = new URL(request.url).searchParams.get("secret");
-    const providedSecret = authHeader?.replace("Bearer ", "") ?? secretParam;
+    const providedSecret = (authHeader?.replace("Bearer ", "") ?? secretParam)?.trim();
     if (providedSecret !== webhookSecret) {
       console.warn("[Gelato webhook] Invalid or missing authorization");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
