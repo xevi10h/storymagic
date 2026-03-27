@@ -98,7 +98,7 @@ async function handleOrderStatusUpdated(event: GelatoWebhookEvent) {
   console.log(`[Gelato webhook] Order ${event.orderId} → ${newStatus}`);
 
   if (newStatus === "shipped" || newStatus === "delivered") {
-    await syncStoryStatus(supabase, event.orderId);
+    await syncStoryStatus(supabase, event.orderId, newStatus);
   }
 }
 
@@ -119,6 +119,7 @@ async function handleOrderItemStatusUpdated(event: GelatoWebhookEvent) {
     .update({
       status: "shipped",
       tracking_number: trackingCode ?? null,
+      tracking_url: trackingUrl ?? null,
     })
     .eq("gelato_order_id", event.orderId);
 
@@ -128,13 +129,14 @@ async function handleOrderItemStatusUpdated(event: GelatoWebhookEvent) {
 
   console.log(`[Gelato webhook] Item shipped — tracking: ${trackingCode} ${trackingUrl ?? ""}`);
 
-  await syncStoryStatus(supabase, event.orderId);
+  await syncStoryStatus(supabase, event.orderId, "shipped");
 }
 
 async function syncStoryStatus(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   supabase: any,
   gelatoOrderId: string,
+  orderStatus: string,
 ) {
   const { data: order } = await supabase
     .from("orders")
@@ -144,10 +146,13 @@ async function syncStoryStatus(
 
   if (!order?.story_id) return;
 
+  // Map order status to story status
+  const storyStatus = orderStatus === "delivered" ? "delivered" : "shipped";
+
   await supabase
     .from("stories")
-    .update({ status: "shipped" })
+    .update({ status: storyStatus })
     .eq("id", order.story_id);
 
-  console.log(`[Gelato webhook] Story ${order.story_id} → shipped`);
+  console.log(`[Gelato webhook] Story ${order.story_id} → ${storyStatus}`);
 }

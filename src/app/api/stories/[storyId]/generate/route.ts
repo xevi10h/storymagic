@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { generateArchitect, expandScenes, reviewAndRefineStory, type StoryInput } from "@/lib/ai/story-generator";
 import {
   generateIllustrationsForStory,
+  generateIllustrationsWithFlux,
   buildCharacterReference,
   buildSecondaryPrompt,
   createStyleFromAvatar,
@@ -16,6 +17,9 @@ import { getMockIllustrationUrl, getMockCoverUrl, getMockPortraitUrl, getMockSec
 import { STORY_TEMPLATES } from "@/lib/create-store";
 import { PREVIEW_ILLUSTRATION_COUNT } from "@/lib/pricing";
 import { SCENE_LAYOUT_PAIRS, LAYOUT_IMAGE_SIZE } from "@/components/book-viewer/types";
+import { extractVisualAssets, generateReferenceImages } from "@/lib/ai/visual-assets";
+import { generateScreenplay } from "@/lib/ai/scene-screenplay";
+import { generateFluxPro } from "@/lib/ai/flux-kontext";
 
 // Architect (~15s) + expansion+illustrations in parallel (~15s) + uploads (~5s) = ~35s typical
 export const maxDuration = 300;
@@ -227,6 +231,162 @@ export async function POST(
     const { architect, ageConfig } = architectResult;
     console.log(`[Generate] Phase 1 done — "${architect.bookTitle}", styleId=${styleId ? styleId.slice(0, 8) + "..." : "null"} [${elapsed(routeStart)}]`);
 
+    // ── Feature flag: choose illustration provider ────────────────────────────
+    const illustrationProvider = process.env.ILLUSTRATION_PROVIDER || "recraft";
+    const useFlux = illustrationProvider === "flux" && !!process.env.BFL_API_KEY;
+
+    if (useFlux) {
+      // ══════════════════════════════════════════════════════════════════════════
+      // FLUX KONTEXT PIPELINE — character-consistent illustrations via reference images
+      //
+      //   Phase 2a: Extract visual assets from story
+      //   Phase 2b: Generate reference images
+      //   Phase 3:  Expand scenes + Generate screenplay (parallel)
+      //   Phase 4:  Generate preview illustrations
+      //   Phase 5:  Cover generation with FLUX
+      //   Phase 6:  Editorial review + upload illustrations (parallel)
+      //   Phase 7:  Save to database
+      //   Phase 8:  Final status update
+      // ══════════════════════════════════════════════════════════════════════════
+
+      // ── Phase 2a: Extract visual assets from story ──────────────────────────
+      console.log(`[Generate][FLUX] Phase 2a: Extracting visual assets... [${elapsed(routeStart)}]`);
+      const assetTree = await extractVisualAssets(architect, characterRef, ageConfig);
+      console.log(`[Generate][FLUX] Phase 2a done — ${assetTree.assets.length} assets identified [${elapsed(routeStart)}]`);
+
+      // ── Phase 2b: Generate reference images ─────────────────────────────────
+      console.log(`[Generate][FLUX] Phase 2b: Generating reference images... [${elapsed(routeStart)}]`);
+      const assetReferences = await generateReferenceImages(assetTree, supabase, storyId);
+      console.log(`[Generate][FLUX] Phase 2b done — ${assetReferences.length} references generated [${elapsed(routeStart)}]`);
+
+      // ── Phase 3: Expand scenes + Generate screenplay (parallel) ─────────────
+      console.log(`[Generate][FLUX] Phase 3: Expansion + Screenplay in parallel [${elapsed(routeStart)}]`);
+      const [generatedStory, screenplay] = await Promise.all([
+        expandScenes(architect, input, ageConfig),
+        generateScreenplay(architect, assetTree, characterRef, ageConfig),
+      ]);
+      console.log(`[Generate][FLUX] Phase 3 done — ${generatedStory.scenes.length} scenes expanded, ${screenplay.scenes.length} screenplay specs [${elapsed(routeStart)}]`);
+
+      // ── Phase 4: Generate preview illustrations ─────────────────────────────
+      const previewSceneNumbers = generatedStory.scenes
+        .slice(0, PREVIEW_ILLUSTRATION_COUNT)
+        .map((s) => s.sceneNumber);
+      console.log(`[Generate][FLUX] Phase 4: Generating ${previewSceneNumbers.length} preview illustrations... [${elapsed(routeStart)}]`);
+      const previewIllustrations = await generateIllustrationsWithFlux(
+        screenplay, assetReferences, { sceneNumbers: previewSceneNumbers, batchSize: 2 },
+      );
+      console.log(`[Generate][FLUX] Phase 4 done — ${previewIllustrations.length} previews generated [${elapsed(routeStart)}]`);
+
+      // ── Phase 5: Cover generation with FLUX ─────────────────────────────────
+      console.log(`[Generate][FLUX] Phase 5: Cover generation... [${elapsed(routeStart)}]`);
+      let coverUrl: string | null = null;
+      try {
+        const coverResult = await generateFluxPro(screenplay.coverSpec.fluxPrompt, {
+          inputImage: assetReferences.find((r) => r.assetId === "protagonist")?.base64,
+          aspectRatio: "1:1",
+        });
+        coverUrl = await uploadCoverFromUrl(supabase, storyId, coverResult.url);
+      } catch (err) {
+        console.error("[Generate][FLUX] Cover failed (non-fatal):", err);
+      }
+      console.log(`[Generate][FLUX] Phase 5 done — cover=${!!coverUrl} [${elapsed(routeStart)}]`);
+
+      // ── Phase 6: Editorial review + upload illustrations (parallel) ─────────
+      console.log(`[Generate][FLUX] Phase 6: Editorial review + uploads in parallel [${elapsed(routeStart)}]`);
+      const [refinedStory, finalPreviewIllustrations] = await Promise.all([
+        reviewAndRefineStory(generatedStory, input, ageConfig),
+        Promise.all(
+          previewIllustrations.map(async (ill, index) => {
+            if (ill.provider !== "flux") return ill;
+            try {
+              const permanentUrl = await uploadIllustrationFromUrl(supabase, storyId, previewSceneNumbers[index], ill.imageUrl);
+              return { ...ill, imageUrl: permanentUrl };
+            } catch (err) {
+              console.warn(`[Storage][FLUX] Upload failed for scene ${previewSceneNumbers[index]}:`, err);
+              return ill;
+            }
+          }),
+        ),
+      ]);
+      console.log(`[Generate][FLUX] Phase 6 done — ${refinedStory.scenes.length} scenes refined, uploads complete [${elapsed(routeStart)}]`);
+
+      // ── Phase 7: Save to database — include FLUX metadata ──────────────────
+      console.log(`[Generate][FLUX] Phase 7: Saving to database... [${elapsed(routeStart)}]`);
+      const storyToSave = {
+        ...refinedStory,
+        fluxAssetTree: assetTree,
+        fluxReferences: assetReferences.map((r) => ({ assetId: r.assetId, storageUrl: r.storageUrl })),
+        fluxScreenplay: screenplay,
+        illustrationProvider: "flux" as const,
+      };
+
+      const { error: textSaveError } = await supabase
+        .from("stories")
+        .update({
+          generated_text: JSON.parse(JSON.stringify(storyToSave)),
+          title: refinedStory.titleOptions[0] ?? refinedStory.bookTitle,
+          pdf_url: null,
+        })
+        .eq("id", storyId);
+      if (textSaveError) throw new Error(`Failed to save story text: ${textSaveError.message}`);
+
+      // Delete old and insert new illustration rows
+      const { error: deleteError } = await supabase
+        .from("story_illustrations")
+        .delete()
+        .eq("story_id", storyId);
+      if (deleteError) throw new Error(`Failed to delete old illustrations: ${deleteError.message}`);
+
+      const illustrationRows = refinedStory.scenes.map((scene, index) => {
+        const isPreview = index < PREVIEW_ILLUSTRATION_COUNT;
+        return {
+          story_id: storyId,
+          scene_number: scene.sceneNumber,
+          prompt_used: screenplay.scenes.find((s) => s.sceneNumber === scene.sceneNumber)?.fluxPrompt || scene.imagePrompt,
+          image_url: isPreview ? finalPreviewIllustrations[index]?.imageUrl || null : null,
+          status: isPreview ? ("ready" as const) : ("pending" as const),
+        };
+      });
+
+      const { error: insertError } = await supabase
+        .from("story_illustrations")
+        .insert(illustrationRows);
+      if (insertError) throw new Error(`Failed to insert illustrations: ${insertError.message}`);
+      console.log(`[Generate][FLUX] Phase 7 done — text + ${illustrationRows.length} illustration rows saved [${elapsed(routeStart)}]`);
+
+      // ── Phase 8: Final status update ────────────────────────────────────────
+      const finalUpdate: Record<string, unknown> = { status: "preview" };
+      if (coverUrl) finalUpdate.cover_image_url = coverUrl;
+      if (character.avatar_url) finalUpdate.character_portrait_url = character.avatar_url;
+
+      const { error: finalUpdateError } = await supabase
+        .from("stories")
+        .update(finalUpdate)
+        .eq("id", storyId);
+      if (finalUpdateError) throw new Error(`Failed to finalize: ${finalUpdateError.message}`);
+
+      const fluxCount = finalPreviewIllustrations.filter((i) => i.provider === "flux").length;
+      const mockCount = finalPreviewIllustrations.filter((i) => i.provider === "mock").length;
+
+      if (mockCount > 0) {
+        console.error(`[Generate][FLUX] WARNING: ${mockCount}/${PREVIEW_ILLUSTRATION_COUNT} illustrations fell back to MOCK`);
+      }
+      console.log(`[Generate][FLUX] DONE — preview, cover=${!!coverUrl}, flux=${fluxCount}, mock=${mockCount} [${elapsed(routeStart)}]`);
+
+      return NextResponse.json({
+        status: "preview",
+        bookTitle: generatedStory.titleOptions[0] ?? generatedStory.bookTitle,
+        titleOptions: generatedStory.titleOptions,
+        scenesCount: generatedStory.scenes.length,
+        previewIllustrations: PREVIEW_ILLUSTRATION_COUNT,
+        coverGenerated: !!coverUrl,
+        illustrations: { total: finalPreviewIllustrations.length, flux: fluxCount, mock: mockCount },
+      });
+    } else {
+    // ══════════════════════════════════════════════════════════════════════════
+    // RECRAFT PIPELINE (original) — unchanged
+    // ══════════════════════════════════════════════════════════════════════════
+
     // Extract illustration prompts + sizes from the architect (available NOW, before expansion)
     const previewPrompts = architect.scenes
       .slice(0, PREVIEW_ILLUSTRATION_COUNT)
@@ -320,7 +480,7 @@ export async function POST(
     console.log(`[Generate] Phase 3 done — ${refinedStory.scenes.length} scenes refined, uploads complete [${elapsed(routeStart)}]`);
 
     // Portrait: reuse existing
-    let persistedPortraitUrl: string | null = character.avatar_url || null;
+    const persistedPortraitUrl: string | null = character.avatar_url || null;
 
     // ── Phase 4: Save refined text to DB ─────────────────────────────────────
     const { error: textSaveError } = await supabase
@@ -413,6 +573,7 @@ export async function POST(
       coverGenerated: !!persistedCoverUrl,
       illustrations: { total: finalPreviewIllustrations.length, recraft: recraftCount, mock: mockCount },
     });
+    } // end else (Recraft pipeline)
   } catch (error) {
     await supabase.from("stories").update({ status: "draft" }).eq("id", storyId);
     console.error(`[Generate] FAILED after ${elapsed(routeStart)}:`, error);

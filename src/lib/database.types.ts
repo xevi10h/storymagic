@@ -154,6 +154,7 @@ export type Database = {
           subtotal: number
           total: number
           tracking_number: string | null
+          tracking_url: string | null
           updated_at: string
           user_id: string
         }
@@ -174,6 +175,7 @@ export type Database = {
           subtotal: number
           total: number
           tracking_number?: string | null
+          tracking_url?: string | null
           updated_at?: string
           user_id: string
         }
@@ -194,6 +196,7 @@ export type Database = {
           subtotal?: number
           total?: number
           tracking_number?: string | null
+          tracking_url?: string | null
           updated_at?: string
           user_id?: string
         }

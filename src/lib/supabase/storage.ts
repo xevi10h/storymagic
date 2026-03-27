@@ -256,3 +256,23 @@ export async function uploadCoverSpreadPdf(
   if (error) throw new Error(`Cover spread PDF upload error: ${error.message}`);
   return path;
 }
+
+/**
+ * Upload a reference image from a base64-encoded string to Supabase Storage.
+ * Stored at {storyId}/ref-{assetId}.png in the illustrations bucket (public).
+ * Returns the permanent public URL.
+ */
+export async function uploadReferenceFromBase64(
+  supabase: SupabaseClient,
+  storyId: string,
+  assetId: string,
+  imageBase64: string,
+): Promise<string> {
+  const buf = Buffer.from(imageBase64, "base64");
+  const path = `${storyId}/ref-${assetId}.png`;
+  const { error } = await supabase.storage
+    .from("illustrations")
+    .upload(path, buf, { contentType: "image/png", upsert: true });
+  if (error) throw new Error(`Reference upload failed for ${assetId}: ${error.message}`);
+  return `${SUPABASE_URL}/storage/v1/object/public/illustrations/${path}`;
+}

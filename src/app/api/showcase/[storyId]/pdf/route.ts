@@ -48,6 +48,12 @@ export async function GET(
   const character = story.characters as unknown as {
     name: string;
     age: number;
+    gender?: string;
+    city?: string;
+    special_trait?: string;
+    favorite_companion?: string;
+    favorite_food?: string;
+    future_dream?: string;
   };
 
   const illustrations = (
@@ -65,10 +71,17 @@ export async function GET(
     templateId: story.template_id,
     characterName: character.name,
     characterAge: character.age,
+    characterGender: character.gender as "boy" | "girl" | undefined,
+    characterCity: character.city ?? undefined,
+    specialTrait: character.special_trait ?? undefined,
+    favoriteCompanion: character.favorite_companion ?? undefined,
+    favoriteFood: character.favorite_food ?? undefined,
+    futureDream: character.future_dream ?? undefined,
     dedicationText: story.dedication_text,
     senderName: story.sender_name,
     storyId,
     coverImageUrl: story.cover_image_url ?? null,
+    portraitUrl: story.character_portrait_url ?? null,
     illustrations,
     locale: (story as Record<string, unknown>).locale as string | undefined,
   };

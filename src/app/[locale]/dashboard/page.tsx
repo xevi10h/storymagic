@@ -30,6 +30,7 @@ interface DashboardOrder {
   subtotal: number;
   total: number;
   tracking_number: string | null;
+  tracking_url: string | null;
   shipping_name: string | null;
   created_at: string;
   story_id: string;
@@ -558,9 +559,20 @@ function OrdersTab({
                   <p className="text-xs font-medium text-text-main">
                     {t("trackingNumber")}
                   </p>
-                  <p className="text-xs text-text-muted font-mono">
-                    {order.tracking_number}
-                  </p>
+                  {order.tracking_url ? (
+                    <a
+                      href={order.tracking_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-primary font-mono underline hover:text-primary/80 transition-colors"
+                    >
+                      {order.tracking_number}
+                    </a>
+                  ) : (
+                    <p className="text-xs text-text-muted font-mono">
+                      {order.tracking_number}
+                    </p>
+                  )}
                 </div>
               </div>
             )}

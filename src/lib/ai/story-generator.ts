@@ -37,7 +37,7 @@ import { buildCharacterVisualDescription, getGenderColorDirective } from "./char
 
 // ── Native HTTPS fetch (bypasses undici) ─────────────────────────────────────
 
-function nativeFetch(
+export function nativeFetch(
   url: string,
   options: { method: string; headers: Record<string, string>; body: string; timeoutMs?: number },
 ): Promise<{ ok: boolean; status: number; text: () => Promise<string>; json: () => Promise<unknown> }> {
@@ -124,7 +124,7 @@ interface ArchitectScene {
   type: "scene" | "bridge";
 }
 
-interface ArchitectOutput {
+export interface ArchitectOutput {
   bookTitle: string;
   titleOptions: string[];
   coverImagePrompt: string;
@@ -287,7 +287,7 @@ function getTemplateTone(templateId: string, age: number): NarrativeTone {
 
 // ── Age config ───────────────────────────────────────────────────────────────
 
-interface AgeConfig {
+export interface AgeConfig {
   sceneCount: number;
   bridgeCount: number;
   wordsPerScene: string;
@@ -592,10 +592,10 @@ export function hasAnyProvider(): boolean {
 
 // ── LLM call helper ──────────────────────────────────────────────────────────
 
-async function callLLM(
+export async function callLLM(
   prompt: string,
   model: string,
-  options?: { json?: boolean; timeoutMs?: number },
+  options?: { json?: boolean; timeoutMs?: number; images?: string[] },
 ): Promise<string> {
   const apiKey = getApiKey();
   const url = "https://api.openai.com/v1/chat/completions";
@@ -616,7 +616,12 @@ async function callLLM(
         role: "system",
         content: "You are a world-class children's book author and editor with deep expertise in child development psychology, linguistics, and age-appropriate storytelling. You write with the precision of a published author and the warmth of a gifted parent. Your prose is always calibrated exactly to the cognitive, emotional, and linguistic development stage of the target child — never above it, never below it. You have written hundreds of acclaimed children's books across all age groups.",
       },
-      { role: "user", content: prompt },
+      { role: "user", content: options?.images?.length
+        ? [
+            ...options.images.map(url => ({ type: "image_url" as const, image_url: { url } })),
+            { type: "text" as const, text: prompt },
+          ]
+        : prompt },
     ],
   };
   if (useJson) {
@@ -691,7 +696,7 @@ async function callLLM(
   return content;
 }
 
-function parseJsonResponse<T>(raw: string, label: string): T {
+export function parseJsonResponse<T>(raw: string, label: string): T {
   const cleaned = raw
     .replace(/^```json\s*/i, "")
     .replace(/^```\s*/i, "")

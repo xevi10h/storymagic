@@ -1475,6 +1475,24 @@ function RocketIcon({ color, size }: { color: string; size?: number }) {
   );
 }
 
+/** People icon — for social/friends activities (matches Material Symbols "group") */
+function PeopleIcon({ color, size }: { color: string; size?: number }) {
+  return (
+    <TraitIcon color={color} size={size}>
+      <Path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" fill={color} />
+    </TraitIcon>
+  );
+}
+
+/** Palette icon — for arts & crafts (matches Material Symbols "palette") */
+function PaletteIcon({ color, size }: { color: string; size?: number }) {
+  return (
+    <TraitIcon color={color} size={size}>
+      <Path d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10c1.38 0 2.5-1.12 2.5-2.5 0-.61-.23-1.2-.64-1.67-.08-.1-.13-.21-.13-.33 0-.28.22-.5.5-.5H16c3.31 0 6-2.69 6-6 0-4.96-4.49-9-10-9zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 8 6.5 8 8 8.67 8 9.5 7.33 11 6.5 11zm3-4C8.67 7 8 6.33 8 5.5S8.67 4 9.5 4s1.5.67 1.5 1.5S10.33 7 9.5 7zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 4 14.5 4s1.5.67 1.5 1.5S15.33 7 14.5 7zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 8 17.5 8s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" fill={color} />
+    </TraitIcon>
+  );
+}
+
 // ── About the Reader (keepsake) ──────────────────────────────────────────
 
 function AboutReaderPage({ theme, input, gradientUri }: {
@@ -1484,11 +1502,11 @@ function AboutReaderPage({ theme, input, gradientUri }: {
   const hasPortrait = !!portraitUrl;
   const heroLabel = characterGender === "girl" ? pdfT(input.locale, "heroine") : pdfT(input.locale, "hero");
 
-  const traits: { label: string; icon: "bolt" | "pets" | "restaurant" | "rocket" }[] = [];
+  const traits: { label: string; icon: "bolt" | "pets" | "people" | "palette" }[] = [];
   if (specialTrait) traits.push({ label: specialTrait, icon: "bolt" });
   if (favoriteCompanion) traits.push({ label: favoriteCompanion, icon: "pets" });
-  if (favoriteFood) traits.push({ label: favoriteFood, icon: "restaurant" });
-  if (futureDream) traits.push({ label: futureDream, icon: "rocket" });
+  if (favoriteFood) traits.push({ label: favoriteFood, icon: "people" });
+  if (futureDream) traits.push({ label: futureDream, icon: "palette" });
 
   return (
     <Page size={[BOOK.pageWidth, BOOK.pageHeight]} style={[s.page, { backgroundColor: "#ffffff" }]}>
@@ -1543,7 +1561,7 @@ function AboutReaderPage({ theme, input, gradientUri }: {
           fontFamily: FONTS.body, fontSize: 9, color: COLORS.textMuted,
           marginTop: 8, letterSpacing: 0.3,
         }}>
-          {characterAge} a{"\u00F1"}os{characterCity ? `  \u00B7  ${characterCity}` : ""}
+          {characterAge} {pdfT(input.locale, "years")}{characterCity ? `  \u00B7  ${characterCity}` : ""}
         </Text>
 
         {/* Traits with themed icons (matching web hero card) */}
@@ -1553,8 +1571,8 @@ function AboutReaderPage({ theme, input, gradientUri }: {
               <View key={i} style={{ flexDirection: "row", alignItems: "center", gap: 7 }}>
                 {trait.icon === "bolt" && <BoltIcon color={theme.accent} size={13} />}
                 {trait.icon === "pets" && <PetsIcon color={theme.accent} size={13} />}
-                {trait.icon === "restaurant" && <RestaurantIcon color={theme.accent} size={13} />}
-                {trait.icon === "rocket" && <RocketIcon color={theme.accent} size={13} />}
+                {trait.icon === "people" && <PeopleIcon color={theme.accent} size={13} />}
+                {trait.icon === "palette" && <PaletteIcon color={theme.accent} size={13} />}
                 <Text style={{
                   fontFamily: FONTS.body, fontSize: 9, fontWeight: 600,
                   color: theme.titleColor, letterSpacing: 0.2,

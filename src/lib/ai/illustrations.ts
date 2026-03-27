@@ -9,8 +9,11 @@
 //   2. Identical character description prepended to every prompt (text reference)
 
 import crypto from "crypto";
+import { generateFluxPro, generateFluxMax, type FluxResult } from "./flux-kontext";
 import { getMockIllustrationUrl } from "./mock-story";
+import type { Screenplay, SceneScreenplay } from "./scene-screenplay";
 import { getAgeConfig } from "./story-generator";
+import type { AssetReference } from "./visual-assets";
 export { buildCharacterReference, getGenderColorDirective } from "./character-description";
 import { getGenderColorDirective, buildColorAnchor, buildRecraftControls, type CharacterDescriptionInput, type RecraftControls } from "./character-description";
 
@@ -271,7 +274,7 @@ export function buildSecondaryPrompt(
 export interface IllustrationResult {
   imageUrl: string;
   descriptionHash: string;
-  provider: "recraft" | "mock";
+  provider: "recraft" | "flux" | "mock";
 }
 
 export function hashDescription(description: string): string {
@@ -429,4 +432,130 @@ export async function generateIllustrationsForStory(
   }
 
   return mapped;
+}
+
+// --- FLUX Kontext illustration generation ---
+
+/**
+ * Generate illustrations using FLUX Kontext, driven by a Screenplay and asset references.
+ *
+ * - 0-1 reference images → FLUX Kontext Pro (single reference)
+ * - 2+ reference images  → FLUX Kontext Max (multi-reference composite)
+ *
+ * @param screenplay - The visual screenplay with per-scene fluxPrompts
+ * @param references - Pre-generated asset reference images (base64 + IDs)
+ * @param options    - Optional: which scenes to generate, batch size
+ */
+export async function generateIllustrationsWithFlux(
+  screenplay: Screenplay,
+  references: AssetReference[],
+  options?: {
+    sceneNumbers?: number[];
+    batchSize?: number;
+  },
+): Promise<IllustrationResult[]> {
+  const mockMode = process.env.MOCK_MODE === "true";
+  const hasKey = !!process.env.BFL_API_KEY;
+
+  // Determine which scenes to generate
+  const sceneNumbers = options?.sceneNumbers ?? screenplay.scenes.map((s) => s.sceneNumber);
+  const batchSize = options?.batchSize ?? 2;
+
+  // Build a lookup map: assetId → base64
+  const refMap = new Map<string, string>();
+  for (const ref of references) {
+    refMap.set(ref.assetId, ref.base64);
+  }
+
+  if (mockMode || !hasKey) {
+    const reason = mockMode ? "MOCK_MODE=true" : "no BFL_API_KEY";
+    console.log(`[FLUX] MOCK MODE — ${reason}, returning placeholder results`);
+    return sceneNumbers.map((num, index) => ({
+      imageUrl: getMockIllustrationUrl(index),
+      descriptionHash: hashDescription(`flux-scene-${num}`),
+      provider: "mock" as const,
+    }));
+  }
+
+  console.log(`[FLUX] Generating ${sceneNumbers.length} scenes (batch size: ${batchSize})`);
+
+  // Build generation tasks
+  const tasks: { sceneNumber: number; scene: SceneScreenplay }[] = [];
+  for (const num of sceneNumbers) {
+    const scene = screenplay.scenes.find((s) => s.sceneNumber === num);
+    if (!scene) {
+      console.warn(`[FLUX] Scene ${num} not found in screenplay — skipping`);
+      continue;
+    }
+    tasks.push({ sceneNumber: num, scene });
+  }
+
+  const results: IllustrationResult[] = [];
+
+  // Process in parallel batches
+  for (let i = 0; i < tasks.length; i += batchSize) {
+    const batch = tasks.slice(i, i + batchSize);
+
+    const batchResults = await Promise.all(
+      batch.map(async ({ sceneNumber, scene }) => {
+        const start = Date.now();
+
+        // Find reference images needed for this scene's characters.
+        // Order matters: input_image (first) gets highest priority in FLUX.
+        // If primaryCharacter is set and is NOT the protagonist, put their
+        // ref first so FLUX prioritizes their visual consistency.
+        const sceneRefs: string[] = [];
+        const primaryId = scene.primaryCharacter;
+
+        // 1. Primary character ref first (if it exists and has a reference)
+        if (primaryId) {
+          const primaryBase64 = refMap.get(primaryId);
+          if (primaryBase64) {
+            sceneRefs.push(primaryBase64);
+          }
+        }
+
+        // 2. Remaining characters (skip the primary — already added)
+        for (const charId of scene.characters) {
+          if (charId === primaryId) continue; // already in position 0
+          const base64 = refMap.get(charId);
+          if (base64) {
+            sceneRefs.push(base64);
+          }
+        }
+
+        let fluxResult: FluxResult;
+
+        if (sceneRefs.length <= 1) {
+          // 0-1 reference → FLUX Kontext Pro
+          fluxResult = await generateFluxPro(scene.fluxPrompt, {
+            inputImage: sceneRefs[0],
+            aspectRatio: scene.aspectRatio,
+          });
+        } else {
+          // 2+ references → FLUX Kontext Max
+          fluxResult = await generateFluxMax(scene.fluxPrompt, {
+            inputImage: sceneRefs[0],
+            inputImage2: sceneRefs[1],
+            inputImage3: sceneRefs[2],
+            inputImage4: sceneRefs[3],
+            aspectRatio: scene.aspectRatio,
+          });
+        }
+
+        const elapsed = ((Date.now() - start) / 1000).toFixed(1);
+        console.log(`[FLUX] Generated scene ${sceneNumber} in ${elapsed}s`);
+
+        return {
+          imageUrl: fluxResult.url,
+          descriptionHash: hashDescription(scene.fluxPrompt),
+          provider: "flux" as const,
+        };
+      }),
+    );
+
+    results.push(...batchResults);
+  }
+
+  return results;
 }

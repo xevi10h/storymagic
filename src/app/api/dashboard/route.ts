@@ -21,7 +21,7 @@ export async function GET() {
       .order("created_at", { ascending: false }),
     supabase
       .from("orders")
-      .select("id, format, status, subtotal, total, tracking_number, shipping_name, created_at, story_id, stories(generated_text, characters(name))")
+      .select("id, format, status, subtotal, total, tracking_number, tracking_url, shipping_name, created_at, story_id, stories(generated_text, characters(name))")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false }),
     supabase
