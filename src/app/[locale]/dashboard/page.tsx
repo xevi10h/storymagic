@@ -516,13 +516,49 @@ function OrdersTab({
     );
   }
 
-  // Order lifecycle steps for physical orders
   const STEPS = ["paid", "producing", "shipped", "delivered"] as const;
+  const STEP_ICONS = { paid: "receipt_long", producing: "precision_manufacturing", shipped: "local_shipping", delivered: "inventory" } as const;
 
   function getStepIndex(status: string): number {
     const idx = STEPS.indexOf(status as typeof STEPS[number]);
-    // cancelled/pending → show at step 0
     return idx >= 0 ? idx : 0;
+  }
+
+  // Contextual message for the current order status
+  function getStatusMessage(status: string, shippingName: string | null): string {
+    const name = shippingName ?? "";
+    const msgs: Record<string, Record<string, string>> = {
+      es: {
+        paid: "Preparando tu pedido para impresión",
+        producing: "Tu libro se está imprimiendo",
+        shipped: name ? `Tu libro va camino de ${name}` : "Tu libro está en camino",
+        delivered: name ? `Entregado a ${name}` : "Tu libro ha sido entregado",
+      },
+      en: {
+        paid: "Preparing your order for printing",
+        producing: "Your book is being printed",
+        shipped: name ? `Your book is on its way to ${name}` : "Your book is on its way",
+        delivered: name ? `Delivered to ${name}` : "Your book has been delivered",
+      },
+      ca: {
+        paid: "Preparant la teva comanda per impressió",
+        producing: "El teu llibre s'està imprimint",
+        shipped: name ? `El teu llibre va camí de ${name}` : "El teu llibre està en camí",
+        delivered: name ? `Entregat a ${name}` : "El teu llibre ha estat entregat",
+      },
+      fr: {
+        paid: "Préparation de votre commande pour l'impression",
+        producing: "Votre livre est en cours d'impression",
+        shipped: name ? `Votre livre est en route vers ${name}` : "Votre livre est en route",
+        delivered: name ? `Livré à ${name}` : "Votre livre a été livré",
+      },
+    };
+    // Detect locale from translation key
+    const lang = t("orderStatus.paid") === "Pagado" ? "es"
+      : t("orderStatus.paid") === "Pagat" ? "ca"
+      : t("orderStatus.paid") === "Payé" ? "fr"
+      : "en";
+    return msgs[lang]?.[status] ?? msgs.en[status] ?? "";
   }
 
   return (
@@ -534,14 +570,15 @@ function OrdersTab({
         const formatLabel = order.format === "hardcover" ? t("orderFormat.hardcover") : t("orderFormat.softcover");
         const isCancelled = order.status === "cancelled";
         const currentStep = getStepIndex(order.status);
+        const statusMsg = getStatusMessage(order.status, order.shipping_name);
 
         return (
           <div
             key={order.id}
-            className="rounded-xl border border-border-light bg-white p-5 transition-shadow hover:shadow-sm"
+            className="overflow-hidden rounded-xl border border-border-light bg-white transition-shadow hover:shadow-sm"
           >
-            {/* Header: title + price */}
-            <div className="flex items-start justify-between gap-3">
+            {/* Header */}
+            <div className="flex items-start justify-between gap-3 px-5 pt-5 pb-4">
               <div className="min-w-0 flex-1">
                 <h3 className="truncate text-sm font-bold text-text-main">
                   {bookTitle}
@@ -556,10 +593,36 @@ function OrdersTab({
               </span>
             </div>
 
-            {/* Step tracker */}
+            {/* Progress section */}
             {!isCancelled ? (
-              <div className="mt-5">
-                <div className="flex items-center">
+              <div className="border-t border-border-light/60 bg-cream/30 px-5 py-4">
+                {/* Status message */}
+                <div className="mb-4 flex items-center gap-2.5">
+                  <div className={`flex h-8 w-8 items-center justify-center rounded-full ${
+                    order.status === "delivered" ? "bg-emerald-100" : "bg-primary/10"
+                  }`}>
+                    <span className={`material-symbols-outlined text-[18px] ${
+                      order.status === "delivered" ? "text-emerald-600" : "text-primary"
+                    }`}>
+                      {STEP_ICONS[order.status as keyof typeof STEP_ICONS] ?? "help"}
+                    </span>
+                  </div>
+                  <div>
+                    <p className={`text-[13px] font-semibold ${
+                      order.status === "delivered" ? "text-emerald-700" : "text-text-main"
+                    }`}>
+                      {statusMsg}
+                    </p>
+                    {order.shipping_name && order.status !== "shipped" && order.status !== "delivered" && (
+                      <p className="text-[11px] text-text-muted mt-0.5">
+                        {t("shippingTo", { name: order.shipping_name })}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Step tracker bar */}
+                <div className="flex items-center gap-0">
                   {STEPS.map((step, i) => {
                     const isCompleted = i < currentStep;
                     const isActive = i === currentStep;
@@ -568,48 +631,52 @@ function OrdersTab({
 
                     return (
                       <div key={step} className={`flex items-center ${isLast ? "" : "flex-1"}`}>
-                        {/* Step circle */}
                         <div className="flex flex-col items-center">
+                          {/* Circle */}
                           <div
-                            className={`flex h-7 w-7 items-center justify-center rounded-full text-xs transition-colors ${
+                            className={`relative flex h-6 w-6 items-center justify-center rounded-full transition-all ${
                               isCompleted
                                 ? "bg-emerald-500 text-white"
                                 : isActive
-                                  ? "bg-primary text-white ring-4 ring-primary/15"
-                                  : "bg-gray-100 text-gray-400"
+                                  ? "bg-primary text-white shadow-sm shadow-primary/30"
+                                  : "border-2 border-gray-200 bg-white text-gray-300"
                             }`}
                           >
                             {isCompleted ? (
-                              <span className="material-symbols-outlined text-[16px]">check</span>
+                              <span className="material-symbols-outlined text-[14px] font-bold">check</span>
                             ) : (
-                              <span className="material-symbols-outlined text-[16px]">
-                                {step === "paid" && "receipt_long"}
-                                {step === "producing" && "precision_manufacturing"}
-                                {step === "shipped" && "local_shipping"}
-                                {step === "delivered" && "inventory"}
+                              <span className="material-symbols-outlined text-[13px]">
+                                {STEP_ICONS[step]}
                               </span>
                             )}
+                            {/* Pulse ring on active step */}
+                            {isActive && (
+                              <span className="absolute inset-0 animate-ping rounded-full bg-primary/20" style={{ animationDuration: "2s" }} />
+                            )}
                           </div>
+                          {/* Label */}
                           <span
-                            className={`mt-1.5 text-[10px] font-medium whitespace-nowrap ${
+                            className={`mt-1.5 text-[10px] whitespace-nowrap leading-none ${
                               isCompleted
-                                ? "text-emerald-600"
+                                ? "font-medium text-emerald-600"
                                 : isActive
-                                  ? "text-primary font-semibold"
-                                  : "text-gray-400"
+                                  ? "font-semibold text-primary"
+                                  : "font-medium text-gray-400"
                             }`}
                           >
                             {stepLabel}
                           </span>
                         </div>
 
-                        {/* Connector line */}
+                        {/* Connector */}
                         {!isLast && (
-                          <div
-                            className={`mx-1.5 h-0.5 flex-1 rounded-full transition-colors ${
-                              i < currentStep ? "bg-emerald-500" : "bg-gray-200"
-                            }`}
-                          />
+                          <div className="relative mx-1 h-[3px] flex-1 overflow-hidden rounded-full bg-gray-200">
+                            <div
+                              className={`absolute inset-y-0 left-0 rounded-full transition-all duration-500 ${
+                                i < currentStep ? "w-full bg-emerald-500" : "w-0 bg-primary"
+                              }`}
+                            />
+                          </div>
                         )}
                       </div>
                     );
@@ -617,56 +684,46 @@ function OrdersTab({
                 </div>
               </div>
             ) : (
-              <div className="mt-4 flex items-center gap-2 rounded-lg bg-red-50 px-3 py-2">
-                <span className="material-symbols-outlined text-base text-red-500">cancel</span>
-                <span className="text-xs font-medium text-red-700">{t("orderStatus.cancelled")}</span>
+              <div className="border-t border-red-100 bg-red-50/50 px-5 py-3">
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-base text-red-500">cancel</span>
+                  <span className="text-xs font-semibold text-red-700">{t("orderStatus.cancelled")}</span>
+                </div>
               </div>
             )}
 
-            {/* Tracking info (shown when shipped or delivered) */}
+            {/* Tracking card (when shipped/delivered) */}
             {order.tracking_number && (
-              <div className="mt-4 flex items-center gap-2.5 rounded-lg bg-indigo-50/70 px-3.5 py-2.5">
-                <span className="material-symbols-outlined text-base text-indigo-500">
-                  package_2
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-indigo-400">
-                    {t("trackingNumber")}
-                  </p>
+              <div className="border-t border-indigo-100 bg-indigo-50/50 px-5 py-3.5">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-100">
+                    <span className="material-symbols-outlined text-[18px] text-indigo-600">package_2</span>
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-indigo-400">
+                      {t("trackingNumber")}
+                    </p>
+                    <p className="text-[13px] font-mono font-medium text-indigo-800">
+                      {order.tracking_number}
+                    </p>
+                  </div>
                   {order.tracking_url ? (
                     <a
                       href={order.tracking_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs font-medium text-indigo-700 underline decoration-indigo-300 underline-offset-2 hover:text-indigo-900 transition-colors"
+                      className="flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3.5 py-2 text-[11px] font-semibold text-white shadow-sm hover:bg-indigo-700 transition-colors"
                     >
-                      {order.tracking_number}
+                      <span className="material-symbols-outlined text-[14px]">local_shipping</span>
+                      {t("orderStatus.shipped") === "Enviado" ? "Seguir envío" : t("orderStatus.shipped") === "Enviat" ? "Seguir enviament" : "Track shipment"}
                     </a>
                   ) : (
-                    <p className="text-xs font-mono text-indigo-700">
-                      {order.tracking_number}
-                    </p>
+                    <span className="rounded-lg bg-indigo-100 px-3 py-1.5 text-[11px] font-medium text-indigo-600">
+                      {t("orderStatus.shipped")}
+                    </span>
                   )}
                 </div>
-                {order.tracking_url && (
-                  <a
-                    href={order.tracking_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1 rounded-md bg-indigo-100 px-2.5 py-1.5 text-[11px] font-semibold text-indigo-700 hover:bg-indigo-200 transition-colors"
-                  >
-                    {t("orderStatus.shipped") === "Enviado" ? "Seguir envío" : "Track"}
-                    <span className="material-symbols-outlined text-[14px]">open_in_new</span>
-                  </a>
-                )}
               </div>
-            )}
-
-            {/* Shipping name (before tracking is available) */}
-            {order.shipping_name && !order.tracking_number && order.status !== "cancelled" && (
-              <p className="mt-3 text-xs text-text-muted">
-                {t("shippingTo", { name: order.shipping_name })}
-              </p>
             )}
           </div>
         );
