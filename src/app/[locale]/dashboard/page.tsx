@@ -516,21 +516,31 @@ function OrdersTab({
     );
   }
 
+  // Order lifecycle steps for physical orders
+  const STEPS = ["paid", "producing", "shipped", "delivered"] as const;
+
+  function getStepIndex(status: string): number {
+    const idx = STEPS.indexOf(status as typeof STEPS[number]);
+    // cancelled/pending → show at step 0
+    return idx >= 0 ? idx : 0;
+  }
+
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {orders.map((order) => {
         const bookTitle =
           order.stories?.generated_text?.bookTitle ?? t("untitledStory");
         const characterName = order.stories?.characters?.name ?? "";
         const formatLabel = order.format === "hardcover" ? t("orderFormat.hardcover") : t("orderFormat.softcover");
-
-        const statusLabel = t(`orderStatus.${order.status}` as "orderStatus.pending" | "orderStatus.paid" | "orderStatus.producing" | "orderStatus.shipped" | "orderStatus.delivered" | "orderStatus.cancelled");
+        const isCancelled = order.status === "cancelled";
+        const currentStep = getStepIndex(order.status);
 
         return (
           <div
             key={order.id}
-            className="rounded-xl border border-border-light bg-white p-4 transition-shadow hover:shadow-sm"
+            className="rounded-xl border border-border-light bg-white p-5 transition-shadow hover:shadow-sm"
           >
+            {/* Header: title + price */}
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0 flex-1">
                 <h3 className="truncate text-sm font-bold text-text-main">
@@ -541,22 +551,86 @@ function OrdersTab({
                   {formatLabel} · {formatDate(order.created_at)}
                 </p>
               </div>
-              <div className="flex shrink-0 items-center gap-3">
-                <span className="text-sm font-bold text-secondary tabular-nums">
-                  {order.total.toFixed(2)} €
-                </span>
-                <StatusBadge status={order.status} label={statusLabel} styleMap={ORDER_STATUS_STYLES} />
-              </div>
+              <span className="shrink-0 text-sm font-bold text-text-main tabular-nums">
+                {order.total.toFixed(2)} €
+              </span>
             </div>
 
-            {/* Tracking info */}
+            {/* Step tracker */}
+            {!isCancelled ? (
+              <div className="mt-5">
+                <div className="flex items-center">
+                  {STEPS.map((step, i) => {
+                    const isCompleted = i < currentStep;
+                    const isActive = i === currentStep;
+                    const isLast = i === STEPS.length - 1;
+                    const stepLabel = t(`orderStatus.${step}` as "orderStatus.paid" | "orderStatus.producing" | "orderStatus.shipped" | "orderStatus.delivered");
+
+                    return (
+                      <div key={step} className={`flex items-center ${isLast ? "" : "flex-1"}`}>
+                        {/* Step circle */}
+                        <div className="flex flex-col items-center">
+                          <div
+                            className={`flex h-7 w-7 items-center justify-center rounded-full text-xs transition-colors ${
+                              isCompleted
+                                ? "bg-emerald-500 text-white"
+                                : isActive
+                                  ? "bg-primary text-white ring-4 ring-primary/15"
+                                  : "bg-gray-100 text-gray-400"
+                            }`}
+                          >
+                            {isCompleted ? (
+                              <span className="material-symbols-outlined text-[16px]">check</span>
+                            ) : (
+                              <span className="material-symbols-outlined text-[16px]">
+                                {step === "paid" && "receipt_long"}
+                                {step === "producing" && "precision_manufacturing"}
+                                {step === "shipped" && "local_shipping"}
+                                {step === "delivered" && "inventory"}
+                              </span>
+                            )}
+                          </div>
+                          <span
+                            className={`mt-1.5 text-[10px] font-medium whitespace-nowrap ${
+                              isCompleted
+                                ? "text-emerald-600"
+                                : isActive
+                                  ? "text-primary font-semibold"
+                                  : "text-gray-400"
+                            }`}
+                          >
+                            {stepLabel}
+                          </span>
+                        </div>
+
+                        {/* Connector line */}
+                        {!isLast && (
+                          <div
+                            className={`mx-1.5 h-0.5 flex-1 rounded-full transition-colors ${
+                              i < currentStep ? "bg-emerald-500" : "bg-gray-200"
+                            }`}
+                          />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : (
+              <div className="mt-4 flex items-center gap-2 rounded-lg bg-red-50 px-3 py-2">
+                <span className="material-symbols-outlined text-base text-red-500">cancel</span>
+                <span className="text-xs font-medium text-red-700">{t("orderStatus.cancelled")}</span>
+              </div>
+            )}
+
+            {/* Tracking info (shown when shipped or delivered) */}
             {order.tracking_number && (
-              <div className="mt-3 flex items-center gap-2 rounded-lg bg-cream p-3">
-                <span className="material-symbols-outlined text-lg text-primary">
-                  local_shipping
+              <div className="mt-4 flex items-center gap-2.5 rounded-lg bg-indigo-50/70 px-3.5 py-2.5">
+                <span className="material-symbols-outlined text-base text-indigo-500">
+                  package_2
                 </span>
-                <div>
-                  <p className="text-xs font-medium text-text-main">
+                <div className="min-w-0 flex-1">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-indigo-400">
                     {t("trackingNumber")}
                   </p>
                   {order.tracking_url ? (
@@ -564,21 +638,33 @@ function OrdersTab({
                       href={order.tracking_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs text-primary font-mono underline hover:text-primary/80 transition-colors"
+                      className="text-xs font-medium text-indigo-700 underline decoration-indigo-300 underline-offset-2 hover:text-indigo-900 transition-colors"
                     >
                       {order.tracking_number}
                     </a>
                   ) : (
-                    <p className="text-xs text-text-muted font-mono">
+                    <p className="text-xs font-mono text-indigo-700">
                       {order.tracking_number}
                     </p>
                   )}
                 </div>
+                {order.tracking_url && (
+                  <a
+                    href={order.tracking_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 rounded-md bg-indigo-100 px-2.5 py-1.5 text-[11px] font-semibold text-indigo-700 hover:bg-indigo-200 transition-colors"
+                  >
+                    {t("orderStatus.shipped") === "Enviado" ? "Seguir envío" : "Track"}
+                    <span className="material-symbols-outlined text-[14px]">open_in_new</span>
+                  </a>
+                )}
               </div>
             )}
 
-            {order.shipping_name && !order.tracking_number && (
-              <p className="mt-2 text-xs text-text-muted">
+            {/* Shipping name (before tracking is available) */}
+            {order.shipping_name && !order.tracking_number && order.status !== "cancelled" && (
+              <p className="mt-3 text-xs text-text-muted">
                 {t("shippingTo", { name: order.shipping_name })}
               </p>
             )}
