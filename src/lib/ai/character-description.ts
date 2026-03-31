@@ -52,9 +52,8 @@ export interface CharacterDescriptionInput {
 
 export interface PortraitPersonalityInput {
   interests?: string[];
-  specialTrait?: string;
+  favoriteColor?: string;
   favoriteCompanion?: string;
-  favoriteFood?: string;
   futureDream?: string;
   city?: string;
 }
@@ -113,10 +112,24 @@ const HAIRSTYLE_MAP: Record<string, string> = {
 // Priority: dream outfit > interest outfit > age-default outfit.
 // Only ONE source provides the outfit — no conflicts.
 
-const AGE_DEFAULT_OUTFIT: Record<string, string> = {
-  toddler: "wearing a colorful striped t-shirt and soft pants",
-  child: "wearing a bright hoodie and jeans",
-  preteen: "wearing a casual jacket over a simple t-shirt",
+// Gender-specific outfit colors for visual consistency across all scenes.
+// Without a concrete color, FLUX invents a different one each time.
+const AGE_DEFAULT_OUTFIT: Record<string, Record<string, string>> = {
+  toddler: {
+    girl: "wearing a soft pink striped t-shirt and light denim overalls",
+    boy: "wearing a light blue striped t-shirt and soft gray pants",
+    neutral: "wearing a sunny yellow striped t-shirt and soft pants",
+  },
+  child: {
+    girl: "wearing a bright pink hoodie and blue jeans",
+    boy: "wearing a bright blue hoodie and dark jeans",
+    neutral: "wearing a bright yellow hoodie and blue jeans",
+  },
+  preteen: {
+    girl: "wearing a coral-pink casual jacket over a white t-shirt and jeans",
+    boy: "wearing a navy blue casual jacket over a white t-shirt and jeans",
+    neutral: "wearing a green casual jacket over a white t-shirt and jeans",
+  },
 };
 
 /** Dream → specific themed outfit. No background elements — only clothing/props. */
@@ -211,10 +224,11 @@ function resolveOutfit(input: CharacterDescriptionInput, personality?: PortraitP
     if (INTEREST_OUTFIT_MAP[firstInterest]) return INTEREST_OUTFIT_MAP[firstInterest];
   }
 
-  // Priority 3: Age-appropriate default
-  if (input.age <= 4) return AGE_DEFAULT_OUTFIT.toddler;
-  if (input.age <= 7) return AGE_DEFAULT_OUTFIT.child;
-  return AGE_DEFAULT_OUTFIT.preteen;
+  // Priority 3: Age + gender-appropriate default (concrete colors for FLUX consistency)
+  const gender = input.gender || "neutral";
+  if (input.age <= 4) return AGE_DEFAULT_OUTFIT.toddler[gender] || AGE_DEFAULT_OUTFIT.toddler.neutral;
+  if (input.age <= 7) return AGE_DEFAULT_OUTFIT.child[gender] || AGE_DEFAULT_OUTFIT.child.neutral;
+  return AGE_DEFAULT_OUTFIT.preteen[gender] || AGE_DEFAULT_OUTFIT.preteen.neutral;
 }
 
 /** Resolves Layer 3 — props (max 2). Skips interests already used for outfit. */
@@ -244,19 +258,14 @@ function resolveProps(personality?: PortraitPersonalityInput, outfitFromDream?: 
 }
 
 /** Resolves Layer 4 — expression. */
-function resolveExpression(input: CharacterDescriptionInput, personality?: PortraitPersonalityInput): string {
+function resolveExpression(input: CharacterDescriptionInput, _personality?: PortraitPersonalityInput): string {
   if (input.eyeColor) {
     const eyes = EYE_COLOR_MAP[input.eyeColor];
     if (eyes) {
-      const expression = personality?.specialTrait
-        ? `with ${eyes} eyes, radiating a sense of ${personality.specialTrait}`
-        : `with ${eyes} eyes and a warm friendly smile`;
-      return expression;
+      return `with ${eyes} eyes and a warm friendly smile`;
     }
   }
-  return personality?.specialTrait
-    ? `with bright round eyes, radiating a sense of ${personality.specialTrait}`
-    : "with bright round eyes and a warm friendly smile";
+  return "with bright round eyes and a warm friendly smile";
 }
 
 // ═══════════════════════════════════════════════════════════════════

@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { QRCodeSVG } from "qrcode.react";
 import BrandLogo from "@/components/BrandLogo";
 import { getBookColors } from "@/lib/template-colors";
+import { FAVORITE_COLORS } from "@/lib/create-store";
 import type { BookPage } from "./types";
 
 // ── Auto-fit text ───────────────────────────────────────────────────────────
@@ -129,13 +130,15 @@ interface MobileBookPageProps {
   templateId: string;
   /** Character gender — influences color palette tinting */
   gender?: string;
+  /** Child's favorite color hex — overrides accent palette */
+  favoriteColor?: string;
   /** Real book page number (1-based, only for scene pages) */
   pageNumber?: number;
 }
 
 const MobileBookPage = React.forwardRef<HTMLDivElement, MobileBookPageProps>(
-  function MobileBookPage({ page, templateId, gender, pageNumber }, ref) {
-    const colors = getBookColors(templateId, gender);
+  function MobileBookPage({ page, templateId, gender, favoriteColor, pageNumber }, ref) {
+    const colors = getBookColors(templateId, gender, favoriteColor);
     return (
       <div
         ref={ref}
@@ -155,7 +158,7 @@ const MobileBookPage = React.forwardRef<HTMLDivElement, MobileBookPageProps>(
             "--bk-grad-end": colors.gradientEnd,
           } as React.CSSProperties}
         >
-          <PageContent page={page} templateId={templateId} gender={gender} pageNumber={pageNumber} />
+          <PageContent page={page} templateId={templateId} gender={gender} favoriteColor={favoriteColor} pageNumber={pageNumber} />
           {/* Locked overlay */}
           {page.type === "scene" && page.locked && (
             <button
@@ -751,7 +754,7 @@ function ScenePage({ page, templateId, pageNumber }: SceneProps) {
 
 // ── Page content dispatcher ───────────────────────────────────────────────────
 
-function PageContent({ page, templateId, gender, pageNumber }: { page: BookPage; templateId: string; gender?: string; pageNumber?: number }) {
+function PageContent({ page, templateId, gender, favoriteColor, pageNumber }: { page: BookPage; templateId: string; gender?: string; favoriteColor?: string; pageNumber?: number }) {
   const t = useTranslations("crear.preview");
   const td = useTranslations("data");
   switch (page.type) {
@@ -914,22 +917,20 @@ function PageContent({ page, templateId, gender, pageNumber }: { page: BookPage;
             </p>
 
             <div className="mt-2.5 flex flex-col gap-1.5">
-              {page.specialTrait && (
-                <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-sm shrink-0" style={{ color: "var(--bk-accent)" }}>bolt</span>
-                  <p className="text-[10px] font-medium leading-snug truncate" style={{ color: "var(--bk-title)" }}>{page.specialTrait}</p>
-                </div>
-              )}
+              {page.favoriteColor && (() => {
+                const colorId = FAVORITE_COLORS.find((c) => c.color === page.favoriteColor)?.id;
+                const colorLabel = colorId ? td(`favoriteColors.${colorId}`) : null;
+                return colorLabel ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-3.5 h-3.5 rounded-full shrink-0 ring-1 ring-black/10" style={{ backgroundColor: page.favoriteColor }} />
+                    <p className="text-[10px] font-medium leading-snug truncate" style={{ color: "var(--bk-title)" }}>{colorLabel}</p>
+                  </div>
+                ) : null;
+              })()}
               {page.favoriteCompanion && (
                 <div className="flex items-center gap-2">
                   <span className="material-symbols-outlined text-sm shrink-0" style={{ color: "var(--bk-accent)" }}>pets</span>
                   <p className="text-[10px] font-medium leading-snug truncate" style={{ color: "var(--bk-title)" }}>{page.favoriteCompanion}</p>
-                </div>
-              )}
-              {page.favoriteFood && (
-                <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-sm shrink-0" style={{ color: "var(--bk-accent)" }}>restaurant</span>
-                  <p className="text-[10px] font-medium leading-snug truncate" style={{ color: "var(--bk-title)" }}>{page.favoriteFood}</p>
                 </div>
               )}
               {page.futureDream && (
@@ -965,7 +966,7 @@ function PageContent({ page, templateId, gender, pageNumber }: { page: BookPage;
               value={bookUrl}
               size={72}
               level="M"
-              fgColor={getBookColors(templateId, gender).gradientStart}
+              fgColor={getBookColors(templateId, gender, favoriteColor).gradientStart}
               bgColor="transparent"
             />
             <p className="text-[8px] text-text-muted/60 tracking-wide">meapica.com</p>

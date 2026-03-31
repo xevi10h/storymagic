@@ -25,6 +25,7 @@ export default function MobileBookViewer({
   pages,
   templateId,
   gender,
+  favoriteColor,
   currentPage,
   onPageChange,
 }: BookViewerProps) {
@@ -101,6 +102,7 @@ export default function MobileBookViewer({
                 page={page}
                 templateId={templateId}
                 gender={gender}
+                favoriteColor={favoriteColor}
                 pageNumber={page.type === "scene" ? getBookPageNumber(pages, i) : undefined}
               />
             ))}
@@ -170,6 +172,7 @@ export default function MobileBookViewer({
           pages={pages}
           templateId={templateId}
           gender={gender}
+          favoriteColor={favoriteColor}
           initialPage={fullscreenPage}
           onClose={() => setFullscreenPage(null)}
           onPageChange={(idx) => {

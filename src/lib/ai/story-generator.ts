@@ -31,6 +31,7 @@ import {
   getDecisionNarrative,
   getEndingNarrative,
   getAtmosphereNarrative,
+  FAVORITE_COLORS,
 } from "@/lib/create-store";
 import { generateMockStory } from "./mock-story";
 import { buildCharacterVisualDescription, getGenderColorDirective } from "./character-description";
@@ -497,9 +498,8 @@ export interface StoryInput {
   age: number;
   city: string;
   interests: string[];
-  specialTrait?: string;
+  favoriteColor?: string;
   favoriteCompanion?: string;
-  favoriteFood?: string;
   futureDream?: string;
   hairColor?: string;
   eyeColor?: string;
@@ -887,9 +887,11 @@ function buildArchitectPrompt(input: StoryInput): string {
   const decisionsContext = buildDecisionsContext(input);
 
   const personalDetails: string[] = [];
-  if (input.specialTrait) personalDetails.push(`- Special trait: "${input.specialTrait}"`);
+  if (input.favoriteColor) {
+    const colorName = FAVORITE_COLORS.find((c) => c.color === input.favoriteColor)?.id ?? input.favoriteColor;
+    personalDetails.push(`- Favorite color: "${colorName}"`);
+  }
   if (input.favoriteCompanion) personalDetails.push(`- Favorite companion: "${input.favoriteCompanion}"`);
-  if (input.favoriteFood) personalDetails.push(`- Favorite food: "${input.favoriteFood}"`);
   if (input.futureDream) personalDetails.push(`- Future dream: "${input.futureDream}"`);
   const personalSection = personalDetails.length > 0
     ? `\nPERSONAL DETAILS:\n${personalDetails.join("\n")}`
@@ -1159,9 +1161,11 @@ function buildExpansionPrompt(
   // Build personal context — listed for reference ONLY, not as a checklist
   const personalLines: string[] = [];
   if (input.interests.length > 0) personalLines.push(`Interests: ${input.interests.join(", ")}`);
-  if (input.specialTrait) personalLines.push(`Special trait: "${input.specialTrait}"`);
+  if (input.favoriteColor) {
+    const colorName = FAVORITE_COLORS.find((c) => c.color === input.favoriteColor)?.id ?? input.favoriteColor;
+    personalLines.push(`Favorite color: "${colorName}"`);
+  }
   if (input.favoriteCompanion) personalLines.push(`Favorite companion: "${input.favoriteCompanion}"`);
-  if (input.favoriteFood) personalLines.push(`Favorite food: "${input.favoriteFood}"`);
   if (input.futureDream) personalLines.push(`Future dream: "${input.futureDream}"`);
   const personalContext = personalLines.length > 0
     ? `\nPERSONAL DETAILS (context only — do NOT force any of these into this scene unless the brief specifically references them):\n${personalLines.join("\n")}`

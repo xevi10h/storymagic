@@ -384,16 +384,11 @@
       "neutral": "Neutre",
       "hairstyleLabel": "Pentinat",
       "interestsLabel": "Li encanta...",
-      "specialTraitLabel": "Alguna cosa especial sobre {name}",
-      "specialTraitLabelDefault": "Alguna cosa especial sobre el teu fill/a",
       "optional": "(opcional)",
-      "specialTraitPlaceholder": "Ex: Acaba de perdre una dent, comença l'escola aquest any...",
-      "specialTraitHint": "Aquest detall farà que el conte sigui veritablement únic i personal.",
+      "favoriteColorLabel": "El seu color preferit",
       "companionLabel": "Té mascota o amic especial?",
       "companionPlaceholder": "Ex: El seu gat Miki, la seva germana Llúcia, el seu peluix Ós...",
       "companionHint": "Pot aparèixer com a personatge sorpresa a la història.",
-      "favoriteFoodLabel": "El seu menjar preferit",
-      "favoriteFoodPlaceholder": "Ex: Pizza, macarrons amb formatge, gelat de maduixa...",
       "futureDreamLabel": "Què vol ser de gran?",
       "futureDreamPlaceholder": "Ex: Astronauta, veterinària, xef, futbolista...",
       "greeting": "Hola, {name}!",
@@ -823,7 +818,8 @@
       "brown": "Marró",
       "green": "Verd",
       "blue": "Blau",
-      "hazel": "Avellana"
+      "hazel": "Avellana",
+      "gray": "Gris"
     },
     "skinTones": {
       "light": "Clar",
@@ -831,6 +827,16 @@
       "medium": "Mig",
       "dark": "Fosc",
       "very-dark": "Molt fosc"
+    },
+    "favoriteColors": {
+      "red": "Vermell",
+      "blue": "Blau",
+      "green": "Verd",
+      "purple": "Lila",
+      "orange": "Taronja",
+      "yellow": "Groc",
+      "pink": "Rosa",
+      "turquoise": "Turquesa"
     },
     "tags": {
       "dreamers": "Per a somiadors",

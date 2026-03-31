@@ -55,6 +55,7 @@ import {
 import { BOOK, COLORS, TYPE, FONTS, getTheme, getPdfTextConfig, type TemplateTheme, type PdfTextConfig } from "./theme";
 import { OrnamentalDivider, StarCluster, WavyLine, WavyDots } from "./decorations";
 import type { GeneratedScene, GeneratedStory } from "@/lib/ai/story-generator";
+import { FAVORITE_COLORS } from "@/lib/create-store";
 import QRCode from "qrcode";
 
 // ── Brand logo PNG — rasterised server-side with sharp ────────────────────────
@@ -135,9 +136,8 @@ export interface BookPdfInput {
   characterGender?: string;
   characterCity?: string | null;
   characterInterests?: string[];
-  specialTrait?: string | null;
+  favoriteColor?: string | null;
   favoriteCompanion?: string | null;
-  favoriteFood?: string | null;
   futureDream?: string | null;
 }
 
@@ -859,7 +859,7 @@ function renderIllustrationPage(layout: ScenePageLayout, props: ScenePageProps):
 // ══════════════════════════════════════════════════════════════════════════
 
 export function BookPdf({ input, qrDataUrl, logoDataUri, logoMuted, gradientUri, whiteGradientUri }: { input: BookPdfInput; qrDataUrl?: string; logoDataUri?: string; logoMuted?: string; gradientUri?: string; whiteGradientUri?: string }) {
-  const theme = getTheme(input.templateId, input.characterGender);
+  const theme = getTheme(input.templateId, input.characterGender, input.favoriteColor ?? undefined);
   const { story } = input;
   const tc = getPdfTextConfig(input.characterAge);
 
@@ -1001,7 +1001,7 @@ async function generateQrDataUrl(storyId: string, color: string): Promise<string
 
 /** Full 32-page PDF — used for user-facing download */
 export async function renderBookPdf(input: BookPdfInput): Promise<Buffer> {
-  const theme = getTheme(input.templateId, input.characterGender);
+  const theme = getTheme(input.templateId, input.characterGender, input.favoriteColor ?? undefined);
   const [qrDataUrl, logoWhite, logoOrnament, gradientUri, whiteGradientUri] = await Promise.all([
     generateQrDataUrl(input.storyId, theme.coverGradientStart),
     getBrandLogoPng("#ffffff"),
@@ -1021,7 +1021,7 @@ export async function renderBookPdf(input: BookPdfInput): Promise<Buffer> {
  * Interior-only PDF for Gelato — pages 2–31 (30 inner pages).
  */
 export function InteriorOnlyPdf({ input, qrDataUrl, gradientUri, whiteGradientUri }: { input: BookPdfInput; qrDataUrl?: string; gradientUri?: string; whiteGradientUri?: string }) {
-  const theme = getTheme(input.templateId, input.characterGender);
+  const theme = getTheme(input.templateId, input.characterGender, input.favoriteColor ?? undefined);
   const { story } = input;
   const tc = getPdfTextConfig(input.characterAge);
 
@@ -1118,7 +1118,7 @@ export function InteriorOnlyPdf({ input, qrDataUrl, gradientUri, whiteGradientUr
 }
 
 export async function renderInteriorPdf(input: BookPdfInput): Promise<Buffer> {
-  const theme = getTheme(input.templateId, input.characterGender);
+  const theme = getTheme(input.templateId, input.characterGender, input.favoriteColor ?? undefined);
   const [qrDataUrl, whiteGradientUri] = await Promise.all([
     generateQrDataUrl(input.storyId, theme.coverGradientStart),
     getGradientPng(0.95, 200, [250, 248, 245]),
@@ -1144,7 +1144,7 @@ export function CoverSpreadPdf({
   coverHeightPt: number;
   spineWidthPt: number;
 }) {
-  const theme = getTheme(input.templateId, input.characterGender);
+  const theme = getTheme(input.templateId, input.characterGender, input.favoriteColor ?? undefined);
   const { story } = input;
   const panelWidth = (coverWidthPt - spineWidthPt) / 2;
 
@@ -1498,14 +1498,24 @@ function PaletteIcon({ color, size }: { color: string; size?: number }) {
 function AboutReaderPage({ theme, input, gradientUri }: {
   theme: TemplateTheme; input: BookPdfInput; gradientUri?: string;
 }) {
-  const { characterName, characterAge, portraitUrl, characterCity, characterInterests, specialTrait, favoriteCompanion, favoriteFood, futureDream, characterGender } = input;
+  const { characterName, characterAge, portraitUrl, characterCity, characterInterests, favoriteColor, favoriteCompanion, futureDream, characterGender } = input;
   const hasPortrait = !!portraitUrl;
   const heroLabel = characterGender === "girl" ? pdfT(input.locale, "heroine") : pdfT(input.locale, "hero");
 
-  const traits: { label: string; icon: "bolt" | "pets" | "people" | "palette" }[] = [];
-  if (specialTrait) traits.push({ label: specialTrait, icon: "bolt" });
+  const traits: { label: string; icon: "bolt" | "pets" | "people" | "palette" | "color"; color?: string }[] = [];
+  if (favoriteColor) {
+    const colorId = FAVORITE_COLORS.find((c) => c.color === favoriteColor)?.id;
+    const COLOR_NAMES: Record<string, Record<string, string>> = {
+      es: { red: "Rojo", blue: "Azul", green: "Verde", purple: "Morado", orange: "Naranja", yellow: "Amarillo", pink: "Rosa", turquoise: "Turquesa" },
+      ca: { red: "Vermell", blue: "Blau", green: "Verd", purple: "Lila", orange: "Taronja", yellow: "Groc", pink: "Rosa", turquoise: "Turquesa" },
+      en: { red: "Red", blue: "Blue", green: "Green", purple: "Purple", orange: "Orange", yellow: "Yellow", pink: "Pink", turquoise: "Turquoise" },
+      fr: { red: "Rouge", blue: "Bleu", green: "Vert", purple: "Violet", orange: "Orange", yellow: "Jaune", pink: "Rose", turquoise: "Turquoise" },
+    };
+    const locale = input.locale ?? "es";
+    const label = colorId ? (COLOR_NAMES[locale]?.[colorId] ?? COLOR_NAMES.es[colorId] ?? colorId) : null;
+    if (label) traits.push({ label, icon: "color", color: favoriteColor });
+  }
   if (favoriteCompanion) traits.push({ label: favoriteCompanion, icon: "pets" });
-  if (favoriteFood) traits.push({ label: favoriteFood, icon: "people" });
   if (futureDream) traits.push({ label: futureDream, icon: "palette" });
 
   return (
@@ -1569,6 +1579,11 @@ function AboutReaderPage({ theme, input, gradientUri }: {
           <View style={{ marginTop: 12, gap: 7 }}>
             {traits.map((trait, i) => (
               <View key={i} style={{ flexDirection: "row", alignItems: "center", gap: 7 }}>
+                {trait.icon === "color" && (
+                  <Svg width={13} height={13} viewBox="0 0 13 13">
+                    <Circle cx={6.5} cy={6.5} r={6} fill={trait.color ?? theme.accent} stroke="#00000015" strokeWidth={0.5} />
+                  </Svg>
+                )}
                 {trait.icon === "bolt" && <BoltIcon color={theme.accent} size={13} />}
                 {trait.icon === "pets" && <PetsIcon color={theme.accent} size={13} />}
                 {trait.icon === "people" && <PeopleIcon color={theme.accent} size={13} />}

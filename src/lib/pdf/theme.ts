@@ -9,7 +9,7 @@
  * 1mm = 2.83465pt (PDF points)
  */
 
-import { applyGenderTint } from "@/lib/template-colors";
+import { applyGenderTint, getBookColors } from "@/lib/template-colors";
 
 // ── Dimensions (in PDF points) ─────────────────────────────────────────────
 
@@ -156,32 +156,20 @@ export const TEMPLATE_THEMES: Record<string, TemplateTheme> = {
  * Get the PDF theme for a template, optionally tinted by character gender.
  * Girl → warm rose shift, boy → cool blue shift, neutral → unchanged.
  */
-export function getTheme(templateId: string, gender?: string): TemplateTheme {
+export function getTheme(templateId: string, gender?: string, favoriteColor?: string): TemplateTheme {
   const base = TEMPLATE_THEMES[templateId] ?? TEMPLATE_THEMES.forest;
-  if (!gender || gender === "neutral") return base;
-
-  const tinted = applyGenderTint(
-    {
-      accent: base.accent,
-      accentLight: base.accentLight,
-      titleColor: base.titleColor,
-      ornamentColor: base.ornamentColor,
-      pageTint: base.pageTint,
-      gradientStart: base.coverGradientStart,
-      gradientEnd: base.coverGradientEnd,
-    },
-    gender,
-  );
+  // Use getBookColors which handles both favoriteColor override and gender tinting
+  const colors = getBookColors(templateId, gender, favoriteColor);
 
   return {
     ...base,
-    accent: tinted.accent,
-    accentLight: tinted.accentLight,
-    titleColor: tinted.titleColor,
-    ornamentColor: tinted.ornamentColor,
-    pageTint: tinted.pageTint,
-    coverGradientStart: tinted.gradientStart,
-    coverGradientEnd: tinted.gradientEnd,
+    accent: colors.accent,
+    accentLight: colors.accentLight,
+    titleColor: colors.titleColor,
+    ornamentColor: colors.ornamentColor,
+    pageTint: colors.pageTint,
+    coverGradientStart: colors.gradientStart,
+    coverGradientEnd: colors.gradientEnd,
   };
 }
 

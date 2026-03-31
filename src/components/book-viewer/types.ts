@@ -127,9 +127,8 @@ export type BookPage =
       city: string | null;
       gender: string;
       interests: string[];
-      specialTrait: string | null;
+      favoriteColor: string | null;
       favoriteCompanion: string | null;
-      favoriteFood: string | null;
       futureDream: string | null;
       avatarUrl: string | null;
       portraitUrl: string | null;
@@ -164,6 +163,8 @@ export interface BookViewerProps {
   templateId: string;
   /** Character gender — influences color palette tinting */
   gender?: string;
+  /** Child's favorite color hex — overrides accent palette */
+  favoriteColor?: string;
   currentPage: number;
   onPageChange: (pageIndex: number) => void;
 }

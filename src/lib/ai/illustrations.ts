@@ -504,6 +504,12 @@ export async function generateIllustrationsWithFlux(
         // Order matters: input_image (first) gets highest priority in FLUX.
         // If primaryCharacter is set and is NOT the protagonist, put their
         // ref first so FLUX prioritizes their visual consistency.
+        //
+        // IMPORTANT: Cap at 2 refs per scene. FLUX Max degrades significantly
+        // with 3+ refs — the 3rd/4th images get ignored, causing characters
+        // to appear inconsistent or vanish entirely. Better to describe extra
+        // characters in the text prompt and let FLUX render them from description.
+        const MAX_REFS_PER_SCENE = 2;
         const sceneRefs: string[] = [];
         const primaryId = scene.primaryCharacter;
 
@@ -515,8 +521,9 @@ export async function generateIllustrationsWithFlux(
           }
         }
 
-        // 2. Remaining characters (skip the primary — already added)
+        // 2. Remaining characters (skip the primary — already added, stop at cap)
         for (const charId of scene.characters) {
+          if (sceneRefs.length >= MAX_REFS_PER_SCENE) break;
           if (charId === primaryId) continue; // already in position 0
           const base64 = refMap.get(charId);
           if (base64) {
@@ -524,21 +531,26 @@ export async function generateIllustrationsWithFlux(
           }
         }
 
+        if (scene.characters.length > MAX_REFS_PER_SCENE) {
+          const skipped = scene.characters.length - sceneRefs.length;
+          if (skipped > 0) {
+            console.log(`[FLUX] Scene ${sceneNumber}: using ${sceneRefs.length} refs, ${skipped} character(s) described in text only`);
+          }
+        }
+
         let fluxResult: FluxResult;
 
         if (sceneRefs.length <= 1) {
-          // 0-1 reference → FLUX Kontext Pro
+          // 0-1 reference → FLUX Kontext Pro (cheaper, faster)
           fluxResult = await generateFluxPro(scene.fluxPrompt, {
             inputImage: sceneRefs[0],
             aspectRatio: scene.aspectRatio,
           });
         } else {
-          // 2+ references → FLUX Kontext Max
+          // 2 references → FLUX Kontext Max
           fluxResult = await generateFluxMax(scene.fluxPrompt, {
             inputImage: sceneRefs[0],
             inputImage2: sceneRefs[1],
-            inputImage3: sceneRefs[2],
-            inputImage4: sceneRefs[3],
             aspectRatio: scene.aspectRatio,
           });
         }

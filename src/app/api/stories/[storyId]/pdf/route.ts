@@ -140,9 +140,8 @@ export async function GET(
     gender: string;
     city: string | null;
     interests: string[] | null;
-    special_trait: string | null;
+    favorite_color: string | null;
     favorite_companion: string | null;
-    favorite_food: string | null;
     future_dream: string | null;
     avatar_url: string | null;
   };
@@ -184,9 +183,8 @@ export async function GET(
     characterGender: character.gender,
     characterCity: character.city,
     characterInterests: character.interests ?? [],
-    specialTrait: character.special_trait,
+    favoriteColor: character.favorite_color,
     favoriteCompanion: character.favorite_companion,
-    favoriteFood: character.favorite_food,
     futureDream: character.future_dream,
   };
 

@@ -384,16 +384,11 @@
       "neutral": "Neutro",
       "hairstyleLabel": "Peinado",
       "interestsLabel": "Le encanta...",
-      "specialTraitLabel": "Algo especial sobre {name}",
-      "specialTraitLabelDefault": "Algo especial sobre tu hijo/a",
       "optional": "(opcional)",
-      "specialTraitPlaceholder": "Ej: Acaba de perder un diente, empieza el cole este año...",
-      "specialTraitHint": "Este detalle hará que el cuento sea verdaderamente único y personal.",
+      "favoriteColorLabel": "Su color favorito",
       "companionLabel": "¿Tiene mascota o amigo especial?",
       "companionPlaceholder": "Ej: Su gato Michi, su hermana Lucía, su peluche Oso...",
       "companionHint": "Puede aparecer como personaje sorpresa en la historia.",
-      "favoriteFoodLabel": "Su comida favorita",
-      "favoriteFoodPlaceholder": "Ej: Pizza, macarrones con queso, helado de fresa...",
       "futureDreamLabel": "¿Qué quiere ser de mayor?",
       "futureDreamPlaceholder": "Ej: Astronauta, veterinaria, chef, futbolista...",
       "greeting": "¡Hola, {name}!",
@@ -821,7 +816,8 @@
       "brown": "Marrón",
       "green": "Verde",
       "blue": "Azul",
-      "hazel": "Avellana"
+      "hazel": "Avellana",
+      "gray": "Gris"
     },
     "skinTones": {
       "light": "Claro",
@@ -829,6 +825,16 @@
       "medium": "Medio",
       "dark": "Oscuro",
       "very-dark": "Muy oscuro"
+    },
+    "favoriteColors": {
+      "red": "Rojo",
+      "blue": "Azul",
+      "green": "Verde",
+      "purple": "Morado",
+      "orange": "Naranja",
+      "yellow": "Amarillo",
+      "pink": "Rosa",
+      "turquoise": "Turquesa"
     },
     "tags": {
       "dreamers": "Para soñadores",

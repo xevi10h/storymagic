@@ -21,8 +21,8 @@ export type Database = {
           city: string | null
           created_at: string
           eye_color: string | null
+          favorite_color: string | null
           favorite_companion: string | null
-          favorite_food: string | null
           future_dream: string | null
           gender: string
           hair_color: string
@@ -31,7 +31,6 @@ export type Database = {
           interests: string[]
           name: string
           skin_tone: string
-          special_trait: string | null
           updated_at: string
           user_id: string
         }
@@ -41,8 +40,8 @@ export type Database = {
           city?: string | null
           created_at?: string
           eye_color?: string | null
+          favorite_color?: string | null
           favorite_companion?: string | null
-          favorite_food?: string | null
           future_dream?: string | null
           gender: string
           hair_color: string
@@ -51,7 +50,6 @@ export type Database = {
           interests?: string[]
           name: string
           skin_tone: string
-          special_trait?: string | null
           updated_at?: string
           user_id: string
         }
@@ -61,8 +59,8 @@ export type Database = {
           city?: string | null
           created_at?: string
           eye_color?: string | null
+          favorite_color?: string | null
           favorite_companion?: string | null
-          favorite_food?: string | null
           future_dream?: string | null
           gender?: string
           hair_color?: string
@@ -71,7 +69,6 @@ export type Database = {
           interests?: string[]
           name?: string
           skin_tone?: string
-          special_trait?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -133,6 +130,24 @@ export type Database = {
           template_id?: string | null
           updated_at?: string
           usage_count?: number
+        }
+        Relationships: []
+      }
+      newsletter_subscribers: {
+        Row: {
+          email: string
+          id: string
+          subscribed_at: string | null
+        }
+        Insert: {
+          email: string
+          id?: string
+          subscribed_at?: string | null
+        }
+        Update: {
+          email?: string
+          id?: string
+          subscribed_at?: string | null
         }
         Relationships: []
       }
@@ -244,6 +259,27 @@ export type Database = {
         }
         Relationships: []
       }
+      rate_limits: {
+        Row: {
+          action: string
+          created_at: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       sagas: {
         Row: {
           character_id: string
@@ -291,6 +327,7 @@ export type Database = {
       }
       stories: {
         Row: {
+          art_style: string | null
           character_id: string
           character_portrait_url: string | null
           cover_image_url: string | null
@@ -303,6 +340,7 @@ export type Database = {
           is_showcase: boolean
           locale: string
           pdf_url: string | null
+          recraft_style_id: string | null
           saga_id: string | null
           saga_order: number | null
           sender_name: string | null
@@ -314,6 +352,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          art_style?: string | null
           character_id: string
           character_portrait_url?: string | null
           cover_image_url?: string | null
@@ -326,6 +365,7 @@ export type Database = {
           is_showcase?: boolean
           locale?: string
           pdf_url?: string | null
+          recraft_style_id?: string | null
           saga_id?: string | null
           saga_order?: number | null
           sender_name?: string | null
@@ -337,6 +377,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          art_style?: string | null
           character_id?: string
           character_portrait_url?: string | null
           cover_image_url?: string | null
@@ -349,6 +390,7 @@ export type Database = {
           is_showcase?: boolean
           locale?: string
           pdf_url?: string | null
+          recraft_style_id?: string | null
           saga_id?: string | null
           saga_order?: number | null
           sender_name?: string | null
@@ -429,7 +471,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      cleanup_old_rate_limits: { Args: never; Returns: undefined }
     }
     Enums: {
       [_ in never]: never

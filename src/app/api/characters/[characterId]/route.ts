@@ -18,7 +18,7 @@ export async function GET(
 
   const { data: character, error } = await supabase
     .from("characters")
-    .select("id, name, gender, age, hair_color, skin_tone, hairstyle, interests, city, special_trait, favorite_companion")
+    .select("id, name, gender, age, hair_color, skin_tone, hairstyle, interests, city, favorite_color, favorite_companion")
     .eq("id", characterId)
     .eq("user_id", user.id) // ensure ownership
     .single();

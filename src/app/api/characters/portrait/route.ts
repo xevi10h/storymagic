@@ -21,9 +21,8 @@ const portraitInputSchema = z.object({
   eyeColor: z.string().max(20).optional(),
   hairstyle: z.string().max(30).optional(),
   interests: z.array(z.string().max(50)).max(4).optional(),
-  specialTrait: z.string().max(200).optional(),
+  favoriteColor: z.string().max(20).optional(),
   favoriteCompanion: z.string().max(100).optional(),
-  favoriteFood: z.string().max(100).optional(),
   futureDream: z.string().max(150).optional(),
   city: z.string().max(100).optional(),
 });
@@ -64,12 +63,12 @@ export async function POST(request: Request) {
 
     const {
       gender, age, skinTone, hairColor, eyeColor, hairstyle, childName,
-      interests, specialTrait, favoriteCompanion, favoriteFood, futureDream, city,
+      interests, favoriteColor, favoriteCompanion, futureDream, city,
     } = parsed.data;
 
     const charInput = { gender, age, skinTone, hairColor, eyeColor, hairstyle, childName };
     const personality: PortraitPersonalityInput = {
-      interests, specialTrait, favoriteCompanion, favoriteFood, futureDream, city,
+      interests, favoriteColor, favoriteCompanion, futureDream, city,
     };
 
     // Build portrait using the standardized layered system:

@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import type { CharacterData, CreationMode, Gender } from "@/lib/create-store";
 import CreationHeader from "./CreationHeader";
 import CreationFooterNav from "./CreationFooterNav";
-import { HAIR_COLORS, EYE_COLORS, SKIN_TONES, INTERESTS, HAIRSTYLES } from "@/lib/create-store";
+import { HAIR_COLORS, EYE_COLORS, SKIN_TONES, INTERESTS, HAIRSTYLES, FAVORITE_COLORS } from "@/lib/create-store";
 
 interface Step2Props {
   mode: CreationMode;
@@ -238,27 +238,39 @@ export default function Step2CharacterCreation({
                 </div>
               </div>
 
-              {/* Optional fields */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-create-text font-bold text-xs ml-1 uppercase tracking-wide">
-                    {character.name ? t("specialTraitLabel", { name: character.name }) : t("specialTraitLabelDefault")}
-                    <span className="text-create-text-sub font-medium normal-case tracking-normal ml-1.5">{t("optional")}</span>
-                  </label>
-                  <div className="relative group">
-                    <input
-                      type="text"
-                      value={character.specialTrait}
-                      onChange={(e) => onUpdateCharacter({ specialTrait: e.target.value })}
-                      placeholder={t("specialTraitPlaceholder")}
-                      maxLength={200}
-                      className="w-full h-11 pl-4 pr-10 rounded-xl border-2 border-create-neutral/40 bg-create-bg/50 group-hover:shadow-sm focus:border-create-primary focus:bg-white focus:ring-0 transition-all outline-none placeholder:text-gray-300 text-sm font-medium text-create-text"
-                    />
-                    <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-create-primary transition-colors text-lg">
-                      auto_awesome
-                    </span>
-                  </div>
+              {/* Favorite color picker */}
+              <div className="flex flex-col gap-2">
+                <label className="text-create-text font-bold text-xs ml-1 uppercase tracking-wide">
+                  {t("favoriteColorLabel")}
+                </label>
+                <div className="flex gap-2">
+                  {FAVORITE_COLORS.map((fc) => {
+                    const isSelected = character.favoriteColor === fc.color;
+                    return (
+                      <button
+                        key={fc.id}
+                        onClick={() => onUpdateCharacter({ favoriteColor: fc.color })}
+                        aria-label={td(`favoriteColors.${fc.id}`)}
+                        className={`w-9 h-9 rounded-full transition-all ${
+                          isSelected
+                            ? "ring-[3px] ring-create-primary ring-offset-2 shadow-md scale-110"
+                            : "ring-[3px] ring-transparent hover:scale-110"
+                        }`}
+                        style={{ backgroundColor: fc.color }}
+                      >
+                        {isSelected && (
+                          <span className={`material-symbols-outlined font-bold text-sm text-white`}>
+                            check
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
+              </div>
+
+              {/* Optional fields: companion + future dream */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
                   <label className="text-create-text font-bold text-xs ml-1 uppercase tracking-wide">
                     {t("companionLabel")}
@@ -275,29 +287,6 @@ export default function Step2CharacterCreation({
                     />
                     <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-create-primary transition-colors text-lg">
                       favorite
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Row 3: Favorite food + Future dream */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-create-text font-bold text-xs ml-1 uppercase tracking-wide">
-                    {t("favoriteFoodLabel")}
-                    <span className="text-create-text-sub font-medium normal-case tracking-normal ml-1.5">{t("optional")}</span>
-                  </label>
-                  <div className="relative group">
-                    <input
-                      type="text"
-                      value={character.favoriteFood}
-                      onChange={(e) => onUpdateCharacter({ favoriteFood: e.target.value })}
-                      placeholder={t("favoriteFoodPlaceholder")}
-                      maxLength={100}
-                      className="w-full h-11 pl-4 pr-10 rounded-xl border-2 border-create-neutral/40 bg-create-bg/50 group-hover:shadow-sm focus:border-create-primary focus:bg-white focus:ring-0 transition-all outline-none placeholder:text-gray-300 text-sm font-medium text-create-text"
-                    />
-                    <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-create-primary transition-colors text-lg">
-                      restaurant
                     </span>
                   </div>
                 </div>

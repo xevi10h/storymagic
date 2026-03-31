@@ -10,6 +10,7 @@ interface FullscreenPageViewerProps {
   pages: BookPage[];
   templateId: string;
   gender?: string;
+  favoriteColor?: string;
   initialPage: number;
   onClose: () => void;
   onPageChange: (pageIndex: number) => void;
@@ -19,6 +20,7 @@ export default function FullscreenPageViewer({
   pages,
   templateId,
   gender,
+  favoriteColor,
   initialPage,
   onClose,
   onPageChange,
@@ -107,6 +109,7 @@ export default function FullscreenPageViewer({
             page={pages[current]}
             templateId={templateId}
             gender={gender}
+            favoriteColor={favoriteColor}
             pageNumber={pages[current].type === "scene" ? getBookPageNumber(pages, current) : undefined}
           />
         </div>

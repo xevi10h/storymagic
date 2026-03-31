@@ -31,9 +31,8 @@ interface StoryData {
     gender: string;
     city: string | null;
     interests: string[] | null;
-    special_trait: string | null;
+    favorite_color: string | null;
     favorite_companion: string | null;
-    favorite_food: string | null;
     future_dream: string | null;
     avatar_url: string | null;
   };
@@ -158,9 +157,8 @@ function buildPages(story: StoryData): BookPage[] {
     city: story.characters.city,
     gender: story.characters.gender,
     interests: story.characters.interests ?? [],
-    specialTrait: story.characters.special_trait,
+    favoriteColor: story.characters.favorite_color,
     favoriteCompanion: story.characters.favorite_companion,
-    favoriteFood: story.characters.favorite_food,
     futureDream: story.characters.future_dream,
     avatarUrl: story.characters.avatar_url,
     portraitUrl: story.character_portrait_url,
@@ -420,6 +418,7 @@ export default function PreviewPage() {
             pages={visiblePages}
             templateId={story.template_id}
             gender={story.characters.gender}
+            favoriteColor={story.characters.favorite_color ?? undefined}
             currentPage={currentPage}
             onPageChange={setCurrentPage}
           />

@@ -494,8 +494,8 @@ async function submitToGelato({
     const character = story.characters as {
       name: string; age: number; gender: string;
       city?: string; interests?: string[];
-      special_trait?: string; favorite_companion?: string;
-      favorite_food?: string; future_dream?: string;
+      favorite_color?: string; favorite_companion?: string;
+      future_dream?: string;
     };
 
     // Pre-fetch cover image + portrait as base64 data URIs for @react-pdf
@@ -511,9 +511,8 @@ async function submitToGelato({
       characterAge: character.age,
       characterGender: character.gender,
       characterCity: character.city,
-      specialTrait: character.special_trait,
+      favoriteColor: character.favorite_color,
       favoriteCompanion: character.favorite_companion,
-      favoriteFood: character.favorite_food,
       futureDream: character.future_dream,
       dedicationText: story.dedication_text,
       senderName: story.sender_name,
@@ -546,7 +545,7 @@ async function submitToGelato({
 
     // 5. Build cover spread from actual book pages using pdf-lib
     // Embeds page 0 (front cover) and last page (back cover) with a spine strip
-    const theme = getTheme(story.template_id, character.gender);
+    const theme = getTheme(story.template_id, character.gender, character.favorite_color ?? undefined);
     console.log("[Gelato] Building cover spread from book pages (pdf-lib)...");
     const coverSpreadBuffer = await buildCoverSpreadFromBook({
       fullBookBuffer,

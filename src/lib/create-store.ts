@@ -19,9 +19,8 @@ export interface CharacterData {
   gender: Gender;
   hairstyle: string;
   interests: string[];
-  specialTrait: string;
+  favoriteColor: string;
   favoriteCompanion: string;
-  favoriteFood: string;
   futureDream: string;
 }
 
@@ -151,9 +150,8 @@ export const INITIAL_STATE: CreateBookState = {
     gender: "boy",
     hairstyle: "short",
     interests: [],
-    specialTrait: "",
+    favoriteColor: "#E53935",
     favoriteCompanion: "",
-    favoriteFood: "",
     futureDream: "",
   },
   portraitUrl: null,
@@ -194,6 +192,19 @@ export const SKIN_TONES = [
   { id: "medium", color: "#d4a574" },
   { id: "dark", color: "#8d5524" },
   { id: "very-dark", color: "#523218" },
+];
+
+// Child-friendly colors that double as the book's primary accent color.
+// Labels are translated via i18n: td('favoriteColors.${id}')
+export const FAVORITE_COLORS = [
+  { id: "red", color: "#E53935" },
+  { id: "blue", color: "#1E88E5" },
+  { id: "green", color: "#43A047" },
+  { id: "purple", color: "#8E24AA" },
+  { id: "orange", color: "#FB8C00" },
+  { id: "yellow", color: "#FDD835" },
+  { id: "pink", color: "#EC407A" },
+  { id: "turquoise", color: "#00ACC1" },
 ];
 
 // Labels are translated via i18n: td('interests.${id}')

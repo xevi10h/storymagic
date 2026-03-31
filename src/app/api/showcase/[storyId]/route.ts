@@ -29,7 +29,7 @@ export async function GET(
       cover_image_url,
       character_portrait_url,
       locale,
-      characters (name, age, gender, city, interests, special_trait, favorite_companion, favorite_food, future_dream, avatar_url),
+      characters (name, age, gender, city, interests, favorite_color, favorite_companion, future_dream, avatar_url),
       story_illustrations (scene_number, image_url, status)
     `)
     .eq("id", storyId)

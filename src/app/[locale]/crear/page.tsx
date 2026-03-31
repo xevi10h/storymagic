@@ -95,7 +95,7 @@ function CrearPageContent() {
     return JSON.stringify({
       gender: char.gender, age: char.age, skinTone: char.skinTone,
       hairColor: char.hairColor, hairstyle: char.hairstyle, name: char.name,
-      interests: char.interests, specialTrait: char.specialTrait,
+      interests: char.interests, favoriteColor: char.favoriteColor,
       favoriteCompanion: char.favoriteCompanion, futureDream: char.futureDream,
     });
   }, []);
@@ -363,9 +363,8 @@ function CrearPageContent() {
               hairstyle: ch.hairstyle ?? "short",
               interests: ch.interests ?? [],
               city: ch.city ?? "",
-              specialTrait: ch.special_trait ?? "",
+              favoriteColor: ch.favorite_color ?? "#E53935",
               favoriteCompanion: ch.favorite_companion ?? "",
-              favoriteFood: ch.favorite_food ?? "",
               futureDream: ch.future_dream ?? "",
             };
           }

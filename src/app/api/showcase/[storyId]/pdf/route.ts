@@ -50,9 +50,8 @@ export async function GET(
     age: number;
     gender?: string;
     city?: string;
-    special_trait?: string;
+    favorite_color?: string;
     favorite_companion?: string;
-    favorite_food?: string;
     future_dream?: string;
   };
 
@@ -73,9 +72,8 @@ export async function GET(
     characterAge: character.age,
     characterGender: character.gender as "boy" | "girl" | undefined,
     characterCity: character.city ?? undefined,
-    specialTrait: character.special_trait ?? undefined,
+    favoriteColor: character.favorite_color ?? undefined,
     favoriteCompanion: character.favorite_companion ?? undefined,
-    favoriteFood: character.favorite_food ?? undefined,
     futureDream: character.future_dream ?? undefined,
     dedicationText: story.dedication_text,
     senderName: story.sender_name,

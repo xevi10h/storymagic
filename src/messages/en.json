@@ -384,16 +384,11 @@
       "neutral": "Neutral",
       "hairstyleLabel": "Hairstyle",
       "interestsLabel": "Loves...",
-      "specialTraitLabel": "Something special about {name}",
-      "specialTraitLabelDefault": "Something special about your child",
       "optional": "(optional)",
-      "specialTraitPlaceholder": "E.g.: Just lost a tooth, starting school this year...",
-      "specialTraitHint": "This detail will make the story truly unique and personal.",
+      "favoriteColorLabel": "Favorite color",
       "companionLabel": "Do they have a pet or special friend?",
       "companionPlaceholder": "E.g.: Their cat Whiskers, their sister Lucy, their teddy bear...",
       "companionHint": "They may appear as a surprise character in the story.",
-      "favoriteFoodLabel": "Favorite food",
-      "favoriteFoodPlaceholder": "E.g.: Pizza, mac and cheese, strawberry ice cream...",
       "futureDreamLabel": "What do they want to be when they grow up?",
       "futureDreamPlaceholder": "E.g.: Astronaut, vet, chef, footballer...",
       "greeting": "Hello, {name}!",
@@ -823,7 +818,8 @@
       "brown": "Brown",
       "green": "Green",
       "blue": "Blue",
-      "hazel": "Hazel"
+      "hazel": "Hazel",
+      "gray": "Gray"
     },
     "skinTones": {
       "light": "Light",
@@ -831,6 +827,16 @@
       "medium": "Medium",
       "dark": "Dark",
       "very-dark": "Very dark"
+    },
+    "favoriteColors": {
+      "red": "Red",
+      "blue": "Blue",
+      "green": "Green",
+      "purple": "Purple",
+      "orange": "Orange",
+      "yellow": "Yellow",
+      "pink": "Pink",
+      "turquoise": "Turquoise"
     },
     "tags": {
       "dreamers": "For dreamers",

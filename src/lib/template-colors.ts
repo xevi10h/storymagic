@@ -190,7 +190,59 @@ const DEFAULT_PALETTE: BookColors = {
   gradientEnd: "#4E342E",
 };
 
-export function getBookColors(templateId: string, gender?: Gender | string): BookColors {
+// ── Favorite color accent override ────────────────────────────────────────
+
+/**
+ * Derives a complete accent palette from the child's favorite color.
+ * The template's gradient identity (cover, endpapers) is preserved,
+ * but accent elements (titles, ornaments, badges, borders) shift to
+ * the child's color — making every book feel personally theirs.
+ */
+function deriveAccentPalette(base: BookColors, favoriteColor: string): BookColors {
+  const [r, g, b] = hexToRgb(favoriteColor);
+
+  // accentLight: very pale tint of the favorite color (10% opacity feel)
+  const accentLight = rgbToHex(
+    Math.min(255, Math.round(r + (255 - r) * 0.88)),
+    Math.min(255, Math.round(g + (255 - g) * 0.88)),
+    Math.min(255, Math.round(b + (255 - b) * 0.88)),
+  );
+
+  // titleColor: dark version of the favorite color
+  const titleColor = rgbToHex(
+    Math.round(r * 0.35),
+    Math.round(g * 0.35),
+    Math.round(b * 0.35),
+  );
+
+  // ornamentColor: medium-light version (50% toward white)
+  const ornamentColor = rgbToHex(
+    Math.round(r + (255 - r) * 0.5),
+    Math.round(g + (255 - g) * 0.5),
+    Math.round(b + (255 - b) * 0.5),
+  );
+
+  // pageTint: extremely subtle tint (5% opacity feel)
+  const pageTint = rgbToHex(
+    Math.min(255, Math.round(r + (255 - r) * 0.95)),
+    Math.min(255, Math.round(g + (255 - g) * 0.95)),
+    Math.min(255, Math.round(b + (255 - b) * 0.95)),
+  );
+
+  return {
+    accent: favoriteColor,
+    accentLight,
+    titleColor,
+    ornamentColor,
+    pageTint,
+    // Preserve template gradient identity (cover/endpapers stay thematic)
+    gradientStart: base.gradientStart,
+    gradientEnd: base.gradientEnd,
+  };
+}
+
+export function getBookColors(templateId: string, gender?: Gender | string, favoriteColor?: string): BookColors {
   const base = PALETTES[templateId] ?? DEFAULT_PALETTE;
-  return applyGenderTint(base, gender);
+  const palette = favoriteColor ? deriveAccentPalette(base, favoriteColor) : base;
+  return applyGenderTint(palette, gender);
 }
