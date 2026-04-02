@@ -14,6 +14,49 @@ export async function middleware(request: NextRequest) {
   // Step 1: Apply locale routing (redirects, rewrites)
   const response = intlMiddleware(request);
 
+  // ─── Waitlist gate ───
+  const waitlistMode = process.env.WAITLIST_MODE === "true";
+  if (waitlistMode) {
+    const accessCode = process.env.WAITLIST_ACCESS_CODE;
+    const pathname = request.nextUrl.pathname;
+
+    // Check for access code in query param → set cookie and redirect clean
+    const qsAccess = request.nextUrl.searchParams.get("access");
+    if (qsAccess && accessCode && qsAccess === accessCode) {
+      const cleanUrl = request.nextUrl.clone();
+      cleanUrl.searchParams.delete("access");
+      const redirect = NextResponse.redirect(cleanUrl);
+      redirect.cookies.set("meapica_access", accessCode, {
+        path: "/",
+        maxAge: 60 * 60 * 24 * 30, // 30 days
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+      });
+      return redirect;
+    }
+
+    // Check if user has access cookie
+    const cookie = request.cookies.get("meapica_access")?.value;
+    const hasAccess = cookie === accessCode;
+
+    if (!hasAccess) {
+      // Extract locale from path
+      const localeMatch = pathname.match(/^\/(es|ca|en|fr)(\/|$)/);
+      const detectedLocale = localeMatch ? localeMatch[1] : "es";
+      const pathWithoutLocale = localeMatch
+        ? pathname.replace(`/${detectedLocale}`, "") || "/"
+        : pathname;
+
+      // Only allow root page (waitlist itself) — block everything else
+      if (pathWithoutLocale !== "/") {
+        const rootUrl = request.nextUrl.clone();
+        rootUrl.pathname = `/${detectedLocale}`;
+        rootUrl.search = "";
+        return NextResponse.redirect(rootUrl);
+      }
+    }
+  }
+
   // Step 2: Refresh Supabase session on the response
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

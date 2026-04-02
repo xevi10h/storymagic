@@ -112,6 +112,28 @@ For ages 2-4, bridges also serve as parent reading pauses.
 - Emotional expressions must match scene context
 - Character must be recognizable by physical attributes across all pages
 
+## Waitlist (Pre-Launch Gate)
+
+The entire site is gated behind a pre-launch waiting list when `WAITLIST_MODE=true`. This allows building an audience and collecting leads before the product is publicly available.
+
+**How it works:**
+- A full-screen waitlist page replaces the normal site content for all visitors
+- Users submit their **name + email** to join the waiting list
+- On submission, a **confirmation email** is sent via **Resend** (currently sending from `constrack.pro` domain; `meapica.com` DNS records pending configuration)
+- Subscriber data is stored in the **`newsletter_subscribers`** table in Supabase
+- A **live subscriber counter** is displayed on the waitlist page to create social proof
+- Available in all **4 languages** (ES, CA, EN, FR) via next-intl
+
+**Team access bypass:**
+- A secret access code can be passed as a query parameter to bypass the waitlist gate
+- The code is set via the `WAITLIST_ACCESS_CODE` env var
+- Once entered, a cookie is set so the team member can navigate freely without re-entering the code
+
+**Disabling the waitlist:**
+- Set `WAITLIST_MODE=false` (or remove the env var) to open the site to all visitors
+
+---
+
 ## Saga System (Post-MVP)
 
 Three saga types for returning customers:

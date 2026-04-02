@@ -31,7 +31,7 @@ The roadmap is divided into 6 phases, from foundation to scale. Each phase has c
 - [x] Meapica brand identity: BrandLogo + WritingAnimation components
 - [ ] Domain registration (meapica.com)
 - [ ] SEO: meta tags, Open Graph, structured data
-- [ ] Email capture / waitlist
+- [x] Email capture / waitlist (Resend confirmation emails, newsletter_subscribers table, secret access code bypass)
 - [ ] Analytics (Vercel Analytics)
 
 ---
@@ -189,9 +189,16 @@ Inspired by Will Guidara's "Unreasonable Hospitality": the product isn't the boo
 | 7 | PDF engine | DONE | @react-pdf/renderer (Node.js) |
 | 8 | Gelato product specs | PENDING | Paper weight, binding, finish TBD |
 | 9 | i18n strategy | DONE | next-intl, 4 locales (ES/CA/EN/FR) from day 1 |
+| 10 | Pre-launch waitlist | DONE | Resend emails + Supabase newsletter_subscribers + secret access code bypass |
 
 ---
 
 ## Current Focus
 
-**Next action:** Phase 4 — Activate Stripe + Gelato integration. First physical test book.
+**Next actions:**
+- Configure `meapica.com` DNS records in Resend for branded waitlist confirmation emails (currently using `constrack.pro` as temporary sender domain)
+- Add Vercel production env vars: `WAITLIST_MODE`, `WAITLIST_ACCESS_CODE`, `RESEND_API_KEY`
+- Analytics/tracking for waitlist conversions (signup funnel, email open rates)
+- Social sharing from waitlist (refer-a-friend mechanism to boost organic signups)
+- Disable waitlist mode when ready to launch (set `WAITLIST_MODE=false`)
+- Phase 4 — Activate Stripe + Gelato integration. First physical test book.

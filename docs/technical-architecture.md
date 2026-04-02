@@ -15,6 +15,7 @@
 | Book Layout | @react-pdf/renderer | PDF composition (32-page book) |
 | Printing | Gelato API | Print-on-demand, global fulfillment |
 | i18n | next-intl | 4 locales: ES (default), CA, EN, FR |
+| Email | Resend | Transactional emails (waitlist confirmation) |
 | Domain | TBD | meapica.com (not yet registered) |
 
 ## Supabase Project
@@ -113,6 +114,14 @@ sagas
 ├── type (linear / episodic / progression)
 ├── created_at
 └── updated_at
+
+newsletter_subscribers (waitlist)
+├── id (uuid, PK)
+├── name (text)
+├── email (text, unique)
+├── locale (text — es/ca/en/fr)
+├── created_at
+└── updated_at
 ```
 
 ## Storage Buckets
@@ -189,6 +198,7 @@ User clicks "Buy" in Step 7
 |---------|------|
 | Vercel (Pro) | ~20 EUR/month |
 | Supabase (Free → Pro when needed) | 0-25 EUR/month |
+| Resend (email) | Free tier (3,000 emails/month) |
 | Domain | ~1 EUR/month (12 EUR/year) |
 | **Total fixed** | **~21-46 EUR/month** |
 
@@ -214,6 +224,8 @@ src/
 │   ├── perfil/page.tsx                   — User profile
 │   └── checkout/success/page.tsx         — Post-purchase confirmation
 ├── app/api/
+│   ├── waitlist/route.ts                 — POST: subscribe to waitlist (name + email → Supabase + Resend)
+│   ├── newsletter/route.ts               — POST: newsletter subscription endpoint
 │   ├── stories/
 │   │   ├── route.ts                      — POST: save character + story draft
 │   │   └── [storyId]/
@@ -236,6 +248,8 @@ src/
 │   ├── book-viewer/                      — react-pageflip book viewer
 │   ├── crear/                            — All wizard step components
 │   ├── landing/                          — Navbar, Footer, etc.
+│   ├── waitlist/
+│   │   └── WaitlistPage.tsx              — Full-screen waitlist gate (form + subscriber counter)
 │   ├── BrandLogo.tsx                     — Meapica logo (SVG Book-M + Fredoka text)
 │   └── WritingAnimation.tsx              — Quill pen logo reveal animation
 ├── lib/
@@ -253,6 +267,7 @@ src/
 │   │   ├── server.ts                     — Server client (RSC/Route Handlers)
 │   │   ├── middleware.ts                 — Session refresh + route protection
 │   │   └── storage.ts                    — Upload illustrations + PDFs
+│   ├── waitlist-email.ts                 — Resend email template for waitlist confirmation
 │   ├── create-store.ts                   — Wizard state + decision tree constants
 │   ├── pricing.ts                        — Shared pricing constants
 │   ├── stripe.ts                         — Stripe singleton
@@ -270,6 +285,8 @@ src/
 
 ## Key Technical Notes
 
+- **Resend email** — Transactional emails via Resend API. Currently sending from `constrack.pro` domain (temporary). `meapica.com` DNS records need to be configured in Resend for branded emails. API key env var: `RESEND_API_KEY`.
+- **Waitlist gate** — Controlled by `WAITLIST_MODE` env var (true/false). Secret bypass via `WAITLIST_ACCESS_CODE` env var (query param sets a cookie for team testing).
 - **No AI SDKs** — Xavier's preference. Everything uses plain `fetch()`. Provider auto-detected from env vars.
 - **Guest flow** — /crear is unprotected. Anonymous Supabase sign-in at checkout if not logged in. State persisted in localStorage.
 - **Character consistency** — `buildCharacterVisualDescription()` in `character-description.ts` (extracted to avoid circular deps between story-generator and mock-story).

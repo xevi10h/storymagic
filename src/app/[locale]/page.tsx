@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import Navbar from "@/components/landing/Navbar";
 import Hero from "@/components/landing/Hero";
 import HowItWorks from "@/components/landing/HowItWorks";
@@ -8,6 +9,7 @@ import AdventurePack from "@/components/landing/AdventurePack";
 import Testimonials from "@/components/landing/Testimonials";
 import CollectionOffer from "@/components/landing/CollectionOffer";
 import Footer from "@/components/landing/Footer";
+import WaitlistPage from "@/components/waitlist/WaitlistPage";
 import { OrganizationJsonLd, ProductJsonLd } from "@/components/seo/JsonLd";
 
 type Props = {
@@ -16,6 +18,19 @@ type Props = {
 
 export default async function Home({ params }: Props) {
   const { locale } = await params;
+
+  // Waitlist mode: show waitlist unless user has access cookie
+  const isWaitlistMode = process.env.WAITLIST_MODE === "true";
+  if (isWaitlistMode) {
+    const cookieStore = await cookies();
+    const hasAccess =
+      cookieStore.get("meapica_access")?.value ===
+      process.env.WAITLIST_ACCESS_CODE;
+
+    if (!hasAccess) {
+      return <WaitlistPage />;
+    }
+  }
 
   return (
     <>
