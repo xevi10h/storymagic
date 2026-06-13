@@ -11,11 +11,12 @@
 | Payments | Stripe | Checkout, webhooks, order management |
 | Story AI | Claude Sonnet 4 (Anthropic) | Text generation — prod |
 | Story AI (dev) | Groq / Cerebras / Gemini | Free-tier fallbacks for local development |
-| Image AI | Recraft V3 (`child_book` style) | Illustration generation |
+| Image AI | FLUX.2 [flex] (BFL) | Illustration generation — visual-bible multi-reference (Recraft V3 fallback) |
+| Illustration QA | Gemini 2.5 Flash (vision) | Per-scene consistency/coherence/quality judge + regen loop |
 | Book Layout | @react-pdf/renderer | PDF composition (32-page book) |
 | Printing | Gelato API | Print-on-demand, global fulfillment |
 | i18n | next-intl | 4 locales: ES (default), CA, EN, FR |
-| Email | Resend | Transactional emails (waitlist confirmation) |
+| Email | Resend | Transactional emails (waitlist + order lifecycle: confirmed/producing/shipped/delivered) |
 | Domain | TBD | meapica.com (not yet registered) |
 
 ## Supabase Project
@@ -122,13 +123,30 @@ newsletter_subscribers (waitlist)
 ├── locale (text — es/ca/en/fr)
 ├── created_at
 └── updated_at
+
+blog_posts (editorial blog — Supabase CMS)
+├── id (uuid, PK)
+├── slug (text — English, shared across locales)
+├── locale (text — es/ca/en/fr)   ── UNIQUE (locale, slug)
+├── title / excerpt / body_markdown
+├── cover_image_url (nullable)
+├── author (text, default 'Meapica')
+├── status (draft | published)    ── RLS: public reads published only; writes service-role only
+├── published_at
+├── seo_title / seo_description (nullable overrides)
+├── related_type (gifts|ages|themes) / related_slug  ── cross-link to SEO landing
+├── tags (text[])
+├── created_at
+└── updated_at
 ```
+
+**Blog read path:** `src/lib/blog.ts` (untyped Supabase client) → `/blog` index + `/blog/[slug]` post. Markdown rendered with `marked`; styled via `.prose-article` in globals.css. `Article` + `BreadcrumbList` JSON-LD. Authoring v1 = seed via service role (no admin UI yet).
 
 ## Storage Buckets
 
 | Bucket | Access | Path pattern | Content |
 |--------|--------|-------------|---------|
-| `illustrations` | Public | `{storyId}/{sceneNumber}.png` | Recraft-generated scene illustrations |
+| `illustrations` | Public | `{storyId}/{sceneNumber}.png`, `{storyId}/ref-{assetId}.png`, `portraits/ref-{uuid}.png` | FLUX.2 scene illustrations + visual-bible reference sheets + child avatar portraits |
 | `book-pdfs` | Private | `{userId}/{storyId}.pdf` | Generated PDF books, served via signed URL |
 
 ## Generation Pipeline
@@ -148,11 +166,18 @@ User completes Step 5 (dedication + ending)
                     │      Output: 12 scenes (title + text + image_prompt each)
                     │      12-beat narrative arc
                     │
-                    ├─→ 2. Illustration generation × 12 (parallel)
-                    │      Recraft V3 child_book, 1024×1024
-                    │      Character description prepended to every prompt (consistency)
-                    │      illustration_library cache checked first (avoids regeneration)
-                    │      Images stored in Supabase Storage (illustrations bucket)
+                    ├─→ 2. Illustration generation — FLUX.2 "visual bible" pipeline
+                    │      a. Extract visual assets (LLM): protagonist + secondary
+                    │         characters + recurring LOCATIONS + WARDROBE + PROPS (≤10)
+                    │      b. Generate a frozen reference sheet per asset via FLUX.2
+                    │         (protagonist sheet anchored to the child's real avatar)
+                    │      c. Screenplay (LLM): per-scene fluxPrompt + asset IDs present
+                    │      d. Generate each scene with FLUX.2 conditioned on up to 8 of
+                    │         those reference images → whole-world consistency
+                    │      Style: reinforced watercolor suffix (see lib/ai/style.ts)
+                    │      Engine: ILLUSTRATION_PROVIDER=flux2 (FLUX2_MODEL=flux-2-flex)
+                    │      Preview = 4 scenes here; rest generated post-purchase
+                    │      Fallback: Recraft V3 (ILLUSTRATION_PROVIDER=recraft)
                     │
                     ├─→ 3. Save to Supabase
                     │      stories.generated_text = all 12 scenes
@@ -165,12 +190,23 @@ User clicks "Buy" in Step 7
   │
   └─→ POST /api/checkout
         └─→ Stripe Checkout Session created
-              └─→ On success: POST /api/webhooks/stripe
-                    ├─→ Order saved to DB
-                    └─→ GET /api/stories/[storyId]/pdf (triggered or on-demand)
-                          ├─→ Check Supabase Storage cache
-                          ├─→ If missing: render PDF with @react-pdf/renderer
-                          └─→ Upload to book-pdfs bucket, return signed URL
+              └─→ On success: POST /api/webhooks/stripe (or /api/checkout/verify if it wins the race)
+                    ├─→ Order → 'paid'
+                    └─→ Physical order → email "order_confirmed" (exactly-once across webhook+verify)
+
+Physical fulfillment + customer updates (Gelato)
+  │
+  ├─→ POST /api/stories/[storyId]/complete (after payment, finishes illustrations)
+  │     ├─→ Render full book + interior PDFs, build cover spread (pdf-lib)
+  │     ├─→ Upload PDFs → Supabase, sign 7-day URLs
+  │     ├─→ createPrintOrder() → Gelato; order → 'producing', story → 'ordered'
+  │     └─→ email "in_production"
+  │
+  └─→ POST /api/webhooks/gelato (order_status_updated / order_item_status_updated)
+        ├─→ transitionOrder(): update status + tracking; story status synced
+        ├─→ Emails ONLY on real status transition (no duplicates on Gelato retries):
+        │     producing→in_production · shipped→shipped (w/ tracking) · delivered→delivered
+        └─→ cancelled/failed → revert to 'paid' (manual review, no email)
 ```
 
 ## AI Provider Details
@@ -189,8 +225,13 @@ User clicks "Buy" in Step 7
 | Service | Cost | Notes |
 |---------|------|-------|
 | Claude Sonnet 4 (story text) | ~$0.05 | ~3K input + 2K output tokens |
-| Recraft V3 (12 illustrations) | ~$0.48 | $0.04/img × 12 |
-| **Total AI cost per book** | **~$0.53** | |
+| FLUX.2 [flex] reference sheets | ~$0.06 | ~6 visual-bible assets × $0.01 |
+| FLUX.2 [flex] illustrations | ~$0.21 | ~21 imgs (cover+scenes+secondaries) × $0.01 |
+| Gemini 2.5 Flash QA judge | ~$0.02 | vision review + re-judge passes |
+| **Total AI cost per book** | **~$0.34** | flex; with FLUX.2 pro ≈ $0.85 — both ≤ €1.50 target |
+
+> Engine A/B (artifacts/benchmark): FLUX.2 beat Recraft on scene coherence 9.8 vs 4.8.
+> FLUX.2 [flex] + reinforced watercolor prompt chosen as default (look + cost); pro via `FLUX2_MODEL`.
 
 ## Infrastructure Cost (Monthly, Estimated)
 
@@ -235,7 +276,9 @@ src/
 │   │       ├── title/route.ts            — POST: update story title
 │   │       └── pdf/route.ts              — GET: render + cache PDF
 │   ├── checkout/route.ts                 — POST: create Stripe session
-│   ├── webhooks/stripe/route.ts          — POST: Stripe webhook handler
+│   ├── checkout/verify/route.ts          — GET: confirm payment (webhook fallback) + order_confirmed email
+│   ├── webhooks/stripe/route.ts          — POST: Stripe webhook → 'paid' + order_confirmed email
+│   ├── webhooks/gelato/route.ts          — POST: Gelato webhook → status/tracking + lifecycle emails
 │   ├── dashboard/route.ts                — GET: user stories/orders/characters
 │   └── profile/route.ts                  — GET/PATCH: user profile
 ├── components/
@@ -255,7 +298,12 @@ src/
 ├── lib/
 │   ├── ai/
 │   │   ├── story-generator.ts            — Multi-provider text generation
-│   │   ├── illustrations.ts              — Recraft V3 image generation
+│   │   ├── flux2.ts                      — FLUX.2 wrapper (≤8 refs, flex/pro)
+│   │   ├── visual-assets.ts              — Visual bible: extract + gen reference sheets
+│   │   ├── scene-screenplay.ts           — Per-scene fluxPrompt + asset IDs + watercolor suffix
+│   │   ├── style.ts                      — Shared reinforced-watercolor style directives
+│   │   ├── qa-judge.ts                   — Gemini 2.5 Flash illustration QA judge
+│   │   ├── illustrations.ts              — FLUX.2 multi-ref scene gen (Recraft V3 fallback)
 │   │   ├── character-description.ts      — buildCharacterVisualDescription()
 │   │   └── mock-story.ts                 — Mock data for dev/testing
 │   ├── pdf/
@@ -267,6 +315,11 @@ src/
 │   │   ├── server.ts                     — Server client (RSC/Route Handlers)
 │   │   ├── middleware.ts                 — Session refresh + route protection
 │   │   └── storage.ts                    — Upload illustrations + PDFs
+│   ├── email/
+│   │   ├── send.ts                       — Resend REST sender + getSiteUrl() (never throws)
+│   │   ├── layout.ts                     — Shared branded HTML email shell + escapeHtml()
+│   │   ├── order-emails.ts               — Localized order lifecycle templates (es/ca/en/fr)
+│   │   └── notify-order.ts               — Resolve recipient (auth.admin or passed email) + send
 │   ├── waitlist-email.ts                 — Resend email template for waitlist confirmation
 │   ├── create-store.ts                   — Wizard state + decision tree constants
 │   ├── pricing.ts                        — Shared pricing constants
@@ -285,7 +338,7 @@ src/
 
 ## Key Technical Notes
 
-- **Resend email** — Transactional emails via Resend API. Currently sending from `constrack.pro` domain (temporary). `meapica.com` DNS records need to be configured in Resend for branded emails. API key env var: `RESEND_API_KEY`.
+- **Resend email** — Transactional emails via Resend REST API (no SDK). Currently sending from `constrack.pro` domain (temporary); `meapica.com` DNS records need to be configured in Resend for branded emails. Two flows: (1) waitlist confirmation, (2) physical-order lifecycle — `order_confirmed` → `in_production` → `shipped` (with carrier tracking) → `delivered`, all localized (es/ca/en/fr). Order emails fire exactly-once: confirmation from whichever of the Stripe webhook / verify endpoint flips the order to `paid` first; production/shipping/delivery from the Gelato webhook, guarded by a real status transition so retried webhooks never duplicate. Env vars: `RESEND_API_KEY` (required), `EMAIL_FROM` (optional, default `Meapica <hola@constrack.pro>`), `NEXT_PUBLIC_SITE_URL` (optional, default `https://meapica.com` — used for logo + dashboard/tracking links).
 - **Waitlist gate** — Controlled by `WAITLIST_MODE` env var (true/false). Secret bypass via `WAITLIST_ACCESS_CODE` env var (query param sets a cookie for team testing).
 - **No AI SDKs** — Xavier's preference. Everything uses plain `fetch()`. Provider auto-detected from env vars.
 - **Guest flow** — /crear is unprotected. Anonymous Supabase sign-in at checkout if not logged in. State persisted in localStorage.

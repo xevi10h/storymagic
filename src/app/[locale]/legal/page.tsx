@@ -1,6 +1,7 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import Navbar from "@/components/landing/Navbar";
+import { FAQJsonLd } from "@/components/seo/JsonLd";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { routing } from "@/i18n/routing";
@@ -81,8 +82,15 @@ export default function LegalPage() {
     { id: "shipping", sectionCount: 4 },
   ] as const;
 
+  // FAQPage structured data — enables FAQ rich results in Google SERP
+  const faqQuestions = Array.from({ length: 6 }, (_, i) => ({
+    question: t(`faq.section${i + 1}Title`),
+    answer: t(`faq.section${i + 1}Text`),
+  }));
+
   return (
     <>
+      <FAQJsonLd questions={faqQuestions} />
       <Navbar />
       <main className="min-h-screen bg-white pt-24 pb-16">
         <div className="mx-auto max-w-3xl px-6">

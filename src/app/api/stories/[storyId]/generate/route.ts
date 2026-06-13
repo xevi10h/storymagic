@@ -19,7 +19,7 @@ import { PREVIEW_ILLUSTRATION_COUNT } from "@/lib/pricing";
 import { SCENE_LAYOUT_PAIRS, LAYOUT_IMAGE_SIZE } from "@/components/book-viewer/types";
 import { extractVisualAssets, generateReferenceImages } from "@/lib/ai/visual-assets";
 import { generateScreenplay } from "@/lib/ai/scene-screenplay";
-import { generateFluxPro } from "@/lib/ai/flux-kontext";
+import { generateFlux2 } from "@/lib/ai/flux2";
 
 // Architect (~15s) + expansion+illustrations in parallel (~15s) + uploads (~5s) = ~35s typical
 export const maxDuration = 300;
@@ -231,8 +231,9 @@ export async function POST(
     console.log(`[Generate] Phase 1 done — "${architect.bookTitle}", styleId=${styleId ? styleId.slice(0, 8) + "..." : "null"} [${elapsed(routeStart)}]`);
 
     // ── Feature flag: choose illustration provider ────────────────────────────
+    // "flux2" (FLUX.2, current) or legacy "flux" (Kontext) both take the FLUX path.
     const illustrationProvider = process.env.ILLUSTRATION_PROVIDER || "recraft";
-    const useFlux = illustrationProvider === "flux" && !!process.env.BFL_API_KEY;
+    const useFlux = (illustrationProvider === "flux2" || illustrationProvider === "flux") && !!process.env.BFL_API_KEY;
 
     if (useFlux) {
       // ══════════════════════════════════════════════════════════════════════════
@@ -254,8 +255,23 @@ export async function POST(
       console.log(`[Generate][FLUX] Phase 2a done — ${assetTree.assets.length} assets identified [${elapsed(routeStart)}]`);
 
       // ── Phase 2b: Generate reference images ─────────────────────────────────
+      // Anchor the protagonist sheet to the child's REAL avatar so identity is
+      // locked to the actual child, not re-invented from text.
+      let protagonistAvatarBase64: string | undefined;
+      if (character.avatar_url) {
+        try {
+          let url = character.avatar_url;
+          if (url.includes("api.dicebear.com") && url.includes("/svg?")) url = url.replace("/svg?", "/png?") + "&size=512";
+          if (url.startsWith("http")) {
+            const r = await fetch(url);
+            if (r.ok) protagonistAvatarBase64 = Buffer.from(await r.arrayBuffer()).toString("base64");
+          }
+        } catch (e) {
+          console.warn("[Generate][FLUX2] avatar fetch for anchor failed (non-fatal):", e);
+        }
+      }
       console.log(`[Generate][FLUX] Phase 2b: Generating reference images... [${elapsed(routeStart)}]`);
-      const assetReferences = await generateReferenceImages(assetTree, supabase, storyId);
+      const assetReferences = await generateReferenceImages(assetTree, supabase, storyId, { protagonistAvatarBase64 });
       console.log(`[Generate][FLUX] Phase 2b done — ${assetReferences.length} references generated [${elapsed(routeStart)}]`);
 
       // ── Phase 3: Expand scenes + Generate screenplay (parallel) ─────────────
@@ -272,7 +288,7 @@ export async function POST(
         .map((s) => s.sceneNumber);
       console.log(`[Generate][FLUX] Phase 4: Generating ${previewSceneNumbers.length} preview illustrations... [${elapsed(routeStart)}]`);
       const previewIllustrations = await generateIllustrationsWithFlux(
-        screenplay, assetReferences, { sceneNumbers: previewSceneNumbers, batchSize: 2 },
+        screenplay, assetReferences, { sceneNumbers: previewSceneNumbers },
       );
       console.log(`[Generate][FLUX] Phase 4 done — ${previewIllustrations.length} previews generated [${elapsed(routeStart)}]`);
 
@@ -280,8 +296,12 @@ export async function POST(
       console.log(`[Generate][FLUX] Phase 5: Cover generation... [${elapsed(routeStart)}]`);
       let coverUrl: string | null = null;
       try {
-        const coverResult = await generateFluxPro(screenplay.coverSpec.fluxPrompt, {
-          inputImage: assetReferences.find((r) => r.assetId === "protagonist")?.base64,
+        const coverRefs = [
+          assetReferences.find((r) => r.assetId === "protagonist")?.base64,
+          ...(screenplay.coverSpec.locationAsset ? [assetReferences.find((r) => r.assetId === screenplay.coverSpec.locationAsset)?.base64] : []),
+        ].filter((b): b is string => !!b);
+        const coverResult = await generateFlux2(screenplay.coverSpec.fluxPrompt, {
+          inputImages: coverRefs,
           aspectRatio: "1:1",
         });
         coverUrl = await uploadCoverFromUrl(supabase, storyId, coverResult.url);

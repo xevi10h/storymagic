@@ -352,6 +352,12 @@ export default function GenerarPage() {
 
   useEffect(() => {
     if (illustrationsDone) {
+      // Flag the preview to play the one-shot "book is born" reveal
+      try {
+        sessionStorage.setItem("meapica_fresh_book", storyId);
+      } catch {
+        // storage unavailable (private mode) — reveal is skipped, no harm
+      }
       // If title not yet confirmed, auto-confirm default before redirecting
       if (!titleConfirmed) {
         const titleToUse = customTitle.trim() || selectedTitle;

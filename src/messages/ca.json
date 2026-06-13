@@ -1,4 +1,403 @@
 {
+  "seo": {
+    "common": {
+      "breadcrumbHome": "Inici",
+      "featuredHeading": "Contes que es converteixen en records",
+      "featuredSubheading": "Cada edició és única, amb el teu fill com a protagonista.",
+      "relatedHeading": "També et pot interessar",
+      "faqHeading": "Preguntes freqüents",
+      "ctaPrimary": "Crear el meu conte"
+    },
+    "gifts": {
+      "three-kings": {
+        "metaTitle": "Conte personalitzat per Reis: el regal protagonista",
+        "metaDescription": "Aquest any, regala alguna cosa que els teus fills recordaran sempre: un conte on són els herois. Encarrega'l amb temps per als Reis.",
+        "h1": "El regal de Reis que no acaba en una capsa oblidada",
+        "heroIntro": "El matí del 6 de gener arriba un cop l'any. En lloc d'una joguina més de plàstic, deixa als Reis un conte on el teu fill és el protagonista de la seva pròpia aventura.",
+        "bodyHeading": "Un regal que es guarda, no que es trenca",
+        "bodyParagraphs": [
+          "Les joguines de moda canvien cada temporada; un llibre amb el nom, la cara i els somnis del teu fill no caduca mai. És el tipus de regal que es torna a obrir anys després, que es guarda a la prestatgeria i que un dia explicarà als seus propis fills. Paper per damunt de píxels, emoció per damunt del soroll.",
+          "Cada conte és una edició única: escrivim una història a mida a partir del nom, l'edat i els trets del teu fill, i ell mateix apareix dibuixat a cada escena. Pots veure la previsualització sencera abans de comprar, així que saps exactament quin regal hi haurà sota la falguera. Demana'l amb temps: l'enviament tarda entre 7 i 12 dies laborables."
+        ],
+        "benefitsHeading": "Per què aquest Reis",
+        "benefits": [
+          "El teu fill és l'heroi, no un espectador més",
+          "Un record que dura tota la vida, no una temporada",
+          "Previsualització completa abans de comprar"
+        ]
+      },
+      "sant-jordi": {
+        "metaTitle": "Conte personalitzat per Sant Jordi: el llibre i la rosa",
+        "metaDescription": "Per Sant Jordi, regala el llibre més personal de tots: un conte on el teu fill és el protagonista. La rosa es marceix; aquest conte queda per sempre.",
+        "h1": "El llibre de Sant Jordi amb el teu fill com a protagonista",
+        "heroIntro": "Per Diada de Sant Jordi tothom regala un llibre. Aquest any regala'n un que ningú més té: un conte únic on el teu fill viu la seva pròpia aventura.",
+        "bodyHeading": "La rosa es marceix, aquest conte no",
+        "bodyParagraphs": [
+          "Sant Jordi és la festa dels llibres i les roses, i no hi ha regal més fidel a aquest esperit que un conte fet expressament per a algú que estimes. La rosa dura uns dies; un llibre amb el nom i la cara del teu fill es guarda a la prestatgeria de casa i s'obre una vegada i una altra. És literatura i és record, tot alhora.",
+          "Escrivim una història original protagonitzada pel teu fill, amb els seus trets i els seus somnis dibuixats a cada escena, enquadernada amb cosit i impresa en paper cremós Munken de 170 g amb certificació FSC. Un objecte digne de la millor llibreria, pensat per durar. Veuràs la previsualització sencera abans de decidir-te, perquè un regal així es mereix mirar-se amb calma."
+        ],
+        "benefitsHeading": "Per què per Sant Jordi",
+        "benefits": [
+          "El regal més personal d'una diada de llibres",
+          "Paper FSC i enquadernació cosida, fet per durar",
+          "Una edició única que la rosa no pot igualar"
+        ]
+      },
+      "birthday": {
+        "metaTitle": "Conte personalitzat d'aniversari: ell n'és l'heroi",
+        "metaDescription": "Per al seu aniversari, regala-li la millor aventura: un conte únic on el teu fill és el protagonista. Previsualització completa abans de comprar.",
+        "h1": "El conte d'aniversari on el protagonista és el teu fill",
+        "heroIntro": "El dia del seu aniversari, el teu fill ho és tot. Regala-li un conte on també sigui l'heroi indiscutible d'una aventura escrita només per a ell.",
+        "bodyHeading": "La cara que farà en reconèixer-se",
+        "bodyParagraphs": [
+          "Hi ha un instant impagable quan un nen obre el llibre i descobreix que el protagonista té el seu nom, els seus cabells, els seus ulls i fins i tot la seva mascota. Deixa de ser un conte qualsevol i passa a ser el seu conte. Aquest moment, el dia del seu aniversari, val molt més que qualsevol joguina que oblidarà en una setmana.",
+          "Construïm una història a mida amb les dades del teu fill i una dedicatòria personalitzada a la primera pàgina, perquè recordi qui li va fer aquest regal i per quin motiu. Disponible en PDF digital, tapa tova o tapa dura, sempre amb la previsualització sencera abans de comprar. L'enviament tarda entre 7 i 12 dies laborables, així que demana'l amb una mica d'antelació."
+        ],
+        "benefitsHeading": "Per què per l'aniversari",
+        "benefits": [
+          "El protagonista és ell, el dia que tot gira al seu voltant",
+          "Dedicatòria personalitzada per recordar qui l'hi va regalar",
+          "Un record que sobreviu a totes les joguines"
+        ]
+      },
+      "communion": {
+        "metaTitle": "Conte personalitzat de Primera Comunió: record elegant",
+        "metaDescription": "Un record elegant i ple de sentit per a la Primera Comunió: un conte únic amb el nom del nen i una dedicatòria especial. Fet per durar.",
+        "h1": "Un conte de Primera Comunió que es guarda tota la vida",
+        "heroIntro": "La Primera Comunió és una fita que es recorda per sempre. Acompanya-la amb un regal a l'altura: un conte únic, elegant i personalitzat, amb el protagonista que celebra el dia.",
+        "bodyHeading": "Un record per a una ocasió que no es repeteix",
+        "bodyParagraphs": [
+          "En un dia tan assenyalat, els regals que perduren són els que tenen ànima. Un conte fet a mida, amb el nom del nen i una dedicatòria pensada per a l'ocasió, esdevé un d'aquests objectes que la família guarda amb cura i que el nen retrobarà de gran amb emoció. No és un detall més: és un record que el connecta amb un dels dies importants de la seva infància.",
+          "Cada llibre s'enquaderna amb cosit i s'imprimeix en paper cremós Munken de 170 g certificat FSC, amb un acabat sobri i elegant a l'altura del moment. Pots triar tapa dura per a un objecte encara més durador i veuràs la previsualització completa abans de comprar. Recorda demanar-lo amb temps, perquè l'enviament tarda entre 7 i 12 dies laborables."
+        ],
+        "benefitsHeading": "Per què per la Comunió",
+        "benefits": [
+          "Un record elegant a l'altura d'una fita única",
+          "Dedicatòria pensada especialment per a l'ocasió",
+          "Tapa dura i paper FSC: fet per conservar-se"
+        ]
+      },
+      "christmas": {
+        "metaTitle": "Conte personalitzat de Nadal: màgia sense pantalles",
+        "metaDescription": "Aquest Nadal, recupera la màgia de llegir junts: un conte únic amb el teu fill com a protagonista. Moments de família lluny de les pantalles.",
+        "h1": "El conte de Nadal per llegir junts, lluny de les pantalles",
+        "heroIntro": "El Nadal demana moments de calma compartida. Regala un conte on el teu fill és el protagonista i recupera el plaer de llegir junts, sense pantalles pel mig.",
+        "bodyHeading": "La màgia de Nadal es llegeix en veu alta",
+        "bodyParagraphs": [
+          "Entre llums i sobretaules, el millor regal de Nadal és el temps compartit. Un conte personalitzat convida pares i fills a seure plegats, llegir a poc a poc i descobrir què li passa al protagonista, que resulta ser el mateix nen que escolta. És la mena de moment que cap pantalla pot oferir i que es repetirà nit rere nit.",
+          "Escrivim una història única amb el nom, els trets i els somnis del teu fill, i l'imprimim en un llibre de 20×20 cm amb 12 escenes il·lustrades a doble pàgina. Una dedicatòria personalitzada el converteix en el regal perfecte per posar sota l'arbre. Veuràs tota la previsualització abans de comprar i, com que l'enviament tarda entre 7 i 12 dies laborables, val la pena anticipar-se."
+        ],
+        "benefitsHeading": "Per què per Nadal",
+        "benefits": [
+          "Moments de família lluny de les pantalles",
+          "Un ritual de lectura que es repeteix nit rere nit",
+          "El regal amb ànima per posar sota l'arbre"
+        ]
+      },
+      "baptism": {
+        "metaTitle": "Conte personalitzat de bateig | Meapica",
+        "metaDescription": "Un conte imprès personalitzat amb el nom del nen, regal de bateig per a tota la vida. Padrins i família. Edició única, paper Munken FSC.",
+        "h1": "El conte de bateig que creixerà amb ell",
+        "heroIntro": "Un record de bateig que no s'oblida dins un calaix. Un conte imprès, amb el seu nom, que el petit anirà descobrint a mesura que creix.",
+        "bodyHeading": "Un regal de bateig per recordar tota la vida",
+        "bodyParagraphs": [
+          "El dia del bateig es regalen moltes coses, però poques arriben als deu anys. Un conte personalitzat sí. Escrivim una història única protagonitzada pel nen, amb el seu nom, els seus cabells, els seus ulls i fins i tot la seva mascota, perquè cada vegada que obri el llibre s'hi reconegui i recordi qui el va estimar des del primer dia.",
+          "Pensat per a padrins, avis i família que volen deixar empremta. El llibre arriba imprès en paper Munken crema de 170 g amb certificat FSC, enquadernat cosit perquè aguanti anys de mans petites. Una dedicatòria personalitzada a la primera pàgina converteix el detall en una herència familiar que passarà de generació en generació."
+        ],
+        "benefitsHeading": "Per què és el regal de bateig perfecte",
+        "benefits": [
+          "El nen és el protagonista de la seva pròpia història",
+          "Dedicatòria personalitzada per als padrins o la família",
+          "Enquadernació cosida i paper FSC que dura anys",
+          "Edició única: no n'hi ha cap altra igual al món",
+          "Veus el conte sencer abans de comprar-lo"
+        ]
+      },
+      "end-of-school": {
+        "metaTitle": "Conte personalitzat de fi de curs | Meapica",
+        "metaDescription": "Celebra el final de curs amb un conte imprès personalitzat. El teu fill, protagonista de la seva aventura d'estiu. Edició única, vista prèvia gratuïta.",
+        "h1": "El conte de fi de curs que premia llegir",
+        "heroIntro": "S'acaba el curs i comença l'estiu. Regala-li una aventura on és el protagonista, una manera de celebrar tot el que ha après i de mantenir el gust per la lectura.",
+        "bodyHeading": "Una aventura d'estiu amb el seu nom",
+        "bodyParagraphs": [
+          "El final de curs mereix més que un diploma. Creem una història única protagonitzada pel teu fill, amb el seu nom, el seu aspecte i allò que més li agrada, perquè s'endinsi en una aventura feta a mida. És la recompensa perfecta per a tot un any d'esforç i la guspira ideal per encendre les ganes de llegir durant les vacances.",
+          "Lluny de pantalles, amb un llibre que pot tocar, fullejar i tornar a obrir tantes vegades com vulgui. Imprès en paper Munken crema de 170 g amb certificat FSC i enquadernat cosit, és un objecte bonic de tenir a l'estanteria. Dotze escenes il·lustrades a doble pàgina on ell sempre és el centre de la història."
+        ],
+        "benefitsHeading": "Per què regalar-lo a final de curs",
+        "benefits": [
+          "Premia l'esforç de tot un any escolar",
+          "Desperta el gust per llegir durant l'estiu",
+          "El teu fill és el protagonista de l'aventura",
+          "Lectura en paper, lluny de les pantalles",
+          "Dotze escenes il·lustrades a doble pàgina"
+        ]
+      },
+      "name-day": {
+        "metaTitle": "Conte personalitzat per al sant | Meapica",
+        "metaDescription": "Celebra el sant amb un conte imprès personalitzat amb el seu nom. El petit, protagonista de la seva pròpia història. Edició única, vista prèvia gratuïta.",
+        "h1": "Un conte amb el seu nom per celebrar el sant",
+        "heroIntro": "El dia del sant té un protagonista clar: ell. Regala-li un conte imprès on, per fi, el seu nom és el del personatge principal de la història.",
+        "bodyHeading": "El seu nom, el seu dia, la seva història",
+        "bodyParagraphs": [
+          "El sant és un dia per fer-lo sentir especial sense necessitat d'un gran aniversari. Per això creem una història única on el protagonista porta el seu nom, té els seus cabells, els seus ulls i fins i tot la seva mascota. Una manera delicada de celebrar qui és, amb un detall pensat especialment per a ell que recordarà molt després que passi la data.",
+          "És un regal personal, gens improvisat, que diu molt amb poc. Arriba imprès en paper Munken crema de 170 g amb certificat FSC i enquadernat cosit, amb una dedicatòria a la primera pàgina. Dotze escenes il·lustrades a doble pàgina on el petit es reconeix de seguida, perquè el llibre és, literalment, sobre ell."
+        ],
+        "benefitsHeading": "Per què és el regal ideal per al sant",
+        "benefits": [
+          "El seu nom és el del protagonista del conte",
+          "Un detall personal que se surt del típic regal",
+          "Dedicatòria escrita especialment per a ell",
+          "Edició única, feta a mida del petit",
+          "Veus la història completa abans de comprar"
+        ]
+      },
+      "graduation": {
+        "metaTitle": "Conte personalitzat de graduació | Meapica",
+        "metaDescription": "Un conte imprès personalitzat per a la graduació, ideal de 8 a 12 anys. Celebra la fita amb una història que és seva. Edició única, vista prèvia gratuïta.",
+        "h1": "El conte de graduació que parla d'ell",
+        "heroIntro": "Tancar una etapa també es celebra. Un conte imprès on és el protagonista, pensat per als més grans, per recordar de què és capaç quan es proposa una cosa.",
+        "bodyHeading": "Una fita que mereix quedar per escrit",
+        "bodyParagraphs": [
+          "Acabar una etapa, sigui primària o un cicle, és una fita que val la pena celebrar. Escrivim una història única protagonitzada per ell, amb el seu nom, el seu aspecte i fins i tot el somni de futur que vol perseguir, teixit dins l'aventura. Un regal que connecta amb nens de 8 a 12 anys perquè parla del que són i del que poden arribar a ser.",
+          "No és un joguet més que es deixa de banda en una setmana. És un objecte per conservar, imprès en paper Munken crema de 170 g amb certificat FSC i enquadernat cosit, amb una dedicatòria que li recordarà aquest moment d'orgull. Un record tangible d'un dia important que podrà rellegir d'aquí a anys."
+        ],
+        "benefitsHeading": "Per què és el regal de graduació adequat",
+        "benefits": [
+          "Pensat per a nens i nenes de 8 a 12 anys",
+          "Incorpora el seu somni de futur a la història",
+          "Celebra una fita amb un record que perdura",
+          "Edició única que parla de qui és ell",
+          "Enquadernació cosida i paper FSC de qualitat"
+        ]
+      },
+      "first-birthday": {
+        "metaTitle": "Conte personalitzat de primer aniversari | Meapica",
+        "metaDescription": "El seu primer llibre, amb el seu nom. Conte imprès personalitzat per al primer aniversari. Record per a tota la vida. Edició única, paper Munken FSC.",
+        "h1": "El seu primer llibre, amb el seu nom",
+        "heroIntro": "Compleix un any. Regala-li el primer llibre de la seva vida, un conte imprès amb el seu nom que serà el record d'aquest primer aniversari per sempre.",
+        "bodyHeading": "El record del primer aniversari",
+        "bodyParagraphs": [
+          "El primer aniversari és més per als pares que per al petit, i precisament per això mereix un record que duri. Creem un conte únic amb el seu nom, els seus cabells i els seus ulls, el primer llibre que tindrà mai. Encara no sap llegir, però el sentirà entre les mans, escoltarà la seva història i creixerà amb un objecte fet exclusivament per a ell.",
+          "És el regal que d'aquí a vint anys encara serà a casa. Imprès en paper Munken crema de 170 g amb certificat FSC i enquadernat cosit perquè resisteixi els primers anys de mans curioses. Una dedicatòria a la primera pàgina deixa per escrit qui el va estimar quan tot just començava la seva història."
+        ],
+        "benefitsHeading": "Per què és el regal de primer aniversari ideal",
+        "benefits": [
+          "El primer llibre de la seva vida, amb el seu nom",
+          "Un record d'aquest aniversari per a tota la vida",
+          "Paper FSC i enquadernació cosida que aguanta",
+          "Dedicatòria personalitzada a la primera pàgina",
+          "Edició única, feta exclusivament per a ell"
+        ]
+      }
+    },
+    "ages": {
+      "2-4": {
+        "metaTitle": "Conte personalitzat de 2 a 4 anys: primers llibres",
+        "metaDescription": "Els primers llibres del teu fill, amb el seu nom i la seva cara a cada pàgina. Desperta l'amor per la lectura des dels 2 anys. Edició única.",
+        "h1": "Contes personalitzats per a nens de 2 a 4 anys",
+        "heroIntro": "Els primers llibres marquen per sempre. Veure el propi nom i la pròpia cara a cada pàgina és la guspira que desperta l'amor per la lectura des de ben petits.",
+        "bodyHeading": "El primer llibre que sent seu de debò",
+        "bodyParagraphs": [
+          "A aquesta edat, els nens encara no llegeixen, però reconeixen. Reconeixen el seu nom quan el dius, reconeixen una cara semblant a la seva i s'il·luminen quan entenen que aquell personatge són ells. Un conte personalitzat aprofita aquesta guspira primerenca per associar els llibres amb una emoció bona, la base de tot lector futur.",
+          "Les 12 escenes a doble pàgina, grans i de colors càlids, són ideals per assenyalar, anomenar i compartir en veu alta. El format de 20×20 cm i el paper Munken de 170 g aguanten bé mans petites i lectures repetides. Escrivim la història amb els trets del teu fill perquè es vegi reflectit a cada pàgina, i pots veure-la sencera abans de comprar."
+        ],
+        "benefitsHeading": "Per als més petits",
+        "benefits": [
+          "Reconèixer el seu nom i la seva cara desperta la lectura",
+          "Escenes grans i càlides per assenyalar i compartir",
+          "Paper resistent, pensat per a mans petites"
+        ]
+      },
+      "5-7": {
+        "metaTitle": "Conte personalitzat de 5 a 7 anys: el seu primer heroi",
+        "metaDescription": "Per als primers lectors: un conte on el teu fill reconeix el seu nom i es converteix en l'heroi de la història. Acompanya els seus primers passos llegint.",
+        "h1": "Contes personalitzats per a primers lectors de 5 a 7 anys",
+        "heroIntro": "Entre els 5 i els 7 anys, llegir comença a ser una aventura pròpia. Quan l'heroi de la història porta el seu nom, la motivació per seguir llegint es dispara.",
+        "bodyHeading": "Llegir té molt més sentit quan el protagonista ets tu",
+        "bodyParagraphs": [
+          "En aquesta etapa els nens comencen a desxifrar paraules i a reconèixer el seu propi nom escrit. Trobar-lo una vegada i una altra al llarg d'un conte és una recompensa constant que els empeny a continuar pàgina rere pàgina. La lectura deixa de ser un deure per convertir-se en el desig de saber què li passarà al protagonista, que és precisament el lector.",
+          "Construïm una història amb el nivell de llenguatge adequat per a aquesta edat i amb el teu fill dibuixat a cada escena, amb els seus cabells, els seus ulls i fins i tot la seva mascota si vols. La dedicatòria personalitzada i l'enquadernació cosida en fan un objecte que voldrà tornar a llegir. Veuràs la previsualització completa abans de comprar."
+        ],
+        "benefitsHeading": "Per als primers lectors",
+        "benefits": [
+          "Reconèixer el seu nom escrit motiva a seguir llegint",
+          "Llenguatge a mida per a primers lectors",
+          "Es converteix en l'heroi de la seva pròpia història"
+        ]
+      },
+      "8-12": {
+        "metaTitle": "Conte personalitzat de 8 a 12 anys: aventures i valors",
+        "metaDescription": "Per a lectors segurs: aventures riques i valors per créixer, amb el teu fill com a protagonista. Una història a mida que els repta i els inspira.",
+        "h1": "Contes personalitzats per a lectors de 8 a 12 anys",
+        "heroIntro": "Els lectors d'aquesta edat busquen aventures de veritat. Un conte on són el protagonista els ofereix una història rica, amb valors per créixer i un repte a la seva alçada.",
+        "bodyHeading": "Històries que els reten i els fan pensar",
+        "bodyParagraphs": [
+          "Als 8 anys i més, els nens ja llegeixen sols i demanen històries amb cos: aventures amb conflictes, decisions i petits aprenentatges. Un conte personalitzat aprofita aquesta maduresa per situar el teu fill al centre d'una trama que parla de valentia, amistat o curiositat, valors que calen més fons quan el protagonista és un mateix.",
+          "Adaptem la complexitat del relat i el vocabulari a aquesta franja d'edat, integrant els trets del teu fill i fins i tot el seu somni de futur dins la història i les il·lustracions. El resultat és un llibre que els repta com a lectors i que conserven amb orgull. Pots revisar tota la previsualització abans de comprar i triar tapa dura per a un acabat més durador."
+        ],
+        "benefitsHeading": "Per a lectors segurs",
+        "benefits": [
+          "Aventures riques amb valors que calen més fons",
+          "Vocabulari i trama a la seva alçada lectora",
+          "El seu somni de futur, integrat a la història"
+        ]
+      }
+    },
+    "themes": {
+      "dinosaurs": {
+        "metaTitle": "Conte personalitzat de dinosaures: viatge al passat",
+        "metaDescription": "El teu fill viatja en el temps fins a l'era dels dinosaures en un conte únic. Una aventura de valentia i curiositat amb ell com a protagonista.",
+        "h1": "Conte personalitzat de dinosaures amb el teu fill d'heroi",
+        "heroIntro": "Un viatge en el temps fins a l'era dels grans dinosaures, amb el teu fill al capdavant. Una aventura de valentia i curiositat escrita només per a ell.",
+        "bodyHeading": "Cara a cara amb els gegants del passat",
+        "bodyParagraphs": [
+          "Pocs temes desperten tanta fascinació com els dinosaures. En aquest conte, el teu fill travessa el temps i es planta en un món de selves humides i criatures enormes, on cada pàgina demana una mica de valentia i molta curiositat. És la trama perfecta perquè el petit explorador que tots porten dins surti a la llum.",
+          "Escrivim la història al voltant del teu fill, amb els seus trets dibuixats a cada escena i, si vols, la seva mascota acompanyant-lo en l'aventura. Les 12 escenes a doble pàgina recreen un món prehistòric ple de detalls, impreses en paper Munken de 170 g. Veuràs la previsualització sencera abans de comprar, així saps com quedarà cada dinosaure."
+        ],
+        "benefitsHeading": "Una aventura prehistòrica",
+        "benefits": [
+          "Viatge en el temps fins a l'era dels dinosaures",
+          "Una història de valentia i curiositat",
+          "El teu fill, dibuixat a cada escena de l'aventura"
+        ]
+      },
+      "space": {
+        "metaTitle": "Conte personalitzat de l'espai: viatge a les estrelles",
+        "metaDescription": "El teu fill emprèn un viatge cap a les estrelles i planetes desconeguts en un conte únic. Una aventura còsmica amb ell com a protagonista.",
+        "h1": "Conte personalitzat de l'espai amb el teu fill d'astronauta",
+        "heroIntro": "Un viatge més enllà del cel, cap a les estrelles i els planetes desconeguts, amb el teu fill com a explorador de l'espai en una història feta a mida.",
+        "bodyHeading": "Cap a l'infinit, amb el seu nom a la nau",
+        "bodyParagraphs": [
+          "L'espai és el llenç perfecte per a la imaginació: estrelles que no s'acaben mai, planetes per descobrir i la certesa que sempre hi ha alguna cosa nova més enllà. En aquest conte, el teu fill pilota la seva pròpia aventura còsmica, i cada nou món que visita és una excusa per somiar gran i preguntar-se què hi ha allà fora.",
+          "Construïm la història al voltant del teu fill, integrant els seus trets i els seus somnis a la trama i a les il·lustracions. Les 12 escenes a doble pàgina recreen galàxies, planetes i naus amb un nivell de detall pensat per fer-lo somiar despert. Pots veure la previsualització completa abans de comprar i tenir-ne una edició única."
+        ],
+        "benefitsHeading": "Una aventura còsmica",
+        "benefits": [
+          "Viatge a les estrelles i planetes desconeguts",
+          "Desperta la curiositat per l'univers",
+          "El teu fill, protagonista de la seva pròpia missió"
+        ]
+      },
+      "pirates": {
+        "metaTitle": "Conte personalitzat de pirates: a la caça del tresor",
+        "metaDescription": "El teu fill navega els set mars a la caça d'un tresor en un conte únic. Una aventura de pirates amb ell com a capità protagonista.",
+        "h1": "Conte personalitzat de pirates amb el teu fill de capità",
+        "heroIntro": "Una recerca del tresor que travessa els set mars, amb el teu fill al timó. Una aventura de pirates valents escrita perquè ell en sigui el capità.",
+        "bodyHeading": "Hissa l'àncora cap al tresor amagat",
+        "bodyParagraphs": [
+          "Els mapes amb una creu, els vaixells de veles esteses i els tresors amagats formen part de l'imaginari de qualsevol nen. En aquest conte, el teu fill comanda la seva pròpia tripulació i salpa a la recerca d'un tresor que només ell pot trobar, enfrontant-se a temporals i illes misterioses amb astúcia i coratge.",
+          "Escrivim la història amb el teu fill com a protagonista, amb els seus trets dibuixats a cada escena i, si vols, la seva mascota com a company de coberta. Les 12 escenes a doble pàgina recreen els mars, les illes i els vaixells amb tot luxe de detalls, impreses en paper Munken FSC de 170 g. Veuràs la previsualització sencera abans de comprar."
+        ],
+        "benefitsHeading": "Una aventura als set mars",
+        "benefits": [
+          "Recerca del tresor pels set mars",
+          "El teu fill comanda la seva pròpia tripulació",
+          "Una història de coratge i astúcia"
+        ]
+      },
+      "superheroes": {
+        "metaTitle": "Conte personalitzat de superherois: poders amagats",
+        "metaDescription": "El teu fill descobreix els seus poders amagats i salva la ciutat en un conte únic. Una aventura de superherois amb ell com a protagonista.",
+        "h1": "Conte personalitzat de superherois amb el teu fill d'heroi",
+        "heroIntro": "Tots els nens amaguen un superpoder esperant ser descobert. En aquest conte, el teu fill el desperta i es converteix en l'heroi que salva la seva ciutat.",
+        "bodyHeading": "El dia que descobreix el seu superpoder",
+        "bodyParagraphs": [
+          "Hi ha alguna cosa profundament poderosa a imaginar-se capaç de fer grans coses. En aquest conte, el teu fill descobreix un poder amagat dins seu i aprèn que ser un heroi no va de força, sinó de coratge i bon cor. És una història que reforça l'autoestima just quan més importa, perquè l'heroi de debò és ell.",
+          "Construïm el relat amb el teu fill com a protagonista, amb els seus trets i el seu vestit d'heroi dibuixats a cada escena. Les 12 escenes a doble pàgina recreen una ciutat plena d'acció i moments per a la valentia, impreses en paper Munken de 170 g amb enquadernació cosida. Pots revisar tota la previsualització abans de comprar."
+        ],
+        "benefitsHeading": "Una aventura de superpoders",
+        "benefits": [
+          "Descobreix el superpoder que amaga dins seu",
+          "Reforça l'autoestima i el coratge",
+          "El teu fill, l'heroi que salva la ciutat"
+        ]
+      },
+      "magic-forest": {
+        "metaTitle": "Conte personalitzat del bosc màgic: secrets i criatures",
+        "metaDescription": "El teu fill explora un bosc màgic ple de secrets i criatures fantàstiques en un conte únic. Una aventura encantada amb ell com a protagonista.",
+        "h1": "Conte personalitzat del bosc màgic amb el teu fill d'heroi",
+        "heroIntro": "Entre arbres antiquíssims i criatures fantàstiques s'amaguen secrets que esperen ser descoberts. El teu fill s'endinsa al bosc màgic en una aventura feta a mida.",
+        "bodyHeading": "Secrets que només descobreix qui s'hi atreveix",
+        "bodyParagraphs": [
+          "El bosc màgic és un lloc on tot és possible: arbres que xiuxiuegen, camins que apareixen i desapareixen i criatures que només es deixen veure pels qui tenen el cor obert. En aquest conte, el teu fill recorre aquest món encantat descobrint-ne els secrets, en una aventura que celebra la imaginació i el respecte per la natura.",
+          "Escrivim la història al voltant del teu fill, amb els seus trets dibuixats a cada escena i, si vols, la seva mascota com a guia pel bosc. Les 12 escenes a doble pàgina recreen una natura frondosa i màgica plena de detalls, impreses en paper cremós Munken FSC de 170 g. Veuràs la previsualització completa abans de comprar."
+        ],
+        "benefitsHeading": "Una aventura encantada",
+        "benefits": [
+          "Secrets entre arbres antics i criatures fantàstiques",
+          "Celebra la imaginació i el respecte per la natura",
+          "El teu fill, explorador d'un món encantat"
+        ]
+      },
+      "safari": {
+        "metaTitle": "Conte personalitzat de safari: la sabana africana",
+        "metaDescription": "El teu fill explora la sabana africana entre lleons i elefants en un conte únic. Una aventura de safari amb ell com a protagonista.",
+        "h1": "Conte personalitzat de safari amb el teu fill d'explorador",
+        "heroIntro": "Un safari per la sabana africana, entre lleons, elefants i grans paisatges oberts, amb el teu fill com a explorador d'una aventura escrita només per a ell.",
+        "bodyHeading": "Cara a cara amb els animals de la sabana",
+        "bodyParagraphs": [
+          "La sabana africana és un escenari de pel·lícula: horitzons infinits, postes de sol daurades i alguns dels animals més impressionants del planeta. En aquest conte, el teu fill recorre aquesta terra salvatge i s'hi troba cara a cara amb lleons, elefants i girafes, en una aventura que desperta el respecte i la fascinació per la vida animal.",
+          "Construïm la història amb el teu fill com a protagonista, integrant els seus trets a cada escena i, si vols, la seva mascota com a companya d'expedició. Les 12 escenes a doble pàgina recreen la sabana i la seva fauna amb molt de detall, impreses en paper Munken de 170 g certificat FSC. Pots veure la previsualització sencera abans de comprar."
+        ],
+        "benefitsHeading": "Una aventura salvatge",
+        "benefits": [
+          "Safari per la sabana entre lleons i elefants",
+          "Desperta el respecte per la vida animal",
+          "El teu fill, explorador d'una terra salvatge"
+        ]
+      }
+    },
+    "nav": {
+      "giftHeading": "Regals per ocasió",
+      "ageHeading": "Contes per edat",
+      "gifts": {
+        "three-kings": "Reis Mags",
+        "sant-jordi": "Sant Jordi",
+        "birthday": "Aniversari",
+        "communion": "Comunió",
+        "christmas": "Nadal",
+        "baptism": "Bateig",
+        "end-of-school": "Fi de curs",
+        "name-day": "El sant",
+        "graduation": "Graduació",
+        "first-birthday": "Primer aniversari"
+      },
+      "ages": {
+        "2-4": "2-4 anys",
+        "5-7": "5-7 anys",
+        "8-12": "8-12 anys"
+      },
+      "themes": {
+        "dinosaurs": "Dinosaures",
+        "space": "Espai",
+        "pirates": "Pirates",
+        "superheroes": "Superherois",
+        "magic-forest": "Bosc màgic",
+        "safari": "Safari"
+      },
+      "themeHeading": "Contes per temàtica"
+    },
+    "hubs": {
+      "gifts": {
+        "metaTitle": "Regals personalitzats per a nens | Meapica",
+        "metaDescription": "Contes personalitzats per a cada ocasió: Reis, Sant Jordi, aniversari, comunió i Nadal. El regal on el teu fill és el protagonista.",
+        "h1": "Regals personalitzats per a nens, per a cada ocasió",
+        "intro": "Un conte on el teu fill és l’heroi és el regal que es recorda. Tria l’ocasió i crea una edició única, impresa i pensada per guardar tota la vida."
+      },
+      "ages": {
+        "metaTitle": "Contes personalitzats per edat | Meapica",
+        "metaDescription": "Contes personalitzats adaptats a cada edat, dels 2 als 12 anys. Històries i il·lustracions on el teu fill és el protagonista.",
+        "h1": "Contes personalitzats per edat",
+        "intro": "Cada edat demana la seva història. Tria la franja del teu fill i descobreix contes pensats per al seu moment lector, sempre amb ell com a protagonista."
+      },
+      "themes": {
+        "metaTitle": "Contes personalitzats per temàtica | Meapica",
+        "metaDescription": "Dinosaures, espai, pirates, superherois i més. Tria l’aventura preferida del teu fill i converteix-lo en el protagonista.",
+        "h1": "Contes personalitzats per temàtica",
+        "intro": "Dinosaures, estrelles, mars o boscos màgics. Tria el món que més el fascina i crea un conte únic on el teu fill viu l’aventura."
+      }
+    }
+  },
   "metadata": {
     "title": "Meapica — Històries Reals per Tocar",
     "description": "Recupera la màgia de passar les pàgines. Contes personalitzats impresos en paper d'alta qualitat, dissenyats per crear moments de connexió real.",
@@ -26,7 +425,9 @@
     "titleHighlight": "més històries",
     "titleEnd": "per tocar",
     "description": "Recupera la màgia de passar les pàgines. Contes personalitzats impresos en paper d'alta qualitat, dissenyats per crear moments de connexió real, lluny de la lluentor de les tablets.",
-    "cta": "Personalitzar llibre físic",
+    "cta": "Crear el meu conte",
+    "priceFrom": "Des de {price}",
+    "priceNote": "Llibre imprès + versió digital inclosa",
     "secondaryCta": "Veure qualitat del paper",
     "fscPaper": "Paper certificat FSC",
     "artisanalShipping": "Enviament artesanal",
@@ -107,27 +508,6 @@
     "descriptionEnd": "del personatge principal, full d'adhesius mat i punt de llibre de fusta.",
     "cta": "Afegir extres físics (+12.90€)",
     "imageCaption": "El regal perfecte"
-  },
-  "testimonials": {
-    "title": "Famílies Desconnectades",
-    "subtitle": "El que diuen els pares que han triat paper per sobre de píxels.",
-    "reviews": {
-      "laura": {
-        "name": "Laura M.",
-        "subtitle": "Va comprar \"El Bosc Màgic\"",
-        "text": "Per fi alguna cosa que no necessita carregador. La qualitat del llibre és impressionant, sembla tret d'una llibreria antiga però amb el meu fill a dins."
-      },
-      "carlos": {
-        "name": "Carlos R.",
-        "subtitle": "Va comprar Pack Premium",
-        "text": "L'olor a llibre nou quan vam obrir la caixa va ser increïble. Els detalls físics com la carta extra li van donar un toc màgic real."
-      },
-      "marta": {
-        "name": "Marta P.",
-        "subtitle": "Va comprar \"Pirates del Mar\"",
-        "text": "La meva filla de 4 anys me'l demana cada nit. Veure el seu nom i la seva cara a cada pàgina li va fer una il·lusió que cap joguina digital ha aconseguit mai."
-      }
-    }
   },
   "collectionOffer": {
     "badge": "Biblioteca Personal",
@@ -341,28 +721,15 @@
       "saveAndExit": "Desar i sortir",
       "step": "Pas {current} de {total}",
       "regenerateTooltip": "Canviar retrat",
-      "years": "anys"
+      "years": "anys",
+      "stepCharacter": "Personatge",
+      "stepAdventure": "Aventura",
+      "stepDedication": "Dedicatòria"
     },
     "footer": {
       "back": "Enrere",
       "next": "Següent",
       "saving": "Desant..."
-    },
-    "step1": {
-      "title": "Com vols crear aquesta aventura?",
-      "subtitle": "Tu decideixes: prepara'l com a sorpresa o viure-ho junts com una experiència familiar.",
-      "solo": {
-        "title": "Ho preparo com a sorpresa",
-        "subtitle": "Regal Secret",
-        "description": "Dissenya el conte en secret mentre el teu fill dorm. Tu controles cada detall: la història, les il·lustracions i el missatge especial que trobarà imprès.",
-        "imageAlt": "Pare o mare preparant un llibre sorpresa a l'ordinador"
-      },
-      "juntos": {
-        "title": "Ho creem junts",
-        "subtitle": "Experiència Familiar",
-        "description": "Una experiència per gaudir en família. Seieu amb el vostre fill i preneu les decisions junts: quina aventura viure, quins personatges incloure i com acaba la història.",
-        "imageAlt": "Pare, mare i fill creant junts en una tauleta"
-      }
     },
     "step2": {
       "title": "Crea el teu petit heroi",
@@ -407,6 +774,10 @@
     "portraitReveal": {
       "generating": "Creant a {name}...",
       "generatingSubtitle": "Estem donant vida al teu personatge tal com l'has descrit",
+      "step1": "Barrejant els colors de l'aquarel·la…",
+      "step2": "Dibuixant la seva mirada i el seu somriure…",
+      "step3": "Pentinant cada bri de cabell…",
+      "step4": "Afegint el toc de màgia final…",
       "revealTitle": "Aquest és {name}",
       "revealTitleFemale": "Aquesta és {name}",
       "revealSubtitle": "Tal com l'has descrit. Ara tria la seva aventura.",
@@ -419,54 +790,6 @@
       "regenerateTooltip": "Generar un nou retrat",
       "rateLimitError": "Has generat massa retrats. Torna-ho a provar d'aquí una hora."
     },
-    "step3": {
-      "title": "Quina aventura viurà {name}?",
-      "titleJuntos": "Quina aventura vols viure, {name}?",
-      "subtitle": "Selecciona una història màgica per començar el viatge. Cada conte està dissenyat per despertar la seva imaginació.",
-      "subtitleJuntos": "Tria la teva aventura favorita. Tu decideixes quina història explicarà aquest llibre!",
-      "recommendedFor": "Per a {name}",
-      "recommended": "Top",
-      "defaultName": "el teu heroi",
-      "filterAll": "Totes"
-    },
-    "step4": {
-      "solo": {
-        "title": "El Llibre de les Mil Decisions",
-        "subtitle": "Personalitza els detalls de la història de <highlight>{name}</highlight> i observa com canvia la màgia.",
-        "defaultName": "el teu heroi",
-        "companionTab": "Company",
-        "atmosphereTab": "Atmosfera",
-        "twistTab": "El Gir",
-        "timeOfDay": "Moment del dia",
-        "setting": "Escenari",
-        "chapter": "Capítol 1",
-        "storyStart": "Hi havia una vegada un petit explorador anomenat",
-        "storyLived": "que vivia al límit del desconegut.",
-        "skyShowed": "El cel mostrava un",
-        "notAlone": "o anava sol, el seu fidel",
-        "followedClose": "el seguia de prop.",
-        "unknownAfternoon": "Una tarda, va decidir endinsar-se en el desconegut...",
-        "wouldFace": "El que no sabien era que aviat s'enfrontarien a",
-        "settingLabel": "Escenari:",
-        "page": "Pàgina",
-        "specialMomentLabel": "Hi ha algun moment especial que vulguis incloure?",
-        "specialMomentPlaceholder": "Ex: Que superi la por a la foscor, que comparteixi amb la seva germana, que aprengui a ser valent...",
-        "specialMomentHint": "Inclourem aquest moment a la història de forma natural.",
-        "storyPreview": "Vista prèvia",
-        "yourStory": "La teva història fins ara",
-        "notChosen": "Sense triar",
-        "companionContext": "Qui acompanyarà {name} en la seva aventura? Aquest personatge apareixerà en els moments clau del conte i en les il·lustracions.",
-        "atmosphereContext": "Tria el moment del dia i l'escenari. Això dona forma al to emocional i a l'estil visual de cada il·lustració.",
-        "twistContext": "Tot gran conte té un repte. Això defineix l'arc emocional i la lliçó que {name} aprendrà durant la història.",
-        "nextTooltipPrefix": "Falta completar"
-      },
-      "juntos": {
-        "defaultName": "l'heroi",
-        "chooseNext": "Tria el següent pas de la història!",
-        "decision": "Decisió {current} de {total}",
-        "nextDecision": "Següent decisió"
-      }
-    },
     "step5": {
       "title": "El Gran Final",
       "subtitle": "Com vols que acabi l'aventura de <highlight>{name}</highlight>? Tu tens l'última paraula.",
@@ -475,8 +798,8 @@
       "defaultName": "el teu heroi",
       "dedicationLabel": "Dedicatòria",
       "dedicationLabelSolo": "El teu missatge secret",
-      "dedicationPlaceholder": "Estimat {name},\nHe escrit aquest conte per recordar-te que sempre pots arribar a les estrelles.\nAmb amor, Mama.",
-      "dedicationPlaceholderSolo": "Estimat {name},\nAquest llibre el vaig crear pensant en tu, en la teva curiositat i en aquell somriure que ho il·lumina tot.\nAmb tot el meu amor.",
+      "dedicationPlaceholder": "Per a {name},\nHe escrit aquest conte per recordar-te que sempre pots arribar a les estrelles.\nAmb amor, Mama.",
+      "dedicationPlaceholderSolo": "Per a {name},\nAquest llibre el vaig crear pensant en tu, en la teva curiositat i en aquell somriure que ho il·lumina tot.\nAmb tot el meu amor.",
       "senderPlaceholder": "El teu nom (ex: Mama, Papa, Àvia...)",
       "adventureOf": "L'aventura de {name}",
       "createMyStory": "Crear el meu conte",
@@ -543,6 +866,9 @@
       "lockedDescription": "Desbloqueja el conte complet per descobrir com segueix la història.",
       "lockedCta": "Desbloquejar conte",
       "expandPage": "Veure a pantalla completa",
+      "freshTitle": "El conte de {name} ja està llest!",
+      "freshSubtitle": "Passa les pàgines i descobreix la seva aventura…",
+      "freshSkip": "Continuar a la vista prèvia",
       "downloadPdf": "Descarregar PDF complet",
       "generatingPdf": "Generant PDF...",
       "downloadHint": "Descarrega el conte complet en format PDF",
@@ -573,6 +899,30 @@
       "companion": "Company",
       "interests": "Li encanta",
       "colophonText": "Aquest llibre ha estat creat amb amor per Meapica. Cada història és única, escrita i il·lustrada especialment per al seu protagonista. Perquè cada nen mereix ser l'heroi de la seva pròpia aventura."
+    },
+    "path": {
+      "title": "El camí de {name}",
+      "subtitle": "Decideix pas a pas la seva aventura, com un llibre on tu tries el futur.",
+      "chapter": "Capítol {n}",
+      "worldChapter": "L’inici",
+      "protagonist": "Protagonista",
+      "worldLabel": "El món",
+      "worldQuestion": "On comença l’aventura de {name}?",
+      "ambientLabel": "L’ambient",
+      "timeQuestion": "En quin moment passa tot?",
+      "settingQuestion": "En quin racó d’aquest món?",
+      "change": "canviar",
+      "edit": "editar",
+      "nextHint": "i després…",
+      "finishCta": "Continuar",
+      "backToStart": "Tornar",
+      "recommendedBadge": "Recomanat",
+      "worldRecommendHint": "Hem destacat les millors per a {name} segons la seva edat i els seus gustos.",
+      "completeChapter": "Camí complet",
+      "completeTitle": "El camí de {name} ja està traçat!",
+      "completeSubtitle": "Cada decisió que has pres donarà forma a la seva història. Només falta el toc final: la teva dedicatòria.",
+      "completeCta": "Escriure la dedicatòria",
+      "trailLabel": "El camí de l’aventura"
     }
   },
   "checkout": {
@@ -1254,21 +1604,48 @@
         "decisions": {
           "encounter": {
             "question": "Què descobreix {name} en arribar a l'era dels dinosaures?",
-            "baby-dino": { "title": "Bebè Dinosaure", "subtitle": "S'ha perdut i necessita ajuda" },
-            "fossil-portal": { "title": "Portal de Fòssils", "subtitle": "Un cercle d'ossos que brilla" },
-            "volcano": { "title": "Volcà Misteriós", "subtitle": "Alguna cosa brilla al seu interior" }
+            "baby-dino": {
+              "title": "Bebè Dinosaure",
+              "subtitle": "S'ha perdut i necessita ajuda"
+            },
+            "fossil-portal": {
+              "title": "Portal de Fòssils",
+              "subtitle": "Un cercle d'ossos que brilla"
+            },
+            "volcano": {
+              "title": "Volcà Misteriós",
+              "subtitle": "Alguna cosa brilla al seu interior"
+            }
           },
           "companion": {
             "question": "Qui acompanya {name} a l'era prehistòrica?",
-            "triceratops": { "title": "Triceràtops Amable", "subtitle": "Fort, lleial i li encanta jugar" },
-            "pterodactyl": { "title": "Pterodàctil Veloç", "subtitle": "Ho veu tot des de les altures" },
-            "cave-child": { "title": "Nen/a de les Cavernes", "subtitle": "Parla amb gestos i somriures" }
+            "triceratops": {
+              "title": "Triceràtops Amable",
+              "subtitle": "Fort, lleial i li encanta jugar"
+            },
+            "pterodactyl": {
+              "title": "Pterodàctil Veloç",
+              "subtitle": "Ho veu tot des de les altures"
+            },
+            "cave-child": {
+              "title": "Nen/a de les Cavernes",
+              "subtitle": "Parla amb gestos i somriures"
+            }
           },
           "challenge": {
             "question": "Quin perill amenaça els dinosaures de {name}?",
-            "tar-pits": { "title": "Pantans de Quitrà", "subtitle": "Els dinosaures queden atrapats!" },
-            "t-rex": { "title": "T-Rex Enfadat", "subtitle": "Té mal de queixals i gruny a tothom" },
-            "meteor": { "title": "Pluja d'Estrelles", "subtitle": "Alguna cosa s'acosta des del cel!" }
+            "tar-pits": {
+              "title": "Pantans de Quitrà",
+              "subtitle": "Els dinosaures queden atrapats!"
+            },
+            "t-rex": {
+              "title": "T-Rex Enfadat",
+              "subtitle": "Té mal de queixals i gruny a tothom"
+            },
+            "meteor": {
+              "title": "Pluja d'Estrelles",
+              "subtitle": "Alguna cosa s'acosta des del cel!"
+            }
           }
         },
         "atmosphere": {
@@ -1284,9 +1661,18 @@
           }
         },
         "endings": {
-          "dino-farewell": { "title": "Comiat Juràssic", "description": "Els dinosaures rugeixen d'alegria en acomiadar-se del seu nou amic." },
-          "time-souvenir": { "title": "Record del Passat", "description": "Torna a casa amb un petit fòssil brillant que guarda la màgia del viatge." },
-          "sleeping-under-stars": { "title": "Sota les Estrelles Antigues", "description": "S'adorm al costat del triceràtops mirant el cel més antic del món." }
+          "dino-farewell": {
+            "title": "Comiat Juràssic",
+            "description": "Els dinosaures rugeixen d'alegria en acomiadar-se del seu nou amic."
+          },
+          "time-souvenir": {
+            "title": "Record del Passat",
+            "description": "Torna a casa amb un petit fòssil brillant que guarda la màgia del viatge."
+          },
+          "sleeping-under-stars": {
+            "title": "Sota les Estrelles Antigues",
+            "description": "S'adorm al costat del triceràtops mirant el cel més antic del món."
+          }
         }
       },
       "castle": {
@@ -1297,21 +1683,48 @@
         "decisions": {
           "encounter": {
             "question": "Què descobreix {name} en entrar al castell?",
-            "dream-mirror": { "title": "Mirall de Somnis", "subtitle": "Mostra mons que només tu pots veure" },
-            "baby-dragon": { "title": "Drac Bebè", "subtitle": "Esternuda espurnes de colors" },
-            "enchanted-armor": { "title": "Armadura Encantada", "subtitle": "Es mou sola i vol ser la teva amiga" }
+            "dream-mirror": {
+              "title": "Mirall de Somnis",
+              "subtitle": "Mostra mons que només tu pots veure"
+            },
+            "baby-dragon": {
+              "title": "Drac Bebè",
+              "subtitle": "Esternuda espurnes de colors"
+            },
+            "enchanted-armor": {
+              "title": "Armadura Encantada",
+              "subtitle": "Es mou sola i vol ser la teva amiga"
+            }
           },
           "companion": {
             "question": "Qui acompanya {name} pel castell?",
-            "wise-cat": { "title": "Gat del Castell", "subtitle": "Coneix tots els passadissos secrets" },
-            "jester": { "title": "Bufó Màgic", "subtitle": "Les seves bromes fan màgia de debò" },
-            "ghost-princess": { "title": "Fantasma Amigable", "subtitle": "Coneix la història del castell" }
+            "wise-cat": {
+              "title": "Gat del Castell",
+              "subtitle": "Coneix tots els passadissos secrets"
+            },
+            "jester": {
+              "title": "Bufó Màgic",
+              "subtitle": "Les seves bromes fan màgia de debò"
+            },
+            "ghost-princess": {
+              "title": "Fantasma Amigable",
+              "subtitle": "Coneix la història del castell"
+            }
           },
           "challenge": {
             "question": "Què amenaça el regne de {name}?",
-            "nightmare-cloud": { "title": "Núvol de Malsons", "subtitle": "Converteix els somnis en malsons" },
-            "frozen-time": { "title": "Temps Congelat", "subtitle": "Tot s'atura excepte tu" },
-            "labyrinth": { "title": "Laberint Canviant", "subtitle": "Els passadissos es mouen i canvien" }
+            "nightmare-cloud": {
+              "title": "Núvol de Malsons",
+              "subtitle": "Converteix els somnis en malsons"
+            },
+            "frozen-time": {
+              "title": "Temps Congelat",
+              "subtitle": "Tot s'atura excepte tu"
+            },
+            "labyrinth": {
+              "title": "Laberint Canviant",
+              "subtitle": "Els passadissos es mouen i canvien"
+            }
           }
         },
         "atmosphere": {
@@ -1327,9 +1740,18 @@
           }
         },
         "endings": {
-          "dream-coronation": { "title": "Coronació de Somnis", "description": "El regne celebra amb una corona feta d'estrelles i somnis complerts." },
-          "dragon-flight": { "title": "Vol amb el Drac", "description": "Sobrevola el regne al llom d'un drac amigable al capvespre." },
-          "dream-door": { "title": "La Porta dels Somnis", "description": "Descobreix que pot tornar al castell cada cop que tanqui els ulls." }
+          "dream-coronation": {
+            "title": "Coronació de Somnis",
+            "description": "El regne celebra amb una corona feta d'estrelles i somnis complerts."
+          },
+          "dragon-flight": {
+            "title": "Vol amb el Drac",
+            "description": "Sobrevola el regne al llom d'un drac amigable al capvespre."
+          },
+          "dream-door": {
+            "title": "La Porta dels Somnis",
+            "description": "Descobreix que pot tornar al castell cada cop que tanqui els ulls."
+          }
         }
       },
       "safari": {
@@ -1340,21 +1762,48 @@
         "decisions": {
           "encounter": {
             "question": "Què descobreix {name} a la sabana?",
-            "lion-cub": { "title": "Cadell de Lleó", "subtitle": "Petit, valent i amb molta son" },
-            "baobab-tree": { "title": "Baobab Parlant", "subtitle": "L'arbre més vell explica històries" },
-            "watering-hole": { "title": "Oasi Màgic", "subtitle": "Un lloc on tots els animals són amics" }
+            "lion-cub": {
+              "title": "Cadell de Lleó",
+              "subtitle": "Petit, valent i amb molta son"
+            },
+            "baobab-tree": {
+              "title": "Baobab Parlant",
+              "subtitle": "L'arbre més vell explica històries"
+            },
+            "watering-hole": {
+              "title": "Oasi Màgic",
+              "subtitle": "Un lloc on tots els animals són amics"
+            }
           },
           "companion": {
             "question": "Qui acompanya {name} al safari?",
-            "elephant": { "title": "Elefant Savi", "subtitle": "Té la millor memòria del món" },
-            "meerkat": { "title": "Suricata Exploradora", "subtitle": "Sempre de guàrdia, sempre alerta" },
-            "giraffe": { "title": "Girafa Amable", "subtitle": "Ho veu tot des de molt amunt" }
+            "elephant": {
+              "title": "Elefant Savi",
+              "subtitle": "Té la millor memòria del món"
+            },
+            "meerkat": {
+              "title": "Suricata Exploradora",
+              "subtitle": "Sempre de guàrdia, sempre alerta"
+            },
+            "giraffe": {
+              "title": "Girafa Amable",
+              "subtitle": "Ho veu tot des de molt amunt"
+            }
           },
           "challenge": {
             "question": "Quin problema amenaça la sabana de {name}?",
-            "drought": { "title": "Gran Sequera", "subtitle": "L'aigua s'acaba i els animals tenen set" },
-            "lost-herd": { "title": "Ramat Perdut", "subtitle": "Els elefants no troben el camí" },
-            "trapped-animals": { "title": "Animals Atrapats", "subtitle": "Un esllavissament bloqueja el pas" }
+            "drought": {
+              "title": "Gran Sequera",
+              "subtitle": "L'aigua s'acaba i els animals tenen set"
+            },
+            "lost-herd": {
+              "title": "Ramat Perdut",
+              "subtitle": "Els elefants no troben el camí"
+            },
+            "trapped-animals": {
+              "title": "Animals Atrapats",
+              "subtitle": "Un esllavissament bloqueja el pas"
+            }
           }
         },
         "atmosphere": {
@@ -1370,9 +1819,18 @@
           }
         },
         "endings": {
-          "sunset-gathering": { "title": "Trobada al Capvespre", "description": "Tots els animals es reuneixen al capvespre per celebrar amb rugits i cants." },
-          "baobab-promise": { "title": "La Promesa del Baobab", "description": "Deixa una marca al baobab per recordar sempre l'aventura." },
-          "stargazing-savanna": { "title": "Sota el Cel Africà", "description": "S'estira entre els animals a mirar la Via Làctia sobre la sabana." }
+          "sunset-gathering": {
+            "title": "Trobada al Capvespre",
+            "description": "Tots els animals es reuneixen al capvespre per celebrar amb rugits i cants."
+          },
+          "baobab-promise": {
+            "title": "La Promesa del Baobab",
+            "description": "Deixa una marca al baobab per recordar sempre l'aventura."
+          },
+          "stargazing-savanna": {
+            "title": "Sota el Cel Africà",
+            "description": "S'estira entre els animals a mirar la Via Làctia sobre la sabana."
+          }
         }
       },
       "inventor": {
@@ -1383,21 +1841,48 @@
         "decisions": {
           "encounter": {
             "question": "Què descobreix {name} a la fàbrica d'invents?",
-            "flying-machine": { "title": "Màquina Voladora", "subtitle": "Feta de paraigües i engranatges" },
-            "talking-invention": { "title": "Invent Parlant", "subtitle": "S'ha inventat a si mateix!" },
-            "shrink-ray": { "title": "Raig Miniaturitzador", "subtitle": "Tot es fa petit!" }
+            "flying-machine": {
+              "title": "Màquina Voladora",
+              "subtitle": "Feta de paraigües i engranatges"
+            },
+            "talking-invention": {
+              "title": "Invent Parlant",
+              "subtitle": "S'ha inventat a si mateix!"
+            },
+            "shrink-ray": {
+              "title": "Raig Miniaturitzador",
+              "subtitle": "Tot es fa petit!"
+            }
           },
           "companion": {
             "question": "Qui ajuda {name} a inventar?",
-            "genius-robot": { "title": "Robot Geni", "subtitle": "Ho calcula tot però no entén les bromes" },
-            "mad-professor": { "title": "Professor Despistat", "subtitle": "S'oblida de tot menys d'inventar" },
-            "creative-spark": { "title": "Espurna Creativa", "subtitle": "Una llumeta que apareix quan tens idees" }
+            "genius-robot": {
+              "title": "Robot Geni",
+              "subtitle": "Ho calcula tot però no entén les bromes"
+            },
+            "mad-professor": {
+              "title": "Professor Despistat",
+              "subtitle": "S'oblida de tot menys d'inventar"
+            },
+            "creative-spark": {
+              "title": "Espurna Creativa",
+              "subtitle": "Una llumeta que apareix quan tens idees"
+            }
           },
           "challenge": {
             "question": "Quin problema sorgeix a la fàbrica de {name}?",
-            "chain-reaction": { "title": "Reacció en Cadena", "subtitle": "Un invent activa tots els altres!" },
-            "imagination-drain": { "title": "Sense Imaginació", "subtitle": "Les idees han desaparegut!" },
-            "time-machine": { "title": "Màquina del Temps Espatllada", "subtitle": "Barreja passat, present i futur" }
+            "chain-reaction": {
+              "title": "Reacció en Cadena",
+              "subtitle": "Un invent activa tots els altres!"
+            },
+            "imagination-drain": {
+              "title": "Sense Imaginació",
+              "subtitle": "Les idees han desaparegut!"
+            },
+            "time-machine": {
+              "title": "Màquina del Temps Espatllada",
+              "subtitle": "Barreja passat, present i futur"
+            }
           }
         },
         "atmosphere": {
@@ -1413,9 +1898,18 @@
           }
         },
         "endings": {
-          "great-invention": { "title": "El Gran Invent", "description": "Presenta l'invent més increïble del món: un que fa feliç a tothom." },
-          "inventor-badge": { "title": "Insígnia d'Inventor", "description": "Rep la insígnia oficial d'inventor i un taller propi." },
-          "blueprints": { "title": "Plànols del Futur", "description": "Dibuixa els plànols del seu proper invent: el més ambiciós fins ara!" }
+          "great-invention": {
+            "title": "El Gran Invent",
+            "description": "Presenta l'invent més increïble del món: un que fa feliç a tothom."
+          },
+          "inventor-badge": {
+            "title": "Insígnia d'Inventor",
+            "description": "Rep la insígnia oficial d'inventor i un taller propi."
+          },
+          "blueprints": {
+            "title": "Plànols del Futur",
+            "description": "Dibuixa els plànols del seu proper invent: el més ambiciós fins ara!"
+          }
         }
       },
       "candy": {
@@ -1426,21 +1920,48 @@
         "decisions": {
           "encounter": {
             "question": "Què descobreix {name} al País dels Dolços?",
-            "chocolate-river": { "title": "Riu de Xocolata", "subtitle": "Hi flueix xocolata calenta!" },
-            "candy-garden": { "title": "Jardí de Llaminadures", "subtitle": "Flors de piruleta i arbres de regalèssia" },
-            "cookie-house": { "title": "Casa de Galeta", "subtitle": "Amb teules de xocolata i porta de neula" }
+            "chocolate-river": {
+              "title": "Riu de Xocolata",
+              "subtitle": "Hi flueix xocolata calenta!"
+            },
+            "candy-garden": {
+              "title": "Jardí de Llaminadures",
+              "subtitle": "Flors de piruleta i arbres de regalèssia"
+            },
+            "cookie-house": {
+              "title": "Casa de Galeta",
+              "subtitle": "Amb teules de xocolata i porta de neula"
+            }
           },
           "companion": {
             "question": "Qui acompanya {name} pel País dels Dolços?",
-            "gummy-bear": { "title": "Osset de Gominola", "subtitle": "Tou, alegre i molt dolç" },
-            "cookie-baker": { "title": "Pastissera dels Núvols", "subtitle": "Forneja els núvols més esponjosos" },
-            "candy-fairy": { "title": "Fada de Sucre", "subtitle": "La seva vareta converteix tot en dolços" }
+            "gummy-bear": {
+              "title": "Osset de Gominola",
+              "subtitle": "Tou, alegre i molt dolç"
+            },
+            "cookie-baker": {
+              "title": "Pastissera dels Núvols",
+              "subtitle": "Forneja els núvols més esponjosos"
+            },
+            "candy-fairy": {
+              "title": "Fada de Sucre",
+              "subtitle": "La seva vareta converteix tot en dolços"
+            }
           },
           "challenge": {
             "question": "Quin problema hi ha al País dels Dolços de {name}?",
-            "melting-kingdom": { "title": "Regne Fos", "subtitle": "Fa massa calor i tot es fon!" },
-            "sour-invasion": { "title": "Invasió Àcida", "subtitle": "Les llaminadures àcides volen conquerir!" },
-            "sugar-shortage": { "title": "Falta de Sucre", "subtitle": "Els dolços perden el seu sabor!" }
+            "melting-kingdom": {
+              "title": "Regne Fos",
+              "subtitle": "Fa massa calor i tot es fon!"
+            },
+            "sour-invasion": {
+              "title": "Invasió Àcida",
+              "subtitle": "Les llaminadures àcides volen conquerir!"
+            },
+            "sugar-shortage": {
+              "title": "Falta de Sucre",
+              "subtitle": "Els dolços perden el seu sabor!"
+            }
           }
         },
         "atmosphere": {
@@ -1456,35 +1977,26 @@
           }
         },
         "endings": {
-          "candy-feast": { "title": "Gran Banquet de Dolços", "description": "Tot el regne celebra amb la festa més dolça mai vista." },
-          "candy-pocket": { "title": "Butxaca Màgica", "description": "Torna a casa amb una butxaca que sempre té el dolç perfecte." },
-          "sweet-dreams": { "title": "Dolços Somnis", "description": "S'adorm en un llit de cotó de sucre somiant amb tornar-hi." }
+          "candy-feast": {
+            "title": "Gran Banquet de Dolços",
+            "description": "Tot el regne celebra amb la festa més dolça mai vista."
+          },
+          "candy-pocket": {
+            "title": "Butxaca Màgica",
+            "description": "Torna a casa amb una butxaca que sempre té el dolç perfecte."
+          },
+          "sweet-dreams": {
+            "title": "Dolços Somnis",
+            "description": "S'adorm en un llit de cotó de sucre somiant amb tornar-hi."
+          }
         }
       }
     }
   },
   "showcase": {
-    "loading": "Carregant exemple...",
-    "backToHome": "Tornar a l'inici",
-    "library": "Biblioteca",
-    "sampleBadge": "Exemple real",
-    "personalizedFor": "Història personalitzada per a {name}",
-    "softcover": "Tapa tova",
-    "hardcover": "Tapa dura (Premium)",
-    "pageCount": "{count} pàgines",
-    "downloadPdf": "Descarregar PDF de mostra",
-    "generatingPdf": "Generant PDF...",
-    "fromPrice": "Des de {price}€",
-    "createYourOwn": "Crear el meu propi conte",
-    "createYourVersion": "Crea la teva pròpia versió",
-    "createYourVersionHint": "Personalitza el protagonista, tria l'aventura i rep un llibre únic a casa teva.",
-    "createHint": "Personalitza un llibre únic per al teu fill o filla",
-    "pages": "pàgines",
-    "previous": "Anterior",
-    "next": "Següent",
-    "personalizedStory": "Una història personalitzada per a",
-    "createdFor": "Una història creada especialment per a",
-    "end": "Fi"
+    "title": "Exemples de contes reals",
+    "subtitle": "Mira contes personalitzats que ja hem creat. Cada un és únic: imagina el del teu fill.",
+    "cta": "Crear el del meu fill"
   },
   "waitlist": {
     "badge": "Properament",
@@ -1518,5 +2030,14 @@
     "feature3Title": "Enviament artesanal",
     "feature3Description": "Empaquetat amb cura i llest per regalar o guardar com un tresor.",
     "copyright": "© 2026 Meapica. Tots els drets reservats."
+  },
+  "blog": {
+    "title": "Idees, regals i lectura",
+    "subtitle": "Guies i consells per regalar millor i acompanyar els petits en el seu amor pels llibres.",
+    "readingTime": "{min} min de lectura",
+    "backToBlog": "Tornar al blog",
+    "empty": "Aviat publicarem nous articles.",
+    "relatedHeading": "Continua explorant",
+    "author": "Per {author}"
   }
 }

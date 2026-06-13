@@ -1,4 +1,393 @@
 {
+  "seo": {
+    "common": {
+      "breadcrumbHome": "Home",
+      "featuredHeading": "Choose an adventure to begin",
+      "featuredSubheading": "Every story is written and illustrated around one child: yours.",
+      "relatedHeading": "Explore more ideas",
+      "faqHeading": "Frequently asked questions",
+      "ctaPrimary": "Create my story"
+    },
+    "gifts": {
+      "three-kings": {
+        "metaTitle": "Three Kings' Day Gift: Personalized Kids' Book",
+        "metaDescription": "Make this Epiphany unforgettable with a printed book where your child is the hero. Order in time for January 6 and preview before you buy.",
+        "h1": "A Three Kings' Day gift your child will keep for years",
+        "heroIntro": "On the morning of January 6, while the wrapping paper piles up, one gift stands apart: a printed book where your child is the hero of the story. Not another toy lost by February.",
+        "bodyHeading": "The present the Kings could never bring twice",
+        "bodyParagraphs": [
+          "Most Epiphany gifts are forgotten within weeks. A personalized book is different. Your child's name, face, hair and eyes live inside an adventure written for them alone, printed on cream Munken paper and sewn to last. It becomes the book they ask you to read again, long after the new toys go quiet.",
+          "Each copy is a one-of-a-kind edition with a dedication you write yourself. You see the full story and illustrations before deciding, so there are no surprises on the big morning. Order with enough lead time and the Kings arrive carrying something no shop window can match."
+        ],
+        "benefitsHeading": "Why it wins on January 6",
+        "benefits": [
+          "Your child is the named hero, not a bystander",
+          "A keepsake that outlasts every plastic toy",
+          "Full preview before you commit to print"
+        ]
+      },
+      "sant-jordi": {
+        "metaTitle": "Sant Jordi Gift: A Personalized Book to Keep",
+        "metaDescription": "This Sant Jordi, give the most personal book of all: one starring your child. A rose fades; this story lasts forever. Preview before you buy.",
+        "h1": "The most personal book to give this Sant Jordi",
+        "heroIntro": "On April 23, Catalonia trades roses and books. The rose will wilt by the weekend. The book, if you choose the right one, can last a lifetime.",
+        "bodyHeading": "A book no other family owns",
+        "bodyParagraphs": [
+          "Sant Jordi rewards the thoughtful giver. Anyone can buy a bestseller off the table; almost no one arrives with a book where the child on every page shares your child's name, hair and eyes. It turns the day's oldest tradition into something deeply, unmistakably theirs.",
+          "We write a unique story around your child and print it on FSC-certified cream paper with a sewn binding meant for the shelf, not the bin. Add a handwritten-style dedication, preview the whole edition before printing, and give a book that earns its place beside the rose for far longer than a single spring day."
+        ],
+        "benefitsHeading": "Worthy of the day of books",
+        "benefits": [
+          "A unique edition no bookshop can stock",
+          "Lasts long after the rose has faded",
+          "Your dedication printed inside the cover"
+        ]
+      },
+      "birthday": {
+        "metaTitle": "Personalized Birthday Book: Make Them the Star",
+        "metaDescription": "Give the birthday child a book where they are the hero of their own adventure. Better than one more toy. Full preview before you buy.",
+        "h1": "A birthday book where the birthday child is the star",
+        "heroIntro": "Every birthday brings another pile of toys. This year, give the one present that puts your child's name on the cover and their face on every page.",
+        "bodyHeading": "The gift they remember the candle by",
+        "bodyParagraphs": [
+          "Toys come and go, but few children forget the year they opened a book and found themselves inside it. We build a one-of-a-kind story around your child, their age, their look and the things they love, so the hero turning each page is unmistakably them on the day they grow a year older.",
+          "It reads like a real bookshop find, printed on cream Munken paper and sewn to survive bedtime after bedtime. Write a birthday dedication they will reread as a teenager, preview the entire edition before printing, and hand over a present that still means something long after the cake is gone."
+        ],
+        "benefitsHeading": "Better than another toy",
+        "benefits": [
+          "Their name on the cover, their face on every page",
+          "A dedication they will treasure for years",
+          "Built to survive countless rereads"
+        ]
+      },
+      "communion": {
+        "metaTitle": "First Communion Gift: A Personalized Keepsake Book",
+        "metaDescription": "Mark a First Communion with an elegant personalized book starring the child. A meaningful heirloom for a milestone day. Preview before buying.",
+        "h1": "An elegant First Communion keepsake, made for one child",
+        "heroIntro": "A First Communion is a day of meaning, not of plastic. It calls for a gift with the same weight: a printed book the child will keep into adulthood.",
+        "bodyHeading": "A milestone deserves a milestone gift",
+        "bodyParagraphs": [
+          "Envelopes are forgotten and trinkets get misplaced, but a beautifully made book finds a permanent home on the shelf. We craft a unique story around the child being celebrated, printed on FSC-certified cream paper and sewn by hand, so the keepsake feels as considered as the occasion itself.",
+          "Inside, you can write a dedication that names the day, the family and the moment, turning the book into a quiet record of the milestone. You preview the complete edition before it prints, ensuring the story, the look and the dedication are exactly right for such a meaningful celebration."
+        ],
+        "benefitsHeading": "Fitting for the occasion",
+        "benefits": [
+          "An heirloom keepsake, not a forgettable trinket",
+          "A dedication that records the special day",
+          "Sewn, FSC-certified, made to be kept"
+        ]
+      },
+      "christmas": {
+        "metaTitle": "Christmas Gift: Personalized Screen-Free Kids' Book",
+        "metaDescription": "Put screen-free magic under the tree: a printed book starring your child. Real family reading moments that last. Full preview before you buy.",
+        "h1": "Screen-free Christmas magic, starring your child",
+        "heroIntro": "Amid the screens and the batteries, leave one gift under the tree that asks for nothing but your voice and a lap to sit on: a book where your child is the hero.",
+        "bodyHeading": "The quiet centre of Christmas morning",
+        "bodyParagraphs": [
+          "The best Christmas mornings have a moment of stillness, and a personalized book creates it. Your child finds their own name on the cover and their own face in the illustrations, then climbs into your lap to be read to. It is the antidote to the flashing, beeping pile of everything else.",
+          "Printed on cream Munken paper and sewn to last, it becomes the December book your family returns to year after year. Write a Christmas dedication, preview the whole story and its illustrations before printing, and give a present that trades screen time for the kind of reading moments children actually remember."
+        ],
+        "benefitsHeading": "Magic without a screen",
+        "benefits": [
+          "Real reading moments instead of screen time",
+          "Your child is the hero under the tree",
+          "A December keepsake to revisit each year"
+        ]
+      },
+      "baptism": {
+        "metaTitle": "Personalized Baptism Book | A Keepsake to Grow Into",
+        "metaDescription": "A christening keepsake starring the child by name. Sewn binding, cream FSC paper, printed in Spain. Full preview before you buy. From €9.90.",
+        "h1": "A christening keepsake the child grows into",
+        "heroIntro": "A printed book written for one child alone, kept on the shelf long after the day itself has passed. The kind of gift a godparent gives once and is remembered for.",
+        "bodyHeading": "A gift that outlasts the day",
+        "bodyParagraphs": [
+          "Christening presents are often outgrown within a season. A book is not. We write a unique story around the child by name, age and likeness, then illustrate them across twelve double-page scenes they can return to year after year. It waits on the shelf until the day they are old enough to read their own name on the page.",
+          "Every copy is a single edition, never reprinted, bound by hand. The dedication page carries your own words to the child, set in print rather than scribbled in a card. Munken cream paper, sewn binding, twenty by twenty centimetres, made to be handled gently and passed down rather than discarded."
+        ],
+        "benefitsHeading": "Why it makes a lasting christening gift",
+        "benefits": [
+          "A keepsake the child grows into, not out of",
+          "Personalized dedication set in print, in your words",
+          "Sewn binding and cream FSC paper, made to last"
+        ]
+      },
+      "end-of-school": {
+        "metaTitle": "End-of-School Gift Book | Reward the Reader in Them",
+        "metaDescription": "Celebrate the school year with a story starring your child by name. 32 pages, printed in Spain, full preview before you buy. From €9.90.",
+        "h1": "Close the school year with an adventure of their own",
+        "heroIntro": "A personalized book to mark the end of term, where the child who worked all year becomes the hero of the summer ahead. From parents who are proud, or a teacher who noticed.",
+        "bodyHeading": "The reward that keeps them reading",
+        "bodyParagraphs": [
+          "The last day of school deserves more than a certificate. We write an original story with the child at its centre, weaving in their name, their looks and the things they love, so the reward for a year of reading is a book they actually want to open. Twelve illustrated scenes carry them from the classroom into a summer of their own making.",
+          "It is the gift a teacher gives the class reader, or parents leave on the bed the morning term ends. You preview the full story before anything is printed, then it arrives as a single bound edition on cream paper. A quiet, screen-free way to keep a child turning pages through the long holiday."
+        ],
+        "benefitsHeading": "Why it works as an end-of-term gift",
+        "benefits": [
+          "Rewards a year of reading with a story they star in",
+          "Screen-free summer reading they return to",
+          "Choose digital, softcover or hardcover to suit"
+        ]
+      },
+      "name-day": {
+        "metaTitle": "Name Day Gift Book | A Story That Bears Their Name",
+        "metaDescription": "Celebrate their saint's day with a personalized book starring the child by name. Printed in Spain, full preview before you buy. From €9.90.",
+        "h1": "A book that carries their name, for the day that does too",
+        "heroIntro": "The saint's day is a second birthday in everything but cake. This is the gift that makes the day truly personal, with the child written in as the hero of their own story.",
+        "bodyHeading": "A gift as personal as the day itself",
+        "bodyParagraphs": [
+          "A name day is about one person and the name they carry. So is this book. We write an original adventure around the child by name, age and likeness, with room for a pet, a favourite thing or the dream they hope to grow into, woven through both the words and the illustrations. The result is a story that could belong to no one else.",
+          "Twelve double-page scenes, a dedication in your own words, and a single edition that is never reprinted. You see the whole story in preview before it goes to print, so nothing is left to chance. A name day gift that honours the name, rather than another toy forgotten by the next one."
+        ],
+        "benefitsHeading": "Why it suits a name day",
+        "benefits": [
+          "A story written around their name and likeness",
+          "Pet, favourite thing or dream woven into the tale",
+          "A one-of-a-kind edition, never reprinted"
+        ]
+      },
+      "graduation": {
+        "metaTitle": "Graduation Keepsake Book | A Milestone in Print",
+        "metaDescription": "Mark a milestone with a personalized story starring the child, ages 8-12. Sewn binding, printed in Spain, full preview before you buy. From €9.90.",
+        "h1": "A milestone kept, for the child who reached it",
+        "heroIntro": "For the older child crossing a threshold, a book that holds who they were at this moment, and the values you hope they carry forward. A keepsake, not a trophy.",
+        "bodyHeading": "Who they were, kept in print",
+        "bodyParagraphs": [
+          "Children of eight to twelve are old enough to feel a milestone, and old enough to keep one. We write an original story with the child as its protagonist, shaping the adventure around their name, their likeness and the dream they are reaching toward, so the book reads as a portrait of them at this turning point rather than a story for someone much younger.",
+          "It is a gift with weight: a single bound edition, never reprinted, carrying a dedication in your own words. Cream FSC paper, sewn binding, made to sit on a grown child's shelf for years. The kind of present they understand the value of now, and understand differently when they are older."
+        ],
+        "benefitsHeading": "Why it fits a graduation",
+        "benefits": [
+          "Written for ages 8-12, not for little ones",
+          "A keepsake of who they were at this milestone",
+          "Dedication in your words, on lasting cream paper"
+        ]
+      },
+      "first-birthday": {
+        "metaTitle": "First Birthday Book | Their First Book, With Their Name",
+        "metaDescription": "Their very first book, starring them by name. A first birthday keepsake on sewn cream paper, printed in Spain. Full preview before you buy. From €9.90.",
+        "h1": "Their first book, with their name on every page",
+        "heroIntro": "A first birthday is remembered by everyone but the child. This is the keepsake that lets them hold it later: their very first book, written for them alone.",
+        "bodyHeading": "A treasure for the years to come",
+        "bodyParagraphs": [
+          "At one, the story is read to them. The gift is really for the child they will become, the one who finds this book years from now and reads their own name as the hero. We write an original tale around their name, age and likeness, illustrated across twelve double-page scenes, so their first book is unlike any other first book given that year.",
+          "A single edition, bound by hand on Munken cream paper, never reprinted. The dedication page holds your words from this birthday, kept exactly as you wrote them. While the toys come and go, this is the one gift built to still be on the shelf when they are old enough to understand whose book it is."
+        ],
+        "benefitsHeading": "Why it makes a first birthday keepsake",
+        "benefits": [
+          "Their very first book, starring them by name",
+          "A dedication kept in your words from day one",
+          "Sewn cream FSC paper, made to be treasured"
+        ]
+      }
+    },
+    "ages": {
+      "2-4": {
+        "metaTitle": "Personalized Books for Ages 2-4 | First Stories",
+        "metaDescription": "First books for toddlers, starring your child by name and face. Short, sensory scenes that spark an early love of reading. Preview before you buy.",
+        "h1": "First personalized books for ages 2 to 4",
+        "heroIntro": "At this age, a book is something to point at, name and hold close. When the child on the page is your child, every reading turns into a little moment of recognition.",
+        "bodyHeading": "Where the love of books begins",
+        "bodyParagraphs": [
+          "Two- to four-year-olds learn the world by spotting what they know. A familiar face, a familiar name, a beloved pet appearing in big, clear illustrations gives them exactly that thrill on every spread. The scenes stay short and warm, made for small attention spans and well-loved bedtime routines.",
+          "We build the story around your toddler's name, age and features, then print it on thick cream Munken paper sewn to survive curious hands. Seeing themselves as the hero, again and again, is often a child's very first reason to ask for one more page, and then another."
+        ],
+        "benefitsHeading": "Made for little ones",
+        "benefits": [
+          "Short, warm scenes for small attention spans",
+          "Big, clear illustrations they recognize",
+          "Thick sewn pages that survive curious hands"
+        ]
+      },
+      "5-7": {
+        "metaTitle": "Personalized Books for Ages 5-7 | Early Readers",
+        "metaDescription": "Early readers light up when they spot their own name and become the hero. A printed book that motivates reading. Full preview before you buy.",
+        "h1": "Personalized books for early readers, ages 5 to 7",
+        "heroIntro": "This is the age when reading clicks. There is no stronger motivation than turning a page and finding your own name, written like it belongs there.",
+        "bodyHeading": "The book that makes reading their idea",
+        "bodyParagraphs": [
+          "At five to seven, children are sounding out words and deciding whether reading is for them. Putting their own name on the page changes the answer. Suddenly the story is about them, the hero is them, and finishing it matters in a way no assigned book ever could.",
+          "We write an adventure shaped around your child's name, age, look and the things they love, illustrated so they recognize themselves on every spread. Printed on cream Munken paper and sewn to last, it becomes the book they want to read to you, building confidence one proud sentence at a time."
+        ],
+        "benefitsHeading": "Why it builds readers",
+        "benefits": [
+          "Their own name turns reading into motivation",
+          "They are the hero, so finishing matters",
+          "Confidence built one proud page at a time"
+        ]
+      },
+      "8-12": {
+        "metaTitle": "Personalized Books for Ages 8-12 | Big Adventures",
+        "metaDescription": "Richer adventures and real values for confident readers, with your child as the protagonist. A keepsake they outgrow but never give up. Preview first.",
+        "h1": "Personalized adventures for confident readers, ages 8 to 12",
+        "heroIntro": "Older readers want a real story, not a picture book. They also still want, secretly, to be the hero. This book gives them both.",
+        "bodyHeading": "A bigger story, built around them",
+        "bodyParagraphs": [
+          "Eight- to twelve-year-olds are ready for adventures with stakes, choices and values woven through them. We craft a richer narrative around your child, letting their name, look, dreams and the things they love drive a plot that respects how much they have grown as readers.",
+          "The magic of being the protagonist never quite wears off, and seeing yourself face down the story's challenge lands differently at this age. Printed on cream Munken paper and sewn for the long haul, it is the kind of book they reread quietly, then keep on the shelf well past the age it was made for."
+        ],
+        "benefitsHeading": "Made for bigger readers",
+        "benefits": [
+          "Richer adventures with real stakes and values",
+          "Their dreams and traits drive the plot",
+          "A keepsake they keep long past childhood"
+        ]
+      }
+    },
+    "themes": {
+      "dinosaurs": {
+        "metaTitle": "Personalized Dinosaur Book: Your Child Time-Travels",
+        "metaDescription": "Send your child back to the age of dinosaurs as the brave hero of the story. A printed adventure built around them. Full preview before you buy.",
+        "h1": "A personalized dinosaur adventure starring your child",
+        "heroIntro": "Long before there were cities, there were giants. In this story your child travels back to walk among them, as the curious, brave hero of the age of dinosaurs.",
+        "bodyHeading": "Back to the age of giants",
+        "bodyParagraphs": [
+          "Few things capture a child's imagination like dinosaurs. We turn that fascination into an adventure where your child time-travels to the prehistoric world, named and illustrated as the hero who meets the giants face to face and learns what real curiosity and courage feel like.",
+          "Their name, age, features and the things they love are woven into the journey and the illustrations across twelve double-page scenes. Printed on cream Munken paper and sewn to last, it is the dinosaur book they will want under the pillow, because this time the explorer crossing the prehistoric world is unmistakably them."
+        ],
+        "benefitsHeading": "Why young explorers love it",
+        "benefits": [
+          "Your child time-travels as the brave hero",
+          "A story about curiosity and courage",
+          "Twelve double-page scenes among the giants"
+        ]
+      },
+      "space": {
+        "metaTitle": "Personalized Space Book: A Journey to the Stars",
+        "metaDescription": "Launch your child to the stars and unknown planets as the hero of their own space adventure. A printed keepsake built around them. Preview first.",
+        "h1": "A personalized space adventure to the stars",
+        "heroIntro": "Past the last cloud and into the dark between the stars, a small explorer sets off. In this story, that explorer has your child's name and your child's face.",
+        "bodyHeading": "A journey beyond the stars",
+        "bodyParagraphs": [
+          "The night sky is a child's first taste of the truly vast, and this adventure carries them straight into it. Your child becomes the explorer who leaves Earth behind, drifts past unknown planets and discovers wonders waiting in the quiet dark, named and illustrated as the hero throughout.",
+          "We shape the voyage around your child's name, age, look and the things they love, across twelve double-page scenes printed on cream Munken paper and sewn to last. It is the kind of bedtime book that sends imaginations into orbit, because the astronaut crossing the galaxy is finally them."
+        ],
+        "benefitsHeading": "Why it sparks wonder",
+        "benefits": [
+          "Your child is the explorer of the stars",
+          "Unknown planets and quiet cosmic wonders",
+          "Twelve double-page scenes across the galaxy"
+        ]
+      },
+      "pirates": {
+        "metaTitle": "Personalized Pirate Book: A Treasure-Hunt Adventure",
+        "metaDescription": "Send your child across the seven seas on a treasure hunt as the captain of the story. A printed adventure built around them. Preview before you buy.",
+        "h1": "A personalized pirate adventure across the seven seas",
+        "heroIntro": "Salt air, a worn map, and somewhere over the horizon, buried treasure. In this story your child takes the helm as the bold captain of the hunt.",
+        "bodyHeading": "Treasure across the seven seas",
+        "bodyParagraphs": [
+          "Every child has dreamed of following a treasure map to its X. This adventure makes them the one holding it: your child becomes the daring captain who sails the seven seas, reads the stars and outwits the waves on the way to a hidden fortune, named and illustrated as the hero of every scene.",
+          "We weave your child's name, age, features and the things they love into the voyage across twelve double-page illustrations, printed on cream Munken paper and sewn to last. It is a swashbuckling story they will demand again and again, because the captain at the wheel is unmistakably them."
+        ],
+        "benefitsHeading": "Why young captains love it",
+        "benefits": [
+          "Your child captains the treasure hunt",
+          "A bold voyage across the seven seas",
+          "Twelve double-page scenes of high-seas adventure"
+        ]
+      },
+      "superheroes": {
+        "metaTitle": "Personalized Superhero Book: Save the City",
+        "metaDescription": "Your child discovers hidden superpowers and saves the city as the hero of the story. A printed adventure about helping others. Preview before buying.",
+        "h1": "A personalized superhero adventure starring your child",
+        "heroIntro": "Somewhere beneath the everyday, a hidden power is waiting. In this story your child discovers it, puts on the cape and learns that the greatest strength is helping others.",
+        "bodyHeading": "Hidden powers, a city to save",
+        "bodyParagraphs": [
+          "Children love superheroes because they dream of being capable, brave and needed. This adventure hands them all three: your child uncovers a hidden superpower and rises to save the city, named and illustrated as the hero, while the story quietly shows that true strength lies in helping the people around you.",
+          "Their name, age, look and the things they love shape the powers and the plot across twelve double-page scenes, printed on cream Munken paper and sewn to last. It is the kind of book that makes a child stand a little taller, because the hero saving the day is unmistakably them."
+        ],
+        "benefitsHeading": "Why little heroes love it",
+        "benefits": [
+          "Your child discovers their hidden superpowers",
+          "A story about the value of helping others",
+          "Twelve double-page scenes of saving the city"
+        ]
+      },
+      "magic-forest": {
+        "metaTitle": "Personalized Magic Forest Book: Enchanted Adventure",
+        "metaDescription": "Your child explores an enchanted forest of ancient trees and fantastic creatures as the hero. A printed keepsake built around them. Preview first.",
+        "h1": "A personalized magic forest adventure for your child",
+        "heroIntro": "Beyond the last familiar path, the trees grow older and stranger, and something is watching from between them. In this story your child steps in as the brave hero of the wood.",
+        "bodyHeading": "Secrets among ancient trees",
+        "bodyParagraphs": [
+          "An enchanted forest is a place of whispered secrets and gentle wonder, and this adventure lets your child wander deep into it. They become the hero who befriends fantastic creatures, listens to ancient trees and uncovers the quiet magic hidden among the leaves, named and illustrated on every spread.",
+          "We weave your child's name, age, features and the things they love into the journey across twelve double-page illustrations, printed on cream Munken paper and sewn to last. It is a softly magical story made for slow bedtimes, because the explorer wandering the enchanted wood is unmistakably them."
+        ],
+        "benefitsHeading": "Why it enchants children",
+        "benefits": [
+          "Your child is the hero of the enchanted wood",
+          "Fantastic creatures and ancient, whispering trees",
+          "Twelve double-page scenes of quiet magic"
+        ]
+      },
+      "safari": {
+        "metaTitle": "Personalized Safari Book: An African Savanna Adventure",
+        "metaDescription": "Take your child across the African savanna among lions and elephants as the hero of the story. A printed adventure built around them. Preview first.",
+        "h1": "A personalized safari adventure across the savanna",
+        "heroIntro": "Golden grass to the horizon, a watering hole at dawn, and the great animals moving through the heat. In this story your child crosses the African savanna as the hero of the journey.",
+        "bodyHeading": "Across the African savanna",
+        "bodyParagraphs": [
+          "The savanna is a child's gateway to the wild, full of lions, elephants and creatures that fill any imagination. This adventure makes your child the explorer at its heart, named and illustrated as the hero who tracks the great herds, meets the animals up close and learns to move gently through their world.",
+          "Their name, age, features and the things they love are woven into the expedition across twelve double-page illustrations, printed on cream Munken paper and sewn to last. It is a vivid, sun-warmed story they will return to often, because the explorer crossing the savanna is unmistakably them."
+        ],
+        "benefitsHeading": "Why young explorers love it",
+        "benefits": [
+          "Your child explores the savanna as the hero",
+          "Up close with lions, elephants and more",
+          "Twelve double-page scenes of wild adventure"
+        ]
+      }
+    },
+    "nav": {
+      "giftHeading": "Gifts by occasion",
+      "ageHeading": "Books by age",
+      "gifts": {
+        "three-kings": "Three Kings Day",
+        "sant-jordi": "Sant Jordi",
+        "birthday": "Birthday",
+        "communion": "Communion",
+        "christmas": "Christmas",
+        "baptism": "Baptism",
+        "end-of-school": "End of school",
+        "name-day": "Name day",
+        "graduation": "Graduation",
+        "first-birthday": "First birthday"
+      },
+      "ages": {
+        "2-4": "Ages 2-4",
+        "5-7": "Ages 5-7",
+        "8-12": "Ages 8-12"
+      },
+      "themes": {
+        "dinosaurs": "Dinosaurs",
+        "space": "Space",
+        "pirates": "Pirates",
+        "superheroes": "Superheroes",
+        "magic-forest": "Magic forest",
+        "safari": "Safari"
+      },
+      "themeHeading": "Books by theme"
+    },
+    "hubs": {
+      "gifts": {
+        "metaTitle": "Personalized Gifts for Kids | Meapica",
+        "metaDescription": "Personalized books for every occasion: Three Kings, Sant Jordi, birthdays, communion and Christmas. The gift where your child is the hero.",
+        "h1": "Personalized gifts for kids, for every occasion",
+        "intro": "A book where your child is the hero is the gift they remember. Pick the occasion and create a one-of-a-kind printed edition made to keep for life."
+      },
+      "ages": {
+        "metaTitle": "Personalized Books by Age | Meapica",
+        "metaDescription": "Personalized books tailored to every age, from 2 to 12. Stories and illustrations where your child is the protagonist.",
+        "h1": "Personalized books by age",
+        "intro": "Every age calls for its own story. Choose your child’s range and discover books made for their reading stage, always with them as the hero."
+      },
+      "themes": {
+        "metaTitle": "Personalized Books by Theme | Meapica",
+        "metaDescription": "Dinosaurs, space, pirates, superheroes and more. Pick your child’s favourite adventure and make them the hero of it.",
+        "h1": "Personalized books by theme",
+        "intro": "Dinosaurs, stars, seas or magic forests. Choose the world that fascinates them most and create a unique book where your child lives the adventure."
+      }
+    }
+  },
   "metadata": {
     "title": "Meapica — Real Stories You Can Touch",
     "description": "Bring back the magic of turning pages. Personalized stories printed on premium paper, designed to create moments of real connection.",
@@ -26,7 +415,9 @@
     "titleHighlight": "more stories",
     "titleEnd": "you can touch",
     "description": "Bring back the magic of turning pages. Personalized stories printed on premium paper, designed to create moments of real connection, far from the glow of tablets.",
-    "cta": "Personalize a printed book",
+    "cta": "Create my story",
+    "priceFrom": "From {price}",
+    "priceNote": "Printed book + digital version included",
     "secondaryCta": "See paper quality",
     "fscPaper": "FSC certified paper",
     "artisanalShipping": "Artisanal shipping",
@@ -107,27 +498,6 @@
     "descriptionEnd": "from the main character, a sheet of matte stickers, and a wooden bookmark.",
     "cta": "Add physical extras (+12.90€)",
     "imageCaption": "The perfect gift"
-  },
-  "testimonials": {
-    "title": "Unplugged Families",
-    "subtitle": "What parents who chose paper over pixels have to say.",
-    "reviews": {
-      "laura": {
-        "name": "Laura M.",
-        "subtitle": "Purchased \"The Magical Forest\"",
-        "text": "Finally something that doesn't need a charger. The book quality is stunning — it looks like it came from an antique bookshop, but with my son inside."
-      },
-      "carlos": {
-        "name": "Carlos R.",
-        "subtitle": "Purchased Premium Pack",
-        "text": "The new-book smell when we opened the box was incredible. Physical details like the extra letter gave it a truly magical touch."
-      },
-      "marta": {
-        "name": "Marta P.",
-        "subtitle": "Purchased \"Sea Pirates\"",
-        "text": "My 4-year-old asks for it every night. Seeing her name and her face on every page gave her a thrill that no digital toy has ever matched."
-      }
-    }
   },
   "collectionOffer": {
     "badge": "Personal Library",
@@ -341,28 +711,15 @@
       "saveAndExit": "Save and exit",
       "step": "Step {current} of {total}",
       "regenerateTooltip": "Change portrait",
-      "years": "y/o"
+      "years": "y/o",
+      "stepCharacter": "Character",
+      "stepAdventure": "Adventure",
+      "stepDedication": "Dedication"
     },
     "footer": {
       "back": "Back",
       "next": "Next",
       "saving": "Saving..."
-    },
-    "step1": {
-      "title": "How do you want to create this adventure?",
-      "subtitle": "Your choice: prepare it as a surprise or enjoy the experience together as a family.",
-      "solo": {
-        "title": "I prepare it as a surprise",
-        "subtitle": "Secret Gift",
-        "description": "Design the story in secret while your child sleeps. You control every detail: the plot, the illustrations, and the personal message that will be printed inside.",
-        "imageAlt": "Parent preparing a surprise book on a laptop"
-      },
-      "juntos": {
-        "title": "We create it together",
-        "subtitle": "Family Experience",
-        "description": "An experience to enjoy as a family. Sit down with your child and make decisions together: which adventure to live, which characters to include, and how the story ends.",
-        "imageAlt": "Father, mother and child creating together on a tablet"
-      }
     },
     "step2": {
       "title": "Create your little hero",
@@ -407,6 +764,10 @@
     "portraitReveal": {
       "generating": "Creating {name}...",
       "generatingSubtitle": "We're bringing your character to life, just as you described",
+      "step1": "Mixing the watercolor palette…",
+      "step2": "Drawing their eyes and smile…",
+      "step3": "Combing every strand of hair…",
+      "step4": "Adding the final touch of magic…",
       "revealTitle": "Meet {name}",
       "revealTitleFemale": "Meet {name}",
       "revealSubtitle": "Just as you described. Now choose their adventure.",
@@ -418,54 +779,6 @@
       "regenerateButton": "Generate another",
       "regenerateTooltip": "Generate a new portrait",
       "rateLimitError": "You've generated too many portraits. Please try again in an hour."
-    },
-    "step3": {
-      "title": "What adventure will {name} live?",
-      "titleJuntos": "What adventure do you want to live, {name}?",
-      "subtitle": "Select a magical story to begin the journey. Each tale is designed to spark their imagination.",
-      "subtitleJuntos": "Choose your favourite adventure. You decide what story this book will tell!",
-      "recommendedFor": "For {name}",
-      "recommended": "Top",
-      "defaultName": "your hero",
-      "filterAll": "All"
-    },
-    "step4": {
-      "solo": {
-        "title": "The Book of a Thousand Choices",
-        "subtitle": "Customize the details of <highlight>{name}</highlight>'s story and watch the magic change.",
-        "defaultName": "your hero",
-        "companionTab": "Companion",
-        "atmosphereTab": "Atmosphere",
-        "twistTab": "The Twist",
-        "timeOfDay": "Time of day",
-        "setting": "Setting",
-        "chapter": "Chapter 1",
-        "storyStart": "Once upon a time there was a little explorer named",
-        "storyLived": "who lived at the edge of the unknown.",
-        "skyShowed": "The sky showed a",
-        "notAlone": "wasn't alone, their faithful",
-        "followedClose": "followed close behind.",
-        "unknownAfternoon": "One afternoon, they decided to venture into the unknown...",
-        "wouldFace": "What they didn't know was that they would soon face",
-        "settingLabel": "Setting:",
-        "page": "Page",
-        "specialMomentLabel": "Is there a special moment you'd like to include?",
-        "specialMomentPlaceholder": "E.g.: Overcoming their fear of the dark, sharing with their sister, learning to be brave...",
-        "specialMomentHint": "We'll weave this moment into the story naturally.",
-        "storyPreview": "Story preview",
-        "yourStory": "Your story so far",
-        "notChosen": "Not yet chosen",
-        "companionContext": "Who will travel alongside {name}? This character will appear in key story moments and in the illustrations.",
-        "atmosphereContext": "Choose the time of day and the setting. These shape the emotional tone and visual style of every illustration.",
-        "twistContext": "Every great story has a challenge. This defines the emotional arc and the lesson {name} will learn along the way.",
-        "nextTooltipPrefix": "Still missing"
-      },
-      "juntos": {
-        "defaultName": "the hero",
-        "chooseNext": "Choose the next step in the story!",
-        "decision": "Decision {current} of {total}",
-        "nextDecision": "Next decision"
-      }
     },
     "step5": {
       "title": "The Grand Finale",
@@ -543,6 +856,9 @@
       "lockedDescription": "Unlock the complete story to discover what happens next.",
       "lockedCta": "Unlock story",
       "expandPage": "View fullscreen",
+      "freshTitle": "{name}'s story is ready!",
+      "freshSubtitle": "Turn the pages and discover their adventure…",
+      "freshSkip": "Continue to preview",
       "downloadPdf": "Download full PDF",
       "generatingPdf": "Generating PDF...",
       "downloadHint": "Download the complete story in PDF format",
@@ -573,6 +889,30 @@
       "companion": "Companion",
       "interests": "Loves",
       "colophonText": "This book was lovingly created by Meapica. Every story is unique, written and illustrated especially for its protagonist. Because every child deserves to be the hero of their own adventure."
+    },
+    "path": {
+      "title": "{name}’s adventure",
+      "subtitle": "Decide their story step by step, like a book where you choose what happens next.",
+      "chapter": "Chapter {n}",
+      "worldChapter": "The beginning",
+      "protagonist": "Hero",
+      "worldLabel": "The world",
+      "worldQuestion": "Where does {name}’s adventure begin?",
+      "ambientLabel": "The mood",
+      "timeQuestion": "When does it all take place?",
+      "settingQuestion": "In which corner of this world?",
+      "change": "change",
+      "edit": "edit",
+      "nextHint": "and then…",
+      "finishCta": "Continue",
+      "backToStart": "Back",
+      "recommendedBadge": "Recommended",
+      "worldRecommendHint": "We've highlighted the best ones for {name} based on their age and interests.",
+      "completeChapter": "Path complete",
+      "completeTitle": "{name}'s path is set!",
+      "completeSubtitle": "Every choice you made will shape their story. One last touch: your dedication.",
+      "completeCta": "Write the dedication",
+      "trailLabel": "The adventure trail"
     }
   },
   "checkout": {
@@ -1254,21 +1594,48 @@
         "decisions": {
           "encounter": {
             "question": "What does {name} discover upon arriving in the age of dinosaurs?",
-            "baby-dino": { "title": "Baby Dinosaur", "subtitle": "Lost and in need of help" },
-            "fossil-portal": { "title": "Fossil Portal", "subtitle": "A glowing circle made of bones" },
-            "volcano": { "title": "Mysterious Volcano", "subtitle": "Something glows deep inside" }
+            "baby-dino": {
+              "title": "Baby Dinosaur",
+              "subtitle": "Lost and in need of help"
+            },
+            "fossil-portal": {
+              "title": "Fossil Portal",
+              "subtitle": "A glowing circle made of bones"
+            },
+            "volcano": {
+              "title": "Mysterious Volcano",
+              "subtitle": "Something glows deep inside"
+            }
           },
           "companion": {
             "question": "Who joins {name} in the prehistoric era?",
-            "triceratops": { "title": "Friendly Triceratops", "subtitle": "Strong, loyal, and loves to play" },
-            "pterodactyl": { "title": "Swift Pterodactyl", "subtitle": "Sees everything from up high" },
-            "cave-child": { "title": "Cave Child", "subtitle": "Speaks with gestures and smiles" }
+            "triceratops": {
+              "title": "Friendly Triceratops",
+              "subtitle": "Strong, loyal, and loves to play"
+            },
+            "pterodactyl": {
+              "title": "Swift Pterodactyl",
+              "subtitle": "Sees everything from up high"
+            },
+            "cave-child": {
+              "title": "Cave Child",
+              "subtitle": "Speaks with gestures and smiles"
+            }
           },
           "challenge": {
             "question": "What danger threatens {name}'s dinosaurs?",
-            "tar-pits": { "title": "Tar Pits", "subtitle": "The dinosaurs are getting trapped!" },
-            "t-rex": { "title": "Angry T-Rex", "subtitle": "Has a toothache and growls at everyone" },
-            "meteor": { "title": "Shooting Stars", "subtitle": "Something is heading this way from the sky!" }
+            "tar-pits": {
+              "title": "Tar Pits",
+              "subtitle": "The dinosaurs are getting trapped!"
+            },
+            "t-rex": {
+              "title": "Angry T-Rex",
+              "subtitle": "Has a toothache and growls at everyone"
+            },
+            "meteor": {
+              "title": "Shooting Stars",
+              "subtitle": "Something is heading this way from the sky!"
+            }
           }
         },
         "atmosphere": {
@@ -1284,9 +1651,18 @@
           }
         },
         "endings": {
-          "dino-farewell": { "title": "Jurassic Farewell", "description": "The dinosaurs roar with joy as they say goodbye to their new friend." },
-          "time-souvenir": { "title": "A Souvenir from the Past", "description": "Returns home with a small glowing fossil that holds the magic of the journey." },
-          "sleeping-under-stars": { "title": "Under the Ancient Stars", "description": "Falls asleep next to the triceratops gazing at the oldest sky in the world." }
+          "dino-farewell": {
+            "title": "Jurassic Farewell",
+            "description": "The dinosaurs roar with joy as they say goodbye to their new friend."
+          },
+          "time-souvenir": {
+            "title": "A Souvenir from the Past",
+            "description": "Returns home with a small glowing fossil that holds the magic of the journey."
+          },
+          "sleeping-under-stars": {
+            "title": "Under the Ancient Stars",
+            "description": "Falls asleep next to the triceratops gazing at the oldest sky in the world."
+          }
         }
       },
       "castle": {
@@ -1297,21 +1673,48 @@
         "decisions": {
           "encounter": {
             "question": "What does {name} discover upon entering the castle?",
-            "dream-mirror": { "title": "Dream Mirror", "subtitle": "Shows worlds only you can see" },
-            "baby-dragon": { "title": "Baby Dragon", "subtitle": "Sneezes colourful sparks" },
-            "enchanted-armor": { "title": "Enchanted Armour", "subtitle": "Moves on its own and wants to be your friend" }
+            "dream-mirror": {
+              "title": "Dream Mirror",
+              "subtitle": "Shows worlds only you can see"
+            },
+            "baby-dragon": {
+              "title": "Baby Dragon",
+              "subtitle": "Sneezes colourful sparks"
+            },
+            "enchanted-armor": {
+              "title": "Enchanted Armour",
+              "subtitle": "Moves on its own and wants to be your friend"
+            }
           },
           "companion": {
             "question": "Who joins {name} through the castle?",
-            "wise-cat": { "title": "Castle Cat", "subtitle": "Knows every secret passage" },
-            "jester": { "title": "Magic Jester", "subtitle": "His jokes cast real spells" },
-            "ghost-princess": { "title": "Friendly Ghost", "subtitle": "Knows the castle's history" }
+            "wise-cat": {
+              "title": "Castle Cat",
+              "subtitle": "Knows every secret passage"
+            },
+            "jester": {
+              "title": "Magic Jester",
+              "subtitle": "His jokes cast real spells"
+            },
+            "ghost-princess": {
+              "title": "Friendly Ghost",
+              "subtitle": "Knows the castle's history"
+            }
           },
           "challenge": {
             "question": "What threatens {name}'s kingdom?",
-            "nightmare-cloud": { "title": "Nightmare Cloud", "subtitle": "Turns dreams into nightmares" },
-            "frozen-time": { "title": "Frozen Time", "subtitle": "Everything stops except you" },
-            "labyrinth": { "title": "Shifting Labyrinth", "subtitle": "The corridors move and change" }
+            "nightmare-cloud": {
+              "title": "Nightmare Cloud",
+              "subtitle": "Turns dreams into nightmares"
+            },
+            "frozen-time": {
+              "title": "Frozen Time",
+              "subtitle": "Everything stops except you"
+            },
+            "labyrinth": {
+              "title": "Shifting Labyrinth",
+              "subtitle": "The corridors move and change"
+            }
           }
         },
         "atmosphere": {
@@ -1327,9 +1730,18 @@
           }
         },
         "endings": {
-          "dream-coronation": { "title": "Dream Coronation", "description": "The kingdom celebrates with a crown made of stars and fulfilled dreams." },
-          "dragon-flight": { "title": "Dragon Flight", "description": "Soars over the kingdom on the back of a friendly dragon at sunset." },
-          "dream-door": { "title": "The Door of Dreams", "description": "Discovers they can return to the castle every time they close their eyes." }
+          "dream-coronation": {
+            "title": "Dream Coronation",
+            "description": "The kingdom celebrates with a crown made of stars and fulfilled dreams."
+          },
+          "dragon-flight": {
+            "title": "Dragon Flight",
+            "description": "Soars over the kingdom on the back of a friendly dragon at sunset."
+          },
+          "dream-door": {
+            "title": "The Door of Dreams",
+            "description": "Discovers they can return to the castle every time they close their eyes."
+          }
         }
       },
       "safari": {
@@ -1340,21 +1752,48 @@
         "decisions": {
           "encounter": {
             "question": "What does {name} discover on the savanna?",
-            "lion-cub": { "title": "Lion Cub", "subtitle": "Small, brave, and very sleepy" },
-            "baobab-tree": { "title": "Talking Baobab", "subtitle": "The oldest tree tells stories" },
-            "watering-hole": { "title": "Magic Oasis", "subtitle": "A place where all animals are friends" }
+            "lion-cub": {
+              "title": "Lion Cub",
+              "subtitle": "Small, brave, and very sleepy"
+            },
+            "baobab-tree": {
+              "title": "Talking Baobab",
+              "subtitle": "The oldest tree tells stories"
+            },
+            "watering-hole": {
+              "title": "Magic Oasis",
+              "subtitle": "A place where all animals are friends"
+            }
           },
           "companion": {
             "question": "Who joins {name} on the safari?",
-            "elephant": { "title": "Wise Elephant", "subtitle": "Has the best memory in the world" },
-            "meerkat": { "title": "Explorer Meerkat", "subtitle": "Always on guard, always alert" },
-            "giraffe": { "title": "Kind Giraffe", "subtitle": "Sees everything from way up high" }
+            "elephant": {
+              "title": "Wise Elephant",
+              "subtitle": "Has the best memory in the world"
+            },
+            "meerkat": {
+              "title": "Explorer Meerkat",
+              "subtitle": "Always on guard, always alert"
+            },
+            "giraffe": {
+              "title": "Kind Giraffe",
+              "subtitle": "Sees everything from way up high"
+            }
           },
           "challenge": {
             "question": "What problem threatens {name}'s savanna?",
-            "drought": { "title": "Great Drought", "subtitle": "Water is running out and the animals are thirsty" },
-            "lost-herd": { "title": "Lost Herd", "subtitle": "The elephants can't find their way" },
-            "trapped-animals": { "title": "Trapped Animals", "subtitle": "A landslide blocks the path" }
+            "drought": {
+              "title": "Great Drought",
+              "subtitle": "Water is running out and the animals are thirsty"
+            },
+            "lost-herd": {
+              "title": "Lost Herd",
+              "subtitle": "The elephants can't find their way"
+            },
+            "trapped-animals": {
+              "title": "Trapped Animals",
+              "subtitle": "A landslide blocks the path"
+            }
           }
         },
         "atmosphere": {
@@ -1370,9 +1809,18 @@
           }
         },
         "endings": {
-          "sunset-gathering": { "title": "Sunset Gathering", "description": "All the animals gather at sunset to celebrate with roars and songs." },
-          "baobab-promise": { "title": "The Baobab Promise", "description": "Leaves a mark on the baobab to always remember the adventure." },
-          "stargazing-savanna": { "title": "Under the African Sky", "description": "Lies down among the animals to gaze at the Milky Way over the savanna." }
+          "sunset-gathering": {
+            "title": "Sunset Gathering",
+            "description": "All the animals gather at sunset to celebrate with roars and songs."
+          },
+          "baobab-promise": {
+            "title": "The Baobab Promise",
+            "description": "Leaves a mark on the baobab to always remember the adventure."
+          },
+          "stargazing-savanna": {
+            "title": "Under the African Sky",
+            "description": "Lies down among the animals to gaze at the Milky Way over the savanna."
+          }
         }
       },
       "inventor": {
@@ -1383,21 +1831,48 @@
         "decisions": {
           "encounter": {
             "question": "What does {name} discover in the invention factory?",
-            "flying-machine": { "title": "Flying Machine", "subtitle": "Made of umbrellas and gears" },
-            "talking-invention": { "title": "Talking Invention", "subtitle": "It invented itself!" },
-            "shrink-ray": { "title": "Shrink Ray", "subtitle": "Everything becomes tiny!" }
+            "flying-machine": {
+              "title": "Flying Machine",
+              "subtitle": "Made of umbrellas and gears"
+            },
+            "talking-invention": {
+              "title": "Talking Invention",
+              "subtitle": "It invented itself!"
+            },
+            "shrink-ray": {
+              "title": "Shrink Ray",
+              "subtitle": "Everything becomes tiny!"
+            }
           },
           "companion": {
             "question": "Who helps {name} invent?",
-            "genius-robot": { "title": "Genius Robot", "subtitle": "Calculates everything but doesn't get jokes" },
-            "mad-professor": { "title": "Absent-Minded Professor", "subtitle": "Forgets everything except inventing" },
-            "creative-spark": { "title": "Creative Spark", "subtitle": "A little light that appears when you have ideas" }
+            "genius-robot": {
+              "title": "Genius Robot",
+              "subtitle": "Calculates everything but doesn't get jokes"
+            },
+            "mad-professor": {
+              "title": "Absent-Minded Professor",
+              "subtitle": "Forgets everything except inventing"
+            },
+            "creative-spark": {
+              "title": "Creative Spark",
+              "subtitle": "A little light that appears when you have ideas"
+            }
           },
           "challenge": {
             "question": "What problem arises in {name}'s factory?",
-            "chain-reaction": { "title": "Chain Reaction", "subtitle": "One invention sets off all the others!" },
-            "imagination-drain": { "title": "No Imagination", "subtitle": "The ideas have vanished!" },
-            "time-machine": { "title": "Broken Time Machine", "subtitle": "Mixes up past, present, and future" }
+            "chain-reaction": {
+              "title": "Chain Reaction",
+              "subtitle": "One invention sets off all the others!"
+            },
+            "imagination-drain": {
+              "title": "No Imagination",
+              "subtitle": "The ideas have vanished!"
+            },
+            "time-machine": {
+              "title": "Broken Time Machine",
+              "subtitle": "Mixes up past, present, and future"
+            }
           }
         },
         "atmosphere": {
@@ -1413,9 +1888,18 @@
           }
         },
         "endings": {
-          "great-invention": { "title": "The Great Invention", "description": "Presents the most incredible invention in the world: one that makes everyone happy." },
-          "inventor-badge": { "title": "Inventor Badge", "description": "Receives the official inventor badge and a workshop of their own." },
-          "blueprints": { "title": "Blueprints for the Future", "description": "Draws up blueprints for the next invention: the most ambitious one yet!" }
+          "great-invention": {
+            "title": "The Great Invention",
+            "description": "Presents the most incredible invention in the world: one that makes everyone happy."
+          },
+          "inventor-badge": {
+            "title": "Inventor Badge",
+            "description": "Receives the official inventor badge and a workshop of their own."
+          },
+          "blueprints": {
+            "title": "Blueprints for the Future",
+            "description": "Draws up blueprints for the next invention: the most ambitious one yet!"
+          }
         }
       },
       "candy": {
@@ -1426,21 +1910,48 @@
         "decisions": {
           "encounter": {
             "question": "What does {name} discover in Candy Land?",
-            "chocolate-river": { "title": "Chocolate River", "subtitle": "Hot chocolate flows through it!" },
-            "candy-garden": { "title": "Gummy Garden", "subtitle": "Lollipop flowers and liquorice trees" },
-            "cookie-house": { "title": "Cookie House", "subtitle": "With chocolate roof tiles and a wafer door" }
+            "chocolate-river": {
+              "title": "Chocolate River",
+              "subtitle": "Hot chocolate flows through it!"
+            },
+            "candy-garden": {
+              "title": "Gummy Garden",
+              "subtitle": "Lollipop flowers and liquorice trees"
+            },
+            "cookie-house": {
+              "title": "Cookie House",
+              "subtitle": "With chocolate roof tiles and a wafer door"
+            }
           },
           "companion": {
             "question": "Who joins {name} through Candy Land?",
-            "gummy-bear": { "title": "Gummy Bear", "subtitle": "Soft, cheerful, and very sweet" },
-            "cookie-baker": { "title": "Cloud Baker", "subtitle": "Bakes the fluffiest clouds" },
-            "candy-fairy": { "title": "Sugar Fairy", "subtitle": "Her wand turns everything into sweets" }
+            "gummy-bear": {
+              "title": "Gummy Bear",
+              "subtitle": "Soft, cheerful, and very sweet"
+            },
+            "cookie-baker": {
+              "title": "Cloud Baker",
+              "subtitle": "Bakes the fluffiest clouds"
+            },
+            "candy-fairy": {
+              "title": "Sugar Fairy",
+              "subtitle": "Her wand turns everything into sweets"
+            }
           },
           "challenge": {
             "question": "What problem arises in {name}'s Candy Land?",
-            "melting-kingdom": { "title": "Melting Kingdom", "subtitle": "It's too hot and everything is melting!" },
-            "sour-invasion": { "title": "Sour Invasion", "subtitle": "The sour candies want to take over!" },
-            "sugar-shortage": { "title": "Sugar Shortage", "subtitle": "The sweets are losing their flavour!" }
+            "melting-kingdom": {
+              "title": "Melting Kingdom",
+              "subtitle": "It's too hot and everything is melting!"
+            },
+            "sour-invasion": {
+              "title": "Sour Invasion",
+              "subtitle": "The sour candies want to take over!"
+            },
+            "sugar-shortage": {
+              "title": "Sugar Shortage",
+              "subtitle": "The sweets are losing their flavour!"
+            }
           }
         },
         "atmosphere": {
@@ -1456,35 +1967,26 @@
           }
         },
         "endings": {
-          "candy-feast": { "title": "Grand Sweet Feast", "description": "The whole kingdom celebrates with the sweetest party ever seen." },
-          "candy-pocket": { "title": "Magic Pocket", "description": "Returns home with a pocket that always has the perfect sweet." },
-          "sweet-dreams": { "title": "Sweet Dreams", "description": "Falls asleep in a bed of cotton candy, dreaming of coming back." }
+          "candy-feast": {
+            "title": "Grand Sweet Feast",
+            "description": "The whole kingdom celebrates with the sweetest party ever seen."
+          },
+          "candy-pocket": {
+            "title": "Magic Pocket",
+            "description": "Returns home with a pocket that always has the perfect sweet."
+          },
+          "sweet-dreams": {
+            "title": "Sweet Dreams",
+            "description": "Falls asleep in a bed of cotton candy, dreaming of coming back."
+          }
         }
       }
     }
   },
   "showcase": {
-    "loading": "Loading sample...",
-    "backToHome": "Back to home",
-    "library": "Library",
-    "sampleBadge": "Real example",
-    "personalizedFor": "Personalized story for {name}",
-    "softcover": "Softcover",
-    "hardcover": "Hardcover (Premium)",
-    "pageCount": "{count} pages",
-    "downloadPdf": "Download sample PDF",
-    "generatingPdf": "Generating PDF...",
-    "fromPrice": "From {price}€",
-    "createYourOwn": "Create my own story",
-    "createYourVersion": "Create your own version",
-    "createYourVersionHint": "Customize the character, choose the adventure, and receive a unique book at home.",
-    "pages": "pages",
-    "createHint": "Personalize a unique book for your child",
-    "previous": "Previous",
-    "next": "Next",
-    "personalizedStory": "A personalized story for",
-    "createdFor": "A story created especially for",
-    "end": "The End"
+    "title": "Real personalized book examples",
+    "subtitle": "Browse personalized books we have already created. Each one is unique — imagine your child’s.",
+    "cta": "Create my child’s book"
   },
   "waitlist": {
     "badge": "Coming Soon",
@@ -1518,5 +2020,14 @@
     "feature3Title": "Artisanal shipping",
     "feature3Description": "Lovingly packaged and ready to gift or keep as a treasure.",
     "copyright": "© 2026 Meapica. All rights reserved."
+  },
+  "blog": {
+    "title": "Ideas, gifts & reading",
+    "subtitle": "Guides and tips to give better gifts and nurture a child’s love of books.",
+    "readingTime": "{min} min read",
+    "backToBlog": "Back to the blog",
+    "empty": "New articles coming soon.",
+    "relatedHeading": "Keep exploring",
+    "author": "By {author}"
   }
 }

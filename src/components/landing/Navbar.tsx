@@ -123,7 +123,6 @@ export default function Navbar() {
     { label: t("manifesto"), href: "#manifesto" },
     { label: t("collection"), href: "#catalog" },
     { label: t("artisanal"), href: "#artisanal" },
-    { label: t("families"), href: "#reviews" },
   ];
 
   return (

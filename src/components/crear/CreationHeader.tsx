@@ -12,20 +12,110 @@ interface CreationHeaderProps {
   characterName?: string;
   characterAge?: number;
   onRegeneratePortrait?: () => void;
+  /** Jump to a step by clicking the header stepper. */
+  onStepClick?: (step: number) => void;
+  /** Whether a given step is reachable (already visited + data ready). */
+  canStepNavigate?: (step: number) => boolean;
+}
+
+/** Labelled step indicator (character → adventure → dedication). Compacts on mobile.
+ * Steps the user has already reached become clickable to jump back/forward. */
+function StepProgress({
+  currentStep,
+  totalSteps,
+  labels,
+  onStepClick,
+  canStepNavigate,
+}: {
+  currentStep: number;
+  totalSteps: number;
+  labels: string[];
+  onStepClick?: (step: number) => void;
+  canStepNavigate?: (step: number) => boolean;
+}) {
+  return (
+    <div className="flex items-center justify-center gap-1.5 sm:gap-2 lg:gap-3">
+      {Array.from({ length: totalSteps }, (_, i) => {
+        const step = i + 1;
+        const isActive = step === currentStep;
+        const isCompleted = step < currentStep;
+        const label = labels[i] ?? `${step}`;
+        const navigable =
+          !!onStepClick && step !== currentStep && (canStepNavigate?.(step) ?? false);
+
+        const inner = (
+          <>
+            {isActive ? (
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-create-primary text-[10px] font-bold text-white ring-4 ring-create-primary/15 sm:h-6 sm:w-6 sm:text-[11px]">
+                {step}
+              </span>
+            ) : isCompleted ? (
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-create-primary/80 sm:h-6 sm:w-6">
+                <span className="material-symbols-outlined text-xs text-white sm:text-sm">check</span>
+              </span>
+            ) : (
+              <span className="flex h-5 w-5 items-center justify-center rounded-full border border-create-neutral bg-white text-[10px] font-bold text-create-text-sub/70 sm:h-6 sm:w-6 sm:text-[11px]">
+                {step}
+              </span>
+            )}
+            <span
+              className={`text-[11px] font-bold sm:text-xs ${
+                isActive
+                  ? "text-create-primary"
+                  : isCompleted
+                    ? "text-create-text"
+                    : "text-create-text-sub/70"
+              }`}
+            >
+              {label}
+            </span>
+          </>
+        );
+
+        return (
+          <div key={step} className="flex items-center gap-1.5 sm:gap-2 lg:gap-3">
+            {navigable ? (
+              <button
+                type="button"
+                onClick={() => onStepClick!(step)}
+                title={label}
+                className="flex items-center gap-1 rounded-full transition-opacity hover:opacity-70 sm:gap-1.5"
+              >
+                {inner}
+              </button>
+            ) : (
+              <div className={`flex items-center gap-1 sm:gap-1.5 ${isActive ? "" : "select-none"}`}>
+                {inner}
+              </div>
+            )}
+            {step < totalSteps && (
+              <span
+                className={`h-0.5 w-4 rounded-full sm:w-5 lg:w-7 ${
+                  isCompleted ? "bg-create-primary/40" : "bg-create-neutral"
+                }`}
+              />
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
 }
 
 export default function CreationHeader({
   currentStep,
-  totalSteps = 5,
+  totalSteps = 3,
   rightAction = "close",
   portraitUrl,
   characterName,
   characterAge,
   onRegeneratePortrait,
+  onStepClick,
+  canStepNavigate,
 }: CreationHeaderProps) {
   const t = useTranslations("crear.header");
-  const progress =
-    currentStep && totalSteps ? (currentStep / totalSteps) * 100 : 0;
+  // Labels for the 3-step creation flow (character → adventure → dedication).
+  const stepLabels = [t("stepCharacter"), t("stepAdventure"), t("stepDedication")];
 
   return (
     <>
@@ -106,39 +196,16 @@ export default function CreationHeader({
           )}
         </div>
 
-        {/* Center: Step progress (desktop) — fixed in the middle */}
+        {/* Center: Step progress (desktop) — labelled steps, fixed in the middle */}
         {currentStep != null ? (
-          <div className="hidden items-center gap-2.5 md:flex">
-            {Array.from({ length: totalSteps }, (_, i) => {
-              const step = i + 1;
-              const isActive = step === currentStep;
-              const isCompleted = step < currentStep;
-
-              return (
-                <div key={step} className="flex items-center gap-2.5">
-                  {isActive ? (
-                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-create-primary text-xs font-bold text-white ring-4 ring-create-primary/15">
-                      {step}
-                    </div>
-                  ) : isCompleted ? (
-                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-create-primary/80">
-                      <span className="material-symbols-outlined text-xs text-white">
-                        check
-                      </span>
-                    </div>
-                  ) : (
-                    <div className="h-2.5 w-2.5 rounded-full bg-create-neutral" />
-                  )}
-                  {step < totalSteps && (
-                    <div
-                      className={`h-0.5 w-6 rounded-full ${
-                        isCompleted ? "bg-create-primary/30" : "bg-create-neutral"
-                      }`}
-                    />
-                  )}
-                </div>
-              );
-            })}
+          <div className="hidden md:flex">
+            <StepProgress
+              currentStep={currentStep}
+              totalSteps={totalSteps}
+              labels={stepLabels}
+              onStepClick={onStepClick}
+              canStepNavigate={canStepNavigate}
+            />
           </div>
         ) : (
           <div className="hidden md:block" />
@@ -167,23 +234,16 @@ export default function CreationHeader({
         </div>
       </header>
 
-      {/* Mobile progress bar (below header) */}
+      {/* Mobile: same labelled stepper as desktop, on its own row below the header */}
       {currentStep != null && (
-        <div className="px-5 pb-3 pt-3 sm:px-8 md:hidden">
-          <div className="flex items-center justify-between text-xs font-semibold text-create-text-sub">
-            <span>
-              {t("step", { current: currentStep, total: totalSteps })}
-            </span>
-            <span className="tabular-nums text-create-primary">
-              {Math.round(progress)}%
-            </span>
-          </div>
-          <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-create-neutral">
-            <div
-              className="h-full rounded-full bg-create-primary transition-all duration-500 ease-out"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
+        <div className="flex justify-center border-b border-create-primary/10 px-3 pb-2.5 pt-2.5 md:hidden">
+          <StepProgress
+            currentStep={currentStep}
+            totalSteps={totalSteps}
+            labels={stepLabels}
+            onStepClick={onStepClick}
+            canStepNavigate={canStepNavigate}
+          />
         </div>
       )}
     </>

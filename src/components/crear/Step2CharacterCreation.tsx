@@ -13,6 +13,8 @@ interface Step2Props {
   onUpdateCharacter: (updates: Partial<CharacterData>) => void;
   onNext: () => void;
   onBack: () => void;
+  onStepClick?: (step: number) => void;
+  canStepNavigate?: (step: number) => boolean;
 }
 
 /** Animated nebula placeholder — mystery silhouette while character is being configured. */
@@ -79,6 +81,8 @@ export default function Step2CharacterCreation({
   onUpdateCharacter,
   onNext,
   onBack,
+  onStepClick,
+  canStepNavigate,
 }: Step2Props) {
   const isJuntos = mode === "juntos";
   const t = useTranslations("crear.step2");
@@ -117,7 +121,13 @@ export default function Step2CharacterCreation({
 
   return (
     <div className="flex flex-col h-screen bg-create-bg overflow-hidden">
-      <CreationHeader currentStep={catalogMode ? undefined : 2} rightAction="save" />
+      <CreationHeader
+        currentStep={catalogMode ? undefined : 1}
+        totalSteps={3}
+        rightAction="save"
+        onStepClick={onStepClick}
+        canStepNavigate={canStepNavigate}
+      />
 
       <main className="flex-1 flex flex-col lg:flex-row min-h-0 max-w-[1440px] mx-auto w-full">
         {/* Left: Form */}

@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createClient as createSupabaseAdmin } from "@supabase/supabase-js";
 import type { Database } from "@/lib/database.types";
 import { generateIllustrationsForStory, generateIllustrationsWithFlux, buildCharacterReference } from "@/lib/ai/illustrations";
-import { generateFluxPro } from "@/lib/ai/flux-kontext";
+import { generateFlux2 } from "@/lib/ai/flux2";
 import { judgeIllustrations } from "@/lib/ai/qa-judge";
 import type { Screenplay } from "@/lib/ai/scene-screenplay";
 import type { AssetReference } from "@/lib/ai/visual-assets";
@@ -23,6 +23,7 @@ import { getTheme } from "@/lib/pdf/theme";
 import { prefetchAllIllustrations, prefetchImageAsDataUri } from "@/lib/pdf/prefetch";
 import { createPrintOrder } from "@/lib/gelato/orders";
 import { getCoverDimensions } from "@/lib/gelato/catalog";
+import { notifyOrderEmail } from "@/lib/email/notify-order";
 import type { GeneratedStory } from "@/lib/ai/story-generator";
 
 function createServiceClient() {
@@ -193,7 +194,8 @@ export async function POST(
       ? { ...rawGeneratedText, bookTitle: story.title as string }
       : rawGeneratedText;
 
-    // Detect if story was generated with FLUX Kontext
+    // Detect if story was generated with the FLUX pipeline (screenplay present)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const generatedTextAny = story.generated_text as any;
     const useFlux = !!generatedTextAny?.fluxScreenplay;
 
@@ -230,7 +232,7 @@ export async function POST(
 
         // 3. Generate remaining illustrations
         const newIllustrations = await generateIllustrationsWithFlux(
-          screenplay, assetReferences, { sceneNumbers: pendingSceneNumbers, batchSize: 2 }
+          screenplay, assetReferences, { sceneNumbers: pendingSceneNumbers }
         );
 
         // 4. Upload to Supabase Storage
@@ -269,40 +271,63 @@ export async function POST(
       };
       const characterRef = buildCharacterReference(charDescInput);
 
-      // 6. QA Judge
-      const qaResult = await judgeIllustrations(
+      // 6+7. QA judge → regenerate failing scenes → RE-JUDGE. Closed loop, max 2 regen passes.
+      const loadReady = async () => {
+        const { data } = await supabase
+          .from("story_illustrations")
+          .select("scene_number, image_url")
+          .eq("story_id", storyId).lte("scene_number", 12).eq("status", "ready").order("scene_number");
+        return (data || []).map(i => ({ sceneNumber: i.scene_number, imageUrl: i.image_url! }));
+      };
+
+      const MAX_REGEN_PASSES = 2;
+      let qaResult = await judgeIllustrations(
         (allIlls || []).map(i => ({ sceneNumber: i.scene_number, imageUrl: i.image_url! })),
-        assetReferences,
-        screenplay,
-        characterRef
+        assetReferences, screenplay, characterRef, 1,
       );
 
-      // 7. Regenerate failures (max 1 retry)
-      if (qaResult.scenesToRegenerate.length > 0) {
-        console.log(`[Complete] QA: regenerating scenes ${qaResult.scenesToRegenerate.join(", ")}`);
-        const regenResults = await generateIllustrationsWithFlux(
-          screenplay, assetReferences, { sceneNumbers: qaResult.scenesToRegenerate, batchSize: 2 }
-        );
+      for (let pass = 1; pass <= MAX_REGEN_PASSES && qaResult.scenesToRegenerate.length > 0; pass++) {
+        const failing = qaResult.scenesToRegenerate;
+        console.log(`[Complete][FLUX2] QA pass ${pass}: regenerating scenes [${failing.join(", ")}]`);
+
+        // Escalate: fold the judge's per-scene suggestion + a strict-consistency nudge
+        // into the failing scenes' prompts so the retry changes strategy, not just reroll.
+        const escalated: Screenplay = {
+          ...screenplay,
+          scenes: screenplay.scenes.map((s) => {
+            if (!failing.includes(s.sceneNumber)) return s;
+            const v = qaResult.verdicts.find((x) => x.sceneNumber === s.sceneNumber);
+            const hint = v?.suggestion ? ` ${v.suggestion}` : "";
+            return { ...s, fluxPrompt: `${s.fluxPrompt}${hint} Strictly match the reference sheets: same faces, colors, outfit, location and props.` };
+          }),
+        };
+
+        const regenResults = await generateIllustrationsWithFlux(escalated, assetReferences, { sceneNumbers: failing });
         for (let i = 0; i < regenResults.length; i++) {
           const ill = regenResults[i];
-          const sceneNum = qaResult.scenesToRegenerate[i];
+          const sceneNum = failing[i];
           if (ill.provider === "flux") {
             const url = await uploadIllustrationFromUrl(supabase, storyId, sceneNum, ill.imageUrl);
             await supabase.from("story_illustrations")
               .update({ image_url: url, status: "ready" })
-              .eq("story_id", storyId)
-              .eq("scene_number", sceneNum);
+              .eq("story_id", storyId).eq("scene_number", sceneNum);
           }
         }
+
+        // Re-judge to confirm the regen actually fixed it (closes the loop).
+        qaResult = await judgeIllustrations(await loadReady(), assetReferences, screenplay, characterRef, pass + 1);
+      }
+      if (qaResult.scenesToRegenerate.length > 0) {
+        console.warn(`[Complete][FLUX2] ${qaResult.scenesToRegenerate.length} scene(s) still below threshold after ${MAX_REGEN_PASSES} passes: [${qaResult.scenesToRegenerate.join(", ")}]`);
       }
 
       // 8. Generate portrait with protagonist reference
       const protagonistRef = assetReferences.find(r => r.assetId === "protagonist");
       if (protagonistRef?.base64) {
         try {
-          const portrait = await generateFluxPro(
-            `Close-up portrait of the same character from the reference image, from chest up, warm friendly smile, soft warm lighting, simple clean background. Children's book illustration. No text, no signature.`,
-            { inputImage: protagonistRef.base64, aspectRatio: "3:4" }
+          const portrait = await generateFlux2(
+            `Close-up portrait of the same character from the reference image, from chest up, warm friendly smile, soft warm lighting, simple clean background. Children's book watercolor illustration. No text, no signature.`,
+            { inputImages: [protagonistRef.base64], aspectRatio: "3:4" }
           );
           const portraitUrl = await uploadPortraitFromUrl(supabase, storyId, portrait.url);
           await supabase.from("stories").update({ character_portrait_url: portraitUrl }).eq("id", storyId);
@@ -624,6 +649,16 @@ async function submitToGelato({
         .update({ status: "ordered" })
         .eq("id", storyId),
     ]);
+
+    // 11. Notify customer the book is now in production. The Gelato "created"
+    // webhook will see the order already at "producing" and skip a duplicate email.
+    await notifyOrderEmail({
+      supabase,
+      event: "in_production",
+      storyId,
+      userId: ownerId,
+      email: ownerEmail || undefined, // auth user: scoped client has no auth.admin
+    });
 
   } catch (gelatoError) {
     // Non-fatal: story is "ready", customer can still download their PDF.

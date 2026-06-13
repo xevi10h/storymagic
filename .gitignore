@@ -52,3 +52,9 @@ scripts/test-output.pdf
 *.tsbuildinfo
 next-env.d.ts
 *.jpeg
+
+# local agent/test junk
+artifacts/
+test-results/
+.codex/
+playwright-report/

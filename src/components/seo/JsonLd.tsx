@@ -57,7 +57,22 @@ export function OrganizationJsonLd({ locale }: { locale: string }) {
  * Product structured data for the landing page.
  * Shows the book as a Product with pricing, enabling rich snippets in Google.
  */
-export function ProductJsonLd({ locale }: { locale: string }) {
+export type ProductReview = { author: string; text: string; rating?: number };
+
+export function ProductJsonLd({
+  locale,
+  reviews,
+}: {
+  locale: string;
+  /**
+   * Real customer reviews. ONLY pass genuine, verifiable reviews — emitting
+   * Review/AggregateRating markup with fabricated testimonials violates Google's
+   * structured-data policy (manual action) and EU/Spanish consumer law (fake
+   * reviews are illegal). Leave undefined until real reviews exist; the markup
+   * then activates automatically with no further changes.
+   */
+  reviews?: ProductReview[];
+}) {
   const localizedNames: Record<string, string> = {
     es: "Cuento personalizado para niños",
     ca: "Conte personalitzat per a nens",
@@ -75,6 +90,31 @@ export function ProductJsonLd({ locale }: { locale: string }) {
   const softcoverPrice = (PRICING.softcover.price / 100).toFixed(2);
   const hardcoverPrice = (PRICING.hardcover.price / 100).toFixed(2);
 
+  const hasReviews = Array.isArray(reviews) && reviews.length > 0;
+  const aggregateRating = hasReviews
+    ? {
+        "@type": "AggregateRating",
+        ratingValue: (
+          reviews!.reduce((sum, r) => sum + (r.rating ?? 5), 0) / reviews!.length
+        ).toFixed(1),
+        reviewCount: String(reviews!.length),
+        bestRating: "5",
+        worstRating: "1",
+      }
+    : undefined;
+  const review = hasReviews
+    ? reviews!.map((r) => ({
+        "@type": "Review",
+        author: { "@type": "Person", name: r.author },
+        reviewRating: {
+          "@type": "Rating",
+          ratingValue: String(r.rating ?? 5),
+          bestRating: "5",
+        },
+        reviewBody: r.text,
+      }))
+    : undefined;
+
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -85,6 +125,8 @@ export function ProductJsonLd({ locale }: { locale: string }) {
       "@type": "Brand",
       name: "Meapica",
     },
+    aggregateRating,
+    review,
     offers: [
       {
         "@type": "Offer",
@@ -109,6 +151,34 @@ export function ProductJsonLd({ locale }: { locale: string }) {
       suggestedMinAge: "0",
       suggestedMaxAge: "12",
     },
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+    />
+  );
+}
+
+/**
+ * BreadcrumbList structured data — improves SERP navigation display.
+ * `items` are ordered from home → current page; the last item is the page itself.
+ */
+export function BreadcrumbJsonLd({
+  items,
+}: {
+  items: { name: string; url: string }[];
+}) {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: item.name,
+      item: item.url,
+    })),
   };
 
   return (

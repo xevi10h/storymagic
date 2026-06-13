@@ -1,4 +1,393 @@
 {
+  "seo": {
+    "common": {
+      "breadcrumbHome": "Inicio",
+      "featuredHeading": "Elige la aventura que protagonizará",
+      "featuredSubheading": "Cada historia se personaliza con su nombre, su rostro y los detalles que lo hacen único.",
+      "relatedHeading": "Más ideas para regalar",
+      "faqHeading": "Preguntas frecuentes",
+      "ctaPrimary": "Crear mi cuento"
+    },
+    "gifts": {
+      "three-kings": {
+        "metaTitle": "Regalo de Reyes personalizado | Cuento Meapica",
+        "metaDescription": "Un cuento de Reyes Magos donde tu peque es el héroe de la noche más mágica. Un recuerdo que dura, no otro juguete olvidado. Crea el tuyo.",
+        "h1": "Regalo de Reyes personalizado: el cuento donde tu hijo es el protagonista",
+        "heroIntro": "La noche del 5 de enero merece algo que se recuerde toda la vida. Un libro impreso donde tu peque vive su propia aventura de Reyes, con su nombre y su rostro en cada página.",
+        "bodyHeading": "Por qué un cuento personalizado es el mejor regalo de Reyes",
+        "bodyParagraphs": [
+          "El plástico se rompe y para febrero ya nadie se acuerda de él. Un cuento impreso en el que tu hijo es el héroe de la noche de Reyes no se olvida: se guarda en la estantería, se relee en familia y, con los años, se convierte en uno de esos objetos que cuentan quién fue de pequeño.",
+          "Personalizamos la historia con su nombre, su edad, su color de pelo y de ojos, y los detalles que lo hacen único. La inteligencia artificial escribe una aventura distinta para cada niño, y las 12 escenas a doble página lo muestran a él como verdadero protagonista. Una edición única que ningún otro niño tendrá."
+        ],
+        "benefitsHeading": "Lo que hace especial este regalo",
+        "benefits": [
+          "Tu peque es el héroe de la noche de Reyes",
+          "Un recuerdo que perdura, no un juguete más",
+          "Pídelo con tiempo para tenerlo bajo el árbol"
+        ]
+      },
+      "sant-jordi": {
+        "metaTitle": "Regalo Sant Jordi para niños | Cuento personalizado",
+        "metaDescription": "El libro más personal para el día de los libros. Una rosa se marchita; este cuento con tu peque de protagonista queda para siempre. Créalo hoy.",
+        "h1": "Regalo de Sant Jordi para niños: un cuento personalizado que queda para siempre",
+        "heroIntro": "El 23 de abril se regala un libro y una rosa. Este año, regala el libro más personal de todos: una historia única en la que tu hijo es el protagonista.",
+        "bodyHeading": "Por qué un cuento personalizado es el regalo perfecto de Sant Jordi",
+        "bodyParagraphs": [
+          "La rosa de Sant Jordi es preciosa, pero a los pocos días se marchita. Un cuento impreso en el que tu peque vive su propia aventura permanece en casa años, generación tras generación. Es el regalo que respeta de verdad el espíritu del día de los libros: poner una historia en las manos de quien quieres.",
+          "Creamos una historia única protagonizada por tu hijo, con su nombre, su aspecto y los detalles que lo definen, ilustrada en 12 escenas a doble página sobre papel crema de calidad. Cada ejemplar es una edición irrepetible, encuadernada con costura, pensada para durar. Un detalle de Sant Jordi que combina la tradición catalana con algo profundamente personal."
+        ],
+        "benefitsHeading": "Lo que hace especial este regalo",
+        "benefits": [
+          "El libro más personal para el día de los libros",
+          "Una rosa se marchita; este cuento permanece",
+          "Edición única encuadernada para durar generaciones"
+        ]
+      },
+      "birthday": {
+        "metaTitle": "Regalo de cumpleaños personalizado para niño",
+        "metaDescription": "Convierte a quien cumple años en el protagonista de su propia aventura. Mejor que un juguete más: un cuento único con su nombre. Créalo ahora.",
+        "h1": "Regalo de cumpleaños personalizado: tu peque, protagonista de su aventura",
+        "heroIntro": "En su día más especial, dale algo que no se confunda con ningún otro regalo: un cuento donde él es la estrella absoluta de la historia.",
+        "bodyHeading": "Por qué regalar un cuento personalizado por su cumpleaños",
+        "bodyParagraphs": [
+          "El cumpleaños se llena de juguetes que en pocas semanas acaban en un cajón. Un cuento en el que el niño que cumple años es el héroe de su propia historia ocupa otro lugar: el de los regalos que se abren con los ojos muy abiertos y se releen una y otra vez. Verse a uno mismo dentro de un libro es una sorpresa que ningún juguete iguala.",
+          "Escribimos una aventura única a partir de su nombre, su edad y su aspecto, e incluimos los detalles que más le gustan: su mascota, su afición o aquello que sueña ser de mayor aparecen en la historia y en las ilustraciones. Antes de comprar verás una vista previa completa del cuento, para que sepas exactamente qué vas a regalar."
+        ],
+        "benefitsHeading": "Lo que hace especial este regalo",
+        "benefits": [
+          "El niño que cumple años es la estrella del cuento",
+          "Mejor que otro juguete que acaba olvidado",
+          "Vista previa completa antes de comprar"
+        ]
+      },
+      "communion": {
+        "metaTitle": "Regalo de comunión personalizado niño y niña",
+        "metaDescription": "Un recuerdo elegante y con significado para la Primera Comunión. Un cuento único protagonizado por el niño o la niña del día. Descúbrelo.",
+        "h1": "Regalo de comunión personalizado: un recuerdo con significado",
+        "heroIntro": "La Primera Comunión es un día que se recuerda toda la vida. Acompáñalo con un regalo a su altura: un cuento único, sobrio y emotivo, protagonizado por el niño o la niña.",
+        "bodyHeading": "Por qué un cuento personalizado es un regalo de comunión a la altura del día",
+        "bodyParagraphs": [
+          "En una comunión abundan los regalos prácticos que se olvidan pronto. Un cuento personalizado se distingue por su sentido: es un objeto bonito, cuidado y profundamente personal que el niño o la niña conservará como recuerdo de una jornada importante. El tipo de regalo que, dentro de muchos años, seguirá significando algo.",
+          "Cada ejemplar se imprime sobre papel crema certificado FSC, con encuadernación cosida y una dedicatoria personalizada que puedes adaptar al momento. La historia se construye en torno al protagonista real del día: su nombre, su aspecto y los detalles que lo definen. Una edición única de 20×20 cm, pensada para perdurar como pieza de recuerdo familiar."
+        ],
+        "benefitsHeading": "Lo que hace especial este regalo",
+        "benefits": [
+          "Un recuerdo elegante para un día importante",
+          "Dedicatoria personalizada para la ocasión",
+          "Papel certificado FSC y encuadernación cosida"
+        ]
+      },
+      "christmas": {
+        "metaTitle": "Regalo de Navidad personalizado para niños",
+        "metaDescription": "Magia sin pantallas bajo el árbol: un cuento donde tu peque protagoniza su propia aventura navideña. Momentos de lectura en familia. Créalo.",
+        "h1": "Regalo de Navidad personalizado para niños: magia sin pantallas",
+        "heroIntro": "Estas Navidades, deja a un lado las pantallas y abre un libro juntos. Un cuento impreso donde tu peque es el protagonista de su propia historia.",
+        "bodyHeading": "Por qué un cuento personalizado es el regalo de Navidad que de verdad conecta",
+        "bodyParagraphs": [
+          "Las fiestas se llenan de luces, pantallas y ruido. Un cuento impreso invita justo a lo contrario: sentarse juntos en el sofá, pasar páginas de verdad y leer en voz alta. Apostamos por el papel sobre los píxeles porque esos ratos de lectura compartida son los recuerdos que de verdad quedan de la Navidad.",
+          "La historia se personaliza con el nombre y el aspecto de tu hijo, convirtiéndolo en el héroe de su propia aventura navideña. Recibirás un libro de 20×20 cm con 12 escenas ilustradas a doble página y una dedicatoria a tu gusto, además de la versión digital incluida. Un regalo que se abre bajo el árbol y se relee durante años."
+        ],
+        "benefitsHeading": "Lo que hace especial este regalo",
+        "benefits": [
+          "Magia sin pantallas para las fiestas",
+          "Momentos de lectura compartida en familia",
+          "Versión digital incluida con el libro impreso"
+        ]
+      },
+      "baptism": {
+        "metaTitle": "Regalo de Bautizo Personalizado | Libro Meapica",
+        "metaDescription": "Un libro infantil personalizado con su nombre: el regalo de bautizo que se convierte en tesoro cuando crezca. Vista previa antes de comprar.",
+        "h1": "Un regalo de bautizo personalizado que durará toda la vida",
+        "heroIntro": "Para ese día tan especial, un libro impreso con su nombre y su historia. Un recuerdo que esperará paciente hasta que tenga edad de leerlo.",
+        "bodyHeading": "Un tesoro para el día de su bautizo",
+        "bodyParagraphs": [
+          "El bautizo marca un comienzo, y los mejores regalos acompañan ese camino durante años. En lugar de algo que pasa de moda, Meapica crea un libro impreso único protagonizado por el pequeño: su nombre, su color de ojos, su pelo, escritos en una historia hecha solo para él.",
+          "Encuadernado a mano con costura e impreso sobre papel crema Munken de 170g con certificación FSC, es un objeto pensado para guardarse. Lo recibís hoy como padrinos o familia, y el niño lo descubrirá mañana, cuando ya sepa reconocer su propio nombre entre las páginas."
+        ],
+        "benefitsHeading": "Por qué emociona",
+        "benefits": [
+          "Su nombre y rasgos dentro de la historia y las ilustraciones",
+          "Dedicatoria personalizada para el día del bautizo",
+          "Encuadernación cosida y papel crema FSC de calidad"
+        ]
+      },
+      "end-of-school": {
+        "metaTitle": "Regalo Fin de Curso para Niños | Libro Personalizado",
+        "metaDescription": "Premia su año de cole con un libro personalizado donde es el protagonista. La aventura perfecta para el verano. Mira la vista previa antes de comprar.",
+        "h1": "El regalo de fin de curso que convierte el verano en aventura",
+        "heroIntro": "Cerrar el curso merece algo especial. Un libro impreso donde el niño es el héroe de su propia historia, listo para leer durante todo el verano.",
+        "bodyHeading": "Celebra el final del curso con su propia historia",
+        "bodyParagraphs": [
+          "Después de meses de esfuerzo en el cole, pocos regalos premian tanto como ver al niño convertido en protagonista de un libro. Meapica escribe una historia única con su nombre, su edad y sus rasgos, e incluso su mascota o su sueño de mayor, para que se reconozca en cada página.",
+          "Es el plan perfecto para el verano: lejos de las pantallas, con un libro físico que invita a leer una y otra vez. Ideal como detalle de padres orgullosos o como recuerdo de fin de curso de un profesor que quiere dejar huella en sus alumnos."
+        ],
+        "benefitsHeading": "Por qué funciona",
+        "benefits": [
+          "Una aventura de verano protagonizada por el niño",
+          "Fomenta la lectura lejos de las pantallas",
+          "Recuerdo personalizado del curso que termina"
+        ]
+      },
+      "name-day": {
+        "metaTitle": "Regalo para el Santo del Niño | Libro Personalizado",
+        "metaDescription": "Para su santo, un libro personalizado donde el niño es el protagonista de su aventura. Único y hecho a medida. Vista previa antes de comprar.",
+        "h1": "Un regalo para su santo donde el niño es el protagonista",
+        "heroIntro": "El día de su santo merece un detalle a su altura. Un libro impreso con su nombre y su historia, hecho solo para él.",
+        "bodyHeading": "Celebra su santo con un libro hecho a su medida",
+        "bodyParagraphs": [
+          "En España el santo se celebra casi como un segundo cumpleaños, y es la ocasión perfecta para un regalo verdaderamente personal. Meapica crea una historia única en la que el niño da nombre y rostro al héroe: su pelo, sus ojos, su forma de ser, dentro de una aventura escrita a su medida.",
+          "El nombre cobra un significado nuevo cuando aparece impreso en la portada de su propio libro. Con su dedicatoria y encuadernado a mano, se convierte en el detalle que recordará de su santo mucho después de que las flores y los dulces se hayan acabado."
+        ],
+        "benefitsHeading": "Por qué encanta",
+        "benefits": [
+          "El niño protagoniza la historia con su nombre",
+          "Un detalle único para celebrar su santo",
+          "Dedicatoria personalizada y edición irrepetible"
+        ]
+      },
+      "graduation": {
+        "metaTitle": "Regalo de Graduación para Niños | Libro a Medida",
+        "metaDescription": "Un libro personalizado para celebrar su graduación: un recuerdo de quién era a los 8-12 años. Edición única. Vista previa antes de comprar.",
+        "h1": "Un regalo de graduación que guarda quién era en este momento",
+        "heroIntro": "Terminar una etapa merece reconocerse. Un libro impreso donde el niño es el protagonista de una historia escrita a su medida, para recordar este hito.",
+        "bodyHeading": "Celebra su graduación con un recuerdo a su altura",
+        "bodyParagraphs": [
+          "Pasar de primaria a la ESO, o cerrar un ciclo, es un momento de orgullo que merece más que un diploma. Meapica escribe una aventura única protagonizada por el chico o la chica, con su nombre, su aspecto y aquello que le hace ilusión, una historia pensada para edades entre 8 y 12 años.",
+          "Más que un regalo, es una cápsula del tiempo: dentro quedan sus rasgos, sus sueños y sus valores tal como eran en este momento. Encuadernado a mano e impreso en papel crema FSC, es un recuerdo que querrá conservar y releer cuando sea mayor."
+        ],
+        "benefitsHeading": "Por qué deja huella",
+        "benefits": [
+          "Pensado para chicos y chicas de 8 a 12 años",
+          "Guarda sus sueños y su forma de ser de hoy",
+          "Edición única encuadernada a mano para conservar"
+        ]
+      },
+      "first-birthday": {
+        "metaTitle": "Regalo Primer Cumpleaños Bebé Personalizado | Meapica",
+        "metaDescription": "Su primer libro, con su nombre dentro de la historia: el regalo personalizado para su primer cumpleaños. Un tesoro para el futuro. Vista previa incluida.",
+        "h1": "Su primer libro personalizado para su primer cumpleaños",
+        "heroIntro": "El primer cumpleaños se celebra una sola vez. Un libro impreso con su nombre y sus rasgos, el primero de su biblioteca y un tesoro para el mañana.",
+        "bodyHeading": "Un tesoro para celebrar su primer año",
+        "bodyParagraphs": [
+          "El primer cumpleaños es un momento que las familias guardan para siempre. Por eso un libro impreso con el nombre del bebé dentro de la historia es un regalo que va más allá del día: es su primer libro, escrito con sus rasgos y pensado para acompañarle mientras crece.",
+          "Encuadernado a mano sobre papel crema Munken de 170g con certificación FSC, es un objeto hecho para perdurar. Los padres lo leerán en voz alta este año, y dentro de unos cuantos el niño se reconocerá en sus páginas, descubriendo que la historia siempre fue suya."
+        ],
+        "benefitsHeading": "Por qué emociona",
+        "benefits": [
+          "Su primer libro, con su nombre dentro de la historia",
+          "Un tesoro pensado para conservar y crecer con él",
+          "Encuadernado a mano en papel crema FSC de calidad"
+        ]
+      }
+    },
+    "ages": {
+      "2-4": {
+        "metaTitle": "Cuento personalizado para 2, 3 y 4 años",
+        "metaDescription": "Sus primeros libros: escenas sencillas y su propio nombre y rostro en cada página despiertan el amor por la lectura. Crea su primer cuento.",
+        "h1": "Cuento personalizado para niños de 2 a 4 años",
+        "heroIntro": "A esta edad, los primeros libros marcan para siempre. Imagina su cara al reconocerse a sí mismo entre las páginas de su propio cuento.",
+        "bodyHeading": "Por qué un cuento personalizado para niños de 2 a 4 años",
+        "bodyParagraphs": [
+          "Entre los 2 y los 4 años, los peques descubren los libros con todos los sentidos: señalan, repiten palabras y piden la misma historia una y otra vez. Cuando el protagonista se parece a ellos y lleva su nombre, esa conexión se multiplica. Reconocerse en las ilustraciones es uno de los primeros chispazos que encienden el amor por la lectura.",
+          "Adaptamos la historia a estas primeras edades, con escenas claras y una narración cercana, ideal para leer en voz alta antes de dormir. Personalizamos el cuento con su nombre, su color de pelo y de ojos, su tono de piel y su peinado, para que se reconozca de inmediato. Un libro robusto, sobre papel crema de 170g, hecho para pasar muchas manos pequeñas."
+        ],
+        "benefitsHeading": "Lo que hace especial a esta edad",
+        "benefits": [
+          "Reconocerse despierta el amor por la lectura",
+          "Escenas claras, ideales para leer en voz alta",
+          "Su nombre y su rostro en cada página"
+        ]
+      },
+      "5-7": {
+        "metaTitle": "Cuento personalizado para 5, 6 y 7 años",
+        "metaDescription": "Justo cuando empieza a leer solo, verse como héroe de su propio cuento lo motiva. Reconoce su nombre y quiere seguir leyendo. Créalo hoy.",
+        "h1": "Cuento personalizado para niños de 5 a 7 años",
+        "heroIntro": "Es la edad en la que empiezan a leer por su cuenta. Nada motiva más que descubrir que el héroe del libro lleva su propio nombre.",
+        "bodyHeading": "Por qué un cuento personalizado para niños de 5 a 7 años",
+        "bodyParagraphs": [
+          "Entre los 5 y los 7 años los niños dan el gran salto: empiezan a leer solos. En ese momento, la motivación lo es todo. Cuando reconocen su nombre en la página y entienden que ellos son el héroe de la historia, leer deja de ser una tarea y se convierte en un juego que quieren repetir. Es el empujón perfecto para los primeros lectores.",
+          "Creamos una aventura a su medida, con una historia que entienden y disfrutan a esta edad, y los protagonizan ellos: su nombre, su aspecto y los detalles que eligen, como su mascota o aquello que sueñan ser de mayores. Verán su propia cara en 12 escenas ilustradas a doble página, en un libro hecho para releer una y otra vez."
+        ],
+        "benefitsHeading": "Lo que hace especial a esta edad",
+        "benefits": [
+          "Motiva a los que empiezan a leer solos",
+          "Reconocer su nombre convierte la lectura en juego",
+          "El héroe de la historia es él mismo"
+        ]
+      },
+      "8-12": {
+        "metaTitle": "Libro personalizado para niños de 8 a 12 años",
+        "metaDescription": "Aventuras con más profundidad y valores para lectores seguros. La magia de ser el protagonista, también a partir de los 8 años. Descúbrelo.",
+        "h1": "Libro personalizado para niños de 8 a 12 años",
+        "heroIntro": "A partir de los 8 años buscan historias con más enjundia. Un libro donde son los protagonistas mantiene viva la emoción de leer.",
+        "bodyHeading": "Por qué un libro personalizado para niños de 8 a 12 años",
+        "bodyParagraphs": [
+          "Los lectores de 8 a 12 años ya leen con soltura y piden historias más ricas: aventuras con giros, retos que superar y valores con los que crecer. A esta edad, la personalización deja de ser un detalle infantil para convertirse en algo especial: verse a uno mismo como protagonista de una aventura bien construida sigue teniendo magia, incluso para los más mayores.",
+          "Construimos una historia con más profundidad y matices, adaptada a su edad, en la que ellos toman el papel central con su nombre, su aspecto y los detalles que los definen. El resultado es un libro de 20×20 cm con encuadernación cosida y papel de calidad, un objeto del que sentirse orgulloso y que conservar mucho más allá de la infancia."
+        ],
+        "benefitsHeading": "Lo que hace especial a esta edad",
+        "benefits": [
+          "Aventuras con más profundidad y valores",
+          "La magia de protagonizar, también de mayores",
+          "Un libro del que sentirse orgulloso"
+        ]
+      }
+    },
+    "themes": {
+      "dinosaurs": {
+        "metaTitle": "Cuento personalizado de dinosaurios para niños",
+        "metaDescription": "Tu peque viaja a la era de los dinosaurios en una aventura de valentía y curiosidad, como auténtico protagonista. Crea su cuento de dinosaurios.",
+        "h1": "Cuento personalizado de dinosaurios",
+        "heroIntro": "Un viaje en el tiempo hasta la era de los dinosaurios, con tu hijo como explorador valiente que recorre un mundo perdido.",
+        "bodyHeading": "Una aventura entre dinosaurios protagonizada por tu peque",
+        "bodyParagraphs": [
+          "Pocos temas despiertan tanto la imaginación de los niños como los dinosaurios. En este cuento, tu peque viaja en el tiempo hasta la era de los grandes reptiles y se adentra en un mundo de selvas, huellas gigantes y criaturas asombrosas. Una historia que celebra la curiosidad y la valentía de quien se atreve a explorar lo desconocido.",
+          "Lo convertimos a él en el protagonista de la aventura: su nombre, su aspecto y los detalles que lo hacen único aparecen en la historia y en las 12 escenas ilustradas a doble página. Si quiere, su mascota o su sueño de mayor también forman parte del viaje. Una edición única que ningún otro pequeño explorador tendrá."
+        ],
+        "benefitsHeading": "Lo que hace especial este cuento",
+        "benefits": [
+          "Un viaje en el tiempo a la era de los dinosaurios",
+          "Celebra la valentía y la curiosidad",
+          "Tu peque, protagonista de cada escena"
+        ]
+      },
+      "space": {
+        "metaTitle": "Cuento personalizado del espacio y astronautas",
+        "metaDescription": "Tu peque se convierte en astronauta y viaja a las estrellas y planetas desconocidos. Una aventura espacial donde él es el protagonista. Créala.",
+        "h1": "Cuento personalizado del espacio: tu peque, astronauta",
+        "heroIntro": "Un viaje a las estrellas y a planetas por descubrir, con tu hijo convertido en astronauta de su propia misión.",
+        "bodyHeading": "Una aventura por el espacio protagonizada por tu peque",
+        "bodyParagraphs": [
+          "El cielo nocturno está lleno de preguntas, y este cuento las convierte en una aventura. Tu peque se enfunda el traje de astronauta y despega rumbo a las estrellas, atravesando galaxias y descubriendo planetas que nadie había visto antes. Una historia que alimenta la curiosidad por el universo y las ganas de explorar lo que hay más allá.",
+          "Él es el centro de la misión: personalizamos la historia y las ilustraciones con su nombre, su aspecto y los detalles que elija, para que se reconozca surcando el espacio en cada una de las 12 escenas a doble página. Un libro impreso de 20×20 cm, una edición única para el pequeño explorador de las estrellas de la casa."
+        ],
+        "benefitsHeading": "Lo que hace especial este cuento",
+        "benefits": [
+          "Un viaje a las estrellas y planetas desconocidos",
+          "Tu peque se convierte en astronauta",
+          "Alimenta la curiosidad por el universo"
+        ]
+      },
+      "pirates": {
+        "metaTitle": "Cuento personalizado de piratas para niños",
+        "metaDescription": "A la caza del tesoro por los siete mares: tu peque capitanea su propia aventura pirata como protagonista. Crea su cuento de piratas.",
+        "h1": "Cuento personalizado de piratas",
+        "heroIntro": "Un mapa, un tesoro escondido y los siete mares por delante. Tu hijo se pone al timón de su propia aventura pirata.",
+        "bodyHeading": "Una aventura pirata protagonizada por tu peque",
+        "bodyParagraphs": [
+          "Izad velas: en este cuento, tu peque surca los siete mares en busca de un tesoro escondido. Entre islas misteriosas, mapas antiguos y mares bravos, vive una aventura llena de coraje e ingenio en la que cada decisión lo acerca un poco más al cofre. Una historia de las que se leen conteniendo la respiración hasta la última página.",
+          "Tu hijo es el capitán indiscutible de la historia: su nombre, su aspecto y los detalles que lo hacen único protagonizan la trama y las 12 escenas ilustradas a doble página. Si lo desea, su mascota se enrola también en la tripulación. Una edición irrepetible, impresa sobre papel crema de calidad y encuadernada con costura para que dure."
+        ],
+        "benefitsHeading": "Lo que hace especial este cuento",
+        "benefits": [
+          "A la caza del tesoro por los siete mares",
+          "Tu peque capitanea su propia aventura",
+          "Una edición única encuadernada para durar"
+        ]
+      },
+      "superheroes": {
+        "metaTitle": "Cuento personalizado de superhéroes para niños",
+        "metaDescription": "Tu peque descubre sus poderes ocultos y salva la ciudad en su propia aventura de superhéroe. Una historia sobre el valor de ayudar. Créala.",
+        "h1": "Cuento personalizado de superhéroes",
+        "heroIntro": "Todo niño esconde un héroe dentro. Este cuento le revela sus superpoderes y lo lanza a salvar la ciudad.",
+        "bodyHeading": "Una aventura de superhéroe protagonizada por tu peque",
+        "bodyParagraphs": [
+          "En este cuento, tu peque descubre que tiene superpoderes ocultos y debe usarlos para salvar la ciudad. Más allá de la acción y la emoción, la historia pone el foco en algo que de verdad importa: el valor de ayudar a los demás, ser valiente y hacer lo correcto incluso cuando cuesta. Un héroe no se mide por su capa, sino por lo que decide hacer.",
+          "Lo convertimos a él en el protagonista absoluto: su nombre, su rostro y los detalles que lo definen aparecen en la trama y en las 12 escenas ilustradas a doble página. Verse a uno mismo con poderes, salvando el día, es una experiencia que refuerza su confianza. Una edición única, pensada para releerse y para sentirse el héroe de su propia historia."
+        ],
+        "benefitsHeading": "Lo que hace especial este cuento",
+        "benefits": [
+          "Descubre sus superpoderes y salva la ciudad",
+          "Transmite el valor de ayudar y ser valiente",
+          "Refuerza su confianza viéndose como héroe"
+        ]
+      },
+      "magic-forest": {
+        "metaTitle": "Cuento personalizado del bosque mágico",
+        "metaDescription": "Secretos entre árboles centenarios y criaturas fantásticas: tu peque protagoniza su aventura en el bosque mágico. Crea su cuento.",
+        "h1": "Cuento personalizado del bosque mágico",
+        "heroIntro": "Entre árboles centenarios y senderos escondidos vive un mundo de criaturas fantásticas, y tu hijo es quien descubre sus secretos.",
+        "bodyHeading": "Una aventura en el bosque mágico protagonizada por tu peque",
+        "bodyParagraphs": [
+          "Hay bosques que guardan secretos entre sus raíces. En este cuento, tu peque se adentra en uno de ellos: un lugar de árboles centenarios, luz tamizada entre las hojas y criaturas fantásticas que solo se muestran a quien sabe mirar. Una aventura delicada y llena de asombro, donde la naturaleza es tan protagonista como la magia.",
+          "Tu hijo recorre ese mundo encantado como protagonista de la historia: personalizamos la trama y las 12 escenas ilustradas a doble página con su nombre, su aspecto y los detalles que elija. Si quiere, su mascota lo acompaña entre los árboles. El resultado es un libro impreso sobre papel crema de calidad, una edición única para soñar despierto."
+        ],
+        "benefitsHeading": "Lo que hace especial este cuento",
+        "benefits": [
+          "Secretos entre árboles centenarios",
+          "Criaturas fantásticas en un mundo encantado",
+          "Tu peque descubre la magia del bosque"
+        ]
+      },
+      "safari": {
+        "metaTitle": "Cuento personalizado de safari y animales",
+        "metaDescription": "Tu peque explora la sabana africana entre leones y elefantes en su propia aventura de safari. Una historia con los animales que adora. Créala.",
+        "h1": "Cuento personalizado de safari",
+        "heroIntro": "Rumbo a la sabana africana, entre leones, elefantes y jirafas. Tu hijo se convierte en explorador de su propio safari.",
+        "bodyHeading": "Una aventura de safari protagonizada por tu peque",
+        "bodyParagraphs": [
+          "La sabana africana al amanecer es uno de los escenarios más asombrosos del planeta, y en este cuento tu peque lo recorre de cerca. Entre manadas de elefantes, leones que descansan a la sombra y jirafas que asoman sobre las acacias, vive una aventura que despierta el amor por los animales y el respeto por la naturaleza salvaje.",
+          "Él es el explorador protagonista: su nombre, su aspecto y los detalles que lo hacen único forman parte de la historia y de las 12 escenas ilustradas a doble página. Una aventura ideal para los pequeños que adoran los animales, impresa sobre papel crema certificado FSC y encuadernada con costura. Una edición única para llevarse de safari sin salir de casa."
+        ],
+        "benefitsHeading": "Lo que hace especial este cuento",
+        "benefits": [
+          "Explora la sabana entre leones y elefantes",
+          "Despierta el amor por los animales",
+          "Perfecto para los peques que adoran la naturaleza"
+        ]
+      }
+    },
+    "nav": {
+      "giftHeading": "Regalos por ocasión",
+      "ageHeading": "Cuentos por edad",
+      "gifts": {
+        "three-kings": "Reyes Magos",
+        "sant-jordi": "Sant Jordi",
+        "birthday": "Cumpleaños",
+        "communion": "Comunión",
+        "christmas": "Navidad",
+        "baptism": "Bautizo",
+        "end-of-school": "Fin de curso",
+        "name-day": "El santo",
+        "graduation": "Graduación",
+        "first-birthday": "Primer cumpleaños"
+      },
+      "ages": {
+        "2-4": "2-4 años",
+        "5-7": "5-7 años",
+        "8-12": "8-12 años"
+      },
+      "themes": {
+        "dinosaurs": "Dinosaurios",
+        "space": "Espacio",
+        "pirates": "Piratas",
+        "superheroes": "Superhéroes",
+        "magic-forest": "Bosque mágico",
+        "safari": "Safari"
+      },
+      "themeHeading": "Cuentos por temática"
+    },
+    "hubs": {
+      "gifts": {
+        "metaTitle": "Regalos personalizados para niños | Meapica",
+        "metaDescription": "Cuentos personalizados para cada ocasión: Reyes, Sant Jordi, cumpleaños, comunión y Navidad. El regalo donde tu hijo es el protagonista.",
+        "h1": "Regalos personalizados para niños, para cada ocasión",
+        "intro": "Un cuento donde tu hijo es el héroe es el regalo que se recuerda. Elige la ocasión y crea una edición única, impresa y pensada para guardar toda la vida."
+      },
+      "ages": {
+        "metaTitle": "Cuentos personalizados por edad | Meapica",
+        "metaDescription": "Cuentos personalizados adaptados a cada edad, de los 2 a los 12 años. Historias e ilustraciones donde tu hijo es el protagonista.",
+        "h1": "Cuentos personalizados por edad",
+        "intro": "Cada edad pide su historia. Elige la franja de tu hijo y descubre cuentos pensados para su momento lector, siempre con él como protagonista."
+      },
+      "themes": {
+        "metaTitle": "Cuentos personalizados por temática | Meapica",
+        "metaDescription": "Dinosaurios, espacio, piratas, superhéroes y más. Elige la aventura favorita de tu hijo y conviértelo en su protagonista.",
+        "h1": "Cuentos personalizados por temática",
+        "intro": "Dinosaurios, estrellas, mares o bosques mágicos. Elige el mundo que más le fascina y crea un cuento único donde tu hijo vive la aventura."
+      }
+    }
+  },
   "metadata": {
     "title": "Meapica — Historias Reales para Tocar",
     "description": "Recupera la magia de pasar las páginas. Cuentos personalizados impresos en papel de alta calidad, diseñados para crear momentos de conexión real.",
@@ -26,7 +415,9 @@
     "titleHighlight": "más historias",
     "titleEnd": "para tocar",
     "description": "Recupera la magia de pasar las páginas. Cuentos personalizados impresos en papel de alta calidad, diseñados para crear momentos de conexión real, lejos del brillo de las tablets.",
-    "cta": "Personalizar libro físico",
+    "cta": "Crear mi cuento",
+    "priceFrom": "Desde {price}",
+    "priceNote": "Libro impreso + versión digital incluida",
     "secondaryCta": "Ver calidad del papel",
     "fscPaper": "Papel certificado FSC",
     "artisanalShipping": "Envío artesanal",
@@ -107,27 +498,6 @@
     "descriptionEnd": "del personaje principal, hoja de pegatinas mate y marcapáginas de madera.",
     "cta": "Añadir extras físicos (+12.90€)",
     "imageCaption": "El regalo perfecto"
-  },
-  "testimonials": {
-    "title": "Familias Desconectadas",
-    "subtitle": "Lo que dicen los padres que han elegido papel sobre píxeles.",
-    "reviews": {
-      "laura": {
-        "name": "Laura M.",
-        "subtitle": "Compró \"El Bosque Mágico\"",
-        "text": "Por fin algo que no necesita cargador. La calidad del libro es impresionante, parece sacado de una librería antigua pero con mi hijo dentro."
-      },
-      "carlos": {
-        "name": "Carlos R.",
-        "subtitle": "Compró Pack Premium",
-        "text": "El olor a libro nuevo cuando abrimos la caja fue increíble. Los detalles físicos como la carta extra le dieron un toque mágico real."
-      },
-      "marta": {
-        "name": "Marta P.",
-        "subtitle": "Compró \"Piratas del Mar\"",
-        "text": "Mi hija de 4 años me lo pide cada noche. Ver su nombre y su cara en cada página le hizo una ilusión que ningún juguete digital ha conseguido jamás."
-      }
-    }
   },
   "collectionOffer": {
     "badge": "Biblioteca Personal",
@@ -341,28 +711,15 @@
       "saveAndExit": "Guardar y salir",
       "step": "Paso {current} de {total}",
       "regenerateTooltip": "Cambiar retrato",
-      "years": "años"
+      "years": "años",
+      "stepCharacter": "Personaje",
+      "stepAdventure": "Aventura",
+      "stepDedication": "Dedicatoria"
     },
     "footer": {
       "back": "Atrás",
       "next": "Siguiente",
       "saving": "Guardando..."
-    },
-    "step1": {
-      "title": "¿Cómo quieres crear esta aventura?",
-      "subtitle": "Tú decides: prepáralo como sorpresa o vivirlo juntos como una experiencia familiar.",
-      "solo": {
-        "title": "Lo preparo como sorpresa",
-        "subtitle": "Regalo Secreto",
-        "description": "Diseña el cuento en secreto mientras tu hijo duerme. Tú controlas cada detalle: la historia, las ilustraciones y el mensaje especial que encontrará impreso.",
-        "imageAlt": "Padre o madre preparando un libro sorpresa en el ordenador"
-      },
-      "juntos": {
-        "title": "Lo creamos juntos",
-        "subtitle": "Experiencia Familiar",
-        "description": "Una experiencia para disfrutar en familia. Siéntate con tu hijo y tomad las decisiones juntos: qué aventura vivir, qué personajes incluir y cómo termina la historia.",
-        "imageAlt": "Padre, madre e hijo creando juntos en una tablet"
-      }
     },
     "step2": {
       "title": "Crea a tu pequeño héroe",
@@ -407,6 +764,10 @@
     "portraitReveal": {
       "generating": "Creando a {name}...",
       "generatingSubtitle": "Estamos dando vida a tu personaje tal como lo has descrito",
+      "step1": "Mezclando los colores de la acuarela…",
+      "step2": "Dibujando su mirada y su sonrisa…",
+      "step3": "Peinando cada mechón de pelo…",
+      "step4": "Añadiendo el toque de magia final…",
       "revealTitle": "Este es {name}",
       "revealTitleFemale": "Esta es {name}",
       "revealSubtitle": "Tal como lo has descrito. Ahora elige su aventura.",
@@ -419,54 +780,6 @@
       "regenerateTooltip": "Generar un nuevo retrato",
       "rateLimitError": "Has generado demasiados retratos. Inténtalo de nuevo en una hora."
     },
-    "step3": {
-      "title": "¿Qué aventura vivirá {name}?",
-      "titleJuntos": "¿Qué aventura quieres vivir, {name}?",
-      "subtitle": "Selecciona una historia mágica para comenzar el viaje. Cada cuento está diseñado para despertar su imaginación.",
-      "subtitleJuntos": "Elige tu aventura favorita. ¡Tú decides qué historia contará este libro!",
-      "recommendedFor": "Para {name}",
-      "recommended": "Top",
-      "defaultName": "tu héroe",
-      "filterAll": "Todas"
-    },
-    "step4": {
-      "solo": {
-        "title": "El Libro de las Mil Decisiones",
-        "subtitle": "Personaliza los detalles de la historia de <highlight>{name}</highlight> y observa cómo cambia la magia.",
-        "defaultName": "tu héroe",
-        "companionTab": "Compañero",
-        "atmosphereTab": "Atmósfera",
-        "twistTab": "El Giro",
-        "timeOfDay": "Momento del día",
-        "setting": "Escenario",
-        "chapter": "Capítulo 1",
-        "storyStart": "Había una vez un pequeño explorador llamado",
-        "storyLived": "que vivía al borde de lo desconocido.",
-        "skyShowed": "El cielo mostraba un",
-        "notAlone": "o iba solo, su fiel",
-        "followedClose": "lo seguía de cerca.",
-        "unknownAfternoon": "Una tarde, decidió adentrarse en lo desconocido...",
-        "wouldFace": "Lo que no sabían era que pronto se enfrentarían a",
-        "settingLabel": "Escenario:",
-        "page": "Página",
-        "specialMomentLabel": "¿Hay algún momento especial que quieras incluir?",
-        "specialMomentPlaceholder": "Ej: Que supere su miedo a la oscuridad, que comparta con su hermana, que aprenda a ser valiente...",
-        "specialMomentHint": "Incluiremos este momento en la historia de forma natural.",
-        "storyPreview": "Vista previa",
-        "yourStory": "Tu historia hasta ahora",
-        "notChosen": "Sin elegir",
-        "companionContext": "¿Quién acompañará a {name} en su aventura? Este personaje aparecerá en los momentos clave del cuento y en las ilustraciones.",
-        "atmosphereContext": "Elige el momento del día y el escenario. Esto da forma al tono emocional y al estilo visual de cada ilustración.",
-        "twistContext": "Todo gran cuento tiene un desafío. Esto define el arco emocional y la lección que {name} aprenderá durante la historia.",
-        "nextTooltipPrefix": "Falta completar"
-      },
-      "juntos": {
-        "defaultName": "el héroe",
-        "chooseNext": "¡Elige el siguiente paso de la historia!",
-        "decision": "Decisión {current} de {total}",
-        "nextDecision": "Siguiente decisión"
-      }
-    },
     "step5": {
       "title": "El Gran Final",
       "subtitle": "¿Cómo quieres que termine la aventura de <highlight>{name}</highlight>? Tú tienes la última palabra.",
@@ -475,8 +788,8 @@
       "defaultName": "tu héroe",
       "dedicationLabel": "Dedicatoria",
       "dedicationLabelSolo": "Tu mensaje secreto",
-      "dedicationPlaceholder": "Querido {name},\nEscribí este cuento para recordarte que siempre puedes alcanzar las estrellas.\nCon amor, Mamá.",
-      "dedicationPlaceholderSolo": "Querido {name},\nEste libro lo creé pensando en ti, en tu curiosidad y en esa sonrisa que ilumina todo.\nCon todo mi amor.",
+      "dedicationPlaceholder": "Para {name},\nEscribí este cuento para recordarte que siempre puedes alcanzar las estrellas.\nCon amor, Mamá.",
+      "dedicationPlaceholderSolo": "Para {name},\nEste libro lo creé pensando en ti, en tu curiosidad y en esa sonrisa que ilumina todo.\nCon todo mi amor.",
       "senderPlaceholder": "Tu nombre (ej: Mamá, Papá, Abuela...)",
       "adventureOf": "La aventura de {name}",
       "createMyStory": "Crear mi cuento",
@@ -543,6 +856,9 @@
       "lockedDescription": "Desbloquea el cuento completo para descubrir cómo sigue la historia.",
       "lockedCta": "Desbloquear cuento",
       "expandPage": "Ver a pantalla completa",
+      "freshTitle": "¡El cuento de {name} está listo!",
+      "freshSubtitle": "Pasa las páginas y descubre su aventura…",
+      "freshSkip": "Continuar a la vista previa",
       "downloadPdf": "Descargar PDF completo",
       "generatingPdf": "Generando PDF...",
       "downloadHint": "Descarga el cuento completo en formato PDF",
@@ -571,6 +887,30 @@
       "companion": "Compañero",
       "interests": "Le encanta",
       "colophonText": "Este libro ha sido creado con amor por Meapica. Cada historia es única, escrita e ilustrada especialmente para su protagonista. Porque cada niño merece ser el héroe de su propia aventura."
+    },
+    "path": {
+      "title": "El camino de {name}",
+      "subtitle": "Decide paso a paso su aventura, como un libro donde tú eliges el futuro.",
+      "chapter": "Capítulo {n}",
+      "worldChapter": "El comienzo",
+      "protagonist": "Protagonista",
+      "worldLabel": "El mundo",
+      "worldQuestion": "¿Dónde empieza la aventura de {name}?",
+      "ambientLabel": "El ambiente",
+      "timeQuestion": "¿En qué momento transcurre todo?",
+      "settingQuestion": "¿En qué rincón de este mundo?",
+      "change": "cambiar",
+      "edit": "editar",
+      "nextHint": "y después…",
+      "finishCta": "Continuar",
+      "backToStart": "Volver",
+      "recommendedBadge": "Recomendado",
+      "worldRecommendHint": "Hemos destacado las mejores para {name} según su edad y sus gustos.",
+      "completeChapter": "Camino completo",
+      "completeTitle": "¡El camino de {name} está trazado!",
+      "completeSubtitle": "Cada decisión que has tomado dará forma a su historia. Solo falta el toque final: tu dedicatoria.",
+      "completeCta": "Escribir la dedicatoria",
+      "trailLabel": "El camino de la aventura"
     }
   },
   "checkout": {
@@ -857,21 +1197,48 @@
         "decisions": {
           "encounter": {
             "question": "¿Qué descubre {name} en el planeta desconocido?",
-            "robot": { "title": "Robot Amigable", "subtitle": "Beep boop, ¿quieres ser mi amigo?" },
-            "crystal": { "title": "Cristal Luminoso", "subtitle": "Brilla con los colores del arcoíris" },
-            "ship": { "title": "Nave Abandonada", "subtitle": "¿Quién la dejó aquí?" }
+            "robot": {
+              "title": "Robot Amigable",
+              "subtitle": "Beep boop, ¿quieres ser mi amigo?"
+            },
+            "crystal": {
+              "title": "Cristal Luminoso",
+              "subtitle": "Brilla con los colores del arcoíris"
+            },
+            "ship": {
+              "title": "Nave Abandonada",
+              "subtitle": "¿Quién la dejó aquí?"
+            }
           },
           "companion": {
             "question": "¿Quién acompaña a {name} en esta misión espacial?",
-            "alien": { "title": "Alien Simpático", "subtitle": "Tiene tres ojos y una sonrisa enorme" },
-            "copilot-robot": { "title": "Robot Copiloto", "subtitle": "El mejor navegante de la galaxia" },
-            "star": { "title": "Estrella Guía", "subtitle": "Una estrellita que habla y señala el camino" }
+            "alien": {
+              "title": "Alien Simpático",
+              "subtitle": "Tiene tres ojos y una sonrisa enorme"
+            },
+            "copilot-robot": {
+              "title": "Robot Copiloto",
+              "subtitle": "El mejor navegante de la galaxia"
+            },
+            "star": {
+              "title": "Estrella Guía",
+              "subtitle": "Una estrellita que habla y señala el camino"
+            }
           },
           "challenge": {
             "question": "¿Qué peligro aparece en la misión de {name}?",
-            "asteroids": { "title": "Tormenta de Asteroides", "subtitle": "¡Esquiva y vuela!" },
-            "shrinking-planet": { "title": "Planeta que se Encoge", "subtitle": "¡Hay que salvar a los habitantes!" },
-            "black-hole": { "title": "Agujero Negro Travieso", "subtitle": "¡Absorbe todo lo divertido!" }
+            "asteroids": {
+              "title": "Tormenta de Asteroides",
+              "subtitle": "¡Esquiva y vuela!"
+            },
+            "shrinking-planet": {
+              "title": "Planeta que se Encoge",
+              "subtitle": "¡Hay que salvar a los habitantes!"
+            },
+            "black-hole": {
+              "title": "Agujero Negro Travieso",
+              "subtitle": "¡Absorbe todo lo divertido!"
+            }
           }
         },
         "atmosphere": {
@@ -887,9 +1254,18 @@
           }
         },
         "endings": {
-          "triumphant-return": { "title": "Regreso Triunfal", "description": "Vuelve a la Tierra con un regalo del espacio y una historia increíble que contar." },
-          "galactic-party": { "title": "Fiesta Intergaláctica", "description": "Todos los amigos alienígenas celebran con música cósmica y comida de estrellas." },
-          "stargazing": { "title": "Acampada Estelar", "description": "Se tumba en un planeta suave a mirar las constelaciones y recordar la aventura." }
+          "triumphant-return": {
+            "title": "Regreso Triunfal",
+            "description": "Vuelve a la Tierra con un regalo del espacio y una historia increíble que contar."
+          },
+          "galactic-party": {
+            "title": "Fiesta Intergaláctica",
+            "description": "Todos los amigos alienígenas celebran con música cósmica y comida de estrellas."
+          },
+          "stargazing": {
+            "title": "Acampada Estelar",
+            "description": "Se tumba en un planeta suave a mirar las constelaciones y recordar la aventura."
+          }
         }
       },
       "forest": {
@@ -900,21 +1276,48 @@
         "decisions": {
           "encounter": {
             "question": "¿Qué encuentra {name} entre los árboles?",
-            "dragon": { "title": "Dragón Dormido", "subtitle": "Zzz... bajo el árbol antiguo" },
-            "treasure": { "title": "Cofre Mágico", "subtitle": "¡Lleno de polvo de hadas!" },
-            "door": { "title": "Puerta Secreta", "subtitle": "¿A dónde llevará?" }
+            "dragon": {
+              "title": "Dragón Dormido",
+              "subtitle": "Zzz... bajo el árbol antiguo"
+            },
+            "treasure": {
+              "title": "Cofre Mágico",
+              "subtitle": "¡Lleno de polvo de hadas!"
+            },
+            "door": {
+              "title": "Puerta Secreta",
+              "subtitle": "¿A dónde llevará?"
+            }
           },
           "companion": {
             "question": "¿Quién acompaña a {name} en el bosque?",
-            "fox": { "title": "Zorro Sabio", "subtitle": "Conoce todos los secretos del bosque" },
-            "fairy": { "title": "Hada Traviesa", "subtitle": "Pequeñita pero llena de magia" },
-            "owl": { "title": "Búho Anciano", "subtitle": "Ha visto pasar mil lunas" }
+            "fox": {
+              "title": "Zorro Sabio",
+              "subtitle": "Conoce todos los secretos del bosque"
+            },
+            "fairy": {
+              "title": "Hada Traviesa",
+              "subtitle": "Pequeñita pero llena de magia"
+            },
+            "owl": {
+              "title": "Búho Anciano",
+              "subtitle": "Ha visto pasar mil lunas"
+            }
           },
           "challenge": {
             "question": "¿Qué obstáculo aparece en el camino de {name}?",
-            "river": { "title": "Río Crecido", "subtitle": "El agua sube y no hay puente" },
-            "fog": { "title": "Niebla Encantada", "subtitle": "No se ve nada... ¿o sí?" },
-            "talking-tree": { "title": "Árbol Parlante", "subtitle": "Pide algo a cambio de dejar pasar" }
+            "river": {
+              "title": "Río Crecido",
+              "subtitle": "El agua sube y no hay puente"
+            },
+            "fog": {
+              "title": "Niebla Encantada",
+              "subtitle": "No se ve nada... ¿o sí?"
+            },
+            "talking-tree": {
+              "title": "Árbol Parlante",
+              "subtitle": "Pide algo a cambio de dejar pasar"
+            }
           }
         },
         "atmosphere": {
@@ -930,9 +1333,18 @@
           }
         },
         "endings": {
-          "clearing-celebration": { "title": "Fiesta en el Claro", "description": "Todas las criaturas del bosque celebran con música y baile entre luciérnagas." },
-          "magic-seed": { "title": "La Semilla Mágica", "description": "El bosque regala una semilla especial para plantar en casa y recordar la aventura." },
-          "moss-rest": { "title": "Descanso en el Musgo", "description": "Se tumba en un lecho de musgo a escuchar los susurros del bosque bajo las estrellas." }
+          "clearing-celebration": {
+            "title": "Fiesta en el Claro",
+            "description": "Todas las criaturas del bosque celebran con música y baile entre luciérnagas."
+          },
+          "magic-seed": {
+            "title": "La Semilla Mágica",
+            "description": "El bosque regala una semilla especial para plantar en casa y recordar la aventura."
+          },
+          "moss-rest": {
+            "title": "Descanso en el Musgo",
+            "description": "Se tumba en un lecho de musgo a escuchar los susurros del bosque bajo las estrellas."
+          }
         }
       },
       "superhero": {
@@ -943,21 +1355,48 @@
         "decisions": {
           "encounter": {
             "question": "¿Qué despierta los superpoderes de {name}?",
-            "mask": { "title": "Máscara Misteriosa", "subtitle": "Aparece de la nada con un brillo especial" },
-            "help-call": { "title": "Llamada de Auxilio", "subtitle": "¡Alguien necesita ayuda urgente!" },
-            "power-ray": { "title": "Rayo de Poder", "subtitle": "Un destello que cambia todo" }
+            "mask": {
+              "title": "Máscara Misteriosa",
+              "subtitle": "Aparece de la nada con un brillo especial"
+            },
+            "help-call": {
+              "title": "Llamada de Auxilio",
+              "subtitle": "¡Alguien necesita ayuda urgente!"
+            },
+            "power-ray": {
+              "title": "Rayo de Poder",
+              "subtitle": "Un destello que cambia todo"
+            }
           },
           "companion": {
             "question": "¿Quién es el compañero de equipo de {name}?",
-            "hero-dog": { "title": "Perro Superhéroe", "subtitle": "¡Con capa y todo!" },
-            "best-friend": { "title": "Mejor Amigo/a", "subtitle": "Juntos son un equipo imparable" },
-            "helper-robot": { "title": "Robot Ayudante", "subtitle": "Tiene herramientas para todo" }
+            "hero-dog": {
+              "title": "Perro Superhéroe",
+              "subtitle": "¡Con capa y todo!"
+            },
+            "best-friend": {
+              "title": "Mejor Amigo/a",
+              "subtitle": "Juntos son un equipo imparable"
+            },
+            "helper-robot": {
+              "title": "Robot Ayudante",
+              "subtitle": "Tiene herramientas para todo"
+            }
           },
           "challenge": {
             "question": "¿Qué villano amenaza la ciudad de {name}?",
-            "shadow": { "title": "El Villano Sombra", "subtitle": "Quiere apagar todas las luces de la ciudad" },
-            "storm": { "title": "Tormenta Caótica", "subtitle": "El clima se ha vuelto loco" },
-            "laugh-thief": { "title": "El Ladrón de Risas", "subtitle": "¡Nadie puede reír!" }
+            "shadow": {
+              "title": "El Villano Sombra",
+              "subtitle": "Quiere apagar todas las luces de la ciudad"
+            },
+            "storm": {
+              "title": "Tormenta Caótica",
+              "subtitle": "El clima se ha vuelto loco"
+            },
+            "laugh-thief": {
+              "title": "El Ladrón de Risas",
+              "subtitle": "¡Nadie puede reír!"
+            }
           }
         },
         "atmosphere": {
@@ -973,9 +1412,18 @@
           }
         },
         "endings": {
-          "hero-parade": { "title": "Desfile Heroico", "description": "La ciudad celebra con un gran desfile y todos gritan el nombre del héroe." },
-          "secret-identity": { "title": "Identidad Secreta", "description": "Se quita la capa, sonríe, y vuelve a ser simplemente {name}." },
-          "hero-feast": { "title": "Banquete de Héroes", "description": "Todos los personajes salvados preparan una fiesta sorpresa de agradecimiento." }
+          "hero-parade": {
+            "title": "Desfile Heroico",
+            "description": "La ciudad celebra con un gran desfile y todos gritan el nombre del héroe."
+          },
+          "secret-identity": {
+            "title": "Identidad Secreta",
+            "description": "Se quita la capa, sonríe, y vuelve a ser simplemente {name}."
+          },
+          "hero-feast": {
+            "title": "Banquete de Héroes",
+            "description": "Todos los personajes salvados preparan una fiesta sorpresa de agradecimiento."
+          }
         }
       },
       "pirates": {
@@ -986,21 +1434,48 @@
         "decisions": {
           "encounter": {
             "question": "¿Qué descubre {name} en la isla misteriosa?",
-            "treasure-map": { "title": "Mapa del Tesoro", "subtitle": "¡X marca el lugar!" },
-            "talking-parrot": { "title": "Loro Parlanchín", "subtitle": "Cuenta historias de aventuras pasadas" },
-            "mystery-island": { "title": "Cueva Submarina", "subtitle": "Escondida bajo las olas" }
+            "treasure-map": {
+              "title": "Mapa del Tesoro",
+              "subtitle": "¡X marca el lugar!"
+            },
+            "talking-parrot": {
+              "title": "Loro Parlanchín",
+              "subtitle": "Cuenta historias de aventuras pasadas"
+            },
+            "mystery-island": {
+              "title": "Cueva Submarina",
+              "subtitle": "Escondida bajo las olas"
+            }
           },
           "companion": {
             "question": "¿Quién forma parte de la tripulación de {name}?",
-            "monkey": { "title": "Mono Travieso", "subtitle": "Siempre roba los plátanos del capitán" },
-            "mermaid": { "title": "Sirena Amistosa", "subtitle": "Conoce todos los secretos del mar" },
-            "veteran-pirate": { "title": "Pirata Veterano", "subtitle": "Con parche, pata de palo y corazón de oro" }
+            "monkey": {
+              "title": "Mono Travieso",
+              "subtitle": "Siempre roba los plátanos del capitán"
+            },
+            "mermaid": {
+              "title": "Sirena Amistosa",
+              "subtitle": "Conoce todos los secretos del mar"
+            },
+            "veteran-pirate": {
+              "title": "Pirata Veterano",
+              "subtitle": "Con parche, pata de palo y corazón de oro"
+            }
           },
           "challenge": {
             "question": "¿Qué peligro acecha a la tripulación de {name}?",
-            "kraken": { "title": "Kraken Gigante", "subtitle": "¡Tentáculos por todas partes!" },
-            "sea-storm": { "title": "Tormenta Marina", "subtitle": "Olas enormes y viento feroz" },
-            "sinking-island": { "title": "Isla que se Hunde", "subtitle": "¡Se hunde poco a poco!" }
+            "kraken": {
+              "title": "Kraken Gigante",
+              "subtitle": "¡Tentáculos por todas partes!"
+            },
+            "sea-storm": {
+              "title": "Tormenta Marina",
+              "subtitle": "Olas enormes y viento feroz"
+            },
+            "sinking-island": {
+              "title": "Isla que se Hunde",
+              "subtitle": "¡Se hunde poco a poco!"
+            }
           }
         },
         "atmosphere": {
@@ -1016,9 +1491,18 @@
           }
         },
         "endings": {
-          "true-treasure": { "title": "El Verdadero Tesoro", "description": "Descubren que el verdadero tesoro son los amigos que hicieron en el viaje." },
-          "paradise-island": { "title": "Isla Paradisíaca", "description": "Anclan en una playa de arena dorada para descansar y disfrutar." },
-          "pirate-party": { "title": "Fiesta Pirata", "description": "Gran celebración en el barco con música, baile y pastel de coco." }
+          "true-treasure": {
+            "title": "El Verdadero Tesoro",
+            "description": "Descubren que el verdadero tesoro son los amigos que hicieron en el viaje."
+          },
+          "paradise-island": {
+            "title": "Isla Paradisíaca",
+            "description": "Anclan en una playa de arena dorada para descansar y disfrutar."
+          },
+          "pirate-party": {
+            "title": "Fiesta Pirata",
+            "description": "Gran celebración en el barco con música, baile y pastel de coco."
+          }
         }
       },
       "chef": {
@@ -1029,21 +1513,48 @@
         "decisions": {
           "encounter": {
             "question": "¿Qué descubre {name} en la cocina mágica?",
-            "secret-recipe": { "title": "Receta Secreta", "subtitle": "Un libro viejo con una página que brilla" },
-            "living-ingredient": { "title": "Ingrediente Vivo", "subtitle": "¡La zanahoria puede hablar!" },
-            "enchanted-kitchen": { "title": "Cocina Encantada", "subtitle": "Los utensilios se mueven solos" }
+            "secret-recipe": {
+              "title": "Receta Secreta",
+              "subtitle": "Un libro viejo con una página que brilla"
+            },
+            "living-ingredient": {
+              "title": "Ingrediente Vivo",
+              "subtitle": "¡La zanahoria puede hablar!"
+            },
+            "enchanted-kitchen": {
+              "title": "Cocina Encantada",
+              "subtitle": "Los utensilios se mueven solos"
+            }
           },
           "companion": {
             "question": "¿Quién ayuda a {name} en la cocina?",
-            "singing-spoon": { "title": "Cuchara Cantarina", "subtitle": "Canta mientras remueve la sopa" },
-            "chef-mouse": { "title": "Ratón Chef", "subtitle": "Pequeño pero con un paladar increíble" },
-            "magic-grandma": { "title": "Abuela Mágica", "subtitle": "Sus recetas tienen un ingrediente secreto: amor" }
+            "singing-spoon": {
+              "title": "Cuchara Cantarina",
+              "subtitle": "Canta mientras remueve la sopa"
+            },
+            "chef-mouse": {
+              "title": "Ratón Chef",
+              "subtitle": "Pequeño pero con un paladar increíble"
+            },
+            "magic-grandma": {
+              "title": "Abuela Mágica",
+              "subtitle": "Sus recetas tienen un ingrediente secreto: amor"
+            }
           },
           "challenge": {
             "question": "¿Qué problema surge en la cocina de {name}?",
-            "rebel-ingredients": { "title": "Ingredientes Rebeldes", "subtitle": "¡No quieren entrar en la olla!" },
-            "growing-cake": { "title": "Pastel Gigante", "subtitle": "¡No para de crecer!" },
-            "tiny-kitchen": { "title": "Cocina Diminuta", "subtitle": "¡Todo se hace pequeñito!" }
+            "rebel-ingredients": {
+              "title": "Ingredientes Rebeldes",
+              "subtitle": "¡No quieren entrar en la olla!"
+            },
+            "growing-cake": {
+              "title": "Pastel Gigante",
+              "subtitle": "¡No para de crecer!"
+            },
+            "tiny-kitchen": {
+              "title": "Cocina Diminuta",
+              "subtitle": "¡Todo se hace pequeñito!"
+            }
           }
         },
         "atmosphere": {
@@ -1059,9 +1570,18 @@
           }
         },
         "endings": {
-          "grand-feast": { "title": "Gran Banquete", "description": "Todos prueban la receta mágica y es la más deliciosa del mundo." },
-          "secret-recipe-kept": { "title": "La Receta Secreta", "description": "Guarda la receta en un libro especial para cocinar siempre que quiera." },
-          "cooking-together": { "title": "Todos a Cocinar", "description": "Todos los personajes cocinan juntos la receta más grande del mundo." }
+          "grand-feast": {
+            "title": "Gran Banquete",
+            "description": "Todos prueban la receta mágica y es la más deliciosa del mundo."
+          },
+          "secret-recipe-kept": {
+            "title": "La Receta Secreta",
+            "description": "Guarda la receta en un libro especial para cocinar siempre que quiera."
+          },
+          "cooking-together": {
+            "title": "Todos a Cocinar",
+            "description": "Todos los personajes cocinan juntos la receta más grande del mundo."
+          }
         }
       },
       "dinosaurs": {
@@ -1072,21 +1592,48 @@
         "decisions": {
           "encounter": {
             "question": "¿Qué descubre {name} al llegar a la era de los dinosaurios?",
-            "baby-dino": { "title": "Bebé Dinosaurio", "subtitle": "Se ha perdido y necesita ayuda" },
-            "fossil-portal": { "title": "Portal de Fósiles", "subtitle": "Un círculo de huesos que brilla" },
-            "volcano": { "title": "Volcán Misterioso", "subtitle": "Algo brilla en su interior" }
+            "baby-dino": {
+              "title": "Bebé Dinosaurio",
+              "subtitle": "Se ha perdido y necesita ayuda"
+            },
+            "fossil-portal": {
+              "title": "Portal de Fósiles",
+              "subtitle": "Un círculo de huesos que brilla"
+            },
+            "volcano": {
+              "title": "Volcán Misterioso",
+              "subtitle": "Algo brilla en su interior"
+            }
           },
           "companion": {
             "question": "¿Quién acompaña a {name} en la era prehistórica?",
-            "triceratops": { "title": "Triceratops Amable", "subtitle": "Fuerte, leal y le encanta jugar" },
-            "pterodactyl": { "title": "Pterodáctilo Veloz", "subtitle": "Ve todo desde las alturas" },
-            "cave-child": { "title": "Niño/a de las Cavernas", "subtitle": "Habla con gestos y sonrisas" }
+            "triceratops": {
+              "title": "Triceratops Amable",
+              "subtitle": "Fuerte, leal y le encanta jugar"
+            },
+            "pterodactyl": {
+              "title": "Pterodáctilo Veloz",
+              "subtitle": "Ve todo desde las alturas"
+            },
+            "cave-child": {
+              "title": "Niño/a de las Cavernas",
+              "subtitle": "Habla con gestos y sonrisas"
+            }
           },
           "challenge": {
             "question": "¿Qué peligro amenaza a los dinosaurios de {name}?",
-            "tar-pits": { "title": "Pantanos de Alquitrán", "subtitle": "¡Los dinosaurios quedan atrapados!" },
-            "t-rex": { "title": "T-Rex Enfadado", "subtitle": "Tiene dolor de muelas y gruñe a todos" },
-            "meteor": { "title": "Lluvia de Estrellas", "subtitle": "¡Algo se acerca desde el cielo!" }
+            "tar-pits": {
+              "title": "Pantanos de Alquitrán",
+              "subtitle": "¡Los dinosaurios quedan atrapados!"
+            },
+            "t-rex": {
+              "title": "T-Rex Enfadado",
+              "subtitle": "Tiene dolor de muelas y gruñe a todos"
+            },
+            "meteor": {
+              "title": "Lluvia de Estrellas",
+              "subtitle": "¡Algo se acerca desde el cielo!"
+            }
           }
         },
         "atmosphere": {
@@ -1102,9 +1649,18 @@
           }
         },
         "endings": {
-          "dino-farewell": { "title": "Despedida Jurásica", "description": "Los dinosaurios rugen de alegría al despedirse de su nuevo amigo." },
-          "time-souvenir": { "title": "Recuerdo del Pasado", "description": "Vuelve a casa con un pequeño fósil brillante que guarda la magia del viaje." },
-          "sleeping-under-stars": { "title": "Bajo las Estrellas Antiguas", "description": "Se duerme junto al triceratops mirando el cielo más antiguo del mundo." }
+          "dino-farewell": {
+            "title": "Despedida Jurásica",
+            "description": "Los dinosaurios rugen de alegría al despedirse de su nuevo amigo."
+          },
+          "time-souvenir": {
+            "title": "Recuerdo del Pasado",
+            "description": "Vuelve a casa con un pequeño fósil brillante que guarda la magia del viaje."
+          },
+          "sleeping-under-stars": {
+            "title": "Bajo las Estrellas Antiguas",
+            "description": "Se duerme junto al triceratops mirando el cielo más antiguo del mundo."
+          }
         }
       },
       "castle": {
@@ -1115,21 +1671,48 @@
         "decisions": {
           "encounter": {
             "question": "¿Qué descubre {name} al entrar en el castillo?",
-            "dream-mirror": { "title": "Espejo de Sueños", "subtitle": "Muestra mundos que solo tú puedes ver" },
-            "baby-dragon": { "title": "Dragón Bebé", "subtitle": "Estornuda chispas de colores" },
-            "enchanted-armor": { "title": "Armadura Encantada", "subtitle": "Se mueve sola y quiere ser tu amiga" }
+            "dream-mirror": {
+              "title": "Espejo de Sueños",
+              "subtitle": "Muestra mundos que solo tú puedes ver"
+            },
+            "baby-dragon": {
+              "title": "Dragón Bebé",
+              "subtitle": "Estornuda chispas de colores"
+            },
+            "enchanted-armor": {
+              "title": "Armadura Encantada",
+              "subtitle": "Se mueve sola y quiere ser tu amiga"
+            }
           },
           "companion": {
             "question": "¿Quién acompaña a {name} por el castillo?",
-            "wise-cat": { "title": "Gato del Castillo", "subtitle": "Conoce todos los pasadizos secretos" },
-            "jester": { "title": "Bufón Mágico", "subtitle": "Sus chistes hacen magia de verdad" },
-            "ghost-princess": { "title": "Fantasma Amigable", "subtitle": "Conoce la historia del castillo" }
+            "wise-cat": {
+              "title": "Gato del Castillo",
+              "subtitle": "Conoce todos los pasadizos secretos"
+            },
+            "jester": {
+              "title": "Bufón Mágico",
+              "subtitle": "Sus chistes hacen magia de verdad"
+            },
+            "ghost-princess": {
+              "title": "Fantasma Amigable",
+              "subtitle": "Conoce la historia del castillo"
+            }
           },
           "challenge": {
             "question": "¿Qué amenaza al reino de {name}?",
-            "nightmare-cloud": { "title": "Nube de Pesadillas", "subtitle": "Convierte los sueños en pesadillas" },
-            "frozen-time": { "title": "Tiempo Congelado", "subtitle": "Todo se detiene excepto tú" },
-            "labyrinth": { "title": "Laberinto Cambiante", "subtitle": "Los pasillos se mueven y cambian" }
+            "nightmare-cloud": {
+              "title": "Nube de Pesadillas",
+              "subtitle": "Convierte los sueños en pesadillas"
+            },
+            "frozen-time": {
+              "title": "Tiempo Congelado",
+              "subtitle": "Todo se detiene excepto tú"
+            },
+            "labyrinth": {
+              "title": "Laberinto Cambiante",
+              "subtitle": "Los pasillos se mueven y cambian"
+            }
           }
         },
         "atmosphere": {
@@ -1145,9 +1728,18 @@
           }
         },
         "endings": {
-          "dream-coronation": { "title": "Coronación de Sueños", "description": "El reino celebra con una corona hecha de estrellas y sueños cumplidos." },
-          "dragon-flight": { "title": "Vuelo con el Dragón", "description": "Sobrevuela el reino en el lomo de un dragón amigable al atardecer." },
-          "dream-door": { "title": "La Puerta de los Sueños", "description": "Descubre que puede volver al castillo cada vez que cierre los ojos." }
+          "dream-coronation": {
+            "title": "Coronación de Sueños",
+            "description": "El reino celebra con una corona hecha de estrellas y sueños cumplidos."
+          },
+          "dragon-flight": {
+            "title": "Vuelo con el Dragón",
+            "description": "Sobrevuela el reino en el lomo de un dragón amigable al atardecer."
+          },
+          "dream-door": {
+            "title": "La Puerta de los Sueños",
+            "description": "Descubre que puede volver al castillo cada vez que cierre los ojos."
+          }
         }
       },
       "safari": {
@@ -1158,21 +1750,48 @@
         "decisions": {
           "encounter": {
             "question": "¿Qué descubre {name} en la sabana?",
-            "lion-cub": { "title": "Cachorro de León", "subtitle": "Pequeño, valiente y con mucho sueño" },
-            "baobab-tree": { "title": "Baobab Parlante", "subtitle": "El árbol más viejo cuenta historias" },
-            "watering-hole": { "title": "Oasis Mágico", "subtitle": "Un lugar donde todos los animales son amigos" }
+            "lion-cub": {
+              "title": "Cachorro de León",
+              "subtitle": "Pequeño, valiente y con mucho sueño"
+            },
+            "baobab-tree": {
+              "title": "Baobab Parlante",
+              "subtitle": "El árbol más viejo cuenta historias"
+            },
+            "watering-hole": {
+              "title": "Oasis Mágico",
+              "subtitle": "Un lugar donde todos los animales son amigos"
+            }
           },
           "companion": {
             "question": "¿Quién acompaña a {name} en el safari?",
-            "elephant": { "title": "Elefante Sabio", "subtitle": "Tiene la mejor memoria del mundo" },
-            "meerkat": { "title": "Suricata Exploradora", "subtitle": "Siempre de guardia, siempre alerta" },
-            "giraffe": { "title": "Jirafa Amable", "subtitle": "Ve todo desde muy arriba" }
+            "elephant": {
+              "title": "Elefante Sabio",
+              "subtitle": "Tiene la mejor memoria del mundo"
+            },
+            "meerkat": {
+              "title": "Suricata Exploradora",
+              "subtitle": "Siempre de guardia, siempre alerta"
+            },
+            "giraffe": {
+              "title": "Jirafa Amable",
+              "subtitle": "Ve todo desde muy arriba"
+            }
           },
           "challenge": {
             "question": "¿Qué problema amenaza la sabana de {name}?",
-            "drought": { "title": "Gran Sequía", "subtitle": "El agua se acaba y los animales tienen sed" },
-            "lost-herd": { "title": "Manada Perdida", "subtitle": "Los elefantes no encuentran el camino" },
-            "trapped-animals": { "title": "Animales Atrapados", "subtitle": "Un derrumbe bloquea el paso" }
+            "drought": {
+              "title": "Gran Sequía",
+              "subtitle": "El agua se acaba y los animales tienen sed"
+            },
+            "lost-herd": {
+              "title": "Manada Perdida",
+              "subtitle": "Los elefantes no encuentran el camino"
+            },
+            "trapped-animals": {
+              "title": "Animales Atrapados",
+              "subtitle": "Un derrumbe bloquea el paso"
+            }
           }
         },
         "atmosphere": {
@@ -1188,9 +1807,18 @@
           }
         },
         "endings": {
-          "sunset-gathering": { "title": "Reunión al Atardecer", "description": "Todos los animales se reúnen al atardecer para celebrar con rugidos y cantos." },
-          "baobab-promise": { "title": "La Promesa del Baobab", "description": "Deja una marca en el baobab para recordar siempre la aventura." },
-          "stargazing-savanna": { "title": "Bajo el Cielo Africano", "description": "Se tumba entre los animales a mirar la Vía Láctea sobre la sabana." }
+          "sunset-gathering": {
+            "title": "Reunión al Atardecer",
+            "description": "Todos los animales se reúnen al atardecer para celebrar con rugidos y cantos."
+          },
+          "baobab-promise": {
+            "title": "La Promesa del Baobab",
+            "description": "Deja una marca en el baobab para recordar siempre la aventura."
+          },
+          "stargazing-savanna": {
+            "title": "Bajo el Cielo Africano",
+            "description": "Se tumba entre los animales a mirar la Vía Láctea sobre la sabana."
+          }
         }
       },
       "inventor": {
@@ -1201,21 +1829,48 @@
         "decisions": {
           "encounter": {
             "question": "¿Qué descubre {name} en la fábrica de inventos?",
-            "flying-machine": { "title": "Máquina Voladora", "subtitle": "Hecha de paraguas y engranajes" },
-            "talking-invention": { "title": "Invento Parlante", "subtitle": "¡Se ha inventado a sí mismo!" },
-            "shrink-ray": { "title": "Rayo Miniaturizador", "subtitle": "¡Todo se hace pequeñito!" }
+            "flying-machine": {
+              "title": "Máquina Voladora",
+              "subtitle": "Hecha de paraguas y engranajes"
+            },
+            "talking-invention": {
+              "title": "Invento Parlante",
+              "subtitle": "¡Se ha inventado a sí mismo!"
+            },
+            "shrink-ray": {
+              "title": "Rayo Miniaturizador",
+              "subtitle": "¡Todo se hace pequeñito!"
+            }
           },
           "companion": {
             "question": "¿Quién ayuda a {name} a inventar?",
-            "genius-robot": { "title": "Robot Genio", "subtitle": "Calcula todo pero no entiende los chistes" },
-            "mad-professor": { "title": "Profesor Despistado", "subtitle": "Se olvida de todo menos de inventar" },
-            "creative-spark": { "title": "Chispa Creativa", "subtitle": "Una lucecita que aparece cuando tienes ideas" }
+            "genius-robot": {
+              "title": "Robot Genio",
+              "subtitle": "Calcula todo pero no entiende los chistes"
+            },
+            "mad-professor": {
+              "title": "Profesor Despistado",
+              "subtitle": "Se olvida de todo menos de inventar"
+            },
+            "creative-spark": {
+              "title": "Chispa Creativa",
+              "subtitle": "Una lucecita que aparece cuando tienes ideas"
+            }
           },
           "challenge": {
             "question": "¿Qué problema surge en la fábrica de {name}?",
-            "chain-reaction": { "title": "Reacción en Cadena", "subtitle": "¡Un invento activa todos los demás!" },
-            "imagination-drain": { "title": "Sin Imaginación", "subtitle": "¡Las ideas han desaparecido!" },
-            "time-machine": { "title": "Máquina del Tiempo Rota", "subtitle": "Mezcla pasado, presente y futuro" }
+            "chain-reaction": {
+              "title": "Reacción en Cadena",
+              "subtitle": "¡Un invento activa todos los demás!"
+            },
+            "imagination-drain": {
+              "title": "Sin Imaginación",
+              "subtitle": "¡Las ideas han desaparecido!"
+            },
+            "time-machine": {
+              "title": "Máquina del Tiempo Rota",
+              "subtitle": "Mezcla pasado, presente y futuro"
+            }
           }
         },
         "atmosphere": {
@@ -1231,9 +1886,18 @@
           }
         },
         "endings": {
-          "great-invention": { "title": "El Gran Invento", "description": "Presenta el invento más increíble del mundo: uno que hace feliz a todos." },
-          "inventor-badge": { "title": "Insignia de Inventor", "description": "Recibe la insignia oficial de inventor y un taller propio." },
-          "blueprints": { "title": "Planos del Futuro", "description": "Dibuja los planos de su próximo invento: ¡el más ambicioso hasta ahora!" }
+          "great-invention": {
+            "title": "El Gran Invento",
+            "description": "Presenta el invento más increíble del mundo: uno que hace feliz a todos."
+          },
+          "inventor-badge": {
+            "title": "Insignia de Inventor",
+            "description": "Recibe la insignia oficial de inventor y un taller propio."
+          },
+          "blueprints": {
+            "title": "Planos del Futuro",
+            "description": "Dibuja los planos de su próximo invento: ¡el más ambicioso hasta ahora!"
+          }
         }
       },
       "candy": {
@@ -1244,21 +1908,48 @@
         "decisions": {
           "encounter": {
             "question": "¿Qué descubre {name} en el País de los Dulces?",
-            "chocolate-river": { "title": "Río de Chocolate", "subtitle": "¡Fluye chocolate caliente!" },
-            "candy-garden": { "title": "Jardín de Gominolas", "subtitle": "Flores de piruleta y árboles de regaliz" },
-            "cookie-house": { "title": "Casa de Galleta", "subtitle": "Con tejas de chocolate y puerta de barquillo" }
+            "chocolate-river": {
+              "title": "Río de Chocolate",
+              "subtitle": "¡Fluye chocolate caliente!"
+            },
+            "candy-garden": {
+              "title": "Jardín de Gominolas",
+              "subtitle": "Flores de piruleta y árboles de regaliz"
+            },
+            "cookie-house": {
+              "title": "Casa de Galleta",
+              "subtitle": "Con tejas de chocolate y puerta de barquillo"
+            }
           },
           "companion": {
             "question": "¿Quién acompaña a {name} por el País de los Dulces?",
-            "gummy-bear": { "title": "Osito de Gominola", "subtitle": "Blandito, alegre y muy dulce" },
-            "cookie-baker": { "title": "Pastelera de las Nubes", "subtitle": "Hornea las nubes más esponjosas" },
-            "candy-fairy": { "title": "Hada de Azúcar", "subtitle": "Su varita convierte todo en dulces" }
+            "gummy-bear": {
+              "title": "Osito de Gominola",
+              "subtitle": "Blandito, alegre y muy dulce"
+            },
+            "cookie-baker": {
+              "title": "Pastelera de las Nubes",
+              "subtitle": "Hornea las nubes más esponjosas"
+            },
+            "candy-fairy": {
+              "title": "Hada de Azúcar",
+              "subtitle": "Su varita convierte todo en dulces"
+            }
           },
           "challenge": {
             "question": "¿Qué problema hay en el País de los Dulces de {name}?",
-            "melting-kingdom": { "title": "Reino Derretido", "subtitle": "¡Hace demasiado calor y todo se derrite!" },
-            "sour-invasion": { "title": "Invasión Ácida", "subtitle": "¡Los caramelos ácidos quieren conquistar!" },
-            "sugar-shortage": { "title": "Falta de Azúcar", "subtitle": "¡Los dulces pierden su sabor!" }
+            "melting-kingdom": {
+              "title": "Reino Derretido",
+              "subtitle": "¡Hace demasiado calor y todo se derrite!"
+            },
+            "sour-invasion": {
+              "title": "Invasión Ácida",
+              "subtitle": "¡Los caramelos ácidos quieren conquistar!"
+            },
+            "sugar-shortage": {
+              "title": "Falta de Azúcar",
+              "subtitle": "¡Los dulces pierden su sabor!"
+            }
           }
         },
         "atmosphere": {
@@ -1274,35 +1965,26 @@
           }
         },
         "endings": {
-          "candy-feast": { "title": "Gran Banquete de Dulces", "description": "Todo el reino celebra con la fiesta más dulce jamás vista." },
-          "candy-pocket": { "title": "Bolsillo Mágico", "description": "Vuelve a casa con un bolsillo que siempre tiene el dulce perfecto." },
-          "sweet-dreams": { "title": "Dulces Sueños", "description": "Se duerme en una cama de algodón de azúcar soñando con volver." }
+          "candy-feast": {
+            "title": "Gran Banquete de Dulces",
+            "description": "Todo el reino celebra con la fiesta más dulce jamás vista."
+          },
+          "candy-pocket": {
+            "title": "Bolsillo Mágico",
+            "description": "Vuelve a casa con un bolsillo que siempre tiene el dulce perfecto."
+          },
+          "sweet-dreams": {
+            "title": "Dulces Sueños",
+            "description": "Se duerme en una cama de algodón de azúcar soñando con volver."
+          }
         }
       }
     }
   },
   "showcase": {
-    "loading": "Cargando ejemplo...",
-    "backToHome": "Volver al inicio",
-    "library": "Biblioteca",
-    "sampleBadge": "Ejemplo real",
-    "personalizedFor": "Historia personalizada para {name}",
-    "softcover": "Tapa blanda",
-    "hardcover": "Tapa dura (Premium)",
-    "pageCount": "{count} páginas",
-    "downloadPdf": "Descargar PDF de muestra",
-    "generatingPdf": "Generando PDF...",
-    "fromPrice": "Desde {price}€",
-    "createYourOwn": "Crear mi propio cuento",
-    "createYourVersion": "Crea tu propia versión",
-    "createYourVersionHint": "Personaliza al protagonista, elige la aventura y recibe un libro único en casa.",
-    "pages": "páginas",
-    "createHint": "Personaliza un libro único para tu hijo o hija",
-    "previous": "Anterior",
-    "next": "Siguiente",
-    "personalizedStory": "Una historia personalizada para",
-    "createdFor": "Una historia creada especialmente para",
-    "end": "Fin"
+    "title": "Ejemplos de cuentos reales",
+    "subtitle": "Mira cuentos personalizados que ya hemos creado. Cada uno es único: imagina el de tu hijo.",
+    "cta": "Crear el de mi hijo"
   },
   "waitlist": {
     "badge": "Próximamente",
@@ -1336,5 +2018,14 @@
     "feature3Title": "Envío artesanal",
     "feature3Description": "Empaquetado con cariño y listo para regalar o guardar como tesoro.",
     "copyright": "© 2026 Meapica. Todos los derechos reservados."
+  },
+  "blog": {
+    "title": "Ideas, regalos y lectura",
+    "subtitle": "Guías y consejos para regalar mejor y acompañar a los peques en su amor por los libros.",
+    "readingTime": "{min} min de lectura",
+    "backToBlog": "Volver al blog",
+    "empty": "Pronto publicaremos nuevos artículos.",
+    "relatedHeading": "Sigue explorando",
+    "author": "Por {author}"
   }
 }

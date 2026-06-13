@@ -9,7 +9,8 @@
 //   2. Identical character description prepended to every prompt (text reference)
 
 import crypto from "crypto";
-import { generateFluxPro, generateFluxMax, type FluxResult } from "./flux-kontext";
+import type { FluxResult } from "./flux-kontext";
+import { generateFlux2 } from "./flux2";
 import { getMockIllustrationUrl } from "./mock-story";
 import type { Screenplay, SceneScreenplay } from "./scene-screenplay";
 import { getAgeConfig } from "./story-generator";
@@ -437,14 +438,14 @@ export async function generateIllustrationsForStory(
 // --- FLUX Kontext illustration generation ---
 
 /**
- * Generate illustrations using FLUX Kontext, driven by a Screenplay and asset references.
+ * Generate illustrations using FLUX.2, driven by a Screenplay and the visual-bible
+ * asset references. Each scene is conditioned on up to 8 reference images
+ * (focal character + other characters + recurring location + props/wardrobe),
+ * which is what keeps the WHOLE world — not just the protagonist — consistent.
  *
- * - 0-1 reference images → FLUX Kontext Pro (single reference)
- * - 2+ reference images  → FLUX Kontext Max (multi-reference composite)
- *
- * @param screenplay - The visual screenplay with per-scene fluxPrompts
+ * @param screenplay - The visual screenplay with per-scene fluxPrompts + asset IDs
  * @param references - Pre-generated asset reference images (base64 + IDs)
- * @param options    - Optional: which scenes to generate, batch size
+ * @param options    - Optional: which scenes to generate, batch concurrency
  */
 export async function generateIllustrationsWithFlux(
   screenplay: Screenplay,
@@ -459,7 +460,11 @@ export async function generateIllustrationsWithFlux(
 
   // Determine which scenes to generate
   const sceneNumbers = options?.sceneNumbers ?? screenplay.scenes.map((s) => s.sceneNumber);
-  const batchSize = options?.batchSize ?? 2;
+  // Scenes are independent — each is conditioned ONLY on the frozen reference
+  // sheets, never on another scene — so parallelism does NOT affect coherence.
+  // BFL allows 24 concurrent active tasks for FLUX.2; default to 8 (override with
+  // FLUX2_CONCURRENCY) so a full wave of scenes finishes in ~one image's wall-clock.
+  const batchSize = options?.batchSize ?? (Number(process.env.FLUX2_CONCURRENCY) || 8);
 
   // Build a lookup map: assetId → base64
   const refMap = new Map<string, string>();
@@ -500,63 +505,39 @@ export async function generateIllustrationsWithFlux(
       batch.map(async ({ sceneNumber, scene }) => {
         const start = Date.now();
 
-        // Find reference images needed for this scene's characters.
-        // Order matters: input_image (first) gets highest priority in FLUX.
-        // If primaryCharacter is set and is NOT the protagonist, put their
-        // ref first so FLUX prioritizes their visual consistency.
-        //
-        // IMPORTANT: Cap at 2 refs per scene. FLUX Max degrades significantly
-        // with 3+ refs — the 3rd/4th images get ignored, causing characters
-        // to appear inconsistent or vanish entirely. Better to describe extra
-        // characters in the text prompt and let FLUX render them from description.
-        const MAX_REFS_PER_SCENE = 2;
-        const sceneRefs: string[] = [];
+        // Assemble the "visual bible" reference set for this scene.
+        // FLUX.2 honours up to 8 reference images (vs Kontext's effective 2),
+        // so we feed EVERY recurring entity present: the focal character first
+        // (highest weight), then other characters, the recurring location, and
+        // any recurring props/wardrobe. De-duplicated, capped at 8.
+        const MAX_REFS_PER_SCENE = 8;
         const primaryId = scene.primaryCharacter;
+        const orderedIds: string[] = [];
+        const pushId = (id?: string) => {
+          if (id && !orderedIds.includes(id)) orderedIds.push(id);
+        };
 
-        // 1. Primary character ref first (if it exists and has a reference)
-        if (primaryId) {
-          const primaryBase64 = refMap.get(primaryId);
-          if (primaryBase64) {
-            sceneRefs.push(primaryBase64);
-          }
+        pushId(primaryId);                       // 1. focal character first
+        for (const id of scene.characters) pushId(id); // 2. other characters
+        pushId(scene.locationAsset);             // 3. the stage/setting
+        for (const id of scene.props || []) pushId(id); // 4. recurring props/wardrobe
+
+        const sceneRefs = orderedIds
+          .map((id) => refMap.get(id))
+          .filter((b64): b64 is string => !!b64)
+          .slice(0, MAX_REFS_PER_SCENE);
+
+        if (orderedIds.length > sceneRefs.length) {
+          console.log(`[FLUX2] Scene ${sceneNumber}: ${sceneRefs.length} refs attached (${orderedIds.length} entities, missing refs described in text)`);
         }
 
-        // 2. Remaining characters (skip the primary — already added, stop at cap)
-        for (const charId of scene.characters) {
-          if (sceneRefs.length >= MAX_REFS_PER_SCENE) break;
-          if (charId === primaryId) continue; // already in position 0
-          const base64 = refMap.get(charId);
-          if (base64) {
-            sceneRefs.push(base64);
-          }
-        }
-
-        if (scene.characters.length > MAX_REFS_PER_SCENE) {
-          const skipped = scene.characters.length - sceneRefs.length;
-          if (skipped > 0) {
-            console.log(`[FLUX] Scene ${sceneNumber}: using ${sceneRefs.length} refs, ${skipped} character(s) described in text only`);
-          }
-        }
-
-        let fluxResult: FluxResult;
-
-        if (sceneRefs.length <= 1) {
-          // 0-1 reference → FLUX Kontext Pro (cheaper, faster)
-          fluxResult = await generateFluxPro(scene.fluxPrompt, {
-            inputImage: sceneRefs[0],
-            aspectRatio: scene.aspectRatio,
-          });
-        } else {
-          // 2 references → FLUX Kontext Max
-          fluxResult = await generateFluxMax(scene.fluxPrompt, {
-            inputImage: sceneRefs[0],
-            inputImage2: sceneRefs[1],
-            aspectRatio: scene.aspectRatio,
-          });
-        }
+        const fluxResult: FluxResult = await generateFlux2(scene.fluxPrompt, {
+          inputImages: sceneRefs,
+          aspectRatio: scene.aspectRatio,
+        });
 
         const elapsed = ((Date.now() - start) / 1000).toFixed(1);
-        console.log(`[FLUX] Generated scene ${sceneNumber} in ${elapsed}s`);
+        console.log(`[FLUX2] Generated scene ${sceneNumber} in ${elapsed}s (${sceneRefs.length} refs)`);
 
         return {
           imageUrl: fluxResult.url,

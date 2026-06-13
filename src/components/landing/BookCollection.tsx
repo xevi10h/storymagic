@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { PRICING } from "@/lib/pricing";
@@ -161,11 +162,12 @@ export default function BookCollection() {
                     className="relative aspect-3/4 overflow-hidden rounded-t-xl bg-cream"
                   >
                     {book.coverImage ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
+                      <Image
                         src={book.coverImage}
                         alt={book.title}
-                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        fill
+                        sizes="(max-width: 768px) 70vw, 280px"
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
                       />
                     ) : (
                       <div className="flex h-full items-center justify-center">
@@ -235,11 +237,12 @@ export default function BookCollection() {
                 >
                   {/* Cover */}
                   <div className="relative aspect-3/4 overflow-hidden rounded-t-xl bg-cream">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    <Image
                       src={template.image}
                       alt={td(`templates.${template.id}.title`)}
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      fill
+                      sizes="(max-width: 768px) 70vw, 280px"
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                     {/* Age badge */}
                     <div className="absolute right-2 top-2 rounded-full bg-white/90 px-2.5 py-0.5 text-xs font-bold text-primary backdrop-blur">

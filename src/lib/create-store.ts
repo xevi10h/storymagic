@@ -24,6 +24,12 @@ export interface CharacterData {
   futureDream: string;
 }
 
+/** One resolved choice along a branching story tree (Fase B). */
+export interface TreeChoice {
+  nodeId: string;
+  optionId: string;
+}
+
 export interface StoryDecisions {
   encounter?: string;
   companion?: string;
@@ -31,6 +37,8 @@ export interface StoryDecisions {
   timeOfDay?: string;
   setting?: string;
   specialMoment?: string;
+  /** Ordered path through a branching story tree (set only for tree-driven templates). */
+  treePath?: TreeChoice[];
 }
 
 export interface CreateBookState {
@@ -139,7 +147,7 @@ export interface StoryTemplateConfig {
 
 export const INITIAL_STATE: CreateBookState = {
   currentStep: 1,
-  mode: null,
+  mode: "solo", // mode selection removed; default keeps generation payload valid
   character: {
     name: "",
     city: "",
@@ -2224,8 +2232,16 @@ export function getRecommendedTemplates(
   // Sort by score descending
   scored.sort((a, b) => b.score - a.score);
 
-  // Mark the top one as recommended (only if score > 5)
-  if (scored.length > 0 && scored[0].score > 5) {
+  // Recommend by real interest match first (up to 3); otherwise fall back to the
+  // single best age fit. Keeps the badge meaningful instead of arbitrary.
+  const byInterest = scored.filter((s) =>
+    interests.some((i) => s.relatedInterests.includes(i))
+  );
+  if (byInterest.length > 0) {
+    byInterest.slice(0, 3).forEach((s) => {
+      s.isRecommended = true;
+    });
+  } else if (scored.length > 0 && scored[0].score > 5) {
     scored[0].isRecommended = true;
   }
 
@@ -2365,4 +2381,44 @@ export const CATALOG_DEFAULTS: Record<string, CatalogDefaults> = {
 /** Get catalog defaults for a template */
 export function getCatalogDefaults(templateId: string): CatalogDefaults | undefined {
   return CATALOG_DEFAULTS[templateId];
+}
+
+// ============================================================
+// STORY PATH BEATS — drives the step-by-step "path" creation UX.
+// World is chosen first (picks the template); these are the beats
+// that follow, derived from the chosen template's existing data.
+// ============================================================
+
+export type StoryBeatKind = "world" | "decision" | "atmosphere";
+
+export interface StoryBeat {
+  id: string; // "encounter" | "companion" | "challenge" | "time" | "setting"
+  kind: StoryBeatKind;
+  decisionKey?: "encounter" | "companion" | "challenge";
+  atmosphereSub?: "time" | "setting";
+}
+
+/** Beats that follow the world choice, for a given template (in narrative order). */
+export function getTemplateBeats(templateId: string | null): StoryBeat[] {
+  if (!templateId) return [];
+  const tpl = STORY_TEMPLATES.find((t) => t.id === templateId);
+  if (!tpl) return [];
+  const decisionBeats: StoryBeat[] = tpl.decisions.map((d) => ({
+    id: d.key,
+    kind: "decision",
+    decisionKey: d.key,
+  }));
+  return [
+    ...decisionBeats,
+    { id: "time", kind: "atmosphere", atmosphereSub: "time" },
+    { id: "setting", kind: "atmosphere", atmosphereSub: "setting" },
+  ];
+}
+
+/** State key in StoryDecisions that a beat writes to. */
+export function beatDecisionField(beat: StoryBeat): keyof StoryDecisions | null {
+  if (beat.kind === "decision") return beat.decisionKey ?? null;
+  if (beat.kind === "atmosphere")
+    return beat.atmosphereSub === "time" ? "timeOfDay" : "setting";
+  return null;
 }

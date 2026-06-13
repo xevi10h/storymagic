@@ -13,12 +13,14 @@
 | [Technical Architecture](./technical-architecture.md) | Stack, infrastructure, APIs, data model, automation flow |
 | [Business Model](./business-model.md) | Pricing, costs, margins, upsells, revenue projections |
 | [Marketing Strategy](./marketing-strategy.md) | Channels, copy, calendar, audience segmentation |
+| [Influencer Shortlist](./influencer-shortlist.md) | Potential creator partners, outreach tiers, and partner evaluation criteria |
+| [Influencer Outreach Messages](./influencer-outreach-messages.md) | Ready-to-send email and Instagram DM templates for shortlisted creators |
 | [Roadmap](./roadmap.md) | Phased execution plan with milestones and priorities |
 
 ## Quick Context
 
 **meapica** is a platform where parents create personalized, illustrated children's books with AI + print-on-demand. The child becomes the protagonist of their own adventure. Positioned as "artesanal digital" — handcrafted feel, not AI-generated aesthetic.
 
-**Stack:** Next.js 16 + Supabase + Vercel + Stripe + Claude Sonnet 4 (prod) / Groq / Cerebras / Gemini (dev) + Recraft V3 + Gelato API
+**Stack:** Next.js 16 + Supabase + Vercel + Stripe + Claude Sonnet 4 (prod) / Groq / Cerebras / Gemini (dev) + FLUX.2 [flex] illustrations (Recraft V3 fallback) + Gemini 2.5 Flash QA judge + Gelato API
 
 **Status:** Phases 0–3 complete. Phase 4 (checkout/Gelato) in progress. Phase 5 (launch) unstarted.

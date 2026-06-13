@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
 import { QRCodeSVG } from "qrcode.react";
 import BrandLogo from "@/components/BrandLogo";
@@ -24,15 +24,15 @@ const MIN_FONT_SIZE_PX = 7;
 
 /** Hook: returns the book page size matching MobileBookViewer's breakpoint. */
 function usePageSize(): number {
-  const [size, setSize] = useState(420); // SSR default = desktop
-  useEffect(() => {
-    const mql = window.matchMedia("(max-width: 767px)");
-    setSize(mql.matches ? 350 : 420);
-    const handler = (e: MediaQueryListEvent) => setSize(e.matches ? 350 : 420);
-    mql.addEventListener("change", handler);
-    return () => mql.removeEventListener("change", handler);
-  }, []);
-  return size;
+  return useSyncExternalStore(
+    (onChange) => {
+      const mql = window.matchMedia("(max-width: 767px)");
+      mql.addEventListener("change", onChange);
+      return () => mql.removeEventListener("change", onChange);
+    },
+    () => (window.matchMedia("(max-width: 767px)").matches ? 350 : 420),
+    () => 420, // SSR default = desktop
+  );
 }
 
 /** Estimate how many lines `text` needs at given font metrics. */

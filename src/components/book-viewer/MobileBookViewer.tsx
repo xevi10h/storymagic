@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useCallback, useEffect, useState } from "react";
+import { useRef, useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import HTMLFlipBook from "react-pageflip";
 import { useTranslations } from "next-intl";
 import MobileBookPage from "./MobileBookPage";
@@ -9,16 +9,19 @@ import { getBookPageNumber } from "./types";
 import type { BookViewerProps } from "./types";
 import { playPageTurnSound } from "./page-turn-sound";
 
-function useIsNarrow(breakpoint = 768) {
-  const [narrow, setNarrow] = useState(false);
-  useEffect(() => {
-    const mql = window.matchMedia(`(max-width: ${breakpoint - 1}px)`);
-    setNarrow(mql.matches);
-    const handler = (e: MediaQueryListEvent) => setNarrow(e.matches);
-    mql.addEventListener("change", handler);
-    return () => mql.removeEventListener("change", handler);
-  }, [breakpoint]);
-  return narrow;
+// null = not yet measured (SSR). The flip book must NOT mount until this
+// resolves: react-pageflip reads usePortrait only on init, so mounting with
+// the wrong mode leaves the cover clipped on phones.
+function useIsNarrow(breakpoint = 768): boolean | null {
+  return useSyncExternalStore(
+    (onChange) => {
+      const mql = window.matchMedia(`(max-width: ${breakpoint - 1}px)`);
+      mql.addEventListener("change", onChange);
+      return () => mql.removeEventListener("change", onChange);
+    },
+    () => window.matchMedia(`(max-width: ${breakpoint - 1}px)`).matches,
+    () => null,
+  );
 }
 
 export default function MobileBookViewer({
@@ -35,6 +38,30 @@ export default function MobileBookViewer({
   const lastReportedPage = useRef(currentPage);
   const isNarrow = useIsNarrow();
   const [fullscreenPage, setFullscreenPage] = useState<number | null>(null);
+  const sceneRef = useRef<HTMLDivElement | null>(null);
+  const [sceneWidth, setSceneWidth] = useState<number | null>(null);
+  // Hide the raw page stack until page-flip lays it out (avoids a flash of
+  // all pages flowing as a plain grid on mount).
+  const [flipReady, setFlipReady] = useState(false);
+
+  // Measure the available width before mounting the flip book: page-flip only
+  // honors min/maxWidth as fixed pixel bounds, so they must derive from the
+  // real container or single-page (portrait) mode overflows on phones.
+  // The callback ref re-attaches the observer when the placeholder swaps for
+  // the real scene container.
+  const observerRef = useRef<ResizeObserver | null>(null);
+  const attachScene = useCallback((el: HTMLDivElement | null) => {
+    sceneRef.current = el;
+    observerRef.current?.disconnect();
+    if (!el) return;
+    const measure = () =>
+      setSceneWidth(Math.floor(el.getBoundingClientRect().width));
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    observerRef.current = ro;
+  }, []);
+  useEffect(() => () => observerRef.current?.disconnect(), []);
 
   // Sync external page changes to the flip book
   useEffect(() => {
@@ -64,20 +91,43 @@ export default function MobileBookViewer({
   const isOnCover = currentPage === 0;
   const isOnBack = currentPage === pages.length - 1;
 
+  // Page size for phones: exactly the container width, capped at 400.
+  const portraitSize = sceneWidth !== null ? Math.min(sceneWidth, 400) : null;
+  const ready = isNarrow !== null && (!isNarrow || portraitSize !== null);
+
+  // Wait for the viewport/container measurement before mounting the flip book
+  if (!ready) {
+    return (
+      <div className="flex flex-col items-center w-full">
+        <div ref={attachScene} className="book-scene w-full mx-auto">
+          <div className="book-body w-full mx-auto aspect-square max-w-[420px] animate-pulse rounded-lg bg-create-neutral/40" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col items-center">
       {/* Open book */}
-      <div className="book-scene w-full mx-auto">
-        <div className="book-body w-full">
+      <div ref={attachScene} className="book-scene w-full mx-auto">
+        <div
+          className={`book-body w-full transition-opacity duration-300 ${
+            flipReady ? "opacity-100" : "opacity-0"
+          }`}
+        >
           <HTMLFlipBook
+            key={isNarrow ? `portrait-${portraitSize}` : "landscape"}
+            onInit={() => setFlipReady(true)}
             ref={flipBookRef}
-            width={isNarrow ? 350 : 420}
-            height={isNarrow ? 350 : 420}
-            size="stretch"
-            minWidth={150}
-            maxWidth={isNarrow ? 400 : 520}
+            width={isNarrow ? portraitSize! : 420}
+            height={isNarrow ? portraitSize! : 420}
+            size={isNarrow ? "fixed" : "stretch"}
+            // page-flip picks portrait only when blockWidth < 2*minWidth, so on
+            // phones the bounds are pinned to the measured container width.
+            minWidth={isNarrow ? portraitSize! : 150}
+            maxWidth={isNarrow ? portraitSize! : 520}
             minHeight={150}
-            maxHeight={isNarrow ? 400 : 520}
+            maxHeight={isNarrow ? portraitSize! : 520}
             showCover={true}
             drawShadow={true}
             flippingTime={700}

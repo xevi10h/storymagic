@@ -14,6 +14,9 @@ interface PortraitRevealProps {
 
 type Phase = "generating" | "revealing" | "revealed" | "error";
 
+/** Rotating status messages shown while the portrait generates (~10-20s). */
+const GENERATING_STEPS = ["step1", "step2", "step3", "step4"] as const;
+
 /**
  * Full-screen transition between Step 2 and Step 3.
  *
@@ -34,7 +37,18 @@ export default function PortraitReveal({
   const [portraitUrl, setPortraitUrl] = useState<string | null>(null);
   const [recraftStyleId, setRecraftStyleId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [stepIdx, setStepIdx] = useState(0);
   const startedRef = useRef(false);
+
+  // Cycle the status message while generating so the wait feels alive
+  useEffect(() => {
+    if (phase !== "generating") return;
+    const id = setInterval(
+      () => setStepIdx((i) => (i + 1) % GENERATING_STEPS.length),
+      2600,
+    );
+    return () => clearInterval(id);
+  }, [phase]);
 
   const generatePortrait = useCallback(async () => {
     setPhase("generating");
@@ -103,7 +117,7 @@ export default function PortraitReveal({
 
   return (
     <div className="flex flex-col h-screen bg-create-bg overflow-hidden">
-      <CreationHeader currentStep={2} rightAction="save" />
+      <CreationHeader currentStep={1} totalSteps={3} rightAction="save" />
 
       <main className="flex-1 flex items-center justify-center px-6">
         <div className="flex flex-col items-center max-w-md w-full">
@@ -160,8 +174,8 @@ export default function PortraitReveal({
                 <h2 className="text-xl md:text-2xl font-display font-bold text-create-text">
                   {t("generating", { name: character.name })}
                 </h2>
-                <p className="text-create-text-sub text-sm">
-                  {t("generatingSubtitle")}
+                <p key={stepIdx} className="cp-rise text-create-text-sub text-sm">
+                  {t(GENERATING_STEPS[stepIdx])}
                 </p>
               </div>
             )}

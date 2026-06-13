@@ -12,6 +12,7 @@
 
 import { callLLM, parseJsonResponse, type ArchitectOutput, type AgeConfig } from "./story-generator";
 import type { AssetTree } from "./visual-assets";
+import { WATERCOLOR_STYLE_SUFFIX } from "./style";
 import { SCENE_LAYOUT_PAIRS } from "@/components/book-viewer/types";
 
 // ── Layout-aware aspect ratios ───────────────────────────────────────────────
@@ -45,14 +46,16 @@ export interface SceneScreenplay {
   sceneNumber: number;
   composition: string;        // Camera angle, framing description
   lighting: string;           // Light sources, time of day, mood
-  characters: string[];       // Asset IDs from AssetTree that appear
-  primaryCharacter?: string;  // Asset ID whose ref gets input_image (primary FLUX slot)
+  characters: string[];       // Character/creature asset IDs that appear
+  primaryCharacter?: string;  // Asset ID whose ref gets the first (highest-weight) FLUX slot
+  locationAsset?: string;     // Asset ID of the recurring location/setting for this scene (if any)
+  props?: string[];           // Asset IDs of recurring props/wardrobe present in this scene
   keyActions: string;         // What is happening in the frame
   environment: string;        // Background, setting details
   emotionalTone: string;      // The feeling the image should evoke
   differentiationNote: string; // How this scene differs visually from adjacent scenes
   aspectRatio: string;        // "1:1", "4:3", "16:9"
-  fluxPrompt: string;         // Final assembled prompt for FLUX (max 900 chars)
+  fluxPrompt: string;         // Final assembled prompt for FLUX (style suffix appended in code)
 }
 
 export interface Screenplay {
@@ -149,11 +152,14 @@ CRITICAL RULES FOR fluxPrompt:
 4. Start EVERY fluxPrompt with the protagonist's physical description: "${characterRef}"
 5. After the character, describe: what they are DOING, WHERE they are (full detailed environment with colors), the LIGHTING and TIME OF DAY, and any other characters/objects.
 6. EVERY scene MUST have a FULL DETAILED BACKGROUND — a room, a landscape, a planet, space, etc. NEVER a white/blank/empty background.
-7. End EVERY fluxPrompt with: "Children's book watercolor illustration style, warm soft colors, gentle lighting, cute cartoon proportions, NOT photorealistic, NOT a photograph. Full bleed edge-to-edge illustration. No borders, no white edges, no text, no signature, no watermark, no branded logos."
+7. Do NOT add any art-style or "children's book" suffix yourself — end with the concrete scene description only. The watercolor style directive is appended automatically afterwards.
 8. Keep each fluxPrompt under ${MAX_FLUX_PROMPT_LENGTH} characters.
 9. Each scene MUST have a DIFFERENT camera angle from its neighbors.
 10. Each scene MUST have a DIFFERENT dominant color palette from its neighbors.
-11. Use asset IDs in the "characters" array.
+11. Use asset IDs (from VISUAL ASSETS below) in "characters". ALSO set:
+    - "locationAsset": the asset ID of the recurring LOCATION this scene takes place in, if one of the location assets applies (else null). Keep the SAME location asset every time the story returns to that setting.
+    - "props": array of asset IDs of any recurring PROP or WARDROBE assets visible in this scene (else []).
+    Whenever a scene reuses a location/prop/wardrobe asset, describe it in the fluxPrompt EXACTLY as in its asset description so it stays consistent.
 12. The cover should be the most dramatic — protagonist in a heroic pose.
 
 ASPECT RATIOS — MANDATORY (these match the book's physical page layout):
@@ -198,12 +204,14 @@ Respond with a JSON object:
     "lighting": "light description",
     "characters": ["asset-id-1"],
     "primaryCharacter": "protagonist",
+    "locationAsset": "location-asset-id or null",
+    "props": ["prop-or-wardrobe-asset-id"],
     "keyActions": "what happens",
     "environment": "full background description",
     "emotionalTone": "feeling",
     "differentiationNote": "how cover differs",
     "aspectRatio": "1:1",
-    "fluxPrompt": "CONCRETE visual description starting with character ref, ending with style directive"
+    "fluxPrompt": "CONCRETE visual description starting with character ref (NO style suffix)"
   },
   "scenes": [
     {
@@ -212,6 +220,8 @@ Respond with a JSON object:
       "lighting": "...",
       "characters": ["..."],
       "primaryCharacter": "protagonist",
+      "locationAsset": "location-asset-id or null",
+      "props": ["..."],
       "keyActions": "...",
       "environment": "...",
       "emotionalTone": "...",
@@ -227,27 +237,20 @@ Produce exactly ${architect.scenes.length} scene entries. Every fluxPrompt must 
 
 // ── Prompt length enforcement ────────────────────────────────────────────────
 
-const FLUX_SUFFIX =
-  " Children's book watercolor illustration, warm soft colors, NOT photorealistic. Full bleed edge-to-edge. No borders, no white edges, no text, no signature, no watermark, no branded logos.";
-
-function enforcePromptLength(spec: SceneScreenplay): void {
-  if (spec.fluxPrompt.length <= MAX_FLUX_PROMPT_LENGTH) return;
-
-  // If the suffix is present, truncate the body and re-append
-  const hasSuffix = spec.fluxPrompt.endsWith(FLUX_SUFFIX.trim());
-  if (hasSuffix) {
-    const body = spec.fluxPrompt.slice(
-      0,
-      spec.fluxPrompt.length - FLUX_SUFFIX.trim().length,
-    );
-    const maxBody = MAX_FLUX_PROMPT_LENGTH - FLUX_SUFFIX.length;
-    spec.fluxPrompt = body.slice(0, maxBody).trimEnd() + FLUX_SUFFIX;
-  } else {
-    // Suffix missing — truncate and append it
-    const maxBody = MAX_FLUX_PROMPT_LENGTH - FLUX_SUFFIX.length;
-    spec.fluxPrompt =
-      spec.fluxPrompt.slice(0, maxBody).trimEnd() + FLUX_SUFFIX;
+/**
+ * Deterministically finalize a fluxPrompt: strip any style directive the LLM may
+ * have added, fit the body within the length budget, then append the single
+ * canonical watercolor suffix. Guarantees every scene shares the exact same style.
+ */
+function finalizeFluxPrompt(spec: SceneScreenplay): void {
+  let body = (spec.fluxPrompt || "").trim();
+  // Defensive: if the LLM appended our suffix anyway, drop a trailing duplicate.
+  if (body.endsWith(WATERCOLOR_STYLE_SUFFIX.trim())) {
+    body = body.slice(0, body.length - WATERCOLOR_STYLE_SUFFIX.trim().length).trimEnd();
   }
+  const maxBody = MAX_FLUX_PROMPT_LENGTH - WATERCOLOR_STYLE_SUFFIX.length;
+  if (body.length > maxBody) body = body.slice(0, maxBody).trimEnd();
+  spec.fluxPrompt = body + WATERCOLOR_STYLE_SUFFIX;
 }
 
 // ── Main export ──────────────────────────────────────────────────────────────
@@ -295,11 +298,11 @@ export async function generateScreenplay(
       console.log(`[Screenplay] Correcting scene ${scene.sceneNumber} aspectRatio: "${scene.aspectRatio}" → "${correctAspect}"`);
       scene.aspectRatio = correctAspect;
     }
-    enforcePromptLength(scene);
+    finalizeFluxPrompt(scene);
   }
   // Cover is always 1:1
   result.coverSpec.aspectRatio = "1:1";
-  enforcePromptLength(result.coverSpec);
+  finalizeFluxPrompt(result.coverSpec);
 
   const elapsed = ((Date.now() - start) / 1000).toFixed(1);
   console.log(`[Screenplay] Generated screenplay in ${elapsed}s`);

@@ -1,4 +1,403 @@
 {
+  "seo": {
+    "common": {
+      "breadcrumbHome": "Accueil",
+      "featuredHeading": "Nos contes personnalisés à découvrir",
+      "featuredSubheading": "Chaque livre est une édition unique, créée autour de votre enfant.",
+      "relatedHeading": "À explorer également",
+      "faqHeading": "Questions fréquentes",
+      "ctaPrimary": "Créer mon conte"
+    },
+    "gifts": {
+      "three-kings": {
+        "metaTitle": "Cadeau Rois Mages : conte personnalisé enfant",
+        "metaDescription": "Pour le Jour des Rois, offrez un conte personnalisé où votre enfant est le héros. Un trésor à garder, loin du plastique. Aperçu complet avant d'acheter.",
+        "h1": "Un conte personnalisé pour le Jour des Rois",
+        "heroIntro": "Le 6 janvier, glissez sous le sapin autre chose qu'un jouet oublié en février. Un livre où votre enfant devient le héros de sa propre histoire.",
+        "bodyHeading": "Le cadeau des Rois qui ne finit pas dans une boîte",
+        "bodyParagraphs": [
+          "Le matin de l'Épiphanie, les enfants découvrent une montagne de paquets. La plupart seront délaissés en quelques semaines. Un conte personnalisé, lui, porte le prénom de votre enfant, son visage, ses couleurs. Il devient un objet précieux qu'on relit le soir, qu'on garde sur l'étagère et qu'on retrouve avec émotion des années plus tard.",
+          "Chaque livre est imprimé sur papier crème Munken 170g certifié FSC, relié en couture, dans un format carré de 20×20 cm. Douze doubles pages illustrées, une dédicace écrite par vous. Comme la fabrication demande du soin, pensez à commander quelques semaines avant le 6 janvier pour recevoir votre édition à temps."
+        ],
+        "benefitsHeading": "Pourquoi l'offrir aux Rois",
+        "benefits": [
+          "Votre enfant est le héros de toute l'aventure",
+          "Un trésor durable, pas un jouet jetable",
+          "Aperçu complet du livre avant de commander"
+        ]
+      },
+      "sant-jordi": {
+        "metaTitle": "Sant Jordi : un livre personnalisé à offrir",
+        "metaDescription": "Pour la Sant Jordi, offrez le livre le plus personnel qui soit : un conte où votre enfant est le héros. La rose fane, ce livre reste pour toujours.",
+        "h1": "Un livre personnalisé pour la Sant Jordi",
+        "heroIntro": "Le 23 avril, on offre un livre et une rose. Cette année, offrez le livre le plus personnel de tous : celui dont votre enfant est le héros.",
+        "bodyHeading": "La tradition du livre, rendue inoubliable",
+        "bodyParagraphs": [
+          "La Sant Jordi célèbre les histoires et l'amour des mots. Mais un livre acheté en librairie se retrouve dans des milliers de foyers. Un conte personnalisé n'existe qu'en un seul exemplaire : avec le prénom de votre enfant, ses cheveux, ses yeux, et son rêve glissé dans le récit comme dans les illustrations.",
+          "La rose de Sant Jordi se fanera en quelques jours. Ce livre, lui, traverse les années. Imprimé sur papier crème Munken 170g certifié FSC, relié en couture, 32 pages et douze scènes en double page. Une dédicace de votre main pour signer le plus beau des 23 avril."
+        ],
+        "benefitsHeading": "Le cadeau parfait de Sant Jordi",
+        "benefits": [
+          "Une édition unique, à un seul exemplaire",
+          "Plus durable qu'une rose, gardé pour toujours",
+          "Le prénom et le visage de votre enfant dedans"
+        ]
+      },
+      "birthday": {
+        "metaTitle": "Cadeau anniversaire : conte personnalisé enfant",
+        "metaDescription": "Pour son anniversaire, offrez un conte personnalisé où votre enfant devient la star de sa propre aventure. Édition unique, aperçu avant d'acheter.",
+        "h1": "Un conte personnalisé pour son anniversaire",
+        "heroIntro": "Le jour de son anniversaire, votre enfant mérite d'être au centre de l'attention. Et au centre de sa propre histoire.",
+        "bodyHeading": "Le jour où il devient la star de son histoire",
+        "bodyParagraphs": [
+          "Un anniversaire, c'est la fête de l'enfant. Alors offrez-lui un cadeau qui le célèbre vraiment : un conte dont il est le héros, avec son prénom sur la couverture, son visage dans chaque illustration et son rêve tissé dans l'intrigue. Il ne reçoit pas un livre, il reçoit son livre.",
+          "Format carré de 20×20 cm, 32 pages, douze doubles pages illustrées et une dédicace que vous écrivez pour l'occasion. Imprimé sur papier crème Munken 170g certifié FSC et relié en couture, c'est un souvenir d'anniversaire qu'il relira longtemps après avoir soufflé ses bougies."
+        ],
+        "benefitsHeading": "Le cadeau qui le rend héros",
+        "benefits": [
+          "Son prénom et son visage dans toute l'histoire",
+          "Une dédicace personnalisée pour le grand jour",
+          "Un souvenir d'anniversaire à garder des années"
+        ]
+      },
+      "communion": {
+        "metaTitle": "Première Communion : livre personnalisé souvenir",
+        "metaDescription": "Pour la Première Communion, offrez un conte personnalisé élégant et plein de sens. Un souvenir relié à garder de cette grande étape.",
+        "h1": "Un livre personnalisé pour la Première Communion",
+        "heroIntro": "La Première Communion marque une étape importante. Offrez un souvenir à la hauteur du moment : élégant, personnel et fait pour durer.",
+        "bodyHeading": "Un souvenir digne d'une grande étape",
+        "bodyParagraphs": [
+          "Pour une Première Communion, on cherche un cadeau qui ait du sens, loin des objets vite oubliés. Un conte personnalisé met l'enfant au cœur d'une aventure pleine de valeurs, avec son prénom, son visage et ses couleurs. Un présent élégant qui marque la journée et l'accompagne ensuite.",
+          "La finition est soignée comme il se doit : papier crème Munken 170g certifié FSC, reliure cousue, format carré de 20×20 cm et douze scènes illustrées en double page. La dédicace que vous écrivez transforme le livre en témoignage personnel de cette étape, à conserver précieusement."
+        ],
+        "benefitsHeading": "Un présent qui marque l'étape",
+        "benefits": [
+          "Un souvenir élégant et chargé de sens",
+          "Une dédicace personnelle pour cette journée",
+          "Finition soignée, reliure cousue et papier noble"
+        ]
+      },
+      "christmas": {
+        "metaTitle": "Cadeau de Noël : conte personnalisé enfant",
+        "metaDescription": "Pour Noël, offrez la magie sans écran : un conte personnalisé où votre enfant est le héros. Des moments de lecture en famille sous le sapin.",
+        "h1": "Un conte personnalisé pour Noël",
+        "heroIntro": "Cette année, glissez sous le sapin un peu de magie sans écran : un livre où votre enfant devient le héros, à lire ensemble au coin du feu.",
+        "bodyHeading": "La magie de Noël, sur le papier plutôt que sur un écran",
+        "bodyParagraphs": [
+          "Noël, c'est la lumière des bougies, l'odeur du sapin et le plaisir de partager une histoire. Offrez un conte personnalisé qui ramène l'attention sur ces moments : votre enfant y est le héros, avec son prénom, son visage et son rêve. Un cadeau qui crée du lien plutôt que du temps d'écran.",
+          "Le soir de Noël, ouvrez ensemble un livre imprimé sur papier crème Munken 170g certifié FSC, relié en couture, format 20×20 cm avec douze doubles pages illustrées. La dédicace que vous écrivez en fait un souvenir de famille qui reviendra sous le sapin, lecture après lecture, année après année."
+        ],
+        "benefitsHeading": "Pourquoi l'offrir à Noël",
+        "benefits": [
+          "Un cadeau sans écran, à lire en famille",
+          "Votre enfant héros de sa propre histoire",
+          "Un rituel de lecture à partager au coin du feu"
+        ]
+      },
+      "baptism": {
+        "metaTitle": "Livre de baptême personnalisé | Meapica",
+        "metaDescription": "Un conte personnalisé qui devient le souvenir de baptême de votre enfant. Édition unique, papier d'art, reliure cousue. Un cadeau de parrain ou marraine.",
+        "h1": "Un livre de baptême personnalisé, à conserver toute une vie",
+        "heroIntro": "Pour marquer le baptême, offrez bien plus qu'un objet : un conte unique où votre enfant devient le héros, à garder précieusement et à relire en grandissant.",
+        "bodyHeading": "Un souvenir de baptême que l'enfant grandira à découvrir",
+        "bodyParagraphs": [
+          "Le baptême appelle un cadeau qui dure. Pas un jouet oublié en quelques mois, mais un livre que l'enfant ouvrira à cinq ans, puis à dix, en y retrouvant son prénom imprimé. Notre conte écrit sur mesure place votre filleul au cœur de l'histoire : son prénom, son regard, sa chevelure, jusqu'à sa couleur préférée qui colore chaque page.",
+          "Sur 32 pages au format 20×20 cm, douze grandes illustrations double page accompagnent une dédicace personnalisée que vous signez vous-même. Le papier crème Munken 170g, certifié FSC, et la reliure cousue donnent à l'ouvrage la tenue d'un livre que l'on transmet. Un cadeau de parrain, de marraine ou de famille, pensé pour traverser les années."
+        ],
+        "benefitsHeading": "Pourquoi c'est le cadeau de baptême idéal",
+        "benefits": [
+          "Une édition unique au prénom de l'enfant",
+          "Dédicace personnalisée que vous signez",
+          "Papier d'art crème et reliure cousue, fait pour durer",
+          "Un souvenir relu à chaque âge",
+          "Aperçu complet avant de commander"
+        ]
+      },
+      "end-of-school": {
+        "metaTitle": "Cadeau de fin d'année scolaire personnalisé | Meapica",
+        "metaDescription": "Récompensez l'année avec un conte personnalisé où votre enfant est le héros. Une aventure d'été sur papier, loin des écrans. Aperçu complet avant achat.",
+        "h1": "Un conte personnalisé pour célébrer la fin de l'année scolaire",
+        "heroIntro": "L'école est finie. Offrez à votre enfant une aventure d'été dont il est le héros, un livre rien qu'à lui pour récompenser le chemin parcouru.",
+        "bodyHeading": "Récompenser une année et ouvrir l'été en lecture",
+        "bodyParagraphs": [
+          "Après une année de travail, certains cadeaux marquent plus que d'autres. Un conte où votre enfant devient le protagoniste de sa propre histoire dit, mieux qu'un mot sur un carnet : je suis fier de toi. L'intelligence artificielle compose un récit unique à partir de son prénom, de son âge et de son apparence, pour une lecture qui lui ressemble vraiment.",
+          "C'est aussi une belle manière d'entamer l'été. Pendant que les écrans guettent, ce livre de 32 pages et ses douze scènes double page invitent à tourner les pages, à se reconnaître, à imaginer. Le papier plutôt que les pixels. Une aventure personnelle à lire au calme, à partager le soir, et à garder bien après la rentrée."
+        ],
+        "benefitsHeading": "Le cadeau de fin d'année qui change",
+        "benefits": [
+          "Votre enfant, héros de sa propre aventure",
+          "Une récompense qui valorise la lecture",
+          "Le papier plutôt que les écrans, tout l'été",
+          "Récit unique selon son âge et son apparence",
+          "Disponible aussi en version numérique"
+        ]
+      },
+      "name-day": {
+        "metaTitle": "Cadeau de fête du prénom personnalisé | Meapica",
+        "metaDescription": "Pour la fête du saint, un conte personnalisé où votre enfant est le héros. Son prénom célébré sur chaque page, en édition unique. Aperçu complet avant achat.",
+        "h1": "Un conte personnalisé pour célébrer la fête du prénom",
+        "heroIntro": "Le jour de sa fête, faites de son prénom le cœur d'une histoire. Un conte unique où votre enfant tient le premier rôle, du début à la fin.",
+        "bodyHeading": "Quand le prénom de l'enfant devient une histoire",
+        "bodyParagraphs": [
+          "La fête du prénom célèbre ce que l'enfant a de plus personnel : son nom. Quel plus beau cadeau, alors, qu'un conte écrit autour de lui ? Son prénom apparaît à chaque page, dans le texte comme dans les illustrations, et l'histoire entière se déroule à sa mesure : son âge, son regard, sa coiffure, sa couleur préférée. Une attention qui touche juste.",
+          "Chaque exemplaire est une édition unique, composée pour un seul enfant. Sur 32 pages au format 20×20 cm, douze illustrations double page donnent vie à son aventure, précédées d'une dédicace que vous écrivez vous-même. Imprimé sur papier crème Munken 170g et relié cousu, c'est le genre de cadeau que l'on garde longtemps après le jour de la fête."
+        ],
+        "benefitsHeading": "Pourquoi offrir ce conte pour sa fête",
+        "benefits": [
+          "Son prénom célébré sur chaque page",
+          "Une histoire écrite à sa mesure",
+          "Édition unique pour un seul enfant",
+          "Dédicace personnelle que vous signez",
+          "Aperçu complet avant de commander"
+        ]
+      },
+      "graduation": {
+        "metaTitle": "Cadeau de remise de diplômes personnalisé | Meapica",
+        "metaDescription": "Un conte personnalisé pour marquer une étape. Votre enfant en héros d'une histoire de fierté et de valeurs, idéal de 8 à 12 ans. Aperçu avant achat.",
+        "h1": "Un conte personnalisé pour une remise de diplômes",
+        "heroIntro": "Une étape se franchit, une fierté se célèbre. Offrez un conte unique où votre enfant est le héros d'une histoire qui lui ressemble et qu'il gardera.",
+        "bodyHeading": "Marquer une étape, transmettre des valeurs",
+        "bodyParagraphs": [
+          "Une remise de diplômes marque un passage. À cet âge, entre huit et douze ans, l'enfant aime se reconnaître dans des récits où il joue le premier rôle. Notre conte le place au centre d'une aventure construite autour de son prénom, de son apparence et même de ses rêves d'avenir, glissés dans l'histoire et dans les illustrations. Une façon belle et personnelle de dire bravo.",
+          "Au-delà de la fierté du jour, c'est un objet qui reste. Trente-deux pages, douze scènes double page, une dédicace que vous signez, le tout sur papier crème Munken 170g et relié cousu. Un livre qui célèbre le chemin accompli et porte, en filigrane, les valeurs que l'on souhaite transmettre. Le genre de cadeau qui se relit, des années plus tard, avec émotion."
+        ],
+        "benefitsHeading": "Pourquoi ce conte marque l'étape",
+        "benefits": [
+          "Pensé pour les enfants de 8 à 12 ans",
+          "Votre enfant, héros d'une histoire de fierté",
+          "Ses rêves d'avenir glissés dans le récit",
+          "Un souvenir relu des années plus tard",
+          "Reliure cousue et papier d'art durable"
+        ]
+      },
+      "first-birthday": {
+        "metaTitle": "Cadeau de premier anniversaire personnalisé | Meapica",
+        "metaDescription": "Pour ses 1 an, son premier livre avec son prénom. Un conte personnalisé en édition unique, papier d'art et reliure cousue. Le souvenir d'un premier âge.",
+        "h1": "Son premier livre, pour son premier anniversaire",
+        "heroIntro": "Un an déjà. Pour ce premier grand jour, offrez son tout premier livre : un conte unique, avec son prénom, à garder comme un souvenir de ce premier âge.",
+        "bodyHeading": "Le premier livre d'une vie de lecteur",
+        "bodyParagraphs": [
+          "On se souvient rarement de son premier anniversaire, mais on garde ce qu'on y a reçu. Offrir un livre pour les 1 an, c'est poser la première pierre d'une vie de lecteur. Un conte écrit autour de son prénom, de sa frimousse et de sa couleur préférée, où votre tout-petit devient, dès aujourd'hui, le héros de sa propre histoire.",
+          "C'est un livre que l'on regarde à deux pour commencer, les pages tournées par les grandes mains, puis que l'enfant s'appropriera en grandissant. Trente-deux pages au format 20×20 cm, douze illustrations douces en double page, une dédicace que vous signez. Sur papier crème Munken 170g et relié cousu, il traversera les premières années pour devenir un souvenir précieux."
+        ],
+        "benefitsHeading": "Pourquoi c'est le cadeau parfait pour ses 1 an",
+        "benefits": [
+          "Son tout premier livre, avec son prénom",
+          "Votre tout-petit, héros de son histoire",
+          "Un souvenir tendre de son premier âge",
+          "Dédicace personnelle que vous signez",
+          "Papier d'art et reliure cousue, fait pour durer"
+        ]
+      }
+    },
+    "ages": {
+      "2-4": {
+        "metaTitle": "Livre personnalisé enfant 2-4 ans : premiers contes",
+        "metaDescription": "Premiers livres pour les 2-4 ans : un conte personnalisé où votre enfant voit son prénom et son visage. Éveille l'amour de la lecture en douceur.",
+        "h1": "Conte personnalisé pour les enfants de 2 à 4 ans",
+        "heroIntro": "Avant même de savoir lire, votre tout-petit reconnaît son prénom et son visage. C'est le plus doux des premiers livres.",
+        "bodyHeading": "Les premiers livres, là où tout commence",
+        "bodyParagraphs": [
+          "Entre 2 et 4 ans, l'enfant découvre les livres par les images, les couleurs et la voix de ses parents. Voir son prénom et son propre visage dans une histoire crée un déclic puissant : il se sent reconnu, il s'attache au livre, et l'amour de la lecture s'installe tout naturellement, page après page.",
+          "Le format carré de 20×20 cm tient bien dans de petites mains, et le papier crème Munken 170g, épais et agréable, supporte les manipulations curieuses. Douze grandes scènes illustrées en double page captent le regard, et la dédicace que vous écrivez fait de ce premier livre un objet déjà chargé de tendresse."
+        ],
+        "benefitsHeading": "Idéal pour les tout-petits",
+        "benefits": [
+          "Il reconnaît son prénom et son visage",
+          "Grandes images en double page qui captent l'attention",
+          "Papier épais et agréable pour les petites mains"
+        ]
+      },
+      "5-7": {
+        "metaTitle": "Livre personnalisé enfant 5-7 ans : jeune lecteur",
+        "metaDescription": "Pour les 5-7 ans : un conte personnalisé où votre enfant reconnaît son prénom et devient le héros. L'allié parfait des premières lectures.",
+        "h1": "Conte personnalisé pour les enfants de 5 à 7 ans",
+        "heroIntro": "À l'âge des premières lectures, rien ne motive autant un enfant que de lire une histoire dont il est lui-même le héros.",
+        "bodyHeading": "Quand lire devient une aventure personnelle",
+        "bodyParagraphs": [
+          "Entre 5 et 7 ans, l'enfant commence à déchiffrer les mots et à lire seul. Reconnaître son prénom au fil des pages décuple sa motivation : il n'apprend plus à lire une histoire abstraite, il suit sa propre aventure. C'est un puissant moteur de confiance pour ces premières lectures parfois intimidantes.",
+          "Le récit met en scène ses traits, ses couleurs et son rêve, dans douze doubles pages richement illustrées. Format 20×20 cm, 32 pages, papier crème Munken 170g certifié FSC et reliure cousue : un livre solide pour les lectures répétées, et une dédicace qui rend l'objet vraiment unique."
+        ],
+        "benefitsHeading": "Pensé pour les jeunes lecteurs",
+        "benefits": [
+          "Reconnaître son prénom motive la lecture",
+          "Il devient le héros de sa propre aventure",
+          "Renforce la confiance des premières lectures"
+        ]
+      },
+      "8-12": {
+        "metaTitle": "Livre personnalisé enfant 8-12 ans : lecteur confirmé",
+        "metaDescription": "Pour les 8-12 ans : un conte personnalisé aux aventures plus riches et porteuses de valeurs, où votre enfant reste le héros de l'histoire.",
+        "h1": "Conte personnalisé pour les enfants de 8 à 12 ans",
+        "heroIntro": "Les lecteurs confirmés veulent des aventures à leur mesure. Une histoire plus riche, plus profonde, dont ils sont toujours le héros.",
+        "bodyHeading": "Des aventures à la hauteur des lecteurs confirmés",
+        "bodyParagraphs": [
+          "Entre 8 et 12 ans, l'enfant lit avec aisance et cherche des histoires plus consistantes. Le conte personnalisé lui offre une aventure plus développée, traversée de valeurs comme le courage, l'amitié ou la curiosité, dans laquelle il se reconnaît : son prénom, son apparence et son rêve nourrissent un récit qui le valorise vraiment.",
+          "Cette tranche d'âge apprécie d'autant plus la qualité de l'objet : format carré 20×20 cm, 32 pages, douze doubles pages illustrées, papier crème Munken 170g certifié FSC et reliure cousue. Un livre dont on est fier, avec une dédicace qui en fait un repère à garder bien après l'enfance."
+        ],
+        "benefitsHeading": "Conçu pour les grands lecteurs",
+        "benefits": [
+          "Aventures plus riches et porteuses de valeurs",
+          "Un héros à son image, valorisant et inspirant",
+          "Un bel objet dont on reste fier en grandissant"
+        ]
+      }
+    },
+    "themes": {
+      "dinosaurs": {
+        "metaTitle": "Conte personnalisé dinosaures : enfant héros",
+        "metaDescription": "Un conte personnalisé sur les dinosaures où votre enfant remonte le temps. Courage et curiosité au cœur d'une aventure à son image. Aperçu avant d'acheter.",
+        "h1": "Un conte personnalisé sur les dinosaures",
+        "heroIntro": "Direction l'ère des dinosaures, des millions d'années en arrière. Et cette fois, l'explorateur intrépide, c'est votre enfant.",
+        "bodyHeading": "Un voyage dans le temps à l'ère des géants",
+        "bodyParagraphs": [
+          "Quel enfant n'a jamais rêvé de marcher parmi les dinosaures ? Dans ce conte, votre enfant remonte le temps et arpente un monde de fougères géantes et de créatures fabuleuses. À travers l'aventure, il apprend le courage face à l'inconnu et la curiosité qui pousse à comprendre ce qui l'entoure.",
+          "Son prénom, ses cheveux, ses yeux et son rêve apparaissent dans le récit comme dans les illustrations : il est le véritable héros de l'expédition. Douze doubles pages illustrées, format 20×20 cm, papier crème Munken 170g certifié FSC et reliure cousue, avec votre dédicace en ouverture du voyage."
+        ],
+        "benefitsHeading": "Au cœur de l'aventure préhistorique",
+        "benefits": [
+          "Votre enfant explore l'ère des dinosaures",
+          "Une histoire qui cultive courage et curiosité",
+          "Son prénom et son visage dans chaque scène"
+        ]
+      },
+      "space": {
+        "metaTitle": "Conte personnalisé espace : voyage vers les étoiles",
+        "metaDescription": "Un conte personnalisé sur l'espace où votre enfant voyage vers les étoiles et des planètes inconnues. Une aventure cosmique à son image.",
+        "h1": "Un conte personnalisé sur l'espace",
+        "heroIntro": "Décollage immédiat vers les étoiles. Aux commandes du vaisseau, un explorateur de l'espace bien particulier : votre enfant.",
+        "bodyHeading": "Un voyage vers les étoiles et les planètes inconnues",
+        "bodyParagraphs": [
+          "L'univers fascine les enfants par son immensité et ses mystères. Dans ce conte, votre enfant quitte la Terre pour explorer des planètes inconnues, croiser des constellations et percer les secrets du cosmos. Une aventure qui éveille l'émerveillement et donne envie de toujours regarder plus loin, vers l'inconnu.",
+          "Le héros de cette odyssée porte son prénom, son visage et son rêve, présents dans le récit comme dans chaque illustration. Douze doubles pages spectaculaires, format carré 20×20 cm, papier crème Munken 170g certifié FSC et reliure cousue, ouvertes par la dédicace que vous écrivez avant le grand départ."
+        ],
+        "benefitsHeading": "Cap sur les étoiles",
+        "benefits": [
+          "Votre enfant explore des planètes inconnues",
+          "Une aventure qui nourrit l'émerveillement",
+          "Son prénom et son visage parmi les étoiles"
+        ]
+      },
+      "pirates": {
+        "metaTitle": "Conte personnalisé pirates : chasse au trésor",
+        "metaDescription": "Un conte personnalisé de pirates où votre enfant part à la chasse au trésor sur les sept mers. Une aventure maritime palpitante à son image.",
+        "h1": "Un conte personnalisé sur les pirates",
+        "heroIntro": "Hissez les voiles : une carte au trésor, les sept mers à parcourir, et un capitaine intrépide qui n'est autre que votre enfant.",
+        "bodyHeading": "Une chasse au trésor sur les sept mers",
+        "bodyParagraphs": [
+          "Une carte mystérieuse, un navire prêt à appareiller et l'horizon des sept mers : ce conte embarque votre enfant dans une chasse au trésor pleine de rebondissements. Entre îles secrètes et tempêtes à franchir, il apprend l'audace, le sens de l'équipage et la persévérance qu'exige toute grande quête.",
+          "Le capitaine de cette aventure, c'est lui : son prénom, son apparence et son rêve s'invitent dans le texte comme dans les illustrations. Douze doubles pages illustrées, format 20×20 cm, papier crème Munken 170g certifié FSC et reliure cousue, ouvertes par votre dédicace, juste avant de lever l'ancre."
+        ],
+        "benefitsHeading": "À l'abordage de l'aventure",
+        "benefits": [
+          "Votre enfant capitaine de sa chasse au trésor",
+          "Audace et persévérance au fil de la quête",
+          "Son prénom et son visage à chaque escale"
+        ]
+      },
+      "superheroes": {
+        "metaTitle": "Conte personnalisé super-héros : enfant héros",
+        "metaDescription": "Un conte personnalisé de super-héros où votre enfant découvre ses pouvoirs cachés et sauve la ville. Une aventure héroïque entièrement à son image.",
+        "h1": "Un conte personnalisé sur les super-héros",
+        "heroIntro": "Et si votre enfant avait des super-pouvoirs cachés ? Dans ce conte, il les découvre et part sauver sa ville.",
+        "bodyHeading": "Des super-pouvoirs cachés pour sauver la ville",
+        "bodyParagraphs": [
+          "Chaque enfant rêve un jour de devenir un héros. Dans ce conte, votre enfant découvre des super-pouvoirs insoupçonnés et doit s'en servir pour protéger sa ville. Au fil de l'aventure, il apprend que la véritable force réside dans le courage, l'entraide et le choix de faire ce qui est juste.",
+          "Le super-héros de l'histoire, c'est vraiment lui : son prénom, ses cheveux, ses yeux et son rêve apparaissent dans le récit comme dans les illustrations. Douze doubles pages dynamiques, format carré 20×20 cm, papier crème Munken 170g certifié FSC et reliure cousue, précédées de la dédicace que vous écrivez."
+        ],
+        "benefitsHeading": "Un héros à son image",
+        "benefits": [
+          "Votre enfant découvre ses pouvoirs cachés",
+          "Une histoire de courage et d'entraide",
+          "Son prénom et son visage en super-héros"
+        ]
+      },
+      "magic-forest": {
+        "metaTitle": "Conte personnalisé forêt magique : enfant héros",
+        "metaDescription": "Un conte personnalisé dans une forêt magique où votre enfant découvre des secrets parmi les arbres anciens et des créatures fantastiques. À son image.",
+        "h1": "Un conte personnalisé dans la forêt magique",
+        "heroIntro": "Au cœur d'une forêt ancienne, des secrets murmurent entre les arbres et des créatures fantastiques attendent. L'explorateur, c'est votre enfant.",
+        "bodyHeading": "Des secrets parmi les arbres anciens",
+        "bodyParagraphs": [
+          "La forêt magique est un monde de mystères : arbres centenaires, clairières baignées de lumière et créatures fantastiques tapies dans l'ombre. Dans ce conte, votre enfant s'y aventure et découvre des secrets bien gardés. Une histoire douce et merveilleuse qui éveille l'imaginaire et le respect du vivant.",
+          "L'explorateur de cette forêt enchantée porte son prénom, son visage et son rêve, présents dans le texte comme dans les illustrations. Douze doubles pages aux couleurs profondes, format 20×20 cm, papier crème Munken 170g certifié FSC et reliure cousue, ouvertes par la dédicace que vous lui écrivez."
+        ],
+        "benefitsHeading": "Au cœur de la forêt enchantée",
+        "benefits": [
+          "Votre enfant explore une forêt magique",
+          "Créatures fantastiques et secrets à découvrir",
+          "Son prénom et son visage dans chaque clairière"
+        ]
+      },
+      "safari": {
+        "metaTitle": "Conte personnalisé safari : aventure en savane",
+        "metaDescription": "Un conte personnalisé sur le safari où votre enfant explore la savane africaine parmi lions et éléphants. Une aventure nature entièrement à son image.",
+        "h1": "Un conte personnalisé sur le safari",
+        "heroIntro": "Cap sur la savane africaine, entre lions majestueux et troupeaux d'éléphants. L'explorateur de cette grande aventure, c'est votre enfant.",
+        "bodyHeading": "La savane africaine parmi lions et éléphants",
+        "bodyParagraphs": [
+          "La savane africaine déploie ses paysages immenses, ses couchers de soleil dorés et ses animaux fascinants. Dans ce conte, votre enfant part en safari à la rencontre des lions, des éléphants et des girafes. Une aventure qui éveille l'émerveillement devant la nature et l'envie de protéger la vie sauvage.",
+          "L'explorateur de cette expédition, c'est lui : son prénom, ses traits et son rêve apparaissent dans le récit comme dans les illustrations. Douze doubles pages aux couleurs chaudes, format carré 20×20 cm, papier crème Munken 170g certifié FSC et reliure cousue, précédées de la dédicace que vous écrivez avant le départ."
+        ],
+        "benefitsHeading": "Au cœur de la savane",
+        "benefits": [
+          "Votre enfant explore la savane africaine",
+          "À la rencontre des lions et des éléphants",
+          "Son prénom et son visage à chaque rencontre"
+        ]
+      }
+    },
+    "nav": {
+      "giftHeading": "Cadeaux par occasion",
+      "ageHeading": "Contes par âge",
+      "gifts": {
+        "three-kings": "Jour des Rois",
+        "sant-jordi": "Sant Jordi",
+        "birthday": "Anniversaire",
+        "communion": "Communion",
+        "christmas": "Noël",
+        "baptism": "Baptême",
+        "end-of-school": "Fin d’année scolaire",
+        "name-day": "Fête du saint",
+        "graduation": "Remise de diplômes",
+        "first-birthday": "Premier anniversaire"
+      },
+      "ages": {
+        "2-4": "2-4 ans",
+        "5-7": "5-7 ans",
+        "8-12": "8-12 ans"
+      },
+      "themes": {
+        "dinosaurs": "Dinosaures",
+        "space": "Espace",
+        "pirates": "Pirates",
+        "superheroes": "Super-héros",
+        "magic-forest": "Forêt magique",
+        "safari": "Safari"
+      },
+      "themeHeading": "Contes par thème"
+    },
+    "hubs": {
+      "gifts": {
+        "metaTitle": "Cadeaux personnalisés pour enfants | Meapica",
+        "metaDescription": "Des contes personnalisés pour chaque occasion : Rois, Sant Jordi, anniversaire, communion et Noël. Le cadeau où votre enfant est le héros.",
+        "h1": "Cadeaux personnalisés pour enfants, pour chaque occasion",
+        "intro": "Un conte où votre enfant est le héros est le cadeau dont on se souvient. Choisissez l’occasion et créez une édition unique, imprimée et faite pour durer."
+      },
+      "ages": {
+        "metaTitle": "Contes personnalisés par âge | Meapica",
+        "metaDescription": "Des contes personnalisés adaptés à chaque âge, de 2 à 12 ans. Des histoires et illustrations où votre enfant est le protagoniste.",
+        "h1": "Contes personnalisés par âge",
+        "intro": "Chaque âge a son histoire. Choisissez la tranche d’âge de votre enfant et découvrez des contes pensés pour son niveau de lecture, toujours avec lui en héros."
+      },
+      "themes": {
+        "metaTitle": "Contes personnalisés par thème | Meapica",
+        "metaDescription": "Dinosaures, espace, pirates, super-héros et plus. Choisissez l’aventure préférée de votre enfant et faites-en le héros.",
+        "h1": "Contes personnalisés par thème",
+        "intro": "Dinosaures, étoiles, mers ou forêts magiques. Choisissez le monde qui le fascine le plus et créez un conte unique où votre enfant vit l’aventure."
+      }
+    }
+  },
   "metadata": {
     "title": "Meapica — De Vraies Histoires à Toucher",
     "description": "Retrouvez la magie de tourner les pages. Des contes personnalisés imprimés sur du papier de haute qualité, conçus pour créer des moments de connexion authentique.",
@@ -26,7 +425,9 @@
     "titleHighlight": "plus d'histoires",
     "titleEnd": "à toucher",
     "description": "Retrouvez la magie de tourner les pages. Des contes personnalisés imprimés sur du papier de haute qualité, conçus pour créer des moments de connexion authentique, loin de la lumière des tablettes.",
-    "cta": "Personnaliser un livre physique",
+    "cta": "Créer mon conte",
+    "priceFrom": "À partir de {price}",
+    "priceNote": "Livre imprimé + version numérique incluse",
     "secondaryCta": "Voir la qualité du papier",
     "fscPaper": "Papier certifié FSC",
     "artisanalShipping": "Livraison artisanale",
@@ -107,27 +508,6 @@
     "descriptionEnd": "du personnage principal, une feuille d'autocollants mats et un marque-page en bois.",
     "cta": "Ajouter des extras physiques (+12.90€)",
     "imageCaption": "Le cadeau parfait"
-  },
-  "testimonials": {
-    "title": "Familles Déconnectées",
-    "subtitle": "Ce que disent les parents qui ont choisi le papier plutôt que les pixels.",
-    "reviews": {
-      "laura": {
-        "name": "Laura M.",
-        "subtitle": "A acheté \"La Forêt Magique\"",
-        "text": "Enfin quelque chose qui n'a pas besoin de chargeur. La qualité du livre est impressionnante, on dirait qu'il sort d'une librairie ancienne mais avec mon fils dedans."
-      },
-      "carlos": {
-        "name": "Carlos R.",
-        "subtitle": "A acheté le Pack Premium",
-        "text": "L'odeur du livre neuf en ouvrant le colis était incroyable. Les détails physiques comme la lettre supplémentaire ont apporté une touche véritablement magique."
-      },
-      "marta": {
-        "name": "Marta P.",
-        "subtitle": "A acheté \"Pirates de la Mer\"",
-        "text": "Ma fille de 4 ans me le demande chaque soir. Voir son nom et son visage à chaque page lui a donné une joie qu'aucun jouet numérique n'a jamais égalée."
-      }
-    }
   },
   "collectionOffer": {
     "badge": "Bibliothèque Personnelle",
@@ -341,28 +721,15 @@
       "saveAndExit": "Enregistrer et quitter",
       "step": "Étape {current} sur {total}",
       "regenerateTooltip": "Changer le portrait",
-      "years": "ans"
+      "years": "ans",
+      "stepCharacter": "Personnage",
+      "stepAdventure": "Aventure",
+      "stepDedication": "Dédicace"
     },
     "footer": {
       "back": "Retour",
       "next": "Suivant",
       "saving": "Enregistrement..."
-    },
-    "step1": {
-      "title": "Comment souhaitez-vous créer cette aventure ?",
-      "subtitle": "À vous de choisir : préparez-le en surprise ou vivez l'expérience ensemble en famille.",
-      "solo": {
-        "title": "Je le prépare en surprise",
-        "subtitle": "Cadeau Secret",
-        "description": "Concevez le conte en secret pendant que votre enfant dort. Vous contrôlez chaque détail : l'histoire, les illustrations et le message spécial qui sera imprimé à l'intérieur.",
-        "imageAlt": "Parent préparant un livre surprise sur un ordinateur"
-      },
-      "juntos": {
-        "title": "Nous le créons ensemble",
-        "subtitle": "Expérience Familiale",
-        "description": "Une expérience à partager en famille. Asseyez-vous avec votre enfant et prenez les décisions ensemble : quelle aventure vivre, quels personnages inclure et comment se termine l'histoire.",
-        "imageAlt": "Père, mère et enfant créant ensemble sur une tablette"
-      }
     },
     "step2": {
       "title": "Créez votre petit héros",
@@ -407,6 +774,10 @@
     "portraitReveal": {
       "generating": "Création de {name}...",
       "generatingSubtitle": "Nous donnons vie à ton personnage tel que tu l'as décrit",
+      "step1": "Mélange des couleurs de l'aquarelle…",
+      "step2": "Dessin de son regard et de son sourire…",
+      "step3": "Coiffage de chaque mèche de cheveux…",
+      "step4": "Ajout de la touche de magie finale…",
       "revealTitle": "Voici {name}",
       "revealTitleFemale": "Voici {name}",
       "revealSubtitle": "Tel que tu l'as décrit. Maintenant, choisis son aventure.",
@@ -419,54 +790,6 @@
       "regenerateTooltip": "Générer un nouveau portrait",
       "rateLimitError": "Tu as généré trop de portraits. Réessaye dans une heure."
     },
-    "step3": {
-      "title": "Quelle aventure vivra {name} ?",
-      "titleJuntos": "Quelle aventure veux-tu vivre, {name} ?",
-      "subtitle": "Sélectionnez une histoire magique pour commencer le voyage. Chaque conte est conçu pour éveiller son imagination.",
-      "subtitleJuntos": "Choisis ton aventure préférée. C'est toi qui décides quelle histoire racontera ce livre !",
-      "recommendedFor": "Pour {name}",
-      "recommended": "Top",
-      "defaultName": "votre héros",
-      "filterAll": "Toutes"
-    },
-    "step4": {
-      "solo": {
-        "title": "Le Livre aux Mille Décisions",
-        "subtitle": "Personnalisez les détails de l'histoire de <highlight>{name}</highlight> et observez la magie se transformer.",
-        "defaultName": "votre héros",
-        "companionTab": "Compagnon",
-        "atmosphereTab": "Atmosphère",
-        "twistTab": "Le Rebondissement",
-        "timeOfDay": "Moment de la journée",
-        "setting": "Décor",
-        "chapter": "Chapitre 1",
-        "storyStart": "Il était une fois un petit explorateur nommé",
-        "storyLived": "qui vivait au bord de l'inconnu.",
-        "skyShowed": "Le ciel montrait un",
-        "notAlone": "il n'était pas seul, son fidèle",
-        "followedClose": "le suivait de près.",
-        "unknownAfternoon": "Un après-midi, il décida de s'aventurer dans l'inconnu...",
-        "wouldFace": "Ce qu'ils ne savaient pas, c'est qu'ils allaient bientôt affronter",
-        "settingLabel": "Décor :",
-        "page": "Page",
-        "specialMomentLabel": "Y a-t-il un moment spécial que vous souhaitez inclure ?",
-        "specialMomentPlaceholder": "Ex : Qu'il surmonte sa peur du noir, qu'il partage avec sa sœur, qu'il apprenne à être courageux...",
-        "specialMomentHint": "Nous intégrerons ce moment dans l'histoire de manière naturelle.",
-        "storyPreview": "Aperçu",
-        "yourStory": "Votre histoire jusqu'ici",
-        "notChosen": "Pas encore choisi",
-        "companionContext": "Qui accompagnera {name} dans son aventure ? Ce personnage apparaîtra dans les moments clés du conte et dans les illustrations.",
-        "atmosphereContext": "Choisissez le moment de la journée et le décor. Cela façonne le ton émotionnel et le style visuel de chaque illustration.",
-        "twistContext": "Toute grande histoire a un défi. Cela définit l'arc émotionnel et la leçon que {name} apprendra au fil de l'histoire.",
-        "nextTooltipPrefix": "Manque encore"
-      },
-      "juntos": {
-        "defaultName": "le héros",
-        "chooseNext": "Choisissez la prochaine étape de l'histoire !",
-        "decision": "Décision {current} sur {total}",
-        "nextDecision": "Décision suivante"
-      }
-    },
     "step5": {
       "title": "Le Grand Final",
       "subtitle": "Comment souhaitez-vous que l'aventure de <highlight>{name}</highlight> se termine ? Vous avez le dernier mot.",
@@ -475,8 +798,8 @@
       "defaultName": "votre héros",
       "dedicationLabel": "Dédicace",
       "dedicationLabelSolo": "Votre message secret",
-      "dedicationPlaceholder": "Cher {name},\nJ'ai écrit ce conte pour te rappeler que tu peux toujours atteindre les étoiles.\nAvec amour, Maman.",
-      "dedicationPlaceholderSolo": "Cher {name},\nJ'ai créé ce livre en pensant à toi, à ta curiosité et à ce sourire qui illumine tout.\nAvec tout mon amour.",
+      "dedicationPlaceholder": "Pour {name},\nJ'ai écrit ce conte pour te rappeler que tu peux toujours atteindre les étoiles.\nAvec amour, Maman.",
+      "dedicationPlaceholderSolo": "Pour {name},\nJ'ai créé ce livre en pensant à toi, à ta curiosité et à ce sourire qui illumine tout.\nAvec tout mon amour.",
       "senderPlaceholder": "Votre nom (ex : Maman, Papa, Mamie...)",
       "adventureOf": "L'aventure de {name}",
       "createMyStory": "Créer mon conte",
@@ -543,6 +866,9 @@
       "lockedDescription": "Débloquez l'histoire complète pour découvrir la suite.",
       "lockedCta": "Débloquer l'histoire",
       "expandPage": "Voir en plein écran",
+      "freshTitle": "L'histoire de {name} est prête !",
+      "freshSubtitle": "Tourne les pages et découvre son aventure…",
+      "freshSkip": "Continuer vers l'aperçu",
       "downloadPdf": "Télécharger le PDF complet",
       "generatingPdf": "Génération du PDF...",
       "downloadHint": "Téléchargez l'histoire complète au format PDF",
@@ -573,6 +899,30 @@
       "companion": "Compagnon",
       "interests": "Il/Elle adore",
       "colophonText": "Ce livre a été créé avec amour par Meapica. Chaque histoire est unique, écrite et illustrée spécialement pour son protagoniste. Parce que chaque enfant mérite d'être le héros de sa propre aventure."
+    },
+    "path": {
+      "title": "L’aventure de {name}",
+      "subtitle": "Décidez son histoire pas à pas, comme un livre où tu choisis la suite.",
+      "chapter": "Chapitre {n}",
+      "worldChapter": "Le début",
+      "protagonist": "Héros",
+      "worldLabel": "Le monde",
+      "worldQuestion": "Où commence l’aventure de {name} ?",
+      "ambientLabel": "L’ambiance",
+      "timeQuestion": "À quel moment se passe tout cela ?",
+      "settingQuestion": "Dans quel coin de ce monde ?",
+      "change": "changer",
+      "edit": "modifier",
+      "nextHint": "et ensuite…",
+      "finishCta": "Continuer",
+      "backToStart": "Retour",
+      "recommendedBadge": "Recommandé",
+      "worldRecommendHint": "Nous avons mis en avant les meilleures pour {name} selon son âge et ses goûts.",
+      "completeChapter": "Chemin complet",
+      "completeTitle": "Le chemin de {name} est tracé !",
+      "completeSubtitle": "Chaque décision que vous avez prise donnera forme à son histoire. Il ne manque que la touche finale : votre dédicace.",
+      "completeCta": "Écrire la dédicace",
+      "trailLabel": "Le chemin de l’aventure"
     }
   },
   "checkout": {
@@ -626,7 +976,7 @@
       "characters": "Mes personnages"
     },
     "backHome": "Retour à l'accueil",
-    "loadError": "Impossible de charger votre biblioth\u00e8que",
+    "loadError": "Impossible de charger votre bibliothèque",
     "storyStatus": {
       "draft": "Brouillon",
       "generating": "Génération...",
@@ -1254,21 +1604,48 @@
         "decisions": {
           "encounter": {
             "question": "Que découvre {name} en arrivant à l'ère des dinosaures ?",
-            "baby-dino": { "title": "Bébé Dinosaure", "subtitle": "Il s'est perdu et a besoin d'aide" },
-            "fossil-portal": { "title": "Portail de Fossiles", "subtitle": "Un cercle d'os qui brille" },
-            "volcano": { "title": "Volcan Mystérieux", "subtitle": "Quelque chose brille à l'intérieur" }
+            "baby-dino": {
+              "title": "Bébé Dinosaure",
+              "subtitle": "Il s'est perdu et a besoin d'aide"
+            },
+            "fossil-portal": {
+              "title": "Portail de Fossiles",
+              "subtitle": "Un cercle d'os qui brille"
+            },
+            "volcano": {
+              "title": "Volcan Mystérieux",
+              "subtitle": "Quelque chose brille à l'intérieur"
+            }
           },
           "companion": {
             "question": "Qui accompagne {name} à l'ère préhistorique ?",
-            "triceratops": { "title": "Tricératops Gentil", "subtitle": "Fort, loyal et adore jouer" },
-            "pterodactyl": { "title": "Ptérodactyle Rapide", "subtitle": "Voit tout depuis les hauteurs" },
-            "cave-child": { "title": "Enfant des Cavernes", "subtitle": "Parle avec des gestes et des sourires" }
+            "triceratops": {
+              "title": "Tricératops Gentil",
+              "subtitle": "Fort, loyal et adore jouer"
+            },
+            "pterodactyl": {
+              "title": "Ptérodactyle Rapide",
+              "subtitle": "Voit tout depuis les hauteurs"
+            },
+            "cave-child": {
+              "title": "Enfant des Cavernes",
+              "subtitle": "Parle avec des gestes et des sourires"
+            }
           },
           "challenge": {
             "question": "Quel danger menace les dinosaures de {name} ?",
-            "tar-pits": { "title": "Marécages de Goudron", "subtitle": "Les dinosaures restent coincés !" },
-            "t-rex": { "title": "T-Rex en Colère", "subtitle": "Il a mal aux dents et grogne sur tout le monde" },
-            "meteor": { "title": "Pluie d'Étoiles", "subtitle": "Quelque chose approche depuis le ciel !" }
+            "tar-pits": {
+              "title": "Marécages de Goudron",
+              "subtitle": "Les dinosaures restent coincés !"
+            },
+            "t-rex": {
+              "title": "T-Rex en Colère",
+              "subtitle": "Il a mal aux dents et grogne sur tout le monde"
+            },
+            "meteor": {
+              "title": "Pluie d'Étoiles",
+              "subtitle": "Quelque chose approche depuis le ciel !"
+            }
           }
         },
         "atmosphere": {
@@ -1284,9 +1661,18 @@
           }
         },
         "endings": {
-          "dino-farewell": { "title": "Adieu Jurassique", "description": "Les dinosaures rugissent de joie en disant au revoir à leur nouvel ami." },
-          "time-souvenir": { "title": "Souvenir du Passé", "description": "Rentre à la maison avec un petit fossile brillant qui garde la magie du voyage." },
-          "sleeping-under-stars": { "title": "Sous les Étoiles Anciennes", "description": "S'endort à côté du tricératops en regardant le plus ancien ciel du monde." }
+          "dino-farewell": {
+            "title": "Adieu Jurassique",
+            "description": "Les dinosaures rugissent de joie en disant au revoir à leur nouvel ami."
+          },
+          "time-souvenir": {
+            "title": "Souvenir du Passé",
+            "description": "Rentre à la maison avec un petit fossile brillant qui garde la magie du voyage."
+          },
+          "sleeping-under-stars": {
+            "title": "Sous les Étoiles Anciennes",
+            "description": "S'endort à côté du tricératops en regardant le plus ancien ciel du monde."
+          }
         }
       },
       "castle": {
@@ -1297,21 +1683,48 @@
         "decisions": {
           "encounter": {
             "question": "Que découvre {name} en entrant dans le château ?",
-            "dream-mirror": { "title": "Miroir des Rêves", "subtitle": "Montre des mondes que toi seul peux voir" },
-            "baby-dragon": { "title": "Bébé Dragon", "subtitle": "Éternue des étincelles de couleurs" },
-            "enchanted-armor": { "title": "Armure Enchantée", "subtitle": "Bouge toute seule et veut être ton amie" }
+            "dream-mirror": {
+              "title": "Miroir des Rêves",
+              "subtitle": "Montre des mondes que toi seul peux voir"
+            },
+            "baby-dragon": {
+              "title": "Bébé Dragon",
+              "subtitle": "Éternue des étincelles de couleurs"
+            },
+            "enchanted-armor": {
+              "title": "Armure Enchantée",
+              "subtitle": "Bouge toute seule et veut être ton amie"
+            }
           },
           "companion": {
             "question": "Qui accompagne {name} dans le château ?",
-            "wise-cat": { "title": "Chat du Château", "subtitle": "Connaît tous les passages secrets" },
-            "jester": { "title": "Bouffon Magique", "subtitle": "Ses blagues font de la vraie magie" },
-            "ghost-princess": { "title": "Fantôme Amical", "subtitle": "Connaît l'histoire du château" }
+            "wise-cat": {
+              "title": "Chat du Château",
+              "subtitle": "Connaît tous les passages secrets"
+            },
+            "jester": {
+              "title": "Bouffon Magique",
+              "subtitle": "Ses blagues font de la vraie magie"
+            },
+            "ghost-princess": {
+              "title": "Fantôme Amical",
+              "subtitle": "Connaît l'histoire du château"
+            }
           },
           "challenge": {
             "question": "Qu'est-ce qui menace le royaume de {name} ?",
-            "nightmare-cloud": { "title": "Nuage de Cauchemars", "subtitle": "Transforme les rêves en cauchemars" },
-            "frozen-time": { "title": "Temps Gelé", "subtitle": "Tout s'arrête sauf toi" },
-            "labyrinth": { "title": "Labyrinthe Mouvant", "subtitle": "Les couloirs bougent et changent" }
+            "nightmare-cloud": {
+              "title": "Nuage de Cauchemars",
+              "subtitle": "Transforme les rêves en cauchemars"
+            },
+            "frozen-time": {
+              "title": "Temps Gelé",
+              "subtitle": "Tout s'arrête sauf toi"
+            },
+            "labyrinth": {
+              "title": "Labyrinthe Mouvant",
+              "subtitle": "Les couloirs bougent et changent"
+            }
           }
         },
         "atmosphere": {
@@ -1327,9 +1740,18 @@
           }
         },
         "endings": {
-          "dream-coronation": { "title": "Couronnement de Rêves", "description": "Le royaume célèbre avec une couronne faite d'étoiles et de rêves réalisés." },
-          "dragon-flight": { "title": "Vol avec le Dragon", "description": "Survole le royaume sur le dos d'un dragon amical au coucher du soleil." },
-          "dream-door": { "title": "La Porte des Rêves", "description": "Découvre qu'on peut retourner au château chaque fois qu'on ferme les yeux." }
+          "dream-coronation": {
+            "title": "Couronnement de Rêves",
+            "description": "Le royaume célèbre avec une couronne faite d'étoiles et de rêves réalisés."
+          },
+          "dragon-flight": {
+            "title": "Vol avec le Dragon",
+            "description": "Survole le royaume sur le dos d'un dragon amical au coucher du soleil."
+          },
+          "dream-door": {
+            "title": "La Porte des Rêves",
+            "description": "Découvre qu'on peut retourner au château chaque fois qu'on ferme les yeux."
+          }
         }
       },
       "safari": {
@@ -1340,21 +1762,48 @@
         "decisions": {
           "encounter": {
             "question": "Que découvre {name} dans la savane ?",
-            "lion-cub": { "title": "Lionceau", "subtitle": "Petit, courageux et très endormi" },
-            "baobab-tree": { "title": "Baobab Parlant", "subtitle": "Le plus vieil arbre raconte des histoires" },
-            "watering-hole": { "title": "Oasis Magique", "subtitle": "Un endroit où tous les animaux sont amis" }
+            "lion-cub": {
+              "title": "Lionceau",
+              "subtitle": "Petit, courageux et très endormi"
+            },
+            "baobab-tree": {
+              "title": "Baobab Parlant",
+              "subtitle": "Le plus vieil arbre raconte des histoires"
+            },
+            "watering-hole": {
+              "title": "Oasis Magique",
+              "subtitle": "Un endroit où tous les animaux sont amis"
+            }
           },
           "companion": {
             "question": "Qui accompagne {name} en safari ?",
-            "elephant": { "title": "Éléphant Sage", "subtitle": "A la meilleure mémoire du monde" },
-            "meerkat": { "title": "Suricate Exploratrice", "subtitle": "Toujours de garde, toujours alerte" },
-            "giraffe": { "title": "Girafe Gentille", "subtitle": "Voit tout depuis très haut" }
+            "elephant": {
+              "title": "Éléphant Sage",
+              "subtitle": "A la meilleure mémoire du monde"
+            },
+            "meerkat": {
+              "title": "Suricate Exploratrice",
+              "subtitle": "Toujours de garde, toujours alerte"
+            },
+            "giraffe": {
+              "title": "Girafe Gentille",
+              "subtitle": "Voit tout depuis très haut"
+            }
           },
           "challenge": {
             "question": "Quel problème menace la savane de {name} ?",
-            "drought": { "title": "Grande Sécheresse", "subtitle": "L'eau manque et les animaux ont soif" },
-            "lost-herd": { "title": "Troupeau Perdu", "subtitle": "Les éléphants ne trouvent plus le chemin" },
-            "trapped-animals": { "title": "Animaux Piégés", "subtitle": "Un éboulement bloque le passage" }
+            "drought": {
+              "title": "Grande Sécheresse",
+              "subtitle": "L'eau manque et les animaux ont soif"
+            },
+            "lost-herd": {
+              "title": "Troupeau Perdu",
+              "subtitle": "Les éléphants ne trouvent plus le chemin"
+            },
+            "trapped-animals": {
+              "title": "Animaux Piégés",
+              "subtitle": "Un éboulement bloque le passage"
+            }
           }
         },
         "atmosphere": {
@@ -1370,9 +1819,18 @@
           }
         },
         "endings": {
-          "sunset-gathering": { "title": "Rassemblement au Coucher du Soleil", "description": "Tous les animaux se rassemblent au coucher du soleil pour célébrer avec des rugissements et des chants." },
-          "baobab-promise": { "title": "La Promesse du Baobab", "description": "Laisse une marque sur le baobab pour se souvenir toujours de l'aventure." },
-          "stargazing-savanna": { "title": "Sous le Ciel Africain", "description": "S'allonge parmi les animaux pour contempler la Voie Lactée au-dessus de la savane." }
+          "sunset-gathering": {
+            "title": "Rassemblement au Coucher du Soleil",
+            "description": "Tous les animaux se rassemblent au coucher du soleil pour célébrer avec des rugissements et des chants."
+          },
+          "baobab-promise": {
+            "title": "La Promesse du Baobab",
+            "description": "Laisse une marque sur le baobab pour se souvenir toujours de l'aventure."
+          },
+          "stargazing-savanna": {
+            "title": "Sous le Ciel Africain",
+            "description": "S'allonge parmi les animaux pour contempler la Voie Lactée au-dessus de la savane."
+          }
         }
       },
       "inventor": {
@@ -1383,21 +1841,48 @@
         "decisions": {
           "encounter": {
             "question": "Que découvre {name} dans la fabrique d'inventions ?",
-            "flying-machine": { "title": "Machine Volante", "subtitle": "Faite de parapluies et d'engrenages" },
-            "talking-invention": { "title": "Invention Parlante", "subtitle": "Elle s'est inventée toute seule !" },
-            "shrink-ray": { "title": "Rayon Miniaturisant", "subtitle": "Tout devient minuscule !" }
+            "flying-machine": {
+              "title": "Machine Volante",
+              "subtitle": "Faite de parapluies et d'engrenages"
+            },
+            "talking-invention": {
+              "title": "Invention Parlante",
+              "subtitle": "Elle s'est inventée toute seule !"
+            },
+            "shrink-ray": {
+              "title": "Rayon Miniaturisant",
+              "subtitle": "Tout devient minuscule !"
+            }
           },
           "companion": {
             "question": "Qui aide {name} à inventer ?",
-            "genius-robot": { "title": "Robot Génie", "subtitle": "Calcule tout mais ne comprend pas les blagues" },
-            "mad-professor": { "title": "Professeur Distrait", "subtitle": "Oublie tout sauf d'inventer" },
-            "creative-spark": { "title": "Étincelle Créative", "subtitle": "Une petite lumière qui apparaît quand tu as des idées" }
+            "genius-robot": {
+              "title": "Robot Génie",
+              "subtitle": "Calcule tout mais ne comprend pas les blagues"
+            },
+            "mad-professor": {
+              "title": "Professeur Distrait",
+              "subtitle": "Oublie tout sauf d'inventer"
+            },
+            "creative-spark": {
+              "title": "Étincelle Créative",
+              "subtitle": "Une petite lumière qui apparaît quand tu as des idées"
+            }
           },
           "challenge": {
             "question": "Quel problème surgit dans la fabrique de {name} ?",
-            "chain-reaction": { "title": "Réaction en Chaîne", "subtitle": "Une invention déclenche toutes les autres !" },
-            "imagination-drain": { "title": "Plus d'Imagination", "subtitle": "Les idées ont disparu !" },
-            "time-machine": { "title": "Machine à Remonter le Temps en Panne", "subtitle": "Mélange passé, présent et futur" }
+            "chain-reaction": {
+              "title": "Réaction en Chaîne",
+              "subtitle": "Une invention déclenche toutes les autres !"
+            },
+            "imagination-drain": {
+              "title": "Plus d'Imagination",
+              "subtitle": "Les idées ont disparu !"
+            },
+            "time-machine": {
+              "title": "Machine à Remonter le Temps en Panne",
+              "subtitle": "Mélange passé, présent et futur"
+            }
           }
         },
         "atmosphere": {
@@ -1413,9 +1898,18 @@
           }
         },
         "endings": {
-          "great-invention": { "title": "La Grande Invention", "description": "Présente l'invention la plus incroyable du monde : une qui rend tout le monde heureux." },
-          "inventor-badge": { "title": "Badge d'Inventeur", "description": "Reçoit le badge officiel d'inventeur et un atelier rien qu'à soi." },
-          "blueprints": { "title": "Plans du Futur", "description": "Dessine les plans de sa prochaine invention : la plus ambitieuse jusqu'ici !" }
+          "great-invention": {
+            "title": "La Grande Invention",
+            "description": "Présente l'invention la plus incroyable du monde : une qui rend tout le monde heureux."
+          },
+          "inventor-badge": {
+            "title": "Badge d'Inventeur",
+            "description": "Reçoit le badge officiel d'inventeur et un atelier rien qu'à soi."
+          },
+          "blueprints": {
+            "title": "Plans du Futur",
+            "description": "Dessine les plans de sa prochaine invention : la plus ambitieuse jusqu'ici !"
+          }
         }
       },
       "candy": {
@@ -1426,21 +1920,48 @@
         "decisions": {
           "encounter": {
             "question": "Que découvre {name} au Pays des Bonbons ?",
-            "chocolate-river": { "title": "Rivière de Chocolat", "subtitle": "Du chocolat chaud y coule !" },
-            "candy-garden": { "title": "Jardin de Bonbons", "subtitle": "Des fleurs en sucettes et des arbres en réglisse" },
-            "cookie-house": { "title": "Maison en Biscuit", "subtitle": "Avec un toit en chocolat et une porte en gaufrette" }
+            "chocolate-river": {
+              "title": "Rivière de Chocolat",
+              "subtitle": "Du chocolat chaud y coule !"
+            },
+            "candy-garden": {
+              "title": "Jardin de Bonbons",
+              "subtitle": "Des fleurs en sucettes et des arbres en réglisse"
+            },
+            "cookie-house": {
+              "title": "Maison en Biscuit",
+              "subtitle": "Avec un toit en chocolat et une porte en gaufrette"
+            }
           },
           "companion": {
             "question": "Qui accompagne {name} au Pays des Bonbons ?",
-            "gummy-bear": { "title": "Ourson en Gélatine", "subtitle": "Mou, joyeux et très sucré" },
-            "cookie-baker": { "title": "Pâtissière des Nuages", "subtitle": "Prépare les nuages les plus moelleux" },
-            "candy-fairy": { "title": "Fée du Sucre", "subtitle": "Sa baguette transforme tout en bonbons" }
+            "gummy-bear": {
+              "title": "Ourson en Gélatine",
+              "subtitle": "Mou, joyeux et très sucré"
+            },
+            "cookie-baker": {
+              "title": "Pâtissière des Nuages",
+              "subtitle": "Prépare les nuages les plus moelleux"
+            },
+            "candy-fairy": {
+              "title": "Fée du Sucre",
+              "subtitle": "Sa baguette transforme tout en bonbons"
+            }
           },
           "challenge": {
             "question": "Quel problème y a-t-il au Pays des Bonbons de {name} ?",
-            "melting-kingdom": { "title": "Royaume Fondu", "subtitle": "Il fait trop chaud et tout fond !" },
-            "sour-invasion": { "title": "Invasion Acide", "subtitle": "Les bonbons acides veulent conquérir !" },
-            "sugar-shortage": { "title": "Pénurie de Sucre", "subtitle": "Les bonbons perdent leur saveur !" }
+            "melting-kingdom": {
+              "title": "Royaume Fondu",
+              "subtitle": "Il fait trop chaud et tout fond !"
+            },
+            "sour-invasion": {
+              "title": "Invasion Acide",
+              "subtitle": "Les bonbons acides veulent conquérir !"
+            },
+            "sugar-shortage": {
+              "title": "Pénurie de Sucre",
+              "subtitle": "Les bonbons perdent leur saveur !"
+            }
           }
         },
         "atmosphere": {
@@ -1456,35 +1977,26 @@
           }
         },
         "endings": {
-          "candy-feast": { "title": "Grand Festin de Bonbons", "description": "Tout le royaume célèbre avec la fête la plus sucrée jamais vue." },
-          "candy-pocket": { "title": "Poche Magique", "description": "Rentre à la maison avec une poche qui contient toujours le bonbon parfait." },
-          "sweet-dreams": { "title": "Doux Rêves", "description": "S'endort dans un lit de barbe à papa en rêvant d'y retourner." }
+          "candy-feast": {
+            "title": "Grand Festin de Bonbons",
+            "description": "Tout le royaume célèbre avec la fête la plus sucrée jamais vue."
+          },
+          "candy-pocket": {
+            "title": "Poche Magique",
+            "description": "Rentre à la maison avec une poche qui contient toujours le bonbon parfait."
+          },
+          "sweet-dreams": {
+            "title": "Doux Rêves",
+            "description": "S'endort dans un lit de barbe à papa en rêvant d'y retourner."
+          }
         }
       }
     }
   },
   "showcase": {
-    "loading": "Chargement de l'exemple...",
-    "backToHome": "Retour à l'accueil",
-    "library": "Bibliothèque",
-    "sampleBadge": "Exemple réel",
-    "personalizedFor": "Histoire personnalisée pour {name}",
-    "softcover": "Couverture souple",
-    "hardcover": "Couverture rigide (Premium)",
-    "pageCount": "{count} pages",
-    "downloadPdf": "Télécharger le PDF d'exemple",
-    "generatingPdf": "Génération du PDF...",
-    "fromPrice": "À partir de {price}€",
-    "createYourOwn": "Créer mon propre conte",
-    "createYourVersion": "Créez votre propre version",
-    "createYourVersionHint": "Personnalisez le personnage, choisissez l'aventure et recevez un livre unique chez vous.",
-    "pages": "pages",
-    "createHint": "Personnalisez un livre unique pour votre enfant",
-    "previous": "Précédent",
-    "next": "Suivant",
-    "personalizedStory": "Une histoire personnalisée pour",
-    "createdFor": "Une histoire créée spécialement pour",
-    "end": "Fin"
+    "title": "Exemples de contes réels",
+    "subtitle": "Découvrez des contes personnalisés que nous avons déjà créés. Chacun est unique — imaginez celui de votre enfant.",
+    "cta": "Créer celui de mon enfant"
   },
   "waitlist": {
     "badge": "Bientôt disponible",
@@ -1518,5 +2030,14 @@
     "feature3Title": "Expédition artisanale",
     "feature3Description": "Emballé avec soin, prêt à offrir ou à conserver comme un trésor.",
     "copyright": "© 2026 Meapica. Tous droits réservés."
+  },
+  "blog": {
+    "title": "Idées, cadeaux & lecture",
+    "subtitle": "Guides et conseils pour mieux offrir et accompagner les enfants dans leur amour des livres.",
+    "readingTime": "{min} min de lecture",
+    "backToBlog": "Retour au blog",
+    "empty": "De nouveaux articles arrivent bientôt.",
+    "relatedHeading": "Continuez à explorer",
+    "author": "Par {author}"
   }
 }

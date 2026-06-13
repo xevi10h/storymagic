@@ -30,6 +30,7 @@ export default function PageFlip({ page, disabled, children }: PageFlipProps) {
   if (page !== prevPage) {
     if (!disabled) {
       setDirection(page > prevPage ? "forward" : "back");
+      // eslint-disable-next-line react-hooks/refs -- intentional render-time read: the ref holds a DOM snapshot of the *previous* page, captured post-commit in the effect below; reading it here is the only way to hand it to the exit animation without a flash
       setOutgoingHtml(snapshotHtmlRef.current);
       setPhase("animating");
     }

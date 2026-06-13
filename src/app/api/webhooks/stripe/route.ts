@@ -3,6 +3,7 @@ import { getStripe, getStripeWebhookSecret } from "@/lib/stripe";
 import { createClient as createSupabaseAdmin } from "@supabase/supabase-js";
 import type Stripe from "stripe";
 import type { Database } from "@/lib/database.types";
+import { notifyOrderEmail } from "@/lib/email/notify-order";
 
 // Service-role client for webhook context (no user session/cookies available)
 function createServiceClient() {
@@ -165,6 +166,19 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   }
 
   console.log(`Order paid for story ${storyId}, session ${session.id}, story status: ${story?.status}`);
+
+  // Order-confirmed email — physical orders only (digital downloads immediately).
+  // Best-effort: never block the webhook on email delivery.
+  const format = session.metadata?.format;
+  const isPhysical = format !== "digital_pdf";
+  if (isPhysical) {
+    await notifyOrderEmail({
+      supabase,
+      event: "order_confirmed",
+      storyId,
+      userId,
+    });
+  }
 }
 
 async function handleCheckoutExpired(session: Stripe.Checkout.Session) {

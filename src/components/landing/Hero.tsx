@@ -1,9 +1,23 @@
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { PRICING } from "@/lib/pricing";
+
+const LOCALE_TAG: Record<string, string> = {
+  es: "es-ES",
+  ca: "ca-ES",
+  en: "en-IE",
+  fr: "fr-FR",
+};
 
 export default function Hero() {
   const t = useTranslations("hero");
+  const locale = useLocale();
+  const priceFrom = new Intl.NumberFormat(LOCALE_TAG[locale] ?? "es-ES", {
+    style: "currency",
+    currency: "EUR",
+    minimumFractionDigits: 2,
+  }).format(PRICING.softcover.price / 100);
 
   return (
     <header className="relative overflow-hidden px-4 pt-32 pb-20">
@@ -26,6 +40,30 @@ export default function Hero() {
             <span className="italic text-primary">{t("titleHighlight")}</span> {t("titleEnd")}
           </h1>
 
+          {/* Mobile hero image — visible on entry (desktop shows it in the right column) */}
+          <div className="group relative lg:hidden">
+            <div className="relative aspect-[4/3] w-full rotate-1 bg-white p-3 shadow-xl">
+              <div className="pointer-events-none absolute inset-0 z-20 m-2 border-2 border-cream" />
+              <div className="relative h-full w-full overflow-hidden bg-cream">
+                <Image
+                  alt="Child reading a physical book in a cozy nook with warm lighting"
+                  className="object-cover object-top sepia-[0.1] contrast-[1.1]"
+                  src="/images/hero-child-reading.png"
+                  fill
+                  sizes="100vw"
+                  priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent opacity-80" />
+              </div>
+              <div className="absolute right-5 bottom-5 left-5 z-30 text-white">
+                <div className="border-l-4 border-primary bg-black/30 p-3 backdrop-blur-md">
+                  <p className="font-display mb-0.5 text-lg font-bold text-cream">{t("imageCaption")}</p>
+                  <p className="text-xs text-text-light">{t("imageSubcaption")}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <p className="max-w-lg text-lg leading-relaxed text-text-soft lg:text-xl">
             {t("description")}
           </p>
@@ -46,6 +84,13 @@ export default function Hero() {
             </a>
           </div>
 
+          <p className="text-sm text-text-soft">
+            <span className="font-bold text-secondary">
+              {t("priceFrom", { price: priceFrom })}
+            </span>
+            <span className="text-text-muted"> · {t("priceNote")}</span>
+          </p>
+
           <div className="mt-2 flex items-center gap-4 border-t border-border-light pt-6 text-sm font-medium text-text-soft">
             <div className="flex items-center gap-2">
               <span className="material-symbols-outlined text-xl text-success">forest</span>
@@ -59,8 +104,8 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Right — Polaroid image */}
-        <div className="group relative">
+        {/* Right — Polaroid image (desktop only; mobile shows it inline above) */}
+        <div className="group relative hidden lg:block">
           <div className="relative w-full transform rotate-1 bg-white p-3 shadow-xl transition-transform duration-500 aspect-[4/5] group-hover:rotate-0">
             <div className="pointer-events-none absolute inset-0 z-20 m-2 border-2 border-cream" />
             <div className="relative h-full w-full overflow-hidden bg-cream">
@@ -70,6 +115,7 @@ export default function Hero() {
                 src="/images/hero-child-reading.png"
                 width={512}
                 height={512}
+                sizes="(max-width: 1024px) 90vw, 45vw"
                 priority
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-80" />

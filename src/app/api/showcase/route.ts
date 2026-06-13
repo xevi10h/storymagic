@@ -63,7 +63,11 @@ export async function GET(request: Request) {
         scene_number: number;
         image_url: string | null;
       }[]
-    ).sort((a, b) => a.scene_number - b.scene_number);
+    )
+      // Mock/dev illustrations point at assets that no longer exist —
+      // never surface them on the landing page.
+      .filter((i) => i.image_url && !i.image_url.includes("/illustrations/mock/"))
+      .sort((a, b) => a.scene_number - b.scene_number);
 
     // Use the first illustration as the cover image
     const coverImage = illustrations[0]?.image_url ?? null;

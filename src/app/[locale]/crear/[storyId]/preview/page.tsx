@@ -7,6 +7,7 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { PRICING, ADDONS, type BookFormat, type AddonId } from "@/lib/pricing";
 import { useAuth } from "@/hooks/useAuth";
 import CreationHeader from "@/components/crear/CreationHeader";
+import BookRevealOverlay from "@/components/crear/BookRevealOverlay";
 import BookViewerSwitch from "@/components/book-viewer/BookViewerSwitch";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import type { BookPage } from "@/components/book-viewer/types";
@@ -210,6 +211,19 @@ export default function PreviewPage() {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
 
+  // One-shot "book is born" reveal — flagged by /generar right before redirect
+  const [showReveal, setShowReveal] = useState(false);
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem("meapica_fresh_book") === storyId) {
+        sessionStorage.removeItem("meapica_fresh_book");
+        setShowReveal(true);
+      }
+    } catch {
+      // storage unavailable — skip the reveal
+    }
+  }, [storyId]);
+
   // Checkout state
   const [format, setFormat] = useState<BookFormat>("digital_pdf");
   const [addons, setAddons] = useState<Set<AddonId>>(new Set());
@@ -393,6 +407,14 @@ export default function PreviewPage() {
   return (
     <div className="min-h-screen bg-create-bg">
       <CreationHeader rightAction="close" />
+
+      {showReveal && (
+        <BookRevealOverlay
+          coverUrl={story.cover_image_url}
+          childName={story.characters.name}
+          onDone={() => setShowReveal(false)}
+        />
+      )}
 
       {/* Book title + page counter */}
       <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-2">

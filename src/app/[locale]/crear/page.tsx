@@ -7,7 +7,6 @@ import { useSearchParams } from "next/navigation";
 import {
   CreateBookState,
   INITIAL_STATE,
-  type CreationMode,
   type EndingChoice,
   type StoryDecisions,
   getTemplateConfig,
@@ -15,16 +14,14 @@ import {
 } from "@/lib/create-store";
 import { usePersistedState, STORAGE_KEY } from "@/hooks/usePersistedState";
 import { useAuth } from "@/hooks/useAuth";
-import Step1ModeSelection from "@/components/crear/Step1ModeSelection";
 import Step2CharacterCreation from "@/components/crear/Step2CharacterCreation";
-import Step3AdventureSelection from "@/components/crear/Step3AdventureSelection";
-import Step4Decisions from "@/components/crear/Step4Decisions";
+import PathBuilder from "@/components/crear/PathBuilder";
 import Step5AuthorMessage from "@/components/crear/Step5AuthorMessage";
 import PortraitReveal from "@/components/crear/PortraitReveal";
-import GuestGate from "@/components/crear/GuestGate";
 import PageFlip from "@/components/crear/PageFlip";
 
-const TOTAL_STEPS = 5;
+// New flow: 1 = character, 2 = path (world + decisions), 3 = dedication
+const TOTAL_STEPS = 3;
 
 export default function CrearPage() {
   return (
@@ -37,14 +34,13 @@ export default function CrearPage() {
 function CrearPageContent() {
   const t = useTranslations("crear");
   const locale = useLocale();
-  const [state, setState, clearState] = usePersistedState<CreateBookState>(
+  const [state, setState, clearState, hydrated] = usePersistedState<CreateBookState>(
     STORAGE_KEY,
     INITIAL_STATE
   );
   const [saving, setSaving] = useState(false);
   const [navigating, setNavigating] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showGuestGate, setShowGuestGate] = useState(false);
   const [showPortraitReveal, setShowPortraitReveal] = useState(false);
   const [showRegenerateConfirm, setShowRegenerateConfirm] = useState(false);
   /** When true, user entered via catalog — skip Steps 3-5, use catalog defaults */
@@ -79,8 +75,8 @@ function CrearPageContent() {
   }, [setState]);
 
   const goBack = useCallback(() => {
-    // In catalog mode, going back from Step 2 returns to landing
-    if (catalogMode && state.currentStep <= 2) {
+    // From the first step (character), or catalog mode, leave to the landing.
+    if (state.currentStep <= 1 || (catalogMode && state.currentStep <= 2)) {
       router.push("/");
       return;
     }
@@ -89,6 +85,35 @@ function CrearPageContent() {
       currentStep: Math.max(prev.currentStep - 1, 1),
     }));
   }, [setState, catalogMode, state.currentStep, router]);
+
+  // High-water mark: furthest step the user has validly advanced to. Lets the
+  // header stepper jump back/forward among steps already unlocked this session.
+  const [maxStep, setMaxStep] = useState(state.currentStep);
+  useEffect(() => {
+    setMaxStep((m) => Math.max(m, state.currentStep));
+  }, [state.currentStep]);
+
+  // A step is reachable when it's been unlocked AND its data prerequisites hold:
+  // step 2 (path) needs a portrait; step 3 (dedication) needs a chosen template.
+  const isStepReachable = useCallback(
+    (step: number) => {
+      if (catalogMode) return false; // catalog flow auto-advances; no manual hops
+      if (step < 1 || step > TOTAL_STEPS || step > maxStep) return false;
+      if (step >= 2 && !state.portraitUrl) return false;
+      if (step >= 3 && !state.selectedTemplate) return false;
+      return true;
+    },
+    [catalogMode, maxStep, state.portraitUrl, state.selectedTemplate],
+  );
+
+  const goToStep = useCallback(
+    (step: number) => {
+      if (!isStepReachable(step)) return;
+      setShowPortraitReveal(false);
+      setState((prev) => ({ ...prev, currentStep: step }));
+    },
+    [isStepReachable, setState],
+  );
 
   // Build a snapshot string of character fields that affect the portrait
   const getCharacterSnapshot = useCallback((char: typeof state.character) => {
@@ -128,7 +153,7 @@ function CrearPageContent() {
       ...prev,
       portraitUrl: null,
       recraftStyleId: null,
-      currentStep: 2,
+      currentStep: 1,
     }));
     setShowPortraitReveal(true);
   }, [setState]);
@@ -140,7 +165,7 @@ function CrearPageContent() {
         portraitUrl,
         recraftStyleId,
         portraitCharacterSnapshot: getCharacterSnapshot(prev.character),
-        currentStep: catalogMode ? prev.currentStep : 3, // In catalog mode, stay on step 2 — we'll auto-save
+        currentStep: catalogMode ? prev.currentStep : 2, // → the path (step 2); catalog stays to auto-save
       }));
       setShowPortraitReveal(false);
 
@@ -155,13 +180,6 @@ function CrearPageContent() {
   const handlePortraitBack = useCallback(() => {
     setShowPortraitReveal(false);
   }, []);
-
-  const setMode = useCallback(
-    (mode: CreationMode) => {
-      setState((prev) => ({ ...prev, mode }));
-    },
-    [setState]
-  );
 
   const updateCharacter = useCallback(
     (updates: Partial<CreateBookState["character"]>) => {
@@ -273,16 +291,12 @@ function CrearPageContent() {
   const handleFinish = useCallback(async () => {
     if (user) {
       await saveAndGenerate();
-    } else {
-      setShowGuestGate(true);
+      return;
     }
-  }, [user, saveAndGenerate]);
-
-  const handleGuestContinue = useCallback(async () => {
-    setShowGuestGate(false);
+    // No account required — continue seamlessly as guest (anonymous session).
+    // Account creation is offered later (post-purchase), it never blocks creation.
     setSaving(true);
     setError(null);
-
     try {
       // Sign in anonymously so we get a real user_id for the DB
       const { createClient } = await import("@/lib/supabase/client");
@@ -301,14 +315,7 @@ function CrearPageContent() {
       setError(err instanceof Error ? err.message : "Error inesperado");
       setSaving(false);
     }
-  }, [saveAndGenerate]);
-
-  const handleGuestLogin = useCallback(() => {
-    // State is persisted in localStorage — redirect to login
-    // After login, user returns to /crear?step=finish and auto-saves
-    const next = encodeURIComponent("/crear?step=finish");
-    router.push(`/auth/login?next=${next}`);
-  }, [router]);
+  }, [user, saveAndGenerate]);
 
   // Catalog mode: auto-save after portrait is complete
   useEffect(() => {
@@ -328,7 +335,7 @@ function CrearPageContent() {
       state.selectedTemplate
     ) {
       autoFinishTriggered.current = true;
-      setState((prev) => ({ ...prev, currentStep: 5 }));
+      setState((prev) => ({ ...prev, currentStep: TOTAL_STEPS }));
       saveAndGenerate();
     }
   }, [searchParams, user, authLoading, state.selectedTemplate, setState, saveAndGenerate]);
@@ -389,16 +396,17 @@ function CrearPageContent() {
           endingNote: defaults?.endingNote ?? "",
           dedication: defaults?.dedication ?? "",
           senderName: defaults?.senderName ?? "",
-          currentStep: 2, // Go to character creation (Step 2)
+          currentStep: 1, // Character step; catalog auto-saves after portrait
         });
       } else {
-        // Standard prefill from dashboard
+        // Standard prefill (dashboard reorder / SEO theme link): start at character.
+        // If a template came in (SEO), the path will have its world pre-answered.
         setState({
           ...INITIAL_STATE,
           character: characterData,
           selectedTemplate: templateParam ?? null,
           mode: "solo",
-          currentStep: templateParam && characterIdParam ? 3 : templateParam ? 3 : 2,
+          currentStep: 1,
         });
       }
 
@@ -414,8 +422,9 @@ function CrearPageContent() {
     ? getTemplateConfig(state.selectedTemplate)
     : undefined;
 
-  // Hold render until prefill is resolved to avoid step-1 flash
-  if (!prefillReady) {
+  // Hold render until the persisted draft has hydrated AND prefill is resolved,
+  // so we never flash step 1 before jumping to a restored step (no double render).
+  if (!hydrated || !prefillReady) {
     return <div className="min-h-screen bg-create-bg" />;
   }
 
@@ -442,24 +451,19 @@ function CrearPageContent() {
 
       <div className="relative z-10">
         <PageFlip page={state.currentStep} disabled={catalogMode}>
-          {state.currentStep === 1 && (
-            <Step1ModeSelection
-              mode={state.mode}
-              onSelectMode={setMode}
-              onNext={goNext}
-            />
-          )}
-          {state.currentStep === 2 && !showPortraitReveal && (
+          {state.currentStep === 1 && !showPortraitReveal && (
             <Step2CharacterCreation
-              mode={state.mode}
+              mode={state.mode ?? "solo"}
               character={state.character}
               catalogMode={catalogMode}
               onUpdateCharacter={updateCharacter}
               onNext={handleStep2Next}
               onBack={goBack}
+              onStepClick={goToStep}
+              canStepNavigate={isStepReachable}
             />
           )}
-          {state.currentStep === 2 && showPortraitReveal && (
+          {state.currentStep === 1 && showPortraitReveal && (
             <PortraitReveal
               character={state.character}
               onComplete={handlePortraitComplete}
@@ -467,37 +471,24 @@ function CrearPageContent() {
               onBack={handlePortraitBack}
             />
           )}
-          {state.currentStep === 3 && (
-            <Step3AdventureSelection
-              mode={state.mode}
+          {state.currentStep === 2 && (
+            <PathBuilder
+              character={state.character}
               selectedTemplate={state.selectedTemplate}
-              characterName={state.character.name}
-              characterAge={state.character.age}
-              characterInterests={state.character.interests}
-              portraitUrl={state.portraitUrl}
-              onRegeneratePortrait={handleRegeneratePortrait}
-              onSelectTemplate={setTemplate}
-              onNext={goNext}
-              onBack={goBack}
-            />
-          )}
-          {state.currentStep === 4 && templateConfig && (
-            <Step4Decisions
-              mode={state.mode}
               decisions={state.decisions}
-              characterName={state.character.name}
-              characterAge={state.character.age}
-              template={templateConfig}
               portraitUrl={state.portraitUrl}
-              onRegeneratePortrait={handleRegeneratePortrait}
+              onSelectTemplate={setTemplate}
               onUpdateDecisions={updateDecisions}
-              onNext={goNext}
+              onRegeneratePortrait={handleRegeneratePortrait}
+              onComplete={goNext}
               onBack={goBack}
+              onStepClick={goToStep}
+              canStepNavigate={isStepReachable}
             />
           )}
-          {state.currentStep === 5 && templateConfig && (
+          {state.currentStep === 3 && templateConfig && (
             <Step5AuthorMessage
-              mode={state.mode}
+              mode={state.mode ?? "solo"}
               dedication={state.dedication}
               senderName={state.senderName}
               ending={state.ending}
@@ -514,6 +505,8 @@ function CrearPageContent() {
               onSetEndingNote={setEndingNote}
               onNext={handleFinish}
               onBack={goBack}
+              onStepClick={goToStep}
+              canStepNavigate={isStepReachable}
             />
           )}
         </PageFlip>
@@ -558,16 +551,6 @@ function CrearPageContent() {
               </div>
             </div>
           </div>
-        )}
-
-        {/* Guest gate modal */}
-        {showGuestGate && (
-          <GuestGate
-            onContinueAsGuest={handleGuestContinue}
-            onLogin={handleGuestLogin}
-            onClose={() => setShowGuestGate(false)}
-            saving={saving}
-          />
         )}
 
         {/* Error toast */}

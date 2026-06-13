@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import crypto from "node:crypto";
+import { createClient as createServiceClient } from "@supabase/supabase-js";
 import {
   buildPortraitCharacterReference,
   buildColorAnchor,
@@ -7,10 +9,13 @@ import {
   type PortraitPersonalityInput,
 } from "@/lib/ai/character-description";
 import { createStyleFromAvatar, generateWithRetry } from "@/lib/ai/illustrations";
+import { generateFlux2 } from "@/lib/ai/flux2";
+import { WATERCOLOR_STYLE_SUFFIX } from "@/lib/ai/style";
+import { uploadReferenceFromBase64 } from "@/lib/supabase/storage";
 import { getMockPortraitUrl } from "@/lib/ai/mock-story";
 
-// Portrait generation takes ~5-10s with Recraft
-export const maxDuration = 30;
+// FLUX.2 portrait generation (polling) — allow more headroom than Recraft.
+export const maxDuration = 60;
 
 const portraitInputSchema = z.object({
   childName: z.string().min(1).max(50),
@@ -30,14 +35,15 @@ const portraitInputSchema = z.object({
 /**
  * POST /api/characters/portrait
  *
- * Generates a single AI portrait using the book's age-appropriate illustration
- * style (Recraft V3). The same image serves as both:
- * 1. WOW moment — the user sees their character in the book's art style
- * 2. Style reference — used to create a Recraft style_id for visual consistency
+ * Generates the child's AVATAR portrait in the book's watercolor style using
+ * FLUX.2 (same library as the book illustrations; Recraft is fallback only).
  *
- * Portrait style matches the book: child_book for all ages, with age-adapted prompts.
+ * The returned image is THE identity base: saved as character.avatar_url, then
+ * used downstream to anchor the protagonist reference sheet, which anchors every
+ * scene — so the same child stays consistent across the whole book.
  *
- * Returns: { portraitUrl, recraftStyleId }
+ * Returns: { portraitUrl, recraftStyleId } — recraftStyleId is null on the FLUX.2
+ * path (consistency comes from the reference image, not a Recraft style_id).
  */
 export async function POST(request: Request) {
   try {
@@ -56,8 +62,10 @@ export async function POST(request: Request) {
       );
     }
 
-    // Skip rate limiting in mock/dev mode — only enforce with real Recraft API
+    // Provider selection — standardize on FLUX.2 (same library as the book), Recraft = fallback.
     const mockMode = process.env.MOCK_MODE === "true";
+    const provider = process.env.ILLUSTRATION_PROVIDER || "recraft";
+    const useFlux = (provider === "flux2" || provider === "flux") && !!process.env.BFL_API_KEY;
     const recraftApiToken = process.env.RECRAFT_API_TOKEN?.trim();
     const hasRecraft = !mockMode && recraftApiToken && !recraftApiToken.includes("your_");
 
@@ -77,16 +85,12 @@ export async function POST(request: Request) {
     // Layer 5 — color protection
     const colorAnchor = buildColorAnchor(charInput);
 
-    if (!hasRecraft) {
-      return NextResponse.json({
-        portraitUrl: getMockPortraitUrl(),
-        recraftStyleId: null,
-      });
+    if (mockMode) {
+      return NextResponse.json({ portraitUrl: getMockPortraitUrl(), recraftStyleId: null });
     }
 
     // Age-adaptive illustration style — driven entirely by the prompt.
     // Goes from very simple/rounded (toddlers) to more detailed (older kids).
-    // Always non-realistic: digital_illustration/child_book is the fixed base.
     const ageStylePrompt = age <= 4
       ? "Very simple rounded shapes, soft pastel watercolor style, large expressive eyes, minimal details, warm cozy colors."
       : age <= 6
@@ -94,6 +98,35 @@ export async function POST(request: Request) {
         : age <= 9
           ? "Warm storytelling illustration style, balanced detail and expression, rich atmospheric quality, expressive character design."
           : "Detailed children's book illustration style, warm natural lighting, expressive character design, clean colors.";
+
+    // ── FLUX.2 portrait (default) ─────────────────────────────────────────────
+    // This image becomes the child's AVATAR — the single identity base reused
+    // afterwards: it anchors the protagonist reference sheet, which in turn anchors
+    // every scene. Uploaded to Supabase Storage so the URL is permanent (BFL sample
+    // URLs expire in ~10 min). recraftStyleId is null — the FLUX.2 pipeline achieves
+    // consistency via this reference image, not a Recraft style_id.
+    if (useFlux) {
+      const flux2Prompt = [
+        portraitCharRef + ".",
+        "Close-up character portrait, centered, three-quarter view, warm friendly smile.",
+        "Soft clean pastel background, gentle natural lighting.",
+        ageStylePrompt,
+        colorAnchor,
+      ].filter(Boolean).join(" ") + WATERCOLOR_STYLE_SUFFIX;
+
+      const result = await generateFlux2(flux2Prompt, { aspectRatio: "1:1" });
+      const admin = createServiceClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      );
+      const portraitUrl = await uploadReferenceFromBase64(admin, "portraits", crypto.randomUUID(), result.base64);
+      console.log(`[Portrait] FLUX.2 avatar generated + uploaded: ${portraitUrl.slice(-40)}`);
+      return NextResponse.json({ portraitUrl, recraftStyleId: null });
+    }
+
+    if (!hasRecraft) {
+      return NextResponse.json({ portraitUrl: getMockPortraitUrl(), recraftStyleId: null });
+    }
 
     const portraitPrompt = [
       portraitCharRef + ".",

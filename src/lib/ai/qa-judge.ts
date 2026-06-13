@@ -1,10 +1,12 @@
 // QA Judge — automated quality review for book illustrations
 //
-// Uses OpenAI Vision (gpt-4o) to analyze each illustration against its
-// scene text and reference images. Returns a structured report with
-// per-scene scores and specific issues.
+// Uses Gemini 2.5 Flash (vision) to score each illustration against its scene
+// spec and the visual-bible reference images. Returns per-scene scores + issues.
+//
+// Why Gemini 2.5 Flash (not gpt-4o): ~10× cheaper on vision, handles many images
+// per call, and consolidates on the same Google key already used for image work.
 
-import { callLLM, parseJsonResponse } from "./story-generator";
+import { parseJsonResponse } from "./story-generator";
 import type { Screenplay } from "./scene-screenplay";
 import type { AssetReference } from "./visual-assets";
 
@@ -12,9 +14,9 @@ import type { AssetReference } from "./visual-assets";
 
 export interface QAVerdict {
   sceneNumber: number;
-  score: number;              // 1-10
+  score: number;              // 1-10 overall
   coherenceScore: number;     // Text-image alignment (1-10)
-  consistencyScore: number;   // Character consistency (1-10)
+  consistencyScore: number;   // Character/world consistency vs references (1-10)
   qualityScore: number;       // Visual quality — no borders, watermarks (1-10)
   issues: string[];           // Specific problems found
   suggestion: string;         // How to fix (for regeneration prompt)
@@ -23,48 +25,45 @@ export interface QAVerdict {
 export interface QAResult {
   overallScore: number;       // Average of all scene scores
   verdicts: QAVerdict[];
-  scenesToRegenerate: number[];  // Scene numbers scoring below threshold
+  scenesToRegenerate: number[];  // Scene numbers failing a threshold
   iterationNumber: number;
 }
 
 // ── Config ───────────────────────────────────────────────────────
 
-const QA_MODEL = process.env.OPENAI_QA_MODEL || "gpt-4o";
-const SCORE_THRESHOLD = 7;     // Scenes below this get regenerated
-const MAX_IMAGES_PER_CALL = 16; // gpt-4o supports many images per call
-
-// ── Image conversion helpers ────────────────────────────────────
-
-/**
- * Converts an image URL or raw base64 string to a data URI that
- * OpenAI Vision can consume directly (no external download needed).
- */
-async function toDataUri(input: string): Promise<string> {
-  // Already a data URI — pass through
-  if (input.startsWith("data:")) return input;
-
-  // Raw base64 string (no URL scheme) — wrap as PNG data URI
-  if (!input.startsWith("http")) {
-    return `data:image/png;base64,${input}`;
-  }
-
-  // HTTP(S) URL — download and convert to base64 data URI
-  const response = await fetch(input, { signal: AbortSignal.timeout(30_000) });
-  if (!response.ok) {
-    throw new Error(`Failed to download image for QA: ${response.status} ${input.slice(0, 100)}`);
-  }
-  const buffer = Buffer.from(await response.arrayBuffer());
-  const contentType = response.headers.get("content-type") || "image/png";
-  return `data:${contentType};base64,${buffer.toString("base64")}`;
+const QA_MODEL = process.env.GEMINI_QA_MODEL || "gemini-2.5-flash";
+const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
+function geminiKey(): string {
+  return process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || "";
 }
+
+const SCORE_THRESHOLD = 7;        // overall below this → regenerate
+const CONSISTENCY_THRESHOLD = 8;  // consistency is brand-critical → stricter
+const MAX_REF_IMAGES = 8;         // cap reference sheets sent to the judge
+
+// ── Image helpers ────────────────────────────────────────────────
+
+interface InlinePart { mimeType: string; data: string }
+
+/** Convert a base64 string / data URI / http URL into Gemini inlineData. */
+async function toInline(input: string): Promise<InlinePart> {
+  if (input.startsWith("data:")) {
+    const m = input.match(/^data:([^;]+);base64,(.*)$/);
+    if (m) return { mimeType: m[1], data: m[2] };
+  }
+  if (!input.startsWith("http")) return { mimeType: "image/png", data: input };
+  const res = await fetch(input, { signal: AbortSignal.timeout(30_000) });
+  if (!res.ok) throw new Error(`Failed to download image for QA: ${res.status} ${input.slice(0, 100)}`);
+  const buf = Buffer.from(await res.arrayBuffer());
+  return { mimeType: res.headers.get("content-type") || "image/png", data: buf.toString("base64") };
+}
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 // ── Main ─────────────────────────────────────────────────────────
 
 /**
- * Review all illustrations for quality and consistency.
- *
- * Sends illustration URLs + reference images + screenplay specs to
- * OpenAI Vision for analysis. Returns scores and issues.
+ * Review all illustrations for quality and consistency with the visual bible.
  */
 export async function judgeIllustrations(
   illustrations: { sceneNumber: number; imageUrl: string }[],
@@ -74,18 +73,12 @@ export async function judgeIllustrations(
   iterationNumber = 1,
 ): Promise<QAResult> {
   const mockMode = process.env.MOCK_MODE === "true";
-  if (mockMode) {
-    console.log("[QA Judge] Mock mode — skipping review");
+  if (mockMode || !geminiKey()) {
+    if (!mockMode) console.warn("[QA Judge] No GEMINI/GOOGLE key — skipping review (all-pass)");
     return {
-      overallScore: 10,
+      overallScore: mockMode ? 10 : 0,
       verdicts: illustrations.map((ill) => ({
-        sceneNumber: ill.sceneNumber,
-        score: 10,
-        coherenceScore: 10,
-        consistencyScore: 10,
-        qualityScore: 10,
-        issues: [],
-        suggestion: "",
+        sceneNumber: ill.sceneNumber, score: 10, coherenceScore: 10, consistencyScore: 10, qualityScore: 10, issues: [], suggestion: "",
       })),
       scenesToRegenerate: [],
       iterationNumber,
@@ -93,149 +86,108 @@ export async function judgeIllustrations(
   }
 
   const start = Date.now();
-  console.log(`[QA Judge] Reviewing ${illustrations.length} illustrations (iteration ${iterationNumber})...`);
+  console.log(`[QA Judge] Reviewing ${illustrations.length} illustrations via ${QA_MODEL} (iteration ${iterationNumber})...`);
 
-  // Build the image list as base64 data URIs.
-  // gpt-4o cannot download from Supabase Storage URLs (timeout),
-  // so we convert everything to inline data URIs.
-  const imageDataUris: string[] = [];
-
-  // Add up to 4 reference images — prefer base64 (already in memory), fallback to URL download
-  const refImages = assetReferences.slice(0, 4);
-  for (const ref of refImages) {
+  // Reference images first (base64 preferred, fallback to URL download)
+  const parts: ({ text: string } | { inlineData: InlinePart })[] = [];
+  const refs = assetReferences.slice(0, MAX_REF_IMAGES);
+  const refInlines: InlinePart[] = [];
+  for (const ref of refs) {
     try {
-      if (ref.base64) {
-        imageDataUris.push(`data:image/png;base64,${ref.base64}`);
-      } else if (ref.storageUrl) {
-        imageDataUris.push(await toDataUri(ref.storageUrl));
-      }
+      if (ref.base64) refInlines.push({ mimeType: "image/png", data: ref.base64 });
+      else if (ref.storageUrl) refInlines.push(await toInline(ref.storageUrl));
     } catch (err) {
-      console.warn(`[QA Judge] Failed to convert ref ${ref.assetId} to data URI:`, err);
+      console.warn(`[QA Judge] Failed to load ref ${ref.assetId}:`, err);
     }
   }
-  const refCount = imageDataUris.length;
 
-  // Add illustration images — download each URL and convert to data URI
+  // Illustration images
+  const illInlines: { sceneNumber: number; part: InlinePart }[] = [];
   for (const ill of illustrations) {
-    if (ill.imageUrl) {
-      try {
-        imageDataUris.push(await toDataUri(ill.imageUrl));
-      } catch (err) {
-        console.warn(`[QA Judge] Failed to convert scene ${ill.sceneNumber} image to data URI:`, err);
-      }
+    if (!ill.imageUrl) continue;
+    try {
+      illInlines.push({ sceneNumber: ill.sceneNumber, part: await toInline(ill.imageUrl) });
+    } catch (err) {
+      console.warn(`[QA Judge] Failed to load scene ${ill.sceneNumber} image:`, err);
     }
   }
 
-  // Limit total images to avoid exceeding model limits
-  if (imageDataUris.length > MAX_IMAGES_PER_CALL) {
-    imageDataUris.splice(MAX_IMAGES_PER_CALL);
+  if (illInlines.length === 0) {
+    console.warn("[QA Judge] No illustration images loaded — skipping review");
+    return { overallScore: 0, verdicts: [], scenesToRegenerate: illustrations.map((i) => i.sceneNumber), iterationNumber };
   }
 
-  const illustrationCount = imageDataUris.length - refCount;
-  if (illustrationCount === 0) {
-    console.warn("[QA Judge] No illustration images could be converted to data URIs — skipping review");
-    return {
-      overallScore: 0,
-      verdicts: [],
-      scenesToRegenerate: illustrations.map((i) => i.sceneNumber),
-      iterationNumber,
-    };
-  }
-  console.log(`[QA Judge] Converted ${refCount} refs + ${illustrationCount} illustrations to data URIs`);
-
-  // Build the scene specs summary for the prompt
-  const sceneSpecs = illustrations
-    .map((ill) => {
-      const spec = screenplay.scenes.find((s) => s.sceneNumber === ill.sceneNumber);
-      return `Scene ${ill.sceneNumber}: ${spec?.keyActions || "Unknown"} | Characters: ${spec?.characters.join(", ") || "none"} | Mood: ${spec?.emotionalTone || "unknown"} | Expected: ${spec?.fluxPrompt?.slice(0, 200) || "no spec"}`;
+  const refIds = refs.map((r) => r.assetId);
+  const sceneSpecs = illInlines
+    .map(({ sceneNumber }) => {
+      const spec = screenplay.scenes.find((s) => s.sceneNumber === sceneNumber);
+      const entities = [spec?.primaryCharacter, ...(spec?.characters || []), spec?.locationAsset, ...(spec?.props || [])].filter(Boolean);
+      return `Scene ${sceneNumber}: ${spec?.keyActions || "?"} | Should contain entities: ${entities.join(", ") || "none"} | Mood: ${spec?.emotionalTone || "?"}`;
     })
     .join("\n");
 
-  const prompt = `You are an expert children's book editor and art director. Review these illustrations for a children's picture book.
+  const prompt = `You are an expert children's book art director. Review these watercolor illustrations.
 
-REFERENCE IMAGES (first ${refCount} images): These are the character/object reference sheets. All illustrations must maintain visual consistency with these references.
+The FIRST ${refInlines.length} images are the VISUAL BIBLE reference sheets (in order: ${refIds.join(", ")}). Every illustration must keep characters, locations, wardrobe and props consistent with these references.
 
-CHARACTER DESCRIPTION: ${characterRef}
+CHARACTER: ${characterRef}
 
-SCENE SPECIFICATIONS:
+SCENE SPECS (the following ${illInlines.length} images are the scene illustrations, in this order):
 ${sceneSpecs}
 
-ILLUSTRATION IMAGES (images ${refCount + 1} to ${imageDataUris.length}): These are the scene illustrations to review, in order of scene number.
+For EACH scene illustration rate 1-10:
+1. coherenceScore: does it match the scene action + contain the expected entities?
+2. consistencyScore: do the character, location, wardrobe and props match the reference sheets (same faces, colors, shapes)?
+3. qualityScore: authentic watercolor children's-book look, full-bleed (no borders), no text/watermark, good composition?
+"score" = overall (weighted toward consistency + coherence).
+For any scene scoring low, give a concrete "suggestion" to fix the prompt.
 
-For each scene illustration, evaluate:
+Output ONLY JSON:
+{"verdicts":[{"sceneNumber":1,"score":8,"coherenceScore":9,"consistencyScore":8,"qualityScore":8,"issues":["..."],"suggestion":""}]}`;
 
-1. COHERENCE (1-10): Does the illustration match what the scene text describes? Are the right characters present? Is the action correct?
-2. CONSISTENCY (1-10): Do the characters look like the reference images? Same proportions, colors, features?
-3. QUALITY (1-10): Is it full-bleed (no white borders/margins)? No watermarks or signatures? No text baked into the image? Good composition? Appropriate for a children's book?
-
-SCORING:
-- 10 = Perfect
-- 8-9 = Good, minor issues
-- 6-7 = Acceptable but should improve
-- 1-5 = Must regenerate
-
-For each scene scoring below 7 overall, provide a specific "suggestion" for how to fix the prompt to get a better result.
-
-Output JSON:
-{
-  "verdicts": [
-    {
-      "sceneNumber": 1,
-      "score": 8,
-      "coherenceScore": 9,
-      "consistencyScore": 7,
-      "qualityScore": 8,
-      "issues": ["Character's hair color slightly different from reference"],
-      "suggestion": ""
-    }
-  ]
-}`;
+  // Assemble parts: prompt text, then refs, then illustrations (order matters for the spec mapping)
+  parts.push({ text: prompt });
+  for (const r of refInlines) parts.push({ inlineData: r });
+  for (const { part } of illInlines) parts.push({ inlineData: part });
 
   try {
-    const raw = await callLLM(prompt, QA_MODEL, {
-      json: true,
-      timeoutMs: 120_000,
-      images: imageDataUris,
-    });
+    // Call Gemini with retry on transient overload (503/429)
+    let res: Response | undefined, lastTxt = "";
+    for (let attempt = 0; attempt < 4; attempt++) {
+      res = await fetch(`${GEMINI_BASE}/${QA_MODEL}:generateContent`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-goog-api-key": geminiKey() },
+        body: JSON.stringify({ contents: [{ parts }], generationConfig: { responseModalities: ["TEXT"], temperature: 0 } }),
+        signal: AbortSignal.timeout(120_000),
+      });
+      if (res.ok) break;
+      lastTxt = await res.text();
+      if (res.status === 503 || res.status === 429) { await sleep(5000 * (attempt + 1)); continue; }
+      break;
+    }
+    if (!res || !res.ok) throw new Error(`Gemini QA ${res?.status}: ${lastTxt}`);
 
-    const parsed = parseJsonResponse<{
-      verdicts: QAVerdict[];
-    }>(raw, "QA Judge");
+    const j = await res.json();
+    const text = (j.candidates?.[0]?.content?.parts || []).map((p: { text?: string }) => p.text || "").join("");
+    const parsed = parseJsonResponse<{ verdicts: QAVerdict[] }>(text, "QA Judge");
+    const verdicts = parsed.verdicts || [];
 
-    // Calculate overall score
-    const verdicts = parsed.verdicts;
-    const overallScore =
-      verdicts.length > 0
-        ? Math.round(
-            (verdicts.reduce((sum, v) => sum + v.score, 0) / verdicts.length) * 10,
-          ) / 10
-        : 0;
+    const overallScore = verdicts.length
+      ? Math.round((verdicts.reduce((s, v) => s + v.score, 0) / verdicts.length) * 10) / 10
+      : 0;
 
-    // Identify scenes needing regeneration
+    // Fail a scene if overall is low OR consistency (brand-critical) is below its stricter bar.
     const scenesToRegenerate = verdicts
-      .filter((v) => v.score < SCORE_THRESHOLD)
+      .filter((v) => v.score < SCORE_THRESHOLD || v.consistencyScore < CONSISTENCY_THRESHOLD)
       .map((v) => v.sceneNumber);
 
     const elapsed = ((Date.now() - start) / 1000).toFixed(1);
-    console.log(
-      `[QA Judge] Review complete in ${elapsed}s — overall: ${overallScore}/10, ` +
-        `${scenesToRegenerate.length} scene(s) to regenerate: [${scenesToRegenerate.join(", ")}]`,
-    );
+    console.log(`[QA Judge] Done in ${elapsed}s — overall ${overallScore}/10, regenerate: [${scenesToRegenerate.join(", ")}]`);
 
-    return {
-      overallScore,
-      verdicts,
-      scenesToRegenerate,
-      iterationNumber,
-    };
+    return { overallScore, verdicts, scenesToRegenerate, iterationNumber };
   } catch (err) {
     // QA failure is non-fatal — log and return all-pass
     console.error("[QA Judge] Review failed (non-fatal):", err);
-    return {
-      overallScore: 0,
-      verdicts: [],
-      scenesToRegenerate: [],
-      iterationNumber,
-    };
+    return { overallScore: 0, verdicts: [], scenesToRegenerate: [], iterationNumber };
   }
 }

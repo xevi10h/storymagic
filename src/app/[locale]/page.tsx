@@ -6,11 +6,13 @@ import BookCollection from "@/components/landing/BookCollection";
 import QualitySection from "@/components/landing/QualitySection";
 import UniqueEdition from "@/components/landing/UniqueEdition";
 import AdventurePack from "@/components/landing/AdventurePack";
-import Testimonials from "@/components/landing/Testimonials";
+import FaqSection from "@/components/landing/FaqSection";
 import CollectionOffer from "@/components/landing/CollectionOffer";
 import Footer from "@/components/landing/Footer";
+import MobileStickyCta from "@/components/landing/MobileStickyCta";
 import WaitlistPage from "@/components/waitlist/WaitlistPage";
 import { OrganizationJsonLd, ProductJsonLd } from "@/components/seo/JsonLd";
+import DevResetCreateState from "@/components/dev/DevResetCreateState";
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -34,6 +36,7 @@ export default async function Home({ params }: Props) {
 
   return (
     <>
+      <DevResetCreateState />
       <OrganizationJsonLd locale={locale} />
       <ProductJsonLd locale={locale} />
       <Navbar />
@@ -44,10 +47,11 @@ export default async function Home({ params }: Props) {
         <QualitySection />
         <UniqueEdition />
         <AdventurePack />
-        <Testimonials />
+        <FaqSection />
         <CollectionOffer />
       </main>
       <Footer />
+      <MobileStickyCta />
     </>
   );
 }

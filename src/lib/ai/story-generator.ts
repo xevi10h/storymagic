@@ -32,7 +32,9 @@ import {
   getEndingNarrative,
   getAtmosphereNarrative,
   FAVORITE_COLORS,
+  type TreeChoice,
 } from "@/lib/create-store";
+import { getStoryTree, tx } from "@/lib/story-trees";
 import { generateMockStory } from "./mock-story";
 import { buildCharacterVisualDescription, getGenderColorDirective } from "./character-description";
 
@@ -715,6 +717,33 @@ export function parseJsonResponse<T>(raw: string, label: string): T {
 function buildDecisionsContext(input: StoryInput): string {
   const template = getTemplateConfig(input.templateId);
   if (!template) return "";
+
+  // Branching tree templates (Fase B): the parent walked a choose-your-own-adventure
+  // path. Its ordered narrative fragments ARE the spine of the story — use them
+  // instead of the legacy flat decisions.
+  const treePath = (input.decisions as Record<string, unknown>).treePath as
+    | TreeChoice[]
+    | undefined;
+  if (treePath?.length) {
+    const tree = getStoryTree(input.templateId);
+    if (tree) {
+      const locale = input.locale || "es";
+      const steps: string[] = [];
+      for (const choice of treePath) {
+        const node = tree.nodes[choice.nodeId];
+        const opt = node?.options.find((o) => o.id === choice.optionId);
+        if (node && opt) {
+          const beat = tx(opt.narrative, locale).replaceAll("{name}", input.childName);
+          steps.push(`Chapter ${node.chapter}: ${beat}`);
+        }
+      }
+      if (steps.length) {
+        return `\nSTORY PATH (the parent chose this exact branching adventure — follow these beats IN ORDER as the narrative spine; expand and connect them, do not add unrelated plot turns):\n${steps
+          .map((s, i) => `${i + 1}. ${s}`)
+          .join("\n")}`;
+      }
+    }
+  }
 
   const lines: string[] = [];
   const decisions = input.decisions as Record<string, string>;

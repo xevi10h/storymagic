@@ -11,7 +11,7 @@ const STORAGE_KEY = "meapica_create_state";
 export function usePersistedState<T>(
   key: string,
   initialValue: T
-): [T, (value: T | ((prev: T) => T)) => void, () => void] {
+): [T, (value: T | ((prev: T) => T)) => void, () => void, boolean] {
   const [state, setStateRaw] = useState<T>(initialValue);
   const [hydrated, setHydrated] = useState(false);
   const initialValueRef = useRef(initialValue);
@@ -55,7 +55,7 @@ export function usePersistedState<T>(
     setStateRaw(initialValueRef.current);
   }, [key]);
 
-  return [state, setState, clearState];
+  return [state, setState, clearState, hydrated];
 }
 
 export { STORAGE_KEY };

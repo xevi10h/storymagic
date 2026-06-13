@@ -12,14 +12,25 @@
 
 import { SupabaseClient } from "@supabase/supabase-js";
 import { callLLM, parseJsonResponse, type ArchitectOutput, type AgeConfig } from "./story-generator";
-import { generateFluxPro } from "./flux-kontext";
+import { generateFlux2 } from "./flux2";
+import { WATERCOLOR_REF_STYLE } from "./style";
 import { uploadReferenceFromBase64 } from "../supabase/storage";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
+/** Entity categories that must stay visually consistent across the whole book. */
+export type VisualAssetType =
+  | "character"
+  | "creature"
+  | "object"
+  | "vehicle"
+  | "location"   // recurring setting (cockpit, forest, bedroom) — the "stage"
+  | "wardrobe"   // a key outfit the protagonist/companion wears across scenes
+  | "prop";      // a story-significant object (magic wand, red flag, map)
+
 export interface VisualAsset {
-  id: string;             // e.g. "protagonist", "companion_droid", "object_sword"
-  type: "character" | "object" | "vehicle" | "creature";
+  id: string;             // e.g. "protagonist", "companion_droid", "location_cockpit", "prop_red_flag"
+  type: VisualAssetType;
   name: string;           // Display name e.g. "Silver Droid"
   description: string;    // Full visual description for FLUX prompt
   refPrompt: string;      // The prompt used to generate the reference sheet
@@ -64,7 +75,7 @@ function buildMockAssetTree(characterRef: string, styleDirective: string): Asset
 // ── Extract Visual Assets ────────────────────────────────────────────────────
 
 /** Max assets to extract. Higher = more ref images but more generation time/cost. */
-const MAX_ASSETS = 8;
+const MAX_ASSETS = 10;
 
 /**
  * Scans all image prompts for named entities that should have been extracted
@@ -163,9 +174,9 @@ export async function extractVisualAssets(
     ? `\nNAMED CHARACTERS DETECTED IN THE TEXT: ${[...allNames].join(", ")}. Each of these MUST be a separate asset if they appear in 2+ scenes.`
     : "";
 
-  const prompt = `You are a visual asset analyst for a children's book illustration pipeline.
+  const prompt = `You are a visual asset analyst building the "visual bible" for a children's book illustration pipeline.
 
-Below are 12 scene briefs and their image prompts. Your task is to identify ALL recurring visual elements that need consistent appearance across illustrations. These will be used to generate reference sheets for an AI image generator.
+Below are 12 scene briefs and their image prompts. Identify ALL recurring visual elements that must look IDENTICAL every time they appear — not just characters, but the whole world: settings, key outfits, and story props. These become reference sheets fed to an AI image generator, so consistency across the book depends on you catching them.
 
 CRITICAL RULES — READ CAREFULLY:
 
@@ -175,17 +186,22 @@ CRITICAL RULES — READ CAREFULLY:
 
 3. DISTINGUISH BY CONTEXT: Characters that appear in different parts of the story (e.g., a pet at home vs a companion in space) may look completely different. If they have different names or descriptions, they are DIFFERENT assets.
 
-4. NEVER MERGE CHARACTERS: Do NOT combine two named characters into one asset. "Bolt" (a small silver home robot) and "a friendly robot with a map screen" (a space companion) are TWO SEPARATE assets, not one.
+4. NEVER MERGE CHARACTERS: Do NOT combine two named characters into one asset.
 
-5. ALL TYPES WELCOME: Extract characters, creatures, aliens, robots, magical objects, vehicles — anything that must look the same whenever it appears.
+5. EXTRACT THE WHOLE WORLD, not just characters. Use these types:
+   - "character" / "creature": people, animals, aliens, robots.
+   - "vehicle": ships, cars, etc.
+   - "location": a recurring SETTING the story returns to (e.g. the spaceship cockpit, the grandmother's kitchen, a specific forest clearing). The stage must look the same each visit. id like "location_cockpit".
+   - "wardrobe": a distinctive OUTFIT worn across multiple scenes (e.g. the white astronaut suit with a red star). Only if it recurs and is visually specific. id like "wardrobe_spacesuit".
+   - "prop": a story-significant OBJECT that recurs (e.g. a red flag, a magic compass, a teddy bear). id like "prop_red_flag".
 
 6. MINIMUM 2 SCENES: Only include elements that appear in at least 2 scenes.
 
-7. MAXIMUM ${MAX_ASSETS} ASSETS: Protagonist + up to ${MAX_ASSETS - 1} supporting elements.
+7. MAXIMUM ${MAX_ASSETS} ASSETS total: Protagonist + up to ${MAX_ASSETS - 1} supporting elements. Prioritize: protagonist > named characters > primary recurring location > key wardrobe > key props.
 
-8. DETAILED DESCRIPTIONS: For each asset, write a specific visual description with: physical form, size relative to the protagonist, colors, textures, distinguishing features, clothing/accessories.
+8. DETAILED DESCRIPTIONS: For each asset, write a specific visual description (form, size relative to protagonist, colors, textures, distinguishing features). For locations: architecture/landscape, key furniture/landmarks, color/mood. For wardrobe: garment, colors, patches/details. For props: shape, material, colors, markings.
 
-9. REFERENCE PROMPTS: For refPrompt, write a prompt to generate a clear character/object design on a plain white background. Be specific about the exact visual appearance.
+9. REFERENCE PROMPTS (refPrompt): describe a clean design reference. Characters/creatures/props/wardrobe → on a plain white background. Locations → an empty establishing shot of the setting with NO characters present.
 
 10. For the PROTAGONIST, use this exact description as basis:
     "${characterRef}"
@@ -207,10 +223,10 @@ Return a JSON object:
     },
     {
       "id": "<snake_case_id>",
-      "type": "character" | "object" | "vehicle" | "creature",
-      "name": "<display name, e.g. Zix>",
-      "description": "<detailed visual description — form, size, colors, features>",
-      "refPrompt": "<prompt for reference sheet on white background>",
+      "type": "character" | "creature" | "object" | "vehicle" | "location" | "wardrobe" | "prop",
+      "name": "<display name>",
+      "description": "<detailed visual description>",
+      "refPrompt": "<prompt for reference sheet — white background for things, empty establishing shot for locations>",
       "scenes": [<scene numbers>]
     }
   ]
@@ -304,6 +320,10 @@ export async function generateReferenceImages(
   assetTree: AssetTree,
   supabase: SupabaseClient,
   storyId: string,
+  options?: {
+    /** The child's real avatar/portrait (base64) — anchors the protagonist sheet to the actual child. */
+    protagonistAvatarBase64?: string;
+  },
 ): Promise<AssetReference[]> {
   if (isMockMode()) {
     console.log("[Visual Assets] Mock mode — returning mock references");
@@ -314,7 +334,9 @@ export async function generateReferenceImages(
     }));
   }
 
-  const BATCH_SIZE = 3;
+  // Sheets are independent of each other → safe to parallelize. Stay well under
+  // BFL's 24-concurrent-task ceiling (scenes run in a later phase).
+  const BATCH_SIZE = Number(process.env.FLUX2_CONCURRENCY) || 8;
   const results: AssetReference[] = [];
 
   for (let i = 0; i < assetTree.assets.length; i += BATCH_SIZE) {
@@ -322,30 +344,38 @@ export async function generateReferenceImages(
 
     const batchResults = await Promise.all(
       batch.map(async (asset) => {
-        // Build a safe prompt that forces illustration style (not photorealistic)
+        // Build a type-aware reference prompt in the SAME watercolor style as the
+        // scenes — so scenes and references share one visual distribution.
+        const desc = asset.description.replace(/natural realistic/gi, "illustrated watercolor style");
         let refPrompt: string;
-        const illustrationStyle = "Children's book illustration style, warm soft watercolor and digital painting, cute cartoon proportions with large expressive eyes, NOT photorealistic, NOT a photograph.";
-        if (asset.type === "character" || asset.type === "creature") {
-          refPrompt = [
-            `${illustrationStyle} Character design sheet of ${asset.name}:`,
-            asset.description.replace(/natural realistic/gi, "illustrated cartoon style"),
-            "Front view, standing pose, plain white background.",
-            "Cute storybook illustration style with soft colors. No branded logos, no real brand names.",
-            "Character design reference. No text, no signature.",
-          ].join(" ");
-        } else {
-          refPrompt = [
-            `${illustrationStyle}`,
-            asset.refPrompt,
-            "Plain white background. Cute storybook style with soft colors.",
-            "Design reference. No text, no signature.",
-          ].join(" ");
+        let aspectRatio = "1:1";
+        switch (asset.type) {
+          case "character":
+          case "creature":
+            refPrompt = `${WATERCOLOR_REF_STYLE} Character design reference sheet of ${asset.name}: ${desc}. Front view, full body, standing neutral pose, plain white background. No text, no signature, no branded logos.`;
+            break;
+          case "location":
+            // Empty stage — no characters — so the setting stays consistent on every visit.
+            refPrompt = `${WATERCOLOR_REF_STYLE} Establishing shot of a setting: ${desc}. Empty scene with NO people and NO characters present. Wide environment view. No text, no signature.`;
+            aspectRatio = "4:3";
+            break;
+          case "wardrobe":
+            refPrompt = `${WATERCOLOR_REF_STYLE} Costume design reference: ${desc}. The outfit shown clearly, plain white background. No text, no signature.`;
+            break;
+          default: // object | vehicle | prop
+            refPrompt = `${WATERCOLOR_REF_STYLE} Object design reference: ${asset.refPrompt || desc}. Plain white background. No text, no signature.`;
         }
+
+        // Anchor the protagonist sheet to the child's REAL avatar (identity lock).
+        const inputImages =
+          asset.id === "protagonist" && options?.protagonistAvatarBase64
+            ? [options.protagonistAvatarBase64]
+            : undefined;
 
         const start = Date.now();
         let fluxResult;
         try {
-          fluxResult = await generateFluxPro(refPrompt);
+          fluxResult = await generateFlux2(refPrompt, { aspectRatio, inputImages });
         } catch (err) {
           // If moderation or generation fails, return empty ref (non-fatal)
           const msg = err instanceof Error ? err.message : String(err);
@@ -357,7 +387,7 @@ export async function generateReferenceImages(
           };
         }
         const elapsed = ((Date.now() - start) / 1000).toFixed(1);
-        console.log(`[Visual Assets] Generated ref for ${asset.name} in ${elapsed}s`);
+        console.log(`[Visual Assets] Generated ${asset.type} ref for ${asset.name} in ${elapsed}s`);
 
         const storageUrl = await uploadReferenceFromBase64(
           supabase,

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --port 3013",
+    "dev": "NODE_OPTIONS='--max-http-header-size=131072' next dev --port 3013",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
@@ -16,6 +16,7 @@
     "@supabase/supabase-js": "^2.97.0",
     "@types/qrcode": "^1.5.6",
     "lucide-react": "^0.575.0",
+    "marked": "^18.0.4",
     "next": "16.1.6",
     "next-intl": "^4.8.3",
     "pdf-lib": "^1.17.1",
@@ -29,6 +30,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

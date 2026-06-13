@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createClient as createSupabaseAdmin } from "@supabase/supabase-js";
 import { getStripe } from "@/lib/stripe";
 import type { Database } from "@/lib/database.types";
+import { notifyOrderEmail } from "@/lib/email/notify-order";
 
 function createServiceClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -31,7 +32,7 @@ export async function GET(request: NextRequest) {
   // Fetch order by checkout session ID
   const query = supabase
     .from("orders")
-    .select("id, format, status, story_id, stories(generated_text, characters(name))")
+    .select("id, format, status, story_id, user_id, stories(generated_text, characters(name))")
     .eq("stripe_checkout_session_id", sessionId);
 
   // If authenticated, scope to user; otherwise session ID is proof enough
@@ -111,6 +112,19 @@ export async function GET(request: NextRequest) {
           }
 
           console.log(`[verify] Order ${order.id} marked paid via direct Stripe check (session ${sessionId})`);
+
+          // Order-confirmed email — physical only. This path "wins the race" against
+          // the Stripe webhook (which will then see status=paid and skip), so emailing
+          // here guarantees exactly-once delivery of the confirmation.
+          if (order.format !== "digital_pdf" && order.user_id) {
+            await notifyOrderEmail({
+              supabase: adminClient,
+              event: "order_confirmed",
+              storyId: order.story_id,
+              userId: order.user_id,
+              email: user?.email ?? undefined,
+            });
+          }
         }
         // Fall through to return order data below
       } else {

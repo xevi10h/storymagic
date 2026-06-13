@@ -2,9 +2,12 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import BrandLogo from "@/components/BrandLogo";
 import NewsletterForm from "@/components/landing/NewsletterForm";
+import { SEO_GIFT_SLUGS, SEO_AGE_SLUGS, seoPath } from "@/lib/seo-landing";
 
 export default function Footer() {
   const t = useTranslations("footer");
+  const ts = useTranslations("seo");
+  const tsc = useTranslations("showcase");
 
   return (
     <footer className="mt-12 border-t-8 border-footer-accent bg-footer-bg pt-20 pb-10 text-footer-text">
@@ -47,6 +50,16 @@ export default function Footer() {
             <h4 className="mb-6 font-display text-lg font-bold text-white">{t("support")}</h4>
             <ul className="space-y-3 text-sm text-footer-muted">
               <li>
+                <Link className="transition-colors hover:text-primary" href="/ejemplo">
+                  {tsc("title")}
+                </Link>
+              </li>
+              <li>
+                <Link className="transition-colors hover:text-primary" href="/blog">
+                  Blog
+                </Link>
+              </li>
+              <li>
                 <Link className="transition-colors hover:text-primary" href="/legal#faq">
                   {t("faq")}
                 </Link>
@@ -71,6 +84,48 @@ export default function Footer() {
               {t("readingClubDescription")}
             </p>
             <NewsletterForm />
+          </div>
+        </div>
+
+        {/* SEO landing links — internal linking for gift occasions & age ranges */}
+        <div className="mb-12 grid grid-cols-1 gap-8 border-t border-footer-border pt-12 sm:grid-cols-2">
+          <div>
+            <h4 className="mb-5 font-display text-sm font-bold uppercase tracking-wider text-white">
+              <Link className="transition-colors hover:text-primary" href="/gifts">
+                {ts("nav.giftHeading")}
+              </Link>
+            </h4>
+            <ul className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-footer-muted">
+              {SEO_GIFT_SLUGS.map((slug) => (
+                <li key={slug}>
+                  <Link
+                    className="transition-colors hover:text-primary"
+                    href={seoPath("gifts", slug)}
+                  >
+                    {ts(`nav.gifts.${slug}`)}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h4 className="mb-5 font-display text-sm font-bold uppercase tracking-wider text-white">
+              <Link className="transition-colors hover:text-primary" href="/personalized-books">
+                {ts("nav.ageHeading")}
+              </Link>
+            </h4>
+            <ul className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-footer-muted">
+              {SEO_AGE_SLUGS.map((slug) => (
+                <li key={slug}>
+                  <Link
+                    className="transition-colors hover:text-primary"
+                    href={seoPath("ages", slug)}
+                  >
+                    {ts(`nav.ages.${slug}`)}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 
