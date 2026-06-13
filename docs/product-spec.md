@@ -58,15 +58,22 @@ Atmospheric transitions between narrative blocks. One evocative sentence (max 25
 
 For ages 2-4, bridges also serve as parent reading pauses.
 
-## Story Templates (MVP: 5 templates)
+## Story Templates (10 templates)
 
-| # | Title | Theme | Age Range | Moral |
-|---|-------|-------|-----------|-------|
-| 1 | La Gran Aventura Espacial | Space travel, planets, alien friends | 4-7 | Curiosity takes you far |
-| 2 | El Bosque Mágico | Fantastic animals, nature, ancient trees | 3-6 | Taking care of our world |
-| 3 | Superhéroe por un Día | Save the city, hidden superpowers | 5-8 | True power is kindness |
-| 4 | Piratas del Mar de [city] | Pirate adventure, hidden treasure | 4-8 | The best treasures are friends |
-| 5 | El Chef Más Pequeño del Mundo | Magical kitchen, living ingredients | 2-5 | Creating with your hands is magic |
+Each template is identified by an English slug and is backed by a branching story-tree in `src/lib/story-trees/` (14 nodes / 39 options / 4 locales each). The template is chosen as the first fork ("world" beat) of the adventure path.
+
+| Slug | Title | Theme |
+|------|-------|-------|
+| `space` | La Gran Aventura Espacial | Space travel, planets, alien friends |
+| `forest` | El Bosque Mágico | Fantastic animals, nature, ancient trees |
+| `pirates` | Piratas del Mar de [city] | Pirate adventure, hidden treasure |
+| `dinosaurs` | Dinosaurios | Prehistoric world, dino friends |
+| `superhero` | Superhéroe por un Día | Save the city, hidden superpowers |
+| `chef` | El Chef Más Pequeño del Mundo | Magical kitchen, living ingredients |
+| `castle` | Castillo | Medieval castle, knights and quests |
+| `safari` | Safari | Wild savanna, animal expedition |
+| `inventor` | Inventor | Workshop of fantastical inventions |
+| `candy` | Candy | Sweet land of candy and confectionery |
 
 ## Personalization Variables (Customer Input)
 
@@ -78,11 +85,13 @@ For ages 2-4, bridges also serve as parent reading pauses.
 | `hair_color` | string | Yes | Hair color/style |
 | `skin_tone` | string | Yes | Skin tone |
 | `eye_color` | string | Yes | Eye color |
-| `interests` | string[] (3-5) | Yes | Child's interests (space, animals, sports, castles, dinosaurs, music, etc.) |
+| `interests` | string[] (up to 4) | Yes | Child's interests (space, animals, sports, castles, dinosaurs, music) |
 | `city` | string | Yes | City where the child lives |
+| `favorite_color` | string | No | Favorite color (used as the book's theme accent) |
+| `favorite_companion` | string | No | Best friend / companion |
 | `sender_name` | string | No | Gift sender's name (if it's a gift) |
 | `custom_dedication` | string | No | Custom dedication message |
-| `template_id` | number (1-5) | Yes | Selected story template |
+| `template_id` | string (slug) | Yes | Selected story template (space / forest / pirates / dinosaurs / superhero / chef / castle / safari / inventor / candy) |
 
 ## Upsells & Add-ons
 

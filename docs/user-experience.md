@@ -8,17 +8,18 @@ All UI designs live in Stitch:
 
 Design theme: Light mode, custom color `#e96b3a` (warm orange), Plus Jakarta Sans font, fully rounded corners, high saturation.
 
-## Complete User Flow
+## Complete User Flow — "El Camino" (3 steps)
+
+The creation flow was redesigned into a single choose-your-own-adventure **path**. There is no longer a mode (solo/together) selection, a separate template-selection screen, or three decision knobs. `TOTAL_STEPS = 3`.
 
 ```
 Landing Page
-  → Step 1: Mode Selection (solo / together)
-  → Step 2: Character Creation (name, age, appearance, interests)
-  → Step 3: Adventure Selection (5 templates)
-  → Step 4: Story Decisions (varies by mode)
-  → Step 5: Personal Touches (dedication, ending choice)
-  → Step 6: Magic Generation (animation while book is created)
-  → Step 7: Preview & Checkout
+  → Step 1: Character Creation (name, age, appearance, interests) + FLUX.2 watercolor portrait reveal
+  → Step 2: Adventure Path (serpentine gamebook):
+              pick a theme/world (1st fork) → branching chapter choices (illustrated cards)
+  → Step 3: Dedication + ending choice (per-template endings) → "Crear mi cuento"
+  → Magic Generation (animation while book is created)  [/crear/[storyId]/generar]
+  → Preview & Checkout                                   [/crear/[storyId]/preview]
 ```
 
 ## Screen-by-Screen Specification
@@ -43,98 +44,52 @@ Landing Page
 
 ---
 
-### Step 1: Mode Selection
+### Step 1: Character Creation
 
-**Stitch screen:** `c44a65fbea2f4803a7aa24f981f36dc4`
-**Purpose:** Choose creation mode.
-
-**Two options:**
-| Mode | Name | Description | UX Implication |
-|------|------|-------------|----------------|
-| Solo | "Creo yo solo/a" (Sorpresa Mágica) | Parent designs secretly as a surprise gift. Full control. | Step 4 shows narrative configuration (detailed controls) |
-| Together | "Creamos juntos" (Aventura Compartida) | Interactive family experience. Choose together. | Step 4 shows illustrated choice cards (kid-friendly) |
-
----
-
-### Step 2: Character Creation
-
-**Stitch screen:** `51ae994b49d34e8da9416981d83cbe9e`
-**Purpose:** Build the protagonist.
+**Component:** `Step2CharacterCreation`
+**Purpose:** Build the protagonist and reveal their portrait.
 
 **Form fields:**
-- Child's name (text input)
+- Child's name (text input, 50-char cap)
 - City / "Lives in" (text input with location pin)
 - Age (slider 1-12)
 - Hair color (color selection)
 - Skin tone (color selection)
 - Gender: Niño / Niña / Neutro (3 options)
 - Interests: selectable tags (Espacio, Animales, Deportes, Castillos, Dinosaurios, Música)
+- Favorite color (book theme accent) + favorite companion (best friend/companion)
 
-**Preview:** Watercolor illustration + confirmation text: "¡Hola, [name]! Tu héroe está listo para vivir aventuras entre [interests]."
-
----
-
-### Step 3: Adventure Selection
-
-**Stitch screen:** `5ffbcaefcf924df98b7ecca810cc78ff`
-**Purpose:** Pick the story template.
-
-5 illustrated cards, each showing:
-- Title
-- Age range badge
-- 1-line description
-- Thematic illustration
-
-Selected card gets a highlighted border.
+**Portrait reveal:** On confirmation, a FLUX.2 watercolor portrait of the child is generated once via `/api/characters/portrait` (stored in the Supabase `portraits/` bucket as `character.portraitUrl`) and shown with rotating "painting your hero" status messages (`PortraitReveal`). This portrait becomes the identity anchor for every illustration in the book — there is no SVG/DiceBear avatar.
 
 ---
 
-### Step 4: Story Decisions
+### Step 2: Adventure Path ("El Camino")
 
-This step varies by mode. Four variants exist in Stitch — **we need to decide the definitive approach.**
+**Component:** `PathBuilder`
+**Purpose:** Build the story as a vertical, gamebook-style path of chained choices — identical on mobile and desktop.
 
-#### Variant A: Interactive Decisions (Together Mode) — RECOMMENDED for "Juntos"
-**Stitch screen:** `316e8192eef2430c95d03ebe0d481d55`
-
-Choose-your-own-adventure style. Story presents a moment ("¿Qué encuentra el héroe en el bosque?") and the child picks from 3 illustrated options (Dragón Dormido, Cofre Mágico, Puerta Secreta). Kid-friendly, visual, engaging. Includes audio button for read-aloud.
-
-#### Variant B: World Builder — ALTERNATIVE (could merge into Variant A)
-**Stitch screen:** `dafedd6e01c34332abe8160fffa83273`
-
-Customize weather (Soleado/Nublado/Tormenta), outfit (Explorador/Mago/Caballero), destination (Bosque/Castillo/Montaña Espacial). More of a configuration panel than interactive storytelling.
-
-#### Variant C: Narrative Configuration — RECOMMENDED for "Solo"
-**Stitch screen:** `5aac75aeec574bb3ad15f66f178fdbf9`
-
-Detailed controls for atmosphere (day/sunset/night), magic weather toggles, category tabs (Protagonist/Atmosphere/Plot Twist). Real-time text preview. Parent-oriented, sophisticated.
-
-#### Variant D: Modular Story Progression — ALTERNATIVE
-**Stitch screen:** `dae4703e99d445fc8b598082eeb518c2`
-
-Chapter-by-chapter builder: choose companion (Robot/Alien/Pet), magical tool (Map/Compass/Flashlight), challenge type. Real-time narrative preview. Shows premium user ("Plan Premium").
-
-**Decision needed:** Which variants to implement for MVP. Recommendation:
-- **Together mode → Variant A** (interactive illustrated choices)
-- **Solo mode → Variant C** (narrative configuration with live preview)
-- Variants B and D → defer to post-MVP or merge useful elements into A/C
+- **First fork = the world.** Instead of a separate template screen, the path opens by asking the child to pick a theme/world (ranked by `getRecommendedTemplates` based on age + interests). This selects the story template (10 available, each backed by a branching story-tree in `src/lib/story-trees/`).
+- **Branching chapter choices.** After the world, the path presents one beat at a time (encounter → companion → challenge → time → setting, or the template's own tree), each with illustrated option cards (real FLUX.2 watercolor art when available, gradient + icon fallback otherwise). Resolved milestones stack above as a trail.
+- **Clickable header stepper.** The `CreationHeader` stepper lets the user jump back to any already-unlocked step.
+- **Editable trail.** Any resolved milestone in the path is tappable to re-open and change that choice.
+- **Completion state.** Reaching the end of the path shows a celebration recap (chosen-path chips) and the CTA to continue to the dedication.
 
 ---
 
-### Step 5: Personal Touches
+### Step 3: Dedication
 
-**Stitch screen:** `2f2d905c2e6c47728ebbfccf3662f7eb`
-**Purpose:** Dedication message + ending selection.
+**Component:** `Step5AuthorMessage`
+**Purpose:** Dedication message + ending selection, then trigger generation.
 
 **Elements:**
 - Dedication text area (personal message from parent/sender)
-- Story ending choice (2 options with descriptions):
-  - "Un Banquete de Celebración" — festive, all characters celebrate together
-  - "Descanso bajo las Estrellas" — calm, reflective, stargazing ending
-- CTA: "Continuar al Resumen"
+- Story ending choice — **per-template endings** (each story template defines its own set of dynamic endings; e.g. a festive celebration vs. a calm, reflective close)
+- Back-cover preview
+- CTA: "Crear mi cuento" → saves the draft and redirects to `/crear/[storyId]/generar`
 
 ---
 
-### Step 6: Magic Generation ✅ IMPLEMENTED
+### Magic Generation ✅ IMPLEMENTED
 
 **Route:** `/crear/[storyId]/generar`
 **Purpose:** Entertaining wait screen while AI generates the book.
@@ -142,12 +97,12 @@ Chapter-by-chapter builder: choose companion (Robot/Alien/Pet), magical tool (Ma
 **Implementation:**
 - Animated WritingAnimation quill + Meapica logo reveal
 - Cycling whimsical progress messages per step ("Writing your story...", "Painting the illustrations...", etc.)
-- Polls generation status, auto-redirects to Step 7 when ready
+- Polls generation status, auto-redirects to the preview when ready
 - Fully i18n'd in ES/CA/EN/FR
 
 ---
 
-### Step 7: Preview & Checkout ✅ IMPLEMENTED
+### Preview & Checkout ✅ IMPLEMENTED
 
 **Route:** `/crear/[storyId]/preview`
 **Purpose:** Review the generated book and purchase.
@@ -184,8 +139,11 @@ Chapter-by-chapter builder: choose companion (Robot/Alien/Pet), magical tool (Ma
 
 | Decision | Resolution |
 |----------|------------|
-| Step 4 variants | Implemented: Variant A (Juntos) + Variant C (Solo) |
-| Step count | Standardized to 7 steps |
-| Missing screens | Steps 6, 7, Dashboard, Auth — all implemented |
+| Creation flow | "El Camino" — 3 steps (Character → Path → Dedication); mode/template/decision-knob screens removed |
+| Step count | `TOTAL_STEPS = 3` |
+| Adventure UX | Single serpentine gamebook path (`PathBuilder`); template chosen as the path's first fork ("world" beat) |
+| Templates | 10 (space/forest/pirates/dinosaurs/superhero/chef/castle/safari/inventor/candy), each with a branching story-tree |
+| Character identity | FLUX.2 watercolor portrait (`portraitUrl`, `portraits/` bucket) — no SVG/DiceBear avatar |
+| Generation + Preview | `/generar` animation + `/preview` viewer/checkout — all implemented |
 | Language toggle | LocaleSwitcher component in nav (ES/CA/EN/FR) |
 | Interest tags | 6 interests (space/animals/sports/castles/dinosaurs/music), max 4 selectable |

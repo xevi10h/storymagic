@@ -44,9 +44,9 @@ characters (saved hero profiles)
 ├── hairstyle (varies by gender)
 ├── interests (text[] — up to 4: space / animals / sports / castles / dinosaurs / music)
 ├── city
-├── special_trait (open text — "what makes them special")
+├── favorite_color (book theme accent color)
 ├── favorite_companion (open text — "best friend/companion")
-├── avatar_url (DiceBear big-smile URL, being phased out)
+├── avatar_url (FLUX.2 watercolor portrait, Supabase portraits/ bucket)
 ├── created_at
 └── updated_at
 
@@ -55,10 +55,10 @@ stories
 ├── user_id (FK → profiles)
 ├── character_id (FK → characters)
 ├── title (nullable — auto-generated post-creation)
-├── template_id (1-5)
-├── creation_mode (solo / together)
-├── story_decisions (jsonb — choices made during Step 4)
-├── special_moment (text — open text from Step 4 Solo)
+├── template_id (slug: space / forest / pirates / dinosaurs / superhero / chef / castle / safari / inventor / candy)
+├── creation_mode (solo / together — legacy; defaults "solo" to keep payload valid)
+├── story_decisions (jsonb — choices made along the adventure path)
+├── special_moment (text — open text, optional)
 ├── dedication_text
 ├── sender_name
 ├── ending_choice
@@ -152,11 +152,11 @@ blog_posts (editorial blog — Supabase CMS)
 ## Generation Pipeline
 
 ```
-User completes Step 5 (dedication + ending)
+User completes Step 3 (dedication + ending)
   │
   └─→ POST /api/stories (save character + draft)
         │
-        └─→ Redirect to /crear/[storyId]/generar (Step 6 animation)
+        └─→ Redirect to /crear/[storyId]/generar (generation animation)
               │
               └─→ POST /api/stories/[storyId]/generate
                     │
@@ -184,9 +184,9 @@ User completes Step 5 (dedication + ending)
                     │      story_illustrations rows created/updated
                     │      stories.status = 'ready'
                     │
-                    └─→ Redirect to /crear/[storyId]/preview (Step 7)
+                    └─→ Redirect to /crear/[storyId]/preview
 
-User clicks "Buy" in Step 7
+User clicks "Buy" in the preview
   │
   └─→ POST /api/checkout
         └─→ Stripe Checkout Session created
@@ -225,13 +225,13 @@ Physical fulfillment + customer updates (Gelato)
 | Service | Cost | Notes |
 |---------|------|-------|
 | Claude Sonnet 4 (story text) | ~$0.05 | ~3K input + 2K output tokens |
-| FLUX.2 [flex] reference sheets | ~$0.06 | ~6 visual-bible assets × $0.01 |
-| FLUX.2 [flex] illustrations | ~$0.21 | ~21 imgs (cover+scenes+secondaries) × $0.01 |
+| FLUX.2 [flex] reference sheets | ~$0.48 | ~6 visual-bible assets × ~$0.08/img |
+| FLUX.2 [flex] illustrations | ~$1.68 | ~21 imgs (cover+scenes+secondaries) × ~$0.08/img |
 | Gemini 2.5 Flash QA judge | ~$0.02 | vision review + re-judge passes |
-| **Total AI cost per book** | **~$0.34** | flex; with FLUX.2 pro ≈ $0.85 — both ≤ €1.50 target |
+| **Total AI cost per book** | **~$2.2** | flex ~$0.08/img (per-megapixel ~$0.06/MP at 1408×960); pro is higher |
 
 > Engine A/B (artifacts/benchmark): FLUX.2 beat Recraft on scene coherence 9.8 vs 4.8.
-> FLUX.2 [flex] + reinforced watercolor prompt chosen as default (look + cost); pro via `FLUX2_MODEL`.
+> FLUX.2 [flex] (~$0.06/megapixel ≈ $0.08/img at 1408×960) + reinforced watercolor prompt chosen as default (look + cost); pro via `FLUX2_MODEL`.
 
 ## Infrastructure Cost (Monthly, Estimated)
 
@@ -257,10 +257,10 @@ src/
 │   │   ├── update-password/page.tsx
 │   │   └── callback/route.ts             — OAuth callback
 │   ├── crear/
-│   │   ├── page.tsx                      — Wizard Steps 1-5
+│   │   ├── page.tsx                      — "El Camino" 3-step flow orchestrator (Character → Path → Dedication, TOTAL_STEPS=3)
 │   │   └── [storyId]/
-│   │       ├── generar/page.tsx          — Step 6 generation animation
-│   │       └── preview/page.tsx          — Step 7 book preview + checkout
+│   │       ├── generar/page.tsx          — Generation animation
+│   │       └── preview/page.tsx          — Book preview + checkout
 │   ├── dashboard/page.tsx                — User dashboard
 │   ├── perfil/page.tsx                   — User profile
 │   └── checkout/success/page.tsx         — Post-purchase confirmation
@@ -282,14 +282,8 @@ src/
 │   ├── dashboard/route.ts                — GET: user stories/orders/characters
 │   └── profile/route.ts                  — GET/PATCH: user profile
 ├── components/
-│   ├── avatar/
-│   │   ├── CharacterAvatar.tsx           — React component (SVG avatar)
-│   │   ├── svg-builder.ts                — getAvatarSvgString() for PDF
-│   │   ├── mappings.ts                   — Gender/hairstyle/interest mappings
-│   │   ├── overlays.ts                   — Interest accessory overlays
-│   │   └── types.ts                      — Avatar prop types
 │   ├── book-viewer/                      — react-pageflip book viewer
-│   ├── crear/                            — All wizard step components
+│   ├── crear/                            — Creation-flow components: Step2CharacterCreation, PortraitReveal, PathBuilder, Step5AuthorMessage, CreationHeader, PageFlip
 │   ├── landing/                          — Navbar, Footer, etc.
 │   ├── waitlist/
 │   │   └── WaitlistPage.tsx              — Full-screen waitlist gate (form + subscriber counter)
@@ -321,7 +315,7 @@ src/
 │   │   ├── order-emails.ts               — Localized order lifecycle templates (es/ca/en/fr)
 │   │   └── notify-order.ts               — Resolve recipient (auth.admin or passed email) + send
 │   ├── waitlist-email.ts                 — Resend email template for waitlist confirmation
-│   ├── create-store.ts                   — Wizard state + decision tree constants
+│   ├── create-store.ts                   — Creation-flow state + path/beat helpers (getTemplateBeats, getRecommendedTemplates)
 │   ├── pricing.ts                        — Shared pricing constants
 │   ├── stripe.ts                         — Stripe singleton
 │   └── database.types.ts                 — Auto-generated Supabase types

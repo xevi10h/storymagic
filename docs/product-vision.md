@@ -31,7 +31,7 @@ This positioning differentiates us from template-based competitors (Wonderbly, H
 
 ## Key Differentiators
 
-1. **Co-creation mode ("Creamos Juntos")** — Parent and child build the story together, choosing characters, plot twists, and endings. Not just personalization — it's a shared experience.
+1. **Choose-your-own-adventure path ("El Camino")** — Parent and child build the story together along a branching, gamebook-style path, choosing the world, characters, plot twists, and ending. Not just personalization — it's a shared experience.
 
 2. **Saga system** — Not a one-off purchase. Children can have ongoing adventures with the same character, building their own universe ("their own Harry Potter").
    - Linear sagas: continuous multi-book stories

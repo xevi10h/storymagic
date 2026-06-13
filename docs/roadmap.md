@@ -37,23 +37,23 @@ The roadmap is divided into 6 phases, from foundation to scale. Each phase has c
 ---
 
 ## Phase 2: Story Builder Flow
-> **Status: COMPLETE ✅**
+> **Status: COMPLETE ✅** (multi-step wizard later **SUPERSEDED by the "El Camino" 3-step flow** — see Creation Flow v2 below)
 
 **Deliverables:**
-- [x] Step 1: Mode selection (solo / together)
-- [x] Step 2: Character creation — name, city, age, hair, skin, gender, interests + live avatar preview
-- [x] Step 3: Template selection (5 templates, sorted by age/interest relevance, "Recomendado" badge)
-- [x] Step 4 Solo Mode: 3 tabs (Compañero/Atmósfera/El Giro), template-driven decisions + open text
-- [x] Step 4 Together Mode: 3 sequential visual decision pages (encounter/companion/challenge)
-- [x] Step 5: Dedication message + 3 dynamic endings per template + back cover preview
-- [x] Step 6: Generation animation with whimsical progress messages
-- [x] Step 7: Interactive book viewer (page-flip animation + sound) + checkout UI
+- [~] Step 1: Mode selection (solo / together) — **SUPERSEDED**: mode removed; flow no longer branches solo/together
+- [x] Step 2: Character creation — name, city, age, hair, skin, gender, interests, favorite color + companion + FLUX.2 portrait reveal
+- [~] Step 3: Template selection (originally 5, now **10** templates) — **SUPERSEDED**: template is now the path's first fork ("world" beat), not a separate screen
+- [~] Step 4 Solo Mode: 3 tabs (Compañero/Atmósfera/El Giro) — **SUPERSEDED** by the branching path (PathBuilder)
+- [~] Step 4 Together Mode: 3 sequential visual decision pages — **SUPERSEDED** by the branching path (PathBuilder)
+- [x] Dedication message + dynamic per-template endings + back cover preview (now Step 3 of El Camino)
+- [x] Generation animation with whimsical progress messages
+- [x] Interactive book viewer (page-flip animation + sound) + checkout UI
 - [x] User authentication (Supabase Auth: email + Google OAuth + anonymous guest sign-in)
 - [x] Guest flow: /crear is unprotected; on finish, non-logged users continue seamlessly as guest (anonymous sign-in, no modal). See Phase 2 — Conversion (GuestGate removed for zero-friction creation)
 - [x] State persistence in localStorage for guests (usePersistedState hook)
-- [x] All wizard state: create-store.ts with decision tree architecture for all 5 templates
+- [x] Creation-flow state: create-store.ts — branching story-tree architecture for all 10 templates
 - [x] Supabase schema: profiles, characters, stories, story_illustrations, orders, sagas, illustration_library tables with RLS
-- [x] All 29 UI components use useTranslations() — zero hardcoded strings
+- [x] All UI components use useTranslations() — zero hardcoded strings
 
 ---
 
@@ -161,11 +161,11 @@ Replaced Recraft V3 with **FLUX.2 [flex]** + a whole-world consistency system. D
 ---
 
 ## Phase 6: Scale & Expand (Month 3+)
-> **Status: PARTIAL 🔄** (avatar done, rest pending)
+> **Status: PARTIAL 🔄** (identity + templates done, rest pending)
 
 **Deliverables:**
-- [x] **Custom SVG avatar system** — DiceBear replaced with composable SVG avatar (CharacterAvatar + svg-builder). Flat file structure: `CharacterAvatar.tsx`, `svg-builder.ts`, `mappings.ts`, `overlays.ts`, `types.ts`.
-- [ ] New story templates (expand from 5 to 10+)
+- [x] **Character identity = FLUX.2 watercolor portrait** — generated once via `/api/characters/portrait`, stored in Supabase `portraits/` bucket, anchors the protagonist reference sheet and every scene. (Note: the previously-planned "custom SVG avatar system" was NEVER built; DiceBear was NOT replaced by SVG avatars — it remains only a legacy URL helper, superseded by the FLUX.2 portrait.)
+- [x] New story templates — **expanded from 5 to 10** (space, forest, pirates, dinosaurs, superhero, chef, castle, safari, inventor, candy), each with a branching story-tree
 - [ ] Saga system implementation (linear, episodic, progression)
 - [ ] English version (USA/UK market)
 - [ ] Premium adventure packs with Spanish 3PL
