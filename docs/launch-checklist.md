@@ -1,5 +1,23 @@
 # Launch Readiness Checklist
 
+> ## Progress update — 2026-06-14
+>
+> **Resolved in code (commit `a0fad04`):**
+> - **P0-1 ✅ Server-side fulfilment** — added `GET /api/cron/fulfill-orders` (`vercel.json`, every 5 min). Sweeps paid-but-uncompleted orders and re-triggers `/complete` server-to-server (idempotent guest path). `CRON_SECRET` already set in Vercel prod. *Active once deployed to prod.*
+> - **P0-2 ✅ (code) Draft-gating footgun** — `gelato/orders.ts` now `.trim()`s `STRIPE_ENVIRONMENT`. (Prod value is literally `"test\n"` — the trailing newline is real; the trim prevents a `"live\n"` from silently producing draft-only orders.)
+> - **P0-3 ✅ (ready) Cheaper path art** — `scripts/generate-path-art.mjs` now supports fal.ai FLUX.1 schnell (auto when `FAL_KEY` set). All 273 pending prompts parse cleanly. **Needs `FAL_KEY` to run** (~$1 for 270 imgs).
+>
+> **Prod-config findings (from `vercel env` + Resend) — need YOUR action:**
+> - 🔴 **`STRIPE_ENVIRONMENT="test\n"`** → prod is in Stripe TEST mode; no real payments, and Gelato orders are drafts. Flip to `live` (+ live Stripe keys) at go-live.
+> - 🔴 **FLUX.2 is NOT active in prod** — `BFL_API_KEY` and `ILLUSTRATION_PROVIDER` are **missing** in prod → the generator falls back to the **Recraft** pipeline (RECRAFT_API_TOKEN is set). To run the FLUX.2 visual-bible pipeline in prod, set `ILLUSTRATION_PROVIDER=flux2` + `BFL_API_KEY` (with credits). Otherwise prod ships Recraft illustrations.
+> - 🟠 **`GELATO_FULFILLMENT_MODE="owner"`** — every book ships to the owner's address (phase-1 manual repackaging). Set `direct` to ship to customers.
+> - 🔴 **Resend `meapica.com` = verification FAILED** — can't send from meapica.com; emails currently send from `constrack.pro` (verified). Fix the DNS records + re-verify, then set `EMAIL_FROM` to a meapica.com address.
+> - ✅ Set: `RESEND_API_KEY`, `GELATO_WEBHOOK_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`, `GEMINI_API_KEY`, `OPENAI_API_KEY`, `RECRAFT_API_TOKEN`, `CRON_SECRET` (added today).
+>
+> **Cost model (live 2026 prices) — see "Unit costs" section at the bottom.**
+
+---
+
 > Created 2026-06-13. Living document — check items off as they ship.
 > Audited against code by three review passes (fulfilment, illustration cost, docs).
 > Severity: **P0** = blocks launch · **P1** = must verify before real customers · **P2** = polish.
@@ -73,3 +91,37 @@ Verify every tree has valid `c1→c2→c3 + ending`, no dangling `option.next`, 
 | Order tracking UI | ✅ Built (dashboard stepper) |
 | Lifecycle/tracking emails | ✅ Built (es/ca/en/fr), wired to Gelato events; sender domain pending (P0-4) |
 | Docs | ✅ Reconciled 2026-06-13 |
+
+---
+
+## Unit costs (live 2026 API prices)
+
+> ⚠️ The code comment in `flux2.ts` claiming flex = "$0.01/img" is **stale by ~6×** — real BFL FLUX.2 flex billing is **$0.06/megapixel** (~$0.063 for a 1:1 image, ~$0.085 for a 1408×960). This is the entire cost center (~85% of every figure below). Worth correcting the comment to avoid mis-budgeting.
+
+### 1. Populating the 270 missing path-art images (1408×960 ≈ 1.35 MP each)
+| Provider | Total |
+|---|---|
+| **BFL FLUX.2 flex** (current) | **$21.87** |
+| **fal.ai FLUX.1 schnell** (recommended, ready in the script) | **≈ $1.09** (~$1.62 worst case w/ MP round-up), ~3–5 min |
+
+Schnell is ~13–20× cheaper and visually indistinguishable at thumbnail size → use it.
+
+### 2. Cost per PREVIEW (incurred on EVERY creation attempt, buyer or not)
+The preview (`/api/stories/[id]/generate`) generates: ~7–10 reference sheets + 4 preview scenes + 1 cover (FLUX.2) + the LLM story work (gpt-5.4-mini ×~14 + gpt-4o-mini).
+- **LLM:** ≈ $0.14 · **FLUX.2 images:** ≈ $0.85 → **≈ $0.99 per preview** (worst case ≈ $1.42).
+- This is the **sunk cost of a non-buyer**: every abandoned creation burns ~$0.99 (mostly ref sheets + cover generated *before* payment). Biggest lever to cut burn: defer/trim ref-sheet generation until purchase intent, or drop preview scene count.
+
+### 3. Cost per FULL BOOK delivered (the digital assets behind the PDF / print)
+= preview + portrait (1) + remaining 8 scenes + QA-judge Gemini (2–3 calls) + ~2 regen images.
+- **≈ $1.82 per book** typical (worst case ≈ $2.99 with a full regen pass).
+- **The PDF rendering itself is ≈ free** — `renderBookPdf` + `buildCoverSpreadFromBook` (@react-pdf/renderer + pdf-lib) is pure CPU on a Vercel function (~$0.001–0.003). The "PDF version" adds no image-API cost; it reuses the already-generated illustrations.
+
+### Summary
+| Metric | Cost |
+|---|---|
+| 270 path images — flex / schnell | **$21.87 / ~$1.09** |
+| Per preview (typical) | **~$0.99** (non-buyer sunk cost) |
+| Per full book delivered (digital assets) | **~$1.82** (PDF render ≈ $0) |
+| Marginal buyer-vs-non-buyer | non-buyer $0.99 sunk; buyer adds ~$0.83 → $1.82 total |
+
+> Note: these figures assume the **FLUX.2** pipeline. Prod currently runs **Recraft** (FLUX.2 not enabled in prod — see config findings). Recraft is $0.04/img → a 24-image book ≈ $0.96; recompute if you keep Recraft for prod.
