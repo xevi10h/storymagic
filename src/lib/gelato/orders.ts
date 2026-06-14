@@ -190,8 +190,10 @@ export async function createPrintOrder(
   params: PrintOrderParams,
 ): Promise<GelatoOrderResponse> {
   const address = resolveShippingAddress(params);
-  // Use "draft" when Stripe is in test mode — prevents real print charges
-  const orderType = process.env.STRIPE_ENVIRONMENT === "live" ? "order" : "draft";
+  // Use "draft" when Stripe is in test mode — prevents real print charges.
+  // .trim() is defensive: env values sometimes carry a trailing newline, which
+  // would silently turn every live order into a non-printing "draft".
+  const orderType = process.env.STRIPE_ENVIRONMENT?.trim() === "live" ? "order" : "draft";
   const body: GelatoOrderRequest = {
     orderType,
     orderReferenceId: params.orderReferenceId,

@@ -48,12 +48,25 @@ function loadEnv() {
 loadEnv();
 
 const BFL_KEY = process.env.BFL_API_KEY || "";
-if (!BFL_KEY && !MANIFEST_ONLY) {
-  console.error("FATAL: BFL_API_KEY not found in .env.local");
-  process.exit(1);
+const FAL_KEY = process.env.FAL_KEY || process.env.FAL_API_KEY || "";
+// Provider: fal.ai FLUX.1 [schnell] (~$0.003/MP, ~13× cheaper) when FAL_KEY is set,
+// else BFL FLUX.2 flex. These are decorative thumbnails (no character consistency
+// needed) so schnell is the cost-optimal choice. Force BFL with PATH_ART_PROVIDER=bfl.
+const PROVIDER =
+  process.env.PATH_ART_PROVIDER || (FAL_KEY ? "fal" : "bfl");
+if (!MANIFEST_ONLY) {
+  if (PROVIDER === "fal" && !FAL_KEY) {
+    console.error("FATAL: PATH_ART_PROVIDER=fal but FAL_KEY not found in .env.local");
+    process.exit(1);
+  }
+  if (PROVIDER === "bfl" && !BFL_KEY) {
+    console.error("FATAL: BFL_API_KEY not found in .env.local (or set FAL_KEY to use fal.ai schnell)");
+    process.exit(1);
+  }
 }
 
 const MODEL = "flux-2-flex";
+const FAL_MODEL = "fal-ai/flux/schnell";
 const WIDTH = 1408; // 3:2, multiples of 32 (matches ASPECT_TO_DIMS in src/lib/ai/flux2.ts)
 const HEIGHT = 960;
 const FINAL_W = 720;
@@ -313,6 +326,35 @@ async function fluxGenerate(prompt) {
   throw new Error(`Timeout after ${(MAX_POLL_ITERATIONS * POLL_INTERVAL_MS) / 1000}s polling FLUX.2`);
 }
 
+// ── fal.ai FLUX.1 [schnell] (sync endpoint) ───────────────────────────────────
+async function falGenerate(prompt) {
+  const res = await fetch(`https://fal.run/${FAL_MODEL}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Key ${FAL_KEY}` },
+    body: JSON.stringify({
+      prompt,
+      image_size: { width: WIDTH, height: HEIGHT },
+      num_inference_steps: 4,
+      num_images: 1,
+      enable_safety_checker: false,
+      output_format: "png",
+    }),
+  });
+  if (!res.ok) {
+    const errText = await res.text();
+    if (res.status === 401 || res.status === 403) throw new Error(`NO CREDITS — check FAL_KEY / fal.ai balance. ${errText}`);
+    throw new Error(`fal.ai ${res.status}: ${errText}`);
+  }
+  const data = await res.json();
+  const url = data?.images?.[0]?.url;
+  if (!url) throw new Error(`fal.ai returned no image: ${JSON.stringify(data).slice(0, 200)}`);
+  const imgRes = await fetch(url);
+  if (!imgRes.ok) throw new Error(`image download ${imgRes.status}`);
+  return { buffer: Buffer.from(await imgRes.arrayBuffer()), cost: null };
+}
+
+const generateImage = (prompt) => (PROVIDER === "fal" ? falGenerate(prompt) : fluxGenerate(prompt));
+
 async function generateOne(opt, index) {
   const tag = `[${String(index + 1).padStart(2, "0")}/${OPTIONS.length}] ${opt.seed}`;
   const fullPrompt = opt.prompt + NO_CHILD + WATERCOLOR_STYLE_SUFFIX;
@@ -327,7 +369,7 @@ async function generateOne(opt, index) {
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     const t0 = Date.now();
     try {
-      const { buffer, cost } = await fluxGenerate(fullPrompt);
+      const { buffer, cost } = await generateImage(fullPrompt);
       await sharp(buffer)
         .resize(FINAL_W, FINAL_H, { fit: "cover" })
         .webp({ quality: 80 })
