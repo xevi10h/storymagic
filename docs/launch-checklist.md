@@ -94,9 +94,24 @@ Verify every tree has valid `c1→c2→c3 + ending`, no dangling `option.next`, 
 
 ---
 
-## Unit costs (live 2026 API prices)
+## Unit costs
 
-> ⚠️ The code comment in `flux2.ts` claiming flex = "$0.01/img" is **stale by ~6×** — real BFL FLUX.2 flex billing is **$0.06/megapixel** (~$0.063 for a 1:1 image, ~$0.085 for a 1408×960). This is the entire cost center (~85% of every figure below). Worth correcting the comment to avoid mis-budgeting.
+> ### ✅ MEASURED — BFL FLUX.2 flex (2026-06-15, from the live API `cost` field + balance)
+> **1 BFL credit = $0.01 · $10 top-up = 1000 credits.** Endpoint `GET https://api.bfl.ai/v1/credits` returns the balance.
+>
+> | Resolution | MP | Cost | $ |
+> |---|---|---|---|
+> | 1408×960 (current generator setting) | 1.35 | **10 cr** | **$0.10** |
+> | 1024×704 | 0.72 | 5 cr | $0.05 |
+> | 768×512 | 0.39 | 5 cr | $0.05 |
+>
+> - Bills **per megapixel**, with a **5-credit ($0.05) floor**. Lowering `steps` does NOT reduce cost.
+> - The final path-art asset is downscaled to **720×480** regardless → generating at **768×512 (5 cr / $0.05)** instead of 1408×960 (10 cr / $0.10) **halves the cost with no visible loss** at thumbnail size.
+> - **270 path images:** 1408×960 = **$27** · 768×512 = **$13.50**.
+> - **Per delivered book** (~24 FLUX.2 images, mixed sizes, mostly ≥0.72 MP ≈ 8–10 cr each): **≈ $2.0–2.4**. Per preview (~12 images): **≈ $1.0–1.2**.
+> - These MEASURED numbers supersede the estimates below (which were ~2× low).
+
+> ⚠️ (Original estimate, kept for reference — superseded by measured values above.) The code comment in `flux2.ts` claiming flex = "$0.01/img" was **stale by ~10×**.
 
 ### 1. Populating the 270 missing path-art images (1408×960 ≈ 1.35 MP each)
 | Provider | Total |

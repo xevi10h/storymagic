@@ -5,7 +5,11 @@
  *   - Up to 8 reference images per generation (input_image..input_image_8)
  *     → enables a full "visual bible" (protagonist + secondaries + location + props).
  *   - Uses width/height (NOT aspect_ratio).
- *   - Models: flux-2-flex (cheap, $0.01/img — default) and flux-2-pro ($0.03/img).
+ *   - Models: flux-2-flex (default) and flux-2-pro.
+ *     MEASURED cost (BFL credits, 1 credit = $0.01), flux-2-flex, 2026-06-15:
+ *       1408×960 (1.35 MP) = 10 cr = $0.10  ·  ≤0.72 MP = 5 cr = $0.05 (5-cr floor).
+ *       Bills per megapixel, NOT per step (lowering `steps` does not reduce cost).
+ *     (The old "$0.01/img" was stale by ~10×.)
  *
  * The reinforced-watercolor look is driven by the prompt (see scene-screenplay.ts),
  * not the model. flex was chosen as default: with the watercolor prompt it matches
