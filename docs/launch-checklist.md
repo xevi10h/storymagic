@@ -5,7 +5,7 @@
 > **Resolved in code (commit `a0fad04`):**
 > - **P0-1 ✅ Server-side fulfilment** — added `GET /api/cron/fulfill-orders` (`vercel.json`, every 5 min). Sweeps paid-but-uncompleted orders and re-triggers `/complete` server-to-server (idempotent guest path). `CRON_SECRET` already set in Vercel prod. *Active once deployed to prod.*
 > - **P0-2 ✅ (code) Draft-gating footgun** — `gelato/orders.ts` now `.trim()`s `STRIPE_ENVIRONMENT`. (Prod value is literally `"test\n"` — the trailing newline is real; the trim prevents a `"live\n"` from silently producing draft-only orders.)
-> - **P0-3 ✅ (ready) Cheaper path art** — `scripts/generate-path-art.mjs` now supports fal.ai FLUX.1 schnell (auto when `FAL_KEY` set). All 273 pending prompts parse cleanly. **Needs `FAL_KEY` to run** (~$1 for 270 imgs).
+> - **P0-3 ✅ DONE — all 390 path images generated.** The 270 missing were generated via **fal FLUX.2 [dev]** ($0.012/MP, rich watercolor matching the 120 BFL ones), **~$3.24, 4 min, 0 failures** (2026-06-15). Provenance per image in `src/lib/story-trees/art-provenance.json` (270 fal/flux-2 + 120 bfl/flux-2-flex) for targeted regeneration after a style review. fal schnell was rejected (flat/white-bg look).
 >
 > **Prod-config findings (from `vercel env` + Resend) — need YOUR action:**
 > - 🔴 **`STRIPE_ENVIRONMENT="test\n"`** → prod is in Stripe TEST mode; no real payments, and Gelato orders are drafts. Flip to `live` (+ live Stripe keys) at go-live.
