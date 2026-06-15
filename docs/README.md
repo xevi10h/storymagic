@@ -1,12 +1,18 @@
 # meapica — Documentation Index
 
 > Living documentation for the meapica project.
-> Last updated: 2026-06-13
+> Last updated: 2026-06-15
+
+> **▶ Resuming work? Read these two first:**
+> - [`launch-checklist.md`](./launch-checklist.md) — current state, what's done, what's next, blockers (top section is the live session summary).
+> - [`generation-pipeline.md`](./generation-pipeline.md) — the AI generation system: two-speed architecture, model choices + measured costs, consistency, status.
 
 ## Documents
 
 | Document | Description |
 |----------|-------------|
+| [Launch Checklist](./launch-checklist.md) | **Live state tracker** — done / pending / blockers, prioritized for launch |
+| [Generation Pipeline](./generation-pipeline.md) | **AI book generation** — two-speed architecture, models, costs, consistency, status |
 | [Product Vision](./product-vision.md) | What we're building, who it's for, positioning and value proposition |
 | [Product Spec](./product-spec.md) | Book format, templates, personalization variables, story structure |
 | [User Experience](./user-experience.md) | Complete user flow, screen-by-screen spec, Stitch design references |
@@ -24,3 +30,5 @@
 **Stack:** Next.js 16 + Supabase + Vercel + Stripe + Claude Sonnet 4 (prod) / Groq / Cerebras / Gemini (dev) + FLUX.2 [flex] illustrations (Recraft V3 fallback) + Gemini 2.5 Flash QA judge + Gelato API
 
 **Status:** Phases 0–3 complete, including **Creation Flow v2 ("El Camino")** — a 3-step choose-your-own-adventure path (Character → Path → Dedication) with **10 branching story templates**, the **FLUX.2 illustration migration** (visual-bible engine + watercolor portrait identity), and **programmatic SEO + editorial blog** live. Phase 4 (checkout/Gelato) in progress. Phase 5 (launch) unstarted.
+
+**Current focus (2026-06-15):** generation cost/quality + the **two-speed pipeline** (fast cheap preview, premium final book generated in the background) — all 390 path-art images done, fulfilment safety-net cron added, per-scene character-consistency lock + per-stage resolution implemented. **Next:** preview ≤15-20s, validate the consistency fix, background-gen + email. **Blocker:** image credits exhausted (BFL + fal) — top up to continue. See `generation-pipeline.md` + `launch-checklist.md`.

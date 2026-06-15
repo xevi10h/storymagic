@@ -1,5 +1,35 @@
 # Launch Readiness Checklist
 
+> ## 🧭 RESUME HERE — session summary 2026-06-15
+> A long working session focused on **AI generation cost, quality, and the two-speed
+> architecture**. Full detail: **`docs/generation-pipeline.md`** (read it first).
+>
+> **Shipped this session (committed):**
+> - El Camino UI: serpentine adventure-path builder, clickable header stepper (jump
+>   between unlocked steps), mobile = desktop stepper, compact mobile dedication. (`5ebc2f1`)
+> - **All 390 path-art card images generated** via fal FLUX.2 dev (~$4.68), uniform,
+>   with per-image provenance in `src/lib/story-trees/art-provenance.json`. (`c3f0388`, `02e2e66`)
+> - **Fulfilment safety-net cron** `/api/cron/fulfill-orders` so paid orders reach
+>   Gelato even if the browser tab closes. (`a0fad04`) + STRIPE_ENVIRONMENT trim fix.
+> - **Generation pipeline overhaul:** preview timeout false-error fix, cover anchored
+>   to all char refs, protagonist-ref safeguard, QA-skipped surfaced, parallelized
+>   screenplay, 3-scene preview, **two-speed model split** (preview=fal dev / final=
+>   flux-2-flex), **per-scene character lock** (fixes "boy→girl" drift), **per-stage
+>   resolution scale**. (`86ce1d7`, `a51d0a1`, `ea574ef`, `1d7656a`, `a883d60`)
+> - Measured all model costs + ran a full real book end-to-end → validated PDF
+>   (`artifacts/twospeed/book-final.pdf`).
+>
+> **Open / next (priority order):**
+> 1. 🔴 **BLOCKER: BFL + fal image credits both exhausted** — top up ~$15-20 (fal
+>    recommended) before any generation work.
+> 2. ⏳ **Preview ≤ 15-20s** — decouple the heavy LLM (light "preview architect" +
+>    defer full screenplay/bible to /complete). Images already ~7s on fal dev.
+> 3. ⏳ **Validate** the character-lock + high-res fixes with a fresh book (needs credits).
+> 4. ⏳ **Background final generation + "book ready" email** (tie into the cron).
+> 5. The P0/P1 launch items below (deploy, go-live envs, Resend domain, real order test).
+>
+> ---
+>
 > ## Progress update — 2026-06-14
 >
 > **Resolved in code (commit `a0fad04`):**

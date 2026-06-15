@@ -151,6 +151,15 @@ blog_posts (editorial blog — Supabase CMS)
 
 ## Generation Pipeline
 
+> ⚠️ **The generation pipeline was substantially reworked 2026-06-15. The authoritative,
+> current description (two-speed model split, per-stage models + resolution, measured
+> costs, the per-scene character-consistency lock) lives in `docs/generation-pipeline.md`.**
+> Key changes since the diagram below: PREVIEW uses a fast/cheap model
+> (`PREVIEW_IMAGE_PROVIDER`/`PREVIEW_FAL_MODEL`, e.g. fal FLUX.2 dev) and `/complete`
+> uses a premium model (`FINAL_IMAGE_PROVIDER`/`FINAL_FAL_MODEL` = flux-2-flex) +
+> `FINAL_IMAGE_SCALE` for print resolution, regenerating ALL 12 scenes; the immutable
+> character descriptor is now force-injected into every scene prompt; preview is 3 scenes.
+
 ```
 User completes Step 3 (dedication + ending)
   │

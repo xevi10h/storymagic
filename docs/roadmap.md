@@ -6,6 +6,31 @@ The roadmap is divided into 6 phases, from foundation to scale. Each phase has c
 
 ---
 
+## 🔥 Active priorities (2026-06-15) — generation pipeline & launch
+
+See **`docs/generation-pipeline.md`** and **`docs/launch-checklist.md`** for full detail.
+
+**Blocked on:** BFL + fal image credits exhausted → top up ~$15-20 (fal) before any generation work.
+
+- [ ] **Preview ≤ 15-20s** — decouple the heavy LLM from the preview: a light "preview
+      architect" (title + 3 hero scene prompts) + protagonist ref + 3 fal-dev scenes;
+      defer the full screenplay + visual bible + 12 scenes to `/complete`. (Images already ~7s.)
+- [ ] **Validate** the per-scene character lock + high-res (`FINAL_IMAGE_SCALE`) with a fresh book.
+- [ ] **Background final generation + "book ready" email** — run `/complete` async post-purchase
+      (tie into the fulfilment cron) and email the customer when the book is finished.
+- [ ] Consistency hardening: multi-pose protagonist turnaround sheet generated with the premium
+      model; enforce gender from the `gender` field over the name in prose; unify the descriptor
+      across architect/screenplay.
+- [ ] Launch P0/P1 (from launch-checklist): deploy to prod (activates the cron), go-live envs
+      (`STRIPE_ENVIRONMENT=live`, live Stripe keys, `GELATO_FULFILLMENT_MODE=direct`,
+      `ILLUSTRATION_PROVIDER`/image-model envs), verify `meapica.com` in Resend, real order test.
+
+**Done this session:** all 390 path-art images (fal dev, ~$4.68); fulfilment safety-net cron;
+preview-timeout fix; cover ref anchoring; QA-skipped flag; two-speed model split; per-scene
+character lock; per-stage resolution. (commits 5ebc2f1 → a883d60)
+
+---
+
 ## Phase 0: Foundation
 > **Status: COMPLETE ✅**
 
