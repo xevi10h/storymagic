@@ -819,550 +819,550 @@
     "at": "2026-06-15T08:13:34.619Z"
   },
   "dinosaurs-c1-egg": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:29.918Z"
   },
   "dinosaurs-c1-footprints": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:31.070Z"
   },
   "dinosaurs-c1-fossil": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:30.716Z"
   },
   "dinosaurs-c2egg-hill": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:36.631Z"
   },
   "dinosaurs-c2egg-ptero": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:33.576Z"
   },
   "dinosaurs-c2egg-river": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:33.230Z"
   },
   "dinosaurs-c2footprints-feast": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:42.917Z"
   },
   "dinosaurs-c2footprints-lights": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:40.636Z"
   },
   "dinosaurs-c2footprints-music": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:38.289Z"
   },
   "dinosaurs-c2fossil-ferns": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:33.980Z"
   },
   "dinosaurs-c2fossil-lake": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:36.575Z"
   },
   "dinosaurs-c2fossil-volcano": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:36.132Z"
   },
   "dinosaurs-c3egga-call": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:42.790Z"
   },
   "dinosaurs-c3egga-flag": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:43.113Z"
   },
   "dinosaurs-c3egga-shell": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:44.170Z"
   },
   "dinosaurs-c3eggb-compare": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:45.678Z"
   },
   "dinosaurs-c3eggb-leaves": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:47.423Z"
   },
   "dinosaurs-c3eggb-turtle": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:46.302Z"
   },
   "dinosaurs-c3eggc-chirp": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:48.579Z"
   },
   "dinosaurs-c3eggc-draw": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:47.856Z"
   },
   "dinosaurs-c3eggc-fly": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:27.495Z"
   },
   "dinosaurs-c3footprintsa-drum": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:56.648Z"
   },
   "dinosaurs-c3footprintsa-shakers": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:58.365Z"
   },
   "dinosaurs-c3footprintsa-stomp": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:58.761Z"
   },
   "dinosaurs-c3footprintsb-beetles": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:59.664Z"
   },
   "dinosaurs-c3footprintsb-crystals": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:31:01.927Z"
   },
   "dinosaurs-c3footprintsb-mushrooms": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:58.383Z"
   },
   "dinosaurs-c3footprintsc-elevator": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:31:01.180Z"
   },
   "dinosaurs-c3footprintsc-flyer": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:31:01.784Z"
   },
   "dinosaurs-c3footprintsc-vine": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:31:02.852Z"
   },
   "dinosaurs-c3fossila-climb": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:50.761Z"
   },
   "dinosaurs-c3fossila-hoppers": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:50.341Z"
   },
   "dinosaurs-c3fossila-hum": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:49.232Z"
   },
   "dinosaurs-c3fossilb-pinecone": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:53.177Z"
   },
   "dinosaurs-c3fossilb-sand": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:52.405Z"
   },
   "dinosaurs-c3fossilb-scratch": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:51.440Z"
   },
   "dinosaurs-c3fossilc-lily": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:54.742Z"
   },
   "dinosaurs-c3fossilc-raft": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:55.363Z"
   },
   "dinosaurs-c3fossilc-swimmer": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:55.213Z"
   },
   "forest-c1-chest": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:58.190Z"
   },
   "forest-c1-door": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:58.480Z"
   },
   "forest-c1-dragon": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:57.853Z"
   },
   "forest-c2chest-hollow": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:03.486Z"
   },
   "forest-c2chest-squirrels": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:01.736Z"
   },
   "forest-c2chest-stream": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:02.326Z"
   },
   "forest-c2door-fountain": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:04.676Z"
   },
   "forest-c2door-pond": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:05.344Z"
   },
   "forest-c2door-tree": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:03.945Z"
   },
   "forest-c2dragon-cave": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:01.160Z"
   },
   "forest-c2dragon-fireflies": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:59.673Z"
   },
   "forest-c2dragon-sunflower": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:00.647Z"
   },
   "forest-c3chesta-hide": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:15.618Z"
   },
   "forest-c3chesta-pantry": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:14.727Z"
   },
   "forest-c3chesta-trade": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:13.076Z"
   },
   "forest-c3chestb-frog": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:16.064Z"
   },
   "forest-c3chestb-rod": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:17.707Z"
   },
   "forest-c3chestb-stones": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:15.723Z"
   },
   "forest-c3chestc-climb": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:18.404Z"
   },
   "forest-c3chestc-stairs": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:18.740Z"
   },
   "forest-c3chestc-woodpecker": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:18.854Z"
   },
   "forest-c3doora-dew": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:21.463Z"
   },
   "forest-c3doora-hug": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:21.352Z"
   },
   "forest-c3doora-petals": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:20.755Z"
   },
   "forest-c3doorb-cloud": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:23.561Z"
   },
   "forest-c3doorb-leaves": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:22.765Z"
   },
   "forest-c3doorb-song": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:24.465Z"
   },
   "forest-c3doorc-moonbeam": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:26.761Z"
   },
   "forest-c3doorc-petals": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:24.608Z"
   },
   "forest-c3doorc-whistle": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:25.633Z"
   },
   "forest-c3dragona-berries": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:07.475Z"
   },
   "forest-c3dragona-dance": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:06.473Z"
   },
   "forest-c3dragona-song": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:07.028Z"
   },
   "forest-c3dragonb-dew": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:08.702Z"
   },
   "forest-c3dragonb-leaf": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:09.924Z"
   },
   "forest-c3dragonb-song": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:09.630Z"
   },
   "forest-c3dragonc-echo": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:12.796Z"
   },
   "forest-c3dragonc-listen": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:10.513Z"
   },
   "forest-c3dragonc-warmth": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:11.654Z"
   },
   "inventor-c1-attic": {
     "provider": "fal",
@@ -1638,11 +1638,11 @@
     "at": "2026-06-15T08:14:51.338Z"
   },
   "pirates-c1-bottle": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:31:04.224Z"
   },
   "pirates-c1-dolphin": {
     "provider": "fal",
@@ -1771,11 +1771,11 @@
     "at": "2026-06-15T08:12:17.135Z"
   },
   "pirates-c3dolphinc-race": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:27.889Z"
   },
   "pirates-c3dolphinc-tidy": {
     "provider": "fal",
@@ -1834,11 +1834,11 @@
     "at": "2026-06-15T08:12:31.101Z"
   },
   "pirates-c3islandc-game": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:30:28.629Z"
   },
   "pirates-c3islandc-teamwork": {
     "provider": "fal",
@@ -2184,277 +2184,277 @@
     "at": "2026-06-15T08:14:36.175Z"
   },
   "space-c1-crystal": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:27.791Z"
   },
   "space-c1-robot": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:28.863Z"
   },
   "space-c1-ship": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:28.051Z"
   },
   "space-c2crystal-rainbow": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:31.800Z"
   },
   "space-c2crystal-song": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:33.957Z"
   },
   "space-c2crystal-star": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:31.355Z"
   },
   "space-c2robot-comet": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:30.998Z"
   },
   "space-c2robot-factory": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:28.559Z"
   },
   "space-c2robot-moon": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:31.014Z"
   },
   "space-c2ship-bridge": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:33.903Z"
   },
   "space-c2ship-engine": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:34.247Z"
   },
   "space-c2ship-garden": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:34.869Z"
   },
   "space-c3crystala-carry": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:43.575Z"
   },
   "space-c3crystala-jar": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:43.364Z"
   },
   "space-c3crystala-ray": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:43.691Z"
   },
   "space-c3crystalb-bottles": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:47.342Z"
   },
   "space-c3crystalb-brush": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:45.837Z"
   },
   "space-c3crystalb-slide": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:46.625Z"
   },
   "space-c3crystalc-clap": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:48.498Z"
   },
   "space-c3crystalc-dance": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:49.598Z"
   },
   "space-c3crystalc-friends": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:49.065Z"
   },
   "space-c3robota-helper": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:37.464Z"
   },
   "space-c3robota-listen": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:36.933Z"
   },
   "space-c3robota-magnet": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:37.500Z"
   },
   "space-c3robotb-net": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:37.606Z"
   },
   "space-c3robotb-race": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:39.536Z"
   },
   "space-c3robotb-wish": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:40.749Z"
   },
   "space-c3robotc-build": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:42.682Z"
   },
   "space-c3robotc-dig": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:40.583Z"
   },
   "space-c3robotc-friend": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:40.647Z"
   },
   "space-c3shipa-blue": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:50.707Z"
   },
   "space-c3shipa-lever": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:51.858Z"
   },
   "space-c3shipa-map": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:51.859Z"
   },
   "space-c3shipb-hug": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:53.782Z"
   },
   "space-c3shipb-stardust": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:52.674Z"
   },
   "space-c3shipb-sunray": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:54.943Z"
   },
   "space-c3shipc-light": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:56.675Z"
   },
   "space-c3shipc-water": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:54.960Z"
   },
   "space-c3shipc-whisper": {
-    "provider": "bfl",
-    "model": "flux-2-flex",
-    "w": 1408,
-    "h": 960,
-    "note": "backfilled"
+    "provider": "fal",
+    "model": "fal-ai/flux-2",
+    "w": 1024,
+    "h": 704,
+    "at": "2026-06-15T08:29:55.618Z"
   },
   "superhero-c1-badge": {
     "provider": "fal",
