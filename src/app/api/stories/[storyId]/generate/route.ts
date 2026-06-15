@@ -274,6 +274,15 @@ export async function POST(
       const assetReferences = await generateReferenceImages(assetTree, supabase, storyId, { protagonistAvatarBase64 });
       console.log(`[Generate][FLUX] Phase 2b done — ${assetReferences.length} references generated [${elapsed(routeStart)}]`);
 
+      // Quality safeguard: the protagonist reference anchors character identity in
+      // EVERY scene. If it failed to generate (empty base64), abort rather than ship
+      // a character-less, inconsistent book — the catch below reverts to "draft" so
+      // the user simply retries. (Was: silently degraded with no anchor.)
+      const protoRef = assetReferences.find((r) => r.assetId === "protagonist");
+      if (!protoRef?.base64) {
+        throw new Error("Protagonist reference image failed to generate — aborting to avoid an inconsistent book");
+      }
+
       // ── Phase 3: Expand scenes + Generate screenplay (parallel) ─────────────
       console.log(`[Generate][FLUX] Phase 3: Expansion + Screenplay in parallel [${elapsed(routeStart)}]`);
       const [generatedStory, screenplay] = await Promise.all([
@@ -296,10 +305,21 @@ export async function POST(
       console.log(`[Generate][FLUX] Phase 5: Cover generation... [${elapsed(routeStart)}]`);
       let coverUrl: string | null = null;
       try {
-        const coverRefs = [
-          assetReferences.find((r) => r.assetId === "protagonist")?.base64,
-          ...(screenplay.coverSpec.locationAsset ? [assetReferences.find((r) => r.assetId === screenplay.coverSpec.locationAsset)?.base64] : []),
-        ].filter((b): b is string => !!b);
+        // The cover is the most visible image in the book — anchor it to ALL its
+        // characters (protagonist + companions), then the location and props, in
+        // the same priority order scenes use, so cover identity matches the pages.
+        const cs = screenplay.coverSpec;
+        const coverRefMap = new Map(assetReferences.map((r) => [r.assetId, r.base64]));
+        const coverIds: string[] = [];
+        const pushCoverId = (id?: string) => { if (id && !coverIds.includes(id)) coverIds.push(id); };
+        pushCoverId(cs.primaryCharacter ?? "protagonist");
+        for (const id of cs.characters || []) pushCoverId(id);
+        pushCoverId(cs.locationAsset);
+        for (const id of cs.props || []) pushCoverId(id);
+        const coverRefs = coverIds
+          .map((id) => coverRefMap.get(id))
+          .filter((b): b is string => !!b)
+          .slice(0, 6);
         const coverResult = await generateFlux2(screenplay.coverSpec.fluxPrompt, {
           inputImages: coverRefs,
           aspectRatio: "1:1",

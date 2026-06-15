@@ -22,8 +22,14 @@ const WHIMSICAL_MESSAGE_KEYS = [
 ];
 
 const POLL_INTERVAL_MS = 3000;
-const STUCK_TIMEOUT_MS = 180_000; // 3 minutes without text = stuck
-const ILLUSTRATION_TIMEOUT_MS = 360_000; // 6 minutes for illustrations (12 images)
+// The FLUX.2 pipeline saves generated_text only at the END of the request
+// (architect → assets → refs → expansion → screenplay → previews → cover, ~4 min),
+// so "no text yet" is normal for the whole run. A real backend failure reverts
+// status to "draft" (handled separately + immediately), so this only guards a true
+// hang. Keep it generous (8 min) so a slow-but-healthy generation never shows a
+// false "stuck" error. (Bug: was 180s < the ~240s real generation time.)
+const STUCK_TIMEOUT_MS = 480_000; // 8 minutes without text = genuinely stuck
+const ILLUSTRATION_TIMEOUT_MS = 480_000; // 8 minutes for illustrations
 const AUTO_CONFIRM_SECONDS = 30;
 
 // ── Types ──────────────────────────────────────────────────────────────────
