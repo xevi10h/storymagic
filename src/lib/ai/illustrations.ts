@@ -454,7 +454,7 @@ export async function generateIllustrationsWithFlux(
     sceneNumbers?: number[];
     batchSize?: number;
     /** Per-stage image model (preview→fast/cheap, final→premium). */
-    imageModel?: { provider?: string; falModel?: string };
+    imageModel?: { provider?: string; falModel?: string; scale?: number };
   },
 ): Promise<IllustrationResult[]> {
   const mockMode = process.env.MOCK_MODE === "true";
@@ -538,6 +538,7 @@ export async function generateIllustrationsWithFlux(
           aspectRatio: scene.aspectRatio,
           provider: options?.imageModel?.provider,
           falModel: options?.imageModel?.falModel,
+          scale: options?.imageModel?.scale,
         });
 
         const elapsed = ((Date.now() - start) / 1000).toFixed(1);

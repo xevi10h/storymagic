@@ -51,6 +51,8 @@ export interface Flux2Options {
   provider?: string;
   /** Per-call fal model override (e.g. "fal-ai/flux-2" for dev). Defaults to FAL_FLUX2_MODEL. */
   falModel?: string;
+  /** Multiply the derived width/height (rounded to /32). >1 = higher resolution (print quality). */
+  scale?: number;
 }
 
 // ── Aspect → dimensions (multiples of 32, ≤ ~1.5MP for speed/cost) ──────
@@ -64,9 +66,19 @@ const ASPECT_TO_DIMS: Record<string, [number, number]> = {
   "2:3": [960, 1408],
 };
 
+/** Round to the nearest multiple of 32, clamped to FLUX.2's safe range. */
+function snap32(n: number): number {
+  return Math.max(512, Math.min(2048, Math.round(n / 32) * 32));
+}
 function dimsFor(opts: Flux2Options): [number, number] {
-  if (opts.width && opts.height) return [opts.width, opts.height];
-  return ASPECT_TO_DIMS[opts.aspectRatio || "1:1"] || ASPECT_TO_DIMS["1:1"];
+  let [w, h] = opts.width && opts.height
+    ? [opts.width, opts.height]
+    : ASPECT_TO_DIMS[opts.aspectRatio || "1:1"] || ASPECT_TO_DIMS["1:1"];
+  if (opts.scale && opts.scale !== 1) {
+    w = snap32(w * opts.scale);
+    h = snap32(h * opts.scale);
+  }
+  return [w, h];
 }
 
 // ── Mock mode ───────────────────────────────────────────────────────

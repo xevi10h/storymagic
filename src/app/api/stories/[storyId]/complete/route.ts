@@ -206,8 +206,9 @@ export async function POST(
       // Per-stage image model: the FINAL book uses the PREMIUM model (default
       // BFL flux-2-flex) for maximum consistency/quality — cost/time don't matter
       // here (already paid, generated in the background). Override via env.
-      const finalModel = process.env.FINAL_IMAGE_PROVIDER
-        ? { provider: process.env.FINAL_IMAGE_PROVIDER, falModel: process.env.FINAL_FAL_MODEL }
+      const finalScale = process.env.FINAL_IMAGE_SCALE ? Number(process.env.FINAL_IMAGE_SCALE) : undefined;
+      const finalModel = (process.env.FINAL_IMAGE_PROVIDER || finalScale)
+        ? { provider: process.env.FINAL_IMAGE_PROVIDER, falModel: process.env.FINAL_FAL_MODEL, scale: finalScale }
         : undefined;
 
       // 1. Load references from Supabase Storage URLs → base64
@@ -344,7 +345,7 @@ export async function POST(
         try {
           const portrait = await generateFlux2(
             `Close-up portrait of the same character from the reference image, from chest up, warm friendly smile, soft warm lighting, simple clean background. Children's book watercolor illustration. No text, no signature.`,
-            { inputImages: [protagonistRef.base64], aspectRatio: "3:4", provider: finalModel?.provider, falModel: finalModel?.falModel }
+            { inputImages: [protagonistRef.base64], aspectRatio: "3:4", provider: finalModel?.provider, falModel: finalModel?.falModel, scale: finalModel?.scale }
           );
           const portraitUrl = await uploadPortraitFromUrl(supabase, storyId, portrait.url);
           await supabase.from("stories").update({ character_portrait_url: portraitUrl }).eq("id", storyId);

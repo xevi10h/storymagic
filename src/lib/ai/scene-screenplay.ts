@@ -238,19 +238,30 @@ Produce exactly ${architect.scenes.length} scene entries. Every fluxPrompt must 
 // ── Prompt length enforcement ────────────────────────────────────────────────
 
 /**
- * Deterministically finalize a fluxPrompt: strip any style directive the LLM may
- * have added, fit the body within the length budget, then append the single
- * canonical watercolor suffix. Guarantees every scene shares the exact same style.
+ * Deterministically finalize a fluxPrompt. CRITICAL for consistency: we do NOT
+ * trust the LLM to restate the protagonist's appearance — a weak model paraphrases
+ * it, drops traits, or flips the gender per scene (the #1 cause of "boy in some
+ * scenes, girl in others"). So we FORCE the byte-identical immutable character
+ * descriptor to the front of every prompt, reserve its length before truncating
+ * the scene body, then append the single canonical watercolor suffix.
  */
-function finalizeFluxPrompt(spec: SceneScreenplay): void {
+function finalizeFluxPrompt(spec: SceneScreenplay, characterRef: string): void {
   let body = (spec.fluxPrompt || "").trim();
   // Defensive: if the LLM appended our suffix anyway, drop a trailing duplicate.
   if (body.endsWith(WATERCOLOR_STYLE_SUFFIX.trim())) {
     body = body.slice(0, body.length - WATERCOLOR_STYLE_SUFFIX.trim().length).trimEnd();
   }
-  const maxBody = MAX_FLUX_PROMPT_LENGTH - WATERCOLOR_STYLE_SUFFIX.length;
+  // Only scenes featuring the protagonist get the identity lock (locations/props don't).
+  const featuresProtagonist =
+    spec.primaryCharacter === "protagonist" || (spec.characters || []).includes("protagonist") || !spec.primaryCharacter;
+  const lock = characterRef && featuresProtagonist
+    ? `${characterRef.trim()} — the SAME child in every scene: keep the face, hair and outfit IDENTICAL and NEVER change the character's gender. `
+    : "";
+
+  const reserved = lock.length + WATERCOLOR_STYLE_SUFFIX.length;
+  const maxBody = Math.max(0, MAX_FLUX_PROMPT_LENGTH - reserved);
   if (body.length > maxBody) body = body.slice(0, maxBody).trimEnd();
-  spec.fluxPrompt = body + WATERCOLOR_STYLE_SUFFIX;
+  spec.fluxPrompt = lock + body + WATERCOLOR_STYLE_SUFFIX;
 }
 
 // ── Main export ──────────────────────────────────────────────────────────────
@@ -298,11 +309,11 @@ export async function generateScreenplay(
       console.log(`[Screenplay] Correcting scene ${scene.sceneNumber} aspectRatio: "${scene.aspectRatio}" → "${correctAspect}"`);
       scene.aspectRatio = correctAspect;
     }
-    finalizeFluxPrompt(scene);
+    finalizeFluxPrompt(scene, characterRef);
   }
   // Cover is always 1:1
   result.coverSpec.aspectRatio = "1:1";
-  finalizeFluxPrompt(result.coverSpec);
+  finalizeFluxPrompt(result.coverSpec, characterRef);
 
   const elapsed = ((Date.now() - start) / 1000).toFixed(1);
   console.log(`[Screenplay] Generated screenplay in ${elapsed}s`);

@@ -324,7 +324,7 @@ export async function generateReferenceImages(
     /** The child's real avatar/portrait (base64) — anchors the protagonist sheet to the actual child. */
     protagonistAvatarBase64?: string;
     /** Per-stage image model (preview→fast/cheap, final→premium). */
-    imageModel?: { provider?: string; falModel?: string };
+    imageModel?: { provider?: string; falModel?: string; scale?: number };
   },
 ): Promise<AssetReference[]> {
   if (isMockMode()) {
