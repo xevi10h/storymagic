@@ -27,6 +27,12 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
 const PATH_ART_ROOT = path.join(ROOT, "public", "images", "path");
 const MANIFEST_PATH = path.join(ROOT, "src", "lib", "story-trees", "art-manifest.ts");
+// Per-image provenance (which provider/model/size made each seed) so we can later
+// decide what to regenerate. Not served (lives next to the manifest, not in public/).
+const PROVENANCE_PATH = path.join(ROOT, "src", "lib", "story-trees", "art-provenance.json");
+function loadProvenance() {
+  try { return JSON.parse(fs.readFileSync(PROVENANCE_PATH, "utf8")); } catch { return {}; }
+}
 const MIN_VALID_SIZE = 10 * 1024; // webp smaller than this is considered a failed/partial output
 
 const MANIFEST_ONLY = process.argv.includes("--manifest-only");
@@ -66,7 +72,11 @@ if (!MANIFEST_ONLY) {
 }
 
 const MODEL = "flux-2-flex";
-const FAL_MODEL = "fal-ai/flux/schnell";
+// fal hosts FLUX.2 [dev] — same rich watercolor look as BFL flex but ~6× cheaper
+// ($0.012/MP). Generated at ~0.72 MP (bills 1 MP) since the final asset is 720×480.
+const FAL_MODEL = process.env.FAL_PATH_ART_MODEL || "fal-ai/flux-2";
+const FAL_WIDTH = 1024;
+const FAL_HEIGHT = 704;
 const WIDTH = 1408; // 3:2, multiples of 32 (matches ASPECT_TO_DIMS in src/lib/ai/flux2.ts)
 const HEIGHT = 960;
 const FINAL_W = 720;
@@ -333,8 +343,7 @@ async function falGenerate(prompt) {
     headers: { "Content-Type": "application/json", Authorization: `Key ${FAL_KEY}` },
     body: JSON.stringify({
       prompt,
-      image_size: { width: WIDTH, height: HEIGHT },
-      num_inference_steps: 4,
+      image_size: { width: FAL_WIDTH, height: FAL_HEIGHT },
       num_images: 1,
       enable_safety_checker: false,
       output_format: "png",
@@ -363,8 +372,12 @@ async function generateOne(opt, index) {
   // Resumable: skip seeds that already have a valid output from a prior run.
   if (fs.existsSync(dest) && fs.statSync(dest).size > MIN_VALID_SIZE) {
     console.log(`${tag} ✓ already exists, skipping`);
-    return { ok: true, seed: opt.seed, cost: 0 };
+    return { ok: true, seed: opt.seed, cost: 0, skipped: true };
   }
+
+  const genModel = PROVIDER === "fal" ? FAL_MODEL : MODEL;
+  const genW = PROVIDER === "fal" ? FAL_WIDTH : WIDTH;
+  const genH = PROVIDER === "fal" ? FAL_HEIGHT : HEIGHT;
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     const t0 = Date.now();
@@ -378,7 +391,9 @@ async function generateOne(opt, index) {
       if (size < MIN_VALID_SIZE) throw new Error(`output too small (${size} bytes)`);
       const secs = ((Date.now() - t0) / 1000).toFixed(1);
       console.log(`${tag} ✓ ${secs}s${cost != null ? ` (cost ${cost})` : ""} → ${(size / 1024).toFixed(0)}KB`);
-      return { ok: true, seed: opt.seed, cost };
+      const prov = { provider: PROVIDER, model: genModel, w: genW, h: genH, at: new Date().toISOString() };
+      if (cost != null) prov.credits = cost;
+      return { ok: true, seed: opt.seed, cost, prov };
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       if (msg.includes("NO CREDITS")) throw err; // abort everything — not retryable
@@ -430,12 +445,36 @@ function writeManifest() {
     `\n};\n`;
   fs.writeFileSync(MANIFEST_PATH, content);
   console.log(`\n✓ manifest written → ${MANIFEST_PATH} (${entries.length} entries)`);
+  return entries.map((e) => e.seed);
+}
+
+// Records which provider/model/size produced each seed. Freshly-generated seeds
+// get exact provenance; pre-existing seeds with no record are backfilled as BFL
+// flux-2-flex 1408×960 (the original pipeline). Lets us later target regeneration.
+function writeProvenance(results, allSeeds) {
+  const prov = loadProvenance();
+  for (const r of results) {
+    if (r && r.prov) prov[r.seed] = r.prov;
+  }
+  for (const seed of allSeeds) {
+    if (!prov[seed]) prov[seed] = { provider: "bfl", model: "flux-2-flex", w: 1408, h: 960, note: "backfilled" };
+  }
+  const ordered = Object.fromEntries(Object.keys(prov).sort().map((k) => [k, prov[k]]));
+  fs.writeFileSync(PROVENANCE_PATH, JSON.stringify(ordered, null, 2) + "\n");
+  const byModel = {};
+  for (const v of Object.values(ordered)) {
+    const key = `${v.provider}/${v.model}`;
+    byModel[key] = (byModel[key] || 0) + 1;
+  }
+  console.log(`✓ provenance written → ${PROVENANCE_PATH}`);
+  for (const [k, n] of Object.entries(byModel)) console.log(`    ${k}: ${n}`);
 }
 
 async function main() {
   if (MANIFEST_ONLY) {
     console.log("▶ --manifest-only: skipping generation, rescanning existing art");
-    writeManifest();
+    const seeds = writeManifest();
+    writeProvenance([], seeds);
     return;
   }
 
@@ -443,7 +482,11 @@ async function main() {
   for (const template of templates) {
     fs.mkdirSync(path.join(PATH_ART_ROOT, template), { recursive: true });
   }
-  console.log(`▶ Generating ${OPTIONS.length} card images with ${MODEL} (${WIDTH}×${HEIGHT} → ${FINAL_W}×${FINAL_H} webp)`);
+  const provModel = PROVIDER === "fal" ? FAL_MODEL : MODEL;
+  const provW = PROVIDER === "fal" ? FAL_WIDTH : WIDTH;
+  const provH = PROVIDER === "fal" ? FAL_HEIGHT : HEIGHT;
+  console.log(`▶ Provider: ${PROVIDER} · model: ${provModel} (${provW}×${provH} → ${FINAL_W}×${FINAL_H} webp)`);
+  console.log(`▶ ${OPTIONS.length} total seeds; already-present ones are skipped`);
   console.log(`▶ Output: ${PATH_ART_ROOT}/{${templates.join(",")}}\n`);
   const t0 = Date.now();
 
@@ -452,11 +495,13 @@ async function main() {
   const ok = results.filter((r) => r.ok);
   const failed = results.filter((r) => !r.ok);
   const totalCost = results.reduce((a, r) => a + (r.cost || 0), 0);
+  const generated = results.filter((r) => r.ok && !r.skipped).length;
 
-  writeManifest();
+  const seeds = writeManifest();
+  writeProvenance(results, seeds);
 
   console.log(`\n── Summary ──────────────────────────`);
-  console.log(`  Success: ${ok.length}/${OPTIONS.length}`);
+  console.log(`  Success: ${ok.length}/${OPTIONS.length} (newly generated: ${generated})`);
   if (failed.length) console.log(`  FAILED seeds: ${failed.map((r) => r.seed).join(", ")}`);
   if (totalCost > 0) console.log(`  Total BFL cost (provider-reported credits): ${totalCost.toFixed(2)}`);
   console.log(`  Elapsed: ${((Date.now() - t0) / 60000).toFixed(1)} min`);
