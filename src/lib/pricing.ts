@@ -77,8 +77,10 @@ export const ADDONS = {
 export type BookFormat = keyof typeof PRICING;
 export type AddonId = keyof typeof ADDONS;
 
-// Number of scenes to illustrate for the free preview
-export const PREVIEW_ILLUSTRATION_COUNT = 4;
+// Number of scenes to illustrate for the free preview.
+// Kept at 3 (was 4) to shorten preview latency + cost while still showing enough
+// character consistency to convert. The remaining scenes generate after payment.
+export const PREVIEW_ILLUSTRATION_COUNT = 3;
 
 // Total scenes in a story
 export const TOTAL_SCENE_COUNT = 12;

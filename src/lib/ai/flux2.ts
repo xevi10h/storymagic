@@ -69,7 +69,11 @@ function dimsFor(opts: Flux2Options): [number, number] {
 const MOCK_RESULT: FluxResult = { url: "/placeholder-illustration.webp", base64: "" };
 
 function isMockMode(): boolean {
-  return process.env.MOCK_MODE === "true" || !process.env.BFL_API_KEY;
+  if (process.env.MOCK_MODE === "true") return true;
+  // No real key for any provider → fall back to mock.
+  const hasFal = !!(process.env.FAL_KEY || process.env.FAL_API_KEY);
+  const hasBfl = !!process.env.BFL_API_KEY;
+  return !hasFal && !hasBfl;
 }
 
 // ── Retry helpers (shared semantics with flux-kontext.ts) ───────────
@@ -162,6 +166,71 @@ async function callFlux2WithRetry(
   throw new Error("Unreachable");
 }
 
+// ── fal provider (FLUX.2 [pro] / [dev], same FLUX.2 family, ~2.4× faster & cheaper) ──
+// fal hosts FLUX.2 and bills per megapixel. Reference images are passed as data
+// URIs in `image_urls`. Chosen via FLUX2_PROVIDER=fal (model via FAL_FLUX2_MODEL).
+function flux2Provider(): string {
+  return process.env.FLUX2_PROVIDER || "bfl";
+}
+const FAL_FLUX_MODEL = process.env.FAL_FLUX2_MODEL || "fal-ai/flux-2-pro";
+
+async function callFalFlux2(
+  prompt: string,
+  width: number,
+  height: number,
+  refsB64: string[],
+): Promise<FluxResult> {
+  const key = (process.env.FAL_KEY || process.env.FAL_API_KEY || "").trim();
+  if (!key) throw new Error("FLUX2_PROVIDER=fal but FAL_KEY is missing");
+  const imageUrls = refsB64.map((b) =>
+    b.startsWith("data:") || b.startsWith("http") ? b : `data:image/png;base64,${b}`,
+  );
+  const body: Record<string, unknown> = {
+    prompt,
+    image_size: { width, height },
+    num_images: 1,
+    output_format: "png",
+    enable_safety_checker: false,
+  };
+  if (imageUrls.length) body.image_urls = imageUrls;
+
+  const res = await fetch(`https://fal.run/${FAL_FLUX_MODEL}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Key ${key}` },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const t = await res.text();
+    if (res.status === 401 || res.status === 403)
+      throw new Error(`NO CREDITS — check FAL_KEY / fal.ai balance. ${t.slice(0, 160)}`);
+    throw new Error(`fal ${FAL_FLUX_MODEL} ${res.status}: ${t.slice(0, 200)}`);
+  }
+  const d = (await res.json()) as { images?: Array<{ url?: string }> };
+  const url = d?.images?.[0]?.url;
+  if (!url) throw new Error(`fal returned no image: ${JSON.stringify(d).slice(0, 160)}`);
+  const imgBuf = Buffer.from(await (await fetch(url)).arrayBuffer());
+  return { url, base64: imgBuf.toString("base64") };
+}
+
+async function callFalWithRetry(
+  prompt: string,
+  width: number,
+  height: number,
+  refs: string[],
+): Promise<FluxResult> {
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      return await callFalFlux2(prompt, width, height, refs);
+    } catch (err) {
+      if (attempt === MAX_RETRIES || isNonRetryableError(err)) throw err;
+      const delay = retryDelay(attempt);
+      console.warn(`[FLUX.2 fal] Attempt ${attempt + 1} failed, retrying in ${delay / 1000}s...`, err instanceof Error ? err.message : err);
+      await sleep(delay);
+    }
+  }
+  throw new Error("Unreachable");
+}
+
 // ── Public API ──────────────────────────────────────────────────────
 
 /**
@@ -177,11 +246,21 @@ export async function generateFlux2(prompt: string, opts: Flux2Options = {}): Pr
     return { ...MOCK_RESULT };
   }
 
-  const apiKey = process.env.BFL_API_KEY!;
-  const model = opts.model || flux2Model();
   const [width, height] = dimsFor(opts);
+  const refs = (opts.inputImages || []).filter(Boolean).slice(0, MAX_INPUT_IMAGES);
   const start = Date.now();
 
+  // fal provider (FLUX.2 pro/dev) — faster + cheaper, same FLUX.2 family.
+  if (flux2Provider() === "fal" && (process.env.FAL_KEY || process.env.FAL_API_KEY)) {
+    const result = await callFalWithRetry(prompt, width, height, refs);
+    const elapsed = ((Date.now() - start) / 1000).toFixed(1);
+    console.log(`[FLUX.2 ${FAL_FLUX_MODEL}] Generated in ${elapsed}s (${refs.length} refs, ${width}x${height})`);
+    return result;
+  }
+
+  // BFL provider (default)
+  const apiKey = process.env.BFL_API_KEY!;
+  const model = opts.model || flux2Model();
   const body: Record<string, unknown> = {
     prompt,
     width,
@@ -189,9 +268,7 @@ export async function generateFlux2(prompt: string, opts: Flux2Options = {}): Pr
     output_format: opts.outputFormat || "png",
     safety_tolerance: Math.min(opts.safetyTolerance ?? 4, 5),
   };
-
   // Attach reference images: input_image, input_image_2 .. input_image_8
-  const refs = (opts.inputImages || []).filter(Boolean).slice(0, MAX_INPUT_IMAGES);
   refs.forEach((b64, idx) => {
     body[idx === 0 ? "input_image" : `input_image_${idx + 1}`] = b64;
   });

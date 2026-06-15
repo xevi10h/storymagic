@@ -233,7 +233,8 @@ export async function POST(
     // ── Feature flag: choose illustration provider ────────────────────────────
     // "flux2" (FLUX.2, current) or legacy "flux" (Kontext) both take the FLUX path.
     const illustrationProvider = process.env.ILLUSTRATION_PROVIDER || "recraft";
-    const useFlux = (illustrationProvider === "flux2" || illustrationProvider === "flux") && !!process.env.BFL_API_KEY;
+    const hasImageKey = !!(process.env.BFL_API_KEY || process.env.FAL_KEY || process.env.FAL_API_KEY);
+    const useFlux = (illustrationProvider === "flux2" || illustrationProvider === "flux") && hasImageKey;
 
     if (useFlux) {
       // ══════════════════════════════════════════════════════════════════════════
@@ -270,9 +271,17 @@ export async function POST(
           console.warn("[Generate][FLUX2] avatar fetch for anchor failed (non-fatal):", e);
         }
       }
-      console.log(`[Generate][FLUX] Phase 2b: Generating reference images... [${elapsed(routeStart)}]`);
-      const assetReferences = await generateReferenceImages(assetTree, supabase, storyId, { protagonistAvatarBase64 });
-      console.log(`[Generate][FLUX] Phase 2b done — ${assetReferences.length} references generated [${elapsed(routeStart)}]`);
+      // ── Phase 2b + 3: reference images + expansion + screenplay, ALL parallel ──
+      // The reference IMAGES only need the assetTree (ready), not the prose/screenplay
+      // — and expansion/screenplay don't need the ref images. Running all three at
+      // once overlaps the ~20s of ref generation with the longer screenplay call.
+      console.log(`[Generate][FLUX] Phase 2b+3: refs + expansion + screenplay in parallel [${elapsed(routeStart)}]`);
+      const [assetReferences, generatedStory, screenplay] = await Promise.all([
+        generateReferenceImages(assetTree, supabase, storyId, { protagonistAvatarBase64 }),
+        expandScenes(architect, input, ageConfig),
+        generateScreenplay(architect, assetTree, characterRef, ageConfig),
+      ]);
+      console.log(`[Generate][FLUX] Phase 2b+3 done — ${assetReferences.length} refs, ${generatedStory.scenes.length} scenes, ${screenplay.scenes.length} specs [${elapsed(routeStart)}]`);
 
       // Quality safeguard: the protagonist reference anchors character identity in
       // EVERY scene. If it failed to generate (empty base64), abort rather than ship
@@ -282,14 +291,6 @@ export async function POST(
       if (!protoRef?.base64) {
         throw new Error("Protagonist reference image failed to generate — aborting to avoid an inconsistent book");
       }
-
-      // ── Phase 3: Expand scenes + Generate screenplay (parallel) ─────────────
-      console.log(`[Generate][FLUX] Phase 3: Expansion + Screenplay in parallel [${elapsed(routeStart)}]`);
-      const [generatedStory, screenplay] = await Promise.all([
-        expandScenes(architect, input, ageConfig),
-        generateScreenplay(architect, assetTree, characterRef, ageConfig),
-      ]);
-      console.log(`[Generate][FLUX] Phase 3 done — ${generatedStory.scenes.length} scenes expanded, ${screenplay.scenes.length} screenplay specs [${elapsed(routeStart)}]`);
 
       // ── Phase 4: Generate preview illustrations ─────────────────────────────
       const previewSceneNumbers = generatedStory.scenes
