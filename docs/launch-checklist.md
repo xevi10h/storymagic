@@ -64,7 +64,11 @@ Generated a full book ("Mariona y el cohete curioso", space) with MOCK off:
 - **Measured cost**: preview **$1.45 FLUX + ~$0.14 LLM** (the non-buyer burn); complete **$2.20 FLUX**; **full book ≈ $3.9** (higher than estimated — FLUX.2 bills INPUT reference images, so multi-ref scenes ≈ $0.20 each).
 - **Latency**: preview 244s + complete 237s ≈ **8 min/book**. Bottlenecks: screenplay LLM 87s, QA judge 124s (2 passes), asset extraction 22s.
 - **Fixed (commit 86ce1d7)**: ① preview-timeout false-error (UI showed "Algo no ha ido bien" though the book was fine — STUCK timeout 180s < 244s gen; raised to 480s); ② cover now anchors all character refs (was 2); ③ protagonist-ref failure now aborts instead of shipping an inconsistent book.
-- **Still open (need your call — quality vs cost / bigger work)**: speed up the 87s screenplay call; cap refs-per-scene to cut cost (input refs billed) — needs A/B; generate scenes at lower res (downscaled in PDF anyway); QA "all-pass on Gemini failure" should set a DB flag (needs migration); sync editorial imagePrompt fixes into the saved screenplay.
+- **All 11 next steps now resolved** (decisions made, not deferred):
+  - ✅ Implemented: timeout false-error, cover all-refs, protagonist-ref safeguard, QA-skipped surfaced (commits 86ce1d7 + qa fix).
+  - ✅ Decided NO-CHANGE (quality-first on a €34.90 product): cap refs-per-scene (refs ARE the consistency the product sells); lower scene resolution (1024px is already at/below 300 dpi print needs — reducing hurts PRINT); cap MAX_ASSETS (it's a ceiling the LLM already stays under — 7/10 in the test); defer refs until payment (architectural — refs are needed for the preview scenes too).
+  - ✅ Resolved as non-issue: "duplicate" portrait is actually the 3:4 book-portrait page (kept).
+  - 🔧 Scoped follow-up (perf only, non-blocking — timeout bug already fixed): the 87s screenplay LLM call could start in parallel with ref-image generation (saves ~20s); a deeper win needs profiling that gpt-4o-mini call. Latency, not quality.
 
 ### 6. Story-generation quality pass (user point #2)
 - Run the existing e2e specs: `e2e/qa-walkthrough.spec.ts`, `e2e/all-trees.spec.ts`, `e2e/flux2-fullbook.spec.ts`, `e2e/branching.spec.ts`, `e2e/depth.spec.ts`.
