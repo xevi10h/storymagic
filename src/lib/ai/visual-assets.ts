@@ -323,6 +323,8 @@ export async function generateReferenceImages(
   options?: {
     /** The child's real avatar/portrait (base64) — anchors the protagonist sheet to the actual child. */
     protagonistAvatarBase64?: string;
+    /** Per-stage image model (preview→fast/cheap, final→premium). */
+    imageModel?: { provider?: string; falModel?: string };
   },
 ): Promise<AssetReference[]> {
   if (isMockMode()) {
@@ -375,7 +377,7 @@ export async function generateReferenceImages(
         const start = Date.now();
         let fluxResult;
         try {
-          fluxResult = await generateFlux2(refPrompt, { aspectRatio, inputImages });
+          fluxResult = await generateFlux2(refPrompt, { aspectRatio, inputImages, provider: options?.imageModel?.provider, falModel: options?.imageModel?.falModel });
         } catch (err) {
           // If moderation or generation fails, return empty ref (non-fatal)
           const msg = err instanceof Error ? err.message : String(err);

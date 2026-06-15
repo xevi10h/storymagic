@@ -237,6 +237,12 @@ export async function POST(
     const useFlux = (illustrationProvider === "flux2" || illustrationProvider === "flux") && hasImageKey;
 
     if (useFlux) {
+      // Per-stage image model: the PREVIEW uses a fast/cheap model (default fal
+      // FLUX.2 dev) — it only needs to be a wow taster + minimise non-buyer burn.
+      // The full premium book is generated post-purchase in /complete.
+      const previewModel = process.env.PREVIEW_IMAGE_PROVIDER
+        ? { provider: process.env.PREVIEW_IMAGE_PROVIDER, falModel: process.env.PREVIEW_FAL_MODEL }
+        : undefined;
       // ══════════════════════════════════════════════════════════════════════════
       // FLUX KONTEXT PIPELINE — character-consistent illustrations via reference images
       //
@@ -277,7 +283,7 @@ export async function POST(
       // once overlaps the ~20s of ref generation with the longer screenplay call.
       console.log(`[Generate][FLUX] Phase 2b+3: refs + expansion + screenplay in parallel [${elapsed(routeStart)}]`);
       const [assetReferences, generatedStory, screenplay] = await Promise.all([
-        generateReferenceImages(assetTree, supabase, storyId, { protagonistAvatarBase64 }),
+        generateReferenceImages(assetTree, supabase, storyId, { protagonistAvatarBase64, imageModel: previewModel }),
         expandScenes(architect, input, ageConfig),
         generateScreenplay(architect, assetTree, characterRef, ageConfig),
       ]);
@@ -298,7 +304,7 @@ export async function POST(
         .map((s) => s.sceneNumber);
       console.log(`[Generate][FLUX] Phase 4: Generating ${previewSceneNumbers.length} preview illustrations... [${elapsed(routeStart)}]`);
       const previewIllustrations = await generateIllustrationsWithFlux(
-        screenplay, assetReferences, { sceneNumbers: previewSceneNumbers },
+        screenplay, assetReferences, { sceneNumbers: previewSceneNumbers, imageModel: previewModel },
       );
       console.log(`[Generate][FLUX] Phase 4 done — ${previewIllustrations.length} previews generated [${elapsed(routeStart)}]`);
 
@@ -324,6 +330,8 @@ export async function POST(
         const coverResult = await generateFlux2(screenplay.coverSpec.fluxPrompt, {
           inputImages: coverRefs,
           aspectRatio: "1:1",
+          provider: previewModel?.provider,
+          falModel: previewModel?.falModel,
         });
         coverUrl = await uploadCoverFromUrl(supabase, storyId, coverResult.url);
       } catch (err) {

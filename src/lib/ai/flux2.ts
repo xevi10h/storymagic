@@ -45,8 +45,12 @@ export interface Flux2Options {
   outputFormat?: string;
   /** 0-5, higher = more permissive moderation. */
   safetyTolerance?: number;
-  /** Override the model for this single call. */
+  /** Override the BFL model for this single call. */
   model?: string;
+  /** Per-call provider override ("bfl" | "fal"). Defaults to FLUX2_PROVIDER env. */
+  provider?: string;
+  /** Per-call fal model override (e.g. "fal-ai/flux-2" for dev). Defaults to FAL_FLUX2_MODEL. */
+  falModel?: string;
 }
 
 // ── Aspect → dimensions (multiples of 32, ≤ ~1.5MP for speed/cost) ──────
@@ -179,12 +183,15 @@ async function callFalFlux2(
   width: number,
   height: number,
   refsB64: string[],
+  falModel: string,
 ): Promise<FluxResult> {
   const key = (process.env.FAL_KEY || process.env.FAL_API_KEY || "").trim();
   if (!key) throw new Error("FLUX2_PROVIDER=fal but FAL_KEY is missing");
   const imageUrls = refsB64.map((b) =>
     b.startsWith("data:") || b.startsWith("http") ? b : `data:image/png;base64,${b}`,
   );
+  // flux-2-flex needs the /edit endpoint to accept reference images; pro/dev accept them on the base endpoint.
+  const endpoint = imageUrls.length && falModel === "fal-ai/flux-2-flex" ? "fal-ai/flux-2-flex/edit" : falModel;
   const body: Record<string, unknown> = {
     prompt,
     image_size: { width, height },
@@ -194,7 +201,7 @@ async function callFalFlux2(
   };
   if (imageUrls.length) body.image_urls = imageUrls;
 
-  const res = await fetch(`https://fal.run/${FAL_FLUX_MODEL}`, {
+  const res = await fetch(`https://fal.run/${endpoint}`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Key ${key}` },
     body: JSON.stringify(body),
@@ -203,7 +210,7 @@ async function callFalFlux2(
     const t = await res.text();
     if (res.status === 401 || res.status === 403)
       throw new Error(`NO CREDITS — check FAL_KEY / fal.ai balance. ${t.slice(0, 160)}`);
-    throw new Error(`fal ${FAL_FLUX_MODEL} ${res.status}: ${t.slice(0, 200)}`);
+    throw new Error(`fal ${endpoint} ${res.status}: ${t.slice(0, 200)}`);
   }
   const d = (await res.json()) as { images?: Array<{ url?: string }> };
   const url = d?.images?.[0]?.url;
@@ -216,11 +223,12 @@ async function callFalWithRetry(
   prompt: string,
   width: number,
   height: number,
+  falModel: string,
   refs: string[],
 ): Promise<FluxResult> {
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     try {
-      return await callFalFlux2(prompt, width, height, refs);
+      return await callFalFlux2(prompt, width, height, refs, falModel);
     } catch (err) {
       if (attempt === MAX_RETRIES || isNonRetryableError(err)) throw err;
       const delay = retryDelay(attempt);
@@ -251,10 +259,12 @@ export async function generateFlux2(prompt: string, opts: Flux2Options = {}): Pr
   const start = Date.now();
 
   // fal provider (FLUX.2 pro/dev) — faster + cheaper, same FLUX.2 family.
-  if (flux2Provider() === "fal" && (process.env.FAL_KEY || process.env.FAL_API_KEY)) {
-    const result = await callFalWithRetry(prompt, width, height, refs);
+  const provider = opts.provider || flux2Provider();
+  if (provider === "fal" && (process.env.FAL_KEY || process.env.FAL_API_KEY)) {
+    const falModel = opts.falModel || FAL_FLUX_MODEL;
+    const result = await callFalWithRetry(prompt, width, height, falModel, refs);
     const elapsed = ((Date.now() - start) / 1000).toFixed(1);
-    console.log(`[FLUX.2 ${FAL_FLUX_MODEL}] Generated in ${elapsed}s (${refs.length} refs, ${width}x${height})`);
+    console.log(`[FLUX.2 ${falModel}] Generated in ${elapsed}s (${refs.length} refs, ${width}x${height})`);
     return result;
   }
 

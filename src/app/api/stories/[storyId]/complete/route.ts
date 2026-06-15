@@ -203,6 +203,13 @@ export async function POST(
       // ── FLUX Kontext completion pipeline ───────────────────────────────
       console.log("[Complete][FLUX] Using FLUX Kontext pipeline");
 
+      // Per-stage image model: the FINAL book uses the PREMIUM model (default
+      // BFL flux-2-flex) for maximum consistency/quality — cost/time don't matter
+      // here (already paid, generated in the background). Override via env.
+      const finalModel = process.env.FINAL_IMAGE_PROVIDER
+        ? { provider: process.env.FINAL_IMAGE_PROVIDER, falModel: process.env.FINAL_FAL_MODEL }
+        : undefined;
+
       // 1. Load references from Supabase Storage URLs → base64
       const fluxRefs = generatedTextAny.fluxReferences as { assetId: string; storageUrl: string }[];
       const screenplay = generatedTextAny.fluxScreenplay as Screenplay;
@@ -219,20 +226,26 @@ export async function POST(
         })
       );
 
-      // 2. Find which scenes still need illustrations (status="pending")
+      // 2. Decide which scenes to generate now.
+      // In two-speed mode the preview scenes were a CHEAP/FAST taster (different
+      // model) — regenerate ALL 12 here with the PREMIUM model so the delivered
+      // book is uniformly perfect. Otherwise just fill the pending (non-preview) ones.
+      const twoSpeed = !!process.env.PREVIEW_IMAGE_PROVIDER;
       const { data: pendingIlls } = await supabase
         .from("story_illustrations")
         .select("scene_number")
         .eq("story_id", storyId)
         .eq("status", "pending");
-      const pendingSceneNumbers = (pendingIlls || []).map(i => i.scene_number).filter(n => n <= 12);
+      const pendingSceneNumbers = twoSpeed
+        ? screenplay.scenes.map((s) => s.sceneNumber).filter((n) => n <= 12)
+        : (pendingIlls || []).map(i => i.scene_number).filter(n => n <= 12);
 
       if (pendingSceneNumbers.length > 0) {
         console.log(`[Complete][FLUX] Generating ${pendingSceneNumbers.length} remaining scenes: [${pendingSceneNumbers.join(", ")}]`);
 
         // 3. Generate remaining illustrations
         const newIllustrations = await generateIllustrationsWithFlux(
-          screenplay, assetReferences, { sceneNumbers: pendingSceneNumbers }
+          screenplay, assetReferences, { sceneNumbers: pendingSceneNumbers, imageModel: finalModel }
         );
 
         // 4. Upload to Supabase Storage
@@ -306,7 +319,7 @@ export async function POST(
           }),
         };
 
-        const regenResults = await generateIllustrationsWithFlux(escalated, assetReferences, { sceneNumbers: failing });
+        const regenResults = await generateIllustrationsWithFlux(escalated, assetReferences, { sceneNumbers: failing, imageModel: finalModel });
         for (let i = 0; i < regenResults.length; i++) {
           const ill = regenResults[i];
           const sceneNum = failing[i];
@@ -331,7 +344,7 @@ export async function POST(
         try {
           const portrait = await generateFlux2(
             `Close-up portrait of the same character from the reference image, from chest up, warm friendly smile, soft warm lighting, simple clean background. Children's book watercolor illustration. No text, no signature.`,
-            { inputImages: [protagonistRef.base64], aspectRatio: "3:4" }
+            { inputImages: [protagonistRef.base64], aspectRatio: "3:4", provider: finalModel?.provider, falModel: finalModel?.falModel }
           );
           const portraitUrl = await uploadPortraitFromUrl(supabase, storyId, portrait.url);
           await supabase.from("stories").update({ character_portrait_url: portraitUrl }).eq("id", storyId);
