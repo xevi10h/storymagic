@@ -58,6 +58,14 @@ Run at least one **real** order per format (softcover + hardcover), all the way 
 - The tracking mechanism itself is **fully built and correct**: dashboard 4-step stepper (`paid→producing→shipped→delivered`, `dashboard/page.tsx:519-674`) fed by `orders.status/tracking_url`; Gelato webhook persists status + tracking and sends localized emails (es/ca/en/fr) on real status transitions, with a duplicate guard (`webhooks/gelato/route.ts`). It only works **if** (a) the order actually submitted to Gelato (see P0-1) and (b) the webhook URL + secret are registered in the Gelato dashboard.
 - **Action:** confirm the Gelato webhook is registered in the live Gelato account; place a live test order; watch status flow end-to-end.
 
+### 6b. Real end-to-end generation test (done 2026-06-15)
+Generated a full book ("Mariona y el cohete curioso", space) with MOCK off:
+- **Algorithm works**: character identity consistent across all 12 scenes; QA judge caught + regenerated a weak scene (8.3→9.0); narrative coherent; 0 console errors.
+- **Measured cost**: preview **$1.45 FLUX + ~$0.14 LLM** (the non-buyer burn); complete **$2.20 FLUX**; **full book ≈ $3.9** (higher than estimated — FLUX.2 bills INPUT reference images, so multi-ref scenes ≈ $0.20 each).
+- **Latency**: preview 244s + complete 237s ≈ **8 min/book**. Bottlenecks: screenplay LLM 87s, QA judge 124s (2 passes), asset extraction 22s.
+- **Fixed (commit 86ce1d7)**: ① preview-timeout false-error (UI showed "Algo no ha ido bien" though the book was fine — STUCK timeout 180s < 244s gen; raised to 480s); ② cover now anchors all character refs (was 2); ③ protagonist-ref failure now aborts instead of shipping an inconsistent book.
+- **Still open (need your call — quality vs cost / bigger work)**: speed up the 87s screenplay call; cap refs-per-scene to cut cost (input refs billed) — needs A/B; generate scenes at lower res (downscaled in PDF anyway); QA "all-pass on Gemini failure" should set a DB flag (needs migration); sync editorial imagePrompt fixes into the saved screenplay.
+
 ### 6. Story-generation quality pass (user point #2)
 - Run the existing e2e specs: `e2e/qa-walkthrough.spec.ts`, `e2e/all-trees.spec.ts`, `e2e/flux2-fullbook.spec.ts`, `e2e/branching.spec.ts`, `e2e/depth.spec.ts`.
 - Manually review a full 12-scene book for **each of the 10 themes**: protagonist/companion/location/prop consistency (the QA-judge regen loop should hold them), text quality, no leftover placeholders, cover spread correct.
