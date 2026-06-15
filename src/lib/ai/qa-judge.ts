@@ -27,6 +27,8 @@ export interface QAResult {
   verdicts: QAVerdict[];
   scenesToRegenerate: number[];  // Scene numbers failing a threshold
   iterationNumber: number;
+  /** True when the judge could not run (Gemini error/no key) → book shipped UNREVIEWED. */
+  skipped?: boolean;
 }
 
 // ── Config ───────────────────────────────────────────────────────
@@ -186,8 +188,10 @@ Output ONLY JSON:
 
     return { overallScore, verdicts, scenesToRegenerate, iterationNumber };
   } catch (err) {
-    // QA failure is non-fatal — log and return all-pass
-    console.error("[QA Judge] Review failed (non-fatal):", err);
-    return { overallScore: 0, verdicts: [], scenesToRegenerate: [], iterationNumber };
+    // QA failure is non-fatal — but the book then ships WITHOUT any review.
+    // Surface it loudly (skipped:true) so the caller can flag/alert instead of
+    // silently treating it as "all scenes passed".
+    console.error(`[QA Judge] ⚠️ REVIEW SKIPPED — book will ship UNREVIEWED (iteration ${iterationNumber}):`, err);
+    return { overallScore: 0, verdicts: [], scenesToRegenerate: [], iterationNumber, skipped: true };
   }
 }

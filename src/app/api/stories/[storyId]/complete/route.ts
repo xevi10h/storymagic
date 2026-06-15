@@ -285,6 +285,10 @@ export async function POST(
         (allIlls || []).map(i => ({ sceneNumber: i.scene_number, imageUrl: i.image_url! })),
         assetReferences, screenplay, characterRef, 1,
       );
+      if (qaResult.skipped) {
+        // Book is going to print/PDF without any QA review — make it auditable.
+        console.error(`[Complete][FLUX2] ⚠️ QA was SKIPPED for story ${storyId} — shipping UNREVIEWED. Check GEMINI_API_KEY / quota.`);
+      }
 
       for (let pass = 1; pass <= MAX_REGEN_PASSES && qaResult.scenesToRegenerate.length > 0; pass++) {
         const failing = qaResult.scenesToRegenerate;
