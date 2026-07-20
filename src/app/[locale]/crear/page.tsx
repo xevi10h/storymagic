@@ -298,16 +298,22 @@ function CrearPageContent() {
     setSaving(true);
     setError(null);
     try {
-      // Sign in anonymously so we get a real user_id for the DB
+      // Reuse the guest session if one already exists (created before the
+      // portrait generation); otherwise sign in anonymously to get a user_id.
       const { createClient } = await import("@/lib/supabase/client");
       const supabase = createClient();
-      const { error: anonError, data } =
-        await supabase.auth.signInAnonymously();
-      if (anonError) {
-        throw new Error(anonError.message);
-      }
-      if (!data.session) {
-        throw new Error("No se pudo crear la sesión de invitado");
+      const {
+        data: { session: existingSession },
+      } = await supabase.auth.getSession();
+      if (!existingSession) {
+        const { error: anonError, data } =
+          await supabase.auth.signInAnonymously();
+        if (anonError) {
+          throw new Error(anonError.message);
+        }
+        if (!data.session) {
+          throw new Error("No se pudo crear la sesión de invitado");
+        }
       }
       // Session cookies are set synchronously when signInAnonymously resolves
       await saveAndGenerate();

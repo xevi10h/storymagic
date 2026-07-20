@@ -1,11 +1,19 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-);
+let serviceClient: SupabaseClient | null = null;
 
-interface RateLimitConfig {
+/** Lazy so importing this module never requires env vars (e.g. unit tests). */
+function getServiceClient(): SupabaseClient {
+  if (!serviceClient) {
+    serviceClient = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    );
+  }
+  return serviceClient;
+}
+
+export interface RateLimitConfig {
   /** Max requests allowed in the time window */
   maxRequests: number;
   /** Time window in seconds */
@@ -16,6 +24,7 @@ const LIMITS: Record<string, RateLimitConfig> = {
   generate_story: { maxRequests: 3, windowSeconds: 300 },   // 3 per 5 min
   generate_pdf: { maxRequests: 5, windowSeconds: 60 },       // 5 per minute
   complete_story: { maxRequests: 3, windowSeconds: 300 },    // 3 per 5 min
+  generate_portrait: { maxRequests: 10, windowSeconds: 3600 }, // 10 per hour
 };
 
 /**
@@ -33,6 +42,7 @@ export async function checkRateLimit(
     Date.now() - config.windowSeconds * 1000,
   ).toISOString();
 
+  const supabase = getServiceClient();
   const { count, error } = await supabase
     .from("rate_limits")
     .select("id", { count: "exact", head: true })
@@ -55,5 +65,54 @@ export async function checkRateLimit(
   // Opportunistic cleanup (non-blocking)
   void supabase.rpc("cleanup_old_rate_limits");
 
+  return { allowed: true };
+}
+
+// ── In-memory fixed-window limiter (defense-in-depth, e.g. per-IP) ──────────
+// ponytail: per-instance limiter, move to durable store if abuse appears
+
+interface MemoryWindow {
+  count: number;
+  windowStart: number;
+}
+
+const memoryWindows = new Map<string, MemoryWindow>();
+const MEMORY_MAP_MAX_ENTRIES = 10_000;
+
+/**
+ * Fixed-window counter held in process memory. Complements the DB limiter:
+ * survives anonymous-session cycling (key by IP) but not instance restarts.
+ * `now` is injectable for tests.
+ */
+export function checkMemoryRateLimit(
+  key: string,
+  config: RateLimitConfig,
+  now: number = Date.now(),
+): { allowed: boolean; retryAfterSeconds?: number } {
+  const windowMs = config.windowSeconds * 1000;
+  const entry = memoryWindows.get(key);
+
+  if (!entry || now - entry.windowStart >= windowMs) {
+    // New window — opportunistically prune expired entries if the map grows
+    if (memoryWindows.size >= MEMORY_MAP_MAX_ENTRIES) {
+      for (const [k, v] of memoryWindows) {
+        if (now - v.windowStart >= windowMs) memoryWindows.delete(k);
+      }
+    }
+    memoryWindows.set(key, { count: 1, windowStart: now });
+    return { allowed: true };
+  }
+
+  if (entry.count >= config.maxRequests) {
+    return {
+      allowed: false,
+      retryAfterSeconds: Math.max(
+        1,
+        Math.ceil((entry.windowStart + windowMs - now) / 1000),
+      ),
+    };
+  }
+
+  entry.count += 1;
   return { allowed: true };
 }

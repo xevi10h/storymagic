@@ -17,6 +17,25 @@ type Phase = "generating" | "revealing" | "revealed" | "error";
 /** Rotating status messages shown while the portrait generates (~10-20s). */
 const GENERATING_STEPS = ["step1", "step2", "step3", "step4"] as const;
 
+/** Client-side budget: 1 initial portrait + 3 regenerations per character. */
+const MAX_REGENERATIONS = 3;
+
+/**
+ * Successful generations per character. Module-scoped so the budget survives
+ * remounts (e.g. regenerating from a later step) within the SPA session.
+ */
+const generationsByCharacter = new Map<string, number>();
+
+/** Mirrors the portrait-affecting snapshot used by the crear page. */
+function characterKey(char: CharacterData): string {
+  return JSON.stringify({
+    gender: char.gender, age: char.age, skinTone: char.skinTone,
+    hairColor: char.hairColor, hairstyle: char.hairstyle, name: char.name,
+    interests: char.interests, favoriteColor: char.favoriteColor,
+    favoriteCompanion: char.favoriteCompanion, futureDream: char.futureDream,
+  });
+}
+
 /**
  * Full-screen transition between Step 2 and Step 3.
  *
@@ -38,6 +57,9 @@ export default function PortraitReveal({
   const [recraftStyleId, setRecraftStyleId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [stepIdx, setStepIdx] = useState(0);
+  const [generationCount, setGenerationCount] = useState(
+    () => generationsByCharacter.get(characterKey(character)) ?? 0,
+  );
   const startedRef = useRef(false);
 
   // Cycle the status message while generating so the wait feels alive
@@ -55,6 +77,18 @@ export default function PortraitReveal({
     setErrorMessage(null);
 
     try {
+      // The endpoint requires a session (rate-limited per user) — guests get an
+      // anonymous one here, reused later when the story is saved.
+      const { createClient } = await import("@/lib/supabase/client");
+      const supabase = createClient();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session) {
+        const { error: anonError } = await supabase.auth.signInAnonymously();
+        if (anonError) throw new Error(anonError.message);
+      }
+
       const res = await fetch("/api/characters/portrait", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -85,6 +119,12 @@ export default function PortraitReveal({
       const data = await res.json();
       setPortraitUrl(data.portraitUrl);
       setRecraftStyleId(data.recraftStyleId);
+
+      // Consume one unit of the per-character generation budget
+      const key = characterKey(character);
+      const used = (generationsByCharacter.get(key) ?? 0) + 1;
+      generationsByCharacter.set(key, used);
+      setGenerationCount(used);
 
       // Brief pause before reveal animation
       setPhase("revealing");
@@ -192,15 +232,18 @@ export default function PortraitReveal({
                 </p>
 
                 <div className="flex items-center gap-3 mt-4">
-                  <button
-                    onClick={handleRetry}
-                    className="px-4 sm:px-5 py-3 border-2 border-create-neutral/40 text-create-text-sub font-bold rounded-full hover:bg-white hover:border-create-primary/30 transition-all text-sm whitespace-nowrap flex items-center gap-1.5"
-                  >
-                    <span className="material-symbols-outlined text-base">
-                      refresh
-                    </span>
-                    {t("regenerateButton")}
-                  </button>
+                  {/* Hidden once the regeneration budget (initial + 3) is spent */}
+                  {generationCount <= MAX_REGENERATIONS && (
+                    <button
+                      onClick={handleRetry}
+                      className="px-4 sm:px-5 py-3 border-2 border-create-neutral/40 text-create-text-sub font-bold rounded-full hover:bg-white hover:border-create-primary/30 transition-all text-sm whitespace-nowrap flex items-center gap-1.5"
+                    >
+                      <span className="material-symbols-outlined text-base">
+                        refresh
+                      </span>
+                      {t("regenerateButton")}
+                    </button>
+                  )}
                   <button
                     onClick={handleContinue}
                     className="px-6 sm:px-8 py-3 bg-create-primary text-white font-bold rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all text-sm whitespace-nowrap"

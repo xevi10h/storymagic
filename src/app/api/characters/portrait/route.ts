@@ -13,6 +13,8 @@ import { generateFlux2 } from "@/lib/ai/flux2";
 import { WATERCOLOR_STYLE_SUFFIX } from "@/lib/ai/style";
 import { uploadReferenceFromBase64 } from "@/lib/supabase/storage";
 import { getMockPortraitUrl } from "@/lib/ai/mock-story";
+import { createClient } from "@/lib/supabase/server";
+import { checkRateLimit, checkMemoryRateLimit } from "@/lib/rate-limit";
 
 // FLUX.2 portrait generation (polling) — allow more headroom than Recraft.
 export const maxDuration = 60;
@@ -45,8 +47,29 @@ const portraitInputSchema = z.object({
  * Returns: { portraitUrl, recraftStyleId } — recraftStyleId is null on the FLUX.2
  * path (consistency comes from the reference image, not a Recraft style_id).
  */
+const RATE_LIMITED_RESPONSE = {
+  error: "rate_limited",
+  message: "Too many portrait generations. Please try again later.",
+};
+
 export async function POST(request: Request) {
   try {
+    // ── Abuse guards — every call costs real money (~$0.04-0.10) ────────────
+    // 1. Per-IP fixed window (first hop of x-forwarded-for). In-memory: catches
+    //    naive loops even when the caller cycles anonymous sessions.
+    const clientIp =
+      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    const ipLimit = checkMemoryRateLimit(`portrait:${clientIp}`, {
+      maxRequests: 30,
+      windowSeconds: 3600,
+    });
+    if (!ipLimit.allowed) {
+      return NextResponse.json(RATE_LIMITED_RESPONSE, {
+        status: 429,
+        headers: { "Retry-After": String(ipLimit.retryAfterSeconds ?? 3600) },
+      });
+    }
+
     let rawBody: unknown;
     try {
       rawBody = await request.json();
@@ -60,6 +83,25 @@ export async function POST(request: Request) {
         { error: "Invalid input", details: parsed.error.flatten().fieldErrors },
         { status: 400 },
       );
+    }
+
+    // 2. Require a Supabase session — the creation flow signs guests in
+    //    anonymously before calling, so this never blocks legitimate users.
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // 3. Per-user durable fixed window (rate_limits table): 10 portraits/hour.
+    const userLimit = await checkRateLimit(user.id, "generate_portrait");
+    if (!userLimit.allowed) {
+      return NextResponse.json(RATE_LIMITED_RESPONSE, {
+        status: 429,
+        headers: { "Retry-After": String(userLimit.retryAfterSeconds ?? 3600) },
+      });
     }
 
     // Provider selection — standardize on FLUX.2 (same library as the book), Recraft = fallback.
