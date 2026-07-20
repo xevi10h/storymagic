@@ -1,6 +1,35 @@
 # Launch Readiness Checklist
 
-> ## 🧭 RESUME HERE — session summary 2026-06-15
+> ## 🧭 RESUME HERE — session summary 2026-07-20
+> **Full web audit + Sprint 1 fixes shipped.** See **`docs/web-audit-2026-07-20.md`**
+> for the complete audit (perf/QA/SEO findings, Sprint 2/3 backlog).
+>
+> **Shipped 2026-07-20 (commits e6ee54f…ee23c0c, deployed + verified in prod):**
+> - Pushed the 13 pending commits from 2026-06-15; two-speed FLUX env config
+>   added to prod (BFL/FAL keys + PREVIEW/FINAL provider vars) + redeployed.
+> - **11 prod env vars had trailing newlines** (Supabase URL/keys, all Stripe
+>   keys, OpenAI/Gemini/Groq/Recraft) — sanitized. This was the root cause of
+>   `\n`-poisoned illustration URLs: **497 DB rows cleaned**, storage.ts trims.
+> - Domain flip: apex `meapica.com` now primary, www → 308 (SEO signals aligned).
+> - Showcase viewer i18n fixed (13 keys ×4 locales); sitemap 228→116 (empty-shell
+>   ejemplo pages out + noindex); functions → fra1; portrait endpoint
+>   rate-limited (session + 10/h user + 30/h IP); legal identity + footer contact.
+>
+> **Open / next (priority order):**
+> 1. 🔴 **BLOCKER: fal + BFL credits exhausted** (BFL $0.15) — top up before any
+>    generation. Prod now runs the FLUX pipeline, so book creation FAILS until
+>    top-up.
+> 2. **NIF pending** for the Aviso Legal (user to provide; identity published
+>    without it).
+> 3. **Resend DNS for meapica.com** — 3 records to add in Spaceship (see 2026-06
+>    notes below), then verify + set EMAIL_FROM.
+> 4. **Sprint 2 (performance)** then **Sprint 3 (conversion/SEO)** —
+>    `docs/web-audit-2026-07-20.md`.
+> 5. Gelato webhook registration check (dashboard-only, no API) + real e2e order.
+>
+> ---
+>
+> ## Previous session — 2026-06-15
 > A long working session focused on **AI generation cost, quality, and the two-speed
 > architecture**. Full detail: **`docs/generation-pipeline.md`** (read it first).
 >
