@@ -1,5 +1,4 @@
 import type { MetadataRoute } from "next";
-import { createClient } from "@supabase/supabase-js";
 import { routing } from "@/i18n/routing";
 import { allSeoPaths } from "@/lib/seo-landing";
 import { getAllPublishedPostRefs } from "@/lib/blog";
@@ -85,40 +84,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("[Sitemap] Failed to fetch blog posts:", error);
   }
 
-  // ── Dynamic showcase story pages ──────────────────────────────────────
-  try {
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    );
-
-    const { data: showcaseStories } = await supabase
-      .from("stories")
-      .select("id, updated_at")
-      .eq("is_showcase", true)
-      .eq("status", "ready")
-      .order("created_at", { ascending: false });
-
-    if (showcaseStories) {
-      for (const story of showcaseStories) {
-        const storyPath = `/ejemplo/${story.id}`;
-        for (const locale of routing.locales) {
-          entries.push({
-            url: `${BASE_URL}/${locale}${storyPath}`,
-            lastModified: story.updated_at ? new Date(story.updated_at) : new Date(),
-            changeFrequency: "monthly",
-            priority: 0.7,
-            alternates: {
-              languages: buildAlternates(storyPath),
-            },
-          });
-        }
-      }
-    }
-  } catch (error) {
-    // Sitemap generation should not fail if DB is unreachable
-    console.error("[Sitemap] Failed to fetch showcase stories:", error);
-  }
+  // Individual showcase stories (/ejemplo/[storyId]) are deliberately NOT
+  // listed: they are client-rendered shells (no server-rendered story text),
+  // so Google sees thin/empty pages. Re-add them once the viewer is SSR'd.
 
   return entries;
 }

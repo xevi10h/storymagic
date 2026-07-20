@@ -141,6 +141,9 @@ export default function Footer() {
             <Link className="transition-colors hover:text-white" href="/legal#cookies">
               {t("cookies")}
             </Link>
+            <a className="transition-colors hover:text-white" href="mailto:hola@meapica.com">
+              hola@meapica.com
+            </a>
           </div>
         </div>
       </div>
