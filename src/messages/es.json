@@ -551,7 +551,7 @@
       "title": "Aviso Legal y Condiciones de Uso",
       "intro": "Al usar meapica.com aceptas las siguientes condiciones.",
       "section1Title": "1. Identificación",
-      "section1Text": "Meapica es una plataforma de creación de libros infantiles personalizados operada desde España.",
+      "section1Text": "Meapica es una plataforma de creación de libros infantiles personalizados operada desde España por Xavier Huix Trenco, con domicilio en Carrer Aribau 140, 5º, 08036 Barcelona (España). Contacto: hola@meapica.com.",
       "section2Title": "2. Servicio",
       "section2Text": "Meapica ofrece la creación de cuentos infantiles personalizados con ilustraciones únicas, impresos bajo demanda.",
       "section3Title": "3. Propiedad intelectual",
@@ -1984,7 +1984,20 @@
   "showcase": {
     "title": "Ejemplos de cuentos reales",
     "subtitle": "Mira cuentos personalizados que ya hemos creado. Cada uno es único: imagina el de tu hijo.",
-    "cta": "Crear el de mi hijo"
+    "cta": "Crear el de mi hijo",
+    "sampleBadge": "Ejemplo",
+    "loading": "Cargando el cuento...",
+    "downloadPdf": "Descargar PDF de ejemplo",
+    "generatingPdf": "Generando PDF...",
+    "createHint": "Descarga gratis este ejemplo y descubre cómo será el cuento de tu hijo",
+    "createYourVersion": "Crea tu propia versión",
+    "createYourVersionHint": "Un cuento único protagonizado por tu hijo, con sus ilustraciones y su historia personalizada.",
+    "softcover": "Tapa blanda",
+    "hardcover": "Tapa dura",
+    "createYourOwn": "Crear mi cuento personalizado",
+    "backToHome": "Volver al inicio",
+    "notFound": "Cuento no encontrado",
+    "notFoundHint": "Este cuento de ejemplo no existe o ya no está disponible."
   },
   "waitlist": {
     "badge": "Próximamente",

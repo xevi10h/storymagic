@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/database.types";
 
@@ -35,8 +36,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .single();
 
   if (!story) {
+    const t = await getTranslations({ locale, namespace: "showcase" });
     return {
-      title: "Story Not Found",
+      title: t("notFound"),
       robots: { index: false, follow: false },
     };
   }
@@ -85,6 +87,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title,
     description,
+    // Story content is client-rendered (empty shell for crawlers) — keep out
+    // of the index until the viewer is SSR'd. OG tags stay for social shares.
+    robots: { index: false, follow: true },
     alternates: {
       canonical: canonicalUrl,
       languages,

@@ -551,7 +551,7 @@
       "title": "Legal Notice and Terms of Use",
       "intro": "By using meapica.com you accept the following terms.",
       "section1Title": "1. Identification",
-      "section1Text": "Meapica is a personalized children's book creation platform operated from Spain.",
+      "section1Text": "Meapica is a personalized children's book creation platform operated from Spain by Xavier Huix Trenco, with registered address at Carrer Aribau 140, 5º, 08036 Barcelona (Spain). Contact: hola@meapica.com.",
       "section2Title": "2. Service",
       "section2Text": "Meapica offers the creation of personalized children's stories with unique illustrations, printed on demand.",
       "section3Title": "3. Intellectual property",
@@ -1986,7 +1986,20 @@
   "showcase": {
     "title": "Real personalized book examples",
     "subtitle": "Browse personalized books we have already created. Each one is unique — imagine your child’s.",
-    "cta": "Create my child’s book"
+    "cta": "Create my child’s book",
+    "sampleBadge": "Sample",
+    "loading": "Loading story...",
+    "downloadPdf": "Download sample PDF",
+    "generatingPdf": "Generating PDF...",
+    "createHint": "Download this free sample and see what your child’s book will look like",
+    "createYourVersion": "Create your own version",
+    "createYourVersionHint": "A unique story starring your child, with personalized illustrations and their very own adventure.",
+    "softcover": "Softcover",
+    "hardcover": "Hardcover",
+    "createYourOwn": "Create my personalized book",
+    "backToHome": "Go back home",
+    "notFound": "Story not found",
+    "notFoundHint": "This sample story doesn’t exist or is no longer available."
   },
   "waitlist": {
     "badge": "Coming Soon",

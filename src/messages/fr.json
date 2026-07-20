@@ -561,7 +561,7 @@
       "title": "Mentions légales et conditions d'utilisation",
       "intro": "En utilisant meapica.com, vous acceptez les conditions suivantes.",
       "section1Title": "1. Identification",
-      "section1Text": "Meapica est une plateforme de création de livres pour enfants personnalisés opérée depuis l'Espagne.",
+      "section1Text": "Meapica est une plateforme de création de livres pour enfants personnalisés opérée depuis l'Espagne par Xavier Huix Trenco, domicilié Carrer Aribau 140, 5º, 08036 Barcelone (Espagne). Contact : hola@meapica.com.",
       "section2Title": "2. Service",
       "section2Text": "Meapica propose la création d'histoires pour enfants personnalisées avec des illustrations uniques, imprimées à la demande.",
       "section3Title": "3. Propriété intellectuelle",
@@ -1996,7 +1996,20 @@
   "showcase": {
     "title": "Exemples de contes réels",
     "subtitle": "Découvrez des contes personnalisés que nous avons déjà créés. Chacun est unique — imaginez celui de votre enfant.",
-    "cta": "Créer celui de mon enfant"
+    "cta": "Créer celui de mon enfant",
+    "sampleBadge": "Exemple",
+    "loading": "Chargement du conte...",
+    "downloadPdf": "Télécharger le PDF d'exemple",
+    "generatingPdf": "Génération du PDF...",
+    "createHint": "Téléchargez gratuitement cet exemple et découvrez à quoi ressemblera le conte de votre enfant",
+    "createYourVersion": "Créez votre propre version",
+    "createYourVersionHint": "Un conte unique dont votre enfant est le héros, avec ses illustrations et son histoire personnalisée.",
+    "softcover": "Couverture souple",
+    "hardcover": "Couverture rigide",
+    "createYourOwn": "Créer mon conte personnalisé",
+    "backToHome": "Retour à l'accueil",
+    "notFound": "Conte introuvable",
+    "notFoundHint": "Ce conte d'exemple n'existe pas ou n'est plus disponible."
   },
   "waitlist": {
     "badge": "Bientôt disponible",

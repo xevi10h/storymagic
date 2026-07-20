@@ -561,7 +561,7 @@
       "title": "Avís Legal i Condicions d'Ús",
       "intro": "En utilitzar meapica.com acceptes les següents condicions.",
       "section1Title": "1. Identificació",
-      "section1Text": "Meapica és una plataforma de creació de llibres infantils personalitzats operada des d'Espanya.",
+      "section1Text": "Meapica és una plataforma de creació de llibres infantils personalitzats operada des d'Espanya per Xavier Huix Trenco, amb domicili al Carrer Aribau 140, 5è, 08036 Barcelona (Espanya). Contacte: hola@meapica.com.",
       "section2Title": "2. Servei",
       "section2Text": "Meapica ofereix la creació de contes infantils personalitzats amb il·lustracions úniques, impresos sota demanda.",
       "section3Title": "3. Propietat intel·lectual",
@@ -1996,7 +1996,20 @@
   "showcase": {
     "title": "Exemples de contes reals",
     "subtitle": "Mira contes personalitzats que ja hem creat. Cada un és únic: imagina el del teu fill.",
-    "cta": "Crear el del meu fill"
+    "cta": "Crear el del meu fill",
+    "sampleBadge": "Exemple",
+    "loading": "Carregant el conte...",
+    "downloadPdf": "Descarregar PDF d'exemple",
+    "generatingPdf": "Generant PDF...",
+    "createHint": "Descarrega gratis aquest exemple i descobreix com serà el conte del teu fill",
+    "createYourVersion": "Crea la teva pròpia versió",
+    "createYourVersionHint": "Un conte únic protagonitzat pel teu fill, amb les seves il·lustracions i la seva història personalitzada.",
+    "softcover": "Tapa tova",
+    "hardcover": "Tapa dura",
+    "createYourOwn": "Crear el meu conte personalitzat",
+    "backToHome": "Tornar a l'inici",
+    "notFound": "Conte no trobat",
+    "notFoundHint": "Aquest conte d'exemple no existeix o ja no està disponible."
   },
   "waitlist": {
     "badge": "Properament",
