@@ -7,7 +7,8 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import sharp from "sharp";
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+// trim(): a trailing newline in the env var once poisoned every stored URL.
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!.trim();
 
 /**
  * Upload an image from a remote URL to Supabase Storage.
