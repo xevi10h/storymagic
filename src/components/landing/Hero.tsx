@@ -12,6 +12,7 @@ const LOCALE_TAG: Record<string, string> = {
 
 export default function Hero() {
   const t = useTranslations("hero");
+  const tPricing = useTranslations("pricing");
   const locale = useLocale();
   const priceFrom = new Intl.NumberFormat(LOCALE_TAG[locale] ?? "es-ES", {
     style: "currency",
@@ -88,6 +89,7 @@ export default function Hero() {
             <span className="font-bold text-secondary">
               {t("priceFrom", { price: priceFrom })}
             </span>
+            <span className="text-text-muted"> · {tPricing("vatIncluded")}</span>
             <span className="text-text-muted"> · {t("priceNote")}</span>
           </p>
 

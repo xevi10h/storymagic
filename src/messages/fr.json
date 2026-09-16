@@ -1092,6 +1092,7 @@
     "signOut": "Se déconnecter"
   },
   "pricing": {
+    "vatIncluded": "TVA incluse",
     "digital_pdf": {
       "label": "PDF Numérique",
       "description": "Téléchargement instantané en haute qualité"

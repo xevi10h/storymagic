@@ -14,6 +14,8 @@
 
 > Note: Pricing updated from initial estimates (29/42 EUR) to final positioning (34.90/49.90 EUR) based on artisanal premium positioning.
 
+> **VAT:** Meapica is B2C, so every displayed price (9.90 / 34.90 / 49.90 / 12.90 / 15.00 EUR in `src/lib/pricing.ts`) is the final VAT-inclusive consumer price, as required by Spanish consumer law. Stripe Prices are configured with `tax_behavior: inclusive`, and the UI shows an "IVA incluido" caption (`pricing.vatIncluded`) next to every price, in meta descriptions and in the JSON-LD `Offer.priceSpecification`.
+
 ## Revenue Streams
 
 ### Core Product

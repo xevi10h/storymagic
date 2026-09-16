@@ -132,6 +132,7 @@ function buildPages(story: ShowcaseStoryData): BookPage[] {
 
 export default function ShowcasePage() {
   const t = useTranslations("showcase");
+  const tPricing = useTranslations("pricing");
   const { storyId } = useParams<{ storyId: string }>();
 
   const [story, setStory] = useState<ShowcaseStoryData | null>(null);
@@ -294,6 +295,8 @@ export default function ShowcasePage() {
               {t("softcover")} <span className="font-bold text-secondary">{softcoverPrice}€</span>
               <span className="mx-2">·</span>
               {t("hardcover")} <span className="font-bold text-primary">{hardcoverPrice}€</span>
+              <span className="mx-2">·</span>
+              {tPricing("vatIncluded")}
             </div>
           </div>
 

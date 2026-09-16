@@ -40,6 +40,7 @@ function templateMatchesFilter(templateId: string, filter: AgeFilter): boolean {
 
 export default function BookCollection() {
   const t = useTranslations("bookCollection");
+  const tPricing = useTranslations("pricing");
   const td = useTranslations("data");
   const [showcaseBooks, setShowcaseBooks] = useState<ShowcaseBook[]>([]);
   const [loaded, setLoaded] = useState(false);
@@ -201,7 +202,7 @@ export default function BookCollection() {
                     <h3 className="font-display text-lg font-bold text-secondary leading-tight">
                       {book.title}
                     </h3>
-                    <div className="flex items-center gap-2 text-xs text-text-muted">
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-text-muted">
                       <span>{t("softcover")}</span>
                       <span className="font-bold text-secondary">
                         {softcoverPrice}&euro;
@@ -211,6 +212,7 @@ export default function BookCollection() {
                       <span className="font-bold text-primary">
                         {hardcoverPrice}&euro;
                       </span>
+                      <span className="text-[11px]">{tPricing("vatIncluded")}</span>
                     </div>
 
                     {/* CTA */}
@@ -258,7 +260,7 @@ export default function BookCollection() {
                     <p className="text-xs text-text-muted line-clamp-2">
                       {td(`templates.${template.id}.description`)}
                     </p>
-                    <div className="flex items-center gap-2 text-xs text-text-muted">
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-text-muted">
                       <span>{t("softcover")}</span>
                       <span className="font-bold text-secondary">
                         {softcoverPrice}&euro;
@@ -268,6 +270,7 @@ export default function BookCollection() {
                       <span className="font-bold text-primary">
                         {hardcoverPrice}&euro;
                       </span>
+                      <span className="text-[11px]">{tPricing("vatIncluded")}</span>
                     </div>
 
                     {/* CTA */}

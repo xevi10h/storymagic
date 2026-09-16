@@ -96,7 +96,7 @@
       },
       "baptism": {
         "metaTitle": "Personalized Baptism Book | A Keepsake to Grow Into",
-        "metaDescription": "A christening keepsake starring the child by name. Sewn binding, cream FSC paper, printed in Spain. Full preview before you buy. From €9.90.",
+        "metaDescription": "A christening keepsake starring the child by name. Sewn binding, cream FSC paper, printed in Spain. Full preview before you buy. From €9.90 (VAT included).",
         "h1": "A christening keepsake the child grows into",
         "heroIntro": "A printed book written for one child alone, kept on the shelf long after the day itself has passed. The kind of gift a godparent gives once and is remembered for.",
         "bodyHeading": "A gift that outlasts the day",
@@ -113,7 +113,7 @@
       },
       "end-of-school": {
         "metaTitle": "End-of-School Gift Book | Reward the Reader in Them",
-        "metaDescription": "Celebrate the school year with a story starring your child by name. 32 pages, printed in Spain, full preview before you buy. From €9.90.",
+        "metaDescription": "Celebrate the school year with a story starring your child by name. 32 pages, printed in Spain, full preview before you buy. From €9.90 (VAT included).",
         "h1": "Close the school year with an adventure of their own",
         "heroIntro": "A personalized book to mark the end of term, where the child who worked all year becomes the hero of the summer ahead. From parents who are proud, or a teacher who noticed.",
         "bodyHeading": "The reward that keeps them reading",
@@ -130,7 +130,7 @@
       },
       "name-day": {
         "metaTitle": "Name Day Gift Book | A Story That Bears Their Name",
-        "metaDescription": "Celebrate their saint's day with a personalized book starring the child by name. Printed in Spain, full preview before you buy. From €9.90.",
+        "metaDescription": "Celebrate their saint's day with a personalized book starring the child by name. Printed in Spain, full preview before you buy. From €9.90 (VAT included).",
         "h1": "A book that carries their name, for the day that does too",
         "heroIntro": "The saint's day is a second birthday in everything but cake. This is the gift that makes the day truly personal, with the child written in as the hero of their own story.",
         "bodyHeading": "A gift as personal as the day itself",
@@ -147,7 +147,7 @@
       },
       "graduation": {
         "metaTitle": "Graduation Keepsake Book | A Milestone in Print",
-        "metaDescription": "Mark a milestone with a personalized story starring the child, ages 8-12. Sewn binding, printed in Spain, full preview before you buy. From €9.90.",
+        "metaDescription": "Mark a milestone with a personalized story starring the child, ages 8-12. Sewn binding, printed in Spain, full preview before you buy. From €9.90 (VAT included).",
         "h1": "A milestone kept, for the child who reached it",
         "heroIntro": "For the older child crossing a threshold, a book that holds who they were at this moment, and the values you hope they carry forward. A keepsake, not a trophy.",
         "bodyHeading": "Who they were, kept in print",
@@ -164,7 +164,7 @@
       },
       "first-birthday": {
         "metaTitle": "First Birthday Book | Their First Book, With Their Name",
-        "metaDescription": "Their very first book, starring them by name. A first birthday keepsake on sewn cream paper, printed in Spain. Full preview before you buy. From €9.90.",
+        "metaDescription": "Their very first book, starring them by name. A first birthday keepsake on sewn cream paper, printed in Spain. Full preview before you buy. From €9.90 (VAT included).",
         "h1": "Their first book, with their name on every page",
         "heroIntro": "A first birthday is remembered by everyone but the child. This is the keepsake that lets them hold it later: their very first book, written for them alone.",
         "bodyHeading": "A treasure for the years to come",
@@ -1082,6 +1082,7 @@
     "signOut": "Sign out"
   },
   "pricing": {
+    "vatIncluded": "VAT included",
     "digital_pdf": {
       "label": "Digital PDF",
       "description": "Instant download in high quality"

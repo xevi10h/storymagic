@@ -526,6 +526,9 @@ export default function PreviewPage() {
 
                       <p className="text-xl font-bold text-secondary tabular-nums">
                         {(val.price / 100).toFixed(2)} €
+                        <span className="ml-1.5 text-xs font-normal text-text-muted">
+                          {tPricing("vatIncluded")}
+                        </span>
                       </p>
 
                       <p className="mt-1 text-xs text-text-muted">
@@ -680,6 +683,9 @@ export default function PreviewPage() {
                   {(subtotal / 100).toFixed(2)} €
                 </span>
               </div>
+              <p className="mt-1 text-right text-xs text-text-muted">
+                {tPricing("vatIncluded")}
+              </p>
 
               <button
                 onClick={handleCheckout}

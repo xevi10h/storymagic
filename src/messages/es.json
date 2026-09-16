@@ -1080,6 +1080,7 @@
     "signOut": "Cerrar sesión"
   },
   "pricing": {
+    "vatIncluded": "IVA incluido",
     "digital_pdf": {
       "label": "PDF Digital",
       "description": "Descarga instantánea en alta calidad"

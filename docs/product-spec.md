@@ -102,6 +102,8 @@ Each template is identified by an English slug and is backed by a branching stor
 | Second copy (discounted) | +15 EUR | Additional softcover copy |
 | Collection discount | 3 books = -20% | Encourage multi-purchase / saga adoption |
 
+All prices above (and the base book prices) are final VAT-inclusive consumer prices (B2C). Stripe Prices use `tax_behavior: inclusive`; the UI always shows "IVA incluido" next to the amount.
+
 ## Illustration Style Guide
 
 **Visual style (consistent across all 12 illustrations):**

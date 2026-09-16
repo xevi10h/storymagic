@@ -1092,6 +1092,7 @@
     "signOut": "Tancar sessió"
   },
   "pricing": {
+    "vatIncluded": "IVA inclòs",
     "digital_pdf": {
       "label": "PDF Digital",
       "description": "Descàrrega instantània en alta qualitat"
