@@ -76,6 +76,8 @@ export type Database = {
           created_at: string
           eye_color: string | null
           favorite_color: string | null
+          glasses: string
+          freckles: boolean
           favorite_companion: string | null
           future_dream: string | null
           gender: string
@@ -95,6 +97,8 @@ export type Database = {
           created_at?: string
           eye_color?: string | null
           favorite_color?: string | null
+          glasses?: string
+          freckles?: boolean
           favorite_companion?: string | null
           future_dream?: string | null
           gender: string
@@ -114,6 +118,8 @@ export type Database = {
           created_at?: string
           eye_color?: string | null
           favorite_color?: string | null
+          glasses?: string
+          freckles?: boolean
           favorite_companion?: string | null
           future_dream?: string | null
           gender?: string

@@ -11,9 +11,12 @@ import {
   GLASSES_OPTIONS,
   type CharacterData,
   type CreateBookState,
-  type Glasses,
 } from "@/lib/create-store";
+import { avatarBaseKey, avatarTraitsFromCharacter, isAvatarRendered, type AvatarGlasses } from "@/lib/avatar/manifest";
 import { STORAGE_KEY } from "@/hooks/usePersistedState";
+
+// Single source for the photo policy (pure module, client-safe).
+export { PHOTO_CONSENT_VERSION, PHOTO_MAX_UPLOAD_BYTES, PHOTO_MAX_EDGE, isPhotoUploadEnabled } from "@/lib/privacy/child-photo-policy";
 
 export const CREATE_STORAGE_KEY = STORAGE_KEY;
 export const TOTAL_CREATION_STEPS = 6;
@@ -27,19 +30,6 @@ export const MAX_NAME_LENGTH = 50;
 export const MAX_DEDICATION_LENGTH = 500;
 export const MAX_SENDER_LENGTH = 100;
 
-// Mirrors of @/lib/privacy/child-photo-policy (privacy branch). Import from there
-// once both branches are merged; the upload route rejects any other version.
-/** Version of the photo-consent copy (crear.photo.*) the parent accepts. */
-export const PHOTO_CONSENT_VERSION = "2026-09-27";
-/** Server body limit (Vercel rejects > 4.5 MB before our code runs). */
-export const PHOTO_MAX_UPLOAD_BYTES = 4 * 1024 * 1024;
-/** Long edge the client downscales to before upload. */
-export const PHOTO_MAX_EDGE = 1536;
-
-export function isPhotoUploadEnabled(): boolean {
-  return process.env.NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED === "true";
-}
-
 /** Template whose art dresses the live cover before a world is chosen. */
 export const DEFAULT_COVER_TEMPLATE = "space";
 
@@ -51,6 +41,12 @@ function isRecord(v: unknown): v is Record<string, unknown> {
 
 function str(v: unknown, fallback: string): string {
   return typeof v === "string" ? v : fallback;
+}
+
+/** v2 drafts before the avatar matrix stored "round" / "square" (no frame colour). */
+function migrateGlasses(value: unknown): AvatarGlasses {
+  if (value === "round" || value === "square") return `${value}-dark`;
+  return GLASSES_OPTIONS.includes(value as AvatarGlasses) ? (value as AvatarGlasses) : "none";
 }
 
 /**
@@ -69,7 +65,7 @@ export function migrateCreateState(raw: unknown): CreateBookState {
     ...base.character,
     ...(rawChar as Partial<CharacterData>),
     name: str(rawChar.name, "").slice(0, MAX_NAME_LENGTH),
-    glasses: GLASSES_OPTIONS.includes(glasses as Glasses) ? (glasses as Glasses) : "none",
+    glasses: migrateGlasses(glasses),
     freckles: rawChar.freckles === true,
     interests: Array.isArray(rawChar.interests)
       ? rawChar.interests.filter((i): i is string => typeof i === "string")
@@ -146,6 +142,67 @@ export function clearStoredDraft(): void {
   }
 }
 
+// ── Request payloads (one builder → prepare and stories can never disagree) ──
+
+/**
+ * Everything the Character Bible is built from. POST /api/characters/prepare and
+ * POST /api/stories both send exactly this object, so the prepared child sheet's
+ * Bible hash matches the story's and the generate route can reuse it.
+ */
+export function characterLookPayload(c: CharacterData) {
+  return {
+    gender: c.gender,
+    age: c.age,
+    skinTone: c.skinTone,
+    hairColor: c.hairColor,
+    eyeColor: c.eyeColor,
+    hairstyle: c.hairstyle,
+    favoriteColor: c.favoriteColor,
+    glasses: c.glasses,
+    freckles: c.freckles,
+  };
+}
+
+/**
+ * Public path of the pre-rendered watercolor avatar base for these traits (the
+ * face anchor of the character sheet), or null while the matrix does not contain
+ * it yet. Overlays (glasses, freckles) are not part of the anchor: the Bible text
+ * carries them.
+ */
+export function avatarAssetPathFor(c: CharacterData): string | null {
+  const traits = avatarTraitsFromCharacter(c);
+  return isAvatarRendered(traits) ? `/images/avatar/${avatarBaseKey(traits)}.webp` : null;
+}
+
+/** Body of POST /api/characters/prepare for a draft. */
+export function characterPrepareBody(state: Pick<CreateBookState, "character" | "protagonistMode" | "photoPath">) {
+  const usePhoto = state.protagonistMode === "photo" && !!state.photoPath;
+  const avatarAssetPath = usePhoto ? null : avatarAssetPathFor(state.character);
+  return {
+    ...characterLookPayload(state.character),
+    ...(usePhoto ? { photoPath: state.photoPath } : {}),
+    ...(avatarAssetPath ? { avatarAssetPath } : {}),
+  };
+}
+
+/** `character` + avatar fields of POST /api/stories for a draft. */
+export function storyCharacterBody(state: Pick<CreateBookState, "character" | "protagonistMode" | "photoPath">) {
+  const c = state.character;
+  const usePhoto = state.protagonistMode === "photo" && !!state.photoPath;
+  const avatarAssetPath = usePhoto ? null : avatarAssetPathFor(c);
+  return {
+    character: {
+      ...characterLookPayload(c),
+      name: c.name.trim(),
+      city: c.city,
+      interests: c.interests,
+      favoriteCompanion: c.favoriteCompanion,
+      futureDream: c.futureDream,
+    },
+    ...(avatarAssetPath ? { avatarAssetPath } : {}),
+  };
+}
+
 // ── Snapshots (change detection) ─────────────────────────────────────────────
 
 /** Traits that define how the protagonist looks (what the character prep depends on). */
@@ -158,6 +215,7 @@ export function protagonistSnapshot(state: Pick<CreateBookState, "character" | "
     hairColor: c.hairColor,
     hairstyle: c.hairstyle,
     eyeColor: c.eyeColor,
+    favoriteColor: c.favoriteColor,
     glasses: c.glasses,
     freckles: c.freckles,
     mode: state.protagonistMode,

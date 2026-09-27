@@ -10,7 +10,7 @@
  *     ARE rewritten to the showcase public URL (the blog renders stored URLs as is)
  *
  * Idempotent (existing destination objects are skipped). Run it BEFORE applying
- * supabase/migrations/20260927140100_private_illustrations.sql, and again every
+ * supabase/migrations/20260927140400_private_illustrations.sql, and again every
  * time a story is newly flagged is_showcase. Unflagging does NOT delete the copy:
  * remove it from the `showcase` bucket by hand.
  *
@@ -42,7 +42,7 @@ const STATIC_PREFIXES = ["waitlist-covers", "style-samples"];
 async function ensureBucket(): Promise<void> {
   const { data } = await admin.storage.getBucket(SHOWCASE_BUCKET);
   if (data) {
-    if (!data.public) throw new Error(`Bucket "${SHOWCASE_BUCKET}" exists but is not public — apply 20260927140000_showcase_bucket.sql`);
+    if (!data.public) throw new Error(`Bucket "${SHOWCASE_BUCKET}" exists but is not public — apply 20260927140300_showcase_bucket.sql`);
     return;
   }
   if (DRY_RUN) return console.log(`[dry-run] would create public bucket "${SHOWCASE_BUCKET}"`);

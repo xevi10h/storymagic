@@ -180,3 +180,34 @@ export async function signStoryRowImages<T extends StoryImageRow>(row: T, userId
   for (const ill of illustrations) if ("image_url" in ill) ill.image_url = resolve(ill.image_url);
   return row;
 }
+
+/**
+ * stories.preview_progress ({ coverUrl?, scenes: [{ index, url }], total }, written by
+ * the streaming preview with object paths) → the same shape with signed URLs for the
+ * story's owner. Entries that cannot be signed are dropped (the screen just waits).
+ * Anything that is not a progress object is returned as null.
+ */
+export async function signPreviewProgress(progress: unknown, userId: string, storyId: string, ttl: number = ILLUSTRATION_URL_TTL.ui) {
+  if (!progress || typeof progress !== "object" || Array.isArray(progress)) return null;
+  const p = progress as { coverUrl?: unknown; scenes?: unknown; total?: unknown };
+  const coverRef = typeof p.coverUrl === "string" ? p.coverUrl : null;
+  const scenes = (Array.isArray(p.scenes) ? p.scenes : []).filter(
+    (s): s is { index: number; url: string } =>
+      !!s && typeof s === "object" && typeof (s as { index?: unknown }).index === "number" && typeof (s as { url?: unknown }).url === "string",
+  );
+  const signed = await signIllustrationRefs([coverRef, ...scenes.map((s) => s.url)], {
+    ttl,
+    allow: userAccess({ userId, storyIds: [storyId] }),
+  });
+  const coverUrl = coverRef ? (signed.get(coverRef) ?? null) : null;
+  // `key` = the stored ref: stable across polls (every signature is a new URL), so the
+  // client keeps the image it already shows until the ref itself changes.
+  return {
+    ...(coverUrl && coverRef ? { coverUrl, coverKey: coverRef } : {}),
+    scenes: scenes.flatMap((s) => {
+      const url = signed.get(s.url);
+      return url ? [{ index: s.index, url, key: s.url }] : [];
+    }),
+    total: typeof p.total === "number" ? p.total : scenes.length,
+  };
+}

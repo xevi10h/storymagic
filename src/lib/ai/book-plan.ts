@@ -1279,5 +1279,7 @@ export function buildPlanChildDescription(input: StoryInput): string {
     eyeColor: input.eyeColor,
     hairstyle: input.hairstyle,
     favoriteColor: input.favoriteColor,
+    glasses: input.glasses,
+    freckles: input.freckles,
   });
 }

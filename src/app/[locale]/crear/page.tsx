@@ -3,8 +3,9 @@
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
+import { normaliseHairstyle } from "@/lib/avatar/manifest";
 import {
-  HAIRSTYLES,
+  GLASSES_OPTIONS,
   INITIAL_STATE,
   type CharacterData,
   type CreateBookState,
@@ -13,7 +14,9 @@ import {
 } from "@/lib/create-store";
 import {
   CREATE_PAGE_STEPS,
+  characterPrepareBody,
   migrateCreateState,
+  storyCharacterBody,
   protagonistSnapshot,
   storyInputSnapshot,
 } from "@/lib/creation-flow";
@@ -77,6 +80,8 @@ function CrearPageContent() {
               eyeColor: ch.eye_color ?? INITIAL_STATE.character.eyeColor,
               skinTone: ch.skin_tone ?? INITIAL_STATE.character.skinTone,
               hairstyle: ch.hairstyle ?? "short",
+              glasses: GLASSES_OPTIONS.includes(ch.glasses) ? ch.glasses : "none",
+              freckles: ch.freckles === true,
               interests: ch.interests ?? [],
               city: ch.city ?? "",
             };
@@ -148,10 +153,8 @@ function CrearPageContent() {
     (updates: Partial<CharacterData>) => {
       setState((prev) => {
         const character = { ...prev.character, ...updates };
-        // Keep the hairstyle valid for the chosen gender
-        if (updates.gender && !HAIRSTYLES[updates.gender].some((h) => h.id === character.hairstyle)) {
-          character.hairstyle = HAIRSTYLES[updates.gender][0].id;
-        }
+        // Keep the hairstyle valid for the chosen gender (and rendered in the avatar matrix)
+        if (updates.gender) character.hairstyle = normaliseHairstyle(updates.gender, character.hairstyle);
         return { ...prev, character };
       });
     },
@@ -190,29 +193,15 @@ function CrearPageContent() {
       if (snapshotState.characterPrepSnapshot === snapshot && snapshotState.characterPrepId) return;
       if (prepInFlight.current === snapshot) return;
       prepInFlight.current = snapshot;
-      const c = snapshotState.character;
-      const usePhoto = snapshotState.protagonistMode === "photo" && !!snapshotState.photoPath;
       void (async () => {
         try {
           await ensureGuestSession();
           const res = await fetch("/api/characters/prepare", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              character: {
-                name: c.name.trim(),
-                gender: c.gender,
-                age: c.age,
-                skinTone: c.skinTone,
-                hairColor: c.hairColor,
-                hairstyle: c.hairstyle,
-                eyeColor: c.eyeColor,
-                glasses: c.glasses,
-                freckles: c.freckles,
-              },
-              ...(usePhoto ? { photoPath: snapshotState.photoPath } : {}),
-              locale,
-            }),
+            // Same look payload as POST /api/stories (characterLookPayload), so the
+            // generate route can reuse this sheet.
+            body: JSON.stringify(characterPrepareBody(snapshotState)),
           });
           if (res.status === 410) {
             // The photo was already used and deleted — ask for it again.
@@ -236,7 +225,7 @@ function CrearPageContent() {
         }
       })();
     },
-    [locale, setState, t],
+    [setState, t],
   );
 
   const handleProtagonistNext = useCallback(() => {
@@ -265,13 +254,17 @@ function CrearPageContent() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          character: { ...state.character, name },
+          ...storyCharacterBody(state),
           templateId: state.selectedTemplate,
           creationMode: state.mode ?? "solo",
           decisions: state.decisions,
           dedication,
           senderName: state.senderName,
-          characterPrepId: state.characterPrepId ?? undefined,
+          // Only a prep made for this exact look (the server re-checks the Bible hash anyway).
+          characterPrepId:
+            state.characterPrepId && state.characterPrepSnapshot === protagonistSnapshot(state)
+              ? state.characterPrepId
+              : undefined,
           locale,
         }),
       });

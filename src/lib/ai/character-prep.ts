@@ -3,7 +3,7 @@
 // protagonist screen). The stories generate route reuses it through
 // stories.character_prep_id when the Character Bible still matches.
 //
-// Table: public.character_preps (supabase/migrations/20260927140000_streaming_preview.sql).
+// Table: public.character_preps (supabase/migrations/20260927140100_streaming_preview.sql).
 // The optional child photo is used for the sheet only and deleted right after;
 // its path is never stored (only `had_photo`).
 
@@ -24,12 +24,15 @@ export interface CharacterTraits {
   eyeColor?: string | null;
   hairstyle?: string | null;
   favoriteColor?: string | null;
+  glasses?: string | null;
+  freckles?: boolean | null;
 }
 
 /**
  * The Bible input with the SAME defaults POST /api/stories uses when it stores
- * the character row (hair_color "brown", skin_tone "medium", hairstyle "short"),
- * so a prep made from the UI's traits matches the story made from the row.
+ * the character row (hair_color "brown", skin_tone "medium", hairstyle "short",
+ * glasses "none", freckles false) and the same shape the generate route builds
+ * (row + extraTraits), so a prep made from the UI's traits matches the story.
  */
 export function bibleInputFromTraits(t: CharacterTraits): CharacterDescriptionInput {
   return {
@@ -40,6 +43,8 @@ export function bibleInputFromTraits(t: CharacterTraits): CharacterDescriptionIn
     eyeColor: t.eyeColor || undefined,
     hairstyle: t.hairstyle || "short",
     favoriteColor: t.favoriteColor || undefined,
+    glasses: t.glasses || "none",
+    freckles: t.freckles ?? false,
   };
 }
 
@@ -54,8 +59,8 @@ export function prepFingerprint(hash: string, avatarRef: string | null, photoPat
 }
 
 export function prepBible(traits: CharacterTraits): CharacterBible {
-  // photoUrl is never persisted in the Bible (the photo is deleted after the sheet).
-  return buildCharacterBible(bibleInputFromTraits(traits), null);
+  // The Bible has no photo field (the photo is deleted after the sheet).
+  return buildCharacterBible(bibleInputFromTraits(traits));
 }
 
 function sha256(s: string): string {

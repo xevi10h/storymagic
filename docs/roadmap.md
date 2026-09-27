@@ -20,8 +20,18 @@ See **`docs/generation-pipeline.md`** and **`docs/launch-checklist.md`** for ful
          companion sheet so it is ready before the plan → cover at ~28–31 s.
       2. Deterministic templated cover shot (child + main companion in the template's world,
          not from the LLM) rendered during the dedication screen → cover visible at ~0–15 s.
-      3. UI shows the first finished image (scene 1 usually beats the cover by ~5 s).
-      4. Apply migration `20260927140000_streaming_preview.sql` before deploying.
+      3. ✅ UI shows the first finished image (scene 1 usually beats the cover by ~5 s).
+      4. Deploy with the migration runbook in `docs/stack.md` ("Deploy order — creation flow v2").
+- [ ] **Creation flow v2 — after the integration (branch `feat/creation-flow-v2`, 2026-09-28):**
+      1. Render the avatar matrix (avatar agent, ~$12.6) + ageBand/eye-colour layers; then relax the
+         e2e "trait swaps are offline" assertion (preloaded avatar images are expected requests).
+      2. Photo mode: the Bible still describes the default traits (skin/hair) next to the photo →
+         derive the look from the photo (vision call) or ask skin/hair in photo mode, before the flag goes on.
+      3. `character_preps` orphans: child sheets of preps never used by a story stay in
+         `illustrations/character-preps/` → add a daily cleanup (> 7 days, no referencing story).
+      4. Local Supabase round-trip (Docker engine was unresponsive on 2026-09-28): `supabase start`,
+         apply the 6 migrations, run prepare → stories → generate with `MOCK_MODE` against it.
+      5. `send-preview`: add a per-IP window next to the per-user limit.
 - [ ] **Validate** the per-scene character lock + high-res (`FINAL_IMAGE_SCALE`) with a fresh book.
 - [ ] **Background final generation + "book ready" email** — run `/complete` async post-purchase
       (tie into the fulfilment cron) and email the customer when the book is finished.
@@ -380,7 +390,7 @@ Replaced the old "mode → template → 3 decision knobs" with a single vertical
 
 ## Next (from 2026-09-27 overhaul)
 - [x] **Phase 2 — creation flow UI (6 screens), 2026-09-27:** Nombre + live cover → Protagonista (trait grid + sticky portrait, photo tab behind flag, background character prep) → Aventura (world + 3 tree chapters on one screen) → Dedicatoria while the preview is painted (real `preview_progress`) → Su libro (checklist chips, in-place sheets) → Formato + pago (VAT next to prices, optional "Envíame la preview"). See `creation-flow-v2.md`.
-- Pending to finish Phase 2: real `WatercolorAvatar` art (replace the SVG placeholder), persist `glasses`/`freckles`/`characterPrepId` in `POST /api/stories`, `preview_progress` written by the preview pipeline, teaser preview <20 s (cover + scene 1 first).
+- Integrated 2026-09-28 (`feat/creation-flow-v2`): real `WatercolorAvatar` (vector fallback until the matrix is rendered), `glasses`/`freckles`/`characterPrepId`/`avatarAssetPath` persisted by `POST /api/stories`, signed `preview_progress`, first image shown as soon as it lands. Pending: see "Creation flow v2 — after the integration" above.
 - "Envíame la preview" works on the same browser only (anonymous session per device): convert the guest to an email identity (magic link) so the link opens anywhere.
 - Arrow-key navigation inside the trait/world/chapter radiogroups (today: Tab + Enter/Space).
 - Print polish: "about the reader" page design, illustrated endpapers, panorama upscale to 300 dpi.

@@ -3,24 +3,18 @@ import { createClient } from "@/lib/supabase/server";
 import { z } from "zod";
 import type { Json } from "@/lib/database.types";
 import { ownedPortraitPath } from "@/lib/storage/illustration-urls";
+import { avatarAssetPathSchema, characterLookShape } from "@/lib/character-look";
 
 const VALID_TEMPLATE_IDS = ["space", "forest", "superhero", "pirates", "chef", "dinosaurs", "castle", "safari", "inventor", "candy"] as const;
 const VALID_MODES = ["solo", "juntos"] as const;
-const VALID_GENDERS = ["boy", "girl", "neutral"] as const;
 const VALID_LOCALES = ["es", "ca", "en", "fr"] as const;
 
 const storyInputSchema = z.object({
   character: z.object({
+    ...characterLookShape,
     name: z.string().min(1).max(50),
-    gender: z.enum(VALID_GENDERS),
-    age: z.number().int().min(1).max(12),
-    hairColor: z.string().max(20).optional(),
-    eyeColor: z.string().max(20).optional(),
-    skinTone: z.string().max(20).optional(),
-    hairstyle: z.string().max(30).optional(),
     interests: z.array(z.string().max(50)).max(4).optional(),
     city: z.string().max(100).optional(),
-    favoriteColor: z.string().max(20).optional(),
     favoriteCompanion: z.string().max(100).optional(),
     futureDream: z.string().max(150).optional(),
   }),
@@ -32,6 +26,8 @@ const storyInputSchema = z.object({
   ending: z.string().max(100).optional(),
   /** Portrait from POST /api/characters/portrait: signed URL, legacy public URL or object path. */
   portraitUrl: z.string().max(2000).nullish(),
+  /** Pre-rendered watercolor avatar ("Créalo tú"), used as the face anchor when there is no portrait. */
+  avatarAssetPath: avatarAssetPathSchema.nullish(),
   recraftStyleId: z.string().max(100).nullish(),
   locale: z.enum(VALID_LOCALES).optional().default("es"),
   /** From POST /api/characters/prepare: the generate route reuses its child sheet if the traits still match */
@@ -65,7 +61,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const { character, templateId, creationMode, decisions, dedication, senderName, ending, portraitUrl, recraftStyleId, locale, characterPrepId } = parsed.data;
+  const { character, templateId, creationMode, decisions, dedication, senderName, ending, portraitUrl, avatarAssetPath, recraftStyleId, locale, characterPrepId } = parsed.data;
 
   // 1. Upsert character (reuse if same name + user)
   const { data: existingCharacter } = await supabase
@@ -85,9 +81,14 @@ export async function POST(request: Request) {
     favorite_color: character.favoriteColor || null,
     favorite_companion: character.favoriteCompanion || null,
     future_dream: character.futureDream || null,
-    // Store the object path of the user's OWN portrait only (private bucket; the
-    // server later downloads it as the sheet's face anchor). MOCK_MODE keeps picsum URLs.
-    avatar_url: ownedPortraitPath(portraitUrl, user.id) ?? (process.env.MOCK_MODE === "true" ? portraitUrl || null : null),
+    glasses: character.glasses ?? "none",
+    freckles: character.freckles ?? false,
+    // Face anchor of the character sheet: the object path of the user's OWN portrait
+    // (private bucket), else the pre-rendered avatar asset path. MOCK_MODE keeps picsum URLs.
+    avatar_url:
+      ownedPortraitPath(portraitUrl, user.id) ??
+      avatarAssetPath ??
+      (process.env.MOCK_MODE === "true" ? portraitUrl || null : null),
   };
 
   if (existingCharacter) {

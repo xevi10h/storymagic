@@ -2,10 +2,9 @@
 
 import { useTranslations } from "next-intl";
 import ProtagonistAvatar, { type ProtagonistLook } from "@/components/avatar/ProtagonistAvatar";
-import { AVATAR_HAIRSTYLES } from "@/lib/avatar/manifest";
+import { AVATAR_GLASSES_SHAPES, AVATAR_HAIRSTYLES, type AvatarGlassesColour } from "@/lib/avatar/manifest";
 import {
   EYE_COLORS,
-  GLASSES_OPTIONS,
   HAIRSTYLES,
   HAIR_COLORS,
   SKIN_TONES,
@@ -39,6 +38,13 @@ export function toAvatarTraits(c: CharacterData): ProtagonistLook {
     freckles: c.freckles,
   };
 }
+
+/** Glasses = shape × frame colour (avatar matrix overlays, src/lib/avatar/manifest.ts). */
+const GLASSES_SHAPES = ["none", ...AVATAR_GLASSES_SHAPES] as const;
+const GLASSES_FRAMES: { id: AvatarGlassesColour; color: string }[] = [
+  { id: "dark", color: "#2c2626" },
+  { id: "red", color: "#b23a2c" },
+];
 
 /** Light swatches need a dark check mark. */
 const LIGHT_SWATCHES = new Set(["#fce4d6", "#eebb99", "#e6c07b", "#d4a574", "#a0875b"]);
@@ -116,6 +122,10 @@ export default function StepProtagonist({
   const traits = toAvatarTraits(character);
   const name = character.name.trim();
   const canContinue = mode === "avatar" || !!photoPath;
+  const [glassesShape, glassesFrame] =
+    character.glasses === "none"
+      ? (["none", "dark"] as const)
+      : (character.glasses.split("-") as [(typeof AVATAR_GLASSES_SHAPES)[number], AvatarGlassesColour]);
 
   const chip = (selected: boolean) =>
     `rounded-xl border-2 px-3 py-2 text-sm font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-create-primary ${
@@ -257,33 +267,46 @@ export default function StepProtagonist({
                   {t("glasses")}
                 </span>
                 <div role="radiogroup" aria-labelledby="lbl-glasses" className="flex flex-wrap gap-2">
-                  {GLASSES_OPTIONS.map((g) => {
-                    // "none" or "{shape}-{frame colour}" (avatar matrix overlays)
-                    const [shape, frame] = g === "none" ? ["none", null] : g.split("-");
-                    const label = frame ? `${t(`glasses_${shape}`)} · ${t(`glassesFrame_${frame}`)}` : t("glasses_none");
+                  {GLASSES_SHAPES.map((shape) => {
+                    const selected = glassesShape === shape;
                     return (
                       <button
-                        key={g}
+                        key={shape}
                         type="button"
                         role="radio"
-                        aria-checked={character.glasses === g}
-                        aria-label={label}
-                        title={label}
-                        onClick={() => onUpdateCharacter({ glasses: g })}
-                        className={`${chip(character.glasses === g)} inline-flex items-center gap-1.5`}
+                        aria-checked={selected}
+                        onClick={() =>
+                          onUpdateCharacter({ glasses: shape === "none" ? "none" : `${shape}-${glassesFrame}` })
+                        }
+                        className={chip(selected)}
                       >
-                        {frame && (
-                          <span
-                            aria-hidden
-                            className="h-3 w-3 shrink-0 rounded-full border border-black/10"
-                            style={{ backgroundColor: frame === "red" ? "#b23a2c" : "#2c2626" }}
-                          />
-                        )}
                         {t(`glasses_${shape}`)}
                       </button>
                     );
                   })}
                 </div>
+                {glassesShape !== "none" && (
+                  <div role="radiogroup" aria-label={t("glassesFrame")} className="flex items-center gap-2.5">
+                    {GLASSES_FRAMES.map((f) => {
+                      const selected = glassesFrame === f.id;
+                      return (
+                        <button
+                          key={f.id}
+                          type="button"
+                          role="radio"
+                          aria-checked={selected}
+                          aria-label={t(`glassesFrame_${f.id}`)}
+                          title={t(`glassesFrame_${f.id}`)}
+                          onClick={() => onUpdateCharacter({ glasses: `${glassesShape}-${f.id}` })}
+                          className={`h-8 w-8 rounded-full border border-black/10 transition-transform focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-create-primary ${
+                            selected ? "ring-[3px] ring-create-primary ring-offset-2 ring-offset-white" : "hover:scale-105"
+                          }`}
+                          style={{ backgroundColor: f.color }}
+                        />
+                      );
+                    })}
+                  </div>
+                )}
               </div>
 
               <div className="flex items-center justify-between gap-4 rounded-2xl border-2 border-create-neutral bg-white px-4 py-3 sm:col-span-2">

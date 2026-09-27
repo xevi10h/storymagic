@@ -10,6 +10,7 @@ import { getMockIllustrationUrl, getMockCoverUrl, getMockPortraitUrl, getMockSec
 import { isProviderUnavailableError } from "@/lib/fulfilment/provider-errors";
 import { STORY_TEMPLATES } from "@/lib/create-store";
 import { ownedPortraitPath } from "@/lib/storage/illustration-urls";
+import { avatarAssetUrl } from "@/lib/character-look";
 
 // Book Plan (35–90 s, streamed) with the sheets, cover and first scenes rendered
 // while it streams; the request ends shortly after the plan does.
@@ -40,7 +41,7 @@ function createProgressWriter(db: Awaited<ReturnType<typeof createClient>>, stor
 }
 
 export async function POST(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ storyId: string }> }
 ) {
   const routeStart = Date.now();
@@ -133,6 +134,8 @@ export async function POST(
       eyeColor: character.eye_color || undefined,
       skinTone: character.skin_tone,
       hairstyle: character.hairstyle || undefined,
+      glasses: character.glasses,
+      freckles: character.freckles,
       templateId: story.template_id,
       templateTitle: template?.title || story.template_id,
       creationMode: story.creation_mode as "solo" | "juntos",
@@ -151,8 +154,10 @@ export async function POST(
     // the first scenes as their shots stream in, writing preview_progress.
     const storage = createServiceClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
     const prepId: string | null = story.character_prep_id ?? null;
-    // Only the user's own portrait may anchor the sheet (the row is user-editable).
-    const avatarRef = ownedPortraitPath(character.avatar_url, user.id);
+    // Face anchor: the user's own portrait (the row is user-editable, so the path's
+    // owner is re-checked) or a pre-rendered avatar asset of this deployment.
+    const avatarRef =
+      ownedPortraitPath(character.avatar_url, user.id) ?? avatarAssetUrl(character.avatar_url, new URL(request.url).origin);
     if (!isMockGeneration()) {
       session = startPreviewSession({
         storyId,

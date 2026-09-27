@@ -2,7 +2,7 @@ import { NextResponse, after } from "next/server";
 import { z } from "zod";
 import { createClient as createServiceClient, type SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
-import { loadReference, renderChildSheet, type ImageReference } from "@/lib/ai/book-images";
+import { renderChildSheet, type ImageReference } from "@/lib/ai/book-images";
 import { optionalReference } from "@/lib/ai/preview-book";
 import {
   CHARACTER_PREPS_TABLE,
@@ -15,47 +15,30 @@ import {
 import { providerOutageRetryAfter, tripOnProviderOutage } from "@/lib/ai/provider-outage";
 import { uploadGeneratedImage } from "@/lib/supabase/storage";
 import { checkMemoryRateLimit, checkRateLimit } from "@/lib/rate-limit";
-import { deleteChildPhoto, loadChildPhoto } from "@/lib/privacy/child-photo";
+import { PhotoUnavailableError, deleteChildPhoto, loadChildPhoto } from "@/lib/privacy/child-photo";
+import { isOwnedPhotoPath, isPhotoUploadEnabled, isValidPhotoPath } from "@/lib/privacy/child-photo-policy";
+import { ownedPortraitPath } from "@/lib/storage/illustration-urls";
+import { avatarAssetPathSchema, avatarAssetUrl, characterLookShape } from "@/lib/character-look";
 import { isMockGeneration } from "@/lib/ai/story-generator";
 
 // The child sheet (gpt-image-2.5-flare, medium, 1536×1024) takes ~15–25 s and
 // runs in after(), which lives for this route's maxDuration.
 export const maxDuration = 120;
 
-const STORAGE_PREFIX = () => `${(process.env.NEXT_PUBLIC_SUPABASE_URL ?? "").trim()}/storage/v1/object/`;
-
 const prepareInputSchema = z
   .object({
-    gender: z.enum(["boy", "girl", "neutral"]),
-    age: z.number().int().min(1).max(12),
-    skinTone: z.string().max(20).optional(),
-    hairColor: z.string().max(20).optional(),
-    eyeColor: z.string().max(20).optional(),
-    hairstyle: z.string().max(30).optional(),
-    favoriteColor: z.string().max(20).optional(),
-    /** Pre-rendered public watercolor avatar, e.g. "/images/avatar/girl-curly-dark-2.jpg" */
-    avatarAssetPath: z
-      .string()
-      .max(200)
-      .regex(/^\/images\/avatar\/[A-Za-z0-9/_-]+\.(png|jpe?g|webp)$/, "avatarAssetPath must be under /images/avatar/")
-      .optional(),
-    /** AI portrait from POST /api/characters/portrait (our storage only — no SSRF) */
-    portraitUrl: z
-      .string()
-      .max(500)
-      .refine((u) => u.startsWith(STORAGE_PREFIX()), "portraitUrl must be a Meapica storage URL")
-      .optional(),
-    /** Object path in the private `child-photos` bucket (ownership enforced by loadChildPhoto) */
-    photoPath: z
-      .string()
-      .max(300)
-      .regex(/^[A-Za-z0-9/._-]+$/, "invalid photoPath")
-      .refine((p) => !p.includes(".."), "invalid photoPath")
-      .optional(),
+    // Same look fields as POST /api/stories (client: characterLookPayload), so the
+    // Bible hash of the prep equals the story's.
+    ...characterLookShape,
+    /** Pre-rendered watercolor avatar base, e.g. "/images/avatar/girl/light/brown-bob.webp" */
+    avatarAssetPath: avatarAssetPathSchema.optional(),
+    /** AI portrait from POST /api/characters/portrait (signed URL or path); only the caller's own is used */
+    portraitUrl: z.string().max(2000).optional(),
+    /** Object path in the private `child-photos` bucket ({userId}/{uuid}.jpg) */
+    photoPath: z.string().max(200).refine(isValidPhotoPath, "invalid photoPath").optional(),
   })
   .refine((d) => !(d.avatarAssetPath && d.portraitUrl), "Send either avatarAssetPath or portraitUrl, not both");
 
-type PrepareInput = z.infer<typeof prepareInputSchema>;
 
 const RATE_LIMITED = { error: "rate_limited", message: "Too many character generations. Please try again later." };
 const PROVIDER_UNAVAILABLE = { error: "provider_unavailable" };
@@ -74,11 +57,15 @@ const PROVIDER_UNAVAILABLE = { error: "provider_unavailable" };
  * Costs like a portrait, so it shares the portrait budget (IP window + the
  * durable `generate_portrait` per-user limit) and the provider-outage breaker.
  *
- * Request:  { gender, age, skinTone?, hairColor?, eyeColor?, hairstyle?, favoriteColor?,
+ * Request:  { gender, age, skinTone?, hairColor?, eyeColor?, hairstyle?, favoriteColor?, glasses?, freckles?,
  *             avatarAssetPath? | portraitUrl?, photoPath? }
  * Response: 202 { characterPrepId, status: "rendering" | "ready" }
  *           200 { characterPrepId: null, status: "skipped" } in MOCK_MODE
- *           400 invalid input · 401 no session · 429 rate_limited · 503 provider_unavailable
+ *           400 invalid input / photo_upload_disabled · 401 no session · 403 photo not the caller's ·
+ *           410 photo_unavailable (already used/deleted → re-upload) · 429 rate_limited · 503 provider_unavailable
+ *
+ * The photo is downloaded (bytes, ownership + open consent checked) BEFORE the
+ * response, used only as a reference of this one render, then deleted.
  */
 export async function POST(request: Request) {
   const outageRetryAfter = providerOutageRetryAfter();
@@ -104,6 +91,14 @@ export async function POST(request: Request) {
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  if (input.photoPath) {
+    if (!isPhotoUploadEnabled()) return NextResponse.json({ error: "photo_upload_disabled" }, { status: 400 });
+    if (!isOwnedPhotoPath(input.photoPath, user.id)) return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  }
+  // Only the caller's own portrait (private bucket path) may anchor the sheet.
+  const portraitPath = input.portraitUrl ? ownedPortraitPath(input.portraitUrl, user.id) : null;
+  if (input.portraitUrl && !portraitPath) return NextResponse.json({ error: "Invalid input" }, { status: 400 });
+
   if (isMockGeneration()) {
     return NextResponse.json({ characterPrepId: null, status: "skipped" });
   }
@@ -111,7 +106,7 @@ export async function POST(request: Request) {
   const admin = createServiceClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
   const bible = prepBible(input);
   const hash = bibleHash(bible);
-  const avatarRef = input.avatarAssetPath ?? input.portraitUrl ?? null;
+  const avatarRef = input.avatarAssetPath ?? portraitPath;
   const fingerprint = prepFingerprint(hash, avatarRef, input.photoPath ?? null);
 
   // ── Idempotency: an equal prep that is ready or still rendering is reused ──
@@ -140,14 +135,27 @@ export async function POST(request: Request) {
     return NextResponse.json(RATE_LIMITED, { status: 429, headers: { "Retry-After": String(userLimit.retryAfterSeconds ?? 3600) } });
   }
 
+  // The photo's bytes are read now (410 when already used/deleted/withdrawn, so the
+  // UI can ask for it again) and only live in this function's memory.
+  let photo: ImageReference | null = null;
+  if (input.photoPath) {
+    try {
+      photo = await loadChildPhoto(input.photoPath, user.id);
+    } catch (err) {
+      if (err instanceof PhotoUnavailableError) return NextResponse.json({ error: "photo_unavailable" }, { status: 410 });
+      console.error(`[Prepare] photo load failed: ${err instanceof Error ? err.message : "unknown"}`);
+      return NextResponse.json({ error: "prepare_failed" }, { status: 500 });
+    }
+  }
+
   const prepId = existing ? await reclaim(admin, existing) : await insert(admin, user.id, fingerprint, hash, bible, avatarRef, !!input.photoPath);
   if (!prepId.claimed) {
     // Another request claimed it between our read and write: that one renders.
     return NextResponse.json({ characterPrepId: prepId.id, status: "rendering" }, { status: 202 });
   }
 
-  const origin = new URL(request.url).origin;
-  after(() => renderPrep(admin, prepId.id, user.id, input, bible, origin));
+  const avatarUrl = input.avatarAssetPath ? avatarAssetUrl(input.avatarAssetPath, new URL(request.url).origin) : portraitPath;
+  after(() => renderPrep(admin, prepId.id, user.id, { avatarUrl, photo, photoPath: input.photoPath ?? null }, bible));
   return NextResponse.json({ characterPrepId: prepId.id, status: "rendering" }, { status: 202 });
 }
 
@@ -190,30 +198,17 @@ async function reclaim(admin: SupabaseClient, row: PrepRow): Promise<{ id: strin
   return { id: row.id, claimed: (data?.length ?? 0) > 0 };
 }
 
-async function loadPhoto(photoPath: string, userId: string): Promise<ImageReference> {
-  const photo = await loadChildPhoto(photoPath, userId);
-  return { data: photo.data, mime: photo.mime === "image/png" || photo.mime === "image/webp" ? photo.mime : "image/jpeg" };
-}
-
 async function renderPrep(
   admin: SupabaseClient,
   prepId: string,
   userId: string,
-  input: PrepareInput,
+  anchors: { avatarUrl: string | null; photo: ImageReference | null; photoPath: string | null },
   bible: ReturnType<typeof prepBible>,
-  origin: string,
 ): Promise<void> {
   const started = Date.now();
+  const { photo, photoPath } = anchors;
   try {
-    const [avatar, photo] = await Promise.all([
-      input.avatarAssetPath
-        ? loadReference(new URL(input.avatarAssetPath, origin).toString()).catch((err) => {
-            console.warn(`[Prepare] avatar asset unavailable (${err instanceof Error ? err.message : err}) — continuing without it`);
-            return null;
-          })
-        : optionalReference(input.portraitUrl, "portrait"),
-      input.photoPath ? loadPhoto(input.photoPath, userId) : Promise.resolve(null),
-    ]);
+    const avatar = await optionalReference(anchors.avatarUrl, "avatar");
     const result = await renderChildSheet(bible, "preview", { avatar, photo }, { label: `prep ${prepId.slice(0, 8)}`, deadline: started + 110_000 });
     const url = await uploadGeneratedImage(admin, `character-preps/${prepId}`, "sheet-child", result.image, result.mime);
     const { error } = await admin
@@ -223,8 +218,8 @@ async function renderPrep(
     if (error) throw new Error(`character_preps update failed: ${error.message}`);
     console.log(`[Prepare] ${prepId} ready in ${((Date.now() - started) / 1000).toFixed(1)}s ($${result.costUsd.toFixed(3)})`);
     // The photo's only job was the sheet's likeness: delete it now.
-    if (input.photoPath) {
-      const deleted = await deleteChildPhoto(input.photoPath, userId, admin);
+    if (photoPath) {
+      const deleted = await deleteChildPhoto(photoPath, userId, admin);
       if (!deleted.ok) console.error(`[Prepare] ${prepId} child photo deletion failed (the purge cron removes it)`);
     }
   } catch (err) {

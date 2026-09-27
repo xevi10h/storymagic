@@ -3,26 +3,26 @@
 Sources: benchmark (Wonderbly ES, Librio ES, Hooray Heroes, Lullaby.ink — screenshots in session scratchpad),
 current-flow map, latency analysis, GDPR analysis. Screen-by-screen behaviour as built: [`user-experience.md`](./user-experience.md).
 
-## Implementation status (2026-09-27)
+## Implementation status (integrated on `feat/creation-flow-v2`, 2026-09-28)
 
 | # | Screen | Status | Where |
 |---|--------|--------|-------|
 | 1 | Nombre + live cover | ✅ built | `StepName`, `LiveCover` (`/crear`) |
-| 2 | Protagonista (Créalo tú / Sube una foto) | ✅ UI built · avatar art = placeholder SVG until the avatar matrix lands · photo tab behind `NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED` | `StepProtagonist`, `PhotoUploadPanel`, `components/avatar/WatercolorAvatar` |
+| 2 | Protagonista (Créalo tú / Sube una foto) | ✅ built · real `WatercolorAvatar` (pre-rendered matrix, `src/lib/avatar/*`); combinations not rendered yet fall back to the vector `AvatarSketch` (the matrix manifest is still empty: only the spike exists) · glasses = shape + frame colour · photo tab behind `NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED` | `StepProtagonist`, `PhotoUploadPanel`, `components/avatar/{ProtagonistAvatar,WatercolorAvatar,AvatarSketch}` |
 | 3 | Aventura (world + 3 chapters, one screen) | ✅ built | `StepAdventure` |
-| 4 | Mientras se pinta + dedicatoria | ✅ built · real progress needs `preview_progress` in the light GET (pipeline agent) | `crear/[storyId]/generar`, `DedicationEditor`, `PATCH /api/stories/{id}/dedication` |
+| 4 | Mientras se pinta + dedicatoria | ✅ built · real progress from the signed `preview_progress` (light GET); the first image to land (usually scene 1) dresses the hero until the cover arrives | `crear/[storyId]/generar`, `DedicationEditor`, `PATCH /api/stories/{id}/dedication` |
 | 5 | Su libro + checklist chips | ✅ built · pages stream on screen 4 (thumbnails); the flipbook opens once the preview is ready | `crear/[storyId]/preview`, `BookChecklist`, `Sheet` |
 | 6 | Formato + pago | ✅ existing paywall reused, VAT next to every price, "Envíame la preview" added | `SendPreviewEmail`, `POST /api/stories/{id}/send-preview` |
 
 Removed: `PortraitReveal` (AI portrait gate), `GuestGate`, `Step2CharacterCreation`, `Step5AuthorMessage`, `PathBuilder`, `PageFlip`, their i18n (`crear.step2/step5/portraitReveal/guestGate/regenerateConfirm/path`) and dead CSS. Ending picker dropped (the story closes from the chosen path).
 
-Contracts consumed from other workstreams (mocked in `e2e/creation-v2.spec.ts` until merged):
-- `POST /api/characters/prepare` → `{ characterPrepId }` (sent as `characterPrepId` in `POST /api/stories`; the stories route must persist it).
-- `POST/DELETE /api/characters/photo` (privacy branch; consent copy `crear.photo.*` copied verbatim).
-- `stories.preview_progress` in `GET /api/stories/{id}?light=true`.
-- `WatercolorAvatar` real implementation + `CharacterData.glasses/freckles` persisted server-side (today the stories route strips them; only the prep call receives them).
+Wiring (single sources of truth):
+- **Look payload** — `characterLookPayload()` (`src/lib/creation-flow.ts`) builds the look fields of BOTH `POST /api/characters/prepare` (`characterPrepareBody`) and `POST /api/stories` (`storyCharacterBody`); the server validates both with `characterLookShape` (`src/lib/character-look.ts`). Same traits → same Character Bible hash → the generate route reuses the prepared child sheet. `characters.glasses` / `characters.freckles` are persisted and feed the Bible (and the Book Plan's child description).
+- **Face anchor** — "Créalo tú": `avatarAssetPath` = the matrix base for the traits (`/images/avatar/{gender}/{skin}/{hair}-{style}.webp`, only when rendered), sent to prepare and stored as `characters.avatar_url`; the server downloads it from the deployment serving the request. Overlays (glasses/freckles) are carried by the Bible text. "Sube una foto": `photoPath` to prepare only (no avatar asset); the photo is read before the 202 (410 → the UI asks for it again) and deleted right after the child sheet.
+- **Progress** — `preview_progress` stores object paths; `GET /api/stories/{id}?light=true` returns it signed for the owner, with a stable `key`/`coverKey` per image so the client keeps the `<img>` it already shows (every poll returns new signatures). Children's images are always plain `<img>`, never `next/image`.
+- Removed UI still has API: `POST /api/characters/portrait` (AI portrait, 24 h signed URL) and `POST /api/illustrations/sign` (re-sign own refs) are not called by the v2 UI.
 
-QA: `e2e/creation-v2.spec.ts` — es/ca × 1440×900 / 390×844 happy path to screen 6, cover typography, offline trait swaps, Back/reload state, v1 draft migration, photo tab flag off/on (run with `PHOTO_FLAG=1` and the server flag on), mocked progress, zero console errors / 4xx.
+QA: `e2e/creation-v2.spec.ts` — es/ca × 1440×900 / 390×844 happy path to screen 6, cover typography, offline trait swaps, prepare ≡ stories look payload, first-scene-before-cover + stable signed URLs, Back/reload state, v1 draft migration, photo tab flag off/on incl. prepare with `photoPath` (run with `PHOTO_FLAG=1` and the server flag on), mocked backend, zero console errors / 4xx. When the avatar matrix is rendered, the "trait swaps are offline" assertion must allow the (preloaded) avatar image requests.
 
 ## Benchmark takeaways
 - Best wow: Librio's cover with name + avatar (~10 s after "Ver libro"). We beat it: live cover on the first keystroke.
@@ -68,17 +68,17 @@ every screen has Back that keeps state, names with accents/ñ/l·l/apostrophes, 
 - **Créalo tú**: pre-rendered watercolor avatars, swapped client-side (0 ms). Plan: derive all variants from one
   base via image edits so face position is identical; glasses/freckles as aligned overlay layers. Validate with a
   ~10-image spike before rendering the matrix (~300 bases × overlays, est. 10–30 $ one-off).
-- **Sube una foto**: private bucket `child-photos`, EXIF stripped, signed URLs ≤5 min, consent record
-  (user, time, copy version, locale), deleted right after the portrait + hourly purge cron (≤24 h).
+- **Sube una foto**: private bucket `child-photos`, EXIF stripped, never a URL (bytes read server-side), consent
+  record (user, time, copy version, locale), deleted right after the early child sheet + hourly purge cron (≤24 h).
 
 ## Preview latency (honest numbers)
-- Today ≈ 85–125 s, fully sequential; `onProgress` exists but `generate/route.ts:121` never passes it.
-- Wiring onProgress + incremental `stories.preview_progress` (existing 3 s poll): first cover ≈ 40–55 s.
-- To reach ~20 s perceived: start the child character sheet at the end of screen 2 (while user picks world and
-  writes the dedication) → requires splitting the sheet into child rows + companion rows.
+- Was ≈ 85–125 s, fully sequential. Now (streaming Book Plan + split sheets + early child sheet from screen 2,
+  measured 2026-09-27): scene 1 visible ≈ 35 s, cover ≈ 40 s after "Crear su libro"; the UI shows scene 1 as soon
+  as it lands. Next levers in `roadmap.md` (template companion sheets, templated cover shot).
 
-## Blocking findings (fix regardless of flow)
-- `illustrations` bucket is public → children's likenesses world-readable.
-- Privacy policy omits OpenAI (already a processor today), NIF, retention, AEPD complaint right.
-- `photoUrl` is persisted in the Character Bible and reused by final-book → 24 h deletion impossible as-is.
-- EIPD (DPIA) mandatory before launching photo upload (minors < 14 + generative AI).
+## Blocking findings (status 2026-09-28)
+- ✅ `illustrations` bucket private (signed URLs, public `showcase` mirror) — code on this branch; the flip is a deploy step (docs/stack.md).
+- ✅ Privacy policy: OpenAI as processor, retention, photo deletion, AEPD complaint right (`/legal`). Check NIF before launch.
+- ✅ The photo is no longer in the Character Bible / preview / final book (only avatar portrait + early child sheet, then deleted; hourly purge ≤ 24 h).
+- ⏳ EIPD (DPIA) + OpenAI DPA mandatory before turning `NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED` on (minors < 14 + generative AI).
+- ⏳ Photo mode still builds the Bible from the (untouched) default traits: the text can contradict the photo (e.g. "very fair skin, short brown hair"). Before enabling the flag, derive the look from the photo or ask for skin/hair in photo mode.

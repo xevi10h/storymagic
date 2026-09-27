@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
@@ -26,28 +25,48 @@ const DONE_STATUSES = new Set(["preview", "ready", "ordered", "shipped"]);
 type FailureKind = "failed" | "stuck" | "rate_limited" | "network";
 type GenerationPhase = "starting" | "generating" | "done" | "error";
 
+interface ProgressScene {
+  index: number;
+  url: string;
+  /** Stable identity of the stored image (the signed URL changes on every poll). */
+  key: string;
+}
+
 interface PreviewProgress {
   coverUrl: string | null;
-  scenes: { index: number; url: string }[];
+  coverKey: string | null;
+  scenes: ProgressScene[];
   total: number;
 }
 
-/** Defensive parse of stories.preview_progress (written by the preview pipeline). */
-function parseProgress(raw: unknown): PreviewProgress | null {
+/**
+ * Defensive parse of stories.preview_progress (GET ?light=true signs it: every
+ * poll returns fresh signed URLs). Images whose `key` did not change keep the URL
+ * already on screen, so nothing re-downloads or flickers every 3 s.
+ */
+function parseProgress(raw: unknown, prev: PreviewProgress | null): PreviewProgress | null {
   if (!raw || typeof raw !== "object") return null;
   const r = raw as Record<string, unknown>;
   const scenes = Array.isArray(r.scenes)
     ? r.scenes
         .filter(
-          (s): s is { index: number; url: string } =>
+          (s): s is { index: number; url: string; key?: unknown } =>
             !!s && typeof s === "object" &&
             typeof (s as { index?: unknown }).index === "number" &&
             typeof (s as { url?: unknown }).url === "string",
         )
+        .map((s) => {
+          const key = typeof s.key === "string" ? s.key : s.url;
+          const kept = prev?.scenes.find((p) => p.index === s.index && p.key === key);
+          return { index: s.index, url: kept ? kept.url : s.url, key };
+        })
         .sort((a, b) => a.index - b.index)
     : [];
+  const coverUrl = typeof r.coverUrl === "string" && r.coverUrl ? r.coverUrl : null;
+  const coverKey = coverUrl ? (typeof r.coverKey === "string" ? r.coverKey : coverUrl) : null;
   return {
-    coverUrl: typeof r.coverUrl === "string" && r.coverUrl ? r.coverUrl : null,
+    coverUrl: coverKey && prev?.coverKey === coverKey ? prev.coverUrl : coverUrl,
+    coverKey,
     scenes,
     total: typeof r.total === "number" && r.total > 0 ? Math.round(r.total) : 0,
   };
@@ -156,8 +175,7 @@ export default function GenerarPage() {
     const res = await fetch(`/api/stories/${storyId}?light=true`);
     if (!res.ok) throw new Error(`status_${res.status}`);
     const data = await res.json();
-    const parsed = parseProgress(data.preview_progress);
-    if (parsed && mountedRef.current) setProgress(parsed);
+    if (mountedRef.current && data.preview_progress) setProgress((prev) => parseProgress(data.preview_progress, prev) ?? prev);
     return { status: data.status as string };
   }, [storyId]);
 
@@ -298,6 +316,10 @@ export default function GenerarPage() {
   const elapsedMs = startedAt ? now - startedAt : 0;
   const isSlow = elapsedMs > SLOW_NOTICE_MS;
   const coverUrl = finalCover ?? progress?.coverUrl ?? null;
+  // Show whichever image lands first: scene 1 is often ready seconds before the
+  // cover, so it dresses the hero until the painted cover arrives.
+  const firstScene = progress?.scenes[0] ?? null;
+  const heroUrl = coverUrl ?? firstScene?.url ?? null;
   const total = progress?.total ?? 0;
   const scenesDone = progress?.scenes.length ?? 0;
   const done = phase === "done";
@@ -366,7 +388,9 @@ export default function GenerarPage() {
       ? known
         ? t("statusScenes", { done: Math.min(scenesDone, total), total })
         : t("statusCoverReady")
-      : t("statusStarting");
+      : scenesDone > 0 && known
+        ? t("statusScenesNoCover", { done: Math.min(scenesDone, total), total })
+        : t("statusStarting");
 
   return (
     <div className="flex min-h-[100dvh] flex-col bg-create-bg">
@@ -382,9 +406,11 @@ export default function GenerarPage() {
         <section aria-labelledby="painting-title" className="flex flex-col gap-4">
           <div className="flex items-center gap-4 lg:flex-col lg:items-stretch lg:gap-5">
             <div className="relative w-[112px] shrink-0 sm:w-[150px] lg:mx-auto lg:w-[340px]" data-testid="progress-cover">
-              <LiveCover name={name} templateId={templateId} imageUrl={coverUrl} sizes="(max-width:1024px) 150px, 340px" />
+              <LiveCover name={name} templateId={templateId} imageUrl={heroUrl} sizes="(max-width:1024px) 150px, 340px" />
               {!coverUrl && (
-                <span className="absolute inset-x-2 bottom-2 flex items-center justify-center gap-1 rounded-full bg-white/90 px-2 py-1 text-[10px] font-bold text-create-text shadow-sm lg:inset-x-auto lg:left-1/2 lg:-translate-x-1/2 lg:px-3 lg:text-xs">
+                // Over template art the title sits on top (badge at the bottom); over a painted
+                // first scene the title sits at the bottom (badge at the top).
+                <span className={`absolute inset-x-2 ${heroUrl ? "top-2" : "bottom-2"} flex items-center justify-center gap-1 rounded-full bg-white/90 px-2 py-1 text-[10px] font-bold text-create-text shadow-sm lg:inset-x-auto lg:left-1/2 lg:-translate-x-1/2 lg:px-3 lg:text-xs`}>
                   <span aria-hidden className="material-symbols-outlined animate-spin text-sm text-create-primary">progress_activity</span>
                   <span className="truncate">{t("paintingCover")}</span>
                 </span>
@@ -426,11 +452,14 @@ export default function GenerarPage() {
               {known && (
                 <ol className="mt-3 grid grid-cols-4 gap-2" aria-label={t("scenesLabel")} data-testid="progress-scenes">
                   {Array.from({ length: total }, (_, i) => {
-                    const scene = progress?.scenes[i];
+                    // Slot = scene number (scenes can land out of order)
+                    const scene = progress?.scenes.find((s) => s.index === i + 1);
                     return (
                       <li key={i} className="relative aspect-square overflow-hidden rounded-lg bg-create-neutral">
                         {scene ? (
-                          <Image src={scene.url} alt={t("sceneAlt", { n: i + 1 })} fill sizes="120px" className="cover-art-in object-cover" />
+                          // Signed URL of the private bucket: plain <img>, never the optimizer.
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img key={scene.key} src={scene.url} alt={t("sceneAlt", { n: i + 1 })} className="cover-art-in absolute inset-0 h-full w-full object-cover" />
                         ) : (
                           <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-create-text-sub/50">{i + 1}</span>
                         )}

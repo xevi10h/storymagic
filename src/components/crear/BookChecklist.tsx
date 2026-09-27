@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import ProtagonistAvatar, { type ProtagonistLook } from "@/components/avatar/ProtagonistAvatar";
-import { INITIAL_STATE, type Gender } from "@/lib/create-store";
+import { GLASSES_OPTIONS, INITIAL_STATE, type Gender } from "@/lib/create-store";
+import type { AvatarGlasses } from "@/lib/avatar/manifest";
 import { readStoredDraft } from "@/lib/creation-flow";
 import { useDedicationAutosave } from "@/hooks/useDedicationAutosave";
 import DedicationEditor from "./DedicationEditor";
@@ -17,6 +18,8 @@ interface StoryCharacter {
   skin_tone: string | null;
   eye_color: string | null;
   hairstyle: string | null;
+  glasses?: string | null;
+  freckles?: boolean | null;
 }
 
 interface BookChecklistProps {
@@ -52,8 +55,8 @@ function traitsFor(character: StoryCharacter, useDraftLook: boolean): Protagonis
     hairColor: character.hair_color && HEX.test(character.hair_color) ? character.hair_color : d.hairColor,
     hairstyle: character.hairstyle ?? d.hairstyle,
     eyeColor: character.eye_color && HEX.test(character.eye_color) ? character.eye_color : d.eyeColor,
-    glasses: "none",
-    freckles: false,
+    glasses: GLASSES_OPTIONS.includes(character.glasses as AvatarGlasses) ? (character.glasses as AvatarGlasses) : "none",
+    freckles: character.freckles === true,
   };
 }
 

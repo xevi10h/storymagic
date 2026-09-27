@@ -46,8 +46,8 @@ Landing Page
 
 ### 2 · Protagonista ✅
 
-**Components:** `StepProtagonist`, `PhotoUploadPanel`, `WatercolorAvatar` (placeholder SVG until the pre-rendered avatar matrix lands; same `{ traits }` contract)
-- **Créalo tú** (default): skin, hair colour, hairstyle (mini-avatar thumbnails), eyes, glasses (none/round/square), freckles. Portrait swaps instantly with zero network; sticky under the header on mobile, sticky column on desktop.
+**Components:** `StepProtagonist`, `PhotoUploadPanel`, `ProtagonistAvatar` (pre-rendered `WatercolorAvatar`, vector `AvatarSketch` fallback for combinations not rendered yet)
+- **Créalo tú** (default): skin, hair colour, hairstyle (mini-avatar thumbnails), eyes, glasses (none/round/square + dark/red frame), freckles. Portrait swaps instantly with zero network; sticky under the header on mobile, sticky column on desktop.
 - **Sube una foto** (only when `NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED=true`): unchecked parental-consent checkbox gates the picker; the photo is re-encoded client-side to JPEG ≤ 1536 px (drops EXIF, handles HEIC/large phone photos) and posted to `POST /api/characters/photo` (`photo`, `consent`, `consentVersion`, `locale` → `{ photoPath }`). "Quitar la foto" calls `DELETE /api/characters/photo` and resets consent. Server error codes map to `crear.photo.errors.*`.
 - On "Siguiente": `POST /api/characters/prepare` fire-and-forget (traits + optional `photoPath`) → `characterPrepId` stored in the draft and sent with the story. Re-sent only when the look changes. A `410 photo_unavailable` clears the photo and asks for a re-upload.
 - The old AI portrait screen (`PortraitReveal`) is gone from the flow.
@@ -63,7 +63,7 @@ Landing Page
 ### 4 · Dedicatoria (while the preview is painted) ✅
 
 **Route:** `/crear/[storyId]/generar` · **Components:** `LiveCover`, `DedicationEditor`, `useDedicationAutosave`
-- Real progress only: polls `GET /api/stories/{id}?light=true` every 3 s and reads `preview_progress { coverUrl?, scenes[{index,url}], total }`. The live cover is replaced by the painted cover the moment `coverUrl` exists; scene thumbnails fill in as they arrive; the bar is determinate only when `total` is known (indeterminate otherwise), plus an honest elapsed timer. No fake curve.
+- Real progress only: polls `GET /api/stories/{id}?light=true` every 3 s and reads the signed `preview_progress { coverUrl?, coverKey?, scenes[{index,url,key}], total }` (images kept while their `key` is unchanged, so polls never swap them). The first image to land dresses the hero: usually scene 1 (with a "painting the cover" badge), then the painted cover the moment `coverUrl` exists; scene thumbnails fill their scene slot as they arrive; the bar is determinate only when `total` is known (indeterminate otherwise), plus an honest elapsed timer. No fake curve.
 - Dedication: pre-filled, rendered live on a page mock, 500-char counter, "De parte de"; autosaved (debounced) to `PATCH /api/stories/{id}/dedication`, stored verbatim; mirrored into the draft.
 - When ready: "Ver su libro" (no auto-redirect while the parent is typing). Failure state with retry; Back returns to screen 3 with everything kept.
 

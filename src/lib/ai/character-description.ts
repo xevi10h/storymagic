@@ -23,8 +23,12 @@ export interface CharacterDescriptionInput {
   hairstyle?: string;
   /** Favourite colour (hex from the UI) — colours the outfit's jacket */
   favoriteColor?: string;
-  glasses?: boolean;
-  freckles?: boolean;
+  /**
+   * Avatar builder value ("none" | "round-dark" | "round-red" | "square-dark" | "square-red",
+   * src/lib/avatar/manifest.ts) or a plain boolean (scripts; true = round dark frames).
+   */
+  glasses?: boolean | string | null;
+  freckles?: boolean | null;
   /** Not used visually. Accepted so story inputs can be passed straight in. */
   childName?: string;
 }
@@ -129,6 +133,15 @@ function outfitFor(age: number, favoriteColor: string | undefined): string {
   return `a plain ${color} hooded jacket worn open over a white-and-navy striped t-shirt, ${bottoms} and white canvas sneakers`;
 }
 
+/** "round glasses with thin dark frames" etc.; null = no glasses. Unknown values → the default frame. */
+function glassesDescription(value: CharacterDescriptionInput["glasses"]): string | null {
+  if (!value || value === "none") return null;
+  const [shape, colour] = typeof value === "string" ? value.split("-") : ["round", "dark"];
+  const frameShape = shape === "square" ? "square" : "round";
+  const frameColour = colour === "red" ? "red" : "dark";
+  return `${frameShape} glasses with thin ${frameColour} frames`;
+}
+
 // ── Public API ──────────────────────────────────────────────────────────────
 
 /** Builds the immutable Character Bible. Deterministic: same input → same bytes. */
@@ -143,7 +156,8 @@ export function buildCharacterBible(input: CharacterDescriptionInput): Character
   const hairColor = (input.hairColor && HAIR_COLOR_MAP[input.hairColor.toLowerCase()]) || "dark-brown";
   traits.push(hairDescription(input.hairstyle, hairColor, input.gender));
   traits.push((input.eyeColor && EYE_COLOR_MAP[input.eyeColor.toLowerCase()]) || "warm brown eyes");
-  if (input.glasses) traits.push("round glasses with thin dark frames");
+  const glasses = glassesDescription(input.glasses);
+  if (glasses) traits.push(glasses);
   traits.push("round rosy cheeks");
   if (input.freckles) traits.push(`a sprinkle of freckles across ${possessive} nose`);
 

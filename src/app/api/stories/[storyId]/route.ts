@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { signStoryRowImages } from "@/lib/storage/illustration-urls";
+import { signPreviewProgress, signStoryRowImages } from "@/lib/storage/illustration-urls";
 
 export async function GET(
   request: Request,
@@ -35,7 +35,9 @@ export async function GET(
     if (error || !story) {
       return NextResponse.json({ error: "Story not found" }, { status: 404 });
     }
-    return NextResponse.json(story);
+    // Progress images are object paths in the private bucket: sign them for the owner.
+    const previewProgress = await signPreviewProgress(story.preview_progress, user.id, story.id);
+    return NextResponse.json({ ...story, preview_progress: previewProgress }, { headers: { "Cache-Control": "private, no-store" } });
   }
 
   // Full mode: fetch everything (for preview page, etc.)

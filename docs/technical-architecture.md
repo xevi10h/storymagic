@@ -45,7 +45,9 @@ characters (saved hero profiles)
 ├── city
 ├── favorite_color (book theme accent color)
 ├── favorite_companion (open text — "best friend/companion")
-├── avatar_url (illustration ref = object path of the private bucket: portraits/{userId}/{uuid}/portrait-{v}.jpg)
+├── glasses (text, default 'none' — avatar builder "{round|square}-{dark|red}"; feeds the Character Bible)
+├── freckles (boolean, default false — feeds the Character Bible)
+├── avatar_url (face anchor: pre-rendered avatar asset path "/images/avatar/{gender}/{skin}/{hair}-{style}.webp" (v2 "Créalo tú"), or an illustration ref = object path of the private bucket portraits/{userId}/{uuid}/portrait-{v}.jpg (AI portrait))
 ├── created_at
 └── updated_at
 
@@ -81,7 +83,7 @@ character_preps (early child character sheet — POST /api/characters/prepare; s
 ├── user_id (FK → auth.users)
 ├── fingerprint (unique per user: Bible hash + avatar ref + photo path → idempotency)
 ├── bible_hash (Bible description + age + gender + preview model/quality)
-├── bible (jsonb, photoUrl always null)
+├── bible (jsonb — Character Bible; never contains the photo)
 ├── avatar_ref ("/images/avatar/…" or AI portrait URL)
 ├── had_photo (the photo path itself is never stored; photo deleted after the sheet)
 ├── status (rendering / ready / failed), child_sheet_url, model, cost_usd, error
@@ -196,11 +198,14 @@ blog_posts (editorial blog — Supabase CMS)
 > (new character sheet, all 12 scenes, print-size cover) with `gpt-image-2.5-sunburst`.
 
 ```
-User completes Step 3 (dedication + ending)
+Screen 2 "Siguiente" (protagonist)
+  └─→ POST /api/characters/prepare (look payload + avatarAssetPath | photoPath) → early child sheet in after()
+
+Screen 3 "Crear su libro" (world + 3 chapters)
   │
-  └─→ POST /api/stories (save character + draft)
+  └─→ POST /api/stories (same look payload + avatarAssetPath + characterPrepId; save character + draft)
         │
-        └─→ Redirect to /crear/[storyId]/generar (generation animation)
+        └─→ Redirect to /crear/[storyId]/generar (real progress + dedication editor, PATCH …/dedication)
               │
               └─→ POST /api/stories/[storyId]/generate   (the page polls GET ?light=true → preview_progress)
                     │
@@ -224,8 +229,8 @@ User completes Step 3 (dedication + ending)
                     │
                     ├─→ 3. Save to Supabase
                     │      stories.generated_text = all 12 scenes
-                    │      story_illustrations rows created/updated
-                    │      stories.status = 'ready'
+                    │      story_illustrations rows created/updated (object paths)
+                    │      stories.status = 'preview'
                     │
                     └─→ Redirect to /crear/[storyId]/preview
 
@@ -324,10 +329,10 @@ src/
 │   │   ├── update-password/page.tsx
 │   │   └── callback/route.ts             — OAuth callback
 │   ├── crear/
-│   │   ├── page.tsx                      — "El Camino" 3-step flow orchestrator (Character → Path → Dedication, TOTAL_STEPS=3)
+│   │   ├── page.tsx                      — Creation flow v2 screens 1–3 (Nombre → Protagonista → Aventura), see creation-flow-v2.md
 │   │   └── [storyId]/
-│   │       ├── generar/page.tsx          — Generation animation
-│   │       └── preview/page.tsx          — Book preview + checkout
+│   │       ├── generar/page.tsx          — Screen 4: real progress (signed preview_progress) + dedication
+│   │       └── preview/page.tsx          — Screens 5–6: book + checklist, format + payment
 │   ├── dashboard/page.tsx                — User dashboard
 │   ├── perfil/page.tsx                   — User profile
 │   └── checkout/success/page.tsx         — Post-purchase confirmation
@@ -335,8 +340,10 @@ src/
 │   ├── waitlist/route.ts                 — POST: subscribe to waitlist (name + email → Supabase + Resend)
 │   ├── newsletter/route.ts               — POST: newsletter subscription endpoint
 │   ├── characters/
-│   │   ├── portrait/route.ts             — POST: AI avatar portrait
+│   │   ├── [characterId]/route.ts        — GET: one saved character (prefill ?characterId=)
+│   │   ├── portrait/route.ts             — POST: AI avatar portrait (24 h signed URL; not used by the v2 UI)
 │   │   └── prepare/route.ts              — POST: start the early child sheet → { characterPrepId } (render continues in after())
+│   ├── illustrations/sign/route.ts       — POST: re-sign the caller's own illustration refs (path-based ownership)
 │   ├── stories/
 │   │   ├── route.ts                      — POST: save character + story draft (+ characterPrepId)
 │   │   └── [storyId]/
@@ -344,6 +351,8 @@ src/
 │   │       ├── generate/route.ts         — POST: streamed text + preview images (writes preview_progress)
 │   │       ├── complete/route.ts         — POST: advance resumable fulfilment (lib/fulfilment)
 │   │       ├── title/route.ts            — POST: update story title
+│   │       ├── dedication/route.ts       — PATCH: verbatim dedication + sender (until ordered)
+│   │       ├── send-preview/route.ts     — POST: "Envíame la preview" email (3/h per user, address not stored)
 │   │       └── pdf/route.ts              — GET: render + cache PDF
 │   ├── checkout/route.ts                 — POST: create Stripe session
 │   ├── checkout/verify/route.ts          — GET: confirm payment (webhook fallback) + order_confirmed email
@@ -356,7 +365,8 @@ src/
 │   └── profile/route.ts                  — GET/PATCH: user profile
 ├── components/
 │   ├── book-viewer/                      — react-pageflip book viewer
-│   ├── crear/                            — Creation-flow components: Step2CharacterCreation, PortraitReveal, PathBuilder, Step5AuthorMessage, CreationHeader, PageFlip
+│   ├── avatar/                           — ProtagonistAvatar (real WatercolorAvatar + AvatarSketch fallback), WatercolorAvatar (pre-rendered matrix layers), AvatarSketch (vector stand-in)
+│   ├── crear/                            — Creation flow v2: CreationHeader, StepName + LiveCover, StepProtagonist + PhotoUploadPanel, StepAdventure, DedicationEditor, BookChecklist, Sheet, SendPreviewEmail, CreationFooterNav
 │   ├── landing/                          — Navbar, Footer, etc.
 │   ├── waitlist/
 │   │   └── WaitlistPage.tsx              — Full-screen waitlist gate (form + subscriber counter)
@@ -378,6 +388,11 @@ src/
 │   │   ├── qa-judge.ts                   — OpenAI vision QA judge (sheet + page text)
 │   │   ├── character-description.ts      — Character Bible (one canonical description)
 │   │   └── mock-story.ts                 — Mock data for dev/testing
+│   ├── avatar/manifest.ts                — Watercolor avatar matrix: traits, layer URLs, rendered-set manifest (avatar-manifest.json)
+│   ├── character-look.ts                 — Shared zod look schema (prepare + stories), avatar asset path rule
+│   ├── creation-flow.ts                  — v2 draft migration, look/prepare/story payload builders, snapshots, typography
+│   ├── privacy/child-photo(-policy).ts   — Child photo storage/consent/deletion/purge (server) + pure policy (client-safe)
+│   ├── storage/illustration-{refs,urls}.ts — Illustration refs (paths) + signed URLs with path-based ownership
 │   ├── pdf/                              — public API in index.ts
 │   │   ├── layout.ts                     — 30-page interior plan (parity, image boxes, fitted type) — shared by renderer + validator
 │   │   ├── book-template.tsx             — Interior (30 p) + digital book (34 p) renderers

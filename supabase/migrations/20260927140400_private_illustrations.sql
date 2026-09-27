@@ -18,7 +18,7 @@
 --   * No client may insert/update/delete: uploads are service-role only.
 --
 -- PRE-REQUISITES (deploy order, see docs/stack.md → "Private illustrations"):
---   1. 20260927140000_showcase_bucket.sql applied and `scripts/publish-showcase.mts`
+--   1. 20260927140300_showcase_bucket.sql applied and `scripts/publish-showcase.mts`
 --      run, so example books / waitlist covers / blog images are served from `showcase`.
 --   2. Code that stores/signs paths is deployed (it works with a public bucket too).
 -- Applying this before (2) breaks every image of the old code (it uses public URLs).

@@ -74,15 +74,14 @@ export default function LiveCover({
       data-testid="live-cover"
       className={`relative aspect-square w-full select-none overflow-hidden rounded-[4px_14px_14px_4px] bg-create-neutral shadow-[0_22px_40px_-22px_rgba(58,36,24,.55),0_2px_6px_rgba(58,36,24,.12)] ${className}`}
     >
-      <Image
-        key={art}
-        src={art}
-        alt=""
-        fill
-        priority={priority}
-        sizes={sizes}
-        className="cover-art-in object-cover"
-      />
+      {painted ? (
+        // The painted cover is a short-lived signed URL of the private bucket (or a
+        // mock image): plain <img>, never the optimizer (it would outlive the signature).
+        // eslint-disable-next-line @next/next/no-img-element
+        <img key={art} src={art} alt="" className="cover-art-in absolute inset-0 h-full w-full object-cover" />
+      ) : (
+        <Image key={art} src={art} alt="" fill priority={priority} sizes={sizes} className="cover-art-in object-cover" />
+      )}
       {painted ? (
         // Real painted cover: same treatment as the book viewer's cover page
         <div aria-hidden className="absolute inset-0 bg-gradient-to-b from-black/15 via-transparent to-black/70" />

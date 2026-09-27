@@ -90,6 +90,9 @@ export interface StoryInput {
   eyeColor?: string;
   skinTone?: string;
   hairstyle?: string;
+  /** Avatar builder: "none" | "{round|square}-{dark|red}" (characters.glasses) */
+  glasses?: string;
+  freckles?: boolean;
   templateId: string;
   templateTitle: string;
   creationMode: "solo" | "juntos";

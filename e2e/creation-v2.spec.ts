@@ -85,12 +85,16 @@ async function installMocks(page: Page): Promise<Mock> {
     return route.fulfill({ json: session() });
   });
 
+  // Shape of GET ?light=true (signed): scene `index` is the 1-based scene number,
+  // `key`/`coverKey` the stored object path (stable while the signed URL changes).
+  const scene = (url: string, i: number) => ({ index: i + 1, url: `${url}?sig=${Date.now()}`, key: `k/${i + 1}` });
+  const cover = () => ({ coverUrl: `${COVER_ART}?sig=${Date.now()}`, coverKey: "k/cover" });
   const progressFor = (call: number) => {
-    // 1 draft → 2 generating → 3 cover → 4 cover + 2/4 → 5+ preview (4/4)
+    // 1 draft → 2 generating → 3 scene 1 first (before the cover) → 4 cover + 2/4 → 5 cover + 4/4 → 6+ preview
     if (call <= 2) return null;
-    if (call === 3) return { coverUrl: COVER_ART, scenes: [], total: 4 };
-    if (call === 4) return { coverUrl: COVER_ART, scenes: SCENE_ART.slice(0, 2).map((url, index) => ({ index, url })), total: 4 };
-    return { coverUrl: COVER_ART, scenes: SCENE_ART.map((url, index) => ({ index, url })), total: 4 };
+    if (call === 3) return { scenes: [scene(SCENE_ART[0], 0)], total: 4 };
+    if (call === 4) return { ...cover(), scenes: SCENE_ART.slice(0, 2).map(scene), total: 4 };
+    return { ...cover(), scenes: SCENE_ART.map(scene), total: 4 };
   };
 
   await page.route(/\/api\//, async (route: Route) => {
@@ -123,7 +127,7 @@ async function installMocks(page: Page): Promise<Mock> {
     if (path === `/api/stories/${STORY_ID}/generate`) {
       // Long-running like the real route: answers once the preview is done.
       mock.status = "generating";
-      for (let i = 0; i < 120 && mock.lightCalls < 5; i++) await new Promise((r) => setTimeout(r, 500));
+      for (let i = 0; i < 120 && mock.lightCalls < 6; i++) await new Promise((r) => setTimeout(r, 500));
       return route.fulfill({ json: { status: "preview" } }).catch(() => {});
     }
     if (path === `/api/stories/${STORY_ID}/dedication`) {
@@ -137,7 +141,7 @@ async function installMocks(page: Page): Promise<Mock> {
     if (path === `/api/stories/${STORY_ID}` && url.searchParams.get("light") === "true") {
       mock.lightCalls += 1;
       const call = mock.lightCalls;
-      mock.status = call === 1 ? "draft" : call <= 4 ? "generating" : "preview";
+      mock.status = call === 1 ? "draft" : call <= 5 ? "generating" : "preview";
       return route.fulfill({ json: { id: STORY_ID, status: mock.status, title: null, generated_text: null, preview_progress: progressFor(call) } });
     }
     if (path === `/api/stories/${STORY_ID}`) {
@@ -281,9 +285,10 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
 
         // Character prep fired in the background
         await expect.poll(() => mock.requests.some((r) => r.path === "/api/characters/prepare")).toBe(true);
-        const prep = mock.requests.find((r) => r.path === "/api/characters/prepare")!.body as { character: Record<string, unknown> };
-        expect(prep.character.glasses).toBe("round");
-        expect(prep.character.freckles).toBe(true);
+        const prep = mock.requests.find((r) => r.path === "/api/characters/prepare")!.body as Record<string, unknown>;
+        expect(prep.glasses).toBe("round-dark");
+        expect(prep.freckles).toBe(true);
+        expect(prep.photoPath).toBeUndefined();
 
         // 3 — Adventure: world + 3 chapters on one screen
         await expect(page.getByRole("button", { name: COPY[locale].create })).toBeDisabled();
@@ -300,15 +305,27 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
         await page.waitForURL(new RegExp(`/${locale}/crear/${STORY_ID}/generar`));
         const post = mock.requests.find((r) => r.path === "/api/stories")!.body as Record<string, unknown>;
         expect(post.characterPrepId).toBe("prep-123");
+        // The prep is only reused when the Bible matches: both bodies carry the same look.
+        const look = ["gender", "age", "skinTone", "hairColor", "eyeColor", "hairstyle", "favoriteColor", "glasses", "freckles"];
+        const storyChar = post.character as Record<string, unknown>;
+        for (const k of look) expect(storyChar[k], k).toEqual(prep[k]);
+        expect(post.avatarAssetPath ?? null).toEqual(prep.avatarAssetPath ?? null);
         expect(String(post.dedication)).toContain(NAME);
         expect((post.decisions as { treePath: unknown[] }).treePath).toHaveLength(3);
 
         // 4 — Painting: real progress, cover first, then scenes
         await expect(page.getByRole("heading", { name: COPY[locale].painting })).toBeVisible();
         await shot(page, `${tag}-4-painting-start`);
+        // Scene 1 lands before the cover: it dresses the hero meanwhile
+        await expect(page.getByTestId("progress-cover").locator(`img[src*="space-c1-ship"]`)).toBeVisible({ timeout: 15_000 });
+        await shot(page, `${tag}-4-painting-first-scene`);
         await expect(page.getByTestId("progress-cover").locator(`img[src*="space-c1-crystal"]`)).toBeVisible({ timeout: 15_000 });
         await shot(page, `${tag}-4-painting-cover`);
         await expect(page.getByTestId("progress-scenes").locator("img")).toHaveCount(2, { timeout: 15_000 });
+        // Fresh signatures on every poll must not swap the <img> already shown
+        const firstSrc = await page.getByTestId("progress-scenes").locator("img").first().getAttribute("src");
+        await expect(page.getByTestId("progress-scenes").locator("img")).toHaveCount(4, { timeout: 15_000 });
+        await expect(page.getByTestId("progress-scenes").locator("img").first()).toHaveAttribute("src", firstSrc!);
         await shot(page, `${tag}-4-painting-scenes`);
 
         // Dedication: pre-filled, live on the page mock, counter, saved verbatim
@@ -499,6 +516,15 @@ test.describe("photo tab", () => {
     expect(String(upload?.body)).toContain("2026-09-27");
     await shot(page, "es-mobile-2-photo-uploaded");
     await expect(page.getByRole("button", { name: /Siguiente/ })).toBeEnabled();
+
+    // Next → the early child sheet is prepared from the private photo (no avatar asset)
+    await next(page, "es");
+    await expect.poll(() => mock.requests.some((r) => r.path === "/api/characters/prepare")).toBe(true);
+    const prep = mock.requests.find((r) => r.path === "/api/characters/prepare")!.body as Record<string, unknown>;
+    expect(prep.photoPath).toBe(`${USER.id}/photo-abc.jpg`);
+    expect(prep.avatarAssetPath).toBeUndefined();
+    await page.getByRole("button", { name: "Atrás" }).first().click();
+    await expect(page.getByTestId("photo-uploaded")).toBeVisible();
 
     // Withdraw → DELETE, consent reset
     await page.getByRole("button", { name: /Quitar la foto/ }).click();
