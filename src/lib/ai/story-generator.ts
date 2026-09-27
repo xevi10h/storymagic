@@ -159,6 +159,11 @@ export function hasAnyProvider(): boolean {
   return !!key && !key.includes("your_") && !key.includes("_here");
 }
 
+/** True when generateArchitect returns the mock story (no paid calls may start). */
+export function isMockGeneration(): boolean {
+  return process.env.MOCK_MODE === "true" || !hasAnyProvider();
+}
+
 /**
  * Generic chat completion (JSON mode by default). Used by visual-assets,
  * scene-screenplay and qa-judge. The Book Plan uses strict Structured Outputs
@@ -299,7 +304,7 @@ export async function generateArchitect(
   const mockMode = process.env.MOCK_MODE === "true";
   const ageConfig = getAgeConfig(input.age);
 
-  if (mockMode || !hasAnyProvider()) {
+  if (isMockGeneration()) {
     console.log(`[StoryGen] MOCK MODE — ${mockMode ? "MOCK_MODE=true" : "no LLM API key"}`);
     await new Promise((resolve) => setTimeout(resolve, 1500));
     const mockStory = generateMockStory(input);

@@ -16,6 +16,8 @@
 
 import { buildCharacterBible, type CharacterBible, type CharacterDescriptionInput } from "./character-description";
 import {
+  buildChildSheetPrompt,
+  buildCompanionSheetPrompt,
   buildExtraSheetPrompt,
   buildMainSheetPrompt,
   buildPortraitPrompt,
@@ -49,6 +51,11 @@ export interface BookImagePlan {
 }
 
 export interface SheetSet {
+  /**
+   * "combined" (default, final book): mainUrl = child + 2 companions, extraUrl = companions 3–5.
+   * "split" (streaming preview): mainUrl = child-only sheet, extraUrl = companion sheet.
+   */
+  layout?: "combined" | "split";
   mainUrl: string;
   extraUrl: string | null;
   model: string;
@@ -145,10 +152,30 @@ export async function loadReference(url: string): Promise<ImageReference> {
   return { data: Buffer.from(await res.arrayBuffer()), mime: mime === "image/png" || mime === "image/webp" ? mime : "image/jpeg" };
 }
 
+/** Combined layout (final book): main sheet = child + 2 companions, extra sheet = companions 3–5. */
 export interface SheetRefs {
   sheet: ImageReference;
   extraSheet: ImageReference | null;
   // No photo: scenes/cover/repairs are conditioned on the sheet(s) only.
+}
+
+/**
+ * Split layout (streaming preview): the child sheet is rendered before the Book
+ * Plan exists (from the Bible + avatar), the companion sheet as soon as the plan's
+ * cast is known. Every shot gets BOTH (child + companions, like the main sheet
+ * of the combined layout): no scene is ever drawn without a sheet.
+ */
+export interface SplitSheetRefs {
+  childSheet: ImageReference;
+  /** null only when the book has no recurring companion */
+  companions: { sheet: ImageReference; members: CastMember[] } | null;
+  // No photo (privacy): a child sheet rendered from the photo already carries the likeness.
+}
+
+export type ShotRefs = SheetRefs | SplitSheetRefs;
+
+function isSplit(refs: ShotRefs): refs is SplitSheetRefs {
+  return "childSheet" in refs;
 }
 
 interface CallOptions {
@@ -163,8 +190,21 @@ function planCast(plan: SheetPlan) {
   return { bible: plan.bible, cast: plan.cast, world: plan.world };
 }
 
-/** Reference list for one shot: sheet first, then the extra sheet if needed. */
-function shotReferences(plan: BookImagePlan, shot: ShotSpec, refs: SheetRefs): { images: ImageReference[]; roles: ReferenceRole[] } {
+/**
+ * Reference list for one shot.
+ *   combined: main sheet, extra sheet (only when an extra-sheet member is in frame)
+ *   split:    child sheet, companion sheet (always, when the book has companions)
+ */
+function shotReferences(plan: SheetPlan, shot: ShotSpec, refs: ShotRefs): { images: ImageReference[]; roles: ReferenceRole[] } {
+  if (isSplit(refs)) {
+    const images: ImageReference[] = [refs.childSheet];
+    const roles: ReferenceRole[] = [{ kind: "child-sheet" }];
+    if (refs.companions) {
+      images.push(refs.companions.sheet);
+      roles.push({ kind: "companion-sheet", names: refs.companions.members.map((m) => m.name.toUpperCase()) });
+    }
+    return { images, roles };
+  }
   const images: ImageReference[] = [refs.sheet];
   const roles: ReferenceRole[] = [{ kind: "sheet", names: mainSheetCast(plan).map((m) => m.name.toUpperCase()) }];
   const extras = extraSheetCast(plan).filter((m) => shot.cast.includes(m.id));
@@ -230,12 +270,68 @@ export async function renderSheets(
   return { main, extra };
 }
 
+/**
+ * Split layout, part 1: the child alone (four views + four expressions). Needs
+ * only the Character Bible + face anchors, so it can run before the Book Plan.
+ * `photo` only from POST /api/characters/prepare (deleted right after this render).
+ */
+export async function renderChildSheet(
+  bible: CharacterBible,
+  stage: "preview" | "final",
+  anchors: { avatar: ImageReference | null; photo?: ImageReference | null },
+  opts: CallOptions,
+): Promise<OpenAIImageResult> {
+  const cfg = stageConfig(stage);
+  const images: ImageReference[] = [];
+  const roles: ReferenceRole[] = [];
+  if (anchors.avatar) {
+    images.push(anchors.avatar);
+    roles.push({ kind: "portrait" });
+  }
+  if (anchors.photo) {
+    images.push(anchors.photo);
+    roles.push({ kind: "photo" });
+  }
+  return generateOpenAIImage({
+    model: cfg.model,
+    quality: cfg.quality,
+    size: sizeFor(stage, "sheet"),
+    prompt: buildChildSheetPrompt(bible, roles),
+    references: images,
+    label: `${opts.label} ${stage} child sheet`,
+    deadline: opts.deadline,
+  });
+}
+
+/** Split layout, part 2: the book's recurring companions (front + side view each). */
+export async function renderCompanionSheet(
+  members: CastMember[],
+  stage: "preview" | "final",
+  opts: CallOptions,
+): Promise<OpenAIImageResult> {
+  if (members.length === 0) throw new Error("renderCompanionSheet needs at least one companion");
+  const cfg = stageConfig(stage);
+  return generateOpenAIImage({
+    model: cfg.model,
+    quality: cfg.quality,
+    size: sizeFor(stage, "sheet"),
+    prompt: buildCompanionSheetPrompt(members),
+    label: `${opts.label} ${stage} companion sheet`,
+    deadline: opts.deadline,
+  });
+}
+
+/** The exact scene prompt a render with these refs uses (stored as story_illustrations.prompt_used). */
+export function shotPrompt(plan: SheetPlan, shot: ShotSpec, refs: ShotRefs): string {
+  return buildScenePrompt(planCast(plan), shot, shotReferences(plan, shot, refs).roles);
+}
+
 /** One scene (sceneNumber 1–12) or the cover (plan.cover). */
 export async function renderShot(
-  plan: BookImagePlan,
+  plan: SheetPlan,
   shot: ShotSpec,
   stage: "preview" | "final",
-  refs: SheetRefs,
+  refs: ShotRefs,
   opts: CallOptions,
 ): Promise<OpenAIImageResult> {
   const cfg = stageConfig(stage);
@@ -253,10 +349,10 @@ export async function renderShot(
 
 /** Correct a failing render by EDITING it (failing image + sheet as refs), not re-rolling. */
 export async function repairShot(
-  plan: BookImagePlan,
+  plan: SheetPlan,
   shot: ShotSpec,
   stage: "preview" | "final",
-  refs: SheetRefs,
+  refs: ShotRefs,
   failing: ImageReference,
   fix: string,
   opts: CallOptions,

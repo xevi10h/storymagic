@@ -19,6 +19,10 @@ import { FULL_BLEED, WATERCOLOR_STYLE } from "./style";
 export type ReferenceRole =
   | { kind: "sheet"; names: string[] }
   | { kind: "extra-sheet"; names: string[] }
+  /** Split preview layout: the child alone (can be rendered before the Book Plan exists) */
+  | { kind: "child-sheet" }
+  /** Split preview layout: the companions, rendered once the Book Plan cast is known */
+  | { kind: "companion-sheet"; names: string[] }
   | { kind: "photo" }
   | { kind: "portrait" }
   | { kind: "fix" };
@@ -50,6 +54,10 @@ function describeRole(role: ReferenceRole): string {
       return `the character model sheet: the single source of truth for how ${namesList([CHILD_LABEL, ...role.names])} look`;
     case "extra-sheet":
       return `a second character model sheet: the single source of truth for how ${namesList(role.names)} look`;
+    case "child-sheet":
+      return `the character model sheet of ${CHILD_LABEL}: the single source of truth for how ${CHILD_LABEL} looks`;
+    case "companion-sheet":
+      return `the character model sheet of the companions: the single source of truth for how ${namesList(role.names)} look`;
     case "photo":
       return "a photo of the real child: use it for facial likeness only (face shape and features); do NOT copy its photographic style, clothing, background or lighting";
     case "portrait":
@@ -203,7 +211,20 @@ export function buildMainSheetPrompt(plan: PromptCast, roles: ReferenceRole[]): 
 }
 
 export function buildExtraSheetPrompt(plan: PromptCast): string {
-  const members = extraSheetCast(plan);
+  return buildCompanionSheetPrompt(extraSheetCast(plan));
+}
+
+/**
+ * Child-only sheet (split preview layout): the main sheet without companion
+ * rows. It needs only the Character Bible, so it can be rendered before the
+ * Book Plan exists (POST /api/characters/prepare).
+ */
+export function buildChildSheetPrompt(bible: CharacterBible, roles: ReferenceRole[]): string {
+  return buildMainSheetPrompt({ bible, cast: [], world: [] }, roles);
+}
+
+/** Sheet with exactly these companions (the extra sheet, or the split layout's companion sheet). */
+export function buildCompanionSheetPrompt(members: CastMember[]): string {
   return [
     `Character model sheet for a premium children's picture book, on plain warm off-white watercolor paper. ${members.length} characters side by side, each shown full body in a front view and a side view, drawn at their true size relative to a small child.`,
     members.map((m) => `${label(m)}: ${m.description}`).join("\n"),

@@ -25,7 +25,9 @@ export async function GET(
   if (isLight) {
     const { data: story, error } = await supabase
       .from("stories")
-      .select("id, status, generated_text, title")
+      // preview_progress: { coverUrl?, scenes: [{ index, url }], total } while generating
+      // (src/lib/ai/preview-book.ts PreviewProgress); null before the first image.
+      .select("id, status, generated_text, title, preview_progress")
       .eq("id", storyId)
       .eq("user_id", user.id)
       .single();

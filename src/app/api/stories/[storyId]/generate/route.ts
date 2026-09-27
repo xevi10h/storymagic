@@ -1,18 +1,42 @@
 import { NextResponse } from "next/server";
 import { createClient as createServiceClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
-import { generateArchitect, type StoryInput } from "@/lib/ai/story-generator";
-import { generatePreviewBook } from "@/lib/ai/preview-book";
+import { generateArchitect, isMockGeneration, type StoryInput } from "@/lib/ai/story-generator";
+import { startPreviewSession, type PreviewProgress, type PreviewSession } from "@/lib/ai/preview-book";
+import { resolvePreparedChildSheet } from "@/lib/ai/character-prep";
+import { uploadGeneratedImage } from "@/lib/supabase/storage";
+import type { Json } from "@/lib/database.types";
 import { getMockIllustrationUrl, getMockCoverUrl, getMockPortraitUrl, getMockSecondaryIllustrationUrl, getSecondaryScenes } from "@/lib/ai/mock-story";
 import { isProviderUnavailableError } from "@/lib/fulfilment/provider-errors";
 import { STORY_TEMPLATES } from "@/lib/create-store";
 import { ownedPortraitPath } from "@/lib/storage/illustration-urls";
 
-// Architect (~25 s) + visual cast (~20 s) + [sheet ∥ shot list ∥ text] (~60 s) + 3 scenes + cover (~20 s)
+// Book Plan (35–90 s, streamed) with the sheets, cover and first scenes rendered
+// while it streams; the request ends shortly after the plan does.
 export const maxDuration = 300;
 
 function elapsed(start: number): string {
   return `${((Date.now() - start) / 1000).toFixed(1)}s`;
+}
+
+/**
+ * Serialised, coalescing writer for stories.preview_progress: renders finish
+ * concurrently, so only the newest snapshot is written and writes never overlap.
+ */
+function createProgressWriter(db: Awaited<ReturnType<typeof createClient>>, storyId: string) {
+  let latest: PreviewProgress | null = null;
+  let chain: Promise<void> = Promise.resolve();
+  return {
+    write: (progress: PreviewProgress) => {
+      latest = progress;
+      chain = chain.then(async () => {
+        if (latest !== progress) return; // a newer snapshot is queued
+        const { error } = await db.from("stories").update({ preview_progress: progress as unknown as Json }).eq("id", storyId);
+        if (error) console.warn(`[Generate] preview_progress write failed: ${error.message}`);
+      });
+    },
+    flush: () => chain,
+  };
 }
 
 export async function POST(
@@ -50,7 +74,7 @@ export async function POST(
   // Atomic claim: only transition draft → generating
   const { data: claimedStories, error: claimError } = await supabase
     .from("stories")
-    .update({ status: "generating", updated_at: new Date().toISOString() })
+    .update({ status: "generating", preview_progress: null, updated_at: new Date().toISOString() })
     .eq("id", storyId)
     .eq("user_id", user.id)
     .eq("status", "draft")
@@ -89,6 +113,8 @@ export async function POST(
   }
 
   const story = claimedStories[0];
+  let session: PreviewSession | null = null;
+  const progressWriter = createProgressWriter(supabase, storyId);
 
   try {
     const character = story.characters;
@@ -118,8 +144,30 @@ export async function POST(
       locale: story.locale || "es",
     };
 
+    // Streaming preview (not in mock mode: no paid call may start there). The
+    // session starts the child sheet now — or reuses the one prepared during
+    // character creation — in parallel with the Book Plan, renders the
+    // companion sheet as soon as the plan's cast streams in, then the cover and
+    // the first scenes as their shots stream in, writing preview_progress.
+    const storage = createServiceClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
+    const prepId: string | null = story.character_prep_id ?? null;
+    // Only the user's own portrait may anchor the sheet (the row is user-editable).
+    const avatarRef = ownedPortraitPath(character.avatar_url, user.id);
+    if (!isMockGeneration()) {
+      session = startPreviewSession({
+        storyId,
+        input,
+        avatarUrl: avatarRef,
+        preparedChildSheet: prepId
+          ? (bible) => resolvePreparedChildSheet(storage, { prepId, userId: user.id, bible, avatarUrl: avatarRef })
+          : undefined,
+        upload: (name, image, mime) => uploadGeneratedImage(storage, `${storyId}/preview`, name, image, mime),
+        onProgress: progressWriter.write,
+      });
+    }
+
     console.log(`[Generate] Architect... [${elapsed(routeStart)}]`);
-    const architectResult = await generateArchitect(input);
+    const architectResult = await generateArchitect(input, { onProgress: session?.onPlanProgress });
 
     // Mock mode shortcut (MOCK_MODE=true, local dev only) — placeholder images, no AI calls.
     if (architectResult.isMock && architectResult.mockStory) {
@@ -166,18 +214,10 @@ export async function POST(
       });
     }
 
-    // Storage uploads use the service role (versioned paths under {storyId}/);
-    // ownership was established by the claim above.
-    const storage = createServiceClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
-    const result = await generatePreviewBook({
-      db: supabase,
-      storage,
-      storyId,
-      input,
-      architect: architectResult,
-      // Only the user's own portrait may anchor the sheet (the row is user-editable).
-      avatarUrl: ownedPortraitPath(character.avatar_url, user.id),
-    });
+    if (!session) throw new Error("Preview session missing outside mock mode");
+    // finish() publishes the final snapshot (exactly the saved images) itself.
+    const result = await session.finish(architectResult, { db: supabase });
+    await progressWriter.flush();
     console.log(`[Generate] DONE — preview in ${elapsed(routeStart)}, images $${result.costUsd.toFixed(3)}`);
 
     return NextResponse.json({
@@ -189,7 +229,9 @@ export async function POST(
       coverGenerated: result.coverGenerated,
     });
   } catch (error) {
-    await supabase.from("stories").update({ status: "draft" }).eq("id", storyId);
+    session?.dispose();
+    await progressWriter.flush(); // no queued snapshot may land after the reset below
+    await supabase.from("stories").update({ status: "draft", preview_progress: null }).eq("id", storyId);
     console.error(`[Generate] FAILED after ${elapsed(routeStart)}:`, error);
     // Never leak provider/backend error text to the client.
     if (isProviderUnavailableError(error)) {

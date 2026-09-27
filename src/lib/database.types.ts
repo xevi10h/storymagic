@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      character_preps: {
+        Row: {
+          avatar_ref: string | null
+          bible: Json
+          bible_hash: string
+          child_sheet_url: string | null
+          cost_usd: number | null
+          created_at: string
+          error: string | null
+          fingerprint: string
+          finished_at: string | null
+          had_photo: boolean
+          id: string
+          model: string | null
+          started_at: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          avatar_ref?: string | null
+          bible: Json
+          bible_hash: string
+          child_sheet_url?: string | null
+          cost_usd?: number | null
+          created_at?: string
+          error?: string | null
+          fingerprint: string
+          finished_at?: string | null
+          had_photo?: boolean
+          id?: string
+          model?: string | null
+          started_at?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          avatar_ref?: string | null
+          bible?: Json
+          bible_hash?: string
+          child_sheet_url?: string | null
+          cost_usd?: number | null
+          created_at?: string
+          error?: string | null
+          fingerprint?: string
+          finished_at?: string | null
+          had_photo?: boolean
+          id?: string
+          model?: string | null
+          started_at?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       characters: {
         Row: {
           age: number
@@ -330,6 +384,7 @@ export type Database = {
           art_style: string | null
           character_id: string
           character_portrait_url: string | null
+          character_prep_id: string | null
           cover_image_url: string | null
           created_at: string
           creation_mode: string
@@ -340,6 +395,7 @@ export type Database = {
           is_showcase: boolean
           locale: string
           pdf_url: string | null
+          preview_progress: Json | null
           recraft_style_id: string | null
           saga_id: string | null
           saga_order: number | null
@@ -355,6 +411,7 @@ export type Database = {
           art_style?: string | null
           character_id: string
           character_portrait_url?: string | null
+          character_prep_id?: string | null
           cover_image_url?: string | null
           created_at?: string
           creation_mode: string
@@ -365,6 +422,7 @@ export type Database = {
           is_showcase?: boolean
           locale?: string
           pdf_url?: string | null
+          preview_progress?: Json | null
           recraft_style_id?: string | null
           saga_id?: string | null
           saga_order?: number | null
@@ -380,6 +438,7 @@ export type Database = {
           art_style?: string | null
           character_id?: string
           character_portrait_url?: string | null
+          character_prep_id?: string | null
           cover_image_url?: string | null
           created_at?: string
           creation_mode?: string
@@ -390,6 +449,7 @@ export type Database = {
           is_showcase?: boolean
           locale?: string
           pdf_url?: string | null
+          preview_progress?: Json | null
           recraft_style_id?: string | null
           saga_id?: string | null
           saga_order?: number | null
@@ -402,6 +462,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "stories_character_prep_id_fkey"
+            columns: ["character_prep_id"]
+            isOneToOne: false
+            referencedRelation: "character_preps"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "stories_character_id_fkey"
             columns: ["character_id"]

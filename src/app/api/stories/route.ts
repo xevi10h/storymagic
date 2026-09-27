@@ -34,6 +34,8 @@ const storyInputSchema = z.object({
   portraitUrl: z.string().max(2000).nullish(),
   recraftStyleId: z.string().max(100).nullish(),
   locale: z.enum(VALID_LOCALES).optional().default("es"),
+  /** From POST /api/characters/prepare: the generate route reuses its child sheet if the traits still match */
+  characterPrepId: z.string().uuid().nullish(),
 });
 
 export async function POST(request: Request) {
@@ -63,7 +65,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const { character, templateId, creationMode, decisions, dedication, senderName, ending, portraitUrl, recraftStyleId, locale } = parsed.data;
+  const { character, templateId, creationMode, decisions, dedication, senderName, ending, portraitUrl, recraftStyleId, locale, characterPrepId } = parsed.data;
 
   // 1. Upsert character (reuse if same name + user)
   const { data: existingCharacter } = await supabase
@@ -136,23 +138,26 @@ export async function POST(request: Request) {
   }
 
   // 2. Create story draft
-  const { data: story, error: storyError } = await supabase
-    .from("stories")
-    .insert({
-      user_id: user.id,
-      character_id: characterId,
-      template_id: templateId,
-      creation_mode: creationMode,
-      story_decisions: (decisions || {}) as Json,
-      dedication_text: dedication || null,
-      sender_name: senderName || null,
-      ending_choice: ending || null,
-      recraft_style_id: recraftStyleId || null,
-      locale,
-      status: "draft",
-    })
-    .select("id")
-    .single();
+  const draft = {
+    user_id: user.id,
+    character_id: characterId,
+    template_id: templateId,
+    creation_mode: creationMode,
+    story_decisions: (decisions || {}) as Json,
+    dedication_text: dedication || null,
+    sender_name: senderName || null,
+    ending_choice: ending || null,
+    recraft_style_id: recraftStyleId || null,
+    // Ownership + trait match are re-checked by the generate route before any reuse.
+    character_prep_id: characterPrepId || null,
+    locale,
+    status: "draft",
+  };
+  let { data: story, error: storyError } = await supabase.from("stories").insert(draft).select("id").single();
+  if (storyError?.code === "23503" && draft.character_prep_id) {
+    // Unknown prep id (FK): the prep is only an accelerator — create the story without it.
+    ({ data: story, error: storyError } = await supabase.from("stories").insert({ ...draft, character_prep_id: null }).select("id").single());
+  }
 
   if (storyError || !story) {
     return NextResponse.json(

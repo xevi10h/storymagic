@@ -25,7 +25,8 @@ API facts (official docs + live calls): `/v1/images/edits` multipart with up to 
 
 ### Flow
 - **Portrait** `POST /api/characters/portrait` → `renderPortrait(bible, photo?)` → `portraits/{userId}/{uuid}/portrait-{v}.jpg` in the private bucket; responds with a 24 h signed URL, `POST /api/stories` stores the path (only the caller's own portrait) (outage breaker → 503 `provider_unavailable`). Optional `photoPath` (private `child-photos` bucket) → deleted right after (see "Child photo").
-- **Preview** `POST /api/stories/[id]/generate` → `generateArchitect` (Book Plan, one LLM call) → `generatePreviewBook` (`src/lib/ai/preview-book.ts`): preview sheet → scenes 1–3 + cover in parallel → saves `generated_text.imagePlan` (frozen Bible + cast + world + shots + avatar URL) and `generated_text.imageAssets.preview`. A failed single scene stays `pending`; an outage → 503.
+- **Early child sheet** `POST /api/characters/prepare` (end of the protagonist screen) → child-only preview sheet from the Bible + avatar (+ optional private photo, deleted right after) → `character_preps` row. See "Streaming preview" below.
+- **Preview** `POST /api/stories/[id]/generate` → `PreviewSession` (`src/lib/ai/preview-book.ts`) + streamed `generateArchitect` (Book Plan): split sheets (child ∥ companions), cover + scenes 1–3 start while the plan streams, `stories.preview_progress` updated per image → saves `generated_text.imagePlan` (frozen Bible + cast + world + shots + avatar URL) and `generated_text.imageAssets.preview` (`layout: "split"`). A failed single scene stays `pending`; an outage → 503. `generatePreviewBook` (scripts) runs the same session without streaming.
 - **Final** `POST /api/stories/[id]/complete` → `advanceStoryFulfilment` → `advanceFinalImages` (see below). Stories previewed by the removed engines (no `imagePlan`) fail fulfilment with a clear error and must be re-previewed.
 
 ### Env (all optional — defaults shown)
@@ -63,6 +64,24 @@ Owner decision: the photo is used ONLY for the avatar portrait and the early chi
 - **Purge:** `GET /api/cron/purge-photos` hourly (`17 * * * *`, `CRON_SECRET`): every `child-photos` object older than 24 h (via RPC `list_expired_child_photos`, orphans included) + every open consent row older than 24 h → removed, `deleted_at` set. Logs counts/ids only.
 - **Logging rule:** photo bytes, URLs and request bodies are never logged or emailed (the portrait route logs only `error.message`). No Sentry/analytics in the project.
 - Check: `node --experimental-strip-types src/lib/privacy/child-photo.check.mjs`. DB: `supabase/migrations/20260927140000_child_photos.sql`.
+
+## Streaming preview — split sheets + early child sheet (2026-09-27)
+
+Goal: first images while the Book Plan is still being written (was: fully sequential 85–125 s).
+
+**Split sheet layout (preview only).** The combined main sheet (child + 2 companions) needs the plan's cast, so it could only start after the plan. The preview now uses two sheets: a **child sheet** (4 views + 4 expressions, `buildChildSheetPrompt`, depends only on the Bible + avatar) and a **companion sheet** (every plan cast member ≤5, front + side, `buildCompanionSheetPrompt`). Every cover/scene gets BOTH as refs (`SplitSheetRefs` → roles `child-sheet`, `companion-sheet`), so no image is drawn without a sheet of everyone in it (consistency rule unchanged). The final book keeps the combined layout (`renderSheets`, `SheetRefs`) and renders its own sheets from `imagePlan` — `final-book.ts` is untouched.
+
+**Timeline** (`PreviewSession`): t=0 child sheet (or reused prep) ∥ Book Plan streaming → `onProgress` when the **cast** is complete (new, ~8 s) → companion sheet → when the cover shot / scene 1–3 shots stream in, those renders start (each waits for both sheets) → every finished image is written to `stories.preview_progress` → plan done → **reconcile**: each early render is keyed by its normalised plan shot + the look of everyone in it; if the final plan (e.g. after a Book Plan retry: `onProgress` resets when the stream restarts) differs, that target is re-rendered; the companion sheet is re-rendered only if a final recurring companion is missing or described differently. Save is unchanged (text, `imagePlan`, rows, `status='preview'`).
+
+**Early child sheet** `POST /api/characters/prepare` (Node, `maxDuration` 120, render in `after()`):
+- Request `{ gender, age, skinTone?, hairColor?, eyeColor?, hairstyle?, favoriteColor?, avatarAssetPath? ("/images/avatar/…") | portraitUrl? (our storage), photoPath? (private bucket child-photos) }` → `202 { characterPrepId, status: "rendering"|"ready" }` (`200 { characterPrepId: null, status: "skipped" }` in mock mode; 400/401/429/503).
+- Idempotent per user on sha256(Bible hash + avatar ref + photo path): ready/in-flight preps are returned without a new render; failed or dead (>150 s) preps are reclaimed atomically. New renders share the portrait budget (IP window + `generate_portrait` durable limit) and the outage breaker (`provider-outage.ts`).
+- The photo (loaded with `loadChildPhoto`) is used for the sheet only, then `deleteChildPhoto(photoPath, userId, admin)`; its path is never stored.
+- The UI passes `characterPrepId` to `POST /api/stories` (→ `stories.character_prep_id`). The generate route reuses the sheet only if the story's Bible hash (description + age + gender + preview model/quality) and avatar still match; while the prep is still rendering it waits (≤90 s, in parallel with the Book Plan), otherwise it renders a fresh child sheet. The traits sent to prepare must be the ones later sent to `POST /api/stories` (prepare applies the same defaults: hair "brown", skin "medium", hairstyle "short").
+
+**`preview_progress` contract** (`GET /api/stories/{id}?light=true` now returns it): `null` until the first image, then `{ coverUrl?: string, scenes: [{ index: number /* scene number, 1-based */, url: string }], total: number /* preview scenes, 3 */ }`. Reset to null on claim and on failure. URLs are final storage URLs; a Book Plan retry may replace one. When `status` becomes `preview`, the full story (rows + cover) is authoritative.
+
+**Measured** (`scripts/bench-preview.mjs`, 2026-09-27, Martina girl 5 forest, prep + avatar, real APIs, no DB writes): prep child sheet 11.7 s (before t=0) · plan cast 8.3 s · cover shot 12.4 s · scene-1 shot 16.3 s · companion sheet 20.7 s · **scene 1 visible 35.3 s · all 3 scenes 36.2 s · cover 40.1 s** · plan + save 49.9 s (was 85–125 s). Spend $0.345 (plan $0.140, images $0.171, portrait $0.014, prep $0.02). Critical path to the cover = cast (8 s) + companion sheet (12 s) + cover render (15–19 s, the largest preview size). Levers for ≤30 s in the roadmap.
 
 ## Final-book execution — resumable pipeline (2026-09-27)
 
