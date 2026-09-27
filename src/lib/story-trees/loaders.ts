@@ -1,6 +1,6 @@
 // Client-safe dynamic loaders for the story trees.
 //
-// PathBuilder must NOT import from "./index": that file statically imports all
+// Client components (StepAdventure) must NOT import from "./index": that file statically imports all
 // 10 trees (~600KB source) for the server-side story generator. The client
 // loads only the selected template's tree as its own chunk via these loaders.
 

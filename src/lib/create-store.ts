@@ -1,5 +1,7 @@
-// State management for the book creation flow
-// Complete decision tree: Step 2 (character) → Step 3 (template) → Step 4 (decisions) → Step 5 (ending)
+// State + static data for the book creation flow (creation flow v2, 6 screens):
+// 1 Name → 2 Protagonist → 3 Adventure (world + 3 tree chapters) live on /crear;
+// 4 Dedication-while-painting (/crear/{id}/generar); 5 Book preview + 6 Format/payment
+// (/crear/{id}/preview). See docs/creation-flow-v2.md.
 
 // ============================================================
 // TYPES
@@ -8,6 +10,8 @@
 export type CreationMode = "solo" | "juntos" | null;
 export type Gender = "boy" | "girl" | "neutral";
 export type EndingChoice = string | null;
+
+export type Glasses = "none" | "round" | "square";
 
 export interface CharacterData {
   name: string;
@@ -18,6 +22,9 @@ export interface CharacterData {
   skinTone: string;
   gender: Gender;
   hairstyle: string;
+  /** Glasses frame shown on the avatar ("none" = no glasses). */
+  glasses: Glasses;
+  freckles: boolean;
   interests: string[];
   favoriteColor: string;
   favoriteCompanion: string;
@@ -41,22 +48,31 @@ export interface StoryDecisions {
   treePath?: TreeChoice[];
 }
 
+export type ProtagonistMode = "avatar" | "photo";
+
 export interface CreateBookState {
+  /** Persisted draft schema version (see migrateCreateState in lib/creation-flow). */
+  version: 2;
+  /** Screen on /crear: 1 name, 2 protagonist, 3 adventure. */
   currentStep: number;
   mode: CreationMode;
   character: CharacterData;
-  /** AI-generated portrait URL (created between Step 2 and Step 3) */
-  portraitUrl: string | null;
-  /** Recraft style_id derived from the portrait (reused for all illustrations) */
-  recraftStyleId: string | null;
-  /** Snapshot of character data when portrait was generated (for change detection) */
-  portraitCharacterSnapshot: string | null;
+  /** "avatar" = built from traits (default); "photo" = the parent uploaded a photo. */
+  protagonistMode: ProtagonistMode;
+  /** Private storage path returned by POST /api/characters/photo (never a public URL). */
+  photoPath: string | null;
+  /** Background character-sheet job id from POST /api/characters/prepare. */
+  characterPrepId: string | null;
+  /** Snapshot of the traits/photo the prep job was started for (restart on change). */
+  characterPrepSnapshot: string | null;
   selectedTemplate: string | null;
   decisions: StoryDecisions;
   dedication: string;
   senderName: string;
   ending: EndingChoice;
   endingNote: string;
+  /** Story already created from this exact draft (avoids a duplicate book on Back → Create). */
+  createdStory: { id: string; snapshot: string } | null;
 }
 
 // ============================================================
@@ -146,6 +162,7 @@ export interface StoryTemplateConfig {
 // ============================================================
 
 export const INITIAL_STATE: CreateBookState = {
+  version: 2,
   currentStep: 1,
   mode: "solo", // mode selection removed; default keeps generation payload valid
   character: {
@@ -157,20 +174,24 @@ export const INITIAL_STATE: CreateBookState = {
     skinTone: "#fce4d6",
     gender: "boy",
     hairstyle: "short",
+    glasses: "none",
+    freckles: false,
     interests: [],
     favoriteColor: "#E53935",
     favoriteCompanion: "",
     futureDream: "",
   },
-  portraitUrl: null,
-  recraftStyleId: null,
-  portraitCharacterSnapshot: null,
+  protagonistMode: "avatar",
+  photoPath: null,
+  characterPrepId: null,
+  characterPrepSnapshot: null,
   selectedTemplate: null,
   decisions: {},
   dedication: "",
   senderName: "",
   ending: null,
   endingNote: "",
+  createdStory: null,
 };
 
 // ============================================================
@@ -224,6 +245,8 @@ export const INTERESTS = [
   { id: "dinosaurs", icon: "cruelty_free" },
   { id: "music", icon: "music_note" },
 ];
+
+export const GLASSES_OPTIONS: Glasses[] = ["none", "round", "square"];
 
 // Labels are translated via i18n: td('hairstyles.${id}')
 export interface HairstyleOption {
@@ -2277,148 +2300,4 @@ export function getAtmosphereNarrative(
     time: template.atmosphere.timeOptions.find((t) => t.id === timeId)?.narrativeContext,
     setting: template.atmosphere.settingOptions.find((s) => s.id === settingId)?.narrativeContext,
   };
-}
-
-// ============================================================
-// CATALOG DEFAULTS — Pre-configured decisions for the catalog flow
-// When a user enters via the catalog, these decisions are pre-selected
-// so they skip Steps 3-5 and go directly to Step 2 → Generate.
-// ============================================================
-
-export interface CatalogDefaults {
-  mode: CreationMode;
-  decisions: StoryDecisions;
-  ending: string;
-  endingNote: string;
-  dedication: string;
-  senderName: string;
-}
-
-/** Default decisions for each template in catalog flow */
-export const CATALOG_DEFAULTS: Record<string, CatalogDefaults> = {
-  space: {
-    mode: "solo",
-    decisions: { encounter: "crystal", companion: "alien", challenge: "black-hole" },
-    ending: "galactic-party",
-    endingNote: "",
-    dedication: "",
-    senderName: "",
-  },
-  forest: {
-    mode: "juntos",
-    decisions: { encounter: "dragon", companion: "fox", challenge: "fog" },
-    ending: "magic-seed",
-    endingNote: "",
-    dedication: "",
-    senderName: "",
-  },
-  superhero: {
-    mode: "solo",
-    decisions: { encounter: "mask", companion: "hero-dog", challenge: "laugh-thief" },
-    ending: "secret-identity",
-    endingNote: "",
-    dedication: "",
-    senderName: "",
-  },
-  pirates: {
-    mode: "juntos",
-    decisions: { encounter: "treasure-map", companion: "monkey", challenge: "kraken" },
-    ending: "true-treasure",
-    endingNote: "",
-    dedication: "",
-    senderName: "",
-  },
-  chef: {
-    mode: "juntos",
-    decisions: { encounter: "living-ingredient", companion: "singing-spoon", challenge: "growing-cake" },
-    ending: "grand-feast",
-    endingNote: "",
-    dedication: "",
-    senderName: "",
-  },
-  dinosaurs: {
-    mode: "juntos",
-    decisions: { encounter: "baby-dino", companion: "triceratops", challenge: "t-rex" },
-    ending: "dino-farewell",
-    endingNote: "",
-    dedication: "",
-    senderName: "",
-  },
-  castle: {
-    mode: "solo",
-    decisions: { encounter: "baby-dragon", companion: "wise-cat", challenge: "nightmare-cloud" },
-    ending: "dragon-flight",
-    endingNote: "",
-    dedication: "",
-    senderName: "",
-  },
-  safari: {
-    mode: "juntos",
-    decisions: { encounter: "lion-cub", companion: "elephant", challenge: "drought" },
-    ending: "sunset-gathering",
-    endingNote: "",
-    dedication: "",
-    senderName: "",
-  },
-  inventor: {
-    mode: "solo",
-    decisions: { encounter: "flying-machine", companion: "mad-professor", challenge: "chain-reaction" },
-    ending: "great-invention",
-    endingNote: "",
-    dedication: "",
-    senderName: "",
-  },
-  candy: {
-    mode: "juntos",
-    decisions: { encounter: "chocolate-river", companion: "gummy-bear", challenge: "sour-invasion" },
-    ending: "candy-feast",
-    endingNote: "",
-    dedication: "",
-    senderName: "",
-  },
-};
-
-/** Get catalog defaults for a template */
-export function getCatalogDefaults(templateId: string): CatalogDefaults | undefined {
-  return CATALOG_DEFAULTS[templateId];
-}
-
-// ============================================================
-// STORY PATH BEATS — drives the step-by-step "path" creation UX.
-// World is chosen first (picks the template); these are the beats
-// that follow, derived from the chosen template's existing data.
-// ============================================================
-
-export type StoryBeatKind = "world" | "decision" | "atmosphere";
-
-export interface StoryBeat {
-  id: string; // "encounter" | "companion" | "challenge" | "time" | "setting"
-  kind: StoryBeatKind;
-  decisionKey?: "encounter" | "companion" | "challenge";
-  atmosphereSub?: "time" | "setting";
-}
-
-/** Beats that follow the world choice, for a given template (in narrative order). */
-export function getTemplateBeats(templateId: string | null): StoryBeat[] {
-  if (!templateId) return [];
-  const tpl = STORY_TEMPLATES.find((t) => t.id === templateId);
-  if (!tpl) return [];
-  const decisionBeats: StoryBeat[] = tpl.decisions.map((d) => ({
-    id: d.key,
-    kind: "decision",
-    decisionKey: d.key,
-  }));
-  return [
-    ...decisionBeats,
-    { id: "time", kind: "atmosphere", atmosphereSub: "time" },
-    { id: "setting", kind: "atmosphere", atmosphereSub: "setting" },
-  ];
-}
-
-/** State key in StoryDecisions that a beat writes to. */
-export function beatDecisionField(beat: StoryBeat): keyof StoryDecisions | null {
-  if (beat.kind === "decision") return beat.decisionKey ?? null;
-  if (beat.kind === "atmosphere")
-    return beat.atmosphereSub === "time" ? "timeOfDay" : "setting";
-  return null;
 }

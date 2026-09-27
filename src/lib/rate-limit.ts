@@ -25,6 +25,7 @@ const LIMITS: Record<string, RateLimitConfig> = {
   generate_pdf: { maxRequests: 5, windowSeconds: 60 },       // 5 per minute
   complete_story: { maxRequests: 3, windowSeconds: 300 },    // 3 per 5 min
   generate_portrait: { maxRequests: 10, windowSeconds: 3600 }, // 10 per hour
+  send_preview: { maxRequests: 3, windowSeconds: 3600 },        // 3 preview emails per hour
 };
 
 /**

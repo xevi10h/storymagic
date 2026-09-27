@@ -368,8 +368,9 @@ Replaced the old "mode → template → 3 decision knobs" with a single vertical
 - Phase 4 — Activate Stripe + Gelato integration. First physical test book.
 
 ## Next (from 2026-09-27 overhaul)
-- **Phase 2 — creation flow (6 screens):** name → live templated cover in hero; pre-rendered watercolor avatar matrix; world picker with name covers; El Camino; email + create; dedication during wait; page-flip reveal with sticky hardcover CTA. Teaser preview <20 s using Book Plan `onProgress` (cover + scene 1 first).
-- Optional child photo upload (parental consent, RGPD, delete after generation) — engine already accepts `photoUrl`.
-- Glasses / freckles fields in the character UI (engine accepts `extraTraits`).
+- [x] **Phase 2 — creation flow UI (6 screens), 2026-09-27:** Nombre + live cover → Protagonista (trait grid + sticky portrait, photo tab behind flag, background character prep) → Aventura (world + 3 tree chapters on one screen) → Dedicatoria while the preview is painted (real `preview_progress`) → Su libro (checklist chips, in-place sheets) → Formato + pago (VAT next to prices, optional "Envíame la preview"). See `creation-flow-v2.md`.
+- Pending to finish Phase 2: real `WatercolorAvatar` art (replace the SVG placeholder), persist `glasses`/`freckles`/`characterPrepId` in `POST /api/stories`, `preview_progress` written by the preview pipeline, teaser preview <20 s (cover + scene 1 first).
+- "Envíame la preview" works on the same browser only (anonymous session per device): convert the guest to an email identity (magic link) so the link opens anywhere.
+- Arrow-key navigation inside the trait/world/chapter radiogroups (today: Tab + Enter/Space).
 - Print polish: "about the reader" page design, illustrated endpapers, panorama upscale to 300 dpi.
 - **Phase 3 — sales:** analytics (GA4 + Meta pixel + funnel events); guarantee; −20% on 2+ books; Reyes positioning (cutoff ~29 Dec) + gift card; "Pedir a los abuelos" WhatsApp payment link; AMPA/school class orders; 3 real orders for photos.

@@ -259,37 +259,8 @@ h1, h2, h3, h4 {
   box-shadow: 0 10px 40px -10px rgba(232, 108, 58, 0.25);
 }
 
-.create-paper-texture {
-  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
-}
-
 .create-star-pattern {
   background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23d4af37' fill-opacity='0.15' fill-rule='evenodd'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");
-}
-
-/* Custom range slider for creation flow */
-input[type=range].create-slider {
-  -webkit-appearance: none;
-  background: transparent;
-}
-input[type=range].create-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 32px;
-  height: 32px;
-  background: white;
-  border: 4px solid var(--create-primary);
-  border-radius: 50%;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  cursor: pointer;
-  margin-top: -10px;
-}
-input[type=range].create-slider::-webkit-slider-runnable-track {
-  height: 12px;
-  background: var(--create-neutral-light);
-  border-radius: 9999px;
-}
-input[type=range].create-slider:focus {
-  outline: none;
 }
 
 /* Book spine effect */
@@ -394,14 +365,6 @@ input[type=range].create-slider:focus {
   animation-delay: 1s;
 }
 
-/* Step 5 book tape effect */
-.create-tape-effect {
-  background-color: rgba(255,255,255,0.4);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  transform: rotate(-2deg);
-  backdrop-filter: blur(2px);
-}
-
 /* Fade in animation */
 @keyframes fade-in {
   0% { opacity: 0; transform: translateY(8px); }
@@ -440,35 +403,7 @@ input[type=range].create-slider:focus {
   scrollbar-width: none;
 }
 
-/* ============================
-   Page Flip Transition
-   ============================ */
 
-.page-flip-viewport {
-  position: relative;
-  min-height: 100vh;
-}
-
-.page-flip-active {
-  perspective: 1600px;
-  overflow: hidden;
-}
-
-.page-flip-layer {
-  position: absolute;
-  inset: 0;
-  min-height: 100vh;
-  will-change: transform, opacity;
-  backface-visibility: hidden;
-}
-
-/* Shadow overlay on outgoing page */
-.page-flip-shadow {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 10;
-}
 
 /* --- FORWARD (next step): page turns left like a book --- */
 
@@ -620,63 +555,6 @@ input[type=range].create-slider:focus {
   color: var(--text-muted);
 }
 
-/* ============================
-   Story path — chapter transition (downward)
-   ============================ */
-@keyframes beatSlideUp {
-  from { opacity: 0; transform: translateY(46px) scale(.985); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-@keyframes trailSettle {
-  from { opacity: 0; transform: translateY(-10px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.beat-animate-in { animation: beatSlideUp 500ms cubic-bezier(.22,1,.36,1) both; }
-.trail-animate-in { animation: trailSettle 360ms ease-out both; }
-@media (prefers-reduced-motion: reduce) {
-  .beat-animate-in, .trail-animate-in { animation: none; }
-}
-
-/* ============================
-   El Camí — immersive cinematic chapters
-   Desktop: right→left. Mobile: downward (keyframes overridden in media query).
-   ============================ */
-@keyframes pInFwd  { from { transform: translateX(100%);  opacity:.4 } to { transform: translateX(0); opacity:1 } }
-@keyframes pOutFwd { from { transform: translateX(0); opacity:1 } to { transform: translateX(-100%); opacity:0 } }
-@keyframes pInBack { from { transform: translateX(-100%); opacity:.4 } to { transform: translateX(0); opacity:1 } }
-@keyframes pOutBack{ from { transform: translateX(0); opacity:1 } to { transform: translateX(100%); opacity:0 } }
-.path-panel { position:absolute; inset:0; overflow-y:auto; }
-.pIn-fwd  { animation: pInFwd  .72s cubic-bezier(.76,0,.18,1) both; }
-.pOut-fwd { animation: pOutFwd .72s cubic-bezier(.76,0,.18,1) both; }
-.pIn-back { animation: pInBack .72s cubic-bezier(.76,0,.18,1) both; }
-.pOut-back{ animation: pOutBack .72s cubic-bezier(.76,0,.18,1) both; }
-.chap-rise > * { opacity:0; animation: beatSlideUp .6s cubic-bezier(.22,1,.36,1) both; }
-.chap-rise > *:nth-child(1){ animation-delay:.12s } .chap-rise > *:nth-child(2){ animation-delay:.22s }
-.chap-rise > *:nth-child(3){ animation-delay:.32s } .chap-rise > *:nth-child(4){ animation-delay:.42s }
-@media (max-width:760px){
-  @keyframes pInFwd  { from { transform: translateY(100%);  opacity:.4 } to { transform: translateY(0); opacity:1 } }
-  @keyframes pOutFwd { from { transform: translateY(0); opacity:1 } to { transform: translateY(-100%); opacity:0 } }
-  @keyframes pInBack { from { transform: translateY(-100%); opacity:.4 } to { transform: translateY(0); opacity:1 } }
-  @keyframes pOutBack{ from { transform: translateY(0); opacity:1 } to { transform: translateY(100%); opacity:0 } }
-}
-@media (prefers-reduced-motion: reduce){
-  .pIn-fwd,.pOut-fwd,.pIn-back,.pOut-back,.chap-rise > *{ animation-duration:.01ms; }
-}
-
-/* ============================
-   El Camí — branching tree (desktop)
-   ============================ */
-@keyframes cpFanin{from{opacity:0;transform:translateX(-46px) scale(.92)}to{opacity:1;transform:translateX(0) scale(1)}}
-@keyframes cpDraw{to{stroke-dashoffset:0}}
-@keyframes cpRise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-@keyframes cpPulse{0%,100%{box-shadow:0 0 0 6px rgba(232,108,58,.14),0 8px 22px -6px rgba(232,108,58,.5)}50%{box-shadow:0 0 0 13px rgba(232,108,58,.06),0 10px 26px -6px rgba(232,108,58,.6)}}
-.cp-stage{position:relative;overflow:hidden}
-.cp-world{position:absolute;left:0;top:0;width:100%;height:100%;transition:transform .8s cubic-bezier(.66,0,.18,1);will-change:transform}
-.cp-pos{position:absolute;transform:translate(-50%,-50%)}
-.cp-fanin{animation:cpFanin .55s cubic-bezier(.2,.9,.3,1) both}
-.cp-rise{animation:cpRise .55s .1s both}
-.cp-pulse{animation:cpPulse 2.2s ease-in-out infinite}
-/* El Camí — robust centered layout: chapter advances enter from the right (desktop), fade-up (mobile) */
 /* "Your book is born" reveal (preview, first load after generation) */
 @keyframes bookRevealCover{from{opacity:0;transform:scale(.82) translateY(14px)}60%{opacity:1}to{opacity:1;transform:scale(1) translateY(0)}}
 @keyframes bookRevealTitle{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
@@ -686,24 +564,22 @@ input[type=range].create-slider:focus {
 .book-reveal-sparkle{animation:bookRevealSparkle 2.4s ease-in-out infinite;transform-origin:center;transform-box:fill-box}
 @media (prefers-reduced-motion: reduce){.book-reveal-cover,.book-reveal-title{animation:none}.book-reveal-sparkle{animation:none;opacity:.5}}
 
-@keyframes pathChapterIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
-@keyframes pathChapterInMobile{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-.path-chapter{animation:pathChapterIn .45s cubic-bezier(.2,.9,.3,1) both}
-@media (max-width:640px){.path-chapter{animation-name:pathChapterInMobile}}
-/* El Camí — serpentine adventure trail */
-@keyframes trailPop{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1)}}
-.trail-pop{animation:trailPop .5s cubic-bezier(.2,.9,.3,1) both;transform-origin:center top}
-.trail-line{fill:none;stroke:#e0a53b;stroke-width:3;stroke-linecap:round;stroke-dasharray:1 9;opacity:.65;animation:trailFade .5s ease both}
-.trail-fork{fill:none;stroke:#e0a53b;stroke-width:3;stroke-linecap:round;stroke-dasharray:1 9;opacity:.5;transition:opacity .4s,stroke .4s}
-.trail-fork.win{stroke:var(--create-primary);opacity:.95;stroke-dasharray:none;stroke-width:3.5}
-.trail-fork.dim{opacity:.12}
-@keyframes trailFade{from{opacity:0}to{opacity:.65}}
-@media (prefers-reduced-motion: reduce){.trail-pop{animation:none}.trail-line{animation:none}}
-.cp-svg{position:absolute;left:0;top:0;overflow:visible;pointer-events:none}
-.cp-route{fill:none;stroke:url(#cpgrad);stroke-width:5;stroke-linecap:round;filter:drop-shadow(0 4px 8px rgba(224,165,59,.25))}
-.cp-fork{fill:none;stroke:#e8964a;stroke-width:3.5;stroke-linecap:round;opacity:.55;stroke-dasharray:1600;stroke-dashoffset:1600;animation:cpDraw .7s ease forwards}
-.cp-fork.win{stroke:var(--create-gold);stroke-width:5;opacity:.9;transition:.4s}
-.cp-fork.dim{opacity:.1;transition:.4s}
+/* ============================
+   Creation flow v2 — screen + chapter entrances, live art swaps, sheets
+   ============================ */
+@keyframes stepIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes coverArtIn{from{opacity:0}to{opacity:1}}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes sheetFade{from{opacity:0}to{opacity:1}}
+@keyframes indeterminate{0%{transform:translateX(-110%)}100%{transform:translateX(330%)}}
+.step-in{animation:stepIn .32s cubic-bezier(.2,.9,.3,1) both}
+.chapter-in{animation:stepIn .38s cubic-bezier(.2,.9,.3,1) both}
+.cover-art-in{animation:coverArtIn .35s ease both}
+.sheet-backdrop{animation:sheetFade .2s ease both}
+.sheet-panel{animation:sheetUp .28s cubic-bezier(.2,.9,.3,1) both}
+@media (min-width:640px){.sheet-panel{animation:stepIn .22s ease both}}
+.progress-indeterminate{animation:indeterminate 1.6s ease-in-out infinite}
 @media (prefers-reduced-motion: reduce){
-  .cp-fanin,.cp-rise,.path-chapter{animation:none}.cp-fork{animation:none;stroke-dashoffset:0}.cp-world{transition:none}
+  .step-in,.chapter-in,.cover-art-in,.sheet-backdrop,.sheet-panel{animation:none}
+  .progress-indeterminate{animation:none;width:100%;opacity:.35}
 }

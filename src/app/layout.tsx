@@ -3,13 +3,14 @@ import "./globals.css";
 
 const plusJakarta = Plus_Jakarta_Sans({
   variable: "--font-plus-jakarta",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   display: "swap",
 });
 
 const fredoka = Fredoka({
   variable: "--font-fredoka",
-  subsets: ["latin"],
+  // latin-ext: children's names like Ștefan, Łucja or Ŀlúcia render in the brand face
+  subsets: ["latin", "latin-ext"],
   display: "swap",
 });
 
