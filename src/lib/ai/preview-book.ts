@@ -48,8 +48,8 @@ export interface PreviewArgs {
   architect: ArchitectResult;
   /** Approved avatar portrait (characters.avatar_url) */
   avatarUrl: string | null;
-  /** Optional real photo of the child (future feature) — facial likeness only */
-  photoUrl?: string | null;
+  // No photo: the preview is built ONLY from the avatar + generated sheets
+  // (the child's photo is deleted right after the avatar/child sheet exist).
   /** Traits the UI does not collect yet (glasses, freckles) */
   extraTraits?: Pick<CharacterDescriptionInput, "glasses" | "freckles">;
 }
@@ -79,8 +79,8 @@ export async function generatePreviewBook(args: PreviewArgs): Promise<PreviewRes
   const visual = planToVisualCast(bookPlan);
   const shotList = planToShotList(bookPlan, frameForScene, visual);
 
-  const bible = buildCharacterBible({ ...input, ...args.extraTraits }, args.photoUrl ?? null);
-  const [avatar, photo] = await Promise.all([optionalReference(args.avatarUrl, "avatar"), optionalReference(args.photoUrl, "photo")]);
+  const bible = buildCharacterBible({ ...input, ...args.extraTraits });
+  const avatar = await optionalReference(args.avatarUrl, "avatar");
   const plan: BookImagePlan = {
     version: 1,
     engine: "openai",
@@ -93,7 +93,7 @@ export async function generatePreviewBook(args: PreviewArgs): Promise<PreviewRes
   };
 
   // 1. Character sheet(s) — the first reference of every scene.
-  const sheets = await renderSheets(plan, "preview", { avatar, photo }, { label: `story ${storyId}` });
+  const sheets = await renderSheets(plan, "preview", { avatar }, { label: `story ${storyId}` });
   costUsd += sheets.main.costUsd + (sheets.extra?.costUsd ?? 0);
   console.log(`[Preview] sheet ready (cast [${plan.cast.map((c) => c.id).join(", ")}]) [${t()}]`);
 
@@ -104,7 +104,6 @@ export async function generatePreviewBook(args: PreviewArgs): Promise<PreviewRes
   const refs: SheetRefs = {
     sheet: { data: sheets.main.image, mime: sheets.main.mime },
     extraSheet: sheets.extra ? { data: sheets.extra.image, mime: sheets.extra.mime } : null,
-    photo,
   };
 
   // 2. First scenes + cover, all in parallel (each only conditioned on the sheet).

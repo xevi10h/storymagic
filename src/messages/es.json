@@ -533,19 +533,21 @@
       "title": "Política de Privacidad",
       "intro": "En Meapica, la privacidad de nuestros usuarios —especialmente cuando se trata de datos de menores— es nuestra máxima prioridad.",
       "section1Title": "1. Responsable del tratamiento",
-      "section1Text": "Meapica es responsable del tratamiento de los datos personales recogidos a través de meapica.com.",
+      "section1Text": "El responsable del tratamiento de los datos personales recogidos a través de meapica.com es Xavier Huix Trenco (Meapica), NIF [NIF], con domicilio en [DIRECCIÓN]. Para cualquier cuestión sobre privacidad puedes escribirnos a hola@meapica.com.",
       "section2Title": "2. Datos que recogemos",
-      "section2Text": "Recogemos los datos necesarios para crear tu libro personalizado: nombre del niño/a, edad, ciudad, intereses y características físicas para la ilustración. También recogemos email y dirección de envío para procesar pedidos.",
+      "section2Text": "Recogemos los datos necesarios para crear tu libro personalizado: nombre del niño/a, edad, ciudad, intereses y características físicas para la ilustración y, solo si decides subirla, una foto del niño/a (ver el apartado 8). También recogemos email y dirección de envío para procesar pedidos.",
       "section3Title": "3. Finalidad del tratamiento",
-      "section3Text": "Utilizamos tus datos exclusivamente para: generar el cuento personalizado, procesar el pago y envío, y comunicarnos contigo sobre tu pedido. Nunca vendemos datos a terceros.",
+      "section3Text": "Utilizamos tus datos exclusivamente para: generar el cuento personalizado y su personaje ilustrado, procesar el pago y envío, y comunicarnos contigo sobre tu pedido. Nunca vendemos datos a terceros.",
       "section4Title": "4. Base legal",
-      "section4Text": "El tratamiento se basa en la ejecución del contrato (tu pedido) y tu consentimiento explícito al crear una cuenta.",
-      "section5Title": "5. Servicios de terceros",
-      "section5Text": "Utilizamos Supabase (almacenamiento), Stripe (pagos) y Gelato (impresión) como servicios de terceros. Cada servicio tiene su propia política de privacidad.",
+      "section4Text": "Crear, previsualizar e imprimir tu libro, gestionar tu cuenta, el pago y el envío: ejecución del contrato que nos pides (art. 6.1.b RGPD). Foto del niño/a: consentimiento explícito de su madre, padre o tutor legal (art. 6.1.a RGPD y art. 7 LOPDGDD), que puedes retirar en cualquier momento. Newsletter y lista de espera: tu consentimiento (art. 6.1.a RGPD), que puedes retirar cuando quieras. Conservación de facturas y registros contables: obligación legal (art. 6.1.c RGPD). Seguridad del servicio y prevención de abusos (por ejemplo, límites de uso): interés legítimo (art. 6.1.f RGPD).",
+      "section5Title": "5. Encargados del tratamiento y transferencias internacionales",
+      "section5Text": "Para prestar el servicio trabajamos con proveedores que tratan los datos solo siguiendo nuestras instrucciones: OpenAI Ireland Ltd. (generación del texto y las ilustraciones del cuento y, si la subes, del personaje a partir de la foto), Supabase (base de datos y almacenamiento), Vercel (alojamiento web), Stripe Payments Europe Ltd. (pagos), Gelato (impresión y envío) y Resend (correos del pedido). OpenAI no usa los datos que le enviamos para entrenar sus modelos y puede conservarlos hasta 30 días para detectar abusos. Cuando un proveedor o sus subencargados tratan datos fuera del Espacio Económico Europeo (por ejemplo, en Estados Unidos), la transferencia se ampara en las cláusulas contractuales tipo aprobadas por la Comisión Europea o en el Marco de Privacidad de Datos UE-EE. UU.",
       "section6Title": "6. Tus derechos",
-      "section6Text": "Puedes ejercer tus derechos de acceso, rectificación, supresión, limitación y portabilidad contactándonos en hola@meapica.com.",
+      "section6Text": "Puedes ejercer tus derechos de acceso, rectificación, supresión, oposición, limitación del tratamiento y portabilidad, y retirar tu consentimiento en cualquier momento, escribiendo a hola@meapica.com. Te responderemos en el plazo máximo de un mes. Si consideras que no hemos tratado tus datos correctamente, puedes presentar una reclamación ante la Agencia Española de Protección de Datos (www.aepd.es).",
       "section7Title": "7. Protección de datos de menores",
-      "section7Text": "No recogemos datos directamente de menores. Los datos del niño/a son proporcionados por el padre/madre o tutor legal que crea el libro."
+      "section7Text": "No recogemos datos directamente de menores. Los datos del niño/a son proporcionados por el padre/madre o tutor legal que crea el libro.",
+      "section8Title": "8. Fotos de menores",
+      "section8Text": "Subir una foto es opcional: también puedes crear el personaje eligiendo sus rasgos. Si la subes, la usamos solo para crear su personaje ilustrado (su retrato y su ficha de personaje) y solo con el consentimiento de su madre, padre o tutor legal. Antes de guardarla eliminamos todos sus metadatos, incluida la ubicación GPS, y la guardamos en un almacenamiento privado al que solo accede nuestro servidor. La foto se envía a OpenAI para dibujar el personaje; OpenAI no la usa para entrenar sus modelos y puede conservarla hasta 30 días para detectar abusos. Borramos la foto en cuanto creamos su personaje y, en cualquier caso, en menos de 24 horas. El libro (previsualización y versión final) se ilustra solo a partir del personaje dibujado, nunca a partir de la foto. No la usamos para reconocimiento facial ni para ninguna otra finalidad. Puedes retirar tu consentimiento en cualquier momento escribiendo a hola@meapica.com y la borraremos de inmediato. Guardamos un registro de tu consentimiento (fecha, versión del texto aceptado e idioma) como prueba de que lo diste."
     },
     "terms": {
       "title": "Aviso Legal y Condiciones de Uso",
@@ -940,6 +942,26 @@
     "errors": {
       "saveFailed": "No hemos podido guardar tu cuento. Revisa tu conexión y vuelve a pulsar el botón: todo lo que has escrito sigue aquí.",
       "dismiss": "Cerrar"
+    },
+    "photo": {
+      "checkbox": "Soy madre, padre o tutor legal y autorizo que Meapica use esta foto solo para crear su personaje ilustrado. La foto se envía a OpenAI para dibujarlo y la borramos en cuanto creamos su personaje (y siempre en menos de 24 horas).",
+      "explainer": "Solo la usamos para dibujar su personaje y la borramos en cuanto lo creamos (y siempre en menos de 24 h).",
+      "moreInfo": "Más información",
+      "modalTitle": "Qué hacemos con la foto",
+      "modalText": "Usamos la foto solo para dibujar el personaje ilustrado de tu hijo o hija: su retrato y su ficha de personaje. Antes de guardarla le quitamos todos los metadatos, incluida la ubicación, y la guardamos en un espacio privado. Se envía a OpenAI para dibujar el personaje; OpenAI no la usa para entrenar sus modelos y puede conservarla hasta 30 días para detectar abusos. La borramos en cuanto creamos su personaje (y siempre en menos de 24 horas). El libro se ilustra solo a partir del personaje dibujado, nunca de la foto. Puedes retirar tu consentimiento cuando quieras y la borraremos al momento.",
+      "modalClose": "Entendido",
+      "privacyLink": "Política de privacidad",
+      "remove": "Quitar la foto",
+      "errors": {
+        "consent_required": "Marca la casilla de autorización para poder usar la foto.",
+        "too_large": "La foto pesa demasiado. Prueba con otra de menos de 4 MB.",
+        "unsupported_type": "Este formato no es compatible. Sube una foto JPG, PNG o WebP.",
+        "invalid_image": "No hemos podido leer esta foto. Prueba con otra.",
+        "too_small": "La foto es demasiado pequeña. Sube una en la que se vea bien su cara.",
+        "photo_unavailable": "La foto ya se ha borrado. Súbela de nuevo si quieres usarla.",
+        "rate_limited": "Has subido muchas fotos seguidas. Espera un rato y vuelve a probar.",
+        "upload_failed": "No hemos podido subir la foto. Vuelve a intentarlo."
+      }
     }
   },
   "checkout": {

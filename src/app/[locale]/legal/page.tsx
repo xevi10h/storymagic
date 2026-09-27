@@ -75,7 +75,7 @@ export default function LegalPage() {
   const t = useTranslations("legal");
 
   const pages = [
-    { id: "privacy", sectionCount: 7 },
+    { id: "privacy", sectionCount: 8 },
     { id: "terms", sectionCount: 6 },
     { id: "cookies", sectionCount: 4 },
     { id: "faq", sectionCount: 6 },
@@ -108,7 +108,7 @@ export default function LegalPage() {
                 {t(`${id}.title`)}
               </h1>
               <p className="text-xs text-text-muted mb-8">
-                {t("lastUpdated", { date: "2026-03-08" })}
+                {t("lastUpdated", { date: "2026-09-27" })}
               </p>
               <LegalSection t={t} sectionKey={id} sectionCount={sectionCount} />
             </article>

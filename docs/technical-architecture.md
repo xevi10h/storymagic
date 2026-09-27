@@ -117,6 +117,16 @@ orders
 ├── gelato_status (raw last Gelato fulfillmentStatus)
 └── fulfilment_alerted_at (operator alerted: retries exhausted)
 
+photo_consents (parental consent per child photo — service role only, RLS on, no policies)
+├── id (uuid, PK)
+├── user_id (FK → auth.users, on delete cascade)
+├── photo_path (text, unique — child-photos/{userId}/{uuid}.jpg)
+├── consent_version (text — PHOTO_CONSENT_VERSION of the accepted copy)
+├── locale (es/ca/en/fr)
+├── created_at
+└── deleted_at (photo deleted: after the avatar, on withdrawal, or by the purge cron; row kept as proof)
+RPC list_expired_child_photos(p_older_than, p_limit) — service role only; storage.objects in child-photos older than cutoff
+
 ops_alerts (operator alert dedupe — service role only; RPC claim_ops_alert(key, window))
 ├── created_at
 └── updated_at
@@ -162,6 +172,7 @@ blog_posts (editorial blog — Supabase CMS)
 |--------|--------|-------------|---------|
 | `illustrations` | Public | `{storyId}/preview/{scene-N\|cover\|sheet\|sheet-extra}-{version}.jpg`, `{storyId}/final/…-{version}.jpg`, `portraits/{uuid}/portrait-{version}.jpg` | OpenAI images: character sheets, scenes, covers, avatars. Every upload is a new versioned path (`upsert: false`) — no stale CDN |
 | `book-pdfs` | Private | `{userId}/{storyId}.pdf` | Generated PDF books, served via signed URL |
+| `child-photos` | Private, server-only (no storage policies; 5 MB, image/jpeg) | `{userId}/{uuid}.jpg` | Child's photo, re-encoded JPEG ≤1536 px with all metadata stripped. Used only for the avatar/early child sheet (bytes downloaded server-side, never a URL), deleted right after, hourly purge > 24 h. Migration `20260927140000_child_photos.sql` |
 
 ## Generation Pipeline
 
@@ -316,6 +327,8 @@ src/
 │   ├── checkout/verify/route.ts          — GET: confirm payment (webhook fallback) + order_confirmed email
 │   ├── webhooks/stripe/route.ts          — POST: Stripe webhook → 'paid' (conditional) + customer_email + confirmation email (all formats)
 │   ├── cron/fulfill-orders/route.ts      — GET (Vercel cron, 5 min): fan out /complete for paid, unfulfilled orders
+│   ├── cron/purge-photos/route.ts        — GET (Vercel cron, hourly :17): delete child photos > 24 h, mark photo_consents.deleted_at
+│   ├── characters/photo/route.ts         — POST: child photo upload (consent + sharp re-encode, flag-gated) · DELETE: withdraw consent
 │   ├── webhooks/gelato/route.ts          — POST: Gelato webhook → ranked status/tracking + lifecycle emails
 │   ├── dashboard/route.ts                — GET: user stories/orders/characters
 │   └── profile/route.ts                  — GET/PATCH: user profile
@@ -390,6 +403,7 @@ src/
 ## Key Technical Notes
 
 - **Resend email** — Transactional emails via Resend REST API (no SDK). Currently sending from `constrack.pro` domain (temporary); `meapica.com` DNS records need to be configured in Resend for branded emails. Two flows: (1) waitlist confirmation, (2) order lifecycle — `order_confirmed` (physical) / `order_confirmed_digital` → `book_ready` (all formats, download link, when the final book is generated) → `in_production` → `shipped` (with carrier tracking) → `delivered`, all localized (es/ca/en/fr). Recipient: `orders.customer_email` (Stripe Checkout email — guests are anonymous) with auth-user fallback. Exactly-once: confirmation + book_ready are claimed via `orders.confirmation_email_sent_at` / `ready_email_sent_at`; in_production is sent by the run that records the Gelato order; shipping/delivery by the Gelato webhook event that performs the ranked transition. Operator alerts go to `OPS_ALERT_EMAIL` (optional, falls back to `GELATO_OWNER_EMAIL`). Env vars: `RESEND_API_KEY` (required), `EMAIL_FROM` (optional, default `Meapica <hola@constrack.pro>`), `NEXT_PUBLIC_SITE_URL` (optional, default `https://meapica.com` — used for logo + dashboard/tracking links).
+- **Child photo (flag)** — `NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED` (default off; `true` only after DPIA + OpenAI DPA). Code: `src/lib/privacy/child-photo-policy.ts` (pure, client-safe: bucket, `PHOTO_CONSENT_VERSION`, limits, path rules) + `src/lib/privacy/child-photo.ts` (server: sharp, storage, `deleteChildPhoto`, purge). Crons need `CRON_SECRET`. Vercel crons: `/api/cron/fulfill-orders` (*/5) + `/api/cron/purge-photos` (hourly). Full lifecycle: `generation-pipeline.md` → "Child photo".
 - **Waitlist gate** — Controlled by `WAITLIST_MODE` env var (true/false). Secret bypass via `WAITLIST_ACCESS_CODE` env var (query param sets a cookie for team testing).
 - **No AI SDKs** — Xavier's preference. Everything uses plain `fetch()`. Provider auto-detected from env vars.
 - **Guest flow** — /crear is unprotected. Anonymous Supabase sign-in at checkout if not logged in. State persisted in localStorage.

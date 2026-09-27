@@ -92,6 +92,13 @@ Each template is identified by an English slug and is backed by a branching stor
 | `sender_name` | string | No | Gift sender's name (if it's a gift) |
 | `custom_dedication` | string | No | Custom dedication message |
 | `template_id` | string (slug) | Yes | Selected story template (space / forest / pirates / dinosaurs / superhero / chef / castle / safari / inventor / candy) |
+| `photo` | image | No | Child's photo, behind `NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED` (off until DPIA + OpenAI DPA). Requires the parent/guardian consent checkbox (`crear.photo.*`). Used ONLY to create the avatar portrait (and early child sheet), then deleted; hourly purge guarantees < 24 h. The book never uses it. |
+
+### Child photo — privacy promise (2026-09-27)
+- Public copy: "la borramos en cuanto creamos su personaje (y siempre en menos de 24 horas)"; OpenAI does not train on it and may keep it up to 30 days for abuse monitoring. Privacy policy section 8 "Fotos de menores" (`legal.privacy.section8*`).
+- Consent record per photo (`photo_consents`: user, time, `PHOTO_CONSENT_VERSION`, locale), kept after deletion as proof. Bump `PHOTO_CONSENT_VERSION` whenever the `crear.photo.checkbox` copy changes.
+- Withdrawal: `DELETE /api/characters/photo` or email to hola@meapica.com → deleted immediately.
+- Pending before enabling: DPIA/EIPD, OpenAI DPA, controller NIF/address in the privacy policy (`[NIF]`, `[DIRECCIÓN]` placeholders).
 
 ## Upsells & Add-ons
 

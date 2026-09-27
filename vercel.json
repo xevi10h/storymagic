@@ -5,6 +5,10 @@
     {
       "path": "/api/cron/fulfill-orders",
       "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/purge-photos",
+      "schedule": "17 * * * *"
     }
   ]
 }
