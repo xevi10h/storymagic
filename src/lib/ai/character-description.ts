@@ -1,43 +1,18 @@
-// Character visual description builder for AI image prompts.
+// Character Bible — the SINGLE source of truth for how the child looks.
 //
-// SINGLE source of truth for how the protagonist looks across ALL images.
+// The parent's choices (gender, age, skin, hair colour + style, eyes, favourite
+// colour, optional glasses/freckles) map to ONE canonical English description.
+// That exact string (byte-identical) is used for the avatar portrait, the
+// character sheet, every scene and the cover, and it is frozen into the story's
+// image plan at preview time, so the final book renders the same child the
+// parent approved.
 //
-// ═══════════════════════════════════════════════════════════════════
-// LAYERED PROMPT ARCHITECTURE
-// ═══════════════════════════════════════════════════════════════════
-//
-// Every prompt is built from 5 layers, always in this order:
-//
-// LAYER 1 — PHYSICAL IDENTITY (always included, immutable)
-//   Skin tone, hair color+style, eye color, gender, age.
-//   These are the hex-mapped constants that NEVER change.
-//
-// LAYER 2 — OUTFIT (priority: dream > interest > age-default)
-//   Only ONE outfit per prompt. Clear priority prevents conflicts.
-//
-// LAYER 3 — PROPS & ENVIRONMENT (additive, max 2 items)
-//   Small objects from interests or companion. Never background themes.
-//
-// LAYER 4 — EXPRESSION & MOOD
-//   Default warm smile, optionally modified by special trait.
-//
-// LAYER 5 — COLOR PROTECTION (always last, acts as override)
-//   Explicit "skin must be X, hair must be Y" instruction.
-//
-// LAYER 6 — RECRAFT CONTROLS (API-level, not in prompt text)
-//   Passes actual RGB color values to Recraft's `controls.colors` parameter.
-//   This is MORE reliable than text descriptions because the AI model
-//   receives direct color guidance alongside the prompt.
-//
-// ═══════════════════════════════════════════════════════════════════
-
-/** Recraft controls for color guidance and artistic parameters. */
-export interface RecraftControls {
-  colors?: { rgb: [number, number, number] }[];
-  background_color?: { rgb: [number, number, number] };
-  artistic_level?: number;
-  no_text?: boolean;
-}
+// Rules (audit 2026-09-27, identity drift):
+//   - gender comes from the `gender` field only — never inferred from the name;
+//   - the child's name is never a visual cue (it is not part of the description);
+//   - ONE outfit for avatar, sheet and scenes (no dream/interest costume in some
+//     images and an age default in others);
+//   - no "typical of <country>" ethnicity strings, no pink/blue-by-gender palettes.
 
 export interface CharacterDescriptionInput {
   gender: "boy" | "girl" | "neutral";
@@ -46,389 +21,160 @@ export interface CharacterDescriptionInput {
   hairColor?: string;
   eyeColor?: string;
   hairstyle?: string;
-  childName: string;
-  interests?: string[];
-}
-
-export interface PortraitPersonalityInput {
-  interests?: string[];
+  /** Favourite colour (hex from the UI) — colours the outfit's jacket */
   favoriteColor?: string;
-  favoriteCompanion?: string;
-  futureDream?: string;
-  city?: string;
+  glasses?: boolean;
+  freckles?: boolean;
+  /** Not used visually. Accepted so story inputs can be passed straight in. */
+  childName?: string;
 }
 
-// ═══════════════════════════════════════════════════════════════════
-// LAYER 1 — PHYSICAL IDENTITY MAPS
-// ═══════════════════════════════════════════════════════════════════
-// Each hex color from the UI maps to ONE unambiguous natural-language description.
-// These descriptions use real-world analogues for maximum Recraft accuracy.
+export interface CharacterBible {
+  version: 1;
+  gender: "boy" | "girl" | "neutral";
+  age: number;
+  /** "girl" | "boy" | "child" */
+  genderWord: string;
+  /** Body, face and hair only */
+  identity: string;
+  /** The one canonical outfit */
+  outfit: string;
+  /** identity + outfit — THE string used verbatim in every image prompt */
+  description: string;
+  /** Optional real photo of the child (future feature) — facial likeness only */
+  photoUrl: string | null;
+}
+
+// ── Maps (UI hex → words) ───────────────────────────────────────────────────
 
 const SKIN_MAP: Record<string, string> = {
-  "#fce4d6": "very fair pale pinkish-white skin, typical of Nordic countries like Finland or Russia",
-  "#eebb99": "light warm beige skin, typical of Central European countries like Germany or France",
-  "#d4a574": "warm golden olive-tan skin, typical of Mediterranean countries like Spain or Italy",
-  "#c68642": "warm golden olive-tan skin, typical of Mediterranean countries like Spain or Italy", // legacy fallback
-  "#8d5524": "rich dark brown skin, typical of countries like Morocco, Brazil or Peru",
-  "#523218": "deep very dark brown skin, typical of West African countries like Senegal or Gambia",
+  "#fce4d6": "very fair, pale pinkish skin",
+  "#eebb99": "light warm beige skin",
+  "#d4a574": "warm golden olive-tan skin",
+  "#c68642": "warm golden olive-tan skin", // legacy value
+  "#8d5524": "rich medium-dark brown skin",
+  "#523218": "deep dark brown skin",
 };
 
 const HAIR_COLOR_MAP: Record<string, string> = {
-  "#2a2a2a": "jet black",
-  "#5d4037": "dark brown",
-  "#8d6e63": "chestnut brown",
-  "#e6c07b": "golden blonde",
-  "#d84315": "bright red",
+  "#2a2a2a": "jet-black",
+  "#5d4037": "dark-brown",
+  "#8d6e63": "chestnut-brown",
+  "#e6c07b": "golden-blonde",
+  "#d84315": "bright copper-red",
 };
 
 const EYE_COLOR_MAP: Record<string, string> = {
-  "#5d4037": "very dark brown, almost black",
-  "#8d6e63": "warm chestnut brown",
-  "#558b2f": "vivid bright green",
-  "#1976d2": "clear bright blue",
-  "#a0875b": "warm amber-hazel",
-  "#78909c": "soft blue-gray",
+  "#5d4037": "very dark brown, almost black eyes",
+  "#8d6e63": "warm chestnut-brown eyes",
+  "#558b2f": "bright green eyes",
+  "#1976d2": "clear blue eyes",
+  "#a0875b": "warm amber-hazel eyes",
+  "#78909c": "soft blue-grey eyes",
 };
 
-const HAIRSTYLE_MAP: Record<string, string> = {
-  short: "short",
-  curly: "curly",
-  spiky: "spiky",
-  buzz: "very short buzz-cut",
-  long: "long flowing",
-  pigtails: "in two pigtails",
-  bob: "bob-cut",
-  medium: "medium-length",
-  afro: "voluminous afro",
-  mohawk: "bold mohawk",
-  ponytail: "in a ponytail",
-  braids: "in braids",
-  bun: "in a bun",
+/** Favourite colour → the jacket colour (gender-neutral, the child's own choice). */
+const OUTFIT_COLOR_MAP: Record<string, string> = {
+  "#e53935": "tomato-red",
+  "#1e88e5": "cornflower-blue",
+  "#43a047": "leaf-green",
+  "#8e24aa": "plum-purple",
+  "#fb8c00": "tangerine-orange",
+  "#fdd835": "mustard-yellow",
+  "#ec407a": "raspberry-pink",
+  "#00acc1": "teal",
 };
+const DEFAULT_OUTFIT_COLOR = "mustard-yellow";
 
-// ═══════════════════════════════════════════════════════════════════
-// LAYER 2 — OUTFIT MAPS
-// ═══════════════════════════════════════════════════════════════════
-// Priority: dream outfit > interest outfit > age-default outfit.
-// Only ONE source provides the outfit — no conflicts.
+function hairDescription(style: string | undefined, color: string, gender: CharacterDescriptionInput["gender"]): string {
+  switch (style) {
+    case "curly":
+      return gender === "boy"
+        ? `short springy ${color} curls`
+        : gender === "girl"
+          ? `shoulder-length springy ${color} curls`
+          : `chin-length springy ${color} curls`;
+    case "spiky":
+      return `short spiky ${color} hair`;
+    case "buzz":
+      return `very short buzz-cut ${color} hair`;
+    case "medium":
+      return `medium-length straight ${color} hair covering the ears`;
+    case "afro":
+      return `a rounded, voluminous ${color} afro`;
+    case "mohawk":
+      return `a short ${color} mohawk with the sides cut very short`;
+    case "long":
+      return `long straight ${color} hair falling past the shoulders`;
+    case "pigtails":
+      return `${color} hair in two pigtails tied with small bands`;
+    case "ponytail":
+      return `${color} hair pulled back in a high ponytail`;
+    case "braids":
+      return `${color} hair in two long braids`;
+    case "bob":
+      return `a chin-length ${color} bob with a straight fringe`;
+    case "bun":
+      return `${color} hair gathered in a round top bun`;
+    case "short":
+    default:
+      return `short, neatly cut ${color} hair`;
+  }
+}
 
-// Gender-specific outfit colors for visual consistency across all scenes.
-// Without a concrete color, FLUX invents a different one each time.
-const AGE_DEFAULT_OUTFIT: Record<string, Record<string, string>> = {
-  toddler: {
-    girl: "wearing a soft pink striped t-shirt and light denim overalls",
-    boy: "wearing a light blue striped t-shirt and soft gray pants",
-    neutral: "wearing a sunny yellow striped t-shirt and soft pants",
-  },
-  child: {
-    girl: "wearing a bright pink hoodie and blue jeans",
-    boy: "wearing a bright blue hoodie and dark jeans",
-    neutral: "wearing a bright yellow hoodie and blue jeans",
-  },
-  preteen: {
-    girl: "wearing a coral-pink casual jacket over a white t-shirt and jeans",
-    boy: "wearing a navy blue casual jacket over a white t-shirt and jeans",
-    neutral: "wearing a green casual jacket over a white t-shirt and jeans",
-  },
-};
+function outfitFor(age: number, favoriteColor: string | undefined): string {
+  const color = (favoriteColor && OUTFIT_COLOR_MAP[favoriteColor.toLowerCase()]) || DEFAULT_OUTFIT_COLOR;
+  const bottoms = age <= 4 ? "soft navy dungarees" : age <= 7 ? "navy trousers" : "dark-blue jeans";
+  return `a plain ${color} hooded jacket worn open over a white-and-navy striped t-shirt, ${bottoms} and white canvas sneakers`;
+}
 
-/** Dream → specific themed outfit. No background elements — only clothing/props. */
-const DREAM_OUTFIT_MAP: Record<string, string> = {
-  astronaut: "wearing a cute astronaut-themed t-shirt or jumpsuit",
-  doctor: "wearing a small white lab coat with a stethoscope",
-  chef: "wearing a chef's hat and apron",
-  teacher: "holding a book with a studious look",
-  artist: "wearing a colorful beret and paint-splashed apron",
-  athlete: "wearing sporty athletic gear",
-  musician: "holding a musical instrument",
-  scientist: "wearing safety goggles on forehead and a lab coat",
-  firefighter: "wearing a small red firefighter helmet",
-  pilot: "wearing aviator goggles on forehead",
-  vet: "wearing a small lab coat, holding a plush animal",
-  dancer: "in a ballet or dance outfit",
-};
+// ── Public API ──────────────────────────────────────────────────────────────
 
-/** Interest → outfit (used only when no dream provides one). */
-const INTEREST_OUTFIT_MAP: Record<string, string> = {
-  sports: "wearing a sporty t-shirt and shorts",
-  music: "wearing a casual outfit with headphones around neck",
-  space: "wearing a space-themed t-shirt",
-  animals: "wearing a nature-themed outfit",
-  castles: "wearing a medieval-inspired tunic",
-  dinosaurs: "wearing a dinosaur-print t-shirt",
-};
-
-// ═══════════════════════════════════════════════════════════════════
-// LAYER 3 — PROPS MAP
-// ═══════════════════════════════════════════════════════════════════
-// Small objects that appear near the character. Max 2 in any prompt.
-// NEVER background themes (no "stars", "cosmic", "galaxy").
-
-const INTEREST_PROP_MAP: Record<string, string> = {
-  sports: "with a ball nearby",
-  music: "with a small musical instrument nearby",
-  animals: "with a gentle caring expression",
-  space: "with a small rocket toy nearby",
-  castles: "with a small toy castle nearby",
-  dinosaurs: "with a small toy dinosaur nearby",
-};
-
-// ═══════════════════════════════════════════════════════════════════
-// LAYER 5 — GENDER COLOR DIRECTIVES (backgrounds only)
-// ═══════════════════════════════════════════════════════════════════
-
-const GENDER_COLOR_DIRECTIVES: Record<string, string> = {
-  girl: "BACKGROUND and ENVIRONMENT color palette: soft warm pinks, rose, coral, peach tones. Apply ONLY to backgrounds, sky, and environment — never to the character's skin or hair.",
-  boy: "BACKGROUND and ENVIRONMENT color palette: soft warm blues, sky blue, teal accents. Apply ONLY to backgrounds, sky, and environment — never to the character's skin or hair.",
-};
-
-// ═══════════════════════════════════════════════════════════════════
-// BUILDER FUNCTIONS
-// ═══════════════════════════════════════════════════════════════════
-
-/** Resolves Layer 1 — physical identity string (no clothing, no expression). */
-function buildPhysicalIdentity(input: CharacterDescriptionInput): string {
-  const parts: string[] = [];
-
+/** Builds the immutable Character Bible. Deterministic: same input → same bytes. */
+export function buildCharacterBible(input: CharacterDescriptionInput, photoUrl: string | null = null): CharacterBible {
   const genderWord = input.gender === "boy" ? "boy" : input.gender === "girl" ? "girl" : "child";
-  parts.push(`A ${input.age}-year-old ${genderWord}`);
+  const possessive = input.gender === "boy" ? "his" : input.gender === "girl" ? "her" : "their";
+  const age = Math.max(1, Math.min(12, Math.round(input.age)));
 
-  if (input.skinTone) {
-    const skin = SKIN_MAP[input.skinTone];
-    if (skin) parts.push(`with ${skin}`);
-  }
+  const traits: string[] = [];
+  const skin = input.skinTone ? SKIN_MAP[input.skinTone.toLowerCase()] : undefined;
+  traits.push(skin ?? "warm light skin");
+  const hairColor = (input.hairColor && HAIR_COLOR_MAP[input.hairColor.toLowerCase()]) || "dark-brown";
+  traits.push(hairDescription(input.hairstyle, hairColor, input.gender));
+  traits.push((input.eyeColor && EYE_COLOR_MAP[input.eyeColor.toLowerCase()]) || "warm brown eyes");
+  if (input.glasses) traits.push("round glasses with thin dark frames");
+  traits.push("round rosy cheeks");
+  if (input.freckles) traits.push(`a sprinkle of freckles across ${possessive} nose`);
 
-  if (input.hairColor) {
-    const color = HAIR_COLOR_MAP[input.hairColor] || "";
-    const style = input.hairstyle ? (HAIRSTYLE_MAP[input.hairstyle] || input.hairstyle) : "short";
-    parts.push(`${style} ${color} hair`);
-  }
-
-  return parts.join(", ");
-}
-
-/** Resolves Layer 2 — outfit with clear priority: dream > interest > age default. */
-function resolveOutfit(input: CharacterDescriptionInput, personality?: PortraitPersonalityInput): string {
-  // Priority 1: Dream outfit
-  if (personality?.futureDream) {
-    const dreamKey = personality.futureDream.toLowerCase();
-    const match = DREAM_OUTFIT_MAP[dreamKey]
-      || Object.entries(DREAM_OUTFIT_MAP).find(([k]) => dreamKey.includes(k))?.[1];
-    if (match) return match;
-    return `dressed as if dreaming of becoming a ${personality.futureDream}`;
-  }
-
-  // Priority 2: Primary interest outfit
-  if (personality?.interests?.length) {
-    const firstInterest = personality.interests[0];
-    if (INTEREST_OUTFIT_MAP[firstInterest]) return INTEREST_OUTFIT_MAP[firstInterest];
-  }
-
-  // Priority 3: Age + gender-appropriate default (concrete colors for FLUX consistency)
-  const gender = input.gender || "neutral";
-  if (input.age <= 4) return AGE_DEFAULT_OUTFIT.toddler[gender] || AGE_DEFAULT_OUTFIT.toddler.neutral;
-  if (input.age <= 7) return AGE_DEFAULT_OUTFIT.child[gender] || AGE_DEFAULT_OUTFIT.child.neutral;
-  return AGE_DEFAULT_OUTFIT.preteen[gender] || AGE_DEFAULT_OUTFIT.preteen.neutral;
-}
-
-/** Resolves Layer 3 — props (max 2). Skips interests already used for outfit. */
-function resolveProps(personality?: PortraitPersonalityInput, outfitFromDream?: boolean): string[] {
-  if (!personality) return [];
-  const props: string[] = [];
-
-  // Interest props — if dream provided outfit, all interests can provide props.
-  // If interest provided outfit, skip that interest's prop to avoid redundancy.
-  if (personality.interests?.length) {
-    const outfitInterest = !outfitFromDream ? personality.interests[0] : null;
-    for (const interest of personality.interests) {
-      if (interest === outfitInterest) continue; // Skip — already used for outfit
-      if (INTEREST_PROP_MAP[interest]) {
-        props.push(INTEREST_PROP_MAP[interest]);
-        if (props.length >= 2) break;
-      }
-    }
-  }
-
-  // Companion — add if we have room
-  if (props.length < 2 && personality.favoriteCompanion) {
-    props.push(`with a small ${personality.favoriteCompanion} companion nearby`);
-  }
-
-  return props.slice(0, 2);
-}
-
-/** Resolves Layer 4 — expression. */
-function resolveExpression(input: CharacterDescriptionInput, _personality?: PortraitPersonalityInput): string {
-  if (input.eyeColor) {
-    const eyes = EYE_COLOR_MAP[input.eyeColor];
-    if (eyes) {
-      return `with ${eyes} eyes and a warm friendly smile`;
-    }
-  }
-  return "with bright round eyes and a warm friendly smile";
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// PUBLIC API
-// ═══════════════════════════════════════════════════════════════════
-
-/**
- * Builds the FULL character reference for book illustrations.
- * Includes: physical identity + age-default outfit + expression + realism anchor.
- * Used across all book scenes for visual consistency.
- */
-export function buildCharacterReference(input: CharacterDescriptionInput): string {
-  const identity = buildPhysicalIdentity(input);
-  const outfit = resolveOutfit(input); // No personality → always age-default
-  const expression = resolveExpression(input);
-
-  return `${identity}, ${outfit}, ${expression}, natural realistic human skin and hair colors`;
+  const last = traits.pop() as string;
+  const identity = `a ${age}-year-old ${genderWord} with ${traits.join(", ")} and ${last}`;
+  const outfit = outfitFor(age, input.favoriteColor);
+  return {
+    version: 1,
+    gender: input.gender,
+    age,
+    genderWord,
+    identity,
+    outfit,
+    description: `${identity}; wearing ${outfit}`,
+    photoUrl,
+  };
 }
 
 /**
- * Builds the portrait-specific prompt section.
- * Includes: physical identity + personality-driven outfit + props + expression.
- * NO realism anchor (that's added separately via buildColorAnchor).
- */
-export function buildPortraitCharacterReference(
-  input: CharacterDescriptionInput,
-  personality?: PortraitPersonalityInput,
-): string {
-  const identity = buildPhysicalIdentity(input);
-  const hasDreamOutfit = !!personality?.futureDream;
-  const outfit = resolveOutfit(input, personality);
-  const props = resolveProps(personality, hasDreamOutfit);
-  const expression = resolveExpression(input, personality);
-
-  const parts = [identity, outfit, ...props, expression];
-  return parts.filter(Boolean).join(", ");
-}
-
-/**
- * Builds explicit color-anchoring instruction for Recraft.
- * Placed LAST in prompts — acts as final override to protect skin/hair colors.
- */
-export function buildColorAnchor(input: CharacterDescriptionInput): string {
-  const anchors: string[] = [];
-
-  if (input.skinTone) {
-    const skin = SKIN_MAP[input.skinTone];
-    if (skin) anchors.push(`skin must be ${skin}`);
-  }
-
-  if (input.hairColor) {
-    const color = HAIR_COLOR_MAP[input.hairColor];
-    if (color) anchors.push(`hair must be ${color}`);
-  }
-
-  if (input.eyeColor) {
-    const eyes = EYE_COLOR_MAP[input.eyeColor];
-    if (eyes) anchors.push(`eyes must be ${eyes}`);
-  }
-
-  if (anchors.length === 0) return "";
-
-  return `IMPORTANT: Character's ${anchors.join(", ")}. Natural human colors only — no purple, blue, green or gray tints on skin or hair.`;
-}
-
-/**
- * Returns gender-based background color directive.
- * Applied ONLY to backgrounds — explicitly states "never to skin or hair".
- */
-export function getGenderColorDirective(gender?: string): string {
-  if (!gender) return "";
-  return GENDER_COLOR_DIRECTIVES[gender] ?? "";
-}
-
-/**
- * Short version for LLM text generation (story-generator.ts).
- * Gives the LLM physical context without being a full image prompt.
+ * The canonical description, for the story LLM (architect imagePrompts).
+ * Same bytes as the image prompts — one descriptor everywhere.
  */
 export function buildCharacterVisualDescription(input: CharacterDescriptionInput): string {
-  const parts: string[] = [];
-
-  const genderWord = input.gender === "boy" ? "boy" : input.gender === "girl" ? "girl" : "child";
-  parts.push(`${genderWord}, ${input.age} years old`);
-
-  if (input.skinTone) {
-    const skin = SKIN_MAP[input.skinTone];
-    if (skin) parts.push(skin);
-  }
-
-  if (input.hairColor) {
-    const color = HAIR_COLOR_MAP[input.hairColor] || "";
-    const style = input.hairstyle ? (HAIRSTYLE_MAP[input.hairstyle] || input.hairstyle) : "short";
-    parts.push(`${style} ${color} hair`);
-  }
-
-  if (input.eyeColor) {
-    const eyes = EYE_COLOR_MAP[input.eyeColor];
-    if (eyes) parts.push(`${eyes} eyes`);
-  }
-
-  return parts.filter(Boolean).join(", ");
+  return buildCharacterBible(input).description;
 }
-
-// ═══════════════════════════════════════════════════════════════════
-// LAYER 6 — RECRAFT CONTROLS BUILDER
-// ═══════════════════════════════════════════════════════════════════
-// Converts character hex colors to Recraft's `controls` API parameter.
-// These RGB values are passed directly to the model — much more reliable
-// than text descriptions for ensuring correct skin/hair/eye colors.
-
-/** Converts a hex color string (e.g. "#c68642") to an RGB tuple. */
-function hexToRgb(hex: string): [number, number, number] {
-  const clean = hex.replace("#", "");
-  return [
-    parseInt(clean.slice(0, 2), 16),
-    parseInt(clean.slice(2, 4), 16),
-    parseInt(clean.slice(4, 6), 16),
-  ];
-}
-
-/** Gender-based background colors (soft, not overpowering). */
-const GENDER_BG_COLORS: Record<string, [number, number, number]> = {
-  boy: [220, 235, 250],    // Soft warm blue
-  girl: [250, 228, 225],   // Soft warm pink
-};
 
 /**
- * Builds Recraft API `controls` from character data.
- *
- * - `colors`: skin + hair + eye as RGB values → guides the model's palette
- * - `background_color`: gender-based soft background
- * - `artistic_level`: age-based (4 for toddlers = whimsical, 2 for older = refined)
- * - `no_text`: always true
+ * @deprecated Gendered pink/blue palettes were removed from image prompts
+ * (audit 2026-09-27). Kept only because story-generator.ts still calls it;
+ * returns "" so no palette directive is added.
  */
-export function buildRecraftControls(
-  input: CharacterDescriptionInput,
-  options?: { isPortrait?: boolean },
-): RecraftControls {
-  const controls: RecraftControls = {
-    no_text: true,
-  };
-
-  // Color palette: skin tone is the DOMINANT color (listed first = highest weight),
-  // then hair, then eyes. This guides Recraft to respect these specific colors.
-  const colors: { rgb: [number, number, number] }[] = [];
-  if (input.skinTone) colors.push({ rgb: hexToRgb(input.skinTone) });
-  if (input.hairColor) colors.push({ rgb: hexToRgb(input.hairColor) });
-  if (input.eyeColor) colors.push({ rgb: hexToRgb(input.eyeColor) });
-  if (colors.length > 0) controls.colors = colors;
-
-  // Background color: gender-based soft tint
-  const bgColor = GENDER_BG_COLORS[input.gender];
-  if (bgColor) controls.background_color = { rgb: bgColor };
-
-  // Artistic level: consistent per age band
-  // Lower = more restrained/predictable, higher = more creative
-  if (options?.isPortrait) {
-    // Portraits: moderate artistic level for clean, consistent character shots
-    controls.artistic_level = input.age <= 4 ? 4 : input.age <= 6 ? 3 : input.age <= 9 ? 3 : 2;
-  } else {
-    // Book illustrations: slightly more creative for scene richness
-    controls.artistic_level = input.age <= 4 ? 5 : input.age <= 6 ? 4 : input.age <= 9 ? 4 : 3;
-  }
-
-  return controls;
+export function getGenderColorDirective(gender?: string): string {
+  void gender;
+  return "";
 }

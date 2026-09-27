@@ -1,25 +1,16 @@
 /**
- * Shared illustration style directives for the FLUX.2 pipeline.
+ * Illustration style directive — appended verbatim to every image prompt
+ * (portrait, character sheet, scenes, cover) so all images share one look.
  *
- * The reinforced-watercolor look was validated in the engine A/B (artifacts/benchmark-watercolor):
- * with this suffix, FLUX.2 produces an authentic hand-painted watercolor texture (paper grain,
- * soft washes, bleeding edges) that fits meapica's "artisanal, not AI-render" positioning.
- *
- * Used by both scene generation (scene-screenplay.ts) and reference-sheet generation
- * (visual-assets.ts) so scenes and their references share one visual distribution —
- * which is what keeps character/world consistency high.
+ * Ported from the 2026-09 model bake-off (artifacts/model-bakeoff-2026-09/prompts.py,
+ * STYLE), plus a muted/desaturated palette note (the bake-off's main gap was a
+ * slightly "digital" watercolor feel).
  */
+export const WATERCOLOR_STYLE =
+  "Traditional hand-painted children's picture-book watercolor illustration: loose wet-on-wet washes with soft bleeding edges, " +
+  "visible cold-press watercolor paper grain, granulating pigment, gentle gouache highlights, delicate hand-drawn ink linework, " +
+  "muted warm storybook palette, slightly desaturated (Beatrix Potter meets Quentin Blake meets Studio Ghibli backgrounds). " +
+  "Painterly and analog, NOT digital, NOT vector, NOT 3D render, NOT glossy, NOT a photograph. No text, no letters, no signature, no watermark.";
 
-/** Appended to every scene/cover fluxPrompt. Keep in sync with the validated A/B prompt. */
-export const WATERCOLOR_STYLE_SUFFIX =
-  " Traditional hand-painted children's book watercolor illustration: loose wet-on-wet washes with soft bleeding edges, " +
-  "visible cold-press watercolor paper grain, granulating pigment, gentle gouache highlights, delicate ink linework, " +
-  "muted warm storybook palette (Studio Ghibli meets Beatrix Potter meets Quentin Blake). " +
-  "Painterly and analog, NOT digital, NOT vector, NOT 3D render, NOT glossy, NOT a photograph. " +
-  "Full bleed edge-to-edge. No borders, no white edges, no text, no signature, no watermark, no branded logos.";
-
-/** Style framing for reference-sheet generation (same look, neutral background). */
-export const WATERCOLOR_REF_STYLE =
-  "Traditional hand-painted children's book watercolor illustration style: soft washes, visible paper grain, " +
-  "delicate ink linework, muted warm palette, cute storybook proportions with large expressive eyes. " +
-  "NOT digital, NOT vector, NOT 3D, NOT a photograph.";
+/** Scenes and covers: the art must reach every edge (print bleed). */
+export const FULL_BLEED = "Full bleed edge to edge, no borders, no frames, no white margins.";

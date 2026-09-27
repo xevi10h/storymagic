@@ -1,197 +1,197 @@
-// QA Judge — automated quality review for book illustrations
+// QA judge — reviews each final illustration against the character sheet AND
+// the scene's text, with OpenAI vision (same OPENAI_API_KEY as everything else;
+// the old Gemini judge silently skipped whenever GEMINI_API_KEY was missing).
 //
-// Uses Gemini 2.5 Flash (vision) to score each illustration against its scene
-// spec and the visual-bible reference images. Returns per-scene scores + issues.
-//
-// Why Gemini 2.5 Flash (not gpt-4o): ~10× cheaper on vision, handles many images
-// per call, and consolidates on the same Google key already used for image work.
+// One call per scene (sheet + scene image + text), run in parallel: a clean
+// 1-to-1 mapping between verdict and image. A failing verdict carries a concrete
+// fix instruction that the pipeline applies by EDITING the image (repairShot).
 
+import sharp from "sharp";
 import { parseJsonResponse } from "./story-generator";
-import type { Screenplay } from "./scene-screenplay";
-import type { AssetReference } from "./visual-assets";
-
-// ── Types ────────────────────────────────────────────────────────
+import { openAIKey } from "./openai-image";
 
 export interface QAVerdict {
   sceneNumber: number;
-  score: number;              // 1-10 overall
-  coherenceScore: number;     // Text-image alignment (1-10)
-  consistencyScore: number;   // Character/world consistency vs references (1-10)
-  qualityScore: number;       // Visual quality — no borders, watermarks (1-10)
-  issues: string[];           // Specific problems found
-  suggestion: string;         // How to fix (for regeneration prompt)
+  /** 1–10 overall */
+  score: number;
+  /** Same child / companions as the sheet (face, hair, skin, outfit, gender, age) */
+  consistencyScore: number;
+  /** Matches the scene text and shot */
+  coherenceScore: number;
+  /** Watercolor look, full bleed, no text, anatomy */
+  qualityScore: number;
+  issues: string[];
+  /** One imperative correction for the illustrator (edit instruction) */
+  fix: string;
+  /** Hard failures that always regenerate: text in image, duplicated character, wrong gender/character */
+  hardFail: boolean;
 }
 
 export interface QAResult {
-  overallScore: number;       // Average of all scene scores
+  overallScore: number;
   verdicts: QAVerdict[];
-  scenesToRegenerate: number[];  // Scene numbers failing a threshold
+  scenesToRegenerate: number[];
   iterationNumber: number;
-  /** True when the judge could not run (Gemini error/no key) → book shipped UNREVIEWED. */
+  /** True when the judge could not run → the book ships UNREVIEWED (callers must log loudly). */
   skipped?: boolean;
+  skipReason?: string;
 }
 
-// ── Config ───────────────────────────────────────────────────────
-
-const QA_MODEL = process.env.GEMINI_QA_MODEL || "gemini-2.5-flash";
-const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
-function geminiKey(): string {
-  return process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || "";
+export interface QAScene {
+  sceneNumber: number;
+  imageUrl: string;
+  /** The page text the child reads (story language) */
+  text: string;
+  /** What the illustration should show (English shot summary) */
+  shot: string;
+  /** Who must be in frame, e.g. ["THE CHILD", "PIP"] */
+  present: string[];
+  /** Recurring characters that must NOT be in frame */
+  absent: string[];
 }
 
-const SCORE_THRESHOLD = 7;        // overall below this → regenerate
-const CONSISTENCY_THRESHOLD = 8;  // consistency is brand-critical → stricter
-const MAX_REF_IMAGES = 8;         // cap reference sheets sent to the judge
+const SCORE_THRESHOLD = 7;
+const CONSISTENCY_THRESHOLD = 8;
+const JUDGE_CONCURRENCY = 6;
+const judgeModel = () => process.env.QA_JUDGE_MODEL || "gpt-5.4-mini";
 
-// ── Image helpers ────────────────────────────────────────────────
-
-interface InlinePart { mimeType: string; data: string }
-
-/** Convert a base64 string / data URI / http URL into Gemini inlineData. */
-async function toInline(input: string): Promise<InlinePart> {
-  if (input.startsWith("data:")) {
-    const m = input.match(/^data:([^;]+);base64,(.*)$/);
-    if (m) return { mimeType: m[1], data: m[2] };
+async function toDataUri(input: Buffer | string, maxEdge: number): Promise<string> {
+  let buf: Buffer;
+  if (typeof input === "string") {
+    const res = await fetch(input, { signal: AbortSignal.timeout(30_000) });
+    if (!res.ok) throw new Error(`QA image download failed (${res.status})`);
+    buf = Buffer.from(await res.arrayBuffer());
+  } else {
+    buf = input;
   }
-  if (!input.startsWith("http")) return { mimeType: "image/png", data: input };
-  const res = await fetch(input, { signal: AbortSignal.timeout(30_000) });
-  if (!res.ok) throw new Error(`Failed to download image for QA: ${res.status} ${input.slice(0, 100)}`);
-  const buf = Buffer.from(await res.arrayBuffer());
-  return { mimeType: res.headers.get("content-type") || "image/png", data: buf.toString("base64") };
+  const jpeg = await sharp(buf).resize({ width: maxEdge, height: maxEdge, fit: "inside", withoutEnlargement: true }).jpeg({ quality: 85 }).toBuffer();
+  return `data:image/jpeg;base64,${jpeg.toString("base64")}`;
 }
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+function buildPrompt(scene: QAScene, characters: string): string {
+  return `You are the art director of a premium personalised children's picture book. Review ONE illustration.
 
-// ── Main ─────────────────────────────────────────────────────────
+The FIRST image is the character model sheet — the single source of truth for how the recurring characters look.
+The SECOND image is the illustration to review.
+
+CHARACTERS (canonical descriptions):
+${characters}
+
+This illustration must show: ${scene.shot}
+Must be in frame: ${scene.present.join(", ") || "(no recurring character)"}.
+Must NOT be in frame: ${scene.absent.join(", ") || "(nobody excluded)"}.
+Page text (the reader sees this next to the picture): "${scene.text}"
+
+Score 1–10:
+- consistencyScore: every recurring character in frame matches the sheet — same face, skin tone, hair colour AND style, eye colour, outfit, gender and apparent age. A different-looking child is 1–3.
+- coherenceScore: the picture shows the moment of the page text and the shot (right action, setting, who is present).
+- qualityScore: hand-painted watercolor look, art reaches every edge (no border/frame/white margin), no anatomy errors.
+"score" = overall, weighted toward consistency and coherence.
+Set "hardFail": true if ANY of: letters/words/text/signature anywhere in the image; a recurring character appears twice; the child's gender or identity is different; a character listed as NOT in frame is visible; it copies the model-sheet layout (turnaround poses on plain paper).
+"issues": short concrete problems. "fix": ONE imperative instruction that tells an illustrator exactly what to change (empty if nothing).
+
+Return ONLY JSON: {"score":8,"consistencyScore":8,"coherenceScore":8,"qualityScore":8,"hardFail":false,"issues":[],"fix":""}`;
+}
+
+async function judgeOne(key: string, sheetUri: string, scene: QAScene, characters: string): Promise<QAVerdict> {
+  const imageUri = await toDataUri(scene.imageUrl, 1024);
+  let lastErr = "";
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: judgeModel(),
+        reasoning_effort: "low",
+        response_format: { type: "json_object" },
+        messages: [
+          {
+            role: "user",
+            content: [
+              { type: "text", text: buildPrompt(scene, characters) },
+              { type: "image_url", image_url: { url: sheetUri, detail: "high" } },
+              { type: "image_url", image_url: { url: imageUri, detail: "high" } },
+            ],
+          },
+        ],
+      }),
+      signal: AbortSignal.timeout(90_000),
+    });
+    const text = await res.text();
+    if (res.ok) {
+      const content = (JSON.parse(text) as { choices?: { message?: { content?: string } }[] }).choices?.[0]?.message?.content ?? "";
+      const v = parseJsonResponse<Partial<QAVerdict>>(content, `QA scene ${scene.sceneNumber}`);
+      const num = (x: unknown) => (typeof x === "number" && Number.isFinite(x) ? Math.max(1, Math.min(10, x)) : 1);
+      return {
+        sceneNumber: scene.sceneNumber,
+        score: num(v.score),
+        consistencyScore: num(v.consistencyScore),
+        coherenceScore: num(v.coherenceScore),
+        qualityScore: num(v.qualityScore),
+        hardFail: v.hardFail === true,
+        issues: Array.isArray(v.issues) ? v.issues.map(String) : [],
+        fix: typeof v.fix === "string" ? v.fix : "",
+      };
+    }
+    lastErr = `${res.status} ${text.slice(0, 200)}`;
+    if (res.status !== 429 && res.status < 500) break;
+    await new Promise((r) => setTimeout(r, 3_000 * (attempt + 1)));
+  }
+  throw new Error(`QA judge failed for scene ${scene.sceneNumber}: ${lastErr}`);
+}
+
+export function failsQa(v: QAVerdict): boolean {
+  return v.hardFail || v.score < SCORE_THRESHOLD || v.consistencyScore < CONSISTENCY_THRESHOLD;
+}
 
 /**
- * Review all illustrations for quality and consistency with the visual bible.
+ * Judge every scene. Never throws: if the judge cannot run at all, returns
+ * `skipped: true` with the reason (callers log it as a loud warning). A scene
+ * whose individual review failed is left out of `verdicts` (not regenerated).
  */
-export async function judgeIllustrations(
-  illustrations: { sceneNumber: number; imageUrl: string }[],
-  assetReferences: AssetReference[],
-  screenplay: Screenplay,
-  characterRef: string,
-  iterationNumber = 1,
-): Promise<QAResult> {
-  const mockMode = process.env.MOCK_MODE === "true";
-  if (mockMode || !geminiKey()) {
-    if (!mockMode) console.warn("[QA Judge] No GEMINI/GOOGLE key — skipping review (all-pass)");
-    return {
-      overallScore: mockMode ? 10 : 0,
-      verdicts: illustrations.map((ill) => ({
-        sceneNumber: ill.sceneNumber, score: 10, coherenceScore: 10, consistencyScore: 10, qualityScore: 10, issues: [], suggestion: "",
-      })),
-      scenesToRegenerate: [],
-      iterationNumber,
-    };
+export async function judgeScenes(args: {
+  scenes: QAScene[];
+  sheet: Buffer;
+  /** "THE CHILD: …\nPIP: …" */
+  characters: string;
+  iterationNumber: number;
+}): Promise<QAResult> {
+  const { scenes, iterationNumber } = args;
+  if (process.env.MOCK_MODE === "true") {
+    return { overallScore: 10, verdicts: [], scenesToRegenerate: [], iterationNumber, skipped: true, skipReason: "MOCK_MODE" };
   }
+  const key = openAIKey();
+  if (!key) return { overallScore: 0, verdicts: [], scenesToRegenerate: [], iterationNumber, skipped: true, skipReason: "OPENAI_API_KEY missing" };
 
-  const start = Date.now();
-  console.log(`[QA Judge] Reviewing ${illustrations.length} illustrations via ${QA_MODEL} (iteration ${iterationNumber})...`);
-
-  // Reference images first (base64 preferred, fallback to URL download)
-  const parts: ({ text: string } | { inlineData: InlinePart })[] = [];
-  const refs = assetReferences.slice(0, MAX_REF_IMAGES);
-  const refInlines: InlinePart[] = [];
-  for (const ref of refs) {
-    try {
-      if (ref.base64) refInlines.push({ mimeType: "image/png", data: ref.base64 });
-      else if (ref.storageUrl) refInlines.push(await toInline(ref.storageUrl));
-    } catch (err) {
-      console.warn(`[QA Judge] Failed to load ref ${ref.assetId}:`, err);
-    }
-  }
-
-  // Illustration images
-  const illInlines: { sceneNumber: number; part: InlinePart }[] = [];
-  for (const ill of illustrations) {
-    if (!ill.imageUrl) continue;
-    try {
-      illInlines.push({ sceneNumber: ill.sceneNumber, part: await toInline(ill.imageUrl) });
-    } catch (err) {
-      console.warn(`[QA Judge] Failed to load scene ${ill.sceneNumber} image:`, err);
-    }
-  }
-
-  if (illInlines.length === 0) {
-    console.warn("[QA Judge] No illustration images loaded — skipping review");
-    return { overallScore: 0, verdicts: [], scenesToRegenerate: illustrations.map((i) => i.sceneNumber), iterationNumber };
-  }
-
-  const refIds = refs.map((r) => r.assetId);
-  const sceneSpecs = illInlines
-    .map(({ sceneNumber }) => {
-      const spec = screenplay.scenes.find((s) => s.sceneNumber === sceneNumber);
-      const entities = [spec?.primaryCharacter, ...(spec?.characters || []), spec?.locationAsset, ...(spec?.props || [])].filter(Boolean);
-      return `Scene ${sceneNumber}: ${spec?.keyActions || "?"} | Should contain entities: ${entities.join(", ") || "none"} | Mood: ${spec?.emotionalTone || "?"}`;
-    })
-    .join("\n");
-
-  const prompt = `You are an expert children's book art director. Review these watercolor illustrations.
-
-The FIRST ${refInlines.length} images are the VISUAL BIBLE reference sheets (in order: ${refIds.join(", ")}). Every illustration must keep characters, locations, wardrobe and props consistent with these references.
-
-CHARACTER: ${characterRef}
-
-SCENE SPECS (the following ${illInlines.length} images are the scene illustrations, in this order):
-${sceneSpecs}
-
-For EACH scene illustration rate 1-10:
-1. coherenceScore: does it match the scene action + contain the expected entities?
-2. consistencyScore: do the character, location, wardrobe and props match the reference sheets (same faces, colors, shapes)?
-3. qualityScore: authentic watercolor children's-book look, full-bleed (no borders), no text/watermark, good composition?
-"score" = overall (weighted toward consistency + coherence).
-For any scene scoring low, give a concrete "suggestion" to fix the prompt.
-
-Output ONLY JSON:
-{"verdicts":[{"sceneNumber":1,"score":8,"coherenceScore":9,"consistencyScore":8,"qualityScore":8,"issues":["..."],"suggestion":""}]}`;
-
-  // Assemble parts: prompt text, then refs, then illustrations (order matters for the spec mapping)
-  parts.push({ text: prompt });
-  for (const r of refInlines) parts.push({ inlineData: r });
-  for (const { part } of illInlines) parts.push({ inlineData: part });
-
+  const started = Date.now();
   try {
-    // Call Gemini with retry on transient overload (503/429)
-    let res: Response | undefined, lastTxt = "";
-    for (let attempt = 0; attempt < 4; attempt++) {
-      res = await fetch(`${GEMINI_BASE}/${QA_MODEL}:generateContent`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-goog-api-key": geminiKey() },
-        body: JSON.stringify({ contents: [{ parts }], generationConfig: { responseModalities: ["TEXT"], temperature: 0 } }),
-        signal: AbortSignal.timeout(120_000),
-      });
-      if (res.ok) break;
-      lastTxt = await res.text();
-      if (res.status === 503 || res.status === 429) { await sleep(5000 * (attempt + 1)); continue; }
-      break;
+    const sheetUri = await toDataUri(args.sheet, 1536);
+    const verdicts: QAVerdict[] = [];
+    const queue = [...scenes];
+    let failures = 0;
+    const worker = async () => {
+      for (let scene = queue.shift(); scene; scene = queue.shift()) {
+        try {
+          verdicts.push(await judgeOne(key, sheetUri, scene, args.characters));
+        } catch (err) {
+          failures++;
+          console.error(`[QA Judge] ${err instanceof Error ? err.message : String(err)}`);
+        }
+      }
+    };
+    await Promise.all(Array.from({ length: Math.min(JUDGE_CONCURRENCY, scenes.length) }, worker));
+    if (verdicts.length === 0 && scenes.length > 0) {
+      return { overallScore: 0, verdicts: [], scenesToRegenerate: [], iterationNumber, skipped: true, skipReason: `all ${failures} scene reviews failed` };
     }
-    if (!res || !res.ok) throw new Error(`Gemini QA ${res?.status}: ${lastTxt}`);
-
-    const j = await res.json();
-    const text = (j.candidates?.[0]?.content?.parts || []).map((p: { text?: string }) => p.text || "").join("");
-    const parsed = parseJsonResponse<{ verdicts: QAVerdict[] }>(text, "QA Judge");
-    const verdicts = parsed.verdicts || [];
-
-    const overallScore = verdicts.length
-      ? Math.round((verdicts.reduce((s, v) => s + v.score, 0) / verdicts.length) * 10) / 10
-      : 0;
-
-    // Fail a scene if overall is low OR consistency (brand-critical) is below its stricter bar.
-    const scenesToRegenerate = verdicts
-      .filter((v) => v.score < SCORE_THRESHOLD || v.consistencyScore < CONSISTENCY_THRESHOLD)
-      .map((v) => v.sceneNumber);
-
-    const elapsed = ((Date.now() - start) / 1000).toFixed(1);
-    console.log(`[QA Judge] Done in ${elapsed}s — overall ${overallScore}/10, regenerate: [${scenesToRegenerate.join(", ")}]`);
-
+    verdicts.sort((a, b) => a.sceneNumber - b.sceneNumber);
+    const overallScore = Math.round((verdicts.reduce((s, v) => s + v.score, 0) / verdicts.length) * 10) / 10;
+    const scenesToRegenerate = verdicts.filter(failsQa).map((v) => v.sceneNumber);
+    console.log(
+      `[QA Judge] ${judgeModel()} pass ${iterationNumber}: ${verdicts.length}/${scenes.length} reviewed in ${((Date.now() - started) / 1000).toFixed(0)}s — overall ${overallScore}/10, regenerate [${scenesToRegenerate.join(", ")}]`,
+    );
     return { overallScore, verdicts, scenesToRegenerate, iterationNumber };
   } catch (err) {
-    // QA failure is non-fatal — but the book then ships WITHOUT any review.
-    // Surface it loudly (skipped:true) so the caller can flag/alert instead of
-    // silently treating it as "all scenes passed".
-    console.error(`[QA Judge] ⚠️ REVIEW SKIPPED — book will ship UNREVIEWED (iteration ${iterationNumber}):`, err);
-    return { overallScore: 0, verdicts: [], scenesToRegenerate: [], iterationNumber, skipped: true };
+    const reason = err instanceof Error ? err.message : String(err);
+    return { overallScore: 0, verdicts: [], scenesToRegenerate: [], iterationNumber, skipped: true, skipReason: reason };
   }
 }

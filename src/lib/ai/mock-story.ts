@@ -1,7 +1,7 @@
 // Mock story generator for local development (MOCK_MODE=true).
 //
-// Returns a publication-quality story with real Recraft illustrations
-// stored in Supabase Storage. Zero API calls — instant generation.
+// Returns a publication-quality story with placeholder illustrations.
+// Zero API calls — instant generation.
 //
 // This mock also serves as a reference for the expected output quality
 // and structure of real AI-generated books.
@@ -9,6 +9,14 @@
 import { getTemplateConfig } from "@/lib/create-store";
 import type { GeneratedStory, StoryInput } from "./story-generator";
 import { buildCharacterVisualDescription } from "./character-description";
+import {
+  PANORAMIC_SCENES,
+  PLAN_CHILD_ID,
+  buildPlanChildDescription,
+  getPlanSpec,
+  planToGeneratedStory,
+  type BookPlan,
+} from "./book-plan";
 
 // MOCK_MODE images: random real placeholders from Lorem Picsum (no AI cost, no
 // missing-asset/ORB issues). Seeded per slot so each render is stable but the set
@@ -38,6 +46,17 @@ export function getMockIllustrationUrl(sceneIndex: number): string {
 /** Get mock secondary illustration URL — offset by 6 so it differs from primary. */
 export function getMockSecondaryIllustrationUrl(sceneIndex: number): string {
   return MOCK_ILLUSTRATION_URLS[(sceneIndex + 6) % MOCK_ILLUSTRATION_URLS.length];
+}
+
+/**
+ * Scenes that get a secondary illustration in the mock book (stored as scene N + 12).
+ * Excludes the panorama scenes (3, 8). Younger readers get more picture pages.
+ */
+export function getSecondaryScenes(age: number): number[] {
+  if (age <= 4) return [1, 2, 4, 5, 6, 7, 9, 10, 11, 12];
+  if (age <= 6) return [1, 2, 5, 6, 9, 10, 11, 12];
+  if (age <= 9) return [1, 5, 6, 9, 11, 12];
+  return [1, 6, 9, 12];
 }
 
 // --- 12-slot story templates (10 scenes + 2 bridges for default ~6yo) ---
@@ -133,39 +152,99 @@ function buildScenes(name: string, city: string, theme: string, characterVisual:
   ];
 }
 
+const MOCK_CAMERAS = [
+  "eye-level medium shot",
+  "close-up",
+  "wide panoramic shot",
+  "low-angle medium shot",
+  "high-angle wide shot",
+  "over-the-shoulder view",
+  "medium close-up",
+  "wide panoramic shot",
+  "bird's-eye wide shot",
+  "close-up",
+  "low-angle wide shot",
+  "eye-level medium shot",
+];
+
+/**
+ * Deterministic mock that goes through the same Book Plan contract as the real
+ * generator (plan → planToGeneratedStory), so MOCK_MODE exercises the same
+ * consumers (image engine, viewer, PDF). The parent's dedication is verbatim.
+ */
 export function generateMockStory(input: StoryInput): GeneratedStory {
   const template = getTemplateConfig(input.templateId);
   const theme = template?.theme || "a magical adventure";
   const moral = template?.moral || "la bondad es la mayor fuerza de todas";
   const city = input.city || "una ciudad mágica";
   const characterVisual = buildCharacterVisualDescription(input);
-
   const sceneTemplates = buildScenes(input.childName, city, theme, characterVisual);
+  const homeScenes = [1, 2, 12];
 
-  const scenes = sceneTemplates.map((scene, index) => ({
-    sceneNumber: index + 1,
-    title: scene.title,
-    text: scene.text,
-    imagePrompt: scene.imagePrompt,
-    type: scene.type,
-  }));
+  const parentDedication = input.dedication?.trim() ? input.dedication : undefined;
+  const dedicationText = parentDedication
+    ?? `Para ${input.childName}, el alma más valiente y luminosa que conocemos. Que cada página de este libro te recuerde que llevas un héroe dentro.`;
 
-  const dedication = input.dedication
-    ? `Para ${input.childName}, con todo el cariño de ${input.senderName || "alguien muy especial"}. ${input.dedication}`
-    : `Para ${input.childName}, el alma más valiente y luminosa que conocemos. Que cada página de este libro te recuerde que llevas un héroe dentro.`;
-
-  return {
-    bookTitle: `${input.childName} y la capa extraordinaria`,
-    titleOptions: [
-      `${input.childName} y la capa extraordinaria`,
+  const plan: BookPlan = {
+    version: 1,
+    locale: input.locale || "es",
+    mode: getPlanSpec(input.age).mode,
+    childName: input.childName,
+    gender: input.gender,
+    age: input.age,
+    dedicationSource: parentDedication ? "parent" : "generated",
+    dedicationText,
+    model: "mock",
+    title: `${input.childName} y la capa extraordinaria`,
+    alternateTitles: [
       `La gran aventura de ${input.childName}`,
       `${input.childName} y el misterio de ${input.city || "la ciudad"}`,
       `El héroe llamado ${input.childName}`,
     ],
-    coverImagePrompt: `${characterVisual} wearing a red cape, triumphant hero pose, arms outstretched, city skyline in background, golden sunset light, wide cinematic composition, children's book cover art, editorial illustration quality, vivid warm colors, no text.`,
-    scenes,
-    dedication,
-    finalMessage: `Y así, ${input.childName} descubrió que ${moral}. Y que los verdaderos héroes no necesitan capas — solo un corazón valiente y ganas de ayudar.`,
     synopsis: `${input.childName} tiene un don especial que todavía no conoce. Un día extraordinario cambiará su mundo para siempre. ¿Estás listo para acompañarle en la aventura?`,
+    refrain: "",
+    setupPayoff: { detail: "a small glowing red cape found by a street lamp", setupScene: 2, payoffScene: 11 },
+    cast: [],
+    world: [
+      { id: "home_city", name: city, kind: "location", visual: "A sunny Mediterranean city street with cobblestones, balconies with flowers and a warm stone facade." },
+      { id: "magic_city", name: "La ciudad secreta", kind: "location", visual: "The same city transformed by magic: glowing colours, floating lanterns, rooftops that sparkle." },
+      { id: "red_cape", name: "La capa roja", kind: "object", visual: "A small bright red cape with a golden clasp that glows softly." },
+    ],
+    scenes: sceneTemplates.map((scene, index) => {
+      const n = index + 1;
+      const action = scene.imagePrompt
+        .replace(characterVisual, "The child")
+        .replace(/\s*Children's book illustration.*$/, "")
+        .trim();
+      const home = homeScenes.includes(n);
+      return {
+        sceneNumber: n,
+        type: scene.type,
+        title: scene.title,
+        text: scene.text,
+        illustratedMoment: action,
+        shot: {
+          action,
+          setting: home ? `A sunny street in ${city}` : "The city transformed by magic, glowing and colourful",
+          castIds: [PLAN_CHILD_ID],
+          worldIds: [home ? "home_city" : "magic_city", ...(n >= 2 && n <= 11 ? ["red_cape"] : [])],
+          camera: MOCK_CAMERAS[index] ?? "eye-level medium shot",
+          shotScale: PANORAMIC_SCENES.includes(n) ? ("wide" as const) : ("medium" as const),
+          light: "Warm golden light",
+        },
+      };
+    }),
+    cover: {
+      action: "The child wearing a red cape in a gentle heroic pose, arms outstretched, the city skyline behind",
+      setting: `Rooftops of ${city} at sunset`,
+      castIds: [PLAN_CHILD_ID],
+      worldIds: ["home_city", "red_cape"],
+      camera: "low-angle medium shot, calm sky in the upper third for the title",
+      shotScale: "medium",
+      light: "Golden sunset light",
+    },
+    finalMessage: `Y así, ${input.childName} descubrió que ${moral}. Y que los verdaderos héroes no necesitan capas — solo un corazón valiente y ganas de ayudar.`,
   };
+
+  return planToGeneratedStory(plan, buildPlanChildDescription(input));
 }
