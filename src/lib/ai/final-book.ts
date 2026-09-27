@@ -121,17 +121,17 @@ export async function advanceFinalImages(args: {
 
 async function ensureSheets(ctx: Ctx): Promise<boolean> {
   const { state } = ctx;
-  const photo = await optionalReference(state.plan.bible.photoUrl, "photo");
+  // Avatar + sheets only — never the child's photo (deleted ≤ 24 h after upload).
   const existing = state.assets.final;
   if (existing) {
     const [sheet, extraSheet] = await Promise.all([loadReference(existing.mainUrl), existing.extraUrl ? loadReference(existing.extraUrl) : Promise.resolve(null)]);
-    ctx.refs = { sheet, extraSheet, photo };
+    ctx.refs = { sheet, extraSheet };
     return true;
   }
   if (remaining(ctx) < SHEET_MIN_MS) return false;
 
   const avatar = await optionalReference(state.plan.avatarUrl, "avatar");
-  const sheets = await renderSheets(state.plan, "final", { avatar, photo }, { label: `story ${state.storyId}`, deadline: callDeadline(ctx) });
+  const sheets = await renderSheets(state.plan, "final", { avatar }, { label: `story ${state.storyId}`, deadline: callDeadline(ctx) });
   ctx.costUsd += sheets.main.costUsd + (sheets.extra?.costUsd ?? 0);
   const [mainUrl, extraUrl] = await Promise.all([
     uploadGeneratedImage(ctx.storage, folder(ctx), "sheet", sheets.main.image, sheets.main.mime),
@@ -142,7 +142,6 @@ async function ensureSheets(ctx: Ctx): Promise<boolean> {
   ctx.refs = {
     sheet: { data: sheets.main.image, mime: sheets.main.mime },
     extraSheet: sheets.extra ? { data: sheets.extra.image, mime: sheets.extra.mime } : null,
-    photo,
   };
   return true;
 }

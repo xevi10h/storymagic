@@ -148,7 +148,7 @@ export async function loadReference(url: string): Promise<ImageReference> {
 export interface SheetRefs {
   sheet: ImageReference;
   extraSheet: ImageReference | null;
-  photo: ImageReference | null;
+  // No photo: scenes/cover/repairs are conditioned on the sheet(s) only.
 }
 
 interface CallOptions {
@@ -163,14 +163,10 @@ function planCast(plan: SheetPlan) {
   return { bible: plan.bible, cast: plan.cast, world: plan.world };
 }
 
-/** Reference list for one shot: sheet first, then photo, then the extra sheet if needed. */
+/** Reference list for one shot: sheet first, then the extra sheet if needed. */
 function shotReferences(plan: BookImagePlan, shot: ShotSpec, refs: SheetRefs): { images: ImageReference[]; roles: ReferenceRole[] } {
   const images: ImageReference[] = [refs.sheet];
   const roles: ReferenceRole[] = [{ kind: "sheet", names: mainSheetCast(plan).map((m) => m.name.toUpperCase()) }];
-  if (refs.photo) {
-    images.push(refs.photo);
-    roles.push({ kind: "photo" });
-  }
   const extras = extraSheetCast(plan).filter((m) => shot.cast.includes(m.id));
   if (refs.extraSheet && extras.length > 0) {
     images.push(refs.extraSheet);
@@ -187,13 +183,15 @@ export interface RenderedSheets {
 }
 
 /**
- * The character sheet(s) for a stage. The avatar the parent approved and the
- * optional photo anchor the child's face; the Bible text defines everything else.
+ * The character sheet(s) for a stage. The avatar the parent approved anchors the
+ * child's face; the Bible text defines everything else. `photo` is only for the
+ * early child sheet rendered while the photo still exists (creation flow); the
+ * preview/final book pipelines never pass it.
  */
 export async function renderSheets(
   plan: SheetPlan,
   stage: "preview" | "final",
-  anchors: { avatar: ImageReference | null; photo: ImageReference | null },
+  anchors: { avatar: ImageReference | null; photo?: ImageReference | null },
   opts: CallOptions,
 ): Promise<RenderedSheets> {
   const cfg = stageConfig(stage);

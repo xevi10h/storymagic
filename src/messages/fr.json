@@ -543,19 +543,21 @@
       "title": "Politique de confidentialité",
       "intro": "Chez Meapica, la confidentialité de nos utilisateurs — en particulier concernant les données des enfants — est notre priorité absolue.",
       "section1Title": "1. Responsable du traitement",
-      "section1Text": "Meapica est responsable du traitement des données personnelles collectées via meapica.com.",
+      "section1Text": "Le responsable du traitement des données personnelles collectées via meapica.com est Xavier Huix Trenco (Meapica), NIF [NIF], domicilié à [DIRECCIÓN]. Pour toute question relative à la confidentialité, écrivez-nous à hola@meapica.com.",
       "section2Title": "2. Données collectées",
-      "section2Text": "Nous collectons les données nécessaires à la création de votre livre personnalisé : prénom de l'enfant, âge, ville, centres d'intérêt et caractéristiques physiques pour l'illustration. Nous collectons également l'email et l'adresse de livraison pour traiter les commandes.",
+      "section2Text": "Nous collectons les données nécessaires à la création de votre livre personnalisé : prénom de l'enfant, âge, ville, centres d'intérêt et caractéristiques physiques pour les illustrations et, uniquement si vous choisissez de la télécharger, une photo de l'enfant (voir la section 8). Nous collectons également votre e-mail et votre adresse de livraison pour traiter les commandes.",
       "section3Title": "3. Finalité du traitement",
-      "section3Text": "Nous utilisons vos données exclusivement pour : générer l'histoire personnalisée, traiter le paiement et la livraison, et communiquer avec vous concernant votre commande. Nous ne vendons jamais de données à des tiers.",
+      "section3Text": "Nous utilisons vos données exclusivement pour : créer l'histoire personnalisée et son personnage illustré, traiter le paiement et la livraison, et vous contacter au sujet de votre commande. Nous ne vendons jamais de données à des tiers.",
       "section4Title": "4. Base légale",
-      "section4Text": "Le traitement est fondé sur l'exécution du contrat (votre commande) et votre consentement explicite lors de la création d'un compte.",
-      "section5Title": "5. Services tiers",
-      "section5Text": "Nous utilisons Supabase (stockage), Stripe (paiements) et Gelato (impression) comme services tiers. Chaque service possède sa propre politique de confidentialité.",
+      "section4Text": "Créer, prévisualiser et imprimer votre livre, gérer votre compte, le paiement et la livraison : exécution du contrat que vous nous demandez (art. 6.1.b RGPD). Photo de l'enfant : consentement explicite de sa mère, de son père ou de son tuteur légal (art. 6.1.a RGPD et art. 7 de la LOPDGDD espagnole), que vous pouvez retirer à tout moment. Newsletter et liste d'attente : votre consentement (art. 6.1.a RGPD), que vous pouvez retirer quand vous le souhaitez. Conservation des factures et des registres comptables : obligation légale (art. 6.1.c RGPD). Sécurité du service et prévention des abus (par exemple, limites d'utilisation) : intérêt légitime (art. 6.1.f RGPD).",
+      "section5Title": "5. Sous-traitants et transferts internationaux",
+      "section5Text": "Pour fournir le service, nous travaillons avec des prestataires qui traitent les données uniquement selon nos instructions : OpenAI Ireland Ltd. (génération du texte et des illustrations de l'histoire et, si vous en téléchargez une, du personnage à partir de la photo), Supabase (base de données et stockage), Vercel (hébergement web), Stripe Payments Europe Ltd. (paiements), Gelato (impression et livraison) et Resend (e-mails de commande). OpenAI n'utilise pas les données que nous lui envoyons pour entraîner ses modèles et peut les conserver jusqu'à 30 jours pour détecter les abus. Lorsqu'un prestataire ou ses sous-traitants traitent des données en dehors de l'Espace économique européen (par exemple, aux États-Unis), le transfert repose sur les clauses contractuelles types de la Commission européenne ou sur le cadre de protection des données UE-États-Unis.",
       "section6Title": "6. Vos droits",
-      "section6Text": "Vous pouvez exercer vos droits d'accès, de rectification, de suppression, de limitation et de portabilité en nous contactant à hola@meapica.com.",
+      "section6Text": "Vous pouvez exercer vos droits d'accès, de rectification, d'effacement, d'opposition, de limitation du traitement et de portabilité, et retirer votre consentement à tout moment, en écrivant à hola@meapica.com. Nous vous répondrons dans un délai maximal d'un mois. Si vous estimez que vos données n'ont pas été traitées correctement, vous pouvez introduire une réclamation auprès de l'Agence espagnole de protection des données (AEPD, www.aepd.es).",
       "section7Title": "7. Protection des données des mineurs",
-      "section7Text": "Nous ne collectons pas de données directement auprès des mineurs. Les données de l'enfant sont fournies par le parent ou tuteur légal qui crée le livre."
+      "section7Text": "Nous ne collectons pas de données directement auprès des mineurs. Les données de l'enfant sont fournies par le parent ou tuteur légal qui crée le livre.",
+      "section8Title": "8. Photos d'enfants",
+      "section8Text": "Télécharger une photo est facultatif : vous pouvez aussi créer le personnage en choisissant ses traits. Si vous en téléchargez une, nous l'utilisons uniquement pour créer le personnage illustré de l'enfant (son portrait et sa fiche de personnage), et uniquement avec le consentement de sa mère, de son père ou de son tuteur légal. Avant de l'enregistrer, nous supprimons toutes ses métadonnées, y compris la localisation GPS, et la conservons dans un stockage privé auquel seul notre serveur a accès. La photo est envoyée à OpenAI pour dessiner le personnage ; OpenAI ne l'utilise pas pour entraîner ses modèles et peut la conserver jusqu'à 30 jours pour détecter les abus. Nous supprimons la photo dès que le personnage est créé et, dans tous les cas, en moins de 24 heures. Le livre (aperçu et version finale) est illustré uniquement à partir du personnage dessiné, jamais à partir de la photo. Nous ne l'utilisons ni pour la reconnaissance faciale ni pour aucune autre finalité. Vous pouvez retirer votre consentement à tout moment en écrivant à hola@meapica.com et nous la supprimerons immédiatement. Nous conservons une trace de votre consentement (date, version du texte accepté et langue) comme preuve que vous l'avez donné."
     },
     "terms": {
       "title": "Mentions légales et conditions d'utilisation",
@@ -952,6 +954,26 @@
     "errors": {
       "saveFailed": "Nous n'avons pas pu enregistrer votre livre. Vérifiez votre connexion et appuyez à nouveau sur le bouton : tout ce que vous avez saisi est toujours là.",
       "dismiss": "Fermer"
+    },
+    "photo": {
+      "checkbox": "Je suis la mère, le père ou le tuteur légal de l'enfant et j'autorise Meapica à utiliser cette photo uniquement pour créer son personnage illustré. La photo est envoyée à OpenAI pour le dessiner et nous la supprimons dès que le personnage est créé (toujours en moins de 24 heures).",
+      "explainer": "Nous l'utilisons uniquement pour dessiner son personnage et la supprimons dès qu'il est créé (toujours en moins de 24 h).",
+      "moreInfo": "En savoir plus",
+      "modalTitle": "Ce que nous faisons de la photo",
+      "modalText": "Nous utilisons la photo uniquement pour dessiner le personnage illustré de votre enfant : son portrait et sa fiche de personnage. Avant de l'enregistrer, nous supprimons toutes ses métadonnées, y compris la localisation, et la conservons dans un espace privé. Elle est envoyée à OpenAI pour dessiner le personnage ; OpenAI ne l'utilise pas pour entraîner ses modèles et peut la conserver jusqu'à 30 jours pour détecter les abus. Nous la supprimons dès que le personnage est créé (toujours en moins de 24 heures). Le livre est illustré uniquement à partir du personnage dessiné, jamais à partir de la photo. Vous pouvez retirer votre consentement quand vous le souhaitez et nous la supprimerons immédiatement.",
+      "modalClose": "J'ai compris",
+      "privacyLink": "Politique de confidentialité",
+      "remove": "Retirer la photo",
+      "errors": {
+        "consent_required": "Cochez la case d'autorisation pour utiliser la photo.",
+        "too_large": "La photo est trop lourde. Essayez-en une de moins de 4 Mo.",
+        "unsupported_type": "Ce format n'est pas pris en charge. Téléchargez une photo JPG, PNG ou WebP.",
+        "invalid_image": "Nous n'avons pas pu lire cette photo. Essayez-en une autre.",
+        "too_small": "La photo est trop petite. Téléchargez-en une où son visage est bien visible.",
+        "photo_unavailable": "La photo a déjà été supprimée. Téléchargez-la à nouveau si vous souhaitez l'utiliser.",
+        "rate_limited": "Vous avez téléchargé beaucoup de photos d'affilée. Patientez un peu et réessayez.",
+        "upload_failed": "Nous n'avons pas pu télécharger la photo. Veuillez réessayer."
+      }
     }
   },
   "checkout": {

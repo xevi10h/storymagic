@@ -41,8 +41,9 @@ export interface CharacterBible {
   outfit: string;
   /** identity + outfit — THE string used verbatim in every image prompt */
   description: string;
-  /** Optional real photo of the child (future feature) — facial likeness only */
-  photoUrl: string | null;
+  // No photo field on purpose: the Bible is persisted in stories.generated_text,
+  // and the child's photo must never outlive the avatar (deleted ≤ 24 h). The
+  // photo only feeds the portrait / early child sheet (src/lib/privacy/child-photo.ts).
 }
 
 // ── Maps (UI hex → words) ───────────────────────────────────────────────────
@@ -131,7 +132,7 @@ function outfitFor(age: number, favoriteColor: string | undefined): string {
 // ── Public API ──────────────────────────────────────────────────────────────
 
 /** Builds the immutable Character Bible. Deterministic: same input → same bytes. */
-export function buildCharacterBible(input: CharacterDescriptionInput, photoUrl: string | null = null): CharacterBible {
+export function buildCharacterBible(input: CharacterDescriptionInput): CharacterBible {
   const genderWord = input.gender === "boy" ? "boy" : input.gender === "girl" ? "girl" : "child";
   const possessive = input.gender === "boy" ? "his" : input.gender === "girl" ? "her" : "their";
   const age = Math.max(1, Math.min(12, Math.round(input.age)));
@@ -157,7 +158,6 @@ export function buildCharacterBible(input: CharacterDescriptionInput, photoUrl: 
     identity,
     outfit,
     description: `${identity}; wearing ${outfit}`,
-    photoUrl,
   };
 }
 
