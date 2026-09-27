@@ -11,7 +11,8 @@
 //   4. Every scene rendered independently from the sheet (parallel, no chaining)
 //
 // Pure engine: no database access. Callers store the returned buffers
-// (uploadGeneratedImage) — provider URLs are never involved.
+// (uploadGeneratedImage → object path in the private bucket) — provider URLs are
+// never involved. Stored refs are downloaded via signed URLs (loadReference).
 
 import { buildCharacterBible, type CharacterBible, type CharacterDescriptionInput } from "./character-description";
 import {
@@ -27,6 +28,7 @@ import {
 import { generateOpenAIImage, type ImageQuality, type ImageReference, type OpenAIImageResult } from "./openai-image";
 import type { ShotFrame, ShotSpec } from "./scene-screenplay";
 import type { CastMember, WorldAsset } from "./visual-assets";
+import { toServerFetchUrl } from "@/lib/storage/illustration-urls";
 
 export { buildCharacterBible, type CharacterBible, type CharacterDescriptionInput };
 export type { ImageReference, OpenAIImageResult };
@@ -135,9 +137,9 @@ export function sizeFor(stage: "preview" | "final", key: SizeKey): string {
 
 // ── References ───────────────────────────────────────────────────────────────
 
-/** Download a stored image as a reference (our own storage URLs only). */
+/** Download a stored image as a reference (illustration ref / our own storage URL). */
 export async function loadReference(url: string): Promise<ImageReference> {
-  const res = await fetch(url, { signal: AbortSignal.timeout(30_000) });
+  const res = await fetch(await toServerFetchUrl(url), { signal: AbortSignal.timeout(30_000) });
   if (!res.ok) throw new Error(`Reference download failed (${res.status}): ${url.slice(0, 120)}`);
   const mime = (res.headers.get("content-type") ?? "image/jpeg").split(";")[0].trim();
   return { data: Buffer.from(await res.arrayBuffer()), mime: mime === "image/png" || mime === "image/webp" ? mime : "image/jpeg" };

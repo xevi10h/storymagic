@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/database.types";
+import { toShowcaseUrl } from "@/lib/storage/illustration-refs";
 
 const BASE_URL = "https://meapica.com";
 
@@ -61,7 +62,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   // Use the first illustration as the OG image; if none, omit images
   // and the parent route's opengraph-image.tsx will serve as fallback
-  const coverImage = illustrations[0]?.image_url ?? null;
+  // Public `showcase` mirror (never a signed URL: OG images are cached by crawlers).
+  const coverImage = toShowcaseUrl(illustrations[0]?.image_url, process.env.NEXT_PUBLIC_SUPABASE_URL!);
   const title = generated?.bookTitle ?? "Showcase Story";
   const characterName = character?.name ?? "";
 

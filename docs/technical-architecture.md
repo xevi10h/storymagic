@@ -45,7 +45,7 @@ characters (saved hero profiles)
 ├── city
 ├── favorite_color (book theme accent color)
 ├── favorite_companion (open text — "best friend/companion")
-├── avatar_url (OpenAI watercolor portrait, illustrations/portraits/{uuid}/portrait-{v}.jpg)
+├── avatar_url (illustration ref = object path of the private bucket: portraits/{userId}/{uuid}/portrait-{v}.jpg)
 ├── created_at
 └── updated_at
 
@@ -79,7 +79,7 @@ story_illustrations
 ├── story_id (FK → stories)
 ├── scene_number (1-12)
 ├── prompt_used (text)
-├── image_url (text — Supabase Storage public URL; versioned path, never overwritten)
+├── image_url (text — illustration ref: object path in the private `illustrations` bucket; legacy rows may hold the old public URL)
 ├── status (pending / generating / ready / failed)
 ├── render_stage (text — `final:<provider>:<model>` when rendered by the final stage; NULL = preview)
 ├── rendered_at
@@ -160,7 +160,8 @@ blog_posts (editorial blog — Supabase CMS)
 
 | Bucket | Access | Path pattern | Content |
 |--------|--------|-------------|---------|
-| `illustrations` | Public | `{storyId}/preview/{scene-N\|cover\|sheet\|sheet-extra}-{version}.jpg`, `{storyId}/final/…-{version}.jpg`, `portraits/{uuid}/portrait-{version}.jpg` | OpenAI images: character sheets, scenes, covers, avatars. Every upload is a new versioned path (`upsert: false`) — no stale CDN |
+| `illustrations` | **Private** (since 2026-09-27) | `{storyId}/preview/{scene-N\|cover\|sheet\|sheet-extra}-{version}.jpg`, `{storyId}/final/…-{version}.jpg`, `portraits/{userId}/{uuid}/portrait-{version}.jpg` (legacy: `portraits/{uuid}/…`) | Children's likenesses: character sheets, scenes, covers, avatars. Every upload is a new versioned path (`upsert: false`). The DB stores the **object path**; served only as signed URLs after a path-based ownership check (`src/lib/storage/illustration-urls.ts`, see docs/stack.md → Private illustrations) |
+| `showcase` | Public | same paths as `illustrations` + `waitlist-covers/*`, `style-samples/*`, `mock/*` | Marketing copies only (is_showcase example books, waitlist covers, blog images) — filled by `scripts/publish-showcase.mts` |
 | `book-pdfs` | Private | `{userId}/{storyId}.pdf` | Generated PDF books, served via signed URL |
 
 ## Generation Pipeline
@@ -357,7 +358,10 @@ src/
 │   │   ├── client.ts                     — Browser client
 │   │   ├── server.ts                     — Server client (RSC/Route Handlers)
 │   │   ├── middleware.ts                 — Session refresh + route protection
-│   │   └── storage.ts                    — Versioned image uploads + PDFs
+│   │   └── storage.ts                    — Versioned image uploads (returns object path) + PDFs
+│   ├── storage/
+│   │   ├── illustration-refs.ts          — Pure: parse path from ref/URL, ownership scope, showcase mirror URL
+│   │   └── illustration-urls.ts          — Server: signed URLs (batch), userAccess, toServerFetchUrl
 │   ├── email/
 │   │   ├── send.ts                       — Resend REST sender + getSiteUrl() (never throws)
 │   │   ├── layout.ts                     — Shared branded HTML email shell + escapeHtml()

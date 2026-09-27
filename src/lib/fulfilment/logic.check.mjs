@@ -49,6 +49,13 @@ assert.equal(isUsable(`${img(1)}?v=1727430000000`), true);
 assert.equal(isUsable("https://picsum.photos/seed/meapica-scene-1/1024"), false);
 assert.equal(isUsable("https://fal.media/files/tmp.png"), false);
 assert.equal(isUsable(null), false);
+// private-bucket object paths (stored since 2026-09-27)
+assert.equal(isUsable("0b0e4f2a-1c2d-4e5f-8a9b-0c1d2e3f4a5b/final/scene-3-m1x2k3-9f2a.jpg"), true);
+assert.equal(isUsable("mock/scene-1.png"), false);
+assert.equal(isUsable("../etc/passwd"), false);
+assert.equal(isUsable("/images/local.png"), false);
+assert.equal(isUsable("data:image/png;base64,AAAA"), false);
+assert.equal(isUsable("https://other.supabase.co/storage/v1/object/public/illustrations/a/b.png"), false);
 
 // ── Resume selection (two-speed: only final-stage renders count) ─────────────
 const previewRows = ALL.map((n) => ({ scene_number: n, status: "ready", image_url: img(n), render_stage: null }));

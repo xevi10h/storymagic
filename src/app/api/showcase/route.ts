@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/database.types";
+import { toShowcaseUrl } from "@/lib/storage/illustration-refs";
 
 // Use service-level client to bypass RLS for the showcase query
 // (RLS policies also allow this, but service key avoids auth dependency)
@@ -70,7 +71,8 @@ export async function GET(request: Request) {
       .sort((a, b) => a.scene_number - b.scene_number);
 
     // Use the first illustration as the cover image
-    const coverImage = illustrations[0]?.image_url ?? null;
+    // Public `showcase` bucket mirror — children's originals are private.
+    const coverImage = toShowcaseUrl(illustrations[0]?.image_url, process.env.NEXT_PUBLIC_SUPABASE_URL!);
 
     const character = story.characters as unknown as {
       name: string;

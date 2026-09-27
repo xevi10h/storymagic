@@ -6,6 +6,7 @@ import { generatePreviewBook } from "@/lib/ai/preview-book";
 import { getMockIllustrationUrl, getMockCoverUrl, getMockPortraitUrl, getMockSecondaryIllustrationUrl, getSecondaryScenes } from "@/lib/ai/mock-story";
 import { isProviderUnavailableError } from "@/lib/fulfilment/provider-errors";
 import { STORY_TEMPLATES } from "@/lib/create-store";
+import { ownedPortraitPath } from "@/lib/storage/illustration-urls";
 
 // Architect (~25 s) + visual cast (~20 s) + [sheet ∥ shot list ∥ text] (~60 s) + 3 scenes + cover (~20 s)
 export const maxDuration = 300;
@@ -174,7 +175,8 @@ export async function POST(
       storyId,
       input,
       architect: architectResult,
-      avatarUrl: character.avatar_url,
+      // Only the user's own portrait may anchor the sheet (the row is user-editable).
+      avatarUrl: ownedPortraitPath(character.avatar_url, user.id),
     });
     console.log(`[Generate] DONE — preview in ${elapsed(routeStart)}, images $${result.costUsd.toFixed(3)}`);
 

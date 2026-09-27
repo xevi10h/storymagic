@@ -9,6 +9,7 @@
 import sharp from "sharp";
 import { parseJsonResponse } from "./story-generator";
 import { openAIKey } from "./openai-image";
+import { toServerFetchUrl } from "@/lib/storage/illustration-urls";
 
 export interface QAVerdict {
   sceneNumber: number;
@@ -58,7 +59,7 @@ const judgeModel = () => process.env.QA_JUDGE_MODEL || "gpt-5.4-mini";
 async function toDataUri(input: Buffer | string, maxEdge: number): Promise<string> {
   let buf: Buffer;
   if (typeof input === "string") {
-    const res = await fetch(input, { signal: AbortSignal.timeout(30_000) });
+    const res = await fetch(await toServerFetchUrl(input), { signal: AbortSignal.timeout(30_000) });
     if (!res.ok) throw new Error(`QA image download failed (${res.status})`);
     buf = Buffer.from(await res.arrayBuffer());
   } else {

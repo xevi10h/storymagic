@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/database.types";
+import { toShowcaseUrl } from "@/lib/storage/illustration-refs";
 
 function createPublicClient() {
   return createClient<Database>(
@@ -48,6 +49,17 @@ export async function GET(
     } catch {
       return NextResponse.json({ error: "Invalid story data" }, { status: 500 });
     }
+  }
+
+  // Showcase images are served from the public `showcase` bucket mirror
+  // (scripts/publish-showcase.mts); the originals are private children's imagery.
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  story.cover_image_url = toShowcaseUrl(story.cover_image_url, supabaseUrl);
+  story.character_portrait_url = toShowcaseUrl(story.character_portrait_url, supabaseUrl);
+  const character = story.characters as unknown as { avatar_url: string | null } | null;
+  if (character) character.avatar_url = toShowcaseUrl(character.avatar_url, supabaseUrl);
+  for (const ill of (story.story_illustrations ?? []) as unknown as { image_url: string | null }[]) {
+    ill.image_url = toShowcaseUrl(ill.image_url, supabaseUrl);
   }
 
   return NextResponse.json(story, {

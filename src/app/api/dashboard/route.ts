@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { ILLUSTRATION_URL_TTL, signIllustrationRefs, userAccess } from "@/lib/storage/illustration-urls";
 
 export async function GET() {
   const supabase = await createClient();
@@ -55,9 +56,19 @@ export async function GET() {
     );
   }
 
-  return NextResponse.json({
-    stories: storiesResult.data ?? [],
-    orders: ordersResult.data ?? [],
-    characters: charactersResult.data ?? [],
-  });
+  // Avatar portraits live in a private bucket: sign them for their owner.
+  const characters = charactersResult.data ?? [];
+  const signed = await signIllustrationRefs(
+    characters.map((c) => c.avatar_url),
+    { ttl: ILLUSTRATION_URL_TTL.ui, allow: userAccess({ userId: user.id, allowLegacyPortraits: true }) },
+  );
+
+  return NextResponse.json(
+    {
+      stories: storiesResult.data ?? [],
+      orders: ordersResult.data ?? [],
+      characters: characters.map((c) => ({ ...c, avatar_url: c.avatar_url ? (signed.get(c.avatar_url) ?? null) : null })),
+    },
+    { headers: { "Cache-Control": "private, no-store" } },
+  );
 }

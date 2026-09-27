@@ -25,6 +25,7 @@ import {
 } from "./book-images";
 import { buildScenePrompt } from "./image-prompts";
 import { uploadGeneratedImage } from "@/lib/supabase/storage";
+import { isIllustrationRef } from "@/lib/storage/illustration-refs";
 import { PREVIEW_ILLUSTRATION_COUNT } from "@/lib/pricing";
 import { ProviderUnavailableError } from "@/lib/fulfilment/provider-errors";
 
@@ -54,9 +55,9 @@ export interface PreviewArgs {
   extraTraits?: Pick<CharacterDescriptionInput, "glasses" | "freckles">;
 }
 
-/** Reference from a stored URL, or null when it is missing / not a raster image (e.g. old DiceBear SVG avatars). */
+/** Reference from a stored ref/URL, or null when it is missing / not a raster image (e.g. old DiceBear SVG avatars). */
 export async function optionalReference(url: string | null | undefined, what: string): Promise<ImageReference | null> {
-  if (!url || !/^https?:\/\//.test(url) || /\.svg(\?|$)|\/svg\?/.test(url)) return null;
+  if (!url || !(/^https?:\/\//.test(url) || isIllustrationRef(url)) || /\.svg(\?|$)|\/svg\?/.test(url)) return null;
   try {
     return await loadReference(url);
   } catch (err) {

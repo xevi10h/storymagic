@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import { renderBookPdf, type BookPdfInput } from "@/lib/pdf/book-template";
 import type { Database } from "@/lib/database.types";
 import type { GeneratedStory } from "@/lib/ai/story-generator";
+import { toShowcaseUrl } from "@/lib/storage/illustration-refs";
 
 function createPublicClient() {
   return createClient<Database>(
@@ -55,6 +56,7 @@ export async function GET(
     future_dream?: string;
   };
 
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const illustrations = (
     story.story_illustrations as unknown as {
       scene_number: number;
@@ -62,7 +64,8 @@ export async function GET(
     }[]
   ).map((ill) => ({
     sceneNumber: ill.scene_number,
-    imageUrl: ill.image_url,
+    // Public `showcase` bucket mirror — children's originals are private.
+    imageUrl: toShowcaseUrl(ill.image_url, supabaseUrl),
   }));
 
   const pdfInput: BookPdfInput = {
@@ -78,8 +81,8 @@ export async function GET(
     dedicationText: story.dedication_text,
     senderName: story.sender_name,
     storyId,
-    coverImageUrl: story.cover_image_url ?? null,
-    portraitUrl: story.character_portrait_url ?? null,
+    coverImageUrl: toShowcaseUrl(story.cover_image_url, supabaseUrl),
+    portraitUrl: toShowcaseUrl(story.character_portrait_url, supabaseUrl),
     illustrations,
     locale: (story as Record<string, unknown>).locale as string | undefined,
   };
