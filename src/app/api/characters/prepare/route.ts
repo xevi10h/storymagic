@@ -154,7 +154,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ characterPrepId: prepId.id, status: "rendering" }, { status: 202 });
   }
 
-  const avatarUrl = input.avatarAssetPath ? avatarAssetUrl(input.avatarAssetPath, new URL(request.url).origin) : portraitPath;
+  const avatarUrl = input.avatarAssetPath ? avatarAssetUrl(input.avatarAssetPath) : portraitPath;
   after(() => renderPrep(admin, prepId.id, user.id, { avatarUrl, photo, photoPath: input.photoPath ?? null }, bible));
   return NextResponse.json({ characterPrepId: prepId.id, status: "rendering" }, { status: 202 });
 }

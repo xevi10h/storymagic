@@ -82,9 +82,12 @@ const memoryWindows = new Map<string, MemoryWindow>();
 const MEMORY_MAP_MAX_ENTRIES = 10_000;
 
 /**
- * Fixed-window counter held in process memory. Complements the DB limiter:
- * survives anonymous-session cycling (key by IP) but not instance restarts.
- * `now` is injectable for tests.
+ * Fixed-window counter held in the memory of ONE server instance (best effort).
+ * On Vercel every function instance has its own map and instances come and go, so
+ * this only slows a naive loop that keeps hitting the same warm instance (keyed by
+ * IP, it does survive anonymous-session cycling there). It is NOT a global limit:
+ * every paid call must also pass the durable per-user limiter (checkRateLimit,
+ * rate_limits table). `now` is injectable for tests.
  */
 export function checkMemoryRateLimit(
   key: string,

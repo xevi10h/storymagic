@@ -85,8 +85,9 @@ export async function POST(request: Request) {
 
   try {
     // ── Abuse guards — every call costs real money (~$0.03) ─────────────────────
-    // 1. Per-IP fixed window (first hop of x-forwarded-for). In-memory: catches
-    //    naive loops even when the caller cycles anonymous sessions.
+    // 1. Per-IP fixed window (first hop of x-forwarded-for), per-instance memory:
+    //    best effort only (not global on serverless). The durable per-user limit
+    //    below (rate_limits table) is the real guard.
     const clientIp =
       request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
     const ipLimit = checkMemoryRateLimit(`portrait:${clientIp}`, {

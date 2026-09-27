@@ -191,7 +191,8 @@ async function shot(page: Page, name: string) {
 }
 
 async function freshStart(page: Page, locale: Locale) {
-  await page.goto(`/${locale}`);
+  // Not the landing: its showcase images depend on the prod `showcase` bucket (deploy step).
+  await page.goto(`/${locale}/crear`);
   await page.evaluate(() => localStorage.clear());
   await page.goto(`/${locale}/crear`);
   await expect(page.getByTestId("live-cover")).toBeVisible();
@@ -427,7 +428,7 @@ test.describe("state", () => {
   test("an old v1 draft migrates gracefully", async ({ page }) => {
     test.skip(PHOTO_FLAG, "flag-off suite");
     await installMocks(page);
-    await page.goto("/ca");
+    await page.goto("/ca/crear");
     await page.evaluate(() =>
       localStorage.setItem(
         "meapica_create_state",
@@ -460,7 +461,8 @@ test.describe("en/fr smoke", () => {
       test.skip(PHOTO_FLAG, "flag-off suite");
       const errors = trackConsole(page);
       await installMocks(page);
-      await page.goto(`/${locale}`);
+      // Not the landing: its showcase images depend on the prod `showcase` bucket (deploy step).
+      await page.goto(`/${locale}/crear`);
       await page.evaluate(() => localStorage.clear());
       await page.goto(`/${locale}/crear`);
       await fillName(page);

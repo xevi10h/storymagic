@@ -41,7 +41,7 @@ function createProgressWriter(db: Awaited<ReturnType<typeof createClient>>, stor
 }
 
 export async function POST(
-  request: Request,
+  _request: Request,
   { params }: { params: Promise<{ storyId: string }> }
 ) {
   const routeStart = Date.now();
@@ -155,9 +155,8 @@ export async function POST(
     const storage = createServiceClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
     const prepId: string | null = story.character_prep_id ?? null;
     // Face anchor: the user's own portrait (the row is user-editable, so the path's
-    // owner is re-checked) or a pre-rendered avatar asset of this deployment.
-    const avatarRef =
-      ownedPortraitPath(character.avatar_url, user.id) ?? avatarAssetUrl(character.avatar_url, new URL(request.url).origin);
+    // owner is re-checked) or a pre-rendered avatar asset served by our public site.
+    const avatarRef = ownedPortraitPath(character.avatar_url, user.id) ?? avatarAssetUrl(character.avatar_url);
     if (!isMockGeneration()) {
       session = startPreviewSession({
         storyId,

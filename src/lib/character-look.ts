@@ -4,6 +4,7 @@
 
 import { z } from "zod";
 import { AVATAR_GLASSES_OPTIONS, type AvatarGlasses } from "@/lib/avatar/manifest";
+import { getSiteUrl } from "@/lib/email/send";
 
 export const glassesSchema = z.enum(AVATAR_GLASSES_OPTIONS as [AvatarGlasses, ...AvatarGlasses[]]);
 
@@ -33,11 +34,13 @@ export function isAvatarAssetPath(value: unknown): value is string {
 export const avatarAssetPathSchema = z.string().max(200).regex(AVATAR_ASSET_PATH_RE, "avatarAssetPath must be under /images/avatar/");
 
 /**
- * Absolute URL the server downloads an avatar asset from: the deployment that is
- * serving this request (it ships exactly these static files). `origin` comes from
- * the incoming request URL; on Vercel only the project's own domains route here.
- * Returns null for anything that is not an avatar asset path.
+ * Absolute URL the server downloads an avatar asset from: our own public site
+ * (NEXT_PUBLIC_SITE_URL, default https://meapica.com). Never derived from the
+ * request (Host / forwarded headers are client-influenced → SSRF). The path must
+ * pass the strict avatar regex. Returns null for anything else. In local dev the
+ * asset may not exist on the configured site yet: callers treat a failed download
+ * as "no avatar anchor" (optionalReference).
  */
-export function avatarAssetUrl(ref: string | null | undefined, origin: string): string | null {
-  return isAvatarAssetPath(ref) ? new URL(ref, origin).toString() : null;
+export function avatarAssetUrl(ref: string | null | undefined): string | null {
+  return isAvatarAssetPath(ref) ? `${getSiteUrl()}${ref}` : null;
 }

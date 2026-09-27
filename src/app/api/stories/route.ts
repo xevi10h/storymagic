@@ -138,6 +138,19 @@ export async function POST(request: Request) {
     characterId = newCharacter.id;
   }
 
+  // Only the caller's own prep may be linked (the generate route re-checks it too);
+  // an unknown / foreign id is dropped silently: the prep is only an accelerator.
+  let ownPrepId: string | null = null;
+  if (characterPrepId) {
+    const { data: prep } = await supabase
+      .from("character_preps")
+      .select("id")
+      .eq("id", characterPrepId)
+      .eq("user_id", user.id)
+      .maybeSingle();
+    ownPrepId = prep?.id ?? null;
+  }
+
   // 2. Create story draft
   const draft = {
     user_id: user.id,
@@ -150,7 +163,7 @@ export async function POST(request: Request) {
     ending_choice: ending || null,
     recraft_style_id: recraftStyleId || null,
     // Ownership + trait match are re-checked by the generate route before any reuse.
-    character_prep_id: characterPrepId || null,
+    character_prep_id: ownPrepId,
     locale,
     status: "draft",
   };

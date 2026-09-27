@@ -46,7 +46,7 @@ Illustrated likenesses of real children were world-readable by URL, forever. Now
   `/generate` re-checks it before using it as a reference. The child photo is addressed only by
   a `child-photos` object path (`{userId}/{uuid}.jpg`, regex + ownership + open consent row), so no
   client-supplied URL is ever fetched. The pre-rendered avatar anchor is a `/images/avatar/…` path
-  (strict regex) resolved against the deployment serving the request.
+  (strict regex) fetched only from our own site (`NEXT_PUBLIC_SITE_URL`), never from a request-derived host.
 - Storage RLS (`20260927140400_private_illustrations.sql`): all old policies mentioning the
   bucket dropped; owners may SELECT their own story folders / `portraits/{uid}/`; no client
   writes (uploads are service-role only).
@@ -73,7 +73,7 @@ which records the version, or the SQL editor followed by
    `--dry-run` (copies showcase stories, waitlist covers, style samples, blog images; rewrites
    blog rows to the showcase URL). Must precede the deploy: the new code serves every public
    page (landing, `/ejemplo`, OG, waitlist) from `showcase`.
-4. **Env (Vercel prod):** `CRON_SECRET` set (both crons need it); `NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED`
+4. **Env (Vercel prod):** `CRON_SECRET` set (both crons need it); `NEXT_PUBLIC_SITE_URL=https://meapica.com` (avatar anchors are fetched from it); `NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED`
    unset/false until the DPIA + OpenAI DPA are signed.
 5. **Deploy the code** (works with the bucket still public: signed URLs also work on public buckets).
    Check `/ejemplo`, landing BookCollection, waitlist page, blog; create a book end to end
