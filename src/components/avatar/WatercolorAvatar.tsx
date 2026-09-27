@@ -18,8 +18,8 @@ export interface WatercolorAvatarProps {
   traits: AvatarTraits;
   /** Accessible description, e.g. "Retrato de Lucía" */
   alt: string;
-  /** Rendered edge in px (the component is square). Default 240. */
-  size?: number;
+  /** Rendered edge in px (the component is square), or "fill" to fill a sized parent. Default 240. */
+  size?: number | "fill";
   /**
    * Crop factor around the face (1 = the full 512 px portrait with its paper
    * margin). 1.35 frames head and shoulders for a round avatar.
@@ -86,6 +86,7 @@ export default function WatercolorAvatar({
   if (!rendered) return <>{fallback}</>;
 
   const overlays = avatarLayers(traits).filter((l) => l.key !== "base");
+  const sizesAttr = size === "fill" ? "(min-width: 1024px) 300px, 112px" : `${size}px`;
   const layerStyle = { objectFit: "cover" as const };
 
   return (
@@ -95,15 +96,15 @@ export default function WatercolorAvatar({
       aria-label={alt}
       style={{
         position: "relative",
-        width: size,
-        height: size,
+        width: size === "fill" ? "100%" : size,
+        height: size === "fill" ? "100%" : size,
         overflow: "hidden",
         borderRadius: round ? "9999px" : undefined,
         isolation: "isolate", // multiply blends with the base only
       }}
     >
       <div style={{ position: "absolute", inset: 0, transform: `scale(${zoom})`, transformOrigin: "50% 47%" }}>
-        <Image src={shownBase} alt="" fill unoptimized priority={priority} sizes={`${size}px`} style={layerStyle} draggable={false} />
+        <Image src={shownBase} alt="" fill unoptimized priority={priority} sizes={sizesAttr} style={layerStyle} draggable={false} />
         {baseSrc !== shownBase && (
           // Loads the new base on top, then promotes it; invisible until ready.
           <Image
@@ -112,7 +113,7 @@ export default function WatercolorAvatar({
             alt=""
             fill
             unoptimized
-            sizes={`${size}px`}
+            sizes={sizesAttr}
             style={{ ...layerStyle, opacity: 0 }}
             onLoad={() => setShownBase(baseSrc)}
             draggable={false}
@@ -125,7 +126,7 @@ export default function WatercolorAvatar({
             alt=""
             fill
             unoptimized
-            sizes={`${size}px`}
+            sizes={sizesAttr}
             style={{ ...layerStyle, mixBlendMode: l.blend }}
             draggable={false}
           />

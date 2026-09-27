@@ -1,0 +1,509 @@
+import { test, expect, type Page, type Route, type Request } from "@playwright/test";
+
+// Creation flow v2 (6 screens). Every backend call is mocked with page.route:
+// the local .env points at the shared Supabase project, so these tests must
+// never create users, stories or uploads for real.
+//
+// Photo tab tests depend on the build-time flag. Run twice:
+//   npx playwright test e2e/creation-v2.spec.ts                     (flag off)
+//   PHOTO_FLAG=1 npx playwright test e2e/creation-v2.spec.ts -g photo  (server started with
+//   NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED=true)
+
+const SHOTS = process.env.SHOTS_DIR ?? "test-results/flow-v2";
+const PHOTO_FLAG = process.env.PHOTO_FLAG === "1";
+const STORY_ID = "11111111-2222-4333-8444-555555555555";
+const NAME = "Lucía Núria l'Olivé";
+
+const VIEWPORTS = {
+  desktop: { viewport: { width: 1440, height: 900 } },
+  mobile: { viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true },
+} as const;
+
+const COPY = {
+  es: { next: /Siguiente/, create: /Crear su libro/, back: "Atrás", world: /Espacial/i, painting: /Pintando el libro de Lucía/, see: /Ver su libro/ },
+  ca: { next: /Següent/, create: /Crear el seu llibre/, back: "Enrere", world: /Espacial/i, painting: /Pintant el llibre de Lucía/, see: /Veure el llibre/ },
+} as const;
+type Locale = keyof typeof COPY;
+
+// ── Mock backend ──────────────────────────────────────────────────────────────
+
+function b64url(obj: unknown) {
+  return Buffer.from(JSON.stringify(obj)).toString("base64url");
+}
+const USER = {
+  id: "9f1c2d3e-0000-4000-8000-000000000001",
+  aud: "authenticated",
+  role: "authenticated",
+  is_anonymous: true,
+  app_metadata: { provider: "anonymous" },
+  user_metadata: {},
+  created_at: new Date().toISOString(),
+};
+function session() {
+  const exp = Math.floor(Date.now() / 1000) + 3600 * 24;
+  const token = `${b64url({ alg: "HS256", typ: "JWT" })}.${b64url({ sub: USER.id, exp, role: "authenticated", is_anonymous: true })}.sig`;
+  return { access_token: token, token_type: "bearer", expires_in: 86400, expires_at: exp, refresh_token: "refresh-mock", user: USER };
+}
+
+const ART = (f: string) => `/images/path/space/${f}.webp`;
+const SCENE_ART = ["space-c1-ship", "space-c2ship-garden", "space-c2ship-bridge", "space-c2ship-engine"].map(ART);
+const COVER_ART = ART("space-c1-crystal");
+
+function generatedText() {
+  return {
+    bookTitle: "Lucía y el jardín de las estrellas",
+    titleOptions: ["Lucía y el jardín de las estrellas", "La nave dormida", "Un viaje entre cometas"],
+    coverImagePrompt: "",
+    dedication: "",
+    finalMessage: "Y colorín colorado, este cuento se ha terminado.",
+    synopsis: "Una aventura entre estrellas.",
+    scenes: Array.from({ length: 12 }, (_, i) => ({
+      sceneNumber: i + 1,
+      title: `Escena ${i + 1}`,
+      text: `Capítulo ${i + 1}. Lucía miró por la ventanilla de la nave y vio un jardín que flotaba entre las estrellas. Respiró hondo y siguió adelante, con el corazón lleno de valor.`,
+      imagePrompt: "",
+      type: "scene" as const,
+    })),
+  };
+}
+
+interface Mock {
+  requests: { method: string; path: string; body: unknown }[];
+  lightCalls: number;
+  status: string;
+  dedication: string | null;
+  sender: string | null;
+}
+
+async function installMocks(page: Page): Promise<Mock> {
+  const mock: Mock = { requests: [], lightCalls: 0, status: "draft", dedication: null, sender: null };
+
+  await page.route(/\/auth\/v1\//, async (route: Route) => {
+    const url = route.request().url();
+    if (url.includes("/user")) return route.fulfill({ json: USER });
+    if (url.includes("/logout")) return route.fulfill({ status: 204, body: "" });
+    return route.fulfill({ json: session() });
+  });
+
+  const progressFor = (call: number) => {
+    // 1 draft → 2 generating → 3 cover → 4 cover + 2/4 → 5+ preview (4/4)
+    if (call <= 2) return null;
+    if (call === 3) return { coverUrl: COVER_ART, scenes: [], total: 4 };
+    if (call === 4) return { coverUrl: COVER_ART, scenes: SCENE_ART.slice(0, 2).map((url, index) => ({ index, url })), total: 4 };
+    return { coverUrl: COVER_ART, scenes: SCENE_ART.map((url, index) => ({ index, url })), total: 4 };
+  };
+
+  await page.route(/\/api\//, async (route: Route) => {
+    const req = route.request();
+    const url = new URL(req.url());
+    const path = url.pathname;
+    let body: unknown = null;
+    try {
+      body = req.postDataJSON();
+    } catch {
+      body = req.postData();
+    }
+    mock.requests.push({ method: req.method(), path: `${path}${url.search}`, body });
+
+    // Read-only landing data (home page) — not part of this flow
+    if (path.startsWith("/api/showcase")) return route.continue();
+    if (path === "/api/characters/prepare") return route.fulfill({ json: { characterPrepId: "prep-123" } });
+    if (path === "/api/characters/photo") {
+      if (req.method() === "DELETE") return route.fulfill({ json: { deleted: true } });
+      return route.fulfill({ json: { photoPath: `${USER.id}/photo-abc.jpg` } });
+    }
+    if (path === "/api/stories" && req.method() === "POST") {
+      const b = body as { dedication?: string; senderName?: string };
+      mock.dedication = b.dedication ?? null;
+      mock.sender = b.senderName || null;
+      mock.status = "draft";
+      mock.lightCalls = 0;
+      return route.fulfill({ json: { storyId: STORY_ID, characterId: "c1" } });
+    }
+    if (path === `/api/stories/${STORY_ID}/generate`) {
+      // Long-running like the real route: answers once the preview is done.
+      mock.status = "generating";
+      for (let i = 0; i < 120 && mock.lightCalls < 5; i++) await new Promise((r) => setTimeout(r, 500));
+      return route.fulfill({ json: { status: "preview" } }).catch(() => {});
+    }
+    if (path === `/api/stories/${STORY_ID}/dedication`) {
+      const b = body as { dedication?: string; senderName?: string };
+      if (b.dedication !== undefined) mock.dedication = b.dedication;
+      if (b.senderName !== undefined) mock.sender = b.senderName;
+      return route.fulfill({ json: { dedication: mock.dedication, senderName: mock.sender } });
+    }
+    if (path === `/api/stories/${STORY_ID}/title`) return route.fulfill({ json: { success: true } });
+    if (path === `/api/stories/${STORY_ID}/send-preview`) return route.fulfill({ json: { sent: true } });
+    if (path === `/api/stories/${STORY_ID}` && url.searchParams.get("light") === "true") {
+      mock.lightCalls += 1;
+      const call = mock.lightCalls;
+      mock.status = call === 1 ? "draft" : call <= 4 ? "generating" : "preview";
+      return route.fulfill({ json: { id: STORY_ID, status: mock.status, title: null, generated_text: null, preview_progress: progressFor(call) } });
+    }
+    if (path === `/api/stories/${STORY_ID}`) {
+      const done = mock.status === "preview";
+      return route.fulfill({
+        json: {
+          id: STORY_ID,
+          status: mock.status,
+          template_id: "space",
+          title: done ? "Lucía y el jardín de las estrellas" : null,
+          cover_image_url: done ? COVER_ART : null,
+          character_portrait_url: null,
+          dedication_text: mock.dedication,
+          sender_name: mock.sender,
+          generated_text: done ? generatedText() : null,
+          characters: {
+            name: NAME, age: 6, gender: "girl", city: null, interests: [], favorite_color: "#E53935",
+            favorite_companion: null, future_dream: null, avatar_url: null,
+            hair_color: "#e6c07b", skin_tone: "#eebb99", eye_color: "#1976d2", hairstyle: "curly",
+          },
+          story_illustrations: done
+            ? SCENE_ART.slice(0, 3).map((image_url, i) => ({ scene_number: i + 1, image_url, status: "ready" }))
+            : [],
+        },
+      });
+    }
+    return route.fulfill({ status: 404, json: { error: "unmocked", path } });
+  });
+  return mock;
+}
+
+function trackConsole(page: Page) {
+  const errors: string[] = [];
+  page.on("console", (m) => {
+    if (m.type() === "error") errors.push(m.text());
+  });
+  page.on("pageerror", (e) => errors.push(String(e)));
+  page.on("response", (r) => {
+    if (r.status() >= 400) errors.push(`HTTP ${r.status()} ${r.url()}`);
+  });
+  return errors;
+}
+
+async function shot(page: Page, name: string) {
+  await page.waitForTimeout(350); // let entrance animations settle
+  await page.screenshot({ path: `${SHOTS}/${name}.png`, fullPage: false });
+}
+
+async function freshStart(page: Page, locale: Locale) {
+  await page.goto(`/${locale}`);
+  await page.evaluate(() => localStorage.clear());
+  await page.goto(`/${locale}/crear`);
+  await expect(page.getByTestId("live-cover")).toBeVisible();
+}
+
+async function fillName(page: Page) {
+  await page.locator("#child-name").fill(NAME);
+  await expect(page.getByTestId("live-cover-name")).toHaveText(NAME);
+}
+
+async function next(page: Page, locale: Locale) {
+  await page.getByRole("button", { name: COPY[locale].next }).click();
+}
+
+async function chooseAdventure(page: Page, locale: Locale) {
+  await page.getByRole("radio", { name: COPY[locale].world }).first().click();
+  for (let ch = 1; ch <= 3; ch++) {
+    const option = page.locator(`section[aria-labelledby="adv-ch-${ch}"] [role=radio]`).first();
+    await option.waitFor({ state: "visible", timeout: 15000 });
+    await option.click();
+    await expect(option).toHaveAttribute("aria-checked", "true");
+  }
+}
+
+// ── Tests ─────────────────────────────────────────────────────────────────────
+
+for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
+  for (const locale of ["es", "ca"] as Locale[]) {
+    test.describe(`${locale} ${vpName}`, () => {
+      test.use(vp);
+
+      test(`happy path to the painting screen [${locale} ${vpName}]`, async ({ page }) => {
+        test.skip(PHOTO_FLAG, "flag-off suite");
+        test.setTimeout(120_000);
+        const errors = trackConsole(page);
+        const mock = await installMocks(page);
+        const tag = `${locale}-${vpName}`;
+
+        // 1 — Name: live cover
+        await freshStart(page, locale);
+        await shot(page, `${tag}-1-name-empty`);
+        await fillName(page);
+        // Keystroke → cover update latency
+        const latency = await page.evaluate(async () => {
+          const input = document.querySelector<HTMLInputElement>("#child-name")!;
+          const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!;
+          const t0 = performance.now();
+          setter.call(input, input.value + "a");
+          input.dispatchEvent(new Event("input", { bubbles: true }));
+          const target = document.querySelector('[data-testid="live-cover-name"]')!;
+          while (!target.textContent?.endsWith("a")) await new Promise((r) => requestAnimationFrame(r));
+          const dt = performance.now() - t0;
+          setter.call(input, input.value.slice(0, -1));
+          input.dispatchEvent(new Event("input", { bubbles: true }));
+          return dt;
+        });
+        expect(latency).toBeLessThan(100);
+        await expect(page.getByTestId("live-cover-name")).toHaveText(NAME);
+        await page.getByRole("radio", { name: /^6/ }).click();
+        await page.getByRole("radio", { name: locale === "es" ? "Una niña" : "Una nena" }).click();
+        await shot(page, `${tag}-1-name-filled`);
+        await next(page, locale);
+
+        // 2 — Protagonist: trait swaps are instant and offline
+        const portrait = page.getByTestId("protagonist-portrait");
+        await expect(portrait).toBeVisible();
+        await expect(page.getByRole("tab")).toHaveCount(0); // photo flag off
+        const before = await portrait.innerHTML();
+        const netDuringTraits: string[] = [];
+        const onReq = (r: Request) => {
+          if (["fetch", "xhr", "image", "document"].includes(r.resourceType())) netDuringTraits.push(r.url());
+        };
+        page.on("request", onReq);
+        await page.locator('[aria-labelledby="lbl-skin"]').getByRole("radio").nth(3).click();
+        await page.locator('[aria-labelledby="lbl-glasses"]').getByRole("radio").nth(1).click();
+        await page.getByRole("switch").click();
+        await page.locator('[aria-labelledby="lbl-hairstyle"]').getByRole("radio").nth(1).click();
+        await page.waitForTimeout(300);
+        page.off("request", onReq);
+        expect(netDuringTraits).toEqual([]);
+        expect(await portrait.innerHTML()).not.toEqual(before);
+        await shot(page, `${tag}-2-protagonist`);
+        if (vpName === "mobile") {
+          // the portrait stays in view while scrolling the traits
+          await page.mouse.wheel(0, 600);
+          await page.waitForTimeout(300);
+          await expect(portrait).toBeInViewport();
+          await shot(page, `${tag}-2-protagonist-scrolled`);
+        }
+        await next(page, locale);
+
+        // Character prep fired in the background
+        await expect.poll(() => mock.requests.some((r) => r.path === "/api/characters/prepare")).toBe(true);
+        const prep = mock.requests.find((r) => r.path === "/api/characters/prepare")!.body as { character: Record<string, unknown> };
+        expect(prep.character.glasses).toBe("round");
+        expect(prep.character.freckles).toBe(true);
+
+        // 3 — Adventure: world + 3 chapters on one screen
+        await expect(page.getByRole("button", { name: COPY[locale].create })).toBeDisabled();
+        await shot(page, `${tag}-3-adventure-empty`);
+        await chooseAdventure(page, locale);
+        await expect(page.getByTestId("live-cover").filter({ visible: true }).first()).toBeVisible();
+        await page.waitForTimeout(900); // let the smooth scroll to the last chapter finish
+        await shot(page, `${tag}-3-adventure-done-bottom`);
+        await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+        await shot(page, `${tag}-3-adventure-done-top`);
+        await page.getByRole("button", { name: COPY[locale].create }).click();
+
+        // Story POST carries the pre-filled dedication (verbatim template with the name) + prep id
+        await page.waitForURL(new RegExp(`/${locale}/crear/${STORY_ID}/generar`));
+        const post = mock.requests.find((r) => r.path === "/api/stories")!.body as Record<string, unknown>;
+        expect(post.characterPrepId).toBe("prep-123");
+        expect(String(post.dedication)).toContain(NAME);
+        expect((post.decisions as { treePath: unknown[] }).treePath).toHaveLength(3);
+
+        // 4 — Painting: real progress, cover first, then scenes
+        await expect(page.getByRole("heading", { name: COPY[locale].painting })).toBeVisible();
+        await shot(page, `${tag}-4-painting-start`);
+        await expect(page.getByTestId("progress-cover").locator(`img[src*="space-c1-crystal"]`)).toBeVisible({ timeout: 15_000 });
+        await shot(page, `${tag}-4-painting-cover`);
+        await expect(page.getByTestId("progress-scenes").locator("img")).toHaveCount(2, { timeout: 15_000 });
+        await shot(page, `${tag}-4-painting-scenes`);
+
+        // Dedication: pre-filled, live on the page mock, counter, saved verbatim
+        const textarea = page.locator("textarea");
+        await expect(textarea).toHaveValue(new RegExp(NAME));
+        const custom = "  Per a tu, estrella:\nque mai deixis de somiar. ✨ ";
+        await textarea.fill(custom);
+        await expect(page.getByTestId("dedication-page")).toContainText("que mai deixis de somiar");
+        await expect(page.getByTestId("dedication-counter")).toHaveText(`${custom.length}/500`);
+        await page.locator('input[type="text"]').last().fill("Mamà i papà");
+        await expect.poll(() => mock.dedication).toBe(custom);
+        await expect.poll(() => mock.sender).toBe("Mamà i papà");
+        await shot(page, `${tag}-4-dedication`);
+
+        // Ready → open the book
+        await expect(page.getByRole("button", { name: COPY[locale].see }).last()).toBeEnabled({ timeout: 20_000 });
+        await shot(page, `${tag}-4-ready`);
+        await page.getByRole("button", { name: COPY[locale].see }).last().click();
+        await page.waitForURL(new RegExp(`/crear/${STORY_ID}/preview`));
+
+        // 5 — The book + checklist
+        await expect(page.getByTestId("chip-dedication")).toBeVisible({ timeout: 20_000 });
+        await page.waitForTimeout(3500); // one-shot reveal overlay
+        await shot(page, `${tag}-5-book`);
+        await page.getByTestId("chip-dedication").click();
+        await expect(page.getByRole("dialog")).toBeVisible();
+        await expect(page.getByRole("dialog").locator("textarea")).toHaveValue(custom);
+        await shot(page, `${tag}-5-dedication-sheet`);
+        await page.keyboard.press("Escape");
+        await page.getByTestId("chip-cover").click();
+        await shot(page, `${tag}-5-cover-sheet`);
+        await page.keyboard.press("Escape");
+
+        // 6 — Format + payment (VAT next to every price), optional email after the wow
+        await page.locator("#checkout-section").scrollIntoViewIfNeeded();
+        await page.waitForTimeout(500);
+        await shot(page, `${tag}-6-format`);
+        const checkoutText = await page.locator("#checkout-section").innerText();
+        expect(checkoutText).toMatch(locale === "es" ? /IVA incl/ : /IVA incl/);
+        await page.getByTestId("send-preview").locator("input").fill("familia@example.com");
+        await page.getByTestId("send-preview").getByRole("button").click();
+        await expect(page.getByTestId("send-preview-sent")).toBeVisible();
+        await page.getByTestId("send-preview-sent").scrollIntoViewIfNeeded();
+        await shot(page, `${tag}-6-email-sent`);
+
+        expect(errors).toEqual([]);
+      });
+    });
+  }
+}
+
+test.describe("state", () => {
+  test.use(VIEWPORTS.mobile);
+
+  test("Back from every screen keeps state, and reload keeps it", async ({ page }) => {
+    test.skip(PHOTO_FLAG, "flag-off suite");
+    test.setTimeout(90_000);
+    const errors = trackConsole(page);
+    const mock = await installMocks(page);
+    await freshStart(page, "es");
+    await fillName(page);
+    await page.getByRole("radio", { name: /^8/ }).click();
+    await next(page, "es");
+    await page.locator('[aria-labelledby="lbl-glasses"]').getByRole("radio").nth(2).click();
+    await next(page, "es");
+    await chooseAdventure(page, "es");
+
+    // Reload on screen 3: everything restored
+    await page.reload();
+    await expect(page.locator(`section[aria-labelledby="adv-ch-3"] [role=radio][aria-checked=true]`)).toHaveCount(1);
+    await expect(page.getByRole("button", { name: /Crear su libro/ })).toBeEnabled();
+
+    // 3 → 2 → 1 with the header back arrow
+    await page.getByRole("button", { name: "Atrás" }).first().click();
+    await expect(page.locator('[aria-labelledby="lbl-glasses"]').getByRole("radio").nth(2)).toHaveAttribute("aria-checked", "true");
+    await page.getByRole("button", { name: "Atrás" }).first().click();
+    await expect(page.locator("#child-name")).toHaveValue(NAME);
+    await expect(page.getByRole("radio", { name: /^8/ })).toHaveAttribute("aria-checked", "true");
+
+    // Forward again: choices intact
+    await next(page, "es");
+    await next(page, "es");
+    await expect(page.locator(`[role=radio][aria-checked=true]`)).toHaveCount(4); // world + 3 chapters
+
+    // 3 → 4, then Back from 4 returns to 3 with choices, and re-create reuses the same story
+    await page.getByRole("button", { name: /Crear su libro/ }).click();
+    await page.waitForURL(/\/generar/);
+    await expect(page.locator("textarea")).toBeVisible();
+    await page.getByRole("button", { name: "Atrás" }).last().click();
+    await page.waitForURL(/\/es\/crear$/);
+    await expect(page.locator(`[role=radio][aria-checked=true]`)).toHaveCount(4);
+    const postsBefore = mock.requests.filter((r) => r.path === "/api/stories").length;
+    await page.getByRole("button", { name: /Crear su libro/ }).click();
+    await page.waitForURL(/\/generar/);
+    expect(mock.requests.filter((r) => r.path === "/api/stories").length).toBe(postsBefore);
+    expect(errors).toEqual([]);
+  });
+
+  test("an old v1 draft migrates gracefully", async ({ page }) => {
+    test.skip(PHOTO_FLAG, "flag-off suite");
+    await installMocks(page);
+    await page.goto("/ca");
+    await page.evaluate(() =>
+      localStorage.setItem(
+        "meapica_create_state",
+        JSON.stringify({
+          currentStep: 3,
+          mode: "solo",
+          character: { name: "Àlex", age: 7, gender: "boy", hairColor: "#2a2a2a", eyeColor: "#5d4037", skinTone: "#d4a574", hairstyle: "short", interests: ["space"], city: "", favoriteColor: "#E53935", favoriteCompanion: "", futureDream: "" },
+          portraitUrl: "https://example.com/p.png",
+          recraftStyleId: null,
+          portraitCharacterSnapshot: null,
+          selectedTemplate: "forest",
+          decisions: {},
+          dedication: "Per a l'Àlex",
+          senderName: "",
+          ending: null,
+          endingNote: "",
+        }),
+      ),
+    );
+    await page.goto("/ca/crear");
+    await expect(page.getByRole("heading", { name: /Quina aventura viurà Àlex/ })).toBeVisible();
+    // Catalan elision on the cover: "L'aventura d'Àlex"
+    await expect(page.getByTestId("live-cover").first()).toHaveAttribute("aria-label", /L'aventura d'Àlex/);
+  });
+});
+
+test.describe("en/fr smoke", () => {
+  for (const locale of ["en", "fr"] as const) {
+    test(`screens 1–3 render with no missing messages [${locale}]`, async ({ page }) => {
+      test.skip(PHOTO_FLAG, "flag-off suite");
+      const errors = trackConsole(page);
+      await installMocks(page);
+      await page.goto(`/${locale}`);
+      await page.evaluate(() => localStorage.clear());
+      await page.goto(`/${locale}/crear`);
+      await fillName(page);
+      await page.getByRole("button", { name: locale === "en" ? /^Next$/ : /^Suivant$/ }).click();
+      await expect(page.getByTestId("protagonist-portrait")).toBeVisible();
+      await page.getByRole("button", { name: locale === "en" ? /^Next$/ : /^Suivant$/ }).click();
+      await page.getByRole("radio").first().click();
+      await expect(page.locator('section[aria-labelledby="adv-ch-1"]')).toBeVisible({ timeout: 15000 });
+      expect(errors).toEqual([]);
+    });
+  }
+});
+
+test.describe("photo tab", () => {
+  test.use(VIEWPORTS.mobile);
+
+  test("photo tab hidden when the flag is off", async ({ page }) => {
+    test.skip(PHOTO_FLAG, "needs the flag off");
+    await installMocks(page);
+    await freshStart(page, "es");
+    await fillName(page);
+    await next(page, "es");
+    await expect(page.getByTestId("protagonist-portrait")).toBeVisible();
+    await expect(page.getByRole("tab")).toHaveCount(0);
+    await expect(page.getByText(/Sube una foto/)).toHaveCount(0);
+  });
+
+  test("photo tab visible and consent-gated when the flag is on", async ({ page }) => {
+    test.skip(!PHOTO_FLAG, "needs NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED=true");
+    const errors = trackConsole(page);
+    const mock = await installMocks(page);
+    await freshStart(page, "es");
+    await fillName(page);
+    await next(page, "es");
+    await page.getByRole("tab", { name: /Sube una foto/ }).click();
+    const choose = page.getByRole("button", { name: /Elegir una foto/ });
+    await expect(choose).toBeDisabled();
+    await expect(page.getByRole("checkbox")).not.toBeChecked();
+    await expect(page.getByRole("button", { name: /Siguiente/ })).toBeDisabled();
+    await shot(page, "es-mobile-2-photo-consent");
+    await page.getByRole("checkbox").check();
+    await expect(choose).toBeEnabled();
+
+    // Upload: client re-encodes to JPEG and posts field "photo"
+    const png = Buffer.from(
+      "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAAAPUlEQVR42u3BAQ0AAADCoPdPbQ8HFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPwZgAAB4JYwmgAAAABJRU5ErkJggg==",
+      "base64",
+    );
+    await page.getByTestId("photo-input").setInputFiles({ name: "nena.png", mimeType: "image/png", buffer: png });
+    await expect(page.getByTestId("photo-uploaded")).toBeVisible();
+    const upload = mock.requests.find((r) => r.path === "/api/characters/photo" && r.method === "POST");
+    expect(String(upload?.body)).toContain('name="photo"');
+    expect(String(upload?.body)).toContain("2026-09-27");
+    await shot(page, "es-mobile-2-photo-uploaded");
+    await expect(page.getByRole("button", { name: /Siguiente/ })).toBeEnabled();
+
+    // Withdraw → DELETE, consent reset
+    await page.getByRole("button", { name: /Quitar la foto/ }).click();
+    await expect.poll(() => mock.requests.some((r) => r.path === "/api/characters/photo" && r.method === "DELETE")).toBe(true);
+    await expect(page.getByRole("checkbox")).not.toBeChecked();
+    expect(errors).toEqual([]);
+  });
+});

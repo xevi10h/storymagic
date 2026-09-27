@@ -8,18 +8,23 @@ All UI designs live in Stitch:
 
 Design theme: Light mode, custom color `#e96b3a` (warm orange), Plus Jakarta Sans font, fully rounded corners, high saturation.
 
-## Complete User Flow — "El Camino" (3 steps)
+## Complete User Flow — Creation flow v2 (6 screens, 2026-09-27)
 
-The creation flow was redesigned into a single choose-your-own-adventure **path**. There is no longer a mode (solo/together) selection, a separate template-selection screen, or three decision knobs. `TOTAL_STEPS = 3`.
+One progress indicator for all six screens (`CreationHeader`, `TOTAL_CREATION_STEPS = 6`): labelled stepper on desktop, "Paso 2 de 6 · Protagonista" + 6-segment bar on mobile. Every Back keeps state (draft in `localStorage` key `meapica_create_state`, schema v2, older drafts migrated by `migrateCreateState`). No gates before the wow: the anonymous session is created silently the first time an API needs a user (`ensureGuestSession`). Full rationale and benchmark: [`creation-flow-v2.md`](./creation-flow-v2.md).
 
 ```
 Landing Page
-  → Step 1: Character Creation (name, age, appearance, interests) + FLUX.2 watercolor portrait reveal
-  → Step 2: Adventure Path (serpentine gamebook):
-              pick a theme/world (1st fork) → branching chapter choices (illustrated cards)
-  → Step 3: Dedication + ending choice (per-template endings) → "Crear mi cuento"
-  → Magic Generation (animation while book is created)  [/crear/[storyId]/generar]
-  → Preview & Checkout                                   [/crear/[storyId]/preview]
+  → 1 Nombre          name + age + gender, LIVE COVER updates on every keystroke   [/crear]
+  → 2 Protagonista    "Créalo tú" trait grid + sticky portrait (instant, offline)   [/crear]
+                      "Sube una foto" tab (flag NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED)
+                      → on Seguir: POST /api/characters/prepare (background)
+  → 3 Aventura        world + the 3 chapters of its branching tree, one screen    [/crear]
+                      → "Crear su libro": POST /api/stories (pre-filled dedication)
+  → 4 Dedicatoria     real preview progress (cover → scenes) while the parent      [/crear/{id}/generar]
+                      writes the dedication, live on a page mock (autosaved)
+  → 5 Su libro        flipbook + checklist chips that edit in place (sheets)       [/crear/{id}/preview]
+  → 6 Pedido          format + payment (hardcover preselected, IVA incluido),      [/crear/{id}/preview#checkout-section]
+                      optional "Envíame la preview" email after the wow
 ```
 
 ## Screen-by-Screen Specification
@@ -29,90 +34,49 @@ Landing Page
 ### Landing Page
 
 **Stitch screen:** `5325a3cce1324a368453343affe3ef20`
-**Purpose:** Convert visitors into story creators.
-
-**Sections:**
-1. **Nav bar** — Logo, Manifiesto, Colección, Artesanal, Familias, CTA "Crear mi cuento"
-2. **Hero** — "Menos pantallas, más historias para tocar" + dual CTA (Personalizar libro / Ver calidad del papel) + trust badges (FSC paper, artisanal shipping)
-3. **3-step process** — (1) Choose a story, (2) Manual personalization with watercolor illustrations, (3) Receive the physical treasure
-4. **Book library** — 3 featured books with softcover/hardcover pricing (34.90/44.90 EUR)
-5. **Quality showcase** — Traditional binding details, Munken 170g paper
-6. **Pack Aventura Artesanal** — Upsell section (+12.90 EUR)
-7. **Testimonials** — 5-star reviews from real parents
-8. **Collection offer** — 3 books = 20% discount
-9. **Footer** — Workshop info, support, reading club signup, legal
+**Purpose:** Convert visitors into story creators. Entry links: `/crear`, `/crear?template={id}&from=catalog|seo` (world pre-chosen on screen 3), `/crear?characterId={id}` (dashboard: reuse a saved character).
 
 ---
 
-### Step 1: Character Creation
+### 1 · Nombre ✅
 
-**Component:** `Step2CharacterCreation`
-**Purpose:** Build the protagonist and reveal their portrait.
+**Component:** `StepName` + `LiveCover`
+- Big name field (any Unicode letters, accents, ñ, l·l, apostrophes, compound names; 50-char cap; never rejected). Age as 1–12 chips (radiogroup). "Es…": Una niña / Un niño / Prefiero no decirlo (only drives feminine/masculine/neutral wording).
+- `LiveCover`: square book cover = template art + "La aventura de" + the name, re-rendered client-side on every keystroke (measured < 100 ms in e2e). Name size scales with length (`coverNameFontSize`), never breaks inside a word. Catalan/French elide "de" before vowels (`L'aventura d'Àlex`). Fonts load `latin` + `latin-ext` subsets.
 
-**Form fields:**
-- Child's name (text input, 50-char cap)
-- City / "Lives in" (text input with location pin)
-- Age (slider 1-12)
-- Hair color (color selection)
-- Skin tone (color selection)
-- Gender: Niño / Niña / Neutro (3 options)
-- Interests: selectable tags (Espacio, Animales, Deportes, Castillos, Dinosaurios, Música)
-- Favorite color (book theme accent) + favorite companion (best friend/companion)
+### 2 · Protagonista ✅
 
-**Portrait reveal:** On confirmation, a FLUX.2 watercolor portrait of the child is generated once via `/api/characters/portrait` (stored in the Supabase `portraits/` bucket as `character.portraitUrl`) and shown with rotating "painting your hero" status messages (`PortraitReveal`). This portrait becomes the identity anchor for every illustration in the book — there is no SVG/DiceBear avatar.
+**Components:** `StepProtagonist`, `PhotoUploadPanel`, `WatercolorAvatar` (placeholder SVG until the pre-rendered avatar matrix lands; same `{ traits }` contract)
+- **Créalo tú** (default): skin, hair colour, hairstyle (mini-avatar thumbnails), eyes, glasses (none/round/square), freckles. Portrait swaps instantly with zero network; sticky under the header on mobile, sticky column on desktop.
+- **Sube una foto** (only when `NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED=true`): unchecked parental-consent checkbox gates the picker; the photo is re-encoded client-side to JPEG ≤ 1536 px (drops EXIF, handles HEIC/large phone photos) and posted to `POST /api/characters/photo` (`photo`, `consent`, `consentVersion`, `locale` → `{ photoPath }`). "Quitar la foto" calls `DELETE /api/characters/photo` and resets consent. Server error codes map to `crear.photo.errors.*`.
+- On "Siguiente": `POST /api/characters/prepare` fire-and-forget (traits + optional `photoPath`) → `characterPrepId` stored in the draft and sent with the story. Re-sent only when the look changes. A `410 photo_unavailable` clears the photo and asks for a re-upload.
+- The old AI portrait screen (`PortraitReveal`) is gone from the flow.
 
----
+### 3 · Aventura ✅
 
-### Step 2: Adventure Path ("El Camino")
+**Component:** `StepAdventure`
+- World picker (10 templates, horizontal scroller on mobile, grid on desktop; "Para su edad" badge from `getRecommendedTemplates`), then chapter 1 → 2 → 3 of the template's branching tree (`story-trees/loaders.ts`, art from `art-manifest.ts`) on the same screen. Each chapter appears after the previous choice and scrolls into view; changing an earlier chapter drops only the choices that no longer follow.
+- The cover (sticky on desktop, mini on mobile) switches to the chosen world's art. "Crear su libro" enables once world + 3 chapters are set.
+- Creating the story sends the pre-filled dedication (`crear.dedication.default` with the name) so the parent's text is always the verbatim dedication. Back → Create with an unchanged draft reuses the same story (no duplicate book).
+- The per-template ending picker was dropped (the LLM closes the story from the chosen path).
 
-**Component:** `PathBuilder`
-**Purpose:** Build the story as a vertical, gamebook-style path of chained choices — identical on mobile and desktop.
+### 4 · Dedicatoria (while the preview is painted) ✅
 
-- **First fork = the world.** Instead of a separate template screen, the path opens by asking the child to pick a theme/world (ranked by `getRecommendedTemplates` based on age + interests). This selects the story template (10 available, each backed by a branching story-tree in `src/lib/story-trees/`).
-- **Branching chapter choices.** After the world, the path presents one beat at a time (encounter → companion → challenge → time → setting, or the template's own tree), each with illustrated option cards (real FLUX.2 watercolor art when available, gradient + icon fallback otherwise). Resolved milestones stack above as a trail.
-- **Clickable header stepper.** The `CreationHeader` stepper lets the user jump back to any already-unlocked step.
-- **Editable trail.** Any resolved milestone in the path is tappable to re-open and change that choice.
-- **Completion state.** Reaching the end of the path shows a celebration recap (chosen-path chips) and the CTA to continue to the dedication.
+**Route:** `/crear/[storyId]/generar` · **Components:** `LiveCover`, `DedicationEditor`, `useDedicationAutosave`
+- Real progress only: polls `GET /api/stories/{id}?light=true` every 3 s and reads `preview_progress { coverUrl?, scenes[{index,url}], total }`. The live cover is replaced by the painted cover the moment `coverUrl` exists; scene thumbnails fill in as they arrive; the bar is determinate only when `total` is known (indeterminate otherwise), plus an honest elapsed timer. No fake curve.
+- Dedication: pre-filled, rendered live on a page mock, 500-char counter, "De parte de"; autosaved (debounced) to `PATCH /api/stories/{id}/dedication`, stored verbatim; mirrored into the draft.
+- When ready: "Ver su libro" (no auto-redirect while the parent is typing). Failure state with retry; Back returns to screen 3 with everything kept.
 
----
+### 5 · Su libro ✅
 
-### Step 3: Dedication
+**Route:** `/crear/[storyId]/preview` · **Component:** `BookChecklist` (+ `Sheet`)
+- Flipbook (existing viewer) + Wonderbly-style chips: ✓ Protagonista (look + "Cambiar su aspecto" → back to screen 2, warns the book is repainted), ✓ Dedicatoria (editor sheet, autosave, book updates in place), ○/✓ Portada (title sheet with suggestions; ✓ once reviewed). Sheets = bottom sheet on mobile, dialog on desktop, Esc/backdrop close.
+- "Lo quiero" (desktop) / sticky bar (mobile, first tap scrolls to the formats) lead to screen 6.
 
-**Component:** `Step5AuthorMessage`
-**Purpose:** Dedication message + ending selection, then trigger generation.
+### 6 · Formato + pago ✅
 
-**Elements:**
-- Dedication text area (personal message from parent/sender)
-- Story ending choice — **per-template endings** (each story template defines its own set of dynamic endings; e.g. a festive celebration vs. a calm, reflective close)
-- Back-cover preview
-- CTA: "Crear mi cuento" → saves the draft and redirects to `/crear/[storyId]/generar`
-
----
-
-### Magic Generation ✅ IMPLEMENTED
-
-**Route:** `/crear/[storyId]/generar`
-**Purpose:** Entertaining wait screen while AI generates the book.
-
-**Implementation:**
-- Animated WritingAnimation quill + Meapica logo reveal
-- Cycling whimsical progress messages per step ("Writing your story...", "Painting the illustrations...", etc.)
-- Polls generation status, auto-redirects to the preview when ready
-- Fully i18n'd in ES/CA/EN/FR
-
----
-
-### Preview & Checkout ✅ IMPLEMENTED
-
-**Route:** `/crear/[storyId]/preview`
-**Purpose:** Review the generated book and purchase.
-
-**Implementation:**
-- Interactive book viewer with page-flip animation + sound (react-pageflip)
-- Mobile portrait mode optimized, fullscreen viewer
-- Format selection (softcover 34.90 EUR / hardcover 49.90 EUR)
-- Stripe Checkout session creation
-- Post-purchase: `/checkout/success` confirmation page
+- Existing paywall: hardcover preselected with the "Ideal para regalar" badge (no popularity claims without sales data), every price with "IVA incluido" next to it, CTA "Pedir el libro de Lucía · 49,90 € IVA incl.". Stripe Checkout; the creation draft is cleared when checkout starts.
+- **Envíame la preview** (`SendPreviewEmail` → `POST /api/stories/{id}/send-preview`): optional, after the wow, rate-limited (3/h), address not stored. The link opens the preview on the same browser (anonymous sessions are per-device).
 
 ---
 

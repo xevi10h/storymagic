@@ -1,52 +1,61 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { useParams } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { STORAGE_KEY } from "@/hooks/usePersistedState";
 import CreationHeader from "@/components/crear/CreationHeader";
+import CreationFooterNav from "@/components/crear/CreationFooterNav";
+import LiveCover from "@/components/crear/LiveCover";
+import DedicationEditor from "@/components/crear/DedicationEditor";
+import { useDedicationAutosave } from "@/hooks/useDedicationAutosave";
+import { deName, patchStoredDraft } from "@/lib/creation-flow";
 
-// ── Constants ──────────────────────────────────────────────────────────────
-
-const WHIMSICAL_MESSAGE_KEYS = [
-  { key: "backpack", icon: "backpack" },
-  { key: "palette", icon: "palette" },
-  { key: "autoStories", icon: "auto_stories" },
-  { key: "groups", icon: "groups" },
-  { key: "star", icon: "star" },
-  { key: "forest", icon: "forest" },
-  { key: "brush", icon: "brush" },
-  { key: "inkPen", icon: "ink_pen" },
-  { key: "menuBook", icon: "menu_book" },
-  { key: "autoAwesome", icon: "auto_awesome" },
-];
+// Screen 4 — "Mientras se pinta": real preview progress (cover first, then
+// scenes as they are painted) while the parent writes the dedication.
 
 const POLL_INTERVAL_MS = 3000;
-// The generation pipeline saves generated_text only at the END of the request
-// (architect → refs → screenplay → previews → cover, ~4-5 min), so "no text yet"
-// is normal for the whole run. A real backend failure reverts status to "draft"
-// (handled immediately), so this only guards a true hang.
+// A real backend failure reverts status to "draft" (handled immediately), so
+// this only guards a true hang.
 const STUCK_TIMEOUT_MS = 480_000; // 8 min
-// After this, tell the parent honestly that it's taking longer than usual.
-const SLOW_NOTICE_MS = 360_000; // 6 min
-// Progress curve time constant: ~80% at 5 min, keeps creeping up afterwards,
-// never reaches the cap until a real milestone arrives.
-const PROGRESS_TAU_S = 190;
-const PROGRESS_TIME_CAP = 92;
-const PROGRESS_TEXT_READY = 96;
+const SLOW_NOTICE_MS = 180_000; // 3 min: say honestly that it's taking longer
 
 const DONE_STATUSES = new Set(["preview", "ready", "ordered", "shipped"]);
 
-/** Parent-facing failure kinds. Raw backend/provider text is never shown. */
 type FailureKind = "failed" | "stuck" | "rate_limited" | "network";
-
 type GenerationPhase = "starting" | "generating" | "done" | "error";
+
+interface PreviewProgress {
+  coverUrl: string | null;
+  scenes: { index: number; url: string }[];
+  total: number;
+}
+
+/** Defensive parse of stories.preview_progress (written by the preview pipeline). */
+function parseProgress(raw: unknown): PreviewProgress | null {
+  if (!raw || typeof raw !== "object") return null;
+  const r = raw as Record<string, unknown>;
+  const scenes = Array.isArray(r.scenes)
+    ? r.scenes
+        .filter(
+          (s): s is { index: number; url: string } =>
+            !!s && typeof s === "object" &&
+            typeof (s as { index?: unknown }).index === "number" &&
+            typeof (s as { url?: unknown }).url === "string",
+        )
+        .sort((a, b) => a.index - b.index)
+    : [];
+  return {
+    coverUrl: typeof r.coverUrl === "string" && r.coverUrl ? r.coverUrl : null,
+    scenes,
+    total: typeof r.total === "number" && r.total > 0 ? Math.round(r.total) : 0,
+  };
+}
 
 function startedAtKey(storyId: string) {
   return `meapica_gen_started_${storyId}`;
 }
-
 function readStartedAt(storyId: string): number | null {
   try {
     const v = sessionStorage.getItem(startedAtKey(storyId));
@@ -55,48 +64,67 @@ function readStartedAt(storyId: string): number | null {
     return null;
   }
 }
-
 function writeStartedAt(storyId: string, ts: number | null) {
   try {
     if (ts == null) sessionStorage.removeItem(startedAtKey(storyId));
     else sessionStorage.setItem(startedAtKey(storyId), String(ts));
   } catch {
-    // storage unavailable — elapsed time just restarts on reload
+    // storage unavailable — elapsed time restarts on reload
   }
 }
-
 function formatElapsed(ms: number): string {
   const total = Math.max(0, Math.floor(ms / 1000));
-  const m = Math.floor(total / 60);
-  const s = total % 60;
-  return `${m}:${String(s).padStart(2, "0")}`;
+  return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, "0")}`;
 }
-
-// ── Component ──────────────────────────────────────────────────────────────
 
 export default function GenerarPage() {
   const t = useTranslations("crear.generar");
-  const td = useTranslations("data");
+  const locale = useLocale();
   const { storyId } = useParams<{ storyId: string }>();
   const router = useRouter();
 
   const [phase, setPhase] = useState<GenerationPhase>("starting");
   const [failure, setFailure] = useState<FailureKind | null>(null);
-  const [messageIndex, setMessageIndex] = useState(0);
+  const [progress, setProgress] = useState<PreviewProgress | null>(null);
   const [startedAt, setStartedAt] = useState<number | null>(null);
   const [now, setNow] = useState(() => Date.now());
-  const [textReady, setTextReady] = useState(false);
   const [retrying, setRetrying] = useState(false);
-  const [childName, setChildName] = useState<string | null>(null);
+  const [childName, setChildName] = useState("");
   const [templateId, setTemplateId] = useState<string | null>(null);
+  const [finalCover, setFinalCover] = useState<string | null>(null);
+  const [leaving, setLeaving] = useState(false);
+
+  const dedication = useDedicationAutosave(storyId);
+  const { init: initDedication } = dedication;
 
   const postInFlight = useRef(false);
-  // Guards the automatic first POST against effect re-runs (StrictMode, remounts).
   const autoPostFired = useRef(false);
   const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const mountedRef = useRef(true);
 
-  // ── Helpers ───────────────────────────────────────────────────────────────
+  // ── Story details (name, world, dedication) ───────────────────────────────
+
+  const loadDetails = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/stories/${storyId}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      if (!mountedRef.current) return;
+      setChildName(data.characters?.name ?? "");
+      setTemplateId(data.template_id ?? null);
+      if (data.cover_image_url && DONE_STATUSES.has(data.status)) setFinalCover(data.cover_image_url);
+      initDedication({ dedication: data.dedication_text ?? "", senderName: data.sender_name ?? "" });
+    } catch {
+      // the screen still works without it (name-less copy)
+    }
+  }, [storyId, initDedication]);
+
+  useEffect(() => {
+    void loadDetails();
+  }, [loadDetails]);
+
+  // ── Generation state machine (same guarantees as before: idempotent POST,
+  //    409 recovery, polling decides the real outcome) ──────────────────────
 
   const stopPolling = useCallback(() => {
     if (pollIntervalRef.current) {
@@ -119,75 +147,47 @@ export default function GenerarPage() {
   const finish = useCallback(() => {
     stopPolling();
     if (!mountedRef.current) return;
-    // The story exists and is viewable → the creation draft is no longer needed.
-    try {
-      localStorage.removeItem(STORAGE_KEY);
-    } catch {
-      // ignore
-    }
     writeStartedAt(storyId, null);
-    // Flag the preview to play the one-shot "book is born" reveal
-    try {
-      sessionStorage.setItem("meapica_fresh_book", storyId);
-    } catch {
-      // storage unavailable (private mode) — reveal is skipped, no harm
-    }
     setPhase("done");
-    router.replace(`/crear/${storyId}/preview`);
-  }, [router, storyId, stopPolling]);
+    void loadDetails(); // real cover for the ready state
+  }, [stopPolling, storyId, loadDetails]);
 
-  const pollOnce = useCallback(async (): Promise<{ status: string; hasText: boolean }> => {
-    // ?light=true skips the expensive JOINs; polling only needs status + text presence.
+  const pollOnce = useCallback(async () => {
     const res = await fetch(`/api/stories/${storyId}?light=true`);
     if (!res.ok) throw new Error(`status_${res.status}`);
     const data = await res.json();
-    return { status: data.status as string, hasText: !!data.generated_text };
+    const parsed = parseProgress(data.preview_progress);
+    if (parsed && mountedRef.current) setProgress(parsed);
+    return { status: data.status as string };
   }, [storyId]);
 
   const ensureStartedAt = useCallback(
     (reset: boolean) => {
-      const existing = reset ? null : readStartedAt(storyId);
-      const ts = existing ?? Date.now();
+      const ts = (reset ? null : readStartedAt(storyId)) ?? Date.now();
       writeStartedAt(storyId, ts);
       setStartedAt(ts);
     },
     [storyId],
   );
 
-  // Poll until the story reaches `preview` (or fails / hangs)
   const startPolling = useCallback(() => {
     stopPolling();
     const pollStartedAt = Date.now();
     pollIntervalRef.current = setInterval(async () => {
       if (!mountedRef.current) return;
       try {
-        const { status, hasText } = await pollOnce();
-        if (DONE_STATUSES.has(status)) {
-          finish();
-          return;
-        }
-        if (hasText) setTextReady(true);
-        // The generate route reverts to "draft" when it fails — only trust this
-        // when our own POST is no longer in flight (avoids a race right after
-        // retry, before the route has claimed draft → generating).
-        if (status === "draft" && !postInFlight.current) {
-          fail("failed");
-          return;
-        }
-        if (Date.now() - pollStartedAt > STUCK_TIMEOUT_MS) {
-          fail("stuck");
-        }
+        const { status } = await pollOnce();
+        if (DONE_STATUSES.has(status)) return finish();
+        // The generate route reverts to "draft" on failure; trust it only
+        // once our own POST is no longer in flight.
+        if (status === "draft" && !postInFlight.current) return fail("failed");
+        if (Date.now() - pollStartedAt > STUCK_TIMEOUT_MS) fail("stuck");
       } catch {
-        // Transient network error — keep polling
+        // transient network error — keep polling
       }
     }, POLL_INTERVAL_MS);
   }, [pollOnce, stopPolling, finish, fail]);
 
-  /**
-   * Fire POST /generate on this SAME storyId. The route only claims `draft`
-   * stories; on failure it reverts to `draft`, so retrying is always safe.
-   * 409 = it recovered a crashed run back to draft → fire once more.
-   */
   const firePost = useCallback(
     async (allowRecoveryRetry = true): Promise<void> => {
       if (postInFlight.current) return;
@@ -196,60 +196,33 @@ export default function GenerarPage() {
         const res = await fetch(`/api/stories/${storyId}/generate`, { method: "POST" });
         postInFlight.current = false;
         if (!mountedRef.current) return;
-        if (res.ok) {
-          finish();
-          return;
-        }
-        if (res.status === 409 && allowRecoveryRetry) {
-          await firePost(false);
-          return;
-        }
-        if (res.status === 429) {
-          fail("rate_limited");
-          return;
-        }
-        if (res.status === 400) {
-          // Not in draft (already generating from another tab / already done):
-          // let polling decide.
-          return;
-        }
+        if (res.ok) return finish();
+        if (res.status === 409 && allowRecoveryRetry) return firePost(false);
+        if (res.status === 429) return fail("rate_limited");
+        if (res.status === 400) return; // already generating/done elsewhere: polling decides
         fail("failed");
       } catch {
         postInFlight.current = false;
-        // The request may have been cut (network, platform timeout) while the
-        // server keeps working — polling decides the real outcome.
+        // request cut (network/platform timeout) while the server keeps working
       }
     },
     [storyId, finish, fail],
   );
 
-  /** Check the current DB state and start/resume/redirect accordingly. */
   const run = useCallback(
     async (isRetry: boolean) => {
       try {
-        const { status, hasText } = await pollOnce();
+        const { status } = await pollOnce();
         if (!mountedRef.current) return;
-
-        if (DONE_STATUSES.has(status)) {
-          finish();
-          return;
-        }
-
+        if (DONE_STATUSES.has(status)) return finish();
         setFailure(null);
         setPhase("generating");
-        setTextReady(hasText);
-
         if (status === "generating") {
-          // A run is already in progress (reload / other tab) → just follow it.
-          // On an explicit retry also POST: if that run crashed (>5 min idle) the
-          // route recovers it to draft (409) and firePost re-claims it; if it's
-          // still alive the route answers 400 and we keep following it.
           ensureStartedAt(false);
           startPolling();
           if (isRetry) void firePost();
           return;
         }
-
         if (status === "draft") {
           ensureStartedAt(isRetry);
           startPolling();
@@ -259,7 +232,6 @@ export default function GenerarPage() {
           }
           return;
         }
-
         fail("failed");
       } catch {
         fail("network");
@@ -270,8 +242,6 @@ export default function GenerarPage() {
     [pollOnce, finish, ensureStartedAt, startPolling, firePost, fail],
   );
 
-  // ── Mount ────────────────────────────────────────────────────────────────
-
   useEffect(() => {
     mountedRef.current = true;
     void run(false);
@@ -281,63 +251,64 @@ export default function GenerarPage() {
     };
   }, [run, stopPolling]);
 
-  // Child name + chosen world for the wait screen (one full fetch).
-  useEffect(() => {
-    let cancelled = false;
-    fetch(`/api/stories/${storyId}`)
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (cancelled || !data) return;
-        setChildName(data.characters?.name ?? null);
-        setTemplateId(data.template_id ?? null);
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
-  }, [storyId]);
-
-  // ── Tickers (messages + clock) ───────────────────────────────────────────
-
   useEffect(() => {
     if (phase !== "generating" && phase !== "starting") return;
-    const msg = setInterval(() => {
-      setMessageIndex((prev) => (prev + 1) % WHIMSICAL_MESSAGE_KEYS.length);
-    }, 3500);
     const clock = setInterval(() => setNow(Date.now()), 1000);
-    return () => {
-      clearInterval(msg);
-      clearInterval(clock);
-    };
+    return () => clearInterval(clock);
   }, [phase]);
+
+  // ── Actions ───────────────────────────────────────────────────────────────
 
   const handleRetry = () => {
     setRetrying(true);
     void run(true);
   };
 
-  // "Volver" → the creation form, still filled (draft is kept until preview).
-  const handleBack = () => router.push("/crear");
+  /** Back to the adventure screen; the draft (and this story) are kept. */
+  const handleBack = useCallback(async () => {
+    await dedication.flush();
+    patchStoredDraft({ currentStep: 3 }, storyId);
+    router.push("/crear");
+  }, [dedication, storyId, router]);
 
-  // ── Derived ──────────────────────────────────────────────────────────────
+  const openBook = useCallback(async () => {
+    setLeaving(true);
+    await dedication.flush();
+    try {
+      sessionStorage.setItem("meapica_fresh_book", storyId); // one-shot reveal on the preview
+    } catch {
+      // private mode — reveal skipped
+    }
+    router.push(`/crear/${storyId}/preview`);
+  }, [dedication, storyId, router]);
+
+  const goToCreateStep = useCallback(
+    async (step: number) => {
+      if (step === 5 && phase === "done") return void openBook();
+      if (step > 3) return;
+      await dedication.flush();
+      patchStoredDraft({ currentStep: step }, storyId);
+      router.push("/crear");
+    },
+    [dedication, storyId, router, phase, openBook],
+  );
+
+  // ── Derived ───────────────────────────────────────────────────────────────
 
   const elapsedMs = startedAt ? now - startedAt : 0;
-  const timeProgress = PROGRESS_TIME_CAP * (1 - Math.exp(-elapsedMs / 1000 / PROGRESS_TAU_S));
-  const progress = Math.max(3, textReady ? Math.max(timeProgress, PROGRESS_TEXT_READY) : timeProgress);
   const isSlow = elapsedMs > SLOW_NOTICE_MS;
+  const coverUrl = finalCover ?? progress?.coverUrl ?? null;
+  const total = progress?.total ?? 0;
+  const scenesDone = progress?.scenes.length ?? 0;
+  const done = phase === "done";
+  // Determinate only with real numbers: cover counts as one step.
+  const known = total > 0;
+  const completed = (coverUrl ? 1 : 0) + Math.min(scenesDone, total);
+  const pct = known ? Math.round((completed / (total + 1)) * 100) : null;
+  const name = childName;
+  const nameArgs = { name, deName: deName(name, locale) };
 
-  const worldKey = templateId ? `templates.${templateId}.title` : null;
-  const worldName = worldKey && td.has(worldKey as Parameters<typeof td.has>[0])
-    ? td(worldKey as Parameters<typeof td>[0])
-    : null;
-
-  const currentMessage = WHIMSICAL_MESSAGE_KEYS[messageIndex];
-
-  // ── Render ────────────────────────────────────────────────────────────────
-
-  if (phase === "done") {
-    return null; // redirect in flight
-  }
+  // ── Error state ─────────────────────────────────────────────────────────────
 
   if (phase === "error") {
     const errorText =
@@ -350,114 +321,168 @@ export default function GenerarPage() {
             : t("errorDefault");
     return (
       <div className="flex min-h-[100dvh] flex-col bg-create-bg">
-        <CreationHeader rightAction="none" />
-        <div className="flex flex-1 flex-col items-center justify-center px-4 text-center">
+        <CreationHeader currentStep={4} onBack={() => void handleBack()} onStepClick={(s) => void goToCreateStep(s)} canStepNavigate={(s) => s <= 3} />
+        <main className="flex flex-1 flex-col items-center justify-center px-4 py-10 text-center" role="alert">
           <div className="max-w-md">
-            <div className="mb-6 inline-flex h-24 w-24 items-center justify-center rounded-full bg-amber-100">
-              <span className="material-symbols-outlined text-5xl text-amber-600">
-                {failure === "rate_limited" ? "schedule" : "auto_stories"}
-              </span>
-            </div>
-            <h1 className="font-display text-2xl font-bold text-secondary">
-              {childName ? t("errorTitleNamed", { name: childName }) : t("errorTitle")}
+            <span aria-hidden className="material-symbols-outlined mb-4 text-5xl text-create-primary">
+              {failure === "rate_limited" ? "schedule" : "auto_stories"}
+            </span>
+            <h1 className="font-display text-2xl font-bold text-create-text-dark">
+              {name ? t("errorTitleNamed", nameArgs) : t("errorTitle")}
             </h1>
-            <p className="mt-4 text-sm leading-relaxed text-text-muted">{errorText}</p>
-            <p className="mt-2 text-sm leading-relaxed text-text-muted">{t("errorInputSafe")}</p>
+            <p className="mt-4 text-sm leading-relaxed text-create-text-sub">{errorText}</p>
+            <p className="mt-2 text-sm leading-relaxed text-create-text-sub">{t("errorInputSafe")}</p>
             <div className="mt-8 flex flex-col gap-3">
               <button
                 type="button"
                 onClick={handleRetry}
                 disabled={retrying}
-                className="flex items-center justify-center gap-2 rounded-full bg-create-primary px-8 py-3 text-sm font-bold text-white transition-all hover:bg-create-primary-hover disabled:opacity-60"
+                className="flex items-center justify-center gap-2 rounded-full bg-create-primary px-8 py-3 text-sm font-bold text-white transition-colors hover:bg-create-primary-hover disabled:opacity-60"
               >
-                <span className={`material-symbols-outlined text-lg ${retrying ? "animate-spin" : ""}`}>
+                <span aria-hidden className={`material-symbols-outlined text-lg ${retrying ? "animate-spin" : ""}`}>
                   {retrying ? "progress_activity" : "refresh"}
                 </span>
                 {t("retry")}
               </button>
               <button
                 type="button"
-                onClick={handleBack}
-                className="rounded-full px-8 py-3 text-sm font-bold text-text-muted transition-colors hover:text-text-main"
+                onClick={() => void handleBack()}
+                className="rounded-full px-8 py-3 text-sm font-bold text-create-text-sub transition-colors hover:text-create-text"
               >
                 {t("goBackToForm")}
               </button>
             </div>
           </div>
-        </div>
+        </main>
       </div>
     );
   }
 
-  // ── starting + generating: wait screen ───────────────────────────────────
+  // ── Painting + dedication ─────────────────────────────────────────────────
+
+  const statusLine = done
+    ? t("statusReady")
+    : coverUrl
+      ? known
+        ? t("statusScenes", { done: Math.min(scenesDone, total), total })
+        : t("statusCoverReady")
+      : t("statusStarting");
+
   return (
-    <div className="flex min-h-[100dvh] flex-col bg-create-bg relative overflow-hidden">
-      <CreationHeader rightAction="none" />
-      {/* Background star pattern */}
-      <div className="absolute inset-0 create-star-pattern opacity-30 pointer-events-none" />
+    <div className="flex min-h-[100dvh] flex-col bg-create-bg">
+      <CreationHeader
+        currentStep={4}
+        onBack={() => void handleBack()}
+        onStepClick={(s) => void goToCreateStep(s)}
+        canStepNavigate={(s) => s <= 3 || (s === 5 && done)}
+      />
 
-      <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-10 text-center">
-        <div className="max-w-lg w-full">
-          {/* Animated icon */}
-          <div className="mb-8 relative inline-block">
-            <div className="inline-flex h-32 w-32 items-center justify-center rounded-full bg-white shadow-lg shadow-create-primary/10">
-              <span className="material-symbols-outlined text-7xl text-create-primary animate-pulse">
-                {currentMessage.icon}
-              </span>
+      <main className="step-in mx-auto grid w-full max-w-[1120px] flex-1 gap-6 px-4 pb-10 pt-4 sm:px-6 lg:grid-cols-2 lg:gap-14 lg:pt-8">
+        {/* Real progress */}
+        <section aria-labelledby="painting-title" className="flex flex-col gap-4">
+          <div className="flex items-center gap-4 lg:flex-col lg:items-stretch lg:gap-5">
+            <div className="relative w-[112px] shrink-0 sm:w-[150px] lg:mx-auto lg:w-[340px]" data-testid="progress-cover">
+              <LiveCover name={name} templateId={templateId} imageUrl={coverUrl} sizes="(max-width:1024px) 150px, 340px" />
+              {!coverUrl && (
+                <span className="absolute inset-x-2 bottom-2 flex items-center justify-center gap-1 rounded-full bg-white/90 px-2 py-1 text-[10px] font-bold text-create-text shadow-sm lg:inset-x-auto lg:left-1/2 lg:-translate-x-1/2 lg:px-3 lg:text-xs">
+                  <span aria-hidden className="material-symbols-outlined animate-spin text-sm text-create-primary">progress_activity</span>
+                  <span className="truncate">{t("paintingCover")}</span>
+                </span>
+              )}
             </div>
-            <div className="absolute -top-2 -right-4 animate-create-float">
-              <span className="material-symbols-outlined text-2xl text-create-gold opacity-60">star</span>
-            </div>
-            <div className="absolute top-4 -left-6 animate-create-float-delay-2">
-              <span className="material-symbols-outlined text-lg text-indigo-400 opacity-50">star</span>
+            <div className="min-w-0 lg:text-center">
+              <h1 id="painting-title" className="font-display text-xl font-bold leading-tight text-create-text-dark sm:text-2xl lg:text-3xl">
+                {done ? t("readyTitle", nameArgs) : name ? t("paintingTitle", nameArgs) : t("paintingTitleNoName")}
+              </h1>
+              <p className="mt-1 text-sm text-create-text-sub" aria-live="polite" data-testid="progress-status">
+                {statusLine}
+              </p>
             </div>
           </div>
 
-          {/* Title: child's name + chosen world */}
-          <h1 className="font-display text-2xl sm:text-3xl font-bold text-secondary">
-            {childName ? t("creatingStoryFor", { name: childName }) : t("creatingStory")}
-          </h1>
-          {worldName && (
-            <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-white/80 px-3 py-1 text-sm font-semibold text-create-primary shadow-sm">
-              <span className="material-symbols-outlined text-base">public</span>
-              {worldName}
-            </p>
+          {!done && (
+            <div className="rounded-2xl bg-white p-4 shadow-[0_1px_3px_rgba(58,36,24,.08)]">
+              {known ? (
+                <div
+                  role="progressbar"
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={pct ?? 0}
+                  aria-label={t("progressLabel")}
+                  className="h-2 w-full overflow-hidden rounded-full bg-create-neutral"
+                >
+                  <div className="h-full rounded-full bg-create-primary transition-[width] duration-700" style={{ width: `${pct}%` }} />
+                </div>
+              ) : (
+                <div role="progressbar" aria-label={t("progressLabel")} aria-valuetext={t("statusStarting")} className="h-2 w-full overflow-hidden rounded-full bg-create-neutral">
+                  <div className="progress-indeterminate h-full w-1/3 rounded-full bg-create-primary/70" />
+                </div>
+              )}
+              <div className="mt-2 flex items-center justify-between text-xs tabular-nums text-create-text-sub">
+                <span>{isSlow ? t("slowMessage") : t("waitMessage")}</span>
+                <span>{formatElapsed(elapsedMs)}</span>
+              </div>
+
+              {known && (
+                <ol className="mt-3 grid grid-cols-4 gap-2" aria-label={t("scenesLabel")} data-testid="progress-scenes">
+                  {Array.from({ length: total }, (_, i) => {
+                    const scene = progress?.scenes[i];
+                    return (
+                      <li key={i} className="relative aspect-square overflow-hidden rounded-lg bg-create-neutral">
+                        {scene ? (
+                          <Image src={scene.url} alt={t("sceneAlt", { n: i + 1 })} fill sizes="120px" className="cover-art-in object-cover" />
+                        ) : (
+                          <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-create-text-sub/50">{i + 1}</span>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ol>
+              )}
+            </div>
           )}
-
-          {/* Rotating message */}
-          <div className="mt-4 min-h-8">
-            <p key={messageIndex} className="text-base text-text-muted animate-fade-in">
-              {t(`messages.${currentMessage.key}` as Parameters<typeof t>[0])}
-            </p>
-          </div>
-
-          {/* Progress bar: time-based asymptotic curve + real milestones */}
-          <div className="mt-6 w-full max-w-sm mx-auto">
-            <div
-              className="rounded-full bg-create-neutral h-3 w-full overflow-hidden shadow-inner"
-              role="progressbar"
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-valuenow={Math.round(progress)}
-              aria-label={t("progressLabel")}
+          {done && (
+            <button
+              type="button"
+              onClick={() => void openBook()}
+              className="hidden items-center justify-center gap-2 rounded-full bg-create-primary px-8 py-3.5 text-base font-bold text-white shadow-lg shadow-create-primary/25 transition-colors hover:bg-create-primary-hover lg:flex"
             >
-              <div
-                className="h-full rounded-full bg-create-primary transition-all duration-1000 ease-linear"
-                style={{ width: `${Math.min(progress, 100)}%` }}
-              />
-            </div>
-            <div className="mt-2 flex items-center justify-between text-xs text-text-muted tabular-nums">
-              <span>{textReady ? t("milestoneFinishing") : t("milestoneWriting")}</span>
-              <span>{formatElapsed(elapsedMs)}</span>
-            </div>
-          </div>
+              {t("viewBook", nameArgs)}
+              <span aria-hidden className="material-symbols-outlined text-lg">arrow_forward</span>
+            </button>
+          )}
+        </section>
 
-          {/* Honest estimate */}
-          <p className="mt-8 text-sm text-text-muted leading-relaxed max-w-sm mx-auto">
-            {isSlow ? t("slowMessage") : t("waitMessage")}
-          </p>
-        </div>
-      </div>
+        {/* Dedication */}
+        <section aria-labelledby="dedication-title" className="flex flex-col gap-3">
+          <div>
+            <h2 id="dedication-title" className="font-display text-xl font-bold text-create-text-dark sm:text-2xl">
+              {t("dedicationTitle")}
+            </h2>
+            <p className="mt-1 text-sm text-create-text-sub">{t("dedicationSubtitle")}</p>
+          </div>
+          {dedication.values ? (
+            <DedicationEditor
+              name={name}
+              dedication={dedication.values.dedication}
+              senderName={dedication.values.senderName}
+              saveState={dedication.saveState}
+              onChange={dedication.update}
+            />
+          ) : (
+            <div className="h-64 animate-pulse rounded-2xl bg-white/70" aria-hidden />
+          )}
+        </section>
+      </main>
+
+      <CreationFooterNav
+        onBack={() => void handleBack()}
+        onNext={() => void openBook()}
+        nextLabel={t("viewBookShort")}
+        nextDisabled={!done}
+        nextLoading={leaving}
+        nextDisabledTooltip={t("waitHint")}
+      />
     </div>
   );
 }

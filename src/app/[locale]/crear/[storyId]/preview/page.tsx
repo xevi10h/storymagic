@@ -17,6 +17,9 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import CreationHeader from "@/components/crear/CreationHeader";
 import BookRevealOverlay from "@/components/crear/BookRevealOverlay";
+import BookChecklist from "@/components/crear/BookChecklist";
+import SendPreviewEmail from "@/components/crear/SendPreviewEmail";
+import { clearStoredDraft, deName, patchStoredDraft, readStoredDraft } from "@/lib/creation-flow";
 import BookViewerSwitch from "@/components/book-viewer/BookViewerSwitch";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import type { BookPage } from "@/components/book-viewer/types";
@@ -39,6 +42,10 @@ interface StoryData {
     name: string;
     age: number;
     gender: string;
+    hair_color: string | null;
+    skin_tone: string | null;
+    eye_color: string | null;
+    hairstyle: string | null;
     city: string | null;
     interests: string[] | null;
     favorite_color: string | null;
@@ -335,38 +342,59 @@ export default function PreviewPage() {
     PRICING[format].price +
     Array.from(addons).reduce((sum, id) => sum + ADDONS[id].price, 0);
 
-  // Inline title editing (replaces the old 30 s title picker on /generar:
-  // the first suggested title is saved by the generate route, editable here).
-  const [editingTitle, setEditingTitle] = useState(false);
-  const [titleDraft, setTitleDraft] = useState("");
-  const [savingTitle, setSavingTitle] = useState(false);
-  const [titleError, setTitleError] = useState(false);
-  const saveTitle = useCallback(async () => {
-    const next = titleDraft.trim();
-    if (!next) return;
-    setSavingTitle(true);
-    setTitleError(false);
-    try {
-      const res = await fetch(`/api/stories/${storyId}/title`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: next }),
-      });
-      if (!res.ok) throw new Error(`title_${res.status}`);
-      setStory((prev) => (prev ? { ...prev, title: next } : prev));
-      setEditingTitle(false);
-    } catch (err) {
-      console.warn("[preview] Saving title failed:", err);
-      setTitleError(true);
-    } finally {
-      setSavingTitle(false);
-    }
-  }, [titleDraft, storyId]);
+  // Title / dedication edits from the checklist sheets update the book in place.
+  const handleTitleSaved = useCallback((title: string) => {
+    setStory((prev) => (prev ? { ...prev, title } : prev));
+  }, []);
+  const handleDedicationSaved = useCallback((v: { dedication: string; senderName: string }) => {
+    setStory((prev) =>
+      prev
+        ? { ...prev, dedication_text: v.dedication.trim() ? v.dedication : null, sender_name: v.senderName.trim() ? v.senderName : null }
+        : prev,
+    );
+  }, []);
+
+  // Screen 5 (the book) vs screen 6 (format + payment): the progress indicator
+  // follows the checkout section into view.
+  const [checkoutInView, setCheckoutInView] = useState(false);
+  const [seenCheckout, setSeenCheckout] = useState(false);
+  useEffect(() => {
+    const el = document.getElementById("checkout-section");
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(([entry]) => {
+      setCheckoutInView(entry.isIntersecting);
+      if (entry.isIntersecting) setSeenCheckout(true);
+    }, {
+      rootMargin: "-45% 0px -45% 0px",
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [story?.status]);
+  const scrollToCheckout = useCallback(() => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    document.getElementById("checkout-section")?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+  }, []);
+
+  // Earlier screens stay reachable without losing anything (the draft is kept).
+  const goToStep = useCallback(
+    (step: number) => {
+      if (step === 4) return router.push(`/crear/${storyId}/generar`);
+      if (step === 6) return scrollToCheckout();
+      if (step === 5) return window.scrollTo({ top: 0, behavior: "smooth" });
+      patchStoredDraft({ currentStep: step }, storyId);
+      router.push("/crear");
+    },
+    [router, storyId, scrollToCheckout],
+  );
+  const [draftMatches, setDraftMatches] = useState(false);
+  useEffect(() => {
+    setDraftMatches(readStoredDraft()?.createdStory?.id === storyId);
+  }, [storyId]);
 
   const childName = story?.characters.name ?? "";
   const ctaLabel = selectedFormatRequiresShipping
-    ? t("ctaPhysical", { name: childName, price: price(subtotal) })
-    : t("ctaDigital", { name: childName, price: price(subtotal) });
+    ? t("ctaPhysical", { name: childName, deName: deName(childName, locale), price: price(subtotal) })
+    : t("ctaDigital", { name: childName, deName: deName(childName, locale), price: price(subtotal) });
 
   // Mobile sticky buy bar: shown while the main CTA is off-screen.
   const mainCtaRef = useRef<HTMLButtonElement | null>(null);
@@ -403,6 +431,8 @@ export default function PreviewPage() {
       }
 
       const { url } = await res.json();
+      // The book is ordered from here on: the creation draft is no longer needed.
+      if (readStoredDraft()?.createdStory?.id === storyId) clearStoredDraft();
       window.location.href = url;
     } catch (err) {
       console.warn("[preview] Checkout failed:", err);
@@ -477,7 +507,12 @@ export default function PreviewPage() {
 
   return (
     <div className={`min-h-screen bg-create-bg ${isPreviewMode ? "pb-28 sm:pb-0" : ""}`}>
-      <CreationHeader rightAction="close" />
+      <CreationHeader
+        currentStep={isPreviewMode ? (checkoutInView ? 6 : 5) : undefined}
+        onBack={() => router.push(`/crear/${storyId}/generar`)}
+        onStepClick={goToStep}
+        canStepNavigate={(step) => isPreviewMode && (step >= 4 || draftMatches)}
+      />
 
       {showReveal && (
         <BookRevealOverlay
@@ -488,98 +523,36 @@ export default function PreviewPage() {
       )}
 
       {/* Book title + page counter */}
-      <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-2">
-        <div className="flex min-w-0 items-center gap-1">
-          <h2 className="font-display text-sm font-bold text-secondary truncate">
-            {currentTitle}
-          </h2>
+      <div className="mx-auto flex max-w-4xl items-center justify-between gap-3 px-4 pt-4">
+        <h1 className="min-w-0 truncate font-display text-base font-bold text-create-text-dark sm:text-lg">{currentTitle}</h1>
+        <div className="flex shrink-0 items-center gap-2">
           {isPreviewMode && (
-            <button
-              type="button"
-              onClick={() => {
-                setTitleDraft(currentTitle);
-                setTitleError(false);
-                setEditingTitle(true);
-              }}
-              className="flex h-8 shrink-0 items-center gap-1 rounded-full px-2 text-xs font-semibold text-create-primary transition-colors hover:bg-create-primary/10"
-              aria-label={t("editTitle")}
-            >
-              <span className="material-symbols-outlined text-base">edit</span>
-              <span className="hidden sm:inline">{t("editTitle")}</span>
-            </button>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          {isPreviewMode && (
-            <span className="rounded-full bg-create-primary/10 px-2.5 py-0.5 text-[10px] font-bold text-create-primary uppercase tracking-wide">
+            <span className="rounded-full bg-create-primary/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-create-primary">
               {t("previewBadge")}
             </span>
           )}
-          <span className="whitespace-nowrap text-xs text-text-muted tabular-nums">
+          <span className="whitespace-nowrap text-xs tabular-nums text-text-muted">
             {currentPage + 1} / {totalPages}
           </span>
         </div>
       </div>
 
-      {editingTitle && (
-        <div className="mx-auto max-w-3xl px-4 pb-2">
-          <form
-            className="rounded-xl border border-border-light bg-white p-4 shadow-sm"
-            onSubmit={(e) => {
-              e.preventDefault();
-              void saveTitle();
-            }}
-          >
-            <label htmlFor="book-title" className="text-xs font-bold uppercase tracking-wide text-text-main">
-              {t("editTitleLabel")}
-            </label>
-            <input
-              id="book-title"
-              type="text"
-              value={titleDraft}
-              onChange={(e) => setTitleDraft(e.target.value)}
-              maxLength={120}
-              autoFocus
-              className="mt-2 w-full rounded-xl border-2 border-border-light bg-white px-4 py-3 text-base text-text-main focus:border-create-primary focus:outline-none sm:text-sm"
-            />
-            {titleSuggestions.length > 1 && (
-              <div className="mt-3 flex flex-wrap gap-2">
-                {titleSuggestions.map((option) => (
-                  <button
-                    key={option}
-                    type="button"
-                    onClick={() => setTitleDraft(option)}
-                    className={`rounded-full border px-3 py-1.5 text-left text-xs font-semibold transition-colors ${
-                      titleDraft === option
-                        ? "border-create-primary bg-create-primary/10 text-create-primary"
-                        : "border-border-light text-text-soft hover:border-border-medium"
-                    }`}
-                  >
-                    {option}
-                  </button>
-                ))}
-              </div>
-            )}
-            {titleError && (
-              <p className="mt-2 text-xs text-red-600" role="alert">{t("editTitleError")}</p>
-            )}
-            <div className="mt-4 flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setEditingTitle(false)}
-                className="rounded-full px-4 py-2 text-sm font-bold text-text-muted hover:text-text-main"
-              >
-                {t("editTitleCancel")}
-              </button>
-              <button
-                type="submit"
-                disabled={savingTitle || !titleDraft.trim()}
-                className="rounded-full bg-create-primary px-5 py-2 text-sm font-bold text-white transition-all hover:bg-create-primary-hover disabled:opacity-60"
-              >
-                {savingTitle ? t("editTitleSaving") : t("editTitleSave")}
-              </button>
-            </div>
-          </form>
+      {/* Wonderbly-style checklist: every item edits in place */}
+      {isPreviewMode && (
+        <div className="mx-auto max-w-4xl px-4 pt-3">
+          <BookChecklist
+            storyId={storyId}
+            childName={story.characters.name}
+            character={story.characters}
+            useDraftLook={draftMatches}
+            title={currentTitle}
+            titleSuggestions={titleSuggestions}
+            dedication={story.dedication_text ?? ""}
+            senderName={story.sender_name ?? ""}
+            onTitleSaved={handleTitleSaved}
+            onDedicationSaved={handleDedicationSaved}
+            onChangeLook={() => goToStep(2)}
+          />
         </div>
       )}
 
@@ -596,6 +569,19 @@ export default function PreviewPage() {
           />
         </ErrorBoundary>
       </section>
+
+      {isPreviewMode && (
+        <div className="mx-auto hidden max-w-4xl justify-center px-4 pb-8 sm:flex">
+          <button
+            type="button"
+            onClick={scrollToCheckout}
+            className="flex items-center gap-2 rounded-full bg-create-primary px-8 py-3.5 text-base font-bold text-white shadow-lg shadow-create-primary/25 transition-colors hover:bg-create-primary-hover"
+          >
+            {t("wantIt")}
+            <span aria-hidden className="material-symbols-outlined text-lg">arrow_downward</span>
+          </button>
+        </div>
+      )}
 
       {/* PDF Download — only for fully ready stories */}
       {isFullyReady && (
@@ -629,7 +615,7 @@ export default function PreviewPage() {
                 {t("paywallTitle")}
               </h2>
               <p className="mt-2 text-sm text-text-muted max-w-md mx-auto">
-                {t("paywallDescription", { name: story.characters.name })}
+                {t("paywallDescription", { name: story.characters.name, deName: deName(story.characters.name, locale) })}
               </p>
             </div>
 
@@ -914,6 +900,8 @@ export default function PreviewPage() {
               <p className="mt-2 text-center text-xs text-text-muted">
                 {needsAccount ? t("saveForLaterHintAnonymous") : t("saveForLaterHintLoggedIn")}
               </p>
+
+              <SendPreviewEmail storyId={storyId} childName={story.characters.name} />
             </div>
           </div>
         </section>
@@ -938,7 +926,7 @@ export default function PreviewPage() {
             </div>
             <button
               type="button"
-              onClick={handleCheckout}
+              onClick={seenCheckout ? handleCheckout : scrollToCheckout}
               disabled={checkingOut}
               className="flex shrink-0 items-center gap-1.5 rounded-xl bg-create-primary px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-create-primary/20 transition-all active:scale-[0.98] disabled:opacity-60"
             >

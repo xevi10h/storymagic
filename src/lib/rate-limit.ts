@@ -26,6 +26,7 @@ const LIMITS: Record<string, RateLimitConfig> = {
   complete_story: { maxRequests: 3, windowSeconds: 300 },    // 3 per 5 min
   generate_portrait: { maxRequests: 10, windowSeconds: 3600 }, // 10 per hour
   upload_photo: { maxRequests: 10, windowSeconds: 3600 },      // 10 per hour (same budget as portraits)
+  send_preview: { maxRequests: 3, windowSeconds: 3600 },        // 3 preview emails per hour
 };
 
 /**

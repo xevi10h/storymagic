@@ -23,15 +23,21 @@ export default function CreationFooterNav({
   const resolvedNextLabel = nextLabel ?? t("next");
 
   return (
-    <div className="sticky bottom-0 z-20 border-t border-create-primary/10 bg-create-bg/80 backdrop-blur-md">
-      <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-3 sm:px-8">
+    <div className="sticky bottom-0 z-30 border-t border-create-primary/10 bg-create-bg/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-md">
+      {nextDisabled && nextDisabledTooltip && (
+        <p className="px-5 pt-2 text-center text-xs font-medium text-create-text-sub sm:hidden" data-testid="footer-hint">
+          {nextDisabledTooltip}
+        </p>
+      )}
+      <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3 sm:px-8">
         {/* Back */}
         {onBack ? (
           <button
+            type="button"
             onClick={onBack}
             className="group flex items-center gap-2 rounded-full border-2 border-create-primary/20 bg-white px-4 sm:px-6 py-3 text-sm sm:text-base font-bold text-create-primary whitespace-nowrap transition-all hover:border-create-primary hover:bg-create-primary/5"
           >
-            <span className="material-symbols-outlined text-lg transition-transform group-hover:-translate-x-1">
+            <span aria-hidden className="material-symbols-outlined text-lg transition-transform group-hover:-translate-x-1">
               arrow_back
             </span>
             {t("back")}
@@ -43,13 +49,14 @@ export default function CreationFooterNav({
         {/* Next */}
         <div className="relative group/tooltip">
           <button
+            type="button"
             onClick={onNext}
             disabled={nextDisabled || nextLoading}
             className="group flex items-center gap-2 rounded-full bg-create-primary px-6 sm:px-8 py-3 text-sm sm:text-base font-bold text-white whitespace-nowrap shadow-lg shadow-create-primary/30 transition-all hover:bg-create-primary-hover hover:shadow-xl hover:shadow-create-primary/40 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:shadow-lg"
           >
             {nextLoading ? (
               <>
-                <span className="material-symbols-outlined animate-spin text-lg">
+                <span aria-hidden className="material-symbols-outlined animate-spin text-lg">
                   progress_activity
                 </span>
                 <span>{t("saving")}</span>
@@ -57,14 +64,14 @@ export default function CreationFooterNav({
             ) : (
               <>
                 <span>{resolvedNextLabel}</span>
-                <span className="material-symbols-outlined text-lg transition-transform group-hover:translate-x-1">
+                <span aria-hidden className="material-symbols-outlined text-lg transition-transform group-hover:translate-x-1">
                   arrow_forward
                 </span>
               </>
             )}
           </button>
           {nextDisabled && nextDisabledTooltip && (
-            <div className="pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-gray-800 px-3 py-2 text-xs text-white opacity-0 shadow-lg transition-opacity group-hover/tooltip:opacity-100">
+            <div className="pointer-events-none absolute hidden sm:block bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-gray-800 px-3 py-2 text-xs text-white opacity-0 shadow-lg transition-opacity group-hover/tooltip:opacity-100">
               {nextDisabledTooltip}
               <div className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-gray-800" />
             </div>
