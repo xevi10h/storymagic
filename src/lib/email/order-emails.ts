@@ -6,12 +6,19 @@
 //   shipped    → shipped           ("it's on its way" + tracking)
 //   delivered  → delivered         ("it arrived — enjoy")
 //
-// Digital orders never receive these — they download immediately.
+// Digital order: order_confirmed_digital on payment.
+// Every order: book_ready once the final illustrations are done (download link).
 
 import { renderEmailLayout, escapeHtml } from "./layout";
 import { getSiteUrl } from "./send";
 
-export type OrderEmailEvent = "order_confirmed" | "in_production" | "shipped" | "delivered";
+export type OrderEmailEvent =
+  | "order_confirmed"
+  | "order_confirmed_digital"
+  | "book_ready"
+  | "in_production"
+  | "shipped"
+  | "delivered";
 
 type Locale = "es" | "ca" | "en" | "fr";
 
@@ -28,6 +35,10 @@ export interface OrderEmailContext {
   trackingNumber?: string | null;
   /** Carrier tracking URL (shipped event) */
   trackingUrl?: string | null;
+  /** Book view/download link (book_ready event) */
+  downloadUrl?: string | null;
+  /** Physical order (book_ready copy mentions the printed edition) */
+  isPhysical?: boolean;
 }
 
 interface Strings {
@@ -36,6 +47,7 @@ interface Strings {
   dashboardCta: string;
   trackingCta: string;
   trackingLabel: string;
+  downloadCta: string;
   events: Record<
     OrderEmailEvent,
     { subject: (book: string) => string; heading: string; paragraphs: (ctx: OrderEmailContext) => string[] }
@@ -49,7 +61,26 @@ const CONTENT: Record<Locale, Strings> = {
     dashboardCta: "Ver mi pedido",
     trackingCta: "Seguir el envío",
     trackingLabel: "Número de seguimiento",
+    downloadCta: "Ver y descargar mi libro",
     events: {
+      order_confirmed_digital: {
+        subject: (b) => `Hemos recibido tu pedido — ${b}`,
+        heading: "¡Gracias por tu pedido!",
+        paragraphs: (c) => [
+          `Hemos recibido tu pedido de <strong>${escapeHtml(c.bookTitle)}</strong>, el cuento personalizado de ${escapeHtml(c.childName)}.`,
+          "Ahora estamos pintando las ilustraciones finales de cada página. En cuanto el libro esté listo te enviaremos un correo con el enlace para descargarlo.",
+        ],
+      },
+      book_ready: {
+        subject: (b) => `Tu libro ya está listo — ${b}`,
+        heading: "¡Tu libro está listo!",
+        paragraphs: (c) => [
+          `Ya hemos terminado de ilustrar <strong>${escapeHtml(c.bookTitle)}</strong>, el cuento de ${escapeHtml(c.childName)}.`,
+          c.isPhysical
+            ? "Puedes verlo y descargarlo en PDF con el botón de abajo. La versión impresa pasa ahora a imprenta y te avisaremos cuando salga."
+            : "Puedes verlo y descargarlo en PDF con el botón de abajo, siempre que quieras.",
+        ],
+      },
       order_confirmed: {
         subject: (b) => `Hemos recibido tu pedido — ${b}`,
         heading: "¡Gracias por tu pedido!",
@@ -90,7 +121,26 @@ const CONTENT: Record<Locale, Strings> = {
     dashboardCta: "Veure la meva comanda",
     trackingCta: "Seguir l'enviament",
     trackingLabel: "Número de seguiment",
+    downloadCta: "Veure i descarregar el meu llibre",
     events: {
+      order_confirmed_digital: {
+        subject: (b) => `Hem rebut la teva comanda — ${b}`,
+        heading: "Gràcies per la teva comanda!",
+        paragraphs: (c) => [
+          `Hem rebut la teva comanda de <strong>${escapeHtml(c.bookTitle)}</strong>, el conte personalitzat de ${escapeHtml(c.childName)}.`,
+          "Ara estem pintant les il·lustracions finals de cada pàgina. Quan el llibre estigui llest t'enviarem un correu amb l'enllaç per descarregar-lo.",
+        ],
+      },
+      book_ready: {
+        subject: (b) => `El teu llibre ja està llest — ${b}`,
+        heading: "El teu llibre ja està llest!",
+        paragraphs: (c) => [
+          `Ja hem acabat d'il·lustrar <strong>${escapeHtml(c.bookTitle)}</strong>, el conte de ${escapeHtml(c.childName)}.`,
+          c.isPhysical
+            ? "Pots veure'l i descarregar-lo en PDF amb el botó de sota. La versió impresa passa ara a impremta i t'avisarem quan surti."
+            : "Pots veure'l i descarregar-lo en PDF amb el botó de sota, sempre que vulguis.",
+        ],
+      },
       order_confirmed: {
         subject: (b) => `Hem rebut la teva comanda — ${b}`,
         heading: "Gràcies per la teva comanda!",
@@ -131,7 +181,26 @@ const CONTENT: Record<Locale, Strings> = {
     dashboardCta: "View my order",
     trackingCta: "Track shipment",
     trackingLabel: "Tracking number",
+    downloadCta: "View & download my book",
     events: {
+      order_confirmed_digital: {
+        subject: (b) => `We've received your order — ${b}`,
+        heading: "Thank you for your order!",
+        paragraphs: (c) => [
+          `We've received your order for <strong>${escapeHtml(c.bookTitle)}</strong>, ${escapeHtml(c.childName)}'s personalized storybook.`,
+          "We're now painting the final illustrations for every page. As soon as the book is ready we'll email you a link to download it.",
+        ],
+      },
+      book_ready: {
+        subject: (b) => `Your book is ready — ${b}`,
+        heading: "Your book is ready!",
+        paragraphs: (c) => [
+          `We've finished illustrating <strong>${escapeHtml(c.bookTitle)}</strong>, ${escapeHtml(c.childName)}'s story.`,
+          c.isPhysical
+            ? "You can view and download the PDF with the button below. The printed edition now goes to print and we'll let you know when it ships."
+            : "You can view and download the PDF with the button below, whenever you like.",
+        ],
+      },
       order_confirmed: {
         subject: (b) => `We've received your order — ${b}`,
         heading: "Thank you for your order!",
@@ -172,7 +241,26 @@ const CONTENT: Record<Locale, Strings> = {
     dashboardCta: "Voir ma commande",
     trackingCta: "Suivre l'envoi",
     trackingLabel: "Numéro de suivi",
+    downloadCta: "Voir et télécharger mon livre",
     events: {
+      order_confirmed_digital: {
+        subject: (b) => `Nous avons reçu votre commande — ${b}`,
+        heading: "Merci pour votre commande !",
+        paragraphs: (c) => [
+          `Nous avons reçu votre commande de <strong>${escapeHtml(c.bookTitle)}</strong>, le livre personnalisé de ${escapeHtml(c.childName)}.`,
+          "Nous peignons maintenant les illustrations finales de chaque page. Dès que le livre sera prêt, nous vous enverrons un e-mail avec le lien de téléchargement.",
+        ],
+      },
+      book_ready: {
+        subject: (b) => `Votre livre est prêt — ${b}`,
+        heading: "Votre livre est prêt !",
+        paragraphs: (c) => [
+          `Nous avons terminé d'illustrer <strong>${escapeHtml(c.bookTitle)}</strong>, l'histoire de ${escapeHtml(c.childName)}.`,
+          c.isPhysical
+            ? "Vous pouvez le consulter et le télécharger en PDF avec le bouton ci-dessous. La version imprimée part maintenant à l'impression et nous vous préviendrons dès son expédition."
+            : "Vous pouvez le consulter et le télécharger en PDF avec le bouton ci-dessous, quand vous le souhaitez.",
+        ],
+      },
       order_confirmed: {
         subject: (b) => `Nous avons reçu votre commande — ${b}`,
         heading: "Merci pour votre commande !",
@@ -231,11 +319,13 @@ export function buildOrderEmail(event: OrderEmailEvent, ctx: OrderEmailContext):
   const dashboardUrl = `${getSiteUrl()}/${loc}/dashboard`;
   const paragraphs = ev.paragraphs(ctx);
 
-  // CTA: tracking link for shipped (if available), otherwise dashboard.
+  // CTA: tracking link for shipped / download link for book_ready (if available), otherwise dashboard.
   const cta =
     event === "shipped" && ctx.trackingUrl
       ? { label: s.trackingCta, url: ctx.trackingUrl }
-      : { label: s.dashboardCta, url: dashboardUrl };
+      : event === "book_ready" && ctx.downloadUrl
+        ? { label: s.downloadCta, url: ctx.downloadUrl }
+        : { label: s.dashboardCta, url: dashboardUrl };
 
   // Tracking number info block (shipped only, when present)
   const infoHtml =

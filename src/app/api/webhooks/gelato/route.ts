@@ -1,32 +1,15 @@
 import { NextResponse } from "next/server";
-import { createClient as createSupabaseAdmin } from "@supabase/supabase-js";
-import type { Database } from "@/lib/database.types";
 import type { GelatoWebhookEvent } from "@/lib/gelato/types";
 import { notifyOrderEmail } from "@/lib/email/notify-order";
 import type { OrderEmailEvent } from "@/lib/email/order-emails";
+import { createFulfilmentClient, type FulfilmentClient } from "@/lib/fulfilment/db";
+import { alertOperator } from "@/lib/fulfilment/alerts";
+import { decideGelatoTransition } from "@/lib/fulfilment/logic";
 
 // Service-role client — no user session in webhook context
-function createServiceClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !serviceKey) {
-    throw new Error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY for webhook");
-  }
-  return createSupabaseAdmin<Database>(url, serviceKey);
-}
+const createServiceClient = createFulfilmentClient;
 
 export const runtime = "nodejs";
-
-// Map Gelato fulfillment status → our internal order status
-const STATUS_MAP: Record<string, string> = {
-  created: "producing",
-  passed: "producing",
-  printed: "producing",
-  shipped: "shipped",
-  delivered: "delivered",
-  cancelled: "paid", // Revert to paid — needs manual review
-  failed: "paid",
-};
 
 // Internal order status → customer email event. "paid" has no email (manual review).
 const STATUS_EMAIL: Record<string, OrderEmailEvent | undefined> = {
@@ -89,121 +72,141 @@ interface TrackingInfo {
 }
 
 /**
- * Apply a status change to the order and notify the customer — but only email on a
- * real transition (prev status !== new status), so Gelato's repeated/retried events
- * never produce duplicate emails. Tracking is stored whenever provided.
+ * Apply a Gelato status to the order. Transitions are ranked (paid < producing <
+ * shipped < delivered): a late or retried event can never move an order
+ * backwards, and the update is a compare-and-set on the status we read, so two
+ * concurrent events can't both "win". Customers are emailed only by the event
+ * that performed the transition. Tracking is stored whenever provided.
+ * Canceled/failed/returned never change the status automatically: the raw status
+ * is recorded and the operator is alerted.
  */
-async function transitionOrder(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  supabase: any,
+async function applyGelatoStatus(
+  supabase: FulfilmentClient,
   gelatoOrderId: string,
-  newStatus: string,
+  gelatoStatus: string,
   tracking?: TrackingInfo,
-) {
-  const { data: order } = await supabase
-    .from("orders")
-    .select("id, status, story_id, user_id, tracking_number, tracking_url")
-    .eq("gelato_order_id", gelatoOrderId)
-    .single();
+): Promise<void> {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const { data: order, error: readErr } = await supabase
+      .from("orders")
+      .select("id, status, story_id, user_id, tracking_number, tracking_url")
+      .eq("gelato_order_id", gelatoOrderId)
+      .maybeSingle();
+    if (readErr) throw new Error(`Failed to read order ${gelatoOrderId}: ${readErr.message}`);
+    if (!order) {
+      // Our submit records gelato_order_id right after Gelato accepts the order; an
+      // event racing that write is safe to drop (the submitter sends the email).
+      console.warn(`[Gelato webhook] No order found for gelato_order_id ${gelatoOrderId}`);
+      return;
+    }
 
-  if (!order) {
-    console.warn(`[Gelato webhook] No order found for gelato_order_id ${gelatoOrderId}`);
+    const decision = decideGelatoTransition(order.status, gelatoStatus);
+    const nextTrackingNumber = tracking?.trackingNumber ?? order.tracking_number ?? null;
+    const nextTrackingUrl = tracking?.trackingUrl ?? order.tracking_url ?? null;
+    const trackingUpdate = tracking ? { tracking_number: nextTrackingNumber, tracking_url: nextTrackingUrl } : {};
+
+    if (decision.kind === "unknown") {
+      console.log(`[Gelato webhook] Unhandled fulfillment status: ${decision.gelatoStatus}`);
+      return;
+    }
+
+    if (decision.kind === "exception") {
+      await supabase
+        .from("orders")
+        .update({ gelato_status: decision.gelatoStatus, ...trackingUpdate })
+        .eq("id", order.id);
+      await alertOperator(supabase, {
+        key: `gelato-exception:${order.id}:${decision.gelatoStatus}`,
+        subject: `Gelato order ${gelatoOrderId} is ${decision.gelatoStatus}`,
+        lines: [
+          `Local order ${order.id} (story ${order.story_id}) stays at '${order.status}'.`,
+          "Check the order in the Gelato dashboard. To re-submit, clear orders.gelato_order_id and set status back to 'paid' — the cron will send a new order.",
+        ],
+        dedupeSeconds: 24 * 3600,
+      });
+      return;
+    }
+
+    if (decision.kind !== "advance") {
+      // Same or older status: keep the order where it is, only refresh tracking.
+      await supabase
+        .from("orders")
+        .update({ gelato_status: gelatoStatus.toLowerCase(), ...trackingUpdate })
+        .eq("id", order.id);
+      console.log(`[Gelato webhook] Order ${gelatoOrderId}: '${gelatoStatus}' ignored (${decision.kind}, order is '${order.status}')`);
+      return;
+    }
+
+    const { data: moved, error } = await supabase
+      .from("orders")
+      .update({ status: decision.to, gelato_status: gelatoStatus.toLowerCase(), ...trackingUpdate })
+      .eq("id", order.id)
+      .eq("status", order.status)
+      .select("id");
+    if (error) throw new Error(`Failed to update order ${gelatoOrderId}: ${error.message}`);
+    if (!moved || moved.length === 0) continue; // a concurrent event moved it — re-evaluate
+
+    console.log(`[Gelato webhook] Order ${gelatoOrderId} ${order.status} → ${decision.to}`);
+
+    if (decision.to === "shipped" || decision.to === "delivered") {
+      await syncStoryStatus(supabase, order.story_id, decision.to);
+    }
+
+    const emailEvent = STATUS_EMAIL[decision.to];
+    if (emailEvent && order.user_id && order.story_id) {
+      await notifyOrderEmail({
+        supabase,
+        event: emailEvent,
+        storyId: order.story_id,
+        userId: order.user_id,
+        orderId: order.id,
+        trackingNumber: nextTrackingNumber,
+        trackingUrl: nextTrackingUrl,
+      });
+    }
     return;
   }
-
-  const alreadyAtStatus = order.status === newStatus;
-
-  // Build update — keep existing tracking unless a new value arrives
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const update: Record<string, any> = { status: newStatus };
-  const nextTrackingNumber =
-    tracking?.trackingNumber ?? order.tracking_number ?? null;
-  const nextTrackingUrl = tracking?.trackingUrl ?? order.tracking_url ?? null;
-  if (tracking) {
-    update.tracking_number = nextTrackingNumber;
-    update.tracking_url = nextTrackingUrl;
-  }
-
-  const { error } = await supabase
-    .from("orders")
-    .update(update)
-    .eq("gelato_order_id", gelatoOrderId);
-
-  if (error) {
-    throw new Error(`Failed to update order ${gelatoOrderId}: ${error.message}`);
-  }
-
-  console.log(
-    `[Gelato webhook] Order ${gelatoOrderId} → ${newStatus}${alreadyAtStatus ? " (no change)" : ""}`,
-  );
-
-  // Keep the story status in sync for shipped/delivered
-  if (newStatus === "shipped" || newStatus === "delivered") {
-    await syncStoryStatus(supabase, order.story_id, newStatus);
-  }
-
-  // Email only on a genuine transition
-  if (alreadyAtStatus) return;
-
-  const emailEvent = STATUS_EMAIL[newStatus];
-  if (emailEvent && order.user_id && order.story_id) {
-    await notifyOrderEmail({
-      supabase,
-      event: emailEvent,
-      storyId: order.story_id,
-      userId: order.user_id,
-      trackingNumber: nextTrackingNumber,
-      trackingUrl: nextTrackingUrl,
-    });
-  }
+  throw new Error(`Order ${gelatoOrderId}: status kept changing concurrently — retry`);
 }
 
 async function handleOrderStatusUpdated(event: GelatoWebhookEvent) {
-  const supabase = createServiceClient();
   const status = event.fulfillmentStatus?.toLowerCase();
   if (!status) return;
-
-  const newStatus = STATUS_MAP[status];
-  if (!newStatus) {
-    console.log(`[Gelato webhook] Unhandled fulfillment status: ${status}`);
-    return;
-  }
-
-  await transitionOrder(supabase, event.orderId, newStatus);
+  await applyGelatoStatus(createServiceClient(), event.orderId, status);
 }
 
-async function handleOrderItemStatusUpdated(event: GelatoWebhookEvent) {
-  const supabase = createServiceClient();
+const TRACKABLE_ITEM_STATUSES = new Set(["shipped", "in_transit", "delivered"]);
 
+async function handleOrderItemStatusUpdated(event: GelatoWebhookEvent) {
   // Look for a shipped item that has tracking info
   const shippedItem = event.items?.find(
-    (item) => item.fulfillmentStatus?.toLowerCase() === "shipped" && item.shipment?.trackingCode,
+    (item) => TRACKABLE_ITEM_STATUSES.has(item.fulfillmentStatus?.toLowerCase() ?? "") && item.shipment?.trackingCode,
   );
 
-  if (!shippedItem?.shipment) return;
+  if (!shippedItem?.shipment || !shippedItem.fulfillmentStatus) return;
 
   const { trackingCode, trackingUrl } = shippedItem.shipment;
 
-  await transitionOrder(supabase, event.orderId, "shipped", {
+  await applyGelatoStatus(createServiceClient(), event.orderId, shippedItem.fulfillmentStatus.toLowerCase(), {
     trackingNumber: trackingCode ?? null,
     trackingUrl: trackingUrl ?? null,
   });
 
-  console.log(`[Gelato webhook] Item shipped — tracking: ${trackingCode} ${trackingUrl ?? ""}`);
+  console.log(`[Gelato webhook] Item ${shippedItem.fulfillmentStatus} — tracking: ${trackingCode} ${trackingUrl ?? ""}`);
 }
 
 async function syncStoryStatus(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  supabase: any,
+  supabase: FulfilmentClient,
   storyId: string,
-  orderStatus: string,
+  orderStatus: "shipped" | "delivered",
 ) {
   if (!storyId) return;
 
-  // Map order status to story status
+  // Forward-only: never move a delivered story back to shipped.
   const storyStatus = orderStatus === "delivered" ? "delivered" : "shipped";
-
-  await supabase.from("stories").update({ status: storyStatus }).eq("id", storyId);
+  let query = supabase.from("stories").update({ status: storyStatus }).eq("id", storyId);
+  if (storyStatus === "shipped") query = query.neq("status", "delivered");
+  await query;
 
   console.log(`[Gelato webhook] Story ${storyId} → ${storyStatus}`);
 }

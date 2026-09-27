@@ -1,34 +1,34 @@
 import { NextResponse } from "next/server";
-import { createClient as createSupabaseAdmin } from "@supabase/supabase-js";
-import type { Database } from "@/lib/database.types";
+import { createFulfilmentClient } from "@/lib/fulfilment/db";
+import { alertOperator } from "@/lib/fulfilment/alerts";
+import { GELATO_MAX_ATTEMPTS } from "@/lib/fulfilment/logic";
 
 /**
- * Safety-net cron: guarantees paid orders reach Gelato even if the customer
- * closed the checkout-success tab (the primary, client-triggered completion).
+ * Fulfilment driver. Every 5 min it finds paid orders that still need work and
+ * invokes POST /api/stories/{id}/complete for each story IN PARALLEL (one
+ * function instance per story, each with its own 300 s budget). /complete is
+ * resumable + idempotent: it takes a per-story lease, continues from the last
+ * checkpoint and returns before its deadline, so a book is finished across as
+ * many invocations as it needs.
  *
- * It sweeps orders stuck at `status="paid"` whose story hasn't been completed,
- * and re-triggers POST /api/stories/{id}/complete (which accepts a server-to-
- * server call via its guest/service-role path — it just re-verifies the paid
- * order). The complete route is idempotent: it gates on story status and
- * Gelato's orderReferenceId, so re-runs are safe.
+ * Swept regardless of story status: an order stays "paid" until Gelato accepts
+ * it, so a Gelato failure after the story is "ready" is retried here (with the
+ * order's own backoff) instead of being stranded.
  *
- * Scheduled in vercel.json. Vercel sends `Authorization: Bearer $CRON_SECRET`.
+ * Scheduled in vercel.json. Vercel sends `Authorization: Bearer $CRON_SECRET`,
+ * which is forwarded to /complete as proof of a trusted caller.
  */
 export const maxDuration = 300;
 export const dynamic = "force-dynamic";
 
-// Tuning
-const MAX_PER_RUN = 2; // books completed per invocation (each can take minutes)
-const THROTTLE_MIN = 5; // don't re-trigger a story touched < 5 min ago
-const STALE_COMPLETING_MIN = 8; // a "completing" story idle longer than this = crashed mid-run
-const MAX_AGE_HOURS = 6; // stop auto-retrying after this; surfaces for manual handling
-
-function createServiceClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !serviceKey) throw new Error("Missing Supabase service config");
-  return createSupabaseAdmin<Database>(url, serviceKey);
-}
+const MAX_PARALLEL = 5; // stories advanced per tick (each in its own invocation)
+const CALL_TIMEOUT_MS = 290_000; // /complete returns within ~270 s
+/** Only auto-process recent orders; older unfinished ones are escalated, never auto-spent on. */
+const AUTO_PROCESS_MAX_AGE_HOURS = 48;
+/** Escalate still-unfinished orders up to this age (older rows are legacy/test data). */
+const ESCALATE_MAX_AGE_HOURS = 7 * 24;
+/** Stop auto-retrying a story after this many consecutive failed runs and alert. */
+const MAX_COMPLETION_INVOCATIONS = 12;
 
 function baseUrl(): string {
   if (process.env.NEXT_PUBLIC_SITE_URL) return process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "");
@@ -38,91 +38,150 @@ function baseUrl(): string {
   return "http://localhost:3013";
 }
 
+const isFuture = (iso: string | null, now: number) => !!iso && new Date(iso).getTime() > now;
+
 export async function GET(request: Request) {
-  // Auth — Vercel cron injects `Authorization: Bearer $CRON_SECRET` when CRON_SECRET is set.
   const secret = process.env.CRON_SECRET;
-  if (secret) {
-    const auth = request.headers.get("authorization");
-    if (auth !== `Bearer ${secret}`) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  if (!secret) {
+    // /complete trusts the bearer secret; without it the cron can't authenticate.
+    console.error("[cron/fulfill] CRON_SECRET not configured — fulfilment driver disabled");
+    return NextResponse.json({ error: "CRON_SECRET not configured" }, { status: 500 });
+  }
+  if (request.headers.get("authorization") !== `Bearer ${secret}`) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  let admin: ReturnType<typeof createServiceClient>;
+  let admin: ReturnType<typeof createFulfilmentClient>;
   try {
-    admin = createServiceClient();
+    admin = createFulfilmentClient();
   } catch (e) {
     return NextResponse.json({ error: String(e) }, { status: 500 });
   }
 
   const now = Date.now();
+  const escalateSince = new Date(now - ESCALATE_MAX_AGE_HOURS * 3_600_000).toISOString();
 
-  // Candidate orders: paid but not yet fulfilled (oldest first).
+  // Paid = not yet handed to Gelato (physical) or not yet delivered digitally.
   const { data: orders, error } = await admin
     .from("orders")
-    .select("id, story_id, created_at")
+    .select("id, story_id, format, created_at, stripe_checkout_session_id, gelato_submit_attempts, gelato_next_attempt_at, fulfilment_alerted_at")
     .eq("status", "paid")
+    .is("gelato_order_id", null)
+    .gte("created_at", escalateSince)
     .order("created_at", { ascending: true })
-    .limit(25);
+    .limit(50);
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  const triggered: Array<{ storyId: string; httpStatus: number }> = [];
-  const stuck: string[] = []; // paid + unfulfilled past MAX_AGE_HOURS → needs manual attention
-  const base = baseUrl();
+  const candidateStories: string[] = [];
+  const escalate: typeof orders = [];
+  const skipped: Array<{ orderId: string; reason: string }> = [];
 
   for (const order of orders ?? []) {
-    if (triggered.length >= MAX_PER_RUN) break;
-
-    const ageHours = (now - new Date(order.created_at).getTime()) / 3_600_000;
-    if (ageHours > MAX_AGE_HOURS) {
-      stuck.push(order.id);
+    if ((order.stripe_checkout_session_id ?? "").startsWith("mock_")) {
+      skipped.push({ orderId: order.id, reason: "mock order" });
       continue;
     }
+    const ageHours = (now - new Date(order.created_at).getTime()) / 3_600_000;
+    if (ageHours > AUTO_PROCESS_MAX_AGE_HOURS) {
+      escalate.push(order);
+      continue;
+    }
+    if (order.gelato_submit_attempts >= GELATO_MAX_ATTEMPTS) {
+      skipped.push({ orderId: order.id, reason: "gelato retries exhausted (operator alerted)" });
+      continue;
+    }
+    if (isFuture(order.gelato_next_attempt_at, now)) {
+      skipped.push({ orderId: order.id, reason: "gelato backoff" });
+      continue;
+    }
+    if (!candidateStories.includes(order.story_id)) candidateStories.push(order.story_id);
+  }
 
-    const { data: story } = await admin
+  // Story-level filters: lease held by a live run, backoff after a failure, cap.
+  const toRun: string[] = [];
+  if (candidateStories.length > 0) {
+    const { data: stories, error: storiesErr } = await admin
       .from("stories")
-      .select("status, updated_at")
-      .eq("id", order.story_id)
-      .single();
-    if (!story) continue;
+      .select("id, status, completion_lease_until, completion_next_attempt_at, completion_attempts, completion_last_error")
+      .in("id", candidateStories);
+    if (storiesErr) return NextResponse.json({ error: storiesErr.message }, { status: 500 });
 
-    // Already fulfilled (shouldn't still be "paid", but be safe).
-    if (story.status === "ready" || story.status === "ordered" || story.status === "shipped") continue;
-
-    const idleMin = (now - new Date(story.updated_at).getTime()) / 60_000;
-
-    // In-flight completion (started < STALE_COMPLETING_MIN ago) — let it finish.
-    if (story.status === "completing" && idleMin < STALE_COMPLETING_MIN) continue;
-
-    // Recently attempted — throttle to avoid hammering / cost runaway.
-    if (idleMin < THROTTLE_MIN) continue;
-
-    // Only "preview" (abandoned/failed-and-reset) or stale "completing" reach here → fulfil.
-    try {
-      const res = await fetch(`${base}/api/stories/${order.story_id}/complete`, {
-        method: "POST",
-        headers: { "x-cron-fulfillment": "1" },
-      });
-      triggered.push({ storyId: order.story_id, httpStatus: res.status });
-      if (!res.ok) {
-        console.error(`[cron/fulfill] complete failed for story ${order.story_id} → HTTP ${res.status}`);
+    for (const storyId of candidateStories) {
+      const story = stories?.find((s) => s.id === storyId);
+      if (!story) continue;
+      if (isFuture(story.completion_lease_until, now)) {
+        skipped.push({ orderId: storyId, reason: "story in progress (lease held)" });
+        continue;
       }
-    } catch (e) {
-      console.error(`[cron/fulfill] complete threw for story ${order.story_id}:`, e);
-      triggered.push({ storyId: order.story_id, httpStatus: 0 });
+      if (isFuture(story.completion_next_attempt_at, now)) {
+        skipped.push({ orderId: storyId, reason: "story backoff" });
+        continue;
+      }
+      if (story.completion_attempts >= MAX_COMPLETION_INVOCATIONS) {
+        await alertOperator(admin, {
+          key: `completion-capped:${storyId}`,
+          subject: `Paid book stopped auto-completing after ${story.completion_attempts} failed runs (story ${storyId})`,
+          lines: [
+            `Story status: ${story.status}`,
+            `Last error: ${story.completion_last_error ?? "none recorded"}`,
+            "Fix the cause, then reset stories.completion_attempts = 0 to resume.",
+          ],
+          dedupeSeconds: 24 * 3600,
+        });
+        skipped.push({ orderId: storyId, reason: "completion invocation cap" });
+        continue;
+      }
+      toRun.push(storyId);
+      if (toRun.length >= MAX_PARALLEL) break;
     }
   }
 
-  if (stuck.length > 0) {
-    console.error(`[cron/fulfill] ${stuck.length} paid order(s) unfulfilled past ${MAX_AGE_HOURS}h — manual attention: ${stuck.join(", ")}`);
+  // Escalate stranded orders past the auto-processing window (deduped per order).
+  for (const order of escalate ?? []) {
+    await alertOperator(admin, {
+      key: `order-stranded:${order.id}`,
+      subject: `Paid order ${order.id} still not fulfilled after ${AUTO_PROCESS_MAX_AGE_HOURS} h`,
+      lines: [
+        `Story: ${order.story_id} · format: ${order.format} · created: ${order.created_at}`,
+        `Gelato attempts: ${order.gelato_submit_attempts}`,
+        "Automatic processing stopped for this order. Investigate, then POST /api/stories/{storyId}/complete with the cron bearer to resume.",
+      ],
+      dedupeSeconds: 24 * 3600,
+    });
+  }
+
+  // Fan out: one /complete invocation per story, in parallel.
+  const base = baseUrl();
+  const results = await Promise.allSettled(
+    toRun.map(async (storyId) => {
+      const res = await fetch(`${base}/api/stories/${storyId}/complete`, {
+        method: "POST",
+        headers: { authorization: `Bearer ${secret}` },
+        signal: AbortSignal.timeout(CALL_TIMEOUT_MS),
+      });
+      const body = (await res.json().catch(() => null)) as { status?: string; error?: string } | null;
+      return { storyId, httpStatus: res.status, status: body?.status ?? body?.error ?? null };
+    }),
+  );
+
+  const triggered = results.map((r, i) =>
+    r.status === "fulfilled"
+      ? r.value
+      : { storyId: toRun[i], httpStatus: 0, status: r.reason instanceof Error ? r.reason.message : String(r.reason) },
+  );
+  for (const t of triggered) {
+    if (t.httpStatus === 0 || t.httpStatus >= 500) {
+      console.error(`[cron/fulfill] /complete for story ${t.storyId} → HTTP ${t.httpStatus} (${t.status})`);
+    }
   }
 
   return NextResponse.json({
     scanned: orders?.length ?? 0,
     triggered,
-    stuckNeedsManual: stuck,
+    skipped,
+    escalated: (escalate ?? []).map((o) => o.id),
   });
 }

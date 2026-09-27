@@ -2,9 +2,10 @@
 // matching localized email. Used by the Stripe webhook (order_confirmed) and the
 // Gelato webhook (in_production / shipped / delivered).
 //
-// The orders table has no email column, so the recipient is resolved from the
-// auth user (orders.user_id) via the service-role admin API. Sending is best-effort
-// and never throws — a failed email must not break webhook processing.
+// Recipient resolution order: explicit `email` → orders.customer_email (the Stripe
+// Checkout email; the only address guests have, since they are anonymous auth
+// users) → the auth user's email via the service-role admin API. Sending is
+// best-effort and never throws — a failed email must not break webhook processing.
 
 import { sendEmail } from "./send";
 import { buildOrderEmail, type OrderEmailEvent } from "./order-emails";
@@ -21,8 +22,14 @@ export interface NotifyOrderParams {
    * required when `supabase` is a user-scoped client without service-role admin access.
    */
   email?: string | null;
+  /** Order to read `customer_email` from (service-role client required). */
+  orderId?: string;
   trackingNumber?: string | null;
   trackingUrl?: string | null;
+  /** book_ready: view/download link */
+  downloadUrl?: string | null;
+  /** book_ready: physical order (copy mentions the printed edition) */
+  isPhysical?: boolean;
 }
 
 /**
@@ -33,9 +40,18 @@ export async function notifyOrderEmail(params: NotifyOrderParams): Promise<boole
   const { supabase, event, storyId, userId } = params;
 
   try {
-    // 1. Recipient email — use the pre-resolved address if given, else look up the
-    //    auth user (requires a service-role client with auth.admin access).
+    // 1. Recipient email — pre-resolved address, else the order's checkout email,
+    //    else the auth user (requires a service-role client with auth.admin access).
     let email: string | undefined = params.email?.trim() || undefined;
+    if (!email && params.orderId) {
+      const { data: order, error: orderErr } = await supabase
+        .from("orders")
+        .select("customer_email")
+        .eq("id", params.orderId)
+        .maybeSingle();
+      if (orderErr) console.warn(`[email] Could not read customer_email for order ${params.orderId}: ${orderErr.message}`);
+      email = (order?.customer_email as string | null | undefined)?.trim() || undefined;
+    }
     if (!email) {
       const { data: userResult, error: userErr } = await supabase.auth.admin.getUserById(userId);
       email = userResult?.user?.email;
@@ -73,6 +89,8 @@ export async function notifyOrderEmail(params: NotifyOrderParams): Promise<boole
       bookTitle,
       trackingNumber: params.trackingNumber,
       trackingUrl: params.trackingUrl,
+      downloadUrl: params.downloadUrl,
+      isPhysical: params.isPhysical,
     });
 
     const ok = await sendEmail({ to: email, subject: built.subject, html: built.html, text: built.text });

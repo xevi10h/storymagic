@@ -9,6 +9,22 @@ function getApiKey(): string {
   return key;
 }
 
+/** Non-2xx response from Gelato. `status` lets callers tell 4xx (fix input) from 5xx (retry). */
+export class GelatoApiError extends Error {
+  readonly status: number;
+  readonly path: string;
+
+  constructor(status: number, path: string, body: string) {
+    super(`Gelato API error ${status} at ${path}: ${body.slice(0, 500)}`);
+    this.name = "GelatoApiError";
+    this.status = status;
+    this.path = path;
+  }
+}
+
+// Per-request timeout so a hung Gelato call can't eat a whole function invocation.
+const REQUEST_TIMEOUT_MS = 30_000;
+
 async function gelatoFetch<T>(
   baseUrl: string,
   path: string,
@@ -16,6 +32,7 @@ async function gelatoFetch<T>(
 ): Promise<T> {
   const url = `${baseUrl}${path}`;
   const response = await fetch(url, {
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     ...options,
     headers: {
       "Content-Type": "application/json",
@@ -26,7 +43,7 @@ async function gelatoFetch<T>(
 
   if (!response.ok) {
     const body = await response.text().catch(() => "");
-    throw new Error(`Gelato API error ${response.status} at ${path}: ${body}`);
+    throw new GelatoApiError(response.status, path, body);
   }
 
   return response.json() as Promise<T>;

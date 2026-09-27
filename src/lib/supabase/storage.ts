@@ -1,156 +1,39 @@
 // Supabase Storage helpers for uploading illustrations and PDFs
 //
 // Buckets:
-//   illustrations — public, stores Recraft-generated images permanently
+//   illustrations — public, generated images (versioned paths, never overwritten)
 //   book-pdfs     — private (user-scoped), stores rendered PDF books
 
 import { SupabaseClient } from "@supabase/supabase-js";
-import sharp from "sharp";
+import { randomBytes } from "node:crypto";
 
 // trim(): a trailing newline in the env var once poisoned every stored URL.
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!.trim();
 
 /**
- * Upload an image from a remote URL to Supabase Storage.
- * Downloads the image, converts WebP/AVIF → PNG (for PDF compatibility),
- * then uploads it to the illustrations bucket.
- * Returns the permanent public URL.
+ * Upload a generated image (buffer) to the public `illustrations` bucket under a
+ * NEW, versioned path — never overwritten, so the CDN can never serve a stale
+ * preview image for a final render. Returns the permanent public URL.
+ *
+ *   {folder}/{name}-{version}.{ext}   e.g. <storyId>/final/scene-3-m1x2k3-9f2a.jpg
+ *
+ * Provider output is always stored here first; temporary provider URLs are
+ * never persisted.
  */
-export async function uploadIllustrationFromUrl(
+export async function uploadGeneratedImage(
   supabase: SupabaseClient,
-  storyId: string,
-  sceneNumber: number,
-  imageUrl: string,
+  folder: string,
+  name: string,
+  image: Buffer,
+  mime: string,
 ): Promise<string> {
-  const response = await fetch(imageUrl);
-  if (!response.ok) {
-    throw new Error(`Failed to download image: ${response.status}`);
-  }
-
-  const contentType = response.headers.get("content-type") || "image/png";
-  const rawBuffer = Buffer.from(await response.arrayBuffer());
-
-  // Always store as PNG for maximum compatibility (@react-pdf, print, etc.)
-  // Recraft V3 often returns WebP which @react-pdf cannot render.
-  let finalBuffer: Buffer;
-  let finalContentType: string;
-  let extension: string;
-
-  if (contentType.includes("jpeg") || contentType.includes("jpg")) {
-    finalBuffer = rawBuffer;
-    finalContentType = "image/jpeg";
-    extension = "jpg";
-  } else if (contentType.includes("png")) {
-    finalBuffer = rawBuffer;
-    finalContentType = "image/png";
-    extension = "png";
-  } else {
-    // WebP, AVIF, or other — convert to PNG
-    console.log(`[Storage] Converting ${contentType} → PNG for scene ${sceneNumber}`);
-    finalBuffer = await sharp(rawBuffer).png().toBuffer();
-    finalContentType = "image/png";
-    extension = "png";
-  }
-
-  const path = `${storyId}/scene-${sceneNumber}.${extension}`;
-
+  const ext = mime === "image/png" ? "png" : mime === "image/webp" ? "webp" : "jpg";
+  const version = `${Date.now().toString(36)}-${randomBytes(3).toString("hex")}`;
+  const path = `${folder}/${name}-${version}.${ext}`;
   const { error } = await supabase.storage
     .from("illustrations")
-    .upload(path, finalBuffer, {
-      contentType: finalContentType,
-      upsert: true,
-    });
-
-  if (error) {
-    throw new Error(`Supabase upload error: ${error.message}`);
-  }
-
-  return `${SUPABASE_URL}/storage/v1/object/public/illustrations/${path}`;
-}
-
-/**
- * Upload the book cover illustration from a remote URL to Supabase Storage.
- * Stored at {storyId}/cover.png in the illustrations bucket (public).
- * Returns the permanent public URL.
- */
-export async function uploadCoverFromUrl(
-  supabase: SupabaseClient,
-  storyId: string,
-  imageUrl: string,
-): Promise<string> {
-  const response = await fetch(imageUrl);
-  if (!response.ok) {
-    throw new Error(`Failed to download cover image: ${response.status}`);
-  }
-
-  const contentType = response.headers.get("content-type") || "image/png";
-  const rawBuffer = Buffer.from(await response.arrayBuffer());
-
-  let finalBuffer: Buffer;
-
-  if (contentType.includes("jpeg") || contentType.includes("jpg") || contentType.includes("png")) {
-    finalBuffer = rawBuffer;
-  } else {
-    console.log(`[Storage] Converting cover ${contentType} → PNG`);
-    finalBuffer = await sharp(rawBuffer).png().toBuffer();
-  }
-
-  const path = `${storyId}/cover.png`;
-
-  const { error } = await supabase.storage
-    .from("illustrations")
-    .upload(path, finalBuffer, {
-      contentType: "image/png",
-      upsert: true,
-    });
-
-  if (error) {
-    throw new Error(`Supabase cover upload error: ${error.message}`);
-  }
-
-  return `${SUPABASE_URL}/storage/v1/object/public/illustrations/${path}`;
-}
-
-/**
- * Upload the character portrait illustration from a remote URL to Supabase Storage.
- * Stored at {storyId}/portrait.png in the illustrations bucket (public).
- * Returns the permanent public URL.
- */
-export async function uploadPortraitFromUrl(
-  supabase: SupabaseClient,
-  storyId: string,
-  imageUrl: string,
-): Promise<string> {
-  const response = await fetch(imageUrl);
-  if (!response.ok) {
-    throw new Error(`Failed to download portrait image: ${response.status}`);
-  }
-
-  const contentType = response.headers.get("content-type") || "image/png";
-  const rawBuffer = Buffer.from(await response.arrayBuffer());
-
-  let finalBuffer: Buffer;
-
-  if (contentType.includes("jpeg") || contentType.includes("jpg") || contentType.includes("png")) {
-    finalBuffer = rawBuffer;
-  } else {
-    console.log(`[Storage] Converting portrait ${contentType} → PNG`);
-    finalBuffer = await sharp(rawBuffer).png().toBuffer();
-  }
-
-  const path = `${storyId}/portrait.png`;
-
-  const { error } = await supabase.storage
-    .from("illustrations")
-    .upload(path, finalBuffer, {
-      contentType: "image/png",
-      upsert: true,
-    });
-
-  if (error) {
-    throw new Error(`Supabase portrait upload error: ${error.message}`);
-  }
-
+    .upload(path, image, { contentType: mime, upsert: false, cacheControl: "31536000" });
+  if (error) throw new Error(`Supabase upload error (${path}): ${error.message}`);
   return `${SUPABASE_URL}/storage/v1/object/public/illustrations/${path}`;
 }
 
@@ -224,15 +107,17 @@ export async function getSignedPdfUrlForGelato(
 
 /**
  * Upload the Gelato interior PDF (pages 2–31, submitted as type "inside").
- * Path: book-pdfs/{userId}/{storyId}-interior.pdf
+ * Path: book-pdfs/{userId}/{storyId}-interior-{orderId}.pdf — per order, because the
+ * cover geometry depends on the format (softcover + hardcover of one story must not collide).
  */
 export async function uploadInteriorPdf(
   supabase: SupabaseClient,
   userId: string,
   storyId: string,
+  orderId: string,
   pdfBuffer: Buffer,
 ): Promise<string> {
-  const path = `${userId}/${storyId}-interior.pdf`;
+  const path = `${userId}/${storyId}-interior-${orderId}.pdf`;
   const { error } = await supabase.storage
     .from("book-pdfs")
     .upload(path, pdfBuffer, { contentType: "application/pdf", upsert: true });
@@ -242,38 +127,20 @@ export async function uploadInteriorPdf(
 
 /**
  * Upload the Gelato cover spread PDF (submitted as type "default").
- * Path: book-pdfs/{userId}/{storyId}-cover.pdf
+ * Path: book-pdfs/{userId}/{storyId}-cover-{orderId}.pdf — per order, because the
+ * cover geometry depends on the format (softcover + hardcover of one story must not collide).
  */
 export async function uploadCoverSpreadPdf(
   supabase: SupabaseClient,
   userId: string,
   storyId: string,
+  orderId: string,
   pdfBuffer: Buffer,
 ): Promise<string> {
-  const path = `${userId}/${storyId}-cover.pdf`;
+  const path = `${userId}/${storyId}-cover-${orderId}.pdf`;
   const { error } = await supabase.storage
     .from("book-pdfs")
     .upload(path, pdfBuffer, { contentType: "application/pdf", upsert: true });
   if (error) throw new Error(`Cover spread PDF upload error: ${error.message}`);
   return path;
-}
-
-/**
- * Upload a reference image from a base64-encoded string to Supabase Storage.
- * Stored at {storyId}/ref-{assetId}.png in the illustrations bucket (public).
- * Returns the permanent public URL.
- */
-export async function uploadReferenceFromBase64(
-  supabase: SupabaseClient,
-  storyId: string,
-  assetId: string,
-  imageBase64: string,
-): Promise<string> {
-  const buf = Buffer.from(imageBase64, "base64");
-  const path = `${storyId}/ref-${assetId}.png`;
-  const { error } = await supabase.storage
-    .from("illustrations")
-    .upload(path, buf, { contentType: "image/png", upsert: true });
-  if (error) throw new Error(`Reference upload failed for ${assetId}: ${error.message}`);
-  return `${SUPABASE_URL}/storage/v1/object/public/illustrations/${path}`;
 }

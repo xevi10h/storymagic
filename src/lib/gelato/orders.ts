@@ -130,7 +130,7 @@ function resolveShippingAddress(params: PrintOrderParams): GelatoAddress {
 // Our book: 32 total pages — 1 front cover + 30 inner pages + 1 back cover.
 // The front and back cover form the cover spread (type: "default").
 // Gelato counts only inner pages in pageCount.
-const INNER_PAGE_COUNT = 30;
+export const INNER_PAGE_COUNT = 30;
 
 // ── Public API ──────────────────────────────────────────────────────────────
 
@@ -218,4 +218,25 @@ export async function createPrintOrder(
     method: "POST",
     body: JSON.stringify(body),
   });
+}
+
+export interface GelatoOrderSummary {
+  id: string;
+  orderReferenceId: string | null;
+  fulfillmentStatus: string;
+  orderType?: string;
+}
+
+/**
+ * Find existing Gelato orders (draft or live) for our orderReferenceId.
+ * Gelato does NOT dedupe orderReferenceId on create, so this is checked before
+ * re-submitting an order whose previous attempt has an unknown outcome.
+ */
+export async function findOrdersByReference(orderReferenceId: string): Promise<GelatoOrderSummary[]> {
+  const res = await gelatoOrderFetch<{ orders?: GelatoOrderSummary[] }>("/v4/orders:search", {
+    method: "POST",
+    body: JSON.stringify({ orderReferenceIds: [orderReferenceId], orderTypes: ["order", "draft"], limit: 10 }),
+  });
+  // Defensive: only trust exact reference matches.
+  return (res.orders ?? []).filter((o) => o.orderReferenceId === orderReferenceId);
 }

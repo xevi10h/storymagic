@@ -1,19 +1,11 @@
 import { NextResponse } from "next/server";
 import { getStripe, getStripeWebhookSecret } from "@/lib/stripe";
-import { createClient as createSupabaseAdmin } from "@supabase/supabase-js";
 import type Stripe from "stripe";
-import type { Database } from "@/lib/database.types";
-import { notifyOrderEmail } from "@/lib/email/notify-order";
+import { createFulfilmentClient } from "@/lib/fulfilment/db";
+import { sendOrderEmailOnce } from "@/lib/fulfilment/emails";
 
 // Service-role client for webhook context (no user session/cookies available)
-function createServiceClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !serviceKey) {
-    throw new Error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY for webhook");
-  }
-  return createSupabaseAdmin<Database>(url, serviceKey);
-}
+const createServiceClient = createFulfilmentClient;
 
 // Stripe sends raw body — we need to disable body parsing
 export const runtime = "nodejs";
@@ -55,7 +47,8 @@ export async function POST(request: Request) {
   // Handle the event — throw on errors so Stripe retries the webhook
   try {
     switch (event.type) {
-      case "checkout.session.completed": {
+      case "checkout.session.completed":
+      case "checkout.session.async_payment_succeeded": {
         const session = event.data.object as Stripe.Checkout.Session;
         await handleCheckoutCompleted(session);
         break;
@@ -80,7 +73,19 @@ export async function POST(request: Request) {
   }
 }
 
+const PHYSICAL_FORMATS = new Set(["softcover", "hardcover"]);
+
+type LegacyShipping = { name?: string | null; address?: Stripe.Address | null } | null | undefined;
+
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
+  // Delayed payment methods complete the session unpaid; the money arrives later
+  // with checkout.session.async_payment_succeeded (handled by this same function).
+  // no_payment_required = 100% promo code.
+  if (session.payment_status !== "paid" && session.payment_status !== "no_payment_required") {
+    console.log(`[Stripe webhook] Session ${session.id} completed with payment_status=${session.payment_status} — waiting for payment`);
+    return;
+  }
+
   const supabase = createServiceClient();
 
   const storyId = session.metadata?.story_id;
@@ -90,30 +95,13 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     throw new Error(`Missing metadata in Stripe session: ${session.id}`);
   }
 
-  // Idempotency guard — skip if already processed (Stripe guarantees at-least-once delivery)
-  const { data: existingOrder } = await supabase
-    .from("orders")
-    .select("status")
-    .eq("stripe_checkout_session_id", session.id)
-    .single();
-
-  if (existingOrder?.status === "paid" || existingOrder?.status === "completed") {
-    console.log(`Order already processed for session ${session.id}, skipping`);
-    return;
-  }
-
-  // Retrieve full session with shipping details from Stripe API
+  // Retrieve full session with shipping + customer details from Stripe API
   const fullSession = await getStripe().checkout.sessions.retrieve(session.id);
 
-  // Extract shipping details — Stripe Basil API (2025-03-31+) moved shipping
-  // into collected_information.shipping_details. Fall back to top-level
-  // shipping_details for older API versions / SDK compatibility.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const rawSession = fullSession as any;
-  const shipping: { name?: string; address?: Record<string, string> } | undefined =
-    rawSession.collected_information?.shipping_details ??
-    rawSession.shipping_details ??
-    undefined;
+  // Stripe Basil API (2025-03-31+) moved shipping into
+  // collected_information.shipping_details; fall back to the legacy top-level field.
+  const legacyShipping = (fullSession as Stripe.Checkout.Session & { shipping_details?: LegacyShipping }).shipping_details;
+  const shipping = fullSession.collected_information?.shipping_details ?? legacyShipping ?? undefined;
 
   const shippingAddress = shipping?.address
     ? {
@@ -130,8 +118,15 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     console.warn(`[Stripe webhook] No shipping address found for physical order — session ${session.id}`);
   }
 
-  // Update order
-  const { error } = await supabase
+  // Guests are anonymous auth users with no email: the Checkout email is the only
+  // address we have for them.
+  const customerEmail =
+    fullSession.customer_details?.email?.trim() || fullSession.customer_email?.trim() || null;
+
+  // Conditional transition pending → paid: the affected row tells us whether THIS
+  // delivery processed the payment (Stripe delivers at-least-once, and
+  // /api/checkout/verify may have flipped it first).
+  const { data: flipped, error } = await supabase
     .from("orders")
     .update({
       status: "paid",
@@ -142,53 +137,64 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       shipping_address: shippingAddress
         ? JSON.parse(JSON.stringify(shippingAddress))
         : null,
+      customer_email: customerEmail,
     })
-    .eq("stripe_checkout_session_id", session.id);
+    .eq("stripe_checkout_session_id", session.id)
+    .eq("status", "pending")
+    .select("id, story_id, user_id, format");
 
   if (error) {
     throw new Error(`Failed to update order for session ${session.id}: ${error.message}`);
   }
 
-  // Check story status — only transition to "ordered" if story is already fully ready.
-  // If story is in "preview" status, leave it — the success page will trigger
-  // completion of remaining illustrations via /api/stories/[storyId]/complete
-  const { data: story } = await supabase
-    .from("stories")
-    .select("status")
-    .eq("id", storyId)
-    .single();
+  let order = flipped?.[0];
+  const processedHere = !!order;
 
-  if (story?.status === "ready") {
-    await supabase
-      .from("stories")
-      .update({ status: "ordered" })
-      .eq("id", storyId);
+  if (!order) {
+    // Already paid: a retry of this webhook, or verify won the race.
+    const { data: existing, error: readErr } = await supabase
+      .from("orders")
+      .select("id, story_id, user_id, format, status, customer_email")
+      .eq("stripe_checkout_session_id", session.id)
+      .maybeSingle();
+    if (readErr) throw new Error(`Failed to read order for session ${session.id}: ${readErr.message}`);
+    if (!existing) throw new Error(`No order row for paid session ${session.id}`);
+    if (existing.status === "pending" || existing.status === "cancelled") {
+      throw new Error(`Order ${existing.id} for paid session ${session.id} is '${existing.status}' — retry`);
+    }
+    // Backfill the email if the row predates customer_email.
+    if (!existing.customer_email && customerEmail) {
+      await supabase
+        .from("orders")
+        .update({ customer_email: customerEmail })
+        .eq("id", existing.id)
+        .is("customer_email", null);
+    }
+    order = existing;
   }
 
-  console.log(`Order paid for story ${storyId}, session ${session.id}, story status: ${story?.status}`);
+  console.log(`Order ${order.id} paid for story ${storyId}, session ${session.id} (processed here: ${processedHere})`);
 
-  // Order-confirmed email — physical orders only (digital downloads immediately).
-  // Best-effort: never block the webhook on email delivery.
-  const format = session.metadata?.format;
-  const isPhysical = format !== "digital_pdf";
-  if (isPhysical) {
-    await notifyOrderEmail({
-      supabase,
-      event: "order_confirmed",
-      storyId,
-      userId,
-    });
-  }
+  // Confirmation email for EVERY format, exactly once (claimed via
+  // orders.confirmation_email_sent_at; /checkout/verify uses the same claim).
+  const isPhysical = PHYSICAL_FORMATS.has(order.format);
+  await sendOrderEmailOnce(supabase, {
+    order,
+    column: "confirmation_email_sent_at",
+    event: isPhysical ? "order_confirmed" : "order_confirmed_digital",
+    email: customerEmail,
+  });
 }
 
 async function handleCheckoutExpired(session: Stripe.Checkout.Session) {
   const supabase = createServiceClient();
 
-  // Mark the order as cancelled
+  // Mark the order as cancelled — only if it never got paid
   const { error } = await supabase
     .from("orders")
     .update({ status: "cancelled" })
-    .eq("stripe_checkout_session_id", session.id);
+    .eq("stripe_checkout_session_id", session.id)
+    .eq("status", "pending");
 
   if (error) {
     throw new Error(`Failed to cancel order for session ${session.id}: ${error.message}`);

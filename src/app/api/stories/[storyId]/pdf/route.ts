@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient as createSupabaseAdmin } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
-import { renderBookPdf, type BookPdfInput } from "@/lib/pdf/book-template";
+import { renderBookPdf, prefetchAllIllustrations, prefetchImageAsDataUri, type BookPdfInput } from "@/lib/pdf";
 import { uploadBookPdf, getSignedPdfUrl } from "@/lib/supabase/storage";
-import { prefetchAllIllustrations, prefetchImageAsDataUri } from "@/lib/pdf/prefetch";
 import type { GeneratedStory } from "@/lib/ai/story-generator";
 import type { Database } from "@/lib/database.types";
 
@@ -45,15 +44,16 @@ export async function GET(
   if (user) {
     supabase = userSupabase as unknown as ReturnType<typeof createServiceClient>;
   } else {
-    // Guest user — verify they have a paid order for this story
+    // Guest user — verify they have a paid order for this story (fulfilled digital
+    // orders move to "producing"; physical ones on to shipped/delivered)
     const adminClient = createServiceClient();
     const { data: paidOrderCheck } = await adminClient
       .from("orders")
       .select("id")
       .eq("story_id", storyId)
-      .eq("status", "paid")
+      .in("status", ["paid", "producing", "shipped", "delivered"])
       .limit(1)
-      .single();
+      .maybeSingle();
 
     if (!paidOrderCheck) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -75,7 +75,7 @@ export async function GET(
     return NextResponse.json({ error: "Story not found" }, { status: 404 });
   }
 
-  if (story.status !== "ready" && story.status !== "ordered") {
+  if (!["ready", "ordered", "shipped", "delivered"].includes(story.status)) {
     return NextResponse.json(
       { error: "Story is not ready yet" },
       { status: 400 }
@@ -146,11 +146,10 @@ export async function GET(
     avatar_url: string | null;
   };
 
-  // Pre-fetch cover and portrait images as base64 data URIs
-  const [coverImageUrl, portraitUrl] = await Promise.all([
-    story.cover_image_url ? prefetchImageAsDataUri(story.cover_image_url) : null,
-    story.character_portrait_url ? prefetchImageAsDataUri(story.character_portrait_url) : null,
-  ]);
+  // Pre-fetch the cover as a base64 data URI. The portrait is omitted, matching
+  // the print pipeline (current portraits are too low-res): this download is the
+  // same 34-page digital edition fulfilment stores for the customer (bookPdf).
+  const coverImageUrl = story.cover_image_url ? await prefetchImageAsDataUri(story.cover_image_url) : null;
 
   const illustrations = (
     story.story_illustrations as unknown as {
@@ -179,7 +178,7 @@ export async function GET(
     coverImageUrl,
     illustrations: prefetchedIllustrations,
     locale: (story as Record<string, unknown>).locale as string | undefined,
-    portraitUrl,
+    portraitUrl: null,
     characterGender: character.gender,
     characterCity: character.city,
     characterInterests: character.interests ?? [],
