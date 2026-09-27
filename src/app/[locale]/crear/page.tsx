@@ -431,6 +431,9 @@ function CrearPageContent() {
               eyeColor: ch.eye_color ?? "#5d4037",
               skinTone: ch.skin_tone ?? "",
               hairstyle: ch.hairstyle ?? "short",
+              // Not stored on saved characters yet (avatar builder phase 2).
+              glasses: INITIAL_STATE.character.glasses,
+              freckles: INITIAL_STATE.character.freckles,
               interests: ch.interests ?? [],
               city: ch.city ?? "",
               favoriteColor: ch.favorite_color ?? "#E53935",
