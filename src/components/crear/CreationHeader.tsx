@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import BrandLogo from "@/components/BrandLogo";
@@ -16,6 +17,28 @@ interface CreationHeaderProps {
   onStepClick?: (step: number) => void;
   /** Whether a given step is reachable (already visited + data ready). */
   canStepNavigate?: (step: number) => boolean;
+}
+
+/** Character avatar: AI portrait when available, otherwise the initial letter. */
+function AvatarCircle({
+  portraitUrl,
+  name,
+  className,
+  initialClassName = "text-sm",
+}: {
+  portraitUrl?: string | null;
+  name?: string;
+  className: string;
+  initialClassName?: string;
+}) {
+  if (portraitUrl) {
+    return <img src={portraitUrl} alt={name || ""} className={`${className} object-cover`} />;
+  }
+  return (
+    <span className={`${className} flex items-center justify-center bg-create-primary/15 font-display font-bold text-create-primary ${initialClassName}`} aria-hidden="true">
+      {name?.trim() ? name.trim().charAt(0).toUpperCase() : "?"}
+    </span>
+  );
 }
 
 /** Labelled step indicator (character → adventure → dedication). Compacts on mobile.
@@ -116,6 +139,10 @@ export default function CreationHeader({
   const t = useTranslations("crear.header");
   // Labels for the 3-step creation flow (character → adventure → dedication).
   const stepLabels = [t("stepCharacter"), t("stepAdventure"), t("stepDedication")];
+  // Tapping the avatar used to regenerate the portrait immediately (costly and
+  // destructive). Always confirm first.
+  const [confirmRegenerate, setConfirmRegenerate] = useState(false);
+  const showCharacterChip = !!portraitUrl || (!!onRegeneratePortrait && !!characterName?.trim());
 
   return (
     <>
@@ -133,24 +160,24 @@ export default function CreationHeader({
             </span>
           </Link>
 
-          <Link href="/" className={`flex items-center ${portraitUrl ? "hidden sm:flex" : ""}`}>
+          <Link href="/" className={`flex items-center ${showCharacterChip ? "hidden sm:flex" : ""}`}>
             <BrandLogo className="h-5 text-secondary" />
           </Link>
 
-          {/* Character portrait (visible after Step 2) */}
-          {portraitUrl && (
+          {/* Character portrait (visible after Step 1) */}
+          {showCharacterChip && (
             <div className="flex items-center ml-2 sm:ml-3 pl-2 sm:pl-3 border-l border-create-primary/10">
               {onRegeneratePortrait ? (
                 <button
-                  onClick={onRegeneratePortrait}
+                  onClick={() => setConfirmRegenerate(true)}
                   className="group relative flex items-center gap-1.5 sm:gap-2 rounded-full bg-create-neutral/60 pr-2.5 sm:pr-3 transition-colors hover:bg-create-neutral"
                   title={t("regenerateTooltip")}
                 >
                   <div className="relative shrink-0">
-                    <img
-                      src={portraitUrl}
-                      alt={characterName || ""}
-                      className="w-8 h-8 rounded-full object-cover ring-2 ring-create-primary/30 shadow-sm group-hover:ring-create-primary/50 transition-all"
+                    <AvatarCircle
+                      portraitUrl={portraitUrl}
+                      name={characterName}
+                      className="w-8 h-8 rounded-full ring-2 ring-create-primary/30 shadow-sm group-hover:ring-create-primary/50 transition-all"
                     />
                     <div className="absolute inset-0 rounded-full bg-black/0 group-hover:bg-black/30 transition-all flex items-center justify-center">
                       <span className="material-symbols-outlined text-white text-sm opacity-0 group-hover:opacity-100 transition-opacity">
@@ -173,10 +200,10 @@ export default function CreationHeader({
                 </button>
               ) : (
                 <div className="flex items-center gap-1.5 sm:gap-2 rounded-full bg-create-neutral/60 pr-2.5 sm:pr-3">
-                  <img
-                    src={portraitUrl}
-                    alt={characterName || ""}
-                    className="w-8 h-8 rounded-full object-cover ring-2 ring-create-primary/30 shadow-sm"
+                  <AvatarCircle
+                    portraitUrl={portraitUrl}
+                    name={characterName}
+                    className="w-8 h-8 rounded-full ring-2 ring-create-primary/30 shadow-sm"
                   />
                   <div className="flex flex-col items-start leading-none min-w-0">
                     {characterName && (
@@ -233,6 +260,54 @@ export default function CreationHeader({
           )}
         </div>
       </header>
+
+      {confirmRegenerate && onRegeneratePortrait && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm"
+          onClick={() => setConfirmRegenerate(false)}
+        >
+          <div
+            className="flex w-full max-w-sm flex-col items-center gap-4 rounded-2xl bg-white p-6 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <AvatarCircle
+              portraitUrl={portraitUrl}
+              name={characterName}
+              className="h-20 w-20 rounded-full ring-4 ring-create-primary/20 shadow-lg"
+              initialClassName="text-3xl"
+            />
+            <h3 className="text-center font-display text-lg font-bold text-create-text">
+              {portraitUrl
+                ? t("regenerateConfirmTitle", { name: characterName ?? "" })
+                : t("regenerateConfirmNoPortraitTitle", { name: characterName ?? "" })}
+            </h3>
+            <p className="text-center text-sm leading-relaxed text-create-text-sub">
+              {portraitUrl ? t("regenerateConfirmDescription") : t("regenerateConfirmNoPortraitDescription")}
+            </p>
+            <div className="mt-1 flex w-full gap-3">
+              <button
+                type="button"
+                onClick={() => setConfirmRegenerate(false)}
+                className="flex-1 rounded-full border-2 border-create-neutral px-4 py-2.5 text-sm font-bold text-create-text-sub transition-all hover:bg-create-bg"
+              >
+                {t("regenerateConfirmCancel")}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setConfirmRegenerate(false);
+                  onRegeneratePortrait();
+                }}
+                className="flex-1 rounded-full bg-create-primary px-4 py-2.5 text-sm font-bold text-white shadow-lg transition-all hover:shadow-xl"
+              >
+                {t("regenerateConfirmYes")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Mobile: same labelled stepper as desktop, on its own row below the header */}
       {currentStep != null && (

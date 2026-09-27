@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { getStripe, PRICING, ADDONS, type BookFormat, type AddonId } from "@/lib/stripe";
-import { getStripePriceId } from "@/lib/pricing";
+import { getStripePriceId, isAddonEnabled } from "@/lib/pricing";
 
 export async function POST(request: Request) {
   try {
@@ -85,7 +85,8 @@ export async function POST(request: Request) {
         if (seenAddons.has(addonId)) continue;
         seenAddons.add(addonId);
 
-        if (ADDONS[addonId as AddonId]) {
+        // Only sell add-ons we can actually fulfil (see ADDON_ENABLED in pricing.ts)
+        if (isAddonEnabled(addonId)) {
           const addon = ADDONS[addonId as AddonId];
           validAddons.push(addonId as AddonId);
           lineItems.push({
@@ -106,29 +107,16 @@ export async function POST(request: Request) {
       formatConfig.price +
       validAddons.reduce((sum, id) => sum + ADDONS[id].price, 0);
 
-    // MOCK_MODE: bypass Stripe entirely — create a paid order directly so the
-    // full unlock flow (complete route → all illustrations) works without webhooks.
-    // Safety: NEVER allow mock mode when Stripe is in live mode (production safeguard)
-    if (process.env.MOCK_MODE === "true" && process.env.STRIPE_ENVIRONMENT !== "live") {
-      const mockSessionId = `mock_${Date.now()}_${storyId.slice(0, 8)}`;
-      const { error: orderError } = await supabase.from("orders").insert({
-        user_id: user.id,
-        story_id: storyId,
-        stripe_checkout_session_id: mockSessionId,
-        format,
-        addons: JSON.parse(JSON.stringify(validAddons)),
-        subtotal: subtotal / 100,
-        total: subtotal / 100,
-        status: "paid",
-      });
-
-      if (orderError) {
-        console.error("Mock checkout error:", orderError);
-        return NextResponse.json({ error: "Failed to create mock order" }, { status: 500 });
-      }
-
-      const origin = new URL(request.url).origin;
-      return NextResponse.json({ url: `${origin}/checkout/success?session_id=${mockSessionId}` });
+    // MOCK_MODE: refuse checkout. Local dev shares the production Supabase, and the
+    // fulfil-orders cron picks up every `status="paid"` order and sends it to Gelato,
+    // so a mock "paid" row would become a real print order. To unlock a story in
+    // local dev use the preview's "DEV — Mock Mode" button (POST /complete, which
+    // has its own mock path and creates no order).
+    if (process.env.MOCK_MODE === "true") {
+      return NextResponse.json(
+        { error: "mock_mode_checkout_disabled" },
+        { status: 403 },
+      );
     }
 
     const origin = new URL(request.url).origin;
@@ -138,6 +126,8 @@ export async function POST(request: Request) {
     const sessionOptions: Record<string, any> = {
       mode: "payment",
       payment_method_types: ["card"],
+      // Promotion codes are managed in the Stripe Dashboard (schools/AMPA, gifts).
+      allow_promotion_codes: true,
       line_items: lineItems,
       customer_email: user.email || undefined,
       metadata: {
@@ -190,7 +180,7 @@ export async function POST(request: Request) {
   } catch (err) {
     console.error("Checkout error:", err instanceof Error ? { message: err.message, stack: err.stack } : err);
     return NextResponse.json(
-      { error: "Checkout failed", details: err instanceof Error ? err.message : String(err) },
+      { error: "Checkout failed" },
       { status: 500 }
     );
   }

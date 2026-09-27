@@ -23,7 +23,7 @@ export default function QualitySection() {
             {/* Floating eco badge */}
             <div className="absolute -right-6 -bottom-10 w-48 rotate-3 border border-border-light bg-white p-6 shadow-xl">
               <div className="flex flex-col items-center text-center">
-                <span className="material-symbols-outlined mb-2 text-4xl text-success">eco</span>
+                <span className="material-symbols-outlined mb-2 text-4xl text-success">location_on</span>
                 <span className="text-sm font-bold text-secondary">
                   {t("ecoLabel")}
                 </span>

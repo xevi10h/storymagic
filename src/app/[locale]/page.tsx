@@ -13,6 +13,7 @@ import MobileStickyCta from "@/components/landing/MobileStickyCta";
 import WaitlistPage from "@/components/waitlist/WaitlistPage";
 import { OrganizationJsonLd, ProductJsonLd } from "@/components/seo/JsonLd";
 import DevResetCreateState from "@/components/dev/DevResetCreateState";
+import { ADDON_ENABLED } from "@/lib/pricing";
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -46,7 +47,7 @@ export default async function Home({ params }: Props) {
         <BookCollection />
         <QualitySection />
         <UniqueEdition />
-        <AdventurePack />
+        {ADDON_ENABLED.adventure_pack && <AdventurePack />}
         <FaqSection />
         <CollectionOffer />
       </main>

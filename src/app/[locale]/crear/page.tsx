@@ -34,7 +34,7 @@ export default function CrearPage() {
 function CrearPageContent() {
   const t = useTranslations("crear");
   const locale = useLocale();
-  const [state, setState, clearState, hydrated] = usePersistedState<CreateBookState>(
+  const [state, setState, , hydrated] = usePersistedState<CreateBookState>(
     STORAGE_KEY,
     INITIAL_STATE
   );
@@ -94,17 +94,24 @@ function CrearPageContent() {
   }, [state.currentStep]);
 
   // A step is reachable when it's been unlocked AND its data prerequisites hold:
-  // step 2 (path) needs a portrait; step 3 (dedication) needs a chosen template.
+  // step 2 (path) needs a named character; step 3 (dedication) needs a chosen
+  // template. The AI portrait is optional: if the provider fails the parent can
+  // continue without it (the book pipeline builds its own character references).
   const isStepReachable = useCallback(
     (step: number) => {
       if (catalogMode) return false; // catalog flow auto-advances; no manual hops
       if (step < 1 || step > TOTAL_STEPS || step > maxStep) return false;
-      if (step >= 2 && !state.portraitUrl) return false;
+      if (step >= 2 && !state.character.name.trim()) return false;
       if (step >= 3 && !state.selectedTemplate) return false;
       return true;
     },
-    [catalogMode, maxStep, state.portraitUrl, state.selectedTemplate],
+    [catalogMode, maxStep, state.character.name, state.selectedTemplate],
   );
+
+  // Snapshot of the character for which the parent chose "continue without
+  // portrait" (portrait provider failed). Not persisted on purpose: after a
+  // reload we simply try the portrait once more.
+  const [portraitSkippedFor, setPortraitSkippedFor] = useState<string | null>(null);
 
   const goToStep = useCallback(
     (step: number) => {
@@ -128,6 +135,13 @@ function CrearPageContent() {
   // Step 2 → Portrait Reveal → Step 3 (or auto-save in catalog mode)
   const handleStep2Next = useCallback(() => {
     if (!state.portraitUrl) {
+      // Parent already chose to continue without a portrait for this exact
+      // character → don't hit the (failing) provider again.
+      if (portraitSkippedFor === getCharacterSnapshot(state.character)) {
+        if (catalogMode) setCatalogAutoSave(true);
+        else goNext();
+        return;
+      }
       // No portrait yet → generate
       setShowPortraitReveal(true);
       return;
@@ -145,7 +159,7 @@ function CrearPageContent() {
       // No changes → skip straight to Step 3
       goNext();
     }
-  }, [state.portraitUrl, state.character, state.portraitCharacterSnapshot, getCharacterSnapshot, goNext, catalogMode]);
+  }, [state.portraitUrl, state.character, state.portraitCharacterSnapshot, getCharacterSnapshot, goNext, catalogMode, portraitSkippedFor]);
 
   // Regenerate portrait — clears current portrait and shows reveal screen
   const handleRegeneratePortrait = useCallback(() => {
@@ -180,6 +194,20 @@ function CrearPageContent() {
   const handlePortraitBack = useCallback(() => {
     setShowPortraitReveal(false);
   }, []);
+
+  // Portrait provider failed → continue with the initial-letter avatar.
+  const handlePortraitSkip = useCallback(() => {
+    setPortraitSkippedFor(getCharacterSnapshot(state.character));
+    setState((prev) => ({
+      ...prev,
+      portraitUrl: null,
+      recraftStyleId: null,
+      portraitCharacterSnapshot: null,
+      currentStep: catalogMode ? prev.currentStep : 2,
+    }));
+    setShowPortraitReveal(false);
+    if (catalogMode) setCatalogAutoSave(true);
+  }, [getCharacterSnapshot, state.character, setState, catalogMode]);
 
   const updateCharacter = useCallback(
     (updates: Partial<CreateBookState["character"]>) => {
@@ -270,23 +298,23 @@ function CrearPageContent() {
       });
 
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Error al guardar");
+        console.warn("[crear] Saving story failed:", res.status, await res.text().catch(() => ""));
+        throw new Error("save_failed");
       }
 
       const { storyId } = await res.json();
-      // Freeze UI before navigating so step 1 doesn't flash
+      // Freeze UI before navigating so step 1 doesn't flash.
+      // The persisted draft is NOT cleared here: /generar clears it only once the
+      // story reaches `preview`, so a failed generation never loses the parent's
+      // input ("Volver" returns to the filled form).
       setNavigating(true);
       router.push(`/crear/${storyId}/generar`);
-      // Clear persisted localStorage only — React state is frozen by navigating flag
-      setTimeout(() => {
-        try { localStorage.removeItem(STORAGE_KEY); } catch {}
-      }, 1000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error inesperado");
+      console.warn("[crear] saveAndGenerate failed:", err);
+      setError(t("errors.saveFailed"));
       setSaving(false);
     }
-  }, [state, router, clearState]);
+  }, [state, router, locale, t]);
 
   const handleFinish = useCallback(async () => {
     if (user) {
@@ -308,28 +336,27 @@ function CrearPageContent() {
       if (!existingSession) {
         const { error: anonError, data } =
           await supabase.auth.signInAnonymously();
-        if (anonError) {
-          throw new Error(anonError.message);
-        }
-        if (!data.session) {
-          throw new Error("No se pudo crear la sesión de invitado");
+        if (anonError || !data.session) {
+          throw anonError ?? new Error("guest_session_missing");
         }
       }
       // Session cookies are set synchronously when signInAnonymously resolves
       await saveAndGenerate();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error inesperado");
+      console.warn("[crear] Guest session failed:", err);
+      setError(t("errors.saveFailed"));
       setSaving(false);
     }
-  }, [user, saveAndGenerate]);
+  }, [user, saveAndGenerate, t]);
 
   // Catalog mode: auto-save after portrait is complete
   useEffect(() => {
-    if (catalogAutoSave && state.portraitUrl && catalogMode && !saving) {
+    // Portrait is optional (may have been skipped after a provider failure)
+    if (catalogAutoSave && catalogMode && !saving) {
       setCatalogAutoSave(false);
       handleFinish();
     }
-  }, [catalogAutoSave, state.portraitUrl, catalogMode, saving, handleFinish]);
+  }, [catalogAutoSave, catalogMode, saving, handleFinish]);
 
   // Auto-finish after returning from login (guest who chose to log in)
   useEffect(() => {
@@ -475,6 +502,7 @@ function CrearPageContent() {
               onComplete={handlePortraitComplete}
               onRetry={() => {}}
               onBack={handlePortraitBack}
+              onSkip={handlePortraitSkip}
             />
           )}
           {state.currentStep === 2 && (
@@ -561,11 +589,15 @@ function CrearPageContent() {
 
         {/* Error toast */}
         {error && (
-          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-xl border border-red-200 bg-red-50 px-6 py-3 text-sm text-red-700 shadow-lg">
-            {error}
+          <div
+            role="alert"
+            className="fixed bottom-24 left-1/2 z-50 flex w-[calc(100%-2rem)] max-w-md -translate-x-1/2 items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 shadow-lg"
+          >
+            <span className="flex-1">{error}</span>
             <button
               onClick={() => setError(null)}
-              className="ml-3 font-bold hover:text-red-900"
+              aria-label={t("errors.dismiss")}
+              className="font-bold hover:text-red-900"
             >
               ×
             </button>

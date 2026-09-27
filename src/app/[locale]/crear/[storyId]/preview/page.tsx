@@ -1,10 +1,19 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
-import { PRICING, ADDONS, type BookFormat, type AddonId } from "@/lib/pricing";
+import {
+  PRICING,
+  ADDONS,
+  ENABLED_ADDON_IDS,
+  SHOW_ADDON_POPULAR_BADGE,
+  DEFAULT_BOOK_FORMAT,
+  formatPrice,
+  type BookFormat,
+  type AddonId,
+} from "@/lib/pricing";
 import { useAuth } from "@/hooks/useAuth";
 import CreationHeader from "@/components/crear/CreationHeader";
 import BookRevealOverlay from "@/components/crear/BookRevealOverlay";
@@ -69,7 +78,7 @@ interface StoryData {
  *   ...
  *   [7, 8]     scene 3 spread_left (LEFT) + spread_right (RIGHT) ✓
  */
-function buildPages(story: StoryData): BookPage[] {
+function buildPages(story: StoryData, synopsisFallback: string): BookPage[] {
   const generated = story.generated_text;
   const illustrations = story.story_illustrations.sort(
     (a, b) => a.scene_number - b.scene_number
@@ -184,7 +193,7 @@ function buildPages(story: StoryData): BookPage[] {
     type: "back",
     title: story.title ?? generated.bookTitle,
     characterName: story.characters.name,
-    synopsis: generated.synopsis ?? `${story.characters.name} está a punto de vivir la aventura más extraordinaria de su vida.`,
+    synopsis: generated.synopsis ?? synopsisFallback,
     coverImageUrl: backCoverImageUrl,
     templateId: story.template_id,
     storyId: story.id,
@@ -192,6 +201,9 @@ function buildPages(story: StoryData): BookPage[] {
 
   return pages; // Always 32 pages
 }
+
+// Paywall order: hero product first (it is also the default selection).
+const FORMAT_DISPLAY_ORDER: BookFormat[] = ["hardcover", "softcover", "digital_pdf"];
 
 // In preview mode: show first N scenes fully (illustration + text) then 1 locked teaser page
 const PREVIEW_CLEAR_SCENES = 3;  // 3 clear scenes × 2 pages = 6 scene pages
@@ -201,6 +213,8 @@ const PREVIEW_CLEAR_SCENES = 3;  // 3 clear scenes × 2 pages = 6 scene pages
 export default function PreviewPage() {
   const t = useTranslations("crear.preview");
   const tPricing = useTranslations("pricing");
+  const locale = useLocale();
+  const price = useCallback((cents: number) => formatPrice(cents, locale), [locale]);
   const { storyId } = useParams<{ storyId: string }>();
   const router = useRouter();
   const { user } = useAuth();
@@ -225,7 +239,7 @@ export default function PreviewPage() {
   }, [storyId]);
 
   // Checkout state
-  const [format, setFormat] = useState<BookFormat>("digital_pdf");
+  const [format, setFormat] = useState<BookFormat>(DEFAULT_BOOK_FORMAT);
   const [addons, setAddons] = useState<Set<AddonId>>(new Set());
   const [checkingOut, setCheckingOut] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
@@ -248,8 +262,7 @@ export default function PreviewPage() {
       try {
         const res = await fetch(`/api/stories/${storyId}`);
         if (!res.ok) {
-          const data = await res.json();
-          throw new Error(data.error || "Story not found");
+          throw new Error(`story_fetch_${res.status}`);
         }
         const data = await res.json();
         // Redirect to generation page if not yet generated
@@ -259,15 +272,18 @@ export default function PreviewPage() {
         }
         setStory(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Error loading story");
+        console.warn("[preview] Loading story failed:", err);
+        setError(t("loadError"));
       } finally {
         setLoading(false);
       }
     }
     fetchStory();
-  }, [storyId, router]);
+  }, [storyId, router, t]);
 
-  const pages = story ? buildPages(story) : [];
+  const pages = story
+    ? buildPages(story, t("synopsisFallback", { name: story.characters.name }))
+    : [];
 
   // In preview mode, limit visible pages:
   // 3 header (cover + endpaper + title_dedication) + clear scenes × 2 pages + 1 locked teaser
@@ -319,6 +335,53 @@ export default function PreviewPage() {
     PRICING[format].price +
     Array.from(addons).reduce((sum, id) => sum + ADDONS[id].price, 0);
 
+  // Inline title editing (replaces the old 30 s title picker on /generar:
+  // the first suggested title is saved by the generate route, editable here).
+  const [editingTitle, setEditingTitle] = useState(false);
+  const [titleDraft, setTitleDraft] = useState("");
+  const [savingTitle, setSavingTitle] = useState(false);
+  const [titleError, setTitleError] = useState(false);
+  const saveTitle = useCallback(async () => {
+    const next = titleDraft.trim();
+    if (!next) return;
+    setSavingTitle(true);
+    setTitleError(false);
+    try {
+      const res = await fetch(`/api/stories/${storyId}/title`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: next }),
+      });
+      if (!res.ok) throw new Error(`title_${res.status}`);
+      setStory((prev) => (prev ? { ...prev, title: next } : prev));
+      setEditingTitle(false);
+    } catch (err) {
+      console.warn("[preview] Saving title failed:", err);
+      setTitleError(true);
+    } finally {
+      setSavingTitle(false);
+    }
+  }, [titleDraft, storyId]);
+
+  const childName = story?.characters.name ?? "";
+  const ctaLabel = selectedFormatRequiresShipping
+    ? t("ctaPhysical", { name: childName, price: price(subtotal) })
+    : t("ctaDigital", { name: childName, price: price(subtotal) });
+
+  // Mobile sticky buy bar: shown while the main CTA is off-screen.
+  const mainCtaRef = useRef<HTMLButtonElement | null>(null);
+  const [mainCtaVisible, setMainCtaVisible] = useState(false);
+  useEffect(() => {
+    const el = mainCtaRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(
+      ([entry]) => setMainCtaVisible(entry.isIntersecting),
+      { rootMargin: "0px 0px -40px 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [story?.status]);
+
   const handleCheckout = useCallback(async () => {
     setCheckingOut(true);
     setCheckoutError(null);
@@ -335,15 +398,18 @@ export default function PreviewPage() {
       });
 
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Checkout failed");
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data?.error === "mock_mode_checkout_disabled" ? "mock" : "checkout");
       }
 
       const { url } = await res.json();
       window.location.href = url;
     } catch (err) {
+      console.warn("[preview] Checkout failed:", err);
       setCheckoutError(
-        err instanceof Error ? err.message : t("checkoutError")
+        err instanceof Error && err.message === "mock"
+          ? "DEV: checkout is disabled in MOCK_MODE (shared prod DB). Use the Mock Mode unlock button."
+          : t("checkoutError"),
       );
       setCheckingOut(false);
     }
@@ -404,8 +470,13 @@ export default function PreviewPage() {
     );
   }
 
+  const currentTitle = story.title ?? story.generated_text.bookTitle;
+  const titleSuggestions = Array.from(
+    new Set([...(story.generated_text.titleOptions ?? []), currentTitle].filter(Boolean)),
+  ).slice(0, 4);
+
   return (
-    <div className="min-h-screen bg-create-bg">
+    <div className={`min-h-screen bg-create-bg ${isPreviewMode ? "pb-28 sm:pb-0" : ""}`}>
       <CreationHeader rightAction="close" />
 
       {showReveal && (
@@ -417,21 +488,100 @@ export default function PreviewPage() {
       )}
 
       {/* Book title + page counter */}
-      <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-2">
-        <h2 className="font-display text-sm font-bold text-secondary truncate max-w-50 sm:max-w-none">
-          {story.title ?? story.generated_text.bookTitle}
-        </h2>
+      <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-2">
+        <div className="flex min-w-0 items-center gap-1">
+          <h2 className="font-display text-sm font-bold text-secondary truncate">
+            {currentTitle}
+          </h2>
+          {isPreviewMode && (
+            <button
+              type="button"
+              onClick={() => {
+                setTitleDraft(currentTitle);
+                setTitleError(false);
+                setEditingTitle(true);
+              }}
+              className="flex h-8 shrink-0 items-center gap-1 rounded-full px-2 text-xs font-semibold text-create-primary transition-colors hover:bg-create-primary/10"
+              aria-label={t("editTitle")}
+            >
+              <span className="material-symbols-outlined text-base">edit</span>
+              <span className="hidden sm:inline">{t("editTitle")}</span>
+            </button>
+          )}
+        </div>
         <div className="flex items-center gap-2">
           {isPreviewMode && (
             <span className="rounded-full bg-create-primary/10 px-2.5 py-0.5 text-[10px] font-bold text-create-primary uppercase tracking-wide">
               {t("previewBadge")}
             </span>
           )}
-          <span className="text-xs text-text-muted tabular-nums">
+          <span className="whitespace-nowrap text-xs text-text-muted tabular-nums">
             {currentPage + 1} / {totalPages}
           </span>
         </div>
       </div>
+
+      {editingTitle && (
+        <div className="mx-auto max-w-3xl px-4 pb-2">
+          <form
+            className="rounded-xl border border-border-light bg-white p-4 shadow-sm"
+            onSubmit={(e) => {
+              e.preventDefault();
+              void saveTitle();
+            }}
+          >
+            <label htmlFor="book-title" className="text-xs font-bold uppercase tracking-wide text-text-main">
+              {t("editTitleLabel")}
+            </label>
+            <input
+              id="book-title"
+              type="text"
+              value={titleDraft}
+              onChange={(e) => setTitleDraft(e.target.value)}
+              maxLength={120}
+              autoFocus
+              className="mt-2 w-full rounded-xl border-2 border-border-light bg-white px-4 py-3 text-base text-text-main focus:border-create-primary focus:outline-none sm:text-sm"
+            />
+            {titleSuggestions.length > 1 && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {titleSuggestions.map((option) => (
+                  <button
+                    key={option}
+                    type="button"
+                    onClick={() => setTitleDraft(option)}
+                    className={`rounded-full border px-3 py-1.5 text-left text-xs font-semibold transition-colors ${
+                      titleDraft === option
+                        ? "border-create-primary bg-create-primary/10 text-create-primary"
+                        : "border-border-light text-text-soft hover:border-border-medium"
+                    }`}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            )}
+            {titleError && (
+              <p className="mt-2 text-xs text-red-600" role="alert">{t("editTitleError")}</p>
+            )}
+            <div className="mt-4 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setEditingTitle(false)}
+                className="rounded-full px-4 py-2 text-sm font-bold text-text-muted hover:text-text-main"
+              >
+                {t("editTitleCancel")}
+              </button>
+              <button
+                type="submit"
+                disabled={savingTitle || !titleDraft.trim()}
+                className="rounded-full bg-create-primary px-5 py-2 text-sm font-bold text-white transition-all hover:bg-create-primary-hover disabled:opacity-60"
+              >
+                {savingTitle ? t("editTitleSaving") : t("editTitleSave")}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
 
       {/* Book viewer */}
       <section className="mx-auto max-w-4xl px-4 py-6 sm:py-8">
@@ -485,7 +635,7 @@ export default function PreviewPage() {
 
             {/* Format selection — 3 options */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {(Object.entries(PRICING) as [BookFormat, typeof PRICING[BookFormat]][]).map(
+              {FORMAT_DISPLAY_ORDER.map((key) => [key, PRICING[key]] as const).map(
                 ([key, val]) => {
                   const isSelected = format === key;
                   const isDigital = key === "digital_pdf";
@@ -499,9 +649,14 @@ export default function PreviewPage() {
                           : "border-border-light hover:border-border-medium"
                       }`}
                     >
-                      {/* Best value badge for digital */}
-                      {isDigital && (
+                      {/* Hero product badge (hardcover) / instant badge (digital) */}
+                      {key === DEFAULT_BOOK_FORMAT && (
                         <span className="absolute -top-2.5 left-4 rounded-full bg-create-primary px-2.5 py-0.5 text-[10px] font-bold text-white uppercase tracking-wide">
+                          {t("bestForGifting")}
+                        </span>
+                      )}
+                      {isDigital && (
+                        <span className="absolute -top-2.5 left-4 rounded-full bg-create-neutral px-2.5 py-0.5 text-[10px] font-bold text-create-text-sub uppercase tracking-wide">
                           {t("instantDelivery")}
                         </span>
                       )}
@@ -525,11 +680,16 @@ export default function PreviewPage() {
                       </div>
 
                       <p className="text-xl font-bold text-secondary tabular-nums">
-                        {(val.price / 100).toFixed(2)} €
+                        {price(val.price)}
                         <span className="ml-1.5 text-xs font-normal text-text-muted">
                           {tPricing("vatIncluded")}
                         </span>
                       </p>
+                      {val.requiresShipping && (
+                        <p className="mt-0.5 text-xs font-semibold text-success">
+                          {t("shippingIncluded")}
+                        </p>
+                      )}
 
                       <p className="mt-1 text-xs text-text-muted">
                         {tPricing(`${key}.description`)}
@@ -541,13 +701,13 @@ export default function PreviewPage() {
             </div>
 
             {/* Add-ons — only for physical formats */}
-            {selectedFormatRequiresShipping && (
+            {selectedFormatRequiresShipping && ENABLED_ADDON_IDS.length > 0 && (
               <div className="mt-8">
                 <h3 className="font-display text-sm font-bold text-text-main uppercase tracking-wider">
                   {t("optionalExtras")}
                 </h3>
                 <div className="mt-4 space-y-4">
-                  {(Object.entries(ADDONS) as [AddonId, typeof ADDONS[AddonId]][]).map(
+                  {ENABLED_ADDON_IDS.map((key) => [key, ADDONS[key]] as const).map(
                     ([key, val]) => {
                       const selected = addons.has(key);
                       return (
@@ -560,7 +720,7 @@ export default function PreviewPage() {
                               : "border-border-light hover:border-border-medium hover:shadow-sm"
                           }`}
                         >
-                          {val.badge && (
+                          {SHOW_ADDON_POPULAR_BADGE && val.badge && (
                             <span className="absolute -top-2.5 left-4 rounded-full bg-create-gold px-2.5 py-0.5 text-[10px] font-bold text-white uppercase tracking-wide">
                               {tPricing(`addons.${key}.badge`)}
                             </span>
@@ -589,8 +749,13 @@ export default function PreviewPage() {
                               </div>
                             </div>
                             <div className="flex items-center gap-2 shrink-0">
-                              <span className="text-base font-bold text-secondary tabular-nums">
-                                +{(val.price / 100).toFixed(2)} €
+                              <span className="flex flex-col items-end leading-tight">
+                                <span className="text-base font-bold text-secondary tabular-nums">
+                                  +{price(val.price)}
+                                </span>
+                                <span className="text-[10px] text-text-muted">
+                                  {tPricing("vatIncluded")}
+                                </span>
                               </span>
                               <div
                                 className={`flex h-5 w-5 items-center justify-center rounded border-2 transition-colors ${
@@ -662,7 +827,7 @@ export default function PreviewPage() {
                   {tPricing(`${format}.label`)}
                 </span>
                 <span className="text-sm tabular-nums">
-                  {(PRICING[format].price / 100).toFixed(2)} €
+                  {price(PRICING[format].price)}
                 </span>
               </div>
               {Array.from(addons).map((id) => (
@@ -671,7 +836,7 @@ export default function PreviewPage() {
                     {tPricing(`addons.${id}.label`)}
                   </span>
                   <span className="text-sm tabular-nums">
-                    {(ADDONS[id].price / 100).toFixed(2)} €
+                    {price(ADDONS[id].price)}
                   </span>
                 </div>
               ))}
@@ -680,14 +845,17 @@ export default function PreviewPage() {
                   {t("total")}
                 </span>
                 <span className="font-display text-xl font-bold text-secondary tabular-nums">
-                  {(subtotal / 100).toFixed(2)} €
+                  {price(subtotal)}
                 </span>
               </div>
               <p className="mt-1 text-right text-xs text-text-muted">
-                {tPricing("vatIncluded")}
+                {selectedFormatRequiresShipping
+                  ? `${tPricing("vatIncluded")} · ${t("shippingIncluded")}`
+                  : tPricing("vatIncluded")}
               </p>
 
               <button
+                ref={mainCtaRef}
                 onClick={handleCheckout}
                 disabled={checkingOut}
                 className="mt-6 w-full rounded-xl bg-create-primary px-6 py-4 text-base font-bold text-white transition-all hover:bg-create-primary-hover active:scale-[0.98] disabled:opacity-60 shadow-lg shadow-create-primary/20"
@@ -704,7 +872,7 @@ export default function PreviewPage() {
                     <span className="material-symbols-outlined text-lg">
                       shopping_bag
                     </span>
-                    {t("buyNow", { price: (subtotal / 100).toFixed(2) })}
+                    {ctaLabel}
                   </span>
                 )}
               </button>
@@ -749,6 +917,43 @@ export default function PreviewPage() {
             </div>
           </div>
         </section>
+      )}
+
+      {/* Mobile sticky buy bar — keeps the CTA reachable without scrolling */}
+      {isPreviewMode && !mainCtaVisible && (
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border-light bg-white/95 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-4px_20px_rgba(0,0,0,0.08)] backdrop-blur sm:hidden">
+          <div className="flex items-center gap-3">
+            <div className="min-w-0 flex-1 leading-tight">
+              <p className="truncate text-xs font-semibold text-text-muted">
+                {tPricing(`${format}.label`)}
+              </p>
+              <p className="font-display text-lg font-bold text-secondary tabular-nums">
+                {price(subtotal)}
+              </p>
+              <p className="truncate text-[11px] text-text-muted">
+                {selectedFormatRequiresShipping
+                  ? `${tPricing("vatIncluded")} · ${t("shippingIncluded")}`
+                  : tPricing("vatIncluded")}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleCheckout}
+              disabled={checkingOut}
+              className="flex shrink-0 items-center gap-1.5 rounded-xl bg-create-primary px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-create-primary/20 transition-all active:scale-[0.98] disabled:opacity-60"
+            >
+              {checkingOut ? (
+                <span className="material-symbols-outlined animate-spin text-lg">progress_activity</span>
+              ) : (
+                <span className="material-symbols-outlined text-lg">shopping_bag</span>
+              )}
+              {selectedFormatRequiresShipping ? t("stickyCtaPhysical") : t("stickyCtaDigital")}
+            </button>
+          </div>
+          {checkoutError && (
+            <p className="mt-2 text-center text-xs text-red-600" role="alert">{checkoutError}</p>
+          )}
+        </div>
       )}
 
       {/* Checkout for fully ready stories (already paid, viewing complete book) */}

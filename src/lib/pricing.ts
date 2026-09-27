@@ -77,6 +77,43 @@ export const ADDONS = {
 export type BookFormat = keyof typeof PRICING;
 export type AddonId = keyof typeof ADDONS;
 
+// Add-on feature flags. The Adventure Pack (letter + stickers + bookmark) has no
+// fulfilment pipeline yet (Gelato only prints the book), so selling it would be
+// a consumer-law problem. Flip to true only once it is actually shipped.
+export const ADDON_ENABLED: Record<AddonId, boolean> = {
+  adventure_pack: false,
+  extra_copy: true,
+};
+
+/** Show the "Más popular" badge on add-ons. Off until backed by real sales data. */
+export const SHOW_ADDON_POPULAR_BADGE = false;
+
+export const ENABLED_ADDON_IDS = (Object.keys(ADDONS) as AddonId[]).filter(
+  (id) => ADDON_ENABLED[id],
+);
+
+export function isAddonEnabled(id: string): id is AddonId {
+  return id in ADDONS && ADDON_ENABLED[id as AddonId];
+}
+
+/** Default format pre-selected on the paywall (hero product). */
+export const DEFAULT_BOOK_FORMAT: BookFormat = "hardcover";
+
+/**
+ * Format a price in cents as a localized currency string, e.g. 4990 → "49,90 €"
+ * (es/ca/fr) or "€49.90" (en). Prices are VAT-inclusive (B2C).
+ */
+export function formatPrice(cents: number, locale: string): string {
+  const intlLocale =
+    locale === "ca" ? "ca-ES" : locale === "fr" ? "fr-FR" : locale === "en" ? "en-IE" : "es-ES";
+  return new Intl.NumberFormat(intlLocale, {
+    style: "currency",
+    currency: "EUR",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(cents / 100);
+}
+
 // Number of scenes to illustrate for the free preview.
 // Kept at 3 (was 4) to shorten preview latency + cost while still showing enough
 // character consistency to convert. The remaining scenes generate after payment.

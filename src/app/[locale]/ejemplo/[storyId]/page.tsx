@@ -2,9 +2,9 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { PRICING } from "@/lib/pricing";
+import { PRICING, formatPrice } from "@/lib/pricing";
 import BookViewerSwitch from "@/components/book-viewer/BookViewerSwitch";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import type { BookPage } from "@/components/book-viewer/types";
@@ -133,6 +133,7 @@ function buildPages(story: ShowcaseStoryData): BookPage[] {
 export default function ShowcasePage() {
   const t = useTranslations("showcase");
   const tPricing = useTranslations("pricing");
+  const locale = useLocale();
   const { storyId } = useParams<{ storyId: string }>();
 
   const [story, setStory] = useState<ShowcaseStoryData | null>(null);
@@ -206,9 +207,8 @@ export default function ShowcasePage() {
   }
 
   const bookTitle = story.title ?? story.generated_text.bookTitle;
-  const digitalPrice = (PRICING.digital_pdf.price / 100).toFixed(2);
-  const softcoverPrice = (PRICING.softcover.price / 100).toFixed(2);
-  const hardcoverPrice = (PRICING.hardcover.price / 100).toFixed(2);
+  const softcoverPrice = formatPrice(PRICING.softcover.price, locale);
+  const hardcoverPrice = formatPrice(PRICING.hardcover.price, locale);
 
   return (
     <div className="min-h-screen bg-create-bg">
@@ -292,9 +292,9 @@ export default function ShowcasePage() {
 
           <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
             <div className="text-sm text-text-muted">
-              {t("softcover")} <span className="font-bold text-secondary">{softcoverPrice}€</span>
+              {t("softcover")} <span className="font-bold text-secondary">{softcoverPrice}</span>
               <span className="mx-2">·</span>
-              {t("hardcover")} <span className="font-bold text-primary">{hardcoverPrice}€</span>
+              {t("hardcover")} <span className="font-bold text-primary">{hardcoverPrice}</span>
               <span className="mx-2">·</span>
               {tPricing("vatIncluded")}
             </div>

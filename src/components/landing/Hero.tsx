@@ -1,24 +1,13 @@
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { PRICING } from "@/lib/pricing";
-
-const LOCALE_TAG: Record<string, string> = {
-  es: "es-ES",
-  ca: "ca-ES",
-  en: "en-IE",
-  fr: "fr-FR",
-};
+import { PRICING, formatPrice } from "@/lib/pricing";
 
 export default function Hero() {
   const t = useTranslations("hero");
   const tPricing = useTranslations("pricing");
   const locale = useLocale();
-  const priceFrom = new Intl.NumberFormat(LOCALE_TAG[locale] ?? "es-ES", {
-    style: "currency",
-    currency: "EUR",
-    minimumFractionDigits: 2,
-  }).format(PRICING.softcover.price / 100);
+  const priceFrom = formatPrice(PRICING.softcover.price, locale);
 
   return (
     <header className="relative overflow-hidden px-4 pt-32 pb-20">
@@ -95,7 +84,7 @@ export default function Hero() {
 
           <div className="mt-2 flex items-center gap-4 border-t border-border-light pt-6 text-sm font-medium text-text-soft">
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-xl text-success">forest</span>
+              <span className="material-symbols-outlined text-xl text-success">menu_book</span>
               <span>{t("fscPaper")}</span>
             </div>
             <span className="text-text-muted">|</span>

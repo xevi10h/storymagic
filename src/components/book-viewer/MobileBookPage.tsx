@@ -21,6 +21,9 @@ import type { BookPage } from "./types";
 // CSS line-clamp is the absolute last-resort safety net.
 
 const MIN_FONT_SIZE_PX = 7;
+// Readability floor: below this we stop shrinking and let the text area
+// scroll instead (was shrinking to ~7-9 px on phones, unreadable).
+const READABLE_MIN_PX = 12;
 
 /** Hook: returns the book page size matching MobileBookViewer's breakpoint. */
 function usePageSize(): number {
@@ -97,7 +100,24 @@ interface FittedTextProps {
 function FittedText({ children, className, style, basePx, leading, availableRatio, widthRatio = 0.72 }: FittedTextProps) {
   const pageSizePx = usePageSize();
   const text = typeof children === "string" ? children : String(children ?? "");
-  const fittedPx = calcFittedFontSize(text, basePx, leading, pageSizePx, availableRatio, widthRatio);
+  const rawFittedPx = calcFittedFontSize(text, basePx, leading, pageSizePx, availableRatio, widthRatio);
+  const needsScroll = rawFittedPx < READABLE_MIN_PX;
+  const fittedPx = Math.max(rawFittedPx, READABLE_MIN_PX);
+
+  if (needsScroll) {
+    // Too long to fit at a readable size: keep it readable and scrollable
+    // (page-flip runs with mobileScrollSupport, so vertical pans scroll).
+    return (
+      <div
+        className="flex-1 min-h-0 self-stretch overflow-y-auto overscroll-contain no-scrollbar"
+        style={{ touchAction: "pan-y" }}
+      >
+        <p className={className} style={{ ...style, fontSize: `${fittedPx}px` }}>
+          {children}
+        </p>
+      </div>
+    );
+  }
 
   // CSS line-clamp as safety net
   const availH = pageSizePx * availableRatio;
@@ -265,23 +285,23 @@ function getTextConfig(age: number): TextConfig {
   }
   if (age <= 9) {
     return {
-      body: "text-[11px] leading-[1.75]",
-      bodyTextOnly: "text-[12px] leading-[1.8]",
+      body: "text-[12px] leading-[1.7]",
+      bodyTextOnly: "text-[13px] leading-[1.75]",
       title: "text-sm",
       titleOverlay: "text-sm",
       clampSpread: "line-clamp-5",
-      bodySizePx: 11, bodyLeading: 1.75,
-      bodyTextOnlySizePx: 12, bodyTextOnlyLeading: 1.8,
+      bodySizePx: 12, bodyLeading: 1.7,
+      bodyTextOnlySizePx: 13, bodyTextOnlyLeading: 1.75,
     };
   }
   return {
-    body: "text-[10px] leading-[1.6]",
-    bodyTextOnly: "text-[10px] leading-[1.65]",
+    body: "text-[12px] leading-[1.6]",
+    bodyTextOnly: "text-[12px] leading-[1.65]",
     title: "text-[13px]",
     titleOverlay: "text-sm",
     clampSpread: "line-clamp-6",
-    bodySizePx: 10, bodyLeading: 1.6,
-    bodyTextOnlySizePx: 10, bodyTextOnlyLeading: 1.65,
+    bodySizePx: 12, bodyLeading: 1.6,
+    bodyTextOnlySizePx: 12, bodyTextOnlyLeading: 1.65,
   };
 }
 
@@ -468,8 +488,12 @@ function SceneSpreadRight({ page, pageNumber }: SceneProps) {
           background: "linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.7) 30%, rgba(0,0,0,0.45) 55%, rgba(0,0,0,0.15) 75%, transparent 100%)",
         }}
       />
-      <div className="absolute bottom-0 left-0 right-0 px-5 pb-5">
-        <p className={`${tc.body} text-white drop-shadow-sm ${tc.clampSpread}`}>
+      <div
+        className="absolute bottom-0 left-0 right-0 px-5 pb-5 max-h-[70%] overflow-y-auto overscroll-contain no-scrollbar"
+        style={{ touchAction: "pan-y" }}
+      >
+        {/* Scrolls instead of clamping, so long scenes stay readable in full */}
+        <p className={`${tc.body} text-white drop-shadow-sm`}>
           {page.scene.text}
         </p>
       </div>

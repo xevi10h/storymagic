@@ -27,7 +27,7 @@ export default function UniqueEdition() {
             <div className="relative mb-8">
               <div className="flex h-24 w-24 items-center justify-center rounded-full bg-accent shadow-lg shadow-accent/20">
                 <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-dashed border-white/30">
-                  <span className="font-display text-2xl font-bold text-white tracking-tight">1/1</span>
+                  <span className="material-symbols-outlined text-3xl text-white" aria-hidden="true">auto_stories</span>
                 </div>
               </div>
               {/* Drip effect */}
@@ -78,7 +78,7 @@ export default function UniqueEdition() {
 
               <div className="flex flex-col items-center gap-3">
                 <div className="flex h-12 w-12 items-center justify-center rounded-full border border-border-light bg-badge-bg">
-                  <span className="material-symbols-outlined text-xl text-secondary">fingerprint</span>
+                  <span className="material-symbols-outlined text-xl text-secondary">edit_note</span>
                 </div>
                 <h3 className="font-display text-lg font-bold text-secondary">{t("pillar3Title")}</h3>
                 <p className="text-sm leading-relaxed text-text-soft">{t("pillar3Description")}</p>

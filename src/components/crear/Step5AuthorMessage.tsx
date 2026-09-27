@@ -97,7 +97,7 @@ export default function Step5AuthorMessage({
                     placeholder={t(isSolo ? "dedicationPlaceholderSolo" : "dedicationPlaceholder", { name: displayName })}
                     rows={3}
                     maxLength={500}
-                    className="w-full border-none bg-transparent p-0 text-center text-sm text-gray-700 focus:ring-0 resize-none leading-snug placeholder:text-gray-400 placeholder:italic sm:text-lg sm:leading-relaxed"
+                    className="w-full border-none bg-transparent p-0 text-center text-base text-gray-700 focus:ring-0 resize-none leading-snug placeholder:text-gray-400 placeholder:italic sm:text-lg sm:leading-relaxed"
                   />
                   <div className="mt-2 sm:mt-3">
                     <input
@@ -106,12 +106,12 @@ export default function Step5AuthorMessage({
                       onChange={(e) => onSetSenderName(e.target.value)}
                       placeholder={t("senderPlaceholder")}
                       maxLength={100}
-                      className="w-full border-none bg-transparent p-0 text-center text-xs text-gray-500 focus:ring-0 placeholder:text-gray-300 placeholder:italic sm:text-sm"
+                      className="w-full border-none bg-transparent p-0 text-center text-base text-gray-500 focus:ring-0 placeholder:text-gray-300 placeholder:italic sm:text-sm"
                     />
                   </div>
                   <div className="mt-2 pt-2 border-t border-gray-200 flex justify-between items-center text-[10px] text-gray-400 font-medium sm:mt-4 sm:pt-4 sm:text-xs">
                     <span>Meapica</span>
-                    <span>{new Date().getFullYear()} Edition</span>
+                    <span>{t("editionYear", { year: new Date().getFullYear() })}</span>
                   </div>
                 </div>
 
@@ -221,10 +221,15 @@ export default function Step5AuthorMessage({
                   <textarea
                     value={endingNote}
                     onChange={(e) => onSetEndingNote(e.target.value)}
+                    onFocus={(e) => {
+                      // iOS: keep the field above the keyboard + sticky footer
+                      const el = e.currentTarget;
+                      setTimeout(() => el.scrollIntoView({ block: "center", behavior: "smooth" }), 300);
+                    }}
                     placeholder={t("endingNotePlaceholder", { name: displayName })}
                     rows={2}
                     maxLength={300}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-create-neutral bg-white focus:border-create-primary focus:ring-0 transition-all outline-none placeholder:text-gray-300 text-sm font-medium text-create-text resize-none"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-create-neutral bg-white focus:border-create-primary focus:ring-0 transition-all outline-none placeholder:text-gray-300 text-base sm:text-sm font-medium text-create-text resize-none scroll-mb-32"
                   />
                   <p className="text-xs text-create-text-sub">{t("endingNoteHint")}</p>
                 </div>

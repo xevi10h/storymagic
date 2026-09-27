@@ -5,6 +5,7 @@ import { Link } from "@/i18n/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { createClient } from "@/lib/supabase/client";
 import { STORY_TEMPLATES, getRecommendedTemplates } from "@/lib/create-store";
+import { formatPrice } from "@/lib/pricing";
 import { useTranslations, useLocale } from "next-intl";
 import BrandLogo from "@/components/BrandLogo";
 import BrandIcon from "@/components/BrandIcon";
@@ -504,6 +505,8 @@ function OrdersTab({
   t: ReturnType<typeof useTranslations<"dashboard">>;
   formatDate: (iso: string) => string;
 }) {
+  const locale = useLocale();
+  const tPricing = useTranslations("pricing");
   if (orders.length === 0) {
     return (
       <EmptyState
@@ -588,8 +591,11 @@ function OrdersTab({
                   {formatLabel} · {formatDate(order.created_at)}
                 </p>
               </div>
-              <span className="shrink-0 text-sm font-bold text-text-main tabular-nums">
-                {order.total.toFixed(2)} €
+              <span className="flex shrink-0 flex-col items-end">
+                <span className="text-sm font-bold text-text-main tabular-nums">
+                  {formatPrice(Math.round(order.total * 100), locale)}
+                </span>
+                <span className="text-[10px] text-text-muted">{tPricing("vatIncluded")}</span>
               </span>
             </div>
 

@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { PRICING } from "@/lib/pricing";
+import { PRICING, formatPrice } from "@/lib/pricing";
 import { STORY_TEMPLATES } from "@/lib/create-store";
 
 interface ShowcaseBook {
@@ -18,9 +18,6 @@ interface ShowcaseBook {
 }
 
 type AgeFilter = "all" | "2-4" | "5-7" | "8-12";
-
-const softcoverPrice = (PRICING.softcover.price / 100).toFixed(2);
-const hardcoverPrice = (PRICING.hardcover.price / 100).toFixed(2);
 
 function getAgeFilter(age: number): AgeFilter {
   if (age <= 4) return "2-4";
@@ -47,6 +44,8 @@ export default function BookCollection() {
   const [activeFilter, setActiveFilter] = useState<AgeFilter>("all");
   const scrollRef = useRef<HTMLDivElement>(null);
   const locale = useLocale();
+  const softcoverPrice = formatPrice(PRICING.softcover.price, locale);
+  const hardcoverPrice = formatPrice(PRICING.hardcover.price, locale);
 
   useEffect(() => {
     async function fetchShowcase() {
@@ -205,12 +204,12 @@ export default function BookCollection() {
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-text-muted">
                       <span>{t("softcover")}</span>
                       <span className="font-bold text-secondary">
-                        {softcoverPrice}&euro;
+                        {softcoverPrice}
                       </span>
                       <span className="text-border-light">|</span>
                       <span>{t("hardcoverShort")}</span>
                       <span className="font-bold text-primary">
-                        {hardcoverPrice}&euro;
+                        {hardcoverPrice}
                       </span>
                       <span className="text-[11px]">{tPricing("vatIncluded")}</span>
                     </div>
@@ -263,12 +262,12 @@ export default function BookCollection() {
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-text-muted">
                       <span>{t("softcover")}</span>
                       <span className="font-bold text-secondary">
-                        {softcoverPrice}&euro;
+                        {softcoverPrice}
                       </span>
                       <span className="text-border-light">|</span>
                       <span>{t("hardcoverShort")}</span>
                       <span className="font-bold text-primary">
-                        {hardcoverPrice}&euro;
+                        {hardcoverPrice}
                       </span>
                       <span className="text-[11px]">{tPricing("vatIncluded")}</span>
                     </div>

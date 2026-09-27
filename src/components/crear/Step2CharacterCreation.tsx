@@ -120,7 +120,7 @@ export default function Step2CharacterCreation({
       : t("previewDefault");
 
   return (
-    <div className="flex flex-col h-screen bg-create-bg overflow-hidden">
+    <div className="flex flex-col h-[100dvh] bg-create-bg overflow-hidden">
       <CreationHeader
         currentStep={catalogMode ? undefined : 1}
         totalSteps={3}
@@ -201,7 +201,7 @@ export default function Step2CharacterCreation({
                       onChange={(e) => onUpdateCharacter({ name: e.target.value })}
                       placeholder={t("namePlaceholder")}
                       maxLength={50}
-                      className="w-full h-11 px-4 rounded-xl border-2 border-create-neutral/40 bg-create-bg/50 group-hover:shadow-sm focus:border-create-primary focus:bg-white focus:ring-0 transition-all outline-none placeholder:text-gray-300 text-sm font-bold text-create-text"
+                      className="w-full h-11 px-4 rounded-xl border-2 border-create-neutral/40 bg-create-bg/50 group-hover:shadow-sm focus:border-create-primary focus:bg-white focus:ring-0 transition-all outline-none placeholder:text-gray-300 text-base sm:text-sm font-bold text-create-text"
                     />
                     <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-create-primary transition-colors text-lg">
                       edit
@@ -219,7 +219,7 @@ export default function Step2CharacterCreation({
                       onChange={(e) => onUpdateCharacter({ city: e.target.value })}
                       placeholder={t("cityPlaceholder")}
                       maxLength={100}
-                      className="w-full h-11 px-4 rounded-xl border-2 border-create-neutral/40 bg-create-bg/50 group-hover:shadow-sm focus:border-create-primary focus:bg-white focus:ring-0 transition-all outline-none placeholder:text-gray-300 text-sm font-bold text-create-text"
+                      className="w-full h-11 px-4 rounded-xl border-2 border-create-neutral/40 bg-create-bg/50 group-hover:shadow-sm focus:border-create-primary focus:bg-white focus:ring-0 transition-all outline-none placeholder:text-gray-300 text-base sm:text-sm font-bold text-create-text"
                     />
                     <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-create-primary transition-colors text-lg">
                       location_on
@@ -293,7 +293,7 @@ export default function Step2CharacterCreation({
                       onChange={(e) => onUpdateCharacter({ favoriteCompanion: e.target.value })}
                       placeholder={t("companionPlaceholder")}
                       maxLength={100}
-                      className="w-full h-11 pl-4 pr-10 rounded-xl border-2 border-create-neutral/40 bg-create-bg/50 group-hover:shadow-sm focus:border-create-primary focus:bg-white focus:ring-0 transition-all outline-none placeholder:text-gray-300 text-sm font-medium text-create-text"
+                      className="w-full h-11 pl-4 pr-10 rounded-xl border-2 border-create-neutral/40 bg-create-bg/50 group-hover:shadow-sm focus:border-create-primary focus:bg-white focus:ring-0 transition-all outline-none placeholder:text-gray-300 text-base sm:text-sm font-medium text-create-text"
                     />
                     <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-create-primary transition-colors text-lg">
                       favorite
@@ -312,7 +312,7 @@ export default function Step2CharacterCreation({
                       onChange={(e) => onUpdateCharacter({ futureDream: e.target.value })}
                       placeholder={t("futureDreamPlaceholder")}
                       maxLength={150}
-                      className="w-full h-11 pl-4 pr-10 rounded-xl border-2 border-create-neutral/40 bg-create-bg/50 group-hover:shadow-sm focus:border-create-primary focus:bg-white focus:ring-0 transition-all outline-none placeholder:text-gray-300 text-sm font-medium text-create-text"
+                      className="w-full h-11 pl-4 pr-10 rounded-xl border-2 border-create-neutral/40 bg-create-bg/50 group-hover:shadow-sm focus:border-create-primary focus:bg-white focus:ring-0 transition-all outline-none placeholder:text-gray-300 text-base sm:text-sm font-medium text-create-text"
                     />
                     <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-create-primary transition-colors text-lg">
                       rocket_launch

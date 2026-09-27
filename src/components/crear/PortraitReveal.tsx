@@ -10,7 +10,12 @@ interface PortraitRevealProps {
   onComplete: (portraitUrl: string, recraftStyleId: string | null) => void;
   onRetry: () => void;
   onBack: () => void;
+  /** Continue without an AI portrait (initial-letter avatar) after a failure. */
+  onSkip: () => void;
 }
+
+/** Failure kinds shown to parents — never raw provider/backend text. */
+type PortraitError = "rate_limited" | "provider_unavailable" | "generic";
 
 type Phase = "generating" | "revealing" | "revealed" | "error";
 
@@ -50,12 +55,13 @@ export default function PortraitReveal({
   onComplete,
   onRetry,
   onBack,
+  onSkip,
 }: PortraitRevealProps) {
   const t = useTranslations("crear.portraitReveal");
   const [phase, setPhase] = useState<Phase>("generating");
   const [portraitUrl, setPortraitUrl] = useState<string | null>(null);
   const [recraftStyleId, setRecraftStyleId] = useState<string | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [errorKind, setErrorKind] = useState<PortraitError | null>(null);
   const [stepIdx, setStepIdx] = useState(0);
   const [generationCount, setGenerationCount] = useState(
     () => generationsByCharacter.get(characterKey(character)) ?? 0,
@@ -74,7 +80,7 @@ export default function PortraitReveal({
 
   const generatePortrait = useCallback(async () => {
     setPhase("generating");
-    setErrorMessage(null);
+    setErrorKind(null);
 
     try {
       // The endpoint requires a session (rate-limited per user) — guests get an
@@ -86,7 +92,7 @@ export default function PortraitReveal({
       } = await supabase.auth.getSession();
       if (!session) {
         const { error: anonError } = await supabase.auth.signInAnonymously();
-        if (anonError) throw new Error(anonError.message);
+        if (anonError) throw anonError;
       }
 
       const res = await fetch("/api/characters/portrait", {
@@ -109,11 +115,17 @@ export default function PortraitReveal({
       });
 
       if (!res.ok) {
-        if (res.status === 429) {
-          throw new Error("RATE_LIMITED");
-        }
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || `Error ${res.status}`);
+        const kind: PortraitError =
+          res.status === 429
+            ? "rate_limited"
+            : res.status === 503 || data?.error === "provider_unavailable"
+              ? "provider_unavailable"
+              : "generic";
+        console.warn("[PortraitReveal] Portrait API failed:", res.status, data?.error);
+        setErrorKind(kind);
+        setPhase("error");
+        return;
       }
 
       const data = await res.json();
@@ -130,8 +142,8 @@ export default function PortraitReveal({
       setPhase("revealing");
       setTimeout(() => setPhase("revealed"), 600);
     } catch (err) {
-      console.error("[PortraitReveal] Generation failed:", err);
-      setErrorMessage(err instanceof Error ? err.message : "Unknown error");
+      console.warn("[PortraitReveal] Generation failed:", err);
+      setErrorKind("generic");
       setPhase("error");
     }
   }, [character]);
@@ -156,7 +168,7 @@ export default function PortraitReveal({
   };
 
   return (
-    <div className="flex flex-col h-screen bg-create-bg overflow-hidden">
+    <div className="flex flex-col h-[100dvh] bg-create-bg overflow-hidden">
       <CreationHeader currentStep={1} totalSteps={3} rightAction="save" />
 
       <main className="flex-1 flex items-center justify-center px-6">
@@ -177,10 +189,10 @@ export default function PortraitReveal({
                 <div className="absolute inset-4 bg-gradient-to-bl from-amber-200/20 via-transparent to-create-primary/15 animate-spin" style={{ animationDuration: "6s", animationDirection: "reverse" }} />
                 <div className="absolute inset-8 rounded-full bg-white/20 backdrop-blur-sm" />
 
-                {/* Pulsing initial during generation */}
-                {(phase === "generating") && (
+                {/* Initial: pulsing while generating, static fallback avatar on error */}
+                {(phase === "generating" || phase === "error") && (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="font-display font-bold text-6xl text-create-primary/40 animate-pulse">
+                    <span className={`font-display font-bold text-6xl text-create-primary/40 ${phase === "generating" ? "animate-pulse" : ""}`}>
                       {character.name ? character.name.charAt(0).toUpperCase() : "?"}
                     </span>
                   </div>
@@ -259,33 +271,43 @@ export default function PortraitReveal({
 
             {phase === "error" && (
               <div className="flex flex-col items-center gap-3">
-                <span className="material-symbols-outlined text-3xl text-red-400">
-                  {errorMessage === "RATE_LIMITED" ? "schedule" : "error_outline"}
-                </span>
                 <h2 className="text-xl font-display font-bold text-create-text">
-                  {t("errorTitle")}
+                  {t("errorTitle", { name: character.name })}
                 </h2>
-                <p className="text-create-text-sub text-sm max-w-xs">
-                  {errorMessage === "RATE_LIMITED"
+                <p className="text-create-text-sub text-sm max-w-sm">
+                  {errorKind === "rate_limited"
                     ? t("rateLimitError")
-                    : t("errorSubtitle")}
+                    : errorKind === "provider_unavailable"
+                      ? t("providerUnavailable")
+                      : t("errorSubtitle")}
                 </p>
-                <div className="flex gap-3 mt-4">
+                <div className="flex flex-col-reverse sm:flex-row items-center gap-3 mt-4 w-full sm:w-auto">
                   <button
                     onClick={onBack}
-                    className="px-6 py-2.5 border-2 border-create-neutral/40 text-create-text-sub font-bold rounded-full hover:bg-white transition-all text-sm"
+                    className="w-full sm:w-auto px-6 py-2.5 text-create-text-sub font-bold rounded-full hover:bg-white transition-all text-sm"
                   >
                     {t("backButton")}
                   </button>
-                  {errorMessage !== "RATE_LIMITED" && (
+                  {errorKind === "generic" && (
                     <button
                       onClick={handleRetry}
-                      className="px-6 py-2.5 bg-create-primary text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all text-sm"
+                      className="w-full sm:w-auto px-6 py-2.5 border-2 border-create-neutral/40 text-create-text-sub font-bold rounded-full hover:bg-white hover:border-create-primary/30 transition-all text-sm flex items-center justify-center gap-1.5"
                     >
+                      <span className="material-symbols-outlined text-base">refresh</span>
                       {t("retryButton")}
                     </button>
                   )}
+                  <button
+                    onClick={onSkip}
+                    className="w-full sm:w-auto px-6 py-2.5 bg-create-primary text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all text-sm flex items-center justify-center gap-1"
+                  >
+                    {t("continueWithoutPortrait")}
+                    <span className="material-symbols-outlined text-base">arrow_forward</span>
+                  </button>
                 </div>
+                <p className="text-create-text-sub/80 text-xs max-w-xs mt-1">
+                  {t("continueWithoutPortraitHint")}
+                </p>
               </div>
             )}
           </div>
