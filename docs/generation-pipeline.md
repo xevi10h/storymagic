@@ -79,3 +79,10 @@ The June 2026 FLUX.2 two-speed setup (fal dev preview, flux-2-flex final, visual
 - Dedication: the parent's text is never sent to the LLM; copied byte-for-byte.
 - Measured: 35–90 s, $0.10–0.22/book; cover + scene-1 shots available after ~11–18 s via streaming `onProgress` (teaser hook for the future <20 s preview).
 - The old architect/expansion/editorial-review calls are gone (the review was a no-op: object vs `Array.isArray`).
+
+## "Créalo tú" watercolor avatar matrix (spike 2026-09-27, matrix NOT rendered yet)
+- Pre-rendered 512 px webp portraits swapped client-side (`src/components/avatar/WatercolorAvatar.tsx`, traits + URLs in `src/lib/avatar/manifest.ts`, availability in `avatar-manifest.json`). Layers: base (gender × skin × hair colour × hairstyle) + freckles (multiply) + glasses (alpha, 2 shapes × 2 colours).
+- Generator `scripts/avatar/generate-matrix.mjs` (`--dry-run`, `--spike`, resumable, budget cap, ledger in `artifacts/avatar-masters/`): one canonical per gender → skin masters (edits) → bases (hair edits). Every edit is registered back to its parent (pupils + gradient refinement, `scripts/avatar/pixels.mjs`) and the parent's inner face is composited back, so eyes sit on the same pixel in every base (measured ≤4 px @1024) and one overlay per gender fits all.
+- No API masks: guidance-only per the OpenAI docs, and in the spike 3/6 masked edits returned the masked area painted black.
+- Full matrix: 475 bases + 12 skin masters + 3 canonicals + 9 overlay edits ≈ $12.6 (flare/medium, incl. re-rolls), ~20 min. Spike outputs: `public/images/avatar/spike/`.
+- Known limits: one age look (~6) for 3–12; eye colour not rendered (canonical brown eyes); t-shirt only (the favourite-colour jacket stays in the Bible text); "dark" vs "very-dark" skin masters need a luminance gate.

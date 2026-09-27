@@ -5,6 +5,8 @@
 // TYPES
 // ============================================================
 
+import type { AvatarGlasses } from "@/lib/avatar/manifest";
+
 export type CreationMode = "solo" | "juntos" | null;
 export type Gender = "boy" | "girl" | "neutral";
 export type EndingChoice = string | null;
@@ -18,6 +20,9 @@ export interface CharacterData {
   skinTone: string;
   gender: Gender;
   hairstyle: string;
+  /** Avatar builder: "none" or "{round|square}-{dark|red}" */
+  glasses: AvatarGlasses;
+  freckles: boolean;
   interests: string[];
   favoriteColor: string;
   favoriteCompanion: string;
@@ -157,6 +162,8 @@ export const INITIAL_STATE: CreateBookState = {
     skinTone: "#fce4d6",
     gender: "boy",
     hairstyle: "short",
+    glasses: "none",
+    freckles: false,
     interests: [],
     favoriteColor: "#E53935",
     favoriteCompanion: "",

@@ -47,7 +47,7 @@ export interface CharacterBible {
 
 // ── Maps (UI hex → words) ───────────────────────────────────────────────────
 
-const SKIN_MAP: Record<string, string> = {
+export const SKIN_MAP: Record<string, string> = {
   "#fce4d6": "very fair, pale pinkish skin",
   "#eebb99": "light warm beige skin",
   "#d4a574": "warm golden olive-tan skin",
@@ -56,7 +56,7 @@ const SKIN_MAP: Record<string, string> = {
   "#523218": "deep dark brown skin",
 };
 
-const HAIR_COLOR_MAP: Record<string, string> = {
+export const HAIR_COLOR_MAP: Record<string, string> = {
   "#2a2a2a": "jet-black",
   "#5d4037": "dark-brown",
   "#8d6e63": "chestnut-brown",
@@ -86,7 +86,7 @@ const OUTFIT_COLOR_MAP: Record<string, string> = {
 };
 const DEFAULT_OUTFIT_COLOR = "mustard-yellow";
 
-function hairDescription(style: string | undefined, color: string, gender: CharacterDescriptionInput["gender"]): string {
+export function hairDescription(style: string | undefined, color: string, gender: CharacterDescriptionInput["gender"]): string {
   switch (style) {
     case "curly":
       return gender === "boy"
