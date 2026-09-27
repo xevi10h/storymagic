@@ -1,7 +1,9 @@
 # meapica — Documentation Index
 
 > Living documentation for the meapica project.
-> Last updated: 2026-06-15
+> Last updated: 2026-09-27
+>
+> **Latest:** full audit + overhaul 2026-09-27 — see [`audit-2026-09-27.md`](./audit-2026-09-27.md).
 
 > **▶ Resuming work? Read these two first:**
 > - [`launch-checklist.md`](./launch-checklist.md) — current state, what's done, what's next, blockers (top section is the live session summary).
@@ -27,7 +29,7 @@
 
 **meapica** is a platform where parents create personalized, illustrated children's books with AI + print-on-demand. The child becomes the protagonist of their own adventure. Positioned as "artesanal digital" — handcrafted feel, not AI-generated aesthetic.
 
-**Stack:** Next.js 16 + Supabase + Vercel + Stripe + Claude Sonnet 4 (prod) / Groq / Cerebras / Gemini (dev) + FLUX.2 [flex] illustrations (Recraft V3 fallback) + Gemini 2.5 Flash QA judge + Gelato API
+**Stack:** Next.js 16 + Supabase + Vercel + Stripe + OpenAI only: gpt-5.5 Book Plan (story) + gpt-image-2.5 (flare preview / sunburst final, print res) + gpt-5.4-mini QA judge + Gelato API
 
 **Status:** Phases 0–3 complete, including **Creation Flow v2 ("El Camino")** — a 3-step choose-your-own-adventure path (Character → Path → Dedication) with **10 branching story templates**, the **FLUX.2 illustration migration** (visual-bible engine + watercolor portrait identity), and **programmatic SEO + editorial blog** live. Phase 4 (checkout/Gelato) in progress. Phase 5 (launch) unstarted.
 

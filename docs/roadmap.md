@@ -366,3 +366,10 @@ Replaced the old "mode → template → 3 decision knobs" with a single vertical
 - Prepare a remote-only creator/content system so the founder can generate engagement from the computer without handling physical logistics
 - Disable waitlist mode when ready to launch (set `WAITLIST_MODE=false`)
 - Phase 4 — Activate Stripe + Gelato integration. First physical test book.
+
+## Next (from 2026-09-27 overhaul)
+- **Phase 2 — creation flow (6 screens):** name → live templated cover in hero; pre-rendered watercolor avatar matrix; world picker with name covers; El Camino; email + create; dedication during wait; page-flip reveal with sticky hardcover CTA. Teaser preview <20 s using Book Plan `onProgress` (cover + scene 1 first).
+- Optional child photo upload (parental consent, RGPD, delete after generation) — engine already accepts `photoUrl`.
+- Glasses / freckles fields in the character UI (engine accepts `extraTraits`).
+- Print polish: "about the reader" page design, illustrated endpapers, panorama upscale to 300 dpi.
+- **Phase 3 — sales:** analytics (GA4 + Meta pixel + funnel events); guarantee; −20% on 2+ books; Reyes positioning (cutoff ~29 Dec) + gift card; "Pedir a los abuelos" WhatsApp payment link; AMPA/school class orders; 3 real orders for photos.
