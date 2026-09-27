@@ -96,6 +96,10 @@ character lock; per-stage resolution. (commits 5ebc2f1 → a883d60)
 - [x] Generation pipeline: text → 12 illustrations → save to Supabase Storage
 - [x] PDF book generation: 32-pages, 4 layout types (full_bleed, text_page, classic, vignette), @react-pdf/renderer
 - [x] PDF cached in Supabase Storage (private bucket, user-scoped), served via signed URL
+- [x] Children's illustrations private (2026-09-27): `illustrations` bucket private, DB stores object paths, path-based ownership + signed URLs, public `showcase` mirror for marketing (docs/stack.md). **Pending ops:** apply the 3 migrations + run `scripts/publish-showcase.mts` in the documented order
+- [ ] Relocate legacy portraits (`portraits/{uuid}/…`) into `portraits/{userId}/…` and drop the legacy-portrait allowance
+- [ ] Preview page: re-fetch signed URLs on image error / tab focus after ~50 min (1 h TTL)
+- [ ] Admin action "publish/unpublish showcase" that copies/removes the `showcase` mirror (today: manual script)
 - [x] `?force=true` param forces PDF regeneration
 - [x] Error handling and mock fallback for illustration generation
 

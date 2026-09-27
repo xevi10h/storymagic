@@ -5,6 +5,7 @@
 // URIs so the renderer works reliably regardless of the image host.
 
 import sharp from "sharp";
+import { toServerFetchUrl } from "@/lib/storage/illustration-urls";
 
 export interface IllustrationRef {
   sceneNumber: number;
@@ -42,7 +43,8 @@ export async function prefetchImageAsDataUri(
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeoutMs);
 
-    const response = await fetch(url, { signal: controller.signal });
+    // Illustration refs (private bucket paths / legacy public URLs) → short-lived signed URL.
+    const response = await fetch(await toServerFetchUrl(url), { signal: controller.signal });
     clearTimeout(timer);
 
     if (!response.ok) {

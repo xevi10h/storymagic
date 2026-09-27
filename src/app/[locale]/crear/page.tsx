@@ -14,6 +14,7 @@ import {
 } from "@/lib/create-store";
 import { usePersistedState, STORAGE_KEY } from "@/hooks/usePersistedState";
 import { useAuth } from "@/hooks/useAuth";
+import { isIllustrationRef } from "@/lib/storage/illustration-refs";
 import Step2CharacterCreation from "@/components/crear/Step2CharacterCreation";
 import PathBuilder from "@/components/crear/PathBuilder";
 import Step5AuthorMessage from "@/components/crear/Step5AuthorMessage";
@@ -64,6 +65,35 @@ function CrearPageContent() {
     }
     return !p.has("template") && !p.has("characterId") && !p.has("from");
   });
+
+  // The avatar lives in a private bucket: the URL persisted in localStorage is a
+  // signed URL that expires (24 h). Re-sign it once when the flow is resumed; if
+  // it no longer belongs to this session, drop it (the reveal regenerates it).
+  const portraitRefreshed = useRef(false);
+  useEffect(() => {
+    if (!hydrated || portraitRefreshed.current) return;
+    portraitRefreshed.current = true;
+    const current = state.portraitUrl;
+    if (!current || !isIllustrationRef(current)) return;
+    fetch("/api/illustrations/sign", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refs: [current] }),
+    })
+      .then((res) => (res.ok ? (res.json() as Promise<{ urls?: Record<string, string | null> }>) : null))
+      .then((data) => {
+        if (!data?.urls) return; // no session yet / network error: keep what we have
+        const fresh = data.urls[current] ?? null;
+        setState((prev) =>
+          prev.portraitUrl !== current
+            ? prev
+            : fresh
+              ? { ...prev, portraitUrl: fresh }
+              : { ...prev, portraitUrl: null, recraftStyleId: null, portraitCharacterSnapshot: null },
+        );
+      })
+      .catch(() => {});
+  }, [hydrated, state.portraitUrl, setState]);
 
   // --- State updaters ---
 

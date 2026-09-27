@@ -27,7 +27,8 @@ export default function WaitlistPage() {
     setVisible(true);
   }, []);
 
-  const SUPABASE = "https://rmxjtugoyfaxxkiiayss.supabase.co/storage/v1/object/public/illustrations";
+  // Public `showcase` bucket (marketing mirror; the `illustrations` bucket is private).
+  const SUPABASE = "https://rmxjtugoyfaxxkiiayss.supabase.co/storage/v1/object/public/showcase";
   const books: ShowcaseBook[] = [
     {
       id: "teo",

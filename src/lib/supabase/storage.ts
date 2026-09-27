@@ -1,19 +1,19 @@
 // Supabase Storage helpers for uploading illustrations and PDFs
 //
 // Buckets:
-//   illustrations — public, generated images (versioned paths, never overwritten)
+//   illustrations — PRIVATE, generated images of children (versioned paths, never
+//                   overwritten). The DB stores object paths; read them through
+//                   src/lib/storage/illustration-urls.ts (signed URLs).
 //   book-pdfs     — private (user-scoped), stores rendered PDF books
 
 import { SupabaseClient } from "@supabase/supabase-js";
 import { randomBytes } from "node:crypto";
 
-// trim(): a trailing newline in the env var once poisoned every stored URL.
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!.trim();
-
 /**
- * Upload a generated image (buffer) to the public `illustrations` bucket under a
+ * Upload a generated image (buffer) to the private `illustrations` bucket under a
  * NEW, versioned path — never overwritten, so the CDN can never serve a stale
- * preview image for a final render. Returns the permanent public URL.
+ * preview image for a final render. Returns the OBJECT PATH (the "illustration
+ * ref" stored in the DB); sign it with src/lib/storage/illustration-urls.ts.
  *
  *   {folder}/{name}-{version}.{ext}   e.g. <storyId>/final/scene-3-m1x2k3-9f2a.jpg
  *
@@ -34,7 +34,7 @@ export async function uploadGeneratedImage(
     .from("illustrations")
     .upload(path, image, { contentType: mime, upsert: false, cacheControl: "31536000" });
   if (error) throw new Error(`Supabase upload error (${path}): ${error.message}`);
-  return `${SUPABASE_URL}/storage/v1/object/public/illustrations/${path}`;
+  return path;
 }
 
 /**

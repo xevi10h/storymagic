@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { toShowcaseUrl } from "@/lib/storage/illustration-refs";
 
 // Read-side helper for showcase example stories (is_showcase + ready).
 // Mirrors /api/showcase mapping but runs server-side for the /ejemplo index.
@@ -40,7 +41,8 @@ function mapStory(story: any): ShowcaseStory {
     id: story.id,
     templateId: story.template_id,
     title: (generated as any)?.bookTitle ?? "Untitled",
-    coverImage: illustrations[0]?.image_url ?? null,
+    // Public `showcase` bucket mirror — children's originals are private.
+    coverImage: toShowcaseUrl(illustrations[0]?.image_url, process.env.NEXT_PUBLIC_SUPABASE_URL!),
     characterName: character?.name ?? "",
     characterAge: character?.age ?? 0,
   };

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { z } from "zod";
 import type { Json } from "@/lib/database.types";
+import { ownedPortraitPath } from "@/lib/storage/illustration-urls";
 
 const VALID_TEMPLATE_IDS = ["space", "forest", "superhero", "pirates", "chef", "dinosaurs", "castle", "safari", "inventor", "candy"] as const;
 const VALID_MODES = ["solo", "juntos"] as const;
@@ -29,7 +30,8 @@ const storyInputSchema = z.object({
   dedication: z.string().max(500).optional(),
   senderName: z.string().max(100).optional(),
   ending: z.string().max(100).optional(),
-  portraitUrl: z.string().url().max(2000).nullish(),
+  /** Portrait from POST /api/characters/portrait: signed URL, legacy public URL or object path. */
+  portraitUrl: z.string().max(2000).nullish(),
   recraftStyleId: z.string().max(100).nullish(),
   locale: z.enum(VALID_LOCALES).optional().default("es"),
 });
@@ -81,7 +83,9 @@ export async function POST(request: Request) {
     favorite_color: character.favoriteColor || null,
     favorite_companion: character.favoriteCompanion || null,
     future_dream: character.futureDream || null,
-    avatar_url: portraitUrl || null,
+    // Store the object path of the user's OWN portrait only (private bucket; the
+    // server later downloads it as the sheet's face anchor). MOCK_MODE keeps picsum URLs.
+    avatar_url: ownedPortraitPath(portraitUrl, user.id) ?? (process.env.MOCK_MODE === "true" ? portraitUrl || null : null),
   };
 
   if (existingCharacter) {

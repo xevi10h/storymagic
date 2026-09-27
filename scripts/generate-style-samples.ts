@@ -1,6 +1,6 @@
 /**
  * One-time script: Generate sample images for each art style using Recraft V3.
- * Uploads results to Supabase Storage (illustrations bucket).
+ * Uploads results to Supabase Storage (public showcase bucket).
  *
  * Usage: npx tsx scripts/generate-style-samples.ts
  */
@@ -67,10 +67,10 @@ async function generateSample(style: typeof ART_STYLES[number]): Promise<string>
   if (!imgRes.ok) throw new Error(`Failed to download image for ${style.id}`);
   const imgBuffer = Buffer.from(await imgRes.arrayBuffer());
 
-  // Upload to Supabase Storage
+  // Upload to the PUBLIC showcase bucket (marketing; `illustrations` is private)
   const path = `style-samples/${style.id}.webp`;
   const { error: uploadError } = await supabase.storage
-    .from("illustrations")
+    .from("showcase")
     .upload(path, imgBuffer, {
       contentType: "image/webp",
       upsert: true,
@@ -79,7 +79,7 @@ async function generateSample(style: typeof ART_STYLES[number]): Promise<string>
   if (uploadError) throw new Error(`Upload failed for ${style.id}: ${uploadError.message}`);
 
   // Get public URL
-  const { data: urlData } = supabase.storage.from("illustrations").getPublicUrl(path);
+  const { data: urlData } = supabase.storage.from("showcase").getPublicUrl(path);
   console.log(`[${style.id}] Uploaded: ${urlData.publicUrl}`);
 
   return urlData.publicUrl;

@@ -83,15 +83,24 @@ export function isFinalStage(renderStage: string | null | undefined): boolean {
 }
 
 /**
- * A stored image is usable for print only if it lives in our own public storage
- * (not a temporary provider URL, not a picsum/mock placeholder).
+ * A stored image is usable for print only if it lives in our own storage
+ * (not a temporary provider URL, not a picsum/mock placeholder):
+ *  - an object path of the private `illustrations` bucket (what the code stores
+ *    since 2026-09-27; same rule as illustrationPath() in
+ *    src/lib/storage/illustration-refs.ts — duplicated because this module must
+ *    stay import-free for `node --experimental-strip-types`), or
+ *  - a legacy / showcase public URL of our own Supabase project.
  */
 export function isUsableStoredImage(url: string | null | undefined, supabaseUrl: string): boolean {
   if (!url) return false;
+  const value = url.trim();
+  if (/picsum\.photos/i.test(value)) return false;
+  const isBarePath =
+    !/^[a-z][a-z0-9+.-]*:/i.test(value) && !value.startsWith("/") && !value.split("/").some((seg) => seg === "" || seg === "." || seg === "..");
+  if (isBarePath) return value.includes("/") && !value.startsWith("mock/");
   const base = supabaseUrl.trim().replace(/\/+$/, "");
   if (!base) return false;
-  if (/picsum\.photos/i.test(url)) return false;
-  return url.startsWith(`${base}/storage/v1/object/public/`);
+  return value.startsWith(`${base}/storage/v1/object/public/`);
 }
 
 export interface SceneRow {

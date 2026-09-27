@@ -1,6 +1,6 @@
 /**
  * One-time script: generate 13 permanent Recraft V3 illustrations for the mock story
- * (cover + 12 scenes) and upload them to Supabase Storage under illustrations/mock/.
+ * (cover + 12 scenes) and upload them to Supabase Storage under showcase/mock/ (public bucket).
  *
  * Then patches src/lib/ai/mock-story.ts with the new permanent URLs so they never
  * need to be regenerated again.
@@ -165,13 +165,14 @@ async function uploadToStorage(imageUrl, storagePath) {
   const buffer = Buffer.from(await res.arrayBuffer());
   const contentType = res.headers.get("content-type") || "image/png";
 
+  // Mock art is not a child's likeness: public `showcase` bucket (`illustrations` is private).
   const { error } = await supabase.storage
-    .from("illustrations")
+    .from("showcase")
     .upload(storagePath, buffer, { contentType, upsert: true });
 
   if (error) throw new Error(`Supabase upload error: ${error.message}`);
 
-  return `${SUPABASE_URL}/storage/v1/object/public/illustrations/${storagePath}`;
+  return `${SUPABASE_URL}/storage/v1/object/public/showcase/${storagePath}`;
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────────

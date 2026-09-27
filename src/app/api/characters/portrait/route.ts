@@ -5,6 +5,8 @@ import { createClient as createServiceClient } from "@supabase/supabase-js";
 import { buildCharacterBible, renderPortrait } from "@/lib/ai/book-images";
 import { optionalReference } from "@/lib/ai/preview-book";
 import { uploadGeneratedImage } from "@/lib/supabase/storage";
+import { isIllustrationRef, portraitFolder } from "@/lib/storage/illustration-refs";
+import { ILLUSTRATION_URL_TTL, getIllustrationUrl, userAccess } from "@/lib/storage/illustration-urls";
 import { getMockPortraitUrl } from "@/lib/ai/mock-story";
 import { createClient } from "@/lib/supabase/server";
 import { checkRateLimit, checkMemoryRateLimit } from "@/lib/rate-limit";
@@ -31,6 +33,8 @@ const portraitInputSchema = z.object({
     .string()
     .max(500)
     .refine((u) => u.startsWith(`${(process.env.NEXT_PUBLIC_SUPABASE_URL ?? "").trim()}/storage/v1/object/`), "photoUrl must be a Meapica storage URL")
+    // Never the illustrations bucket: the server downloads it with the service role.
+    .refine((u) => !isIllustrationRef(u), "photoUrl must not point at generated illustrations")
     .optional(),
 });
 
@@ -46,7 +50,7 @@ const portraitInputSchema = z.object({
  * The image is stored in our own storage (versioned path) and saved by the UI
  * as character.avatar_url; the book's character sheets use it as the face anchor.
  *
- * Returns: { portraitUrl, recraftStyleId: null } (recraftStyleId kept for UI compatibility).
+ * Returns: { portraitUrl (24 h signed URL), recraftStyleId: null } (recraftStyleId kept for UI compatibility).
  */
 const RATE_LIMITED_RESPONSE = {
   error: "rate_limited",
@@ -144,7 +148,11 @@ export async function POST(request: Request) {
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!,
     );
-    const portraitUrl = await uploadGeneratedImage(admin, `portraits/${crypto.randomUUID()}`, "portrait", result.image, result.mime);
+    // Private bucket, owner encoded in the path (portraits/<userId>/...). The client
+    // gets a 24 h signed URL; POST /api/stories stores the path parsed from it.
+    const portraitPath = await uploadGeneratedImage(admin, portraitFolder(user.id, crypto.randomUUID()), "portrait", result.image, result.mime);
+    const portraitUrl = await getIllustrationUrl(portraitPath, { ttl: ILLUSTRATION_URL_TTL.creation, allow: userAccess({ userId: user.id }) });
+    if (!portraitUrl) throw new Error(`Portrait stored but could not be signed: ${portraitPath}`);
     return NextResponse.json({ portraitUrl, recraftStyleId: null });
   } catch (error: unknown) {
     console.error("[Portrait] Generation failed:", error);

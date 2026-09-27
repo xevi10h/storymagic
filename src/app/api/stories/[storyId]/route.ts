@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { signStoryRowImages } from "@/lib/storage/illustration-urls";
 
 export async function GET(
   request: Request,
@@ -47,5 +48,7 @@ export async function GET(
     return NextResponse.json({ error: "Story not found" }, { status: 404 });
   }
 
-  return NextResponse.json(story);
+  // Children's images live in a private bucket: hand the owner 1-hour signed URLs.
+  await signStoryRowImages(story, user.id);
+  return NextResponse.json(story, { headers: { "Cache-Control": "private, no-store" } });
 }
