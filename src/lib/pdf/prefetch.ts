@@ -11,6 +11,29 @@ export interface IllustrationRef {
   imageUrl: string | null;
 }
 
+/**
+ * Normalises any fetched image into something react-pdf embeds well:
+ * - JPEG without rotation → passed through untouched
+ * - opaque images (the norm for AI art) → high-quality JPEG (q92, no chroma
+ *   subsampling). Embedding 2432² PNGs as-is makes a ~150 MB interior PDF.
+ * - images with real transparency → PNG
+ * - EXIF orientation is baked into the pixels (react-pdf ignores the tag)
+ * - WebP/AVIF/SVG are converted (react-pdf only reads PNG/JPEG)
+ */
+async function toPrintableImage(raw: Buffer): Promise<{ buffer: Buffer; type: string }> {
+  const image = sharp(raw, { failOn: "none" });
+  const meta = await image.metadata();
+  if (meta.format === "jpeg" && (meta.orientation ?? 1) === 1) {
+    return { buffer: raw, type: "image/jpeg" };
+  }
+  const opaque = !meta.hasAlpha || (await sharp(raw).stats()).isOpaque;
+  if (opaque) {
+    const buffer = await sharp(raw).rotate().flatten({ background: "#ffffff" }).jpeg({ quality: 92, chromaSubsampling: "4:4:4", mozjpeg: true }).toBuffer();
+    return { buffer, type: "image/jpeg" };
+  }
+  return { buffer: await sharp(raw).rotate().png().toBuffer(), type: "image/png" };
+}
+
 export async function prefetchImageAsDataUri(
   url: string,
   timeoutMs = 15000,
@@ -27,28 +50,8 @@ export async function prefetchImageAsDataUri(
       return null;
     }
 
-    const contentType = response.headers.get("content-type") || "image/png";
     const rawBuffer = Buffer.from(await response.arrayBuffer());
-
-    const needsConversion =
-      contentType.includes("webp") ||
-      contentType.includes("avif") ||
-      contentType.includes("svg") ||
-      (!contentType.includes("png") &&
-        !contentType.includes("jpeg") &&
-        !contentType.includes("jpg"));
-
-    let finalBuffer: Buffer;
-    let finalType: string;
-
-    if (needsConversion) {
-      console.log(`[PDF] Converting ${contentType} → image/png`);
-      finalBuffer = await sharp(rawBuffer).png().toBuffer();
-      finalType = "image/png";
-    } else {
-      finalBuffer = rawBuffer;
-      finalType = contentType;
-    }
+    const { buffer: finalBuffer, type: finalType } = await toPrintableImage(rawBuffer);
 
     const base64 = finalBuffer.toString("base64");
     return `data:${finalType};base64,${base64}`;
@@ -75,7 +78,7 @@ export async function prefetchAllIllustrations(
         );
       } else {
         console.warn(
-          `[PDF] Scene ${ill.sceneNumber}: not available, will render placeholder`,
+          `[PDF] Scene ${ill.sceneNumber}: not available — validatePrintableBook will reject this book for print`,
         );
       }
 

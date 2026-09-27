@@ -5,11 +5,13 @@
  * - Trim size: 200mm × 200mm
  * - Bleed: 4mm on all sides → total page: 208mm × 208mm  ← Gelato requires 4mm
  * - Safe area: 15mm from trim edge (text/important elements)
+ * - Inner page 1 is a RIGHT-hand page (Gelato adds a blank endpaper before it) — see layout.ts
  *
  * 1mm = 2.83465pt (PDF points)
  */
 
-import { applyGenderTint, getBookColors } from "@/lib/template-colors";
+import { getBookColors } from "@/lib/template-colors";
+import { FONT_FAMILY } from "./fonts";
 
 // ── Dimensions (in PDF points) ─────────────────────────────────────────────
 
@@ -175,10 +177,11 @@ export function getTheme(templateId: string, gender?: string, favoriteColor?: st
 
 // ── Typography ─────────────────────────────────────────────────────────────
 
+// Font stacks (per-glyph fallback) — see fonts.ts. Never set fontStyle "italic" on display.
 export const FONTS = {
-  display: "Fredoka",
-  body: "PlusJakartaSans",
-} as const;
+  display: [FONT_FAMILY.display, FONT_FAMILY.body, FONT_FAMILY.symbols],
+  body: [FONT_FAMILY.body, FONT_FAMILY.symbols],
+};
 
 export const TYPE = {
   coverTitle: { fontFamily: FONTS.display, fontSize: 32, fontWeight: 600 as const, color: "#ffffff", lineHeight: 1.2 },

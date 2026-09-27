@@ -126,3 +126,34 @@ export interface GelatoWebhookEvent {
   fulfillmentStatus?: string;
   items?: GelatoWebhookItem[];
 }
+
+// ── Catalog: cover dimensions (GET /v3/products/{uid}/cover-dimensions?pageCount=N) ──
+// Verified against the live API 2026-09-27. Units: mm, origin top-left of the cover file.
+// Softcover returns bleedSize; hardcover returns wraparoundInsideSize/wraparoundEdgeSize + joints.
+
+export interface GelatoMmBox {
+  width: number;
+  height: number;
+  left: number;
+  top: number;
+  /** Present on outer boxes: bleed (softcover 3) / wraparound (hardcover 17) / board edge (3) */
+  thickness?: number;
+}
+
+export interface GelatoCoverDimensionsResponse {
+  productUid: string;
+  /** Inner pages + 4 cover sides (30 inner → 34) */
+  pagesCount?: number;
+  measureUnit?: string;
+  /** Softcover: whole cover file incl. bleed */
+  bleedSize?: GelatoMmBox;
+  /** Hardcover: whole cover file incl. wraparound */
+  wraparoundInsideSize?: GelatoMmBox;
+  /** Hardcover: board edge band just inside the wraparound */
+  wraparoundEdgeSize?: GelatoMmBox;
+  contentBackSize?: GelatoMmBox;
+  jointBackSize?: GelatoMmBox;
+  spineSize?: GelatoMmBox;
+  jointFrontSize?: GelatoMmBox;
+  contentFrontSize?: GelatoMmBox;
+}
