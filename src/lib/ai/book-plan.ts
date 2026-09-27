@@ -805,8 +805,11 @@ async function checkPlan(plan: BookPlanDraft, input: StoryInput, spec: PlanSpec)
 /** Early, final-for-images view of the plan while it is still streaming. */
 export interface BookPlanProgress {
   title?: string;
+  /** Complete (normalised like the final plan) from the first report on. */
   cast: PlanCastMember[];
+  /** Empty until the cover is complete (the world list is only final then). */
   world: PlanWorldAsset[];
+  /** null in the first, cast-only report. */
   cover: PlanShot | null;
   /** Completed scenes so far, in order. Their shots are final; their text may still be repaired. */
   scenes: PlanScene[];
@@ -858,9 +861,16 @@ function normalizeShot(shot: PlanShot, n: number, cast: PlanCastMember[], world:
   };
 }
 
+/** Cast/world exactly as normalizeDraft stores them (shared with the streaming view so both agree byte for byte). */
+function normalizeBible(draftCast: PlanCastMember[], draftWorld: PlanWorldAsset[], childName: string): { cast: PlanCastMember[]; world: PlanWorldAsset[] } {
+  return {
+    cast: draftCast.filter((c) => c.id !== PLAN_CHILD_ID).map((c) => ({ ...c, visual: scrubChildName(c.visual, childName) })),
+    world: draftWorld.map((w) => ({ ...w, visual: scrubChildName(w.visual, childName) })),
+  };
+}
+
 export function normalizeDraft(draft: BookPlanDraft, spec: PlanSpec, childName: string, locale: string): BookPlanDraft {
-  const cast = draft.cast.filter((c) => c.id !== PLAN_CHILD_ID).map((c) => ({ ...c, visual: scrubChildName(c.visual, childName) }));
-  const world = draft.world.map((w) => ({ ...w, visual: scrubChildName(w.visual, childName) }));
+  const { cast, world } = normalizeBible(draft.cast, draft.world, childName);
 
   const byNumber = new Map(draft.scenes.map((s) => [s.sceneNumber, s]));
   const ordered = byNumber.size === SCENE_COUNT
@@ -953,32 +963,44 @@ const PartialBibleSchema = z.object({
   scenes: z.array(z.unknown()).optional(),
 });
 
-function readProgress(partial: unknown, spec: PlanSpec, childName: string): BookPlanProgress | null {
+/**
+ * Streaming view of a partial plan. parsePartialJson keeps only completed
+ * objects/arrays, and properties are generated in schema order (… cast, world,
+ * cover, scenes), so:
+ *   - `cast` is complete once `world` (or anything after it) is present,
+ *   - `world` is complete once `cover` is present.
+ * Returns null until the cast is complete.
+ */
+export function readProgress(partial: unknown, spec: PlanSpec, childName: string): BookPlanProgress | null {
   const bible = PartialBibleSchema.safeParse(partial);
-  // The cover is generated after cast + world, so both are complete once it exists.
-  if (!bible.success || !bible.data.cover || !bible.data.cast || !bible.data.world) return null;
+  if (!bible.success || !bible.data.cast) return null;
+  const castComplete = bible.data.world !== undefined || bible.data.cover !== undefined;
+  if (!castComplete) return null;
+  const worldComplete = bible.data.cover !== undefined && bible.data.world !== undefined;
+  const { cast, world } = normalizeBible(bible.data.cast, worldComplete ? bible.data.world! : [], childName);
+  if (!bible.data.cover || !worldComplete) {
+    return { title: bible.data.title, cast, world, cover: null, scenes: [] };
+  }
   const draft = {
-    cast: bible.data.cast,
-    world: bible.data.world,
     cover: bible.data.cover,
     scenes: (bible.data.scenes ?? [])
       .map((raw) => SceneSchema.safeParse(raw))
       .filter((r) => r.success)
       .map((r) => r.data!),
   };
-  const cover = normalizeShot(draft.cover, 0, draft.cast, draft.world, childName, true);
+  const cover = normalizeShot(draft.cover, 0, cast, world, childName, true);
   if (!cover.castIds.includes(PLAN_CHILD_ID)) cover.castIds = [PLAN_CHILD_ID, ...cover.castIds];
   return {
     title: bible.data.title,
-    cast: draft.cast,
-    world: draft.world,
+    cast,
+    world,
     cover,
     scenes: draft.scenes.map((s, i) => ({
       ...s,
       sceneNumber: i + 1,
       type: getSlotType(spec, i + 1),
-      illustratedMoment: scrubChildName(humanizeIds(s.illustratedMoment, draft.cast, draft.world), childName),
-      shot: normalizeShot(s.shot, i + 1, draft.cast, draft.world, childName, true),
+      illustratedMoment: scrubChildName(humanizeIds(s.illustratedMoment, cast, world), childName),
+      shot: normalizeShot(s.shot, i + 1, cast, world, childName, true),
     })),
   };
 }
@@ -1005,14 +1027,21 @@ export async function generateBookPlan(
   const schema: z.ZodType<BookPlanDraft> = parentDedication ? BasePlanSchema : PlanWithDedicationSchema;
 
   console.log(`[BookPlan] ${model} (${spec.mode}, age ${input.age}, ${input.locale || "es"})...`);
-  let reported = { cover: false, scenes: 0 };
+  // Fires on: cast complete → cover complete → each new scene. Within one
+  // streamed attempt progress only grows, so a view that went backwards (cover
+  // gone, fewer scenes) means callOpenAIStructured retried from scratch: reset
+  // and report the new attempt's plan (consumers key their work by content).
+  const none = { cast: false, cover: false, scenes: 0 };
+  let reported = { ...none };
   const onPartial = opts?.onProgress
     ? (partial: unknown) => {
         const progress = readProgress(partial, spec, input.childName);
         if (!progress) return;
         const hasCover = !!progress.cover;
-        if (!(hasCover && !reported.cover) && progress.scenes.length <= reported.scenes) return;
-        reported = { cover: reported.cover || hasCover, scenes: Math.max(reported.scenes, progress.scenes.length) };
+        if ((reported.cover && !hasCover) || progress.scenes.length < reported.scenes) reported = { ...none };
+        const isNew = !reported.cast || (hasCover && !reported.cover) || progress.scenes.length > reported.scenes;
+        if (!isNew) return;
+        reported = { cast: true, cover: reported.cover || hasCover, scenes: Math.max(reported.scenes, progress.scenes.length) };
         opts.onProgress!(progress);
       }
     : undefined;
@@ -1105,8 +1134,8 @@ export async function generateBookPlan(
 // the viewer/PDF; planToArchitectOutput is the legacy view.
 
 /** Recurring secondary characters kept consistent via sheets (mirrors visual-assets MAX_CAST). */
-const VISUAL_MAX_CAST = 5;
-const VISUAL_MAX_WORLD = 5;
+export const VISUAL_MAX_CAST = 5;
+export const VISUAL_MAX_WORLD = 5;
 
 function scenesWith(plan: BookPlanDraft, pred: (shot: PlanShot) => boolean): number[] {
   return plan.scenes.filter((s) => pred(s.shot)).map((s) => s.sceneNumber);
@@ -1132,7 +1161,12 @@ export function planToVisualCast(plan: BookPlanDraft): VisualCast {
   return { cast, world };
 }
 
-function toShotSpec(plan: BookPlanDraft, shot: PlanShot, sceneNumber: number, frame: ShotFrame, visual: VisualCast): ShotSpec {
+/**
+ * One plan shot → ShotSpec for the image engine. Exported for the streaming
+ * preview, which builds specs from a partial plan (BookPlanProgress) with a
+ * provisional visual cast.
+ */
+export function toShotSpec(plan: Pick<BookPlanDraft, "cast" | "world">, shot: PlanShot, sceneNumber: number, frame: ShotFrame, visual: VisualCast): ShotSpec {
   const castKept = new Set(visual.cast.map((c) => c.id));
   const worldKept = new Set(visual.world.map((w) => w.id));
   // Characters/objects without a reference sheet are described inline so they still look right.

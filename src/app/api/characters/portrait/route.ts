@@ -8,7 +8,7 @@ import { uploadGeneratedImage } from "@/lib/supabase/storage";
 import { getMockPortraitUrl } from "@/lib/ai/mock-story";
 import { createClient } from "@/lib/supabase/server";
 import { checkRateLimit, checkMemoryRateLimit } from "@/lib/rate-limit";
-import { isProviderUnavailableError } from "@/lib/fulfilment/provider-errors";
+import { providerOutageRetryAfter, tripOnProviderOutage } from "@/lib/ai/provider-outage";
 
 // OpenAI portrait (gpt-image-2.5-flare, medium) takes ~15–25 s.
 export const maxDuration = 60;
@@ -53,27 +53,15 @@ const RATE_LIMITED_RESPONSE = {
   message: "Too many portrait generations. Please try again later.",
 };
 
-// ── Provider-outage circuit breaker ─────────────────────────────────────────
-// When the image provider is out of credits / rejecting our key, every retry
-// fails the same way. Short-circuit BEFORE the durable per-user rate limit so
-// parents who tap "retry" don't burn their hourly quota on a known outage.
-// Per-instance memory: good enough to stop retry storms; a cold instance just
-// makes one real attempt and re-opens the breaker if the outage persists.
-const PROVIDER_OUTAGE_COOLDOWN_MS = 10 * 60 * 1000;
-let providerOutageUntil = 0;
-
-function isProviderOutageError(error: unknown): boolean {
-  const msg = error instanceof Error ? error.message : String(error);
-  return /NO[ _]CREDITS|insufficient|credit|billing|quota|\b402\b|\b401\b|\b403\b/i.test(msg);
-}
-
+// Provider-outage circuit breaker: shared with /api/characters/prepare (src/lib/ai/provider-outage.ts).
 const PROVIDER_UNAVAILABLE_RESPONSE = { error: "provider_unavailable" };
 
 export async function POST(request: Request) {
-  if (Date.now() < providerOutageUntil) {
+  const outageRetryAfter = providerOutageRetryAfter();
+  if (outageRetryAfter > 0) {
     return NextResponse.json(PROVIDER_UNAVAILABLE_RESPONSE, {
       status: 503,
-      headers: { "Retry-After": String(Math.ceil((providerOutageUntil - Date.now()) / 1000)) },
+      headers: { "Retry-After": String(outageRetryAfter) },
     });
   }
 
@@ -150,8 +138,7 @@ export async function POST(request: Request) {
     console.error("[Portrait] Generation failed:", error);
     // Never leak provider/backend error text to the client (parents see a
     // localized message keyed off `error`).
-    if (isProviderUnavailableError(error) || isProviderOutageError(error)) {
-      providerOutageUntil = Date.now() + PROVIDER_OUTAGE_COOLDOWN_MS;
+    if (tripOnProviderOutage(error)) {
       return NextResponse.json(PROVIDER_UNAVAILABLE_RESPONSE, { status: 503 });
     }
     return NextResponse.json({ error: "generation_failed" }, { status: 500 });

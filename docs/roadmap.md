@@ -12,9 +12,16 @@ See **`docs/generation-pipeline.md`** and **`docs/launch-checklist.md`** for ful
 
 **Blocked on:** BFL + fal image credits exhausted → top up ~$15-20 (fal) before any generation work.
 
-- [ ] **Preview ≤ 15-20s** — decouple the heavy LLM from the preview: a light "preview
-      architect" (title + 3 hero scene prompts) + protagonist ref + 3 fal-dev scenes;
-      defer the full screenplay + visual bible + 12 scenes to `/complete`. (Images already ~7s.)
+- [ ] **Preview ≤ 20-30s to first cover** — streaming preview + early child sheet shipped
+      (2026-09-27, docs/generation-pipeline.md "Streaming preview"): measured scene 1 at 35 s,
+      cover at 40 s (was 85–125 s). Remaining critical path = cast (8 s) + companion sheet (12 s)
+      + cover render (15–19 s). Next levers, biggest first:
+      1. Template-level companions: pre-render (and cache per template × companion) the
+         companion sheet so it is ready before the plan → cover at ~28–31 s.
+      2. Deterministic templated cover shot (child + main companion in the template's world,
+         not from the LLM) rendered during the dedication screen → cover visible at ~0–15 s.
+      3. UI shows the first finished image (scene 1 usually beats the cover by ~5 s).
+      4. Apply migration `20260927140000_streaming_preview.sql` before deploying.
 - [ ] **Validate** the per-scene character lock + high-res (`FINAL_IMAGE_SCALE`) with a fresh book.
 - [ ] **Background final generation + "book ready" email** — run `/complete` async post-purchase
       (tie into the fulfilment cron) and email the customer when the book is finished.
