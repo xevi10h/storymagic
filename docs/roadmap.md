@@ -23,8 +23,8 @@ See **`docs/generation-pipeline.md`** and **`docs/launch-checklist.md`** for ful
       3. ✅ UI shows the first finished image (scene 1 usually beats the cover by ~5 s).
       4. Deploy with the migration runbook in `docs/stack.md` ("Deploy order — creation flow v2").
 - [ ] **Creation flow v2 — after the integration (branch `feat/creation-flow-v2`, 2026-09-28):**
-      1. Render the avatar matrix (avatar agent, ~$12.6) + ageBand/eye-colour layers; then relax the
-         e2e "trait swaps are offline" assertion (preloaded avatar images are expected requests).
+      1. ✅ Avatar matrix rendered + wired (950 bases, 2 age bands, eye/freckles/glasses overlays, $24.22).
+         Next: deploy the assets before relying on them as face anchors (fetched from NEXT_PUBLIC_SITE_URL).
       2. Photo mode: the Bible still describes the default traits (skin/hair) next to the photo →
          derive the look from the photo (vision call) or ask skin/hair in photo mode, before the flag goes on.
       3. `character_preps` orphans: child sheets of preps never used by a story stay in

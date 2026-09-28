@@ -3,14 +3,11 @@
 import Image from "next/image";
 import { useEffect, useState, type ReactNode } from "react";
 import {
-  AVATAR_GLASSES_OPTIONS,
   avatarBaseSrc,
-  avatarFrecklesSrc,
-  avatarGlassesSrc,
   avatarLayers,
   avatarNeighbours,
+  avatarOverlaySrcs,
   isAvatarRendered,
-  type AvatarGender,
   type AvatarTraits,
 } from "@/lib/avatar/manifest";
 
@@ -45,16 +42,9 @@ function preload(src: string) {
   img.src = src;
 }
 
-function overlaySrcs(gender: AvatarGender): string[] {
-  return [
-    avatarFrecklesSrc(gender),
-    ...AVATAR_GLASSES_OPTIONS.filter((g) => g !== "none").map((g) => avatarGlassesSrc(gender, g as Exclude<typeof g, "none">)),
-  ];
-}
-
 /**
- * Pre-rendered watercolor portrait assembled client-side: base (skin + hair)
- * + freckles (multiply) + glasses (alpha). All layers are pixel-aligned 512 px
+ * Pre-rendered watercolor portrait assembled client-side: base (age band +
+ * skin + hair) + eye colour (alpha) + freckles (multiply) + glasses (alpha). All layers are pixel-aligned 512 px
  * webp files, so a trait change is a src swap with no server round-trip.
  *
  * Swap strategy: the previously shown base stays on screen until the new one
@@ -79,7 +69,7 @@ export default function WatercolorAvatar({
 
   useEffect(() => {
     if (!preloadNeighbours || !rendered) return;
-    for (const src of overlaySrcs(traits.gender)) preload(src);
+    for (const src of avatarOverlaySrcs(traits.gender, traits.ageBand)) preload(src);
     for (const n of avatarNeighbours(traits)) if (isAvatarRendered(n)) preload(avatarBaseSrc(n));
   }, [traits, preloadNeighbours, rendered]);
 

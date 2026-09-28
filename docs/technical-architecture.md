@@ -47,7 +47,7 @@ characters (saved hero profiles)
 ├── favorite_companion (open text — "best friend/companion")
 ├── glasses (text, default 'none' — avatar builder "{round|square}-{dark|red}"; feeds the Character Bible)
 ├── freckles (boolean, default false — feeds the Character Bible)
-├── avatar_url (face anchor: pre-rendered avatar asset path "/images/avatar/{gender}/{skin}/{hair}-{style}.webp" (v2 "Créalo tú"), or an illustration ref = object path of the private bucket portraits/{userId}/{uuid}/portrait-{v}.jpg (AI portrait))
+├── avatar_url (face anchor: pre-rendered avatar asset path "/images/avatar/{gender}/{band}/{skin}/{hair}-{style}.webp" (v2 "Créalo tú"), or an illustration ref = object path of the private bucket portraits/{userId}/{uuid}/portrait-{v}.jpg (AI portrait))
 ├── created_at
 └── updated_at
 

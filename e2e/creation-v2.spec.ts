@@ -256,7 +256,7 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
         await shot(page, `${tag}-1-name-filled`);
         await next(page, locale);
 
-        // 2 — Protagonist: trait swaps are instant and offline
+        // 2 — Protagonist: trait swaps are instant, client-side (only pre-rendered avatar images, no API/doc)
         const portrait = page.getByTestId("protagonist-portrait");
         await expect(portrait).toBeVisible();
         await expect(page.getByRole("tab")).toHaveCount(0); // photo flag off
@@ -272,8 +272,11 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
         await page.locator('[aria-labelledby="lbl-hairstyle"]').getByRole("radio").nth(1).click();
         await page.waitForTimeout(300);
         page.off("request", onReq);
-        expect(netDuringTraits).toEqual([]);
+        expect(netDuringTraits.filter((u) => !new URL(u).pathname.startsWith("/images/avatar/"))).toEqual([]);
         expect(await portrait.innerHTML()).not.toEqual(before);
+        // Real pre-rendered matrix, not the vector fallback
+        await expect(portrait.locator('img[src*="/images/avatar/"]').first()).toBeVisible();
+        await expect(portrait.locator("svg")).toHaveCount(0);
         await shot(page, `${tag}-2-protagonist`);
         if (vpName === "mobile") {
           // the portrait stays in view while scrolling the traits
@@ -290,6 +293,8 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
         expect(prep.glasses).toBe("round-dark");
         expect(prep.freckles).toBe(true);
         expect(prep.photoPath).toBeUndefined();
+        // Face anchor = the matrix base of the chosen traits (girl, age 6 → small band)
+        expect(String(prep.avatarAssetPath)).toMatch(/^\/images\/avatar\/girl\/small\/dark\/[a-z-]+\.webp$/);
 
         // 3 — Adventure: world + 3 chapters on one screen
         await expect(page.getByRole("button", { name: COPY[locale].create })).toBeDisabled();
@@ -377,6 +382,61 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
     });
   }
 }
+
+test.describe("avatar matrix", () => {
+  const combos = [
+    { name: "girl4-glasses-freckles", age: 4, gender: "Una niña", skin: 0, glasses: 1, frame: 1, freckles: true, eyes: 3 },
+    { name: "girl10-darkskin", age: 10, gender: "Una niña", skin: 4, glasses: 0, frame: -1, freckles: false, eyes: 2 },
+    { name: "boy4-square", age: 4, gender: "Un niño", skin: 2, glasses: 2, frame: 0, freckles: false, eyes: 0 },
+    { name: "boy10-darkskin-freckles-glasses", age: 10, gender: "Un niño", skin: 3, glasses: 1, frame: 0, freckles: true, eyes: 4 },
+  ];
+  for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
+    test(`trait combos render the real matrix without layout shift [${vpName}]`, async ({ browser }) => {
+      test.skip(PHOTO_FLAG, "flag-off suite");
+      test.setTimeout(120_000);
+      const errors: string[] = [];
+      for (const c of combos) {
+        // Fresh context per combo: a clean draft, and a cold image cache like a new visitor.
+        const context = await browser.newContext(vp);
+        const page = await context.newPage();
+        const pageErrors = trackConsole(page);
+        await installMocks(page);
+        await freshStart(page, "es");
+        await fillName(page);
+        await page.getByRole("radio", { name: new RegExp(`^${c.age}\\b`) }).click();
+        await page.getByRole("radio", { name: c.gender }).click();
+        await next(page, "es");
+        const portrait = page.getByTestId("protagonist-portrait");
+        await expect(portrait.locator('img[src*="/images/avatar/"]').first()).toBeVisible();
+        // Layout shift = size of the portrait or document position of the controls changing
+        // (the portrait itself is sticky, so its viewport y legitimately moves with scroll).
+        const docY = () => page.locator('[aria-labelledby="lbl-glasses"]').evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
+        await page.waitForTimeout(700); // screen entrance animation settles first
+        const box0 = await portrait.boundingBox();
+        const y0 = await docY();
+        await page.locator('[aria-labelledby="lbl-skin"]').getByRole("radio").nth(c.skin).click();
+        await page.locator('[aria-labelledby="lbl-eyes"]').getByRole("radio").nth(c.eyes).click();
+        await page.locator('[aria-labelledby="lbl-glasses"]').getByRole("radio").nth(c.glasses).click();
+        if (c.frame >= 0) await page.getByRole("radiogroup", { name: /montura/i }).getByRole("radio").nth(c.frame).click();
+        if (c.freckles) await page.getByRole("switch").click();
+        await page.waitForTimeout(400);
+        const box1 = await portrait.boundingBox();
+        expect(Math.abs(box1!.width - box0!.width)).toBeLessThan(1);
+        expect(Math.abs(box1!.height - box0!.height)).toBeLessThan(1);
+        if (c.glasses === 0) expect(Math.abs((await docY()) - y0)).toBeLessThan(1); // (frame row appears only with glasses)
+        const band = c.age <= 6 ? "small" : "big";
+        await expect(portrait.locator(`img[src*="/${band}/"]`).first()).toBeVisible();
+        if (c.glasses > 0) await expect(portrait.locator('img[src*="glasses-"]')).toHaveCount(1);
+        if (c.freckles) await expect(portrait.locator('img[src*="freckles"]')).toHaveCount(1);
+        await expect(portrait.locator("svg")).toHaveCount(0);
+        await shot(page, `avatar-${vpName}-${c.name}`);
+        errors.push(...pageErrors);
+        await context.close();
+      }
+      expect(errors).toEqual([]);
+    });
+  }
+});
 
 test.describe("state", () => {
   test.use(VIEWPORTS.mobile);

@@ -146,7 +146,7 @@ export function register(parent, child, roi, init) {
  * Initial transform from the two pupils: child pupils are searched ±`search`
  * px around the parent's. Returns null when a pupil cannot be found plausibly.
  */
-export function alignFromPupils(parentEyes, child, search = 36) {
+export function alignFromPupils(parentEyes, child, search = 16) {
   const find = (p) => findPupil(child, { x0: p.x - search, y0: p.y - search, x1: p.x + search, y1: p.y + search });
   const l = find(parentEyes.left);
   const r = find(parentEyes.right);
@@ -309,6 +309,11 @@ export function tintOverlay(overlay, [r, g, b]) {
 
 /** Darkest-blob centre (pupil) inside a search window. */
 export function findPupil(img, { x0, y0, x1, y1 }) {
+  // darkest 13 px blob, with a mild pull towards the window centre so a dark
+  // lash corner on deep skin tones never wins over the pupil
+  const mx = (x0 + x1) / 2;
+  const my = (y0 + y1) / 2;
+  const reach = Math.max(x1 - x0, y1 - y0) / 2;
   let best = { x: 0, y: 0, v: Infinity };
   const r = 6;
   for (let y = y0; y < y1; y += 2)
@@ -319,7 +324,8 @@ export function findPupil(img, { x0, y0, x1, y1 }) {
           const i = ((y + yy) * img.w + (x + xx)) * 4;
           s += img.data[i] + img.data[i + 1] + img.data[i + 2];
         }
-      if (s < best.v) best = { x, y, v: s };
+      const v = s * (1 + 0.25 * (Math.hypot(x - mx, y - my) / reach) ** 2);
+      if (v < best.v) best = { x, y, v };
     }
   return { x: best.x, y: best.y };
 }
@@ -329,4 +335,101 @@ export async function webp(img, { size = 512, quality = 78, alpha = false } = {}
   let s = toSharp(img).resize(size, size, { kernel: "lanczos3" });
   if (!alpha) s = s.removeAlpha();
   return s.webp({ quality, alphaQuality: 90, effort: 6, smartSubsample: true }).toBuffer();
+}
+
+/** Mean luminance inside a disc. */
+export function meanLuma(img, cx, cy, r) {
+  let s = 0;
+  let n = 0;
+  for (let y = Math.round(cy - r); y <= Math.round(cy + r); y++)
+    for (let x = Math.round(cx - r); x <= Math.round(cx + r); x++) {
+      if ((x - cx) ** 2 + (y - cy) ** 2 > r * r || x < 0 || y < 0 || x >= img.w || y >= img.h) continue;
+      const i = (y * img.w + x) * 4;
+      s += 0.299 * img.data[i] + 0.587 * img.data[i + 1] + 0.114 * img.data[i + 2];
+      n++;
+    }
+  return n ? s / n : 0;
+}
+
+/**
+ * Iris recolour layer: every pixel the edit changed inside the iris discs, with
+ * the edited (watercolour) pixel as colour. Glints and pupils the model kept
+ * stay transparent, so the base's own highlights show through.
+ */
+export function extractDiffOverlay(base, edited, roiWeights, { lo = 8, hi = 30 } = {}) {
+  const out = Buffer.alloc(base.data.length);
+  for (let i = 0; i < roiWeights.length; i++) {
+    const r = roiWeights[i];
+    if (r <= 0) continue;
+    let d = 0;
+    for (let c = 0; c < 3; c++) d = Math.max(d, Math.abs(edited.data[i * 4 + c] - base.data[i * 4 + c]));
+    const a = smoothstep(lo, hi, d) * r;
+    if (a <= 0) continue;
+    for (let c = 0; c < 3; c++) out[i * 4 + c] = edited.data[i * 4 + c];
+    out[i * 4 + 3] = Math.round(a * 255);
+  }
+  return { data: out, w: base.w, h: base.h };
+}
+
+/**
+ * Which pixels of the CANONICAL eyes can be pasted onto any skin tone: the dark
+ * iris / pupil / lash line (clearly darker than the canonical skin) and, when
+ * `sclera`, the bright unsaturated whites. Lid skin and crease shadows are
+ * excluded, so no light patch appears around the eyes on darker skins.
+ */
+export function eyeWeights(canon, eyes, radius, skinLuma, { sclera = true } = {}) {
+  const { w, h } = canon;
+  const raw = new Float32Array(w * h);
+  for (const p of [eyes.left, eyes.right])
+    for (let y = Math.floor(p.y - radius); y <= Math.ceil(p.y + radius); y++)
+      for (let x = Math.floor(p.x - radius); x <= Math.ceil(p.x + radius); x++) {
+        const d = Math.hypot(x - p.x, y - p.y);
+        if (d > radius) continue;
+        const i = (y * w + x) * 4;
+        const [r, g, b] = [canon.data[i], canon.data[i + 1], canon.data[i + 2]];
+        const L = 0.299 * r + 0.587 * g + 0.114 * b;
+        const sat = (Math.max(r, g, b) - Math.min(r, g, b)) / Math.max(1, Math.max(r, g, b));
+        const dark = smoothstep(0, 1, (skinLuma - 45 - L) / 20);
+        const white = sclera ? smoothstep(0, 1, (L - skinLuma - 8) / 15) * smoothstep(0, 1, (0.22 - sat) / 0.08) : 0;
+        const edge = smoothstep(0, 1, (radius - d) / 2);
+        raw[y * w + x] = Math.max(raw[y * w + x], Math.max(dark, white) * edge);
+      }
+  // 3×3 box blur: soft watercolour edges instead of a cut-out
+  const out = new Float32Array(w * h);
+  for (let y = 1; y < h - 1; y++)
+    for (let x = 1; x < w - 1; x++) {
+      let s = 0;
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) s += raw[(y + dy) * w + x + dx];
+      out[y * w + x] = s / 9;
+    }
+  return out;
+}
+
+/**
+ * Face-keep weights for a hair edit: the whole inner-face ellipse inside the
+ * core (eyes, nose, mouth — always the parent's pixels, so overlays align),
+ * and towards the ellipse rim only where the edit did NOT paint something new
+ * (hair falling beside the jaw, a fringe over the forehead). Without this the
+ * parent's paper background leaks back as pale wedges under the jaw.
+ */
+export function faceKeepWeights(parent, edit, ellipse, core, { feather = 26, lo = 40, hi = 85 } = {}) {
+  const { w, h } = parent;
+  const e = ellipseWeights(w, h, ellipse, feather);
+  const c = ellipseWeights(w, h, core, 16);
+  const raw = new Float32Array(w * h);
+  for (let i = 0; i < w * h; i++) {
+    if (e[i] <= 0) continue;
+    let d = 0;
+    for (let k = 0; k < 3; k++) d = Math.max(d, Math.abs(parent.data[i * 4 + k] - edit.data[i * 4 + k]));
+    raw[i] = e[i] * Math.max(c[i], 1 - smoothstep(lo, hi, d));
+  }
+  // 5×5 box blur: no speckle along the hair edge
+  const out = new Float32Array(w * h);
+  for (let y = 2; y < h - 2; y++)
+    for (let x = 2; x < w - 2; x++) {
+      let s = 0;
+      for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) s += raw[(y + dy) * w + x + dx];
+      out[y * w + x] = s / 25;
+    }
+  return out;
 }

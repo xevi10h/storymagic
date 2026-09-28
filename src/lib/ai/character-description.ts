@@ -69,7 +69,7 @@ export const HAIR_COLOR_MAP: Record<string, string> = {
   "#d84315": "bright copper-red",
 };
 
-const EYE_COLOR_MAP: Record<string, string> = {
+export const EYE_COLOR_MAP: Record<string, string> = {
   "#5d4037": "very dark brown, almost black eyes",
   "#8d6e63": "warm chestnut-brown eyes",
   "#558b2f": "bright green eyes",
@@ -127,19 +127,23 @@ export function hairDescription(style: string | undefined, color: string, gender
   }
 }
 
+/**
+ * Same frames as the pre-rendered avatar overlays (scripts/avatar/generate-matrix.mjs),
+ * so the book's child wears the glasses the parent picked in the builder.
+ */
+export function glassesDescription(glasses: boolean | string | null | undefined): string | null {
+  if (!glasses || glasses === "none") return null;
+  const [shape, colour] = glasses === true ? ["round", "dark"] : glasses.split("-");
+  const frame = colour === "red" ? "red" : "dark charcoal";
+  return shape === "square"
+    ? `glasses with softly rounded rectangular lenses and medium-thick ${frame} frames`
+    : `round glasses with thin ${frame} frames`;
+}
+
 function outfitFor(age: number, favoriteColor: string | undefined): string {
   const color = (favoriteColor && OUTFIT_COLOR_MAP[favoriteColor.toLowerCase()]) || DEFAULT_OUTFIT_COLOR;
   const bottoms = age <= 4 ? "soft navy dungarees" : age <= 7 ? "navy trousers" : "dark-blue jeans";
   return `a plain ${color} hooded jacket worn open over a white-and-navy striped t-shirt, ${bottoms} and white canvas sneakers`;
-}
-
-/** "round glasses with thin dark frames" etc.; null = no glasses. Unknown values → the default frame. */
-function glassesDescription(value: CharacterDescriptionInput["glasses"]): string | null {
-  if (!value || value === "none") return null;
-  const [shape, colour] = typeof value === "string" ? value.split("-") : ["round", "dark"];
-  const frameShape = shape === "square" ? "square" : "round";
-  const frameColour = colour === "red" ? "red" : "dark";
-  return `${frameShape} glasses with thin ${frameColour} frames`;
 }
 
 // ── Public API ──────────────────────────────────────────────────────────────
@@ -162,7 +166,8 @@ export function buildCharacterBible(input: CharacterDescriptionInput): Character
   if (input.freckles) traits.push(`a sprinkle of freckles across ${possessive} nose`);
 
   const last = traits.pop() as string;
-  const identity = `a ${age}-year-old ${genderWord} with ${traits.join(", ")} and ${last}`;
+  const article = age === 8 || age === 11 ? "an" : "a";
+  const identity = `${article} ${age}-year-old ${genderWord} with ${traits.join(", ")} and ${last}`;
   const outfit = outfitFor(age, input.favoriteColor);
   return {
     version: 1,
