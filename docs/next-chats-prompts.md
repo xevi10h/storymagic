@@ -23,7 +23,9 @@ Objetivos:
 
 Decisiones ya tomadas (28-09): envío solo a España; el cliente elige tapa blanda o tapa dura; la copia extra es del mismo formato que el libro y su precio depende del formato (confirmado: tapa dura +29,90 €, tapa blanda +19,90 €, IVA incluido); encuadernación encolada.
 
-Antes de implementar pregúntame: (a) IVA 4 % confirmado por gestor, (b) cuenta de Stripe separada para Meapica o renombrar la compartida (hoy sale "Constrack" y mi nombre en el extracto), (c) factura con Stripe o con herramienta española, (d) precios finales (digital 9,90 / blanda 34,90 / dura 49,90?).
+IVA: 4 % confirmado por el gestor (libro impreso y PDF). Stripe: Meapica tendrá su PROPIA cuenta nueva (no la de Constrack): migra precios, webhook, claves test/live en Vercel y `stripe login` a la cuenta nueva (si necesitas que yo haga login o verificación, dímelo con el comando exacto); comprueba nombre público "Meapica" y descriptor "MEAPICA".
+
+Antes de implementar pregúntame: (c) factura con Stripe o con herramienta española, (d) precios finales (digital 9,90 / blanda 34,90 / dura 49,90?).
 
 Tope de gasto en OpenAI para pruebas: 5 $ (dímelo antes de cada lote). Pruebas de pago en modo test; un único pago live real al final con reembolso inmediato, solo con mi OK. QA e2e con Playwright en es/ca, desktop y móvil. Actualiza docs.
 ```
