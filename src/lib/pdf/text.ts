@@ -125,3 +125,76 @@ export function fitText(opts: FitOptions): FitResult {
   }
   return last ?? { fontSize: opts.minSize, leading: minLeading, lines: 0, height: 0, fits: false };
 }
+
+// ── Locale typography ────────────────────────────────────────────────────
+
+/**
+ * Opening / closing quotation marks for printed quotes (dedication, back-cover synopsis).
+ * es/ca: «angle quotes»; fr: « guillemets » with a no-break space (U+00A0 — the embedded
+ * fonts have no U+202F narrow no-break space, and a breaking space could orphan the »);
+ * en: “curly quotes”. Unknown locales fall back to Spanish, like pdfT().
+ */
+export function printQuotes(locale: string | undefined): [open: string, close: string] {
+  switch (locale) {
+    case "en":
+      return ["“", "”"];
+    case "fr":
+      return ["« ", " »"];
+    default:
+      return ["«", "»"];
+  }
+}
+
+/**
+ * Splits `text` after its first `lineCount` visual lines at `width`, with the same greedy
+ * breaker (and safety margin) as countLines — so the head is guaranteed to fit in that many
+ * lines when react-pdf renders it. A blank line between paragraphs counts as one line.
+ * Used to set text beside a drop cap; the tail continues at full width.
+ */
+export function splitLeadingLines(
+  text: string,
+  lineCount: number,
+  fontSize: number,
+  width: number,
+  variant: FontVariant,
+): { head: string; tail: string } {
+  const usable = width * WIDTH_SAFETY;
+  const spaceW = measureTextWidth(" ", fontSize, variant);
+  const paragraphs = text.split("\n");
+  const head: string[] = [];
+  let used = 0;
+  for (let p = 0; p < paragraphs.length; p++) {
+    if (used >= lineCount) return { head: head.join("\n"), tail: paragraphs.slice(p).join("\n") };
+    const words = paragraphs[p].split(" ").filter(Boolean);
+    if (words.length === 0) {
+      head.push("");
+      used += 1;
+      continue;
+    }
+    let lineW = 0;
+    let taken = 0;
+    used += 1;
+    for (const word of words) {
+      const w = measureTextWidth(word, fontSize, variant);
+      if (lineW === 0 || lineW + spaceW + w <= usable) {
+        lineW = lineW === 0 ? w : lineW + spaceW + w;
+      } else if (used < lineCount) {
+        used += 1;
+        lineW = w;
+      } else {
+        break;
+      }
+      taken += 1;
+    }
+    head.push(words.slice(0, taken).join(" "));
+    if (taken < words.length) {
+      return { head: head.join("\n"), tail: [words.slice(taken).join(" "), ...paragraphs.slice(p + 1)].join("\n") };
+    }
+  }
+  return { head: head.join("\n"), tail: "" };
+}
+
+/** "…per a l'" + "Anna" → no space after an elided article; otherwise one space. */
+export function joinName(phrase: string, name: string): string {
+  return phrase.endsWith("'") ? `${phrase}${name}` : `${phrase} ${name}`;
+}

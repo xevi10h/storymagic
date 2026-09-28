@@ -21,7 +21,7 @@ import { rootBoxHeight } from "./primitives";
 import { BRAND_LOGO_ASPECT } from "./assets";
 import { fitText } from "./text";
 import { BackCoverDesign, FrontCoverDesign, fitCoverTexts, type CoverTexts, type PanelFrame, type Rect } from "./cover-art";
-import { backCoverImage, pdfT, prepareBookRender, type BookPdfInput, type BookRenderContext } from "./book-template";
+import { backCoverImage, pdfForName, pdfT, prepareBookRender, type BookPdfInput, type BookRenderContext } from "./book-template";
 
 /** Text keep-out from the visible panel edges */
 const COVER_SAFE_MM = 15;
@@ -76,9 +76,10 @@ export function planCoverSpread(ctx: BookRenderContext, geometry: CoverGeometry)
 
   const { texts, overflow } = fitCoverTexts({
     title: ctx.input.story.bookTitle,
-    subtitle: pdfT(ctx.input.locale, "personalizedStory"),
+    subtitle: pdfForName(ctx.input.locale, "personalizedStory", ctx.input.characterName, ctx.input.characterGender),
     name: ctx.input.characterName,
     synopsis: ctx.input.story.synopsis || pdfT(ctx.input.locale, "defaultSynopsis").replace("{name}", ctx.input.characterName),
+    locale: ctx.input.locale,
     visibleWidth: Math.min(frontVisible.width, backVisible.width),
     safe,
   });
@@ -122,7 +123,7 @@ function CoverSpreadDocument({ ctx, layout }: { ctx: BookRenderContext; layout: 
       <Page size={[layout.pageWidth, layout.pageHeight]} style={{ backgroundColor: theme.coverGradientStart }}>
         <View wrap={false} style={{ width: "100%", height: rootBoxHeight(layout.pageHeight), position: "relative", overflow: "hidden", backgroundColor: theme.coverGradientStart }}>
         <BackCoverDesign frame={layout.back} theme={theme} texts={layout.texts} image={backCoverImage(ctx)} logoUri={ctx.logoWhite} />
-        <FrontCoverDesign frame={layout.front} theme={theme} texts={layout.texts} image={ctx.images.cover} overlayUri={ctx.coverGradient} logoUri={ctx.logoWhite} />
+        <FrontCoverDesign frame={layout.front} theme={theme} texts={layout.texts} image={ctx.images.cover} overlayUri={ctx.coverGradient} />
 
         {/* Spine — solid theme colour over the full file height (incl. wrap/bleed) */}
         <View style={{ position: "absolute", left: spine.left, top: 0, width: spine.width, height: layout.pageHeight, backgroundColor: theme.coverGradientStart }} />

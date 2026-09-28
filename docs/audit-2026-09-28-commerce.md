@@ -126,8 +126,9 @@ each once. Simulated Gelato webhooks: no/wrong secret → 401; tracking stored; 
 `in_transit` after `delivered` changes nothing (fixed: it used to rewind `gelato_status`).
 Canarias 35002 → not submitted + ops alert. Delivery copy aligned to the quote: **7-10 business
 days** everywhere (was 5-8). Removed dead order/quote types from `gelato/types.ts`.
-Open: page 27 ("La heroína") prints an empty purple block: the portrait is deliberately omitted
-(`pipeline.ts` `portraitUrl: null`, avatars are ~107 dpi) — needs a print-res image or a redesign.
+Fixed same day: page 27 ("La heroína") printed an empty purple block (avatar too low-dpi, omitted).
+Now a print-size hero portrait (2432², `HERO_SHOT`, `imageAssets.finalHero`) is rendered with the
+final images and QA-judged; older books fall back to the cover art; print validation errors if missing.
 
 Live Gelato numbers (30 inner pages, ES, excl. VAT): hardcover 11,76 €, softcover 8,92 €;
 shipping 4,80 € (softcover 4,69 €) península/Baleares, 7-8 days door to door; a 2nd copy adds

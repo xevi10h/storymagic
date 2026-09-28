@@ -30,6 +30,7 @@ import {
 import { generateOpenAIImage, type ImageQuality, type ImageReference, type OpenAIImageResult } from "./openai-image";
 import type { ShotFrame, ShotSpec } from "./scene-screenplay";
 import type { CastMember, WorldAsset } from "./visual-assets";
+import { MAP_SHOT, mapShot, type MapGame } from "./adventure-map";
 import { toServerFetchUrl } from "@/lib/storage/illustration-urls";
 
 export { buildCharacterBible, type CharacterBible, type CharacterDescriptionInput };
@@ -67,6 +68,12 @@ export interface BookImageAssets {
   preview?: SheetSet;
   final?: SheetSet;
   finalCover?: { url: string; model: string; createdAt: string };
+  /** Print-size portrait of the child for the "about the reader" page */
+  finalHero?: { url: string; model: string; createdAt: string };
+  /** Adventure map spread (pp. 28–29), painted from `mapGame` */
+  finalMap?: { url: string; model: string; createdAt: string };
+  /** The map's search-and-find game (book language), decided before the map is painted */
+  mapGame?: MapGame;
 }
 
 // ── Stage configuration (env) ────────────────────────────────────────────────
@@ -113,6 +120,8 @@ export function finalRenderStage(): string {
 //   square    2432×2432 → 297 dpi on a full page
 //   landscape 2432×1904 → 297 dpi on the 78%-height split band (same 1.28:1 ratio, no crop)
 //   panorama  3840×1920 → ~235 dpi over both pages (model max width; soft-dpi warning only)
+//   hero      2432×2432 → 297 dpi on the full-bleed "about the reader" page (p27)
+//   map       3840×1920 → ~235 dpi over the adventure-map spread (pp. 28–29), like a panorama
 //   cover     2672×2912 → 300 dpi over the hardcover front art box (226×246 mm incl. wrap),
 //                         ~334 dpi on softcover
 //   sheet     2400×1600 (3:2, two rows of figures)
@@ -125,6 +134,8 @@ const SIZES: Record<"preview" | "final", Record<SizeKey, string>> = {
     landscape: "1296x1008",
     panorama: "2048x1024",
     cover: "1248x1360",
+    hero: "1024x1024",
+    map: "2048x1024",
     sheet: "1536x1024",
     portrait: "1024x1024",
   },
@@ -133,6 +144,8 @@ const SIZES: Record<"preview" | "final", Record<SizeKey, string>> = {
     landscape: "2432x1904",
     panorama: "3840x1920",
     cover: "2672x2912",
+    hero: "2432x2432",
+    map: "3840x1920",
     sheet: "2400x1600",
     portrait: "1024x1024",
   },
@@ -387,8 +400,36 @@ export async function renderPortrait(bible: CharacterBible, photo: ImageReferenc
   });
 }
 
-/** Shot for a scene number (1–12) or 0 = cover. */
-export function shotFor(plan: BookImagePlan, sceneNumber: number): ShotSpec {
+/**
+ * The "about the reader" portrait (page 27): the child alone, derived from the
+ * frozen cover shot so it needs no LLM call and matches the book's world.
+ */
+export function heroShot(plan: BookImagePlan): ShotSpec {
+  return {
+    sceneNumber: HERO_SHOT,
+    frame: "hero",
+    camera: "Eye-level waist-up portrait, the child in the right half of the frame, facing the viewer",
+    shotScale: "medium",
+    action: "The child looks straight at the viewer with a warm, proud, happy smile, relaxed and natural, as if posing for a treasured portrait",
+    setting: "A soft, simplified, gently out-of-focus background from the book's world (the places listed below), painted lightly so the child stands out",
+    light: "Warm, soft, flattering light on the child's face",
+    cast: ["child"],
+    world: plan.cover.world,
+  };
+}
+
+/** Shot number of the hero portrait (never a scene: scenes are 1–12, cover 0). */
+export const HERO_SHOT = -1;
+
+export { MAP_SHOT };
+
+/** Shot for a scene number (1–12), 0 = cover, HERO_SHOT, or MAP_SHOT (needs the map's game). */
+export function shotFor(plan: BookImagePlan, sceneNumber: number, mapGame?: MapGame): ShotSpec {
+  if (sceneNumber === HERO_SHOT) return heroShot(plan);
+  if (sceneNumber === MAP_SHOT) {
+    if (!mapGame) throw new Error("The map shot needs its game (imageAssets.mapGame)");
+    return mapShot(plan, mapGame);
+  }
   if (sceneNumber === 0) return plan.cover;
   const shot = plan.shots.find((s) => s.sceneNumber === sceneNumber);
   if (!shot) throw new Error(`No shot for scene ${sceneNumber}`);

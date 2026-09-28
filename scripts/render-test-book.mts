@@ -15,6 +15,8 @@
  *   --stress         Catalan/Spanish edge-case strings in name, dedication, title
  *   --age=N          override the child's age (text sizing)
  *   --out=DIR        output dir (default artifacts/print-test/<storyId>)
+ *   --map-game=FILE  print pp. 28–29 with this MapGame JSON instead of the stored one
+ *                    (same map image — layout check of the other age bands)
  *
  * Needs `pdftoppm` (poppler) for the PNG contact sheets.
  */
@@ -106,7 +108,15 @@ if (flag("--fill-missing")) {
 }
 let coverImageUrl = (story.cover_image_url ? await prefetchImageAsDataUri(story.cover_image_url) : null) ?? fixtureCover;
 if (flag("--upscale")) coverImageUrl = await resampleTo(coverImageUrl, 3072, 3072);
-const portraitUrl = story.character_portrait_url ? await prefetchImageAsDataUri(story.character_portrait_url) : null;
+// Same source as the fulfilment pipeline: final hero shot, falling back to the cover art
+const heroUrl = (story.generated_text as { imageAssets?: { finalHero?: { url?: string } } }).imageAssets?.finalHero?.url ?? null;
+const portraitUrl = (heroUrl ? await prefetchImageAsDataUri(heroUrl) : null) ?? coverImageUrl;
+// Pages 28–29: same source as the fulfilment pipeline (map + its game, or the endpaper fallback)
+type Assets = { finalMap?: { url?: string }; mapGame?: BookPdfInput["mapGame"] };
+const assets = (story.generated_text as { imageAssets?: Assets }).imageAssets;
+const mapFile = opt("map-game");
+const mapGame = mapFile ? (JSON.parse(readFileSync(resolve(mapFile), "utf8")) as BookPdfInput["mapGame"]) : (assets?.mapGame ?? null);
+const mapImageUrl = assets?.finalMap?.url && mapGame ? await prefetchImageAsDataUri(assets.finalMap.url) : null;
 
 const c = story.characters;
 const generated = structuredClone(story.generated_text);
@@ -138,6 +148,8 @@ const input: BookPdfInput = {
   storyId,
   coverImageUrl,
   portraitUrl,
+  mapImageUrl,
+  mapGame: mapImageUrl ? mapGame : null,
   illustrations,
   locale: story.locale ?? "es",
 };

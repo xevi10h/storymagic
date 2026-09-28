@@ -371,8 +371,9 @@ async function runBook(tc: TestCase, userId: string) {
             // (render_stage/rendered_at columns are not migrated in this database yet)
             must(await admin.from("story_illustrations").update({ image_url: url, status: "ready", prompt_used: prompt }).eq("story_id", storyId).eq("scene_number", n).select("id"), `save scene ${n}`);
           },
-          async saveCover(url) {
-            must(await admin.from("stories").update({ cover_image_url: url }).eq("id", storyId).select("id"), "save cover");
+          async saveCover(url, assets) {
+            generated.imageAssets = assets;
+            must(await admin.from("stories").update({ cover_image_url: url, generated_text: JSON.parse(JSON.stringify(generated)) }).eq("id", storyId).select("id"), "save cover");
           },
           async saveQaPass() {},
           async saveQaDone(result) {
@@ -435,7 +436,7 @@ async function runBook(tc: TestCase, userId: string) {
     senderName: story.sender_name,
     storyId,
     coverImageUrl,
-    portraitUrl: null,
+    portraitUrl: coverImageUrl, // print gate requires a page-27 portrait; the pipeline uses the final hero shot, falling back to the cover
     illustrations,
     locale: story.locale,
   };

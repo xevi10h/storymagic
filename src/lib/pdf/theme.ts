@@ -30,6 +30,16 @@ export const BOOK = {
   safeMargin: 15 * MM_TO_PT,
   /** Inner content margin (from page edge including bleed) */
   contentMargin: 19 * MM_TO_PT, // bleed(4) + safe(15)
+  /**
+   * Decorative page frame, from the page edge: 6 mm inside trim, so the ±1 mm
+   * trimming tolerance can never cut it or make it visibly uneven.
+   */
+  frameInset: (4 + 6) * MM_TO_PT,
+  /**
+   * Folios, from the page edge: 10 mm inside trim —
+   * inside the frame, clear of trim variance, below the 15 mm text safe area.
+   */
+  folioInset: (4 + 10) * MM_TO_PT,
 } as const;
 
 // ── Template Color Palettes ────────────────────────────────────────────────
@@ -199,9 +209,13 @@ export const TYPE = {
 // ── Age-adaptive text sizing ──────────────────────────────────────────────
 // Younger children → fewer words → larger text to fill the page nicely.
 // Older children → more words → smaller text so everything fits.
+// Body sizes raised 2026-09-28 (owner decision). Leading multipliers step down
+// slightly as the size grows (larger type needs relatively less air; the absolute
+// line pitch still grows). The Book Plan word budgets (getPlanSpec in
+// src/lib/ai/book-plan.ts) are calibrated against these sizes — change both together.
 
 export interface PdfTextConfig {
-  /** Scene body text font size (pt) */
+  /** Scene body text font size (pt) — the size every body page should print at */
   body: number;
   /** Scene body line height multiplier */
   bodyLeading: number;
@@ -215,19 +229,19 @@ export interface PdfTextConfig {
 
 export function getPdfTextConfig(age: number): PdfTextConfig {
   if (age <= 4) {
-    // 50-80 words/scene → large, spacious text
-    return { body: 15, bodyLeading: 2.0, title: 22, dropCap: 36, bridgeText: 28 };
+    // read-aloud refrain book → large, spacious text
+    return { body: 17, bodyLeading: 1.85, title: 24, dropCap: 40, bridgeText: 30 };
   }
   if (age <= 6) {
-    // 70-100 words/scene → medium-large, still easy to read
-    return { body: 13.5, bodyLeading: 1.9, title: 21, dropCap: 34, bridgeText: 26 };
+    // picture book → medium-large, still easy to read
+    return { body: 15.5, bodyLeading: 1.8, title: 23, dropCap: 38, bridgeText: 28 };
   }
   if (age <= 9) {
-    // 110-150 words/scene → medium
-    return { body: 11.5, bodyLeading: 1.8, title: 19, dropCap: 30, bridgeText: 23 };
+    // first chapter-book readers → medium
+    return { body: 13, bodyLeading: 1.7, title: 21, dropCap: 34, bridgeText: 25 };
   }
-  // 150-200 words/scene → compact
-  return { body: 10.5, bodyLeading: 1.7, title: 18, dropCap: 28, bridgeText: 22 };
+  // confident readers → compact
+  return { body: 11.5, bodyLeading: 1.65, title: 19, dropCap: 31, bridgeText: 23 };
 }
 
 // ── Shared colors ──────────────────────────────────────────────────────────

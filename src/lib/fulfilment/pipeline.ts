@@ -7,7 +7,7 @@
 // previous one stopped:
 //
 //   lease → final images via src/lib/ai/final-book.ts (final sheet → 12 scenes +
-//   print-size cover, each checkpointed → QA passes, checkpointed)
+//   print-size cover + hero portrait, each checkpointed → QA passes on all of them, checkpointed)
 //   → finalize (story 'ready') → customer book PDF (every format, book-pdfs)
 //   → per order: "book ready" email with its tokenised download link
 //   → per physical order: build print files → validation gate → Gelato submit
@@ -20,7 +20,7 @@
 // engine can be swapped without touching this orchestration.
 
 import { randomUUID } from "node:crypto";
-import { advanceFinalImages, type FinalBookState, type FinalBookStore } from "@/lib/ai/final-book";
+import { advanceFinalImages, shotName, type FinalBookState, type FinalBookStore } from "@/lib/ai/final-book";
 import { finalRenderStage, type BookImageAssets, type BookImagePlan } from "@/lib/ai/book-images";
 import type { GeneratedStory } from "@/lib/ai/story-generator";
 import {
@@ -295,6 +295,8 @@ async function runGeneration(ctx: RunContext): Promise<boolean> {
     plan: generated.imagePlan,
     assets: generated.imageAssets ?? {},
     story: generated,
+    locale: ctx.story.locale ?? undefined,
+    childName: ctx.story.characters?.name,
     finalScenes,
     qaPass: ctx.story.final_qa_pass,
     qaDone: !!ctx.story.final_qa_done_at,
@@ -302,7 +304,7 @@ async function runGeneration(ctx: RunContext): Promise<boolean> {
 
   const progress = await advanceFinalImages({ state, store: finalBookStore(ctx, generated), storage: ctx.supabase, deadline: ctx.deadline });
   console.log(
-    `[fulfilment] Story ${ctx.storyId}: images ${progress.done ? "done" : "in progress"} — rendered [${progress.rendered.join(", ")}], repaired [${progress.repaired.join(", ")}], $${progress.costUsd.toFixed(2)} this run`,
+    `[fulfilment] Story ${ctx.storyId}: images ${progress.done ? "done" : "in progress"} — rendered [${progress.rendered.map(shotName).join(", ")}], repaired [${progress.repaired.map(shotName).join(", ")}], $${progress.costUsd.toFixed(2)} this run`,
   );
   if (!progress.done) return false;
 
@@ -324,8 +326,12 @@ function finalBookStore(ctx: RunContext, generated: ImageGeneratedText): FinalBo
     async saveScene(sceneNumber, url, prompt) {
       await persistScene(ctx, sceneNumber, url, prompt);
     },
-    async saveCover(url) {
-      const { error } = await ctx.supabase.from("stories").update({ cover_image_url: url }).eq("id", ctx.storyId);
+    async saveCover(url, assets) {
+      generated.imageAssets = assets;
+      const { error } = await ctx.supabase
+        .from("stories")
+        .update({ cover_image_url: url, generated_text: JSON.parse(JSON.stringify(generated)) })
+        .eq("id", ctx.storyId);
       if (error) throw new Error(`Failed to checkpoint cover: ${error.message}`);
       ctx.story.cover_image_url = url;
     },
@@ -476,9 +482,17 @@ async function buildPdfInput(ctx: RunContext): Promise<BookPdfInput> {
     .order("scene_number");
   if (error) throw new Error(`Failed to load illustrations: ${error.message}`);
 
-  const [prefetched, coverImageUrl] = await Promise.all([
+  // Page 27 portrait: the print-size hero render; books finished before it existed
+  // use the cover art (print resolution too) — never the ~107 dpi avatar.
+  const assets = (rawGenerated as ImageGeneratedText).imageAssets;
+  const heroUrl = assets?.finalHero?.url ?? null;
+  // Pages 28–29: the adventure map + its game; books without one print a patterned endpaper.
+  const mapUrl = assets?.finalMap && assets.mapGame ? assets.finalMap.url : null;
+  const [prefetched, coverImageUrl, heroImageUrl, mapImageUrl] = await Promise.all([
     prefetchAllIllustrations((rows ?? []).map((r) => ({ sceneNumber: r.scene_number, imageUrl: r.image_url }))),
     story.cover_image_url ? prefetchImageAsDataUri(story.cover_image_url) : Promise.resolve(null),
+    heroUrl ? prefetchImageAsDataUri(heroUrl) : Promise.resolve(null),
+    mapUrl ? prefetchImageAsDataUri(mapUrl) : Promise.resolve(null),
   ]);
 
   return {
@@ -496,9 +510,9 @@ async function buildPdfInput(ctx: RunContext): Promise<BookPdfInput> {
     senderName: story.sender_name,
     storyId,
     coverImageUrl,
-    // Current portraits are ~107 dpi and fail the print gate — omitted until they
-    // are generated at print resolution.
-    portraitUrl: null,
+    portraitUrl: heroImageUrl ?? coverImageUrl,
+    mapImageUrl,
+    mapGame: mapUrl ? (assets?.mapGame ?? null) : null,
     illustrations: prefetched,
     locale: story.locale,
   };

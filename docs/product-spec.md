@@ -4,28 +4,25 @@
 
 | Attribute | Value |
 |-----------|-------|
-| Size | 21x21 cm (square, children's standard) |
-| Pages | 24-32 pages (12-16 double spreads) |
-| Binding | Softcover (~3-4 EUR cost) or Hardcover Premium (~6-8 EUR cost) |
-| Interior | Full color, Munken 170g minimum paper |
-| Print partner | Gelato (print-on-demand, global shipping) |
+| Size | 20×20 cm square (Gelato photobook 200×200 mm), 4 mm bleed |
+| Pages | Cover + 30 inner pages (Gelato adds blank endpapers) |
+| Binding | Softcover or hardcover (Gelato); PDF-only format too |
+| Interior | Full colour, 170 g coated paper |
+| Print partner | Gelato (print-on-demand; we ship Spain península + Baleares) |
 
-## Book Layout (24 Pages — Implemented)
+## Book Layout (30 inner pages — implemented, `src/lib/pdf/layout.ts`)
 
-| # | Page | Content |
-|---|------|---------|
-| 1 | Cover | Illustration of the child protagonist + personalized title |
-| 2 | Front endpaper | Thematic decorative pattern |
-| 3 | Title page | Title + subtitle + Meapica Press imprint |
-| 4 | Dedication | "This story is for [name]..." |
-| 5–16 | Scenes 1–12 | 12 illustrated scenes, cycling through 4 layout types |
-| 17 | Final message | "And so, [name] discovered that..." |
-| 18 | Colophon | Meapica Press editorial note |
-| 19 | Back endpaper | Thematic decorative pattern |
-| 20–24 | (Back matter / cover) | Back cover |
+| Page(s) | Content |
+|---|---|
+| Cover | Front: the child's name + title at the top over the cover art (no logo); spine title (hardcover); back: synopsis + brand |
+| 1 | Title + dedication (right page alone) |
+| 2–25 | 12 scenes, one spread each (illustration ↔ text; panoramas across both pages) |
+| 26 | "The End" + closing line |
+| 27 | "About the reader" — print-size hero portrait of the child + age, favourite colour, etc. |
+| 28–29 | Illustrated adventure map + age-adapted "busca y encuentra" game (2-4: 4 items · 5-6: 6 items + follow the path · 7-12: 8 items + 3 questions, answers upside down). Books made before 2026-09-28: light patterned endpaper |
+| 30 | Colophon + QR to meapica.com (left page alone) |
 
-**Scene spread types (cycling for scenes):** galería → pergamino → ventana → repeat
-**Bridge spread type:** puente (full-bleed illustration + centered sentence page)
+Body type grows with the reader's age band (2-4: 17 pt · 5-6: 15.5 · 7-9: 13 · 10-12: 11.5) and the LLM's word budgets are calibrated to fit at that size (docs/generation-pipeline.md).
 
 ## Narrative Structure (Block-Based, Age-Adaptive)
 

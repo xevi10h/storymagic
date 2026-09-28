@@ -7,11 +7,11 @@
 import { SCENE_LAYOUT_PAIRS } from "@/components/book-viewer/types";
 
 export type ShotScale = "close" | "medium" | "wide";
-/** Print frame of an image: square page, landscape band (split layouts), two-page panorama, or cover. */
-export type ShotFrame = "square" | "landscape" | "panorama" | "cover";
+/** Print frame of an image: square page, landscape band (split layouts), two-page panorama, cover, the hero portrait page, or the adventure map spread (pp. 28–29). */
+export type ShotFrame = "square" | "landscape" | "panorama" | "cover" | "hero" | "map";
 
 export interface ShotSpec {
-  /** 1–12; 0 = cover */
+  /** 1–12; 0 = cover; negative = back-matter shots (book-images HERO_SHOT, MAP_SHOT) */
   sceneNumber: number;
   frame: ShotFrame;
   /** Camera angle + framing, e.g. "low-angle medium shot" */

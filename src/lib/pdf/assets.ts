@@ -55,12 +55,17 @@ export const TITLE_OVERLAY_STOPS: GradientStops = [
   [0.45, 0.35],
   [1, 0.75],
 ];
-/** Front cover: light vignette at the top, strong at the bottom where the title sits. */
+/**
+ * Front cover scrim for the title at the TOP: drawn from the visible top edge down to
+ * about half the panel, darkest behind the title and eased out to nothing (no hard edge),
+ * so white type reads over a light wall as well as a busy sky.
+ */
 export const COVER_OVERLAY_STOPS: GradientStops = [
-  [0, 0.2],
-  [0.3, 0],
-  [0.6, 0.12],
-  [1, 0.75],
+  [0, 0.62],
+  [0.5, 0.52],
+  [0.72, 0.26],
+  [0.9, 0.06],
+  [1, 0],
 ];
 /** Portrait → cream fade on the keepsake page (colour set by caller). */
 export const CREAM_FADE_STOPS: GradientStops = [
@@ -108,10 +113,13 @@ export function hexToRgbTuple(hex: string): [number, number, number] {
   return [parseInt(clean.slice(0, 2), 16), parseInt(clean.slice(2, 4), 16), parseInt(clean.slice(4, 6), 16)];
 }
 
-/** QR code pointing at the online book. */
-export async function generateQrDataUrl(storyId: string, color: string): Promise<string> {
+/**
+ * QR code to the Meapica home page. Deliberately NOT a per-book URL: there is no
+ * public book route, and a printed link must never expose a child's book.
+ */
+export async function generateQrDataUrl(color: string): Promise<string> {
   try {
-    return await QRCode.toDataURL(`https://meapica.com/book/${storyId}`, {
+    return await QRCode.toDataURL("https://meapica.com", {
       width: 600,
       margin: 0,
       color: { dark: color, light: "#00000000" },
@@ -129,22 +137,26 @@ export interface ImageRegistry {
   scenes: Map<number, PrintImage>;
   cover: PrintImage | null;
   portrait: PrintImage | null;
+  /** Adventure map spread (pp. 28–29) */
+  map: PrintImage | null;
 }
 
 export async function buildImageRegistry(input: {
   coverImageUrl: string | null;
   portraitUrl?: string | null;
+  mapImageUrl?: string | null;
   illustrations: { sceneNumber: number; imageUrl: string | null }[];
 }): Promise<ImageRegistry> {
   const toImage = async (src: string | null | undefined): Promise<PrintImage | null> =>
     src ? { src, dims: await probeImageDims(src) } : null;
 
-  const [cover, portrait, scenes] = await Promise.all([
+  const [cover, portrait, map, scenes] = await Promise.all([
     toImage(input.coverImageUrl),
     toImage(input.portraitUrl),
+    toImage(input.mapImageUrl),
     Promise.all(input.illustrations.map(async (ill) => [ill.sceneNumber, await toImage(ill.imageUrl)] as const)),
   ]);
-  const map = new Map<number, PrintImage>();
-  for (const [n, img] of scenes) if (img) map.set(n, img);
-  return { scenes: map, cover, portrait };
+  const sceneMap = new Map<number, PrintImage>();
+  for (const [n, img] of scenes) if (img) sceneMap.set(n, img);
+  return { scenes: sceneMap, cover, portrait, map };
 }

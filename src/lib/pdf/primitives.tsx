@@ -5,7 +5,7 @@
 
 import { View, Text, Image } from "@react-pdf/renderer";
 import type { Style } from "@react-pdf/types";
-import { BOOK, COLORS, FONTS, TYPE } from "./theme";
+import { BOOK, COLORS, TYPE } from "./theme";
 import { coverFit } from "./images";
 import type { PrintImage } from "./assets";
 
@@ -81,15 +81,16 @@ export function BottomGradient({ uri, width, height }: { uri?: string; width: nu
   );
 }
 
+/** Hairline page frame, drawn safely inside the trim (BOOK.frameInset). */
 export function FrameBorder({ color }: { color: string }) {
   return (
     <View
       style={{
         position: "absolute",
-        top: 10,
-        left: 10,
-        right: 10,
-        bottom: 10,
+        top: BOOK.frameInset,
+        left: BOOK.frameInset,
+        right: BOOK.frameInset,
+        bottom: BOOK.frameInset,
         borderWidth: 0.75,
         borderColor: color,
         borderRadius: 6,
@@ -107,28 +108,30 @@ export function CornerDot({ color, top, left, right, bottom }: { color: string; 
   );
 }
 
-export function PageNumber({ num, color }: { num: number; color?: string }) {
-  return (
-    <View style={{ position: "absolute", bottom: BOOK.bleed + 10, left: 0, right: 0, alignItems: "center" }}>
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-        <View style={{ width: 12, height: 0.5, backgroundColor: color || COLORS.textLight }} />
-        <Text style={[TYPE.pageNumber, color ? { color } : {}]}>{num}</Text>
-        <View style={{ width: 12, height: 0.5, backgroundColor: color || COLORS.textLight }} />
-      </View>
-    </View>
-  );
-}
+/**
+ * Small paper plate behind folios printed over artwork (react-pdf has no text-shadow):
+ * same paper tint as the spread text panel, so dark ink stays legible over light AND dark art.
+ */
+const ART_PLATE: Style = { backgroundColor: "rgba(255, 252, 247, 0.8)", borderRadius: 5 };
 
-/** Act label overlay — decorative "I", "II", "III" at the top of illustration pages. */
-export function ActLabel({ label, variant }: { label: string; variant: "light" | "dark" }) {
-  const isLight = variant === "light";
-  const lineColor = isLight ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.15)";
-  const textColor = isLight ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.3)";
+/**
+ * Folio centred at the bottom, BOOK.folioInset from the page edge (10 mm inside trim).
+ * `paper`: muted ink with hairlines; `art`: on a paper plate, legible over any illustration.
+ */
+export function PageNumber({ num, variant = "paper" }: { num: number; variant?: "paper" | "art" }) {
   return (
-    <View style={{ position: "absolute", top: BOOK.bleed + 14, left: 0, right: 0, flexDirection: "row", justifyContent: "center", alignItems: "center", gap: 6 }}>
-      <View style={{ width: 18, height: 0.5, backgroundColor: lineColor }} />
-      <Text style={{ fontFamily: FONTS.display, fontSize: 8, fontWeight: 600, color: textColor, letterSpacing: 3 }}>{label}</Text>
-      <View style={{ width: 18, height: 0.5, backgroundColor: lineColor }} />
+    <View style={{ position: "absolute", bottom: BOOK.folioInset, left: 0, right: 0, alignItems: "center" }}>
+      {variant === "art" ? (
+        <View style={{ ...ART_PLATE, paddingHorizontal: 4, paddingVertical: 1 }}>
+          <Text style={[TYPE.pageNumber, { fontSize: 7, color: COLORS.textMedium }]}>{num}</Text>
+        </View>
+      ) : (
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+          <View style={{ width: 12, height: 0.5, backgroundColor: COLORS.textLight }} />
+          <Text style={TYPE.pageNumber}>{num}</Text>
+          <View style={{ width: 12, height: 0.5, backgroundColor: COLORS.textLight }} />
+        </View>
+      )}
     </View>
   );
 }

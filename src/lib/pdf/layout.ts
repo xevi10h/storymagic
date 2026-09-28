@@ -11,14 +11,17 @@
  *   p2–p25    12 scenes: illustration LEFT ↔ text RIGHT    (each scene = one spread)
  *             panoramic scenes: spread_left p(even) + spread_right p(odd)
  *   p26 · p27 Final "The End" ↔ About the reader
- *   p28 · p29 Decorative endpaper spread
+ *   p28 · p29 Adventure map spread + search-and-find panel (books without a map:
+ *             patterned endpaper spread)
  *   p30       Colophon                                    (left, alone)
  */
 
 import type { GeneratedScene, GeneratedStory } from "@/lib/ai/story-generator";
+import type { MapGame, MapGameBand } from "@/lib/ai/adventure-map";
 import { BOOK, getPdfTextConfig, type PdfTextConfig } from "./theme";
 import { MM_TO_PT } from "./images";
-import { fitText, sanitizePrintText, type FitResult } from "./text";
+import { countLines, fitText, sanitizePrintText, type FitResult } from "./text";
+import type { FontVariant } from "./fonts";
 
 export const INTERIOR_PAGE_COUNT = 30;
 export const SCENE_COUNT = 12;
@@ -83,6 +86,13 @@ export const GEOMETRY = {
   overlayTextWidth: W - 2 * M,
   /** Longest body text drawn in white over a gradient (≈ 6 lines); longer → paper panel */
   maxGradientTextHeight: H * 0.26,
+  /**
+   * Adventure map game panel (right page, p29). The map prompt keeps the RIGHT QUARTER of the
+   * image free (image-prompts MAP_RULES): the panel starts 5 mm inside that zone and ends at
+   * the text safe margin. 408 mm × 0.75 − 200 mm + 5 mm = 111 mm from the right page's edge.
+   */
+  mapPanelLeft: ((4 + 200 + 200 + 4) * 0.75 - 200 + 5) * MM_TO_PT,
+  mapPanelWidth: W - M - ((4 + 200 + 200 + 4) * 0.75 - 200 + 5) * MM_TO_PT,
 } as const;
 
 export type ImageRole = "scene" | "spread";
@@ -132,6 +142,8 @@ export type PlannedPage = PageBase &
     | { kind: "illustration-text"; scene: GeneratedScene; image: ImageBox; body: string; bodyType: FittedType }
     | { kind: "final"; message: string; messageType: FittedType }
     | { kind: "about-reader" }
+    /** Adventure map spread; the game panel is drawn on the right half */
+    | { kind: "map"; half: "left" | "right"; panel: MapPanel | null }
     | { kind: "endpaper" }
     | { kind: "colophon" }
   );
@@ -153,6 +165,114 @@ export interface InteriorPlan {
   issues: PlanIssue[];
 }
 
+// ── Adventure map panel ──────────────────────────────────────────────────
+
+/** Locale strings for the panel (resolved by the template's pdfT). */
+export interface MapPanelStrings {
+  kicker: string;
+  /** "Where is…?" (2–4) or "Seek and find" (5–12) */
+  title: string;
+  /** Generic "follow the trail" line, when the game has none of its own */
+  trail: string;
+  questions: string;
+  answers: string;
+}
+
+export interface MapPanel {
+  band: MapGameBand;
+  kicker: string;
+  title: string;
+  items: string[];
+  trail: string | null;
+  questionsTitle: string;
+  questions: string[];
+  /** One line, printed upside down under the questions */
+  answers: string | null;
+  /** Multiplies every MAP_PANEL size so the panel fits the page */
+  scale: number;
+  height: number;
+}
+
+/** Panel metrics — shared by the planner (fitting) and the template (drawing). */
+export const MAP_PANEL = {
+  padding: 16,
+  kicker: 6.5,
+  kickerGap: 6,
+  titleGap: 8,
+  dividerGap: 10,
+  sectionGap: 12,
+  itemLeading: 1.3,
+  noteLeading: 1.4,
+  sizes: {
+    little: { title: 22, item: 16, itemGap: 11, dot: 13, note: 0, qTitle: 0, question: 0, answer: 0 },
+    middle: { title: 18, item: 13, itemGap: 7, dot: 10, note: 10.5, qTitle: 0, question: 0, answer: 0 },
+    big: { title: 16, item: 11, itemGap: 4.5, dot: 8.5, note: 0, qTitle: 12.5, question: 9.5, answer: 6.8 },
+  },
+} as const;
+
+const MAP_FONT = {
+  title: { role: "display", weight: 600 } as FontVariant,
+  item: { role: "body", weight: 600 } as FontVariant,
+  note: { role: "body", italic: true } as FontVariant,
+  question: { role: "body" } as FontVariant,
+} as const;
+
+/** Capitalise the first letter of a list label ("el cohete" → "El cohete"). */
+function capitalise(label: string): string {
+  return label.charAt(0).toLocaleUpperCase() + label.slice(1);
+}
+
+/** Height of the panel content at `scale` (same stack as MapGamePanel in book-template.tsx). */
+export function mapPanelHeight(p: Omit<MapPanel, "scale" | "height">, scale: number): number {
+  const z = MAP_PANEL.sizes[p.band];
+  const inner = GEOMETRY.mapPanelWidth - 2 * MAP_PANEL.padding;
+  const lines = (text: string, size: number, width: number, font: FontVariant) => countLines(text, size, width, font);
+  let h = 2 * MAP_PANEL.padding;
+  h += MAP_PANEL.kicker * 1.3 + MAP_PANEL.kickerGap;
+  h += lines(p.title, z.title * scale, inner, MAP_FONT.title) * z.title * scale * 1.2 + MAP_PANEL.titleGap;
+  h += 1 + MAP_PANEL.dividerGap; // divider
+  const itemW = inner - z.dot * scale - 7;
+  for (const item of p.items) {
+    h += Math.max(z.dot * scale, lines(item, z.item * scale, itemW, MAP_FONT.item) * z.item * scale * MAP_PANEL.itemLeading) + z.itemGap * scale;
+  }
+  if (p.trail) h += MAP_PANEL.sectionGap + lines(p.trail, z.note * scale, inner - 18, MAP_FONT.note) * z.note * scale * MAP_PANEL.noteLeading;
+  if (p.questions.length) {
+    h += MAP_PANEL.sectionGap + 1 + MAP_PANEL.dividerGap;
+    h += z.qTitle * scale * 1.2 + 6;
+    const qW = inner - 14 * scale;
+    for (const q of p.questions) h += lines(q, z.question * scale, qW, MAP_FONT.question) * z.question * scale * MAP_PANEL.noteLeading + 4;
+  }
+  if (p.answers) h += MAP_PANEL.sectionGap + lines(p.answers, z.answer * scale, inner, MAP_FONT.question) * z.answer * scale * MAP_PANEL.noteLeading;
+  return h;
+}
+
+function planMapPanel(game: MapGame, strings: MapPanelStrings, issues: PlanIssue[]): MapPanel {
+  const band = game.band;
+  const label = (s: string) => sanitizePrintText(s);
+  const base: Omit<MapPanel, "scale" | "height"> = {
+    band,
+    kicker: strings.kicker,
+    title: strings.title,
+    // 2–4: labels complete the title "Where is…?"; 5–12: a checklist starts upper-case
+    items: game.items.map((it) => (band === "little" ? label(it.label) : capitalise(label(it.label)))),
+    trail: band === "middle" ? label(game.trailLine) || strings.trail : null,
+    questionsTitle: strings.questions,
+    questions: band === "big" ? game.questions.map((q) => label(q.question)) : [],
+    answers:
+      band === "big" && game.questions.length
+        ? // No-break spaces inside each answer: a line may only break between answers (numbers separate them)
+          `${strings.answers}: ${game.questions.map((q, i) => `${i + 1}.\u00A0${label(q.answer).replace(/ /g, "\u00A0")}`).join("\u00A0\u00A0 ")}`
+        : null,
+  };
+  const maxHeight = H - 2 * M;
+  for (let scale = 1; scale >= 0.7 - 1e-6; scale -= 0.05) {
+    const height = mapPanelHeight(base, scale);
+    if (height <= maxHeight) return { ...base, scale, height };
+  }
+  issues.push({ severity: "error", code: "text_overflow", message: "Adventure map game does not fit its panel", pageNumber: 29 });
+  return { ...base, scale: 0.7, height: maxHeight };
+}
+
 export interface PlanInput {
   story: GeneratedStory;
   characterAge: number;
@@ -161,6 +281,8 @@ export interface PlanInput {
   senderName: string | null;
   /** Scene numbers (1–24) that have a usable image */
   availableImages: Set<number>;
+  /** Adventure map game — only when its map image decodes; null → patterned endpaper spread */
+  map?: { game: MapGame; strings: MapPanelStrings } | null;
 }
 
 // ── Fitting helpers ──────────────────────────────────────────────────────
@@ -173,10 +295,18 @@ function toType(r: FitResult): FittedType {
   return { fontSize: r.fontSize, leading: r.leading };
 }
 
-/** Body limits per age: preferred size from the age config, floor keeps it readable. */
+/**
+ * Body limits per age: preferred size from the age config. The floor (−15 %, 0.25 pt
+ * steps) is only a last-resort safety net so a book always prints; the Book Plan's
+ * budgets + print-fit repair keep real books at the band size, and any shrink beyond
+ * BODY_SHRINK_WARN_PT is reported as a `body_type_shrunk` warning.
+ */
 function bodyLimits(tc: PdfTextConfig) {
-  return { max: tc.body, min: Math.max(8.5, tc.body - 2.5), leading: tc.bodyLeading, minLeading: 1.35 };
+  return { max: tc.body, min: Math.max(9, Math.round(tc.body * 0.85 * 4) / 4), leading: tc.bodyLeading, minLeading: 1.35 };
 }
+
+/** Shrink below the band's body size that is still invisible (fitter works in 0.25 pt steps). */
+export const BODY_SHRINK_WARN_PT = 0.6;
 
 /** Height a text page's fixed chrome takes (title handled separately). */
 const TEXT_PAGE_CHROME = {
@@ -290,7 +420,8 @@ export function planInteriorPages(input: PlanInput): InteriorPlan {
       // Body over the right half: white text on the viewer's dark gradient only while it is short
       // (the gradient must stay dark behind every line); longer text goes on a readable paper panel.
       const bodyW = GEOMETRY.overlayTextWidth;
-      const gradientFit = fitText({ text: sceneText, variant: { role: "body" }, width: bodyW, height: GEOMETRY.maxGradientTextHeight, maxSize: body.max, minSize: body.max - 1, leading: body.leading, minLeading: body.leading - 0.1 });
+      // Gradient text only at the band's body size (never shrunk to stay on the gradient).
+      const gradientFit = fitText({ text: sceneText, variant: { role: "body" }, width: bodyW, height: GEOMETRY.maxGradientTextHeight, maxSize: body.max, minSize: body.max, leading: body.leading, minLeading: body.leading });
       let overlay: { type: FittedType; mode: "gradient" | "panel"; blockHeight: number };
       if (gradientFit.fits) {
         overlay = { type: toType(gradientFit), mode: "gradient", blockHeight: gradientFit.height };
@@ -399,7 +530,10 @@ export function planInteriorPages(input: PlanInput): InteriorPlan {
     push({ kind: "text", pageNumber: right, scene, variant, body: sceneText, titleType: toType(titleType), bodyType: toType(bodyFit) });
   });
 
-  harmonizeBodyType(pages);
+  const bodyType = harmonizeBodyType(pages);
+  if (bodyType && bodyType.fontSize < tc.body - BODY_SHRINK_WARN_PT) {
+    issues.push({ severity: "warning", code: "body_type_shrunk", message: `Body text set at ${bodyType.fontSize}pt instead of the age band's ${tc.body}pt (the longest page does not fit at full size)` });
+  }
 
   // p26–p30 — closing pages
   const message = sanitizePrintText(story.finalMessage ?? "");
@@ -417,8 +551,13 @@ export function planInteriorPages(input: PlanInput): InteriorPlan {
   const closingStart = 2 + SCENE_COUNT * 2; // 26
   push({ kind: "final", pageNumber: closingStart, message, messageType: toType(messageFit) });
   push({ kind: "about-reader", pageNumber: closingStart + 1 });
-  push({ kind: "endpaper", pageNumber: closingStart + 2 });
-  push({ kind: "endpaper", pageNumber: closingStart + 3 });
+  if (input.map) {
+    push({ kind: "map", pageNumber: closingStart + 2, half: "left", panel: null });
+    push({ kind: "map", pageNumber: closingStart + 3, half: "right", panel: planMapPanel(input.map.game, input.map.strings, issues) });
+  } else {
+    push({ kind: "endpaper", pageNumber: closingStart + 2 });
+    push({ kind: "endpaper", pageNumber: closingStart + 3 });
+  }
   push({ kind: "colophon", pageNumber: closingStart + 4 });
 
   if (pages.length !== INTERIOR_PAGE_COUNT) {
@@ -436,22 +575,32 @@ export function planInteriorPages(input: PlanInput): InteriorPlan {
 
 /**
  * One body size per book: a printed book whose text size jumps from page to page
- * looks broken. Every body block takes the smallest fitted size (a smaller size
- * with its tighter leading always still fits the boxes it was measured against).
+ * looks broken. Every body block — text pages, text under a secondary illustration
+ * and panorama body text (paper panel or gradient) — takes the smallest fitted size
+ * (a smaller size with its tighter leading always still fits the boxes it was
+ * measured against). Returns the book's body type (null when there is no body text).
  */
-function harmonizeBodyType(pages: PlannedPage[]): void {
+function harmonizeBodyType(pages: PlannedPage[]): FittedType | null {
   const bodies: FittedType[] = [];
   for (const p of pages) {
     if ((p.kind === "text" && p.variant !== "puente") || p.kind === "illustration-text") bodies.push(p.bodyType);
-    if (p.kind === "spread" && p.overlay.role === "body" && p.overlay.mode === "panel") bodies.push(p.overlay.type);
+    if (p.kind === "spread" && p.overlay.role === "body") bodies.push(p.overlay.type);
   }
-  if (bodies.length === 0) return;
+  if (bodies.length === 0) return null;
   const smallest = bodies.reduce((a, b) => (b.fontSize < a.fontSize ? b : a));
   const target: FittedType = { fontSize: smallest.fontSize, leading: Math.min(...bodies.filter((b) => b.fontSize === smallest.fontSize).map((b) => b.leading)) };
   for (const p of pages) {
     if ((p.kind === "text" && p.variant !== "puente") || p.kind === "illustration-text") p.bodyType = target;
-    if (p.kind === "spread" && p.overlay.role === "body" && p.overlay.mode === "panel") p.overlay.type = target;
+    if (p.kind === "spread" && p.overlay.role === "body") {
+      if (p.overlay.mode === "gradient" && p.overlay.type.fontSize !== target.fontSize) {
+        // The gradient's height follows the text block: re-measure it at the book size.
+        const fit = fitText({ text: p.overlay.text, variant: { role: "body" }, width: GEOMETRY.overlayTextWidth, height: GEOMETRY.maxGradientTextHeight, maxSize: target.fontSize, minSize: target.fontSize, leading: target.leading, minLeading: target.leading });
+        p.overlay.blockHeight = fit.height;
+      }
+      p.overlay.type = target;
+    }
   }
+  return target;
 }
 
 /** Image boxes drawn on a planned page (for DPI checks and rendering). */

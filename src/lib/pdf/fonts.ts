@@ -69,6 +69,8 @@ registerPdfFonts();
 /** Minimal slice of the fontkit Font API we rely on. */
 interface MeasurableFont {
   unitsPerEm: number;
+  ascent: number;
+  capHeight: number;
   hasGlyphForCodePoint(codePoint: number): boolean;
   layout(text: string): { advanceWidth: number };
 }
@@ -137,6 +139,15 @@ export function measureTextWidth(text: string, fontSize: number, variant: FontVa
   }
   flush();
   return width;
+}
+
+/**
+ * Vertical metrics of the primary font of a stack, in em units. react-pdf puts a
+ * line's baseline at lineTop + ascent·fontSize (extra leading goes below it).
+ */
+export function fontMetrics(variant: FontVariant): { ascent: number; capHeight: number } {
+  const [font] = loadedStack(variant);
+  return { ascent: font.ascent / font.unitsPerEm, capHeight: font.capHeight / font.unitsPerEm };
 }
 
 /** Characters that no font in the stack can draw (would print as blank boxes). */

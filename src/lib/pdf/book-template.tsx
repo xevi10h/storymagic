@@ -9,7 +9,7 @@
  *   p1        Title + dedication (verbatim parent text)
  *   p2–p25    12 scenes — illustration LEFT ↔ text RIGHT; panoramas span p(even)+p(odd)
  *   p26 · p27 Final "The End" ↔ About the reader
- *   p28 · p29 Endpaper spread
+ *   p28 · p29 Adventure map + search-and-find game (patterned endpaper when the book has no map)
  *   p30       Colophon
  *
  * Digital book (user download, 34 pages = the physical book in reading order):
@@ -24,11 +24,13 @@
 
 import { createElement, type JSX, type ReactNode } from "react";
 import { Document, Page, View, Text, Image, Svg, Circle, Path, renderToBuffer } from "@react-pdf/renderer";
-import { BOOK, COLORS, TYPE, FONTS, getTheme, getPdfTextConfig, type TemplateTheme } from "./theme";
+import type { Style } from "@react-pdf/types";
+import { BOOK, COLORS, TYPE, FONTS, getTheme, type TemplateTheme } from "./theme";
 import { OrnamentalDivider, StarCluster, WavyDots, HeartIcon } from "./decorations";
 import type { GeneratedStory } from "@/lib/ai/story-generator";
+import type { MapGame } from "@/lib/ai/adventure-map";
 import { FAVORITE_COLORS } from "@/lib/create-store";
-import { ensurePdfFontsLoaded } from "./fonts";
+import { ensurePdfFontsLoaded, fontMetrics, measureTextWidth } from "./fonts";
 import {
   BRAND_LOGO_ASPECT,
   COVER_OVERLAY_STOPS,
@@ -44,15 +46,16 @@ import {
 import {
   GEOMETRY,
   ILL_TEXT_WIDTH,
+  MAP_PANEL,
   PANEL_PADDING,
-  getActLabel,
+  type MapPanel,
   planInteriorPages,
   type InteriorPlan,
   type PlannedPage,
 } from "./layout";
-import { ActLabel, BottomGradient, CornerDot, FrameBorder, PageNumber, Paragraphs, PlacedImage, rootBoxHeight } from "./primitives";
+import { BottomGradient, CornerDot, FrameBorder, PageNumber, Paragraphs, PlacedImage, rootBoxHeight } from "./primitives";
 import { BackCoverDesign, FrontCoverDesign, fitCoverTexts, type CoverTexts, type PanelFrame } from "./cover-art";
-import { sanitizePrintText } from "./text";
+import { joinName, printQuotes, sanitizePrintText, splitLeadingLines } from "./text";
 
 // ── Input types ────────────────────────────────────────────────────────────
 
@@ -75,6 +78,10 @@ export interface BookPdfInput {
   locale?: string;
   // Hero card / back cover enrichment
   portraitUrl?: string | null;
+  /** Data URI (pre-fetched) — adventure map spread (pp. 28–29); printed only together with `mapGame` */
+  mapImageUrl?: string | null;
+  /** The map's search-and-find game (imageAssets.mapGame) */
+  mapGame?: MapGame | null;
   characterGender?: string;
   characterCity?: string | null;
   characterInterests?: string[];
@@ -96,6 +103,12 @@ const PDF_STRINGS: Record<string, Record<string, string>> = {
     years: "años",
     colophonText: "Ilustraciones creadas exclusivamente para este libro.\nDiseño editorial por Meapica.",
     defaultSynopsis: "{name} está a punto de vivir la aventura más extraordinaria de su vida.",
+    mapKicker: "El mapa de la aventura",
+    mapWhereIs: "¿Dónde está…?",
+    mapSeekFind: "Busca y encuentra",
+    mapTrail: "Sigue con el dedo el camino de puntos.",
+    mapQuestions: "Preguntas",
+    mapAnswers: "Respuestas",
   },
   ca: {
     personalizedStory: "Una història personalitzada per a",
@@ -107,6 +120,12 @@ const PDF_STRINGS: Record<string, Record<string, string>> = {
     years: "anys",
     colophonText: "Il·lustracions creades exclusivament per a aquest llibre.\nDisseny editorial per Meapica.",
     defaultSynopsis: "{name} està a punt de viure l'aventura més extraordinària de la seva vida.",
+    mapKicker: "El mapa de l'aventura",
+    mapWhereIs: "On és…?",
+    mapSeekFind: "Busca i troba",
+    mapTrail: "Segueix amb el dit el camí de punts.",
+    mapQuestions: "Preguntes",
+    mapAnswers: "Respostes",
   },
   en: {
     personalizedStory: "A personalized story for",
@@ -118,6 +137,12 @@ const PDF_STRINGS: Record<string, Record<string, string>> = {
     years: "years old",
     colophonText: "Illustrations created exclusively for this book.\nEditorial design by Meapica.",
     defaultSynopsis: "{name} is about to live the most extraordinary adventure of their life.",
+    mapKicker: "The adventure map",
+    mapWhereIs: "Where is…?",
+    mapSeekFind: "Seek and find",
+    mapTrail: "Follow the dotted trail with your finger.",
+    mapQuestions: "Questions",
+    mapAnswers: "Answers",
   },
   fr: {
     personalizedStory: "Une histoire personnalisée pour",
@@ -129,12 +154,31 @@ const PDF_STRINGS: Record<string, Record<string, string>> = {
     years: "ans",
     colophonText: "Illustrations créées exclusivement pour ce livre.\nDesign éditorial par Meapica.",
     defaultSynopsis: "{name} est sur le point de vivre l'aventure la plus extraordinaire de sa vie.",
+    mapKicker: "La carte de l'aventure",
+    mapWhereIs: "Où est… ?",
+    mapSeekFind: "Cherche et trouve",
+    mapTrail: "Suis du doigt le chemin en pointillés.",
+    mapQuestions: "Questions",
+    mapAnswers: "Réponses",
   },
 };
 
 export function pdfT(locale: string | undefined, key: string): string {
   const loc = locale && PDF_STRINGS[locale] ? locale : "es";
   return PDF_STRINGS[loc][key] || PDF_STRINGS.es[key] || key;
+}
+
+/**
+ * A "…for" phrase ready to be followed by the child's name. Catalan needs the
+ * personal article: "per a la Núria", "per a en Pau", "per a l'Anna".
+ * Join with `joinName` (no space after an elided "l'").
+ */
+export function pdfForName(locale: string | undefined, key: string, name: string, gender?: string): string {
+  const phrase = pdfT(locale, key);
+  if (locale !== "ca") return phrase;
+  // ponytail: vowel/h+vowel → l'; ignores the unstressed i/u exceptions ("la Irene").
+  if (/^h?[aeiouàèéíòóúï]/i.test(name.trim())) return `${phrase} l'`;
+  return `${phrase} ${gender === "boy" ? "en" : "la"}`;
 }
 
 // ── Render context (everything pre-computed before drawing) ───────────────
@@ -165,17 +209,31 @@ export async function prepareBookRender(input: BookPdfInput): Promise<BookRender
     dedicationText: input.dedicationText,
     senderName: input.senderName,
     availableImages: new Set(images.scenes.keys()),
+    map:
+      images.map?.dims && input.mapGame
+        ? {
+            game: input.mapGame,
+            strings: {
+              kicker: pdfT(input.locale, "mapKicker"),
+              title: pdfT(input.locale, input.mapGame.band === "little" ? "mapWhereIs" : "mapSeekFind"),
+              trail: pdfT(input.locale, "mapTrail"),
+              questions: pdfT(input.locale, "mapQuestions"),
+              answers: pdfT(input.locale, "mapAnswers"),
+            },
+          }
+        : null,
   });
   const { texts: coverTexts } = fitCoverTexts({
     title: input.story.bookTitle,
-    subtitle: pdfT(input.locale, "personalizedStory"),
+    subtitle: pdfForName(input.locale, "personalizedStory", input.characterName, input.characterGender),
     name: input.characterName,
     synopsis: input.story.synopsis || pdfT(input.locale, "defaultSynopsis").replace("{name}", input.characterName),
+    locale: input.locale,
     visibleWidth: BOOK.trimWidth,
     safe: DIGITAL_COVER_SAFE,
   });
   const [qrDataUrl, logoWhite, logoOrnament, textGradient, titleGradient, coverGradient, creamFade] = await Promise.all([
-    generateQrDataUrl(input.storyId, theme.coverGradientStart),
+    generateQrDataUrl(theme.coverGradientStart),
     getBrandLogoPng("#ffffff"),
     getBrandLogoPng(theme.ornamentColor),
     getGradientPng(TEXT_OVERLAY_STOPS),
@@ -240,7 +298,6 @@ function IllustrationPage({ page, ctx }: { page: PageOf<"illustration">; ctx: Bo
   const { theme, images } = ctx;
   const image = images.scenes.get(page.image.sceneNumber);
   const title = sanitizePrintText(page.scene.title);
-  const actLabel = getActLabel(page.scene.sceneNumber);
   const box = page.image;
 
   if (page.layout === "split_top" || page.layout === "split_bottom") {
@@ -251,17 +308,16 @@ function IllustrationPage({ page, ctx }: { page: PageOf<"illustration">; ctx: Bo
         {page.layout === "split_top" ? (
           <>
             {img}
-            {actLabel && <ActLabel label={actLabel} variant="light" />}
             <TitleStrip theme={theme} text={title} height={strip} />
           </>
         ) : (
           <>
             <TitleStrip theme={theme} text={title} height={strip} />
             {img}
-            {actLabel && <ActLabel label={actLabel} variant="dark" />}
           </>
         )}
-        <PageNumber num={page.pageNumber} />
+        {/* split_bottom: the folio falls on the illustration */}
+        <PageNumber num={page.pageNumber} variant={page.layout === "split_bottom" ? "art" : "paper"} />
       </BookPage>
     );
   }
@@ -271,32 +327,37 @@ function IllustrationPage({ page, ctx }: { page: PageOf<"illustration">; ctx: Bo
     <BookPage>
       <PlacedImage image={image} boxWidth={W} boxHeight={H} />
       {page.layout === "immersive" && <BottomGradient uri={ctx.titleGradient} width={W} height={H * 0.5} />}
-      {actLabel && <ActLabel label={actLabel} variant="light" />}
       {page.layout === "immersive" && <OverlayTitle text={title} fontSize={page.titleType.fontSize} leading={page.titleType.leading} />}
-      <PageNumber num={page.pageNumber} color="#ffffffcc" />
+      <PageNumber num={page.pageNumber} variant="art" />
     </BookPage>
   );
+}
+
+/**
+ * Bottom gradient height shared by BOTH halves of a panorama, so the darkening is
+ * identical on each side of the fold. Uses TEXT_OVERLAY_STOPS on both pages: body text
+ * occupies the bottom 55% of it, where it is ≥ 45% black; the title needs half the page.
+ */
+function spreadGradientHeight(plan: InteriorPlan, sceneNumber: number): number {
+  let height = H * 0.5;
+  for (const p of plan.pages) {
+    if (p.kind === "spread" && p.scene.sceneNumber === sceneNumber && p.overlay.role === "body" && p.overlay.mode === "gradient") {
+      height = Math.max(height, (p.overlay.blockHeight + M + 6) / 0.55);
+    }
+  }
+  return Math.min(H, height);
 }
 
 function SpreadPage({ page, ctx }: { page: PageOf<"spread">; ctx: BookRenderContext }) {
   const image = ctx.images.scenes.get(page.image.sceneNumber);
   const { overlay } = page;
-  const actLabel = page.half === "left" ? getActLabel(page.scene.sceneNumber) : undefined;
   const panelWidth = GEOMETRY.overlayTextWidth;
-  // Text occupies the bottom 55% of the gradient, where it is ≥ 45% black (TEXT_OVERLAY_STOPS)
-  const bodyGradientHeight = Math.min(H, (overlay.blockHeight + M + 6) / 0.55);
 
   return (
     <BookPage>
       <PlacedImage image={image} boxWidth={page.image.boxWidth} boxHeight={page.image.boxHeight} windowLeft={page.image.windowLeft} viewWidth={W} viewHeight={H} />
-      {overlay.mode === "gradient" && (
-        <BottomGradient
-          uri={overlay.role === "title" ? ctx.titleGradient : ctx.textGradient}
-          width={W}
-          height={overlay.role === "title" ? H * 0.5 : bodyGradientHeight}
-        />
-      )}
-      {actLabel && <ActLabel label={actLabel} variant="light" />}
+      {/* Same gradient on both halves → continuous across the fold (no seam at the gutter) */}
+      <BottomGradient uri={ctx.textGradient} width={W} height={spreadGradientHeight(ctx.plan, page.scene.sceneNumber)} />
       {overlay.role === "title" ? (
         <OverlayTitle text={overlay.text} fontSize={overlay.type.fontSize} leading={overlay.type.leading} />
       ) : overlay.mode === "gradient" ? (
@@ -318,7 +379,7 @@ function SpreadPage({ page, ctx }: { page: PageOf<"spread">; ctx: BookRenderCont
           <Paragraphs text={overlay.text} style={{ fontFamily: FONTS.body, fontSize: overlay.type.fontSize, color: COLORS.textDark, lineHeight: overlay.type.leading }} />
         </View>
       )}
-      <PageNumber num={page.pageNumber} color="#ffffffcc" />
+      <PageNumber num={page.pageNumber} variant="art" />
     </BookPage>
   );
 }
@@ -344,6 +405,54 @@ function IllustrationTextPage({ page, ctx }: { page: PageOf<"illustration-text">
 }
 
 // ── Text pages (galeria / pergamino / ventana / puente) ───────────────────
+
+/** Opening punctuation that travels with the initial ("¿Qué", "«Hola"); dashes (dialogue) get no drop cap. */
+const DROP_CAP_INITIAL = /^[¿¡«"“'‘]?[\p{L}\p{N}]/u;
+
+/**
+ * Two-line drop cap. react-pdf cannot float text around a box, so the first two
+ * lines are measured off (same breaker as the planner) and set beside the initial;
+ * the rest continues at full width. The initial's cap height spans from line 1's
+ * cap line to line 2's baseline, its baseline sitting exactly on line 2's.
+ * The planner fits ventana bodies at a narrower width, so this never grows the block.
+ * Falls back to plain paragraphs when the first paragraph is a single line.
+ */
+function DropCapParagraphs({ text, style, width, color }: { text: string; style: Style & { fontSize: number; lineHeight: number }; width: number; color: string }) {
+  const initial = DROP_CAP_INITIAL.exec(text)?.[0];
+  if (!initial) return <Paragraphs text={text} style={style} />;
+  const fs = style.fontSize;
+  const pitch = fs * style.lineHeight;
+  const bodyFont = fontMetrics({ role: "body" });
+  const capVariant = { role: "display" as const, weight: 600 as const };
+  const capFont = fontMetrics(capVariant);
+  const capSize = (pitch + bodyFont.capHeight * fs) / capFont.capHeight;
+  // react-pdf baseline = line top + ascent·size → offset that puts the initial's baseline on line 2's
+  const capTop = pitch + bodyFont.ascent * fs - capFont.ascent * capSize;
+  const capWidth = measureTextWidth(initial, capSize, capVariant) + fs * 0.35;
+  const lineWidth = width - capWidth;
+  const { head, tail } = splitLeadingLines(text.slice(initial.length), 2, fs, lineWidth, { role: "body" });
+  // Only when the first paragraph itself fills both lines beside the initial: a one-line
+  // opening paragraph would leave the initial hanging into the blank gap below it.
+  // splitLeadingLines breaks early (safety margin), so a head it spreads over 2 lines can
+  // still render on ONE — require the head to overflow the REAL line width by a margin;
+  // borderline cases fall back to plain paragraphs (no drop cap beats an empty line).
+  const headOverflows = measureTextWidth(head, fs, { role: "body" }) > lineWidth * 1.04;
+  if (!head || head.includes("\n") || !headOverflows) return <Paragraphs text={text} style={style} />;
+  return (
+    <>
+      <View style={{ flexDirection: "row" }}>
+        <View style={{ width: capWidth, height: 2 * pitch }}>
+          <Text style={{ position: "absolute", top: capTop, left: 0, fontFamily: FONTS.display, fontSize: capSize, fontWeight: 600, color, lineHeight: 1 }}>{initial}</Text>
+        </View>
+        <View style={{ flex: 1 }}>
+          <Paragraphs text={head} style={style} />
+        </View>
+      </View>
+      {tail ? <Paragraphs text={tail} style={style} /> : null}
+    </>
+  );
+}
+
 
 function TextPage({ page, ctx }: { page: PageOf<"text">; ctx: BookRenderContext }) {
   const { theme } = ctx;
@@ -389,23 +498,13 @@ function TextPage({ page, ctx }: { page: PageOf<"text">; ctx: BookRenderContext 
         </BookPage>
       );
 
-    case "ventana": {
-      const tcDrop = getPdfTextConfig(ctx.input.characterAge).dropCap;
-      const firstChar = Array.from(page.body)[0] ?? "";
-      const rest = page.body.slice(firstChar.length);
+    case "ventana":
       return (
         <BookPage background={COLORS.cream}>
           <FrameBorder color={theme.ornamentColor} />
           <View style={column}>
             <Text style={{ ...titleStyle, marginBottom: 14 }}>{title}</Text>
-            <View style={{ flexDirection: "row", alignItems: "flex-start" }}>
-              <View style={{ marginRight: 6, marginTop: 2 }}>
-                <Text style={{ fontFamily: FONTS.display, fontSize: tcDrop, fontWeight: 600, color: theme.accent, lineHeight: 1 }}>{firstChar}</Text>
-              </View>
-              <View style={{ flex: 1 }}>
-                <Paragraphs text={rest} style={bodyStyle} />
-              </View>
-            </View>
+            <DropCapParagraphs text={page.body} style={bodyStyle} width={colW} color={theme.accent} />
             <View style={{ marginTop: 14, alignItems: "center" }}>
               <OrnamentalDivider color={theme.ornamentColor} width={70} />
             </View>
@@ -413,7 +512,6 @@ function TextPage({ page, ctx }: { page: PageOf<"text">; ctx: BookRenderContext 
           <PageNumber num={page.pageNumber} />
         </BookPage>
       );
-    }
 
     case "galeria":
     default:
@@ -442,6 +540,7 @@ function TextPage({ page, ctx }: { page: PageOf<"text">; ctx: BookRenderContext 
 
 function TitleDedicationPage({ page, ctx }: { page: PageOf<"title-dedication">; ctx: BookRenderContext }) {
   const { theme, input } = ctx;
+  const [quoteOpen, quoteClose] = printQuotes(input.locale);
   return (
     <BookPage background={COLORS.cream}>
       <FrameBorder color={theme.ornamentColor} />
@@ -456,7 +555,7 @@ function TitleDedicationPage({ page, ctx }: { page: PageOf<"title-dedication">; 
           <OrnamentalDivider color={theme.ornamentColor} width={60} />
         </View>
 
-        <Text style={{ fontFamily: FONTS.body, fontSize: 11, color: COLORS.textMedium, textAlign: "center" }}>{pdfT(input.locale, "personalizedAdventure")}</Text>
+        <Text style={{ fontFamily: FONTS.body, fontSize: 11, color: COLORS.textMedium, textAlign: "center" }}>{pdfForName(input.locale, "personalizedAdventure", input.characterName, input.characterGender)}</Text>
         <Text style={{ fontFamily: FONTS.display, fontSize: 18, fontWeight: 600, color: theme.accent, marginTop: 4, textAlign: "center" }}>
           {sanitizePrintText(input.characterName)}
         </Text>
@@ -473,8 +572,8 @@ function TitleDedicationPage({ page, ctx }: { page: PageOf<"title-dedication">; 
             <View style={{ alignItems: "center", width: BOOK.trimWidth * 0.62 }}>
               <Paragraphs
                 text={page.dedication}
-                prefix={"\u201C"}
-                suffix={"\u201D"}
+                prefix={quoteOpen}
+                suffix={quoteClose}
                 style={{ fontFamily: FONTS.body, fontStyle: "italic", fontSize: page.dedicationType.fontSize, color: theme.titleColor, opacity: 0.85, textAlign: "center", lineHeight: page.dedicationType.leading }}
               />
               {page.sender && (
@@ -514,6 +613,126 @@ function EndpapersPage({ theme }: { theme: TemplateTheme }) {
   );
 }
 
+// ── Adventure map (pp. 28–29) ─────────────────────────────────────────────
+
+/** Paper game card over the map's calm right quarter (image-prompts MAP_RULES keeps it free). */
+function MapGamePanel({ panel, theme }: { panel: MapPanel; theme: TemplateTheme }) {
+  const z = MAP_PANEL.sizes[panel.band];
+  const s = panel.scale;
+  const inner = GEOMETRY.mapPanelWidth - 2 * MAP_PANEL.padding;
+  const dot = z.dot * s;
+  const divider = <View style={{ width: 28, height: 1, borderRadius: 0.5, backgroundColor: theme.accent, opacity: 0.8, marginBottom: MAP_PANEL.dividerGap }} />;
+  return (
+    <View
+      style={{
+        position: "absolute",
+        left: GEOMETRY.mapPanelLeft,
+        top: (H - panel.height) / 2,
+        width: GEOMETRY.mapPanelWidth,
+        padding: MAP_PANEL.padding,
+        backgroundColor: "rgba(255, 252, 247, 0.95)", // COLORS.paper — alpha on the fill only
+        borderRadius: 10,
+      }}
+    >
+      {/* Inner hairline, like a printed card */}
+      <View style={{ position: "absolute", top: 4, left: 4, right: 4, bottom: 4, borderWidth: 0.75, borderColor: theme.ornamentColor, borderRadius: 7, opacity: 0.7 }} />
+      <Text style={{ fontFamily: FONTS.body, fontSize: MAP_PANEL.kicker, fontWeight: 700, color: theme.accent, letterSpacing: 1.4, lineHeight: 1.3 }}>{panel.kicker.toUpperCase()}</Text>
+      <Text style={{ marginTop: MAP_PANEL.kickerGap, marginBottom: MAP_PANEL.titleGap, fontFamily: FONTS.display, fontWeight: 600, fontSize: z.title * s, lineHeight: 1.2, color: theme.titleColor }}>
+        {panel.title}
+      </Text>
+      {divider}
+      {panel.items.map((item, i) => (
+        <View key={i} style={{ flexDirection: "row", alignItems: "center", marginBottom: z.itemGap * s }}>
+          <View style={{ width: dot, height: dot, borderRadius: dot / 2, borderWidth: 1.1, borderColor: theme.accent, marginRight: 7 }} />
+          <Text style={{ width: inner - dot - 7, fontFamily: FONTS.body, fontWeight: 600, fontSize: z.item * s, lineHeight: MAP_PANEL.itemLeading, color: COLORS.textDark }}>{item}</Text>
+        </View>
+      ))}
+      {panel.trail ? (
+        <View style={{ marginTop: MAP_PANEL.sectionGap, flexDirection: "row", alignItems: "flex-start" }}>
+          {/* The trail's own mark: three dashes */}
+          <View style={{ width: 18, flexDirection: "row", gap: 2, paddingTop: z.note * s * 0.62 }}>
+            {[0, 1, 2].map((d) => (
+              <View key={d} style={{ width: 3.5, height: 1.4, borderRadius: 0.7, backgroundColor: theme.accent }} />
+            ))}
+          </View>
+          <Text style={{ width: inner - 18, fontFamily: FONTS.body, fontStyle: "italic", fontSize: z.note * s, lineHeight: MAP_PANEL.noteLeading, color: COLORS.textMedium }}>{panel.trail}</Text>
+        </View>
+      ) : null}
+      {panel.questions.length ? (
+        <View style={{ marginTop: MAP_PANEL.sectionGap }}>
+          {divider}
+          <Text style={{ marginBottom: 6, fontFamily: FONTS.display, fontWeight: 600, fontSize: z.qTitle * s, lineHeight: 1.2, color: theme.titleColor }}>{panel.questionsTitle}</Text>
+          {panel.questions.map((q, i) => (
+            <View key={i} style={{ flexDirection: "row", marginBottom: 4 }}>
+              <Text style={{ width: 14 * s, fontFamily: FONTS.body, fontWeight: 700, fontSize: z.question * s, lineHeight: MAP_PANEL.noteLeading, color: theme.accent }}>{i + 1}.</Text>
+              <Text style={{ width: inner - 14 * s, fontFamily: FONTS.body, fontSize: z.question * s, lineHeight: MAP_PANEL.noteLeading, color: COLORS.textDark }}>{q}</Text>
+            </View>
+          ))}
+        </View>
+      ) : null}
+      {panel.answers ? (
+        // Upside down, the classic puzzle-book convention
+        <View style={{ marginTop: MAP_PANEL.sectionGap, transform: "rotate(180deg)" }}>
+          <Text style={{ width: inner, fontFamily: FONTS.body, fontSize: z.answer * s, lineHeight: MAP_PANEL.noteLeading, color: COLORS.textMuted, textAlign: "center" }}>{panel.answers}</Text>
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
+/** One half of the map spread (no folio: back-matter art). */
+function MapPage({ page, ctx }: { page: PageOf<"map">; ctx: BookRenderContext }) {
+  return (
+    <BookPage background={COLORS.cream}>
+      <PlacedImage
+        image={ctx.images.map}
+        boxWidth={GEOMETRY.spreadWidth}
+        boxHeight={H}
+        windowLeft={page.half === "right" ? GEOMETRY.spreadRightOffset : 0}
+        viewWidth={W}
+        viewHeight={H}
+      />
+      {page.panel ? <MapGamePanel panel={page.panel} theme={ctx.theme} /> : null}
+    </BookPage>
+  );
+}
+
+/**
+ * pp. 28–29 of books without a map: light paper in the theme's tint with a sparse
+ * lattice of tiny stars and dots, continuous across the fold (`offsetX` = this
+ * page's x in spread coordinates).
+ */
+function PatternEndpaperPage({ theme, offsetX }: { theme: TemplateTheme; offsetX: number }) {
+  const STEP = 38;
+  const first = Math.floor(offsetX / STEP) - 1;
+  const cols = Math.ceil(W / STEP) + 3;
+  const rows = Math.ceil(H / (STEP / 2)) + 2;
+  const marks: JSX.Element[] = [];
+  for (let r = 0; r < rows; r++) {
+    for (let c = first; c < first + cols; c++) {
+      const x = c * STEP + (r % 2 ? STEP / 2 : 0) - offsetX;
+      const y = r * (STEP / 2);
+      if (x < -6 || x > W + 6) continue;
+      // Stars on every other lattice point, dots between
+      if ((r + c) % 2 === 0) {
+        const k = 3.2;
+        marks.push(<Path key={`${r}-${c}`} d={`M${x} ${y - k} Q${x} ${y} ${x + k} ${y} Q${x} ${y} ${x} ${y + k} Q${x} ${y} ${x - k} ${y} Q${x} ${y} ${x} ${y - k} Z`} fill={theme.ornamentColor} fillOpacity={0.55} />);
+      } else {
+        marks.push(<Circle key={`${r}-${c}`} cx={x} cy={y} r={0.9} fill={theme.ornamentColor} fillOpacity={0.5} />);
+      }
+    }
+  }
+  return (
+    <BookPage background={theme.pageTint}>
+      <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}>
+        <Svg width={W} height={H} viewBox={`0 0 ${W} ${H}`}>
+          {marks}
+        </Svg>
+      </View>
+    </BookPage>
+  );
+}
+
 function FinalPage({ page, ctx }: { page: PageOf<"final">; ctx: BookRenderContext }) {
   const { theme, input } = ctx;
   return (
@@ -530,7 +749,7 @@ function FinalPage({ page, ctx }: { page: PageOf<"final">; ctx: BookRenderContex
             <WavyDots color={theme.ornamentColor} />
           </View>
           <Text style={{ fontFamily: FONTS.body, fontSize: 9, color: COLORS.textMuted, marginTop: 28, textAlign: "center" }}>
-            {pdfT(input.locale, "createdFor")} {sanitizePrintText(input.characterName)}
+            {joinName(pdfForName(input.locale, "createdFor", input.characterName, input.characterGender), sanitizePrintText(input.characterName))}
           </Text>
           <Text style={{ fontFamily: FONTS.display, fontSize: 16, fontWeight: 600, color: theme.accent, marginTop: 8 }}>{pdfT(input.locale, "end")}</Text>
         </View>
@@ -616,7 +835,8 @@ function AboutReaderPage({ ctx }: { ctx: BookRenderContext }) {
               <View key={i} style={{ flexDirection: "row", alignItems: "center", gap: 7 }}>
                 {trait.icon === "color" && (
                   <Svg width={13} height={13} viewBox="0 0 13 13">
-                    <Circle cx={6.5} cy={6.5} r={6} fill={trait.color ?? theme.accent} stroke="#00000015" strokeWidth={0.5} />
+                    {/* Opaque light edge — SVG stroke alpha ("#00000015") is dropped and printed solid black */}
+                    <Circle cx={6.5} cy={6.5} r={6} fill={trait.color ?? theme.accent} stroke={COLORS.textLight} strokeWidth={0.5} />
                   </Svg>
                 )}
                 {trait.icon === "pets" && <PetsIcon color={theme.accent} size={13} />}
@@ -675,7 +895,7 @@ const DIGITAL_FRAME: PanelFrame = {
 function CoverPage({ ctx }: { ctx: BookRenderContext }) {
   return (
     <BookPage background={ctx.theme.coverGradientStart}>
-      <FrontCoverDesign frame={DIGITAL_FRAME} theme={ctx.theme} texts={ctx.coverTexts} image={ctx.images.cover} overlayUri={ctx.coverGradient} logoUri={ctx.logoWhite} />
+      <FrontCoverDesign frame={DIGITAL_FRAME} theme={ctx.theme} texts={ctx.coverTexts} image={ctx.images.cover} overlayUri={ctx.coverGradient} />
     </BookPage>
   );
 }
@@ -715,8 +935,10 @@ function renderPlannedPage(page: PlannedPage, ctx: BookRenderContext): JSX.Eleme
       return <FinalPage key={key} page={page} ctx={ctx} />;
     case "about-reader":
       return <AboutReaderPage key={key} ctx={ctx} />;
+    case "map":
+      return <MapPage key={key} page={page} ctx={ctx} />;
     case "endpaper":
-      return <EndpapersPage key={key} theme={ctx.theme} />;
+      return <PatternEndpaperPage key={key} theme={ctx.theme} offsetX={page.side === "right" ? GEOMETRY.spreadRightOffset : 0} />;
     case "colophon":
       return <ColophonPage key={key} ctx={ctx} />;
   }
@@ -738,7 +960,7 @@ export function BookPdf({ ctx }: { ctx: BookRenderContext }) {
     <Document
       title={input.story.bookTitle}
       author="Meapica"
-      subject={`${pdfT(input.locale, "personalizedStory")} ${input.characterName}`}
+      subject={joinName(pdfForName(input.locale, "personalizedStory", input.characterName, input.characterGender), input.characterName)}
       creator="Meapica — meapica.com"
       producer="Meapica"
     >

@@ -9,7 +9,7 @@ import { PDFDocument } from "pdf-lib";
 import type { CoverGeometry } from "@/lib/gelato/catalog";
 import { backCoverImage, prepareBookRender, type BookPdfInput, type BookRenderContext } from "./book-template";
 import { planCoverSpread } from "./cover-spread";
-import { INTERIOR_PAGE_COUNT, SCENE_COUNT, imageBoxesOf, type PlanIssue } from "./layout";
+import { GEOMETRY, INTERIOR_PAGE_COUNT, SCENE_COUNT, imageBoxesOf, type PlanIssue } from "./layout";
 import { MIN_PRINT_DPI, MM_TO_PT, TARGET_PRINT_DPI, coverFit, type ImageDims } from "./images";
 import { unprintableCharacters } from "./text";
 import { BOOK } from "./theme";
@@ -123,14 +123,24 @@ export async function validatePrintableBook(input: BookPdfInput, options: Valida
     }
   }
 
-  // Keepsake portrait (full page)
-  if (ctx.images.portrait) {
-    if (!ctx.images.portrait.dims) {
-      out.errors.push({ severity: "error", code: "undecodable_image", message: "Portrait cannot be decoded (pass portraitUrl: null to print without it)" });
-    } else {
-      const { dpi } = coverFit(ctx.images.portrait.dims, BOOK.pageWidth, BOOK.pageHeight);
-      checkDpi(out, "Page 27 portrait (pass portraitUrl: null to print without it)", ctx.images.portrait.dims, dpi, { pageNumber: 27 });
-    }
+  // Keepsake portrait (page 27, full page) — required: without it the page prints as a bare colour field
+  if (!ctx.images.portrait) {
+    out.errors.push({ severity: "error", code: "missing_portrait", message: "No portrait for page 27 (pass the hero shot, or the cover art as fallback)", pageNumber: 27 });
+  } else if (!ctx.images.portrait.dims) {
+    out.errors.push({ severity: "error", code: "undecodable_image", message: "Page 27 portrait cannot be decoded", pageNumber: 27 });
+  } else {
+    const { dpi } = coverFit(ctx.images.portrait.dims, BOOK.pageWidth, BOOK.pageHeight);
+    checkDpi(out, "Page 27 portrait", ctx.images.portrait.dims, dpi, { pageNumber: 27 });
+  }
+
+  // Adventure map (pp. 28–29) — optional: books without one print a patterned endpaper spread
+  if (input.mapGame && !ctx.images.map) {
+    out.warnings.push({ severity: "warning", code: "map_missing", message: "Adventure map image not available — pages 28–29 print as an endpaper", pageNumber: 28 });
+  } else if (ctx.images.map && !ctx.images.map.dims) {
+    out.warnings.push({ severity: "warning", code: "undecodable_image", message: "Adventure map cannot be decoded — pages 28–29 print as an endpaper", pageNumber: 28 });
+  } else if (ctx.images.map?.dims && ctx.plan.pages.some((p) => p.kind === "map")) {
+    const { dpi } = coverFit(ctx.images.map.dims, GEOMETRY.spreadWidth, BOOK.pageHeight);
+    checkDpi(out, "Pages 28–29 adventure map", ctx.images.map.dims, dpi, { pageNumber: 28 });
   }
 
   // Cover
@@ -169,6 +179,9 @@ export async function validatePrintableBook(input: BookPdfInput, options: Valida
     ["Dedication", input.dedicationText || input.story.dedication || "", "body"],
     ["Sender", input.senderName ?? "", "body"],
     ...input.story.scenes.map((s): [string, string, "display" | "body"] => [`Scene ${s.sceneNumber}`, `${s.title}\n${s.text}`, "body"]),
+    ...(ctx.plan.pages.some((p) => p.kind === "map") && input.mapGame
+      ? [["Map game", [...input.mapGame.items.map((i) => i.label), input.mapGame.trailLine, ...input.mapGame.questions.flatMap((q) => [q.question, q.answer])].join("\n"), "body"] as [string, string, "display" | "body"]]
+      : []),
   ];
   for (const [label, text, role] of texts) {
     const bad = unprintableCharacters(text, { role });

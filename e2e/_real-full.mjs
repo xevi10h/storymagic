@@ -2,7 +2,7 @@
 // phone + Baleares address. Stripe test mode ⇒ Gelato order is a DRAFT (never printed).
 // Spends ~$2.3 of OpenAI (preview + final images). Run the dev server with MOCK_MODE=false and
 // STRIPE_ENVIRONMENT=test, plus `stripe listen --forward-to localhost:3013/api/webhooks/stripe`.
-// Usage: OUT=/tmp/x [POSTCODE=07001] node e2e/_real-full.mjs
+// Usage: OUT=/tmp/x [NAME=Leo AGE=8 GENDER=boy] [POSTCODE=07001] [STORY=<id> to skip creation] node e2e/_real-full.mjs
 import { chromium } from "@playwright/test";
 const OUT = process.env.OUT, BASE = "http://localhost:3013";
 const browser = await chromium.launch();
@@ -24,9 +24,9 @@ if (!storyId) {
 await page.goto(`${BASE}/es/crear`);
 await page.evaluate(() => localStorage.clear());
 await page.goto(`${BASE}/es/crear`);
-await page.locator("#child-name").fill("Martina");
-await page.getByRole("radio", { name: /^5/ }).click();
-await page.getByRole("radio", { name: "Una niña" }).click();
+await page.locator("#child-name").fill(process.env.NAME ?? "Martina");
+await page.getByRole("radio", { name: new RegExp(`^${process.env.AGE ?? 5}`) }).click();
+await page.getByRole("radio", { name: process.env.GENDER === "boy" ? "Un niño" : "Una niña" }).click();
 await page.getByRole("button", { name: /Siguiente/ }).click();
 await page.getByTestId("protagonist-portrait").waitFor();
 await page.getByRole("button", { name: /Siguiente/ }).click();

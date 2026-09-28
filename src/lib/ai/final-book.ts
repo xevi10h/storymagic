@@ -1,7 +1,8 @@
 // Final book images (post-purchase), resumable.
 //
-//   final character sheet(s) → 12 scenes + print-size cover (parallel, sheet-only refs)
-//   → QA judge (sheet + scene text) → repair failing scenes by EDITING them → done
+//   final character sheet(s) → 12 scenes + print-size cover + hero portrait + adventure map
+//   (parallel, sheet-only refs; the map's game is decided first, adventure-map.ts)
+//   → QA judge (sheet + scene text) on scenes, cover, hero and map → repair failing images by EDITING them → done
 //
 // Every finished unit is handed to the caller's store immediately (the
 // fulfilment pipeline turns each call into a DB checkpoint), and nothing is
@@ -11,6 +12,8 @@
 
 import type { GeneratedStory } from "./story-generator";
 import {
+  HERO_SHOT,
+  MAP_SHOT,
   finalRenderStage,
   loadReference,
   renderSheets,
@@ -23,6 +26,7 @@ import {
   type SheetRefs,
 } from "./book-images";
 import { buildScenePrompt } from "./image-prompts";
+import { buildMapGame, mapChecklist, type MapGame } from "./adventure-map";
 import { failsQa, judgeScenes, type QAResult, type QAScene } from "./qa-judge";
 import { optionalReference } from "./preview-book";
 import { CHILD_ID } from "./visual-assets";
@@ -39,7 +43,7 @@ export const COVER = 0;
 const SHEET_MIN_MS = 150_000;
 /** A final scene takes ~60 s (2432²) to ~120 s (3840×1920); per-call timeout is 240 s. */
 const SCENE_START_MIN_MS = 130_000;
-/** Judge (~10 s measured) + edit of the failing scenes (~60 s). */
+/** Judge (~10 s measured, anatomy crops in parallel) + edit of the failing images (~60 s). */
 const QA_PASS_MIN_MS = 120_000;
 /** Kept between the last awaited call and the caller's hard deadline. */
 const SAFETY_MS = 15_000;
@@ -51,8 +55,12 @@ export interface FinalBookState {
   storyId: string;
   plan: BookImagePlan;
   assets: BookImageAssets;
-  /** Scene text for the QA judge */
+  /** Scene text for the QA judge (and the map's game) */
   story: GeneratedStory;
+  /** Book language (stories.locale) — the map's game labels; falls back to the Book Plan's */
+  locale?: string;
+  /** Child's name as printed — the map's game; falls back to the Book Plan's */
+  childName?: string;
   /** Scenes (1–12) that already have a FINAL render → their stored URL */
   finalScenes: Map<number, string>;
   qaPass: number;
@@ -62,7 +70,8 @@ export interface FinalBookState {
 export interface FinalBookStore {
   saveAssets(assets: BookImageAssets): Promise<void>;
   saveScene(sceneNumber: number, url: string, prompt: string, renderStage: string): Promise<void>;
-  saveCover(url: string): Promise<void>;
+  /** The cover URL and the assets that reference it, in ONE write (a crash between two writes re-renders or re-repairs it). */
+  saveCover(url: string, assets: BookImageAssets): Promise<void>;
   saveQaPass(pass: number): Promise<void>;
   saveQaDone(result: QAResult | null): Promise<void>;
   /** QA could not run — the book ships unreviewed (operator alert). */
@@ -85,11 +94,17 @@ interface Ctx {
   deadline: number;
   costUsd: number;
   refs?: SheetRefs;
+  /** Asset checkpoints run one at a time (cover + hero finish concurrently). */
+  assetsWrite: Promise<void>;
 }
 
 const remaining = (ctx: Ctx) => ctx.deadline - Date.now();
 const callDeadline = (ctx: Ctx) => ctx.deadline - SAFETY_MS;
 const folder = (ctx: Ctx) => `${ctx.state.storyId}/final`;
+export const shotName = (n: number) => (n === COVER ? "cover" : n === HERO_SHOT ? "hero" : n === MAP_SHOT ? "map" : `scene ${n}`);
+const fileName = (n: number) => (n >= 1 ? `scene-${n}` : shotName(n));
+/** Shot of any final image (the map's shot is built from its stored game). */
+const shotOf = (state: FinalBookState, n: number) => shotFor(state.plan, n, state.assets.mapGame);
 const errorMessage = (err: unknown) => (err instanceof Error ? err.message : String(err));
 
 /**
@@ -104,7 +119,7 @@ export async function advanceFinalImages(args: {
   storage: SupabaseClient;
   deadline: number;
 }): Promise<FinalBookProgress> {
-  const ctx: Ctx = { ...args, costUsd: 0 };
+  const ctx: Ctx = { ...args, costUsd: 0, assetsWrite: Promise.resolve() };
   const progress: FinalBookProgress = { done: false, costUsd: 0, rendered: [], repaired: [], qa: null };
   try {
     if (!(await ensureSheets(ctx))) return progress;
@@ -138,7 +153,7 @@ async function ensureSheets(ctx: Ctx): Promise<boolean> {
     sheets.extra ? uploadGeneratedImage(ctx.storage, folder(ctx), "sheet-extra", sheets.extra.image, sheets.extra.mime) : Promise.resolve(null),
   ]);
   state.assets = { ...state.assets, final: { mainUrl, extraUrl, model: stageConfig("final").model, createdAt: new Date().toISOString() } };
-  await ctx.store.saveAssets(state.assets);
+  await saveAssets(ctx);
   ctx.refs = {
     sheet: { data: sheets.main.image, mime: sheets.main.mime },
     extraSheet: sheets.extra ? { data: sheets.extra.image, mime: sheets.extra.mime } : null,
@@ -148,22 +163,69 @@ async function ensureSheets(ctx: Ctx): Promise<boolean> {
 
 // ── Scenes + cover ───────────────────────────────────────────────────────────
 
+/** Checkpoint `state.assets` (with the cover URL when it changed), serialised so a slower write never lands last with stale assets. */
+function saveAssets(ctx: Ctx, coverUrl?: string): Promise<void> {
+  const write = ctx.assetsWrite.then(() => (coverUrl ? ctx.store.saveCover(coverUrl, ctx.state.assets) : ctx.store.saveAssets(ctx.state.assets)));
+  ctx.assetsWrite = write.catch(() => undefined);
+  return write;
+}
+
+/** Stored final image of a scene (1–12), the cover or the hero portrait. */
+function finalUrl(state: FinalBookState, n: number): string | undefined {
+  if (n === COVER) return state.assets.finalCover?.url;
+  if (n === HERO_SHOT) return state.assets.finalHero?.url;
+  if (n === MAP_SHOT) return state.assets.finalMap?.url;
+  return state.finalScenes.get(n);
+}
+
+/** Checkpoint a finished final image (first render or repair). */
+async function saveFinal(ctx: Ctx, n: number, url: string, model: string, prompt: string): Promise<void> {
+  const { state } = ctx;
+  const asset = { url, model, createdAt: new Date().toISOString() };
+  if (n === HERO_SHOT) {
+    state.assets = { ...state.assets, finalHero: asset };
+    await saveAssets(ctx);
+  } else if (n === MAP_SHOT) {
+    state.assets = { ...state.assets, finalMap: asset };
+    await saveAssets(ctx);
+  } else if (n === COVER) {
+    state.assets = { ...state.assets, finalCover: asset };
+    await saveAssets(ctx, url);
+  } else {
+    await ctx.store.saveScene(n, url, prompt, finalRenderStage());
+    state.finalScenes.set(n, url);
+  }
+}
+
+/** The map's game, decided (and checkpointed) once, before the map is painted. */
+async function ensureMapGame(ctx: Ctx): Promise<MapGame> {
+  const { state } = ctx;
+  if (state.assets.mapGame) return state.assets.mapGame;
+  const bookPlan = state.story.bookPlan;
+  const { game, costUsd } = await buildMapGame({
+    plan: state.plan,
+    story: state.story,
+    locale: state.locale ?? bookPlan?.locale ?? "es",
+    age: state.plan.bible.age,
+    childName: state.childName ?? bookPlan?.childName ?? "",
+    label: `story ${state.storyId}`,
+  });
+  ctx.costUsd += costUsd;
+  state.assets = { ...state.assets, mapGame: game };
+  await saveAssets(ctx);
+  return game;
+}
+
 async function renderOne(ctx: Ctx, n: number): Promise<void> {
   const { state } = ctx;
   const refs = ctx.refs as SheetRefs;
-  const shot = shotFor(state.plan, n);
-  const label = `story ${state.storyId} ${n === COVER ? "cover" : `scene ${n}`}`;
+  if (n === MAP_SHOT) await ensureMapGame(ctx);
+  const shot = shotOf(state, n);
+  const label = `story ${state.storyId} ${shotName(n)}`;
   const result = await renderShot(state.plan, shot, "final", refs, { label, deadline: callDeadline(ctx) });
   ctx.costUsd += result.costUsd;
-  const url = await uploadGeneratedImage(ctx.storage, folder(ctx), n === COVER ? "cover" : `scene-${n}`, result.image, result.mime);
-  if (n === COVER) {
-    state.assets = { ...state.assets, finalCover: { url, model: result.model, createdAt: new Date().toISOString() } };
-    await ctx.store.saveCover(url);
-    await ctx.store.saveAssets(state.assets);
-  } else {
-    await ctx.store.saveScene(n, url, buildScenePrompt(state.plan, shot, [{ kind: "sheet", names: [] }]), finalRenderStage());
-    state.finalScenes.set(n, url);
-  }
+  const url = await uploadGeneratedImage(ctx.storage, folder(ctx), fileName(n), result.image, result.mime);
+  await saveFinal(ctx, n, url, result.model, buildScenePrompt(state.plan, shot, [{ kind: "sheet", names: [] }]));
 }
 
 /**
@@ -189,7 +251,7 @@ async function runTasks(ctx: Ctx, tasks: number[], work: (n: number) => Promise<
         const typed = classifyProviderError(err, PROVIDER);
         if (typed) outage = true;
         failed.set(n, typed ?? err);
-        console.error(`[Final images] story ${ctx.state.storyId} ${n === COVER ? "cover" : `scene ${n}`} failed: ${errorMessage(err)}`);
+        console.error(`[Final images] story ${ctx.state.storyId} ${shotName(n)} failed: ${errorMessage(err)}`);
       }
     }),
   );
@@ -205,9 +267,11 @@ async function renderMissing(ctx: Ctx, progress: FinalBookProgress): Promise<boo
   const { state } = ctx;
   let todo = state.plan.shots.map((s) => s.sceneNumber).filter((n) => !state.finalScenes.has(n));
   if (!state.assets.finalCover) todo.push(COVER);
+  if (!state.assets.finalHero) todo.push(HERO_SHOT);
+  if (!state.assets.finalMap) todo.push(MAP_SHOT);
   if (todo.length === 0) return true;
 
-  console.log(`[Final images] story ${state.storyId}: rendering [${todo.map((n) => (n === COVER ? "cover" : n)).join(", ")}] with ${stageConfig("final").model}`);
+  console.log(`[Final images] story ${state.storyId}: rendering [${todo.map(shotName).join(", ")}] with ${stageConfig("final").model}`);
   // One in-run retry for scenes that failed with an ordinary error.
   for (let round = 1; round <= 2; round++) {
     const { done, failed, stoppedEarly } = await runTasks(ctx, todo, (n) => renderOne(ctx, n));
@@ -229,15 +293,30 @@ function label(plan: BookImagePlan, id: string): string {
   return plan.cast.find((c) => c.id === id)?.name.toUpperCase() ?? id;
 }
 
-export function qaSceneFor(plan: BookImagePlan, story: GeneratedStory, sceneNumber: number, imageUrl: string): QAScene {
-  const shot = shotFor(plan, sceneNumber);
-  const scene = story.scenes.find((s) => s.sceneNumber === sceneNumber);
+export function qaSceneFor(plan: BookImagePlan, story: GeneratedStory, sceneNumber: number, imageUrl: string, mapGame?: MapGame): QAScene {
+  const shot = shotFor(plan, sceneNumber, mapGame);
+  // The cover and the hero portrait have no page text: the shot brief (with the page's own rules) is what they must show.
+  const scene = sceneNumber >= 1 ? story.scenes.find((s) => s.sceneNumber === sceneNumber) : undefined;
+  const page =
+    sceneNumber === COVER
+      ? "The BOOK COVER (the title is added later in print; the picture itself has no text). "
+      : sceneNumber === HERO_SHOT
+        ? "The portrait page of the child (the name is added later in print; the picture itself has no text). "
+        : sceneNumber === MAP_SHOT
+          ? "The ADVENTURE MAP double page at the end of the book (a search-and-find panel is printed later over its right quarter; the picture itself has no text). "
+          : "";
+  const rule =
+    sceneNumber === HERO_SHOT
+      ? " THE CHILD is the only figure in the picture: no other people, animals or creatures, not even tiny ones in the background."
+      : sceneNumber === MAP_SHOT && mapGame
+        ? ` The reader is asked to FIND each of these, so each must be clearly visible and recognisable in the picture: ${mapChecklist(plan, mapGame)}. Any one missing or unrecognisable → coherenceScore at most 5, and the fix must add it on open ground. Double page: nothing important on the vertical centre line (the fold). Place names, labels or letters (even on a compass) → hardFail. Figures are small on a map: judge the child's identity by hair, skin tone and outfit colours, not facial detail.`
+        : "";
   const presentIds = shot.cast;
   return {
     sceneNumber,
     imageUrl,
     text: scene ? `${scene.title}. ${scene.text}` : "",
-    shot: `${shot.camera}. ${shot.action} Setting: ${shot.setting}. Light: ${shot.light}.${shot.frame === "panorama" ? " (Double-page panorama; nothing important on the vertical centre line.)" : ""}`,
+    shot: `${page}${shot.camera}. ${shot.action} Setting: ${shot.setting}. Light: ${shot.light}.${shot.frame === "panorama" ? " (Double-page panorama; nothing important on the vertical centre line.)" : ""}${rule}`,
     present: presentIds.map((id) => label(plan, id)),
     absent: [CHILD_ID, ...plan.cast.map((c) => c.id)].filter((id) => !presentIds.includes(id)).map((id) => label(plan, id)),
   };
@@ -251,15 +330,19 @@ async function runQa(ctx: Ctx, progress: FinalBookProgress): Promise<boolean> {
   const { state } = ctx;
   if (state.qaDone) return true;
   const refs = ctx.refs as SheetRefs;
-  // First judgement covers every scene; after a repair pass only the edited scenes are re-judged.
+  // First judgement covers every image (scenes, cover, hero); after a repair pass
+  // only the edited ones are re-judged. A resumed run starts with a full judgement:
+  // repairs are checkpointed as they finish, so it sees the repaired images.
   let toJudge: Set<number> | null = null;
 
   for (;;) {
     if (remaining(ctx) < QA_PASS_MIN_MS) return false;
-    const scenes = [...state.finalScenes.entries()]
-      .filter(([n]) => !toJudge || toJudge.has(n))
-      .sort((a, b) => a[0] - b[0])
-      .map(([n, url]) => qaSceneFor(state.plan, state.story, n, url));
+    const scenes = [...state.plan.shots.map((s) => s.sceneNumber), COVER, HERO_SHOT, MAP_SHOT]
+      .filter((n) => !toJudge || toJudge.has(n))
+      .flatMap((n) => {
+        const url = finalUrl(state, n);
+        return url ? [qaSceneFor(state.plan, state.story, n, url, state.assets.mapGame)] : [];
+      });
     const qa = await judgeScenes({ scenes, sheet: refs.sheet.data, characters: qaCharacters(state.plan), iterationNumber: state.qaPass + 1 });
     progress.qa = qa;
     if (qa.skipped) {
@@ -267,29 +350,28 @@ async function runQa(ctx: Ctx, progress: FinalBookProgress): Promise<boolean> {
       await ctx.store.onQaSkipped(qa.skipReason ?? "unknown");
       break;
     }
-    for (const v of qa.verdicts.filter(failsQa)) console.log(`[QA] scene ${v.sceneNumber}: ${v.score}/${v.consistencyScore}/${v.coherenceScore}${v.hardFail ? " HARD" : ""} — ${v.issues.join("; ")} → ${v.fix}`);
+    for (const v of qa.verdicts.filter(failsQa)) console.log(`[QA] ${shotName(v.sceneNumber)}: ${v.score}/${v.consistencyScore}/${v.coherenceScore}${v.hardFail ? " HARD" : ""} — ${v.issues.join("; ")} → ${v.fix}`);
     const failing = qa.verdicts.filter(failsQa);
     if (failing.length === 0) break;
     if (state.qaPass >= MAX_REPAIR_PASSES) {
-      console.warn(`[Final images] story ${state.storyId}: scenes [${failing.map((v) => v.sceneNumber).join(", ")}] still below the bar after ${MAX_REPAIR_PASSES} repair passes`);
+      console.warn(`[Final images] story ${state.storyId}: [${failing.map((v) => shotName(v.sceneNumber)).join(", ")}] still below the bar after ${MAX_REPAIR_PASSES} repair passes`);
       break;
     }
 
     const byScene = new Map(failing.map((v) => [v.sceneNumber, v]));
     const { done, failed, stoppedEarly } = await runTasks(ctx, [...byScene.keys()], async (n) => {
       const v = byScene.get(n);
-      const current = state.finalScenes.get(n);
+      const current = finalUrl(state, n);
       if (!v || !current) return;
       const fix = v.fix.trim() || v.issues.join("; ") || "Match the character sheet exactly";
-      const shot = shotFor(state.plan, n);
+      const shot = shotOf(state, n);
       const result = await repairShot(state.plan, shot, "final", refs, await loadReference(current), fix, {
-        label: `story ${state.storyId} scene ${n}`,
+        label: `story ${state.storyId} ${shotName(n)}`,
         deadline: callDeadline(ctx),
       });
       ctx.costUsd += result.costUsd;
-      const url = await uploadGeneratedImage(ctx.storage, folder(ctx), `scene-${n}-fix${state.qaPass + 1}`, result.image, result.mime);
-      await ctx.store.saveScene(n, url, `${buildScenePrompt(state.plan, shot, [{ kind: "sheet", names: [] }])}\n\nREPAIR: ${fix}`, finalRenderStage());
-      state.finalScenes.set(n, url);
+      const url = await uploadGeneratedImage(ctx.storage, folder(ctx), `${fileName(n)}-fix${state.qaPass + 1}`, result.image, result.mime);
+      await saveFinal(ctx, n, url, result.model, `${buildScenePrompt(state.plan, shot, [{ kind: "sheet", names: [] }])}\n\nREPAIR: ${fix}`);
     });
     progress.repaired.push(...done);
     const err = firstError(failed);

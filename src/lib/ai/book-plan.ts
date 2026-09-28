@@ -78,20 +78,22 @@ export interface PlanSpec {
   minRefrainSlots: number;
 }
 
-// Budgets calibrated against the real print planner (planInteriorPages) at the
-// age's intended body size. Dialogue-heavy prose spends a line per paragraph,
-// so the caps sit below the plain-prose capacity (10–12: ~320 words in 3
-// paragraphs, but ~210 words in 10 paragraphs already shrinks the type).
-// findPrintFitViolations checks the real fit on top of these budgets.
+// Budgets calibrated (2026-09-28) against the real print boxes at the age's body
+// size (getPdfTextConfig: 17 / 15.5 / 13 / 11.5 pt), with real es/ca/fr manuscripts:
+// `max` fits the narrowest text page (ventana, drop cap) at full size in ≥90 % of
+// samples at maxParagraphs+1 paragraphs, dialogue-heavy included. Every paragraph
+// costs its last partial line plus a blank line, so the paragraph count, not the
+// words, is the hard ceiling (at full size a text page holds at most ~6 / 7 / 8 / 10
+// paragraphs per band). findPrintFitViolations checks the real fit on top of these.
 export function getPlanSpec(age: number): PlanSpec {
   if (age <= 4) {
     return {
       mode: "refrain",
       ageBand: "2-4",
       bridgeSlots: [3, 6, 9, 12],
-      scene: { min: 20, max: 50, maxParagraphs: 4 },
-      panoramic: { min: 15, max: 45, maxParagraphs: 3 },
-      bridge: { min: 3, max: 15, maxParagraphs: 1 },
+      scene: { min: 15, max: 36, maxParagraphs: 4 },
+      panoramic: { min: 11, max: 34, maxParagraphs: 3 },
+      bridge: { min: 3, max: 12, maxParagraphs: 1 },
       maxSentenceWords: 14,
       minRefrainSlots: 5,
     };
@@ -101,9 +103,9 @@ export function getPlanSpec(age: number): PlanSpec {
       mode: "picture",
       ageBand: "5-6",
       bridgeSlots: [3, 9],
-      scene: { min: 50, max: 90, maxParagraphs: 5 },
-      panoramic: { min: 30, max: 55, maxParagraphs: 3 },
-      bridge: { min: 4, max: 20, maxParagraphs: 1 },
+      scene: { min: 36, max: 50, maxParagraphs: 5 },
+      panoramic: { min: 22, max: 40, maxParagraphs: 3 },
+      bridge: { min: 4, max: 15, maxParagraphs: 1 },
       maxSentenceWords: 22,
       minRefrainSlots: 0,
     };
@@ -113,9 +115,9 @@ export function getPlanSpec(age: number): PlanSpec {
       mode: "chapter",
       ageBand: "7-9",
       bridgeSlots: [3, 9],
-      scene: { min: 100, max: 150, maxParagraphs: 6 },
-      panoramic: { min: 50, max: 90, maxParagraphs: 3 },
-      bridge: { min: 4, max: 25, maxParagraphs: 1 },
+      scene: { min: 72, max: 95, maxParagraphs: 6 },
+      panoramic: { min: 38, max: 68, maxParagraphs: 3 },
+      bridge: { min: 4, max: 19, maxParagraphs: 1 },
       maxSentenceWords: null,
       minRefrainSlots: 0,
     };
@@ -124,9 +126,9 @@ export function getPlanSpec(age: number): PlanSpec {
     mode: "literary",
     ageBand: "10-12",
     bridgeSlots: [],
-    scene: { min: 150, max: 220, maxParagraphs: 6 },
-    panoramic: { min: 70, max: 110, maxParagraphs: 3 },
-    bridge: { min: 4, max: 25, maxParagraphs: 1 },
+    scene: { min: 105, max: 140, maxParagraphs: 6 },
+    panoramic: { min: 52, max: 82, maxParagraphs: 3 },
+    bridge: { min: 4, max: 19, maxParagraphs: 1 },
     maxSentenceWords: null,
     minRefrainSlots: 0,
   };
@@ -195,7 +197,7 @@ const BasePlanSchema = z.object({
   }),
   cast: z.array(CastSchema).describe('Every recurring character other than the main child (reserved id "child", never listed here).'),
   world: z.array(WorldSchema).describe("Recurring locations and story objects, including the child's home/city."),
-  cover: ShotSchema.describe("The cover: the child (and at most the main companion) in a gentle heroic moment from the story's world; calm space in the upper third for the title."),
+  cover: ShotSchema.describe("The cover: the child (and at most the main companion) in a gentle heroic moment from the story's world; the upper third is calm, simple background (sky, wall, soft space) for the title, and the figures stand in the middle-to-lower part with their feet well above the bottom edge."),
   scenes: z.array(SceneSchema).length(SCENE_COUNT),
   synopsis: z.string().describe("2–3 sentences for the back cover, in the book language."),
   finalMessage: z.string().describe("Closing page message in the book language, 1–3 sentences, like a whisper at bedtime."),

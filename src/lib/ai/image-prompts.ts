@@ -116,9 +116,20 @@ function sentence(text: string): string {
   return /[.!?]$/.test(t) ? t : `${t}.`;
 }
 
+/**
+ * Adventure map spread (pp. 28–29). Must match the print layout: the game panel
+ * covers the right quarter of the image (src/lib/pdf/layout.ts GEOMETRY.mapPanel*),
+ * the fold runs down the centre, and the model garbles any lettering.
+ */
+const MAP_RULES =
+  "Composition: the places are painted vignettes spread over the map and linked by the dotted trail; every search-and-find item sits on open ground where it reads clearly. " +
+  "The RIGHT QUARTER of the picture must be calm, simple, pale open landscape (soft sky, water, meadow or empty space that belongs to this world) with no items, no characters, no places and no trail, because a paper panel with the game is printed over it. " +
+  "The picture will be folded exactly down the vertical centre line: no character, item or face in the central strip (the middle eighth of the width); only landscape or the trail may cross it. " +
+  "Absolutely no text of any kind: no place names, no labels, no banners or scrolls with writing, no letters on a compass rose, no numbers, no signature.";
+
 function sceneBody(plan: PromptCast, shot: ShotSpec): string {
   const lines = [`${sentence(shot.camera)} ${sentence(shot.action)} Setting: ${sentence(shot.setting)} Light: ${sentence(shot.light)}`];
-  if (shot.shotScale === "wide" && shot.cast.includes(CHILD_ID)) {
+  if (shot.shotScale === "wide" && shot.cast.includes(CHILD_ID) && shot.frame !== "map") {
     lines.push(`Long shot: ${CHILD_LABEL} is small in the frame — less than one tenth of the image height, in the lower-left third — and the environment fills the picture.`);
   }
   if (shot.frame === "panorama") {
@@ -126,6 +137,7 @@ function sceneBody(plan: PromptCast, shot: ShotSpec): string {
       "This is a double-page panorama that will be folded exactly down the vertical centre line: every face and key subject must stay out of the central strip (the middle fifth of the image width), placed clearly in the left or right part of the picture — this overrides any placement mentioned above — and only continuous scenery crosses the middle.",
     );
   }
+  if (shot.frame === "map") lines.push(MAP_RULES);
   const world = worldBlock(plan, shot);
   if (world) lines.push(world);
   return lines.join(" ");
@@ -154,8 +166,12 @@ export function buildScenePrompt(plan: PromptCast, shot: ShotSpec, roles: Refere
     .join(" ");
 
   const scene =
-    shot.frame === "cover"
-      ? `BOOK COVER illustration, portrait format: ${sceneBody(plan, shot)} Keep the bottom third of the picture calm and simple (soft ground, grass or water, no faces and no important details) because the title is printed there, and keep a little calm space at the very top. Keep every face in the middle of the picture, well away from the outer edges (they wrap around the book board). Do NOT write any title, letters or text.`
+    shot.frame === "hero"
+      ? `PORTRAIT PAGE illustration, square: ${sceneBody(plan, shot)} ${CHILD_LABEL} is the only figure in the picture: no other people, animals or creatures, not even tiny ones in the background. ${CHILD_LABEL} stands in the right half of the picture (face in the upper half, well away from the edges); the bottom-left quarter and the top-left corner must be calm, soft, simple background because the child's name and a label are printed there. Do NOT write any letters or text.`
+      : shot.frame === "cover"
+      ? `BOOK COVER illustration, portrait format: ${sceneBody(plan, shot)} Keep the TOP third of the picture calm and simple (open sky, a plain wall or soft empty space, no faces, heads or important details) because the title is printed there. The characters stand in the middle and lower part of the picture, drawn a little smaller so their whole bodies fit: feet, shoes and held objects end well above the bottom edge, with a clear strip of ground below them. Keep every face in the middle band of the picture, well away from all outer edges (they wrap around the book board). Do NOT write any title, letters or text.`
+      : shot.frame === "map"
+      ? `ADVENTURE MAP illustration for the last double page of the book, landscape (twice as wide as tall): ${sceneBody(plan, shot)}`
       : `SCENE: ${sceneBody(plan, shot)}`;
 
   return [head, scene, characterBlock(plan, shot), `${WATERCOLOR_STYLE} ${FULL_BLEED}`].filter(Boolean).join("\n\n");

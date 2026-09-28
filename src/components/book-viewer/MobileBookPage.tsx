@@ -979,7 +979,6 @@ function PageContent({ page, templateId, gender, favoriteColor, pageNumber }: { 
     }
 
     case "colophon": {
-      const bookUrl = `https://meapica.com/book/${page.storyId}`;
       return (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-cream p-8 text-center">
           <p className="text-[10px] leading-relaxed text-text-muted max-w-[80%]">
@@ -987,7 +986,7 @@ function PageContent({ page, templateId, gender, favoriteColor, pageNumber }: { 
           </p>
           <div className="mt-5 flex flex-col items-center gap-2">
             <QRCodeSVG
-              value={bookUrl}
+              value="https://meapica.com" // home page, never a per-book URL (matches the printed QR)
               size={72}
               level="M"
               fgColor={getBookColors(templateId, gender, favoriteColor).gradientStart}

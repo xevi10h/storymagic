@@ -8,12 +8,13 @@
 import { View, Text, Image } from "@react-pdf/renderer";
 import { FONTS, type TemplateTheme } from "./theme";
 import { coverFit } from "./images";
-import { fitText, sanitizePrintText } from "./text";
+import { countLines, fitText, joinName, printQuotes, sanitizePrintText } from "./text";
 import { BRAND_LOGO_ASPECT, COVER_OVERLAY_STOPS, type PrintImage } from "./assets";
 import { Paragraphs, PlacedImage } from "./primitives";
 import type { FittedType } from "./layout";
 
-const COVER_OVERLAY_BOTTOM_ALPHA = COVER_OVERLAY_STOPS[COVER_OVERLAY_STOPS.length - 1][1];
+/** Scrim opacity above the visible panel (wrap / bleed), continuing the gradient's first stop. */
+const COVER_OVERLAY_TOP_ALPHA = COVER_OVERLAY_STOPS[0][1];
 
 export interface Rect {
   left: number;
@@ -33,14 +34,106 @@ export interface PanelFrame {
   bottomReserve?: number;
 }
 
+/** One stacked line group of the front-cover title; `hero` is the child's name. */
+export interface CoverTitleSegment {
+  text: string;
+  type: FittedType;
+  hero: boolean;
+}
+
+/**
+ * Front-cover title lockup, set at the top of the panel (Wonderbly / Hooray Heroes
+ * hierarchy): when the title contains the child's name, the name gets its own
+ * large line and the rest of the title sits above / below it at a smaller size.
+ */
+export interface CoverTitleLockup {
+  segments: CoverTitleSegment[];
+  /** Height of the stacked segments, pt */
+  height: number;
+  /** The title does not name the child: print "A personalised story for {name}" under it */
+  showSubtitle: boolean;
+}
+
 export interface CoverTexts {
   title: string;
-  titleType: FittedType;
+  titleLockup: CoverTitleLockup;
   subtitle: string;
   name: string;
   synopsis: string;
+  /** Locale-appropriate quotation marks around the synopsis */
+  synopsisQuotes: [open: string, close: string];
   synopsisType: FittedType;
   backTitleType: FittedType;
+}
+
+// ── Front-cover title lockup ─────────────────────────────────────────────
+
+const TITLE_VARIANT = { role: "display", weight: 600 } as const;
+/** The child's name line (single line) */
+const TITLE_HERO = { max: 62, min: 32, leading: 1.05 };
+/** The rest of the title around the name; kept at 38–50% of the name size */
+const TITLE_REST = { max: 28, min: 16, leading: 1.15 };
+/** Whole title at one size (name not found, or the lockup does not fit) */
+const TITLE_UNIFORM = { max: 36, min: 18, leading: 1.15 };
+const MAX_TITLE_LINES = 3;
+/** The title block (plus subtitle) lives in the top ~third of the panel, from the safe line down */
+const TITLE_ZONE_RATIO = 0.36;
+export const COVER_SUBTITLE = { fontSize: 11, leading: 1.3, gap: 8 };
+
+/**
+ * Splits the title around the child's name (whole word, case-insensitive). A possessive,
+ * trailing punctuation, opening marks and an elided article stay on the name's line:
+ * "Martina's", "Núria,", "¡Leo", "d’Émile".
+ */
+export function splitTitleOnName(title: string, name: string): { pre: string; hero: string; post: string } | null {
+  const n = name.trim();
+  if (!n) return null;
+  const escaped = n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const match = new RegExp(`(?<![\\p{L}\\p{M}\\p{N}])${escaped}(?![\\p{L}\\p{M}\\p{N}])`, "iu").exec(title);
+  if (!match) return null;
+  let pre = title.slice(0, match.index);
+  let post = title.slice(match.index + match[0].length);
+  const tail = /^(?:['’]s)?[,;:!?.…»”"')]*/u.exec(post)?.[0] ?? "";
+  post = post.slice(tail.length);
+  const lead = /(?<!\p{L})(?:\p{L}{1,2}['’]|[¡¿«“"(]+)$/u.exec(pre)?.[0] ?? "";
+  pre = pre.slice(0, pre.length - lead.length);
+  return { pre: pre.trim(), hero: `${lead}${match[0]}${tail}`, post: post.trim() };
+}
+
+/**
+ * Largest title lockup that fits `width` × `maxHeight` in at most three lines.
+ * `subtitleReserve` is kept free under the title when it does not name the child (subtitle shown).
+ */
+export function fitTitleLockup(title: string, name: string, width: number, maxHeight: number, subtitleReserve = 0): CoverTitleLockup & { fits: boolean } {
+  const split = splitTitleOnName(title, name);
+  if (split) {
+    const rest = [split.pre, split.post].filter(Boolean);
+    for (let heroSize = TITLE_HERO.max; heroSize >= TITLE_HERO.min; heroSize -= 1) {
+      if (countLines(split.hero, heroSize, width, TITLE_VARIANT) > 1) continue;
+      const restMax = Math.min(TITLE_REST.max, heroSize * 0.5);
+      const restMin = Math.max(TITLE_REST.min, heroSize * 0.38);
+      for (let restSize = Math.floor(restMax * 2) / 2; restSize >= restMin - 1e-6; restSize -= 0.5) {
+        const restLines = rest.reduce((sum, t) => sum + countLines(t, restSize, width, TITLE_VARIANT), 0);
+        const height = heroSize * TITLE_HERO.leading + restLines * restSize * TITLE_REST.leading;
+        if (1 + restLines > MAX_TITLE_LINES || height > maxHeight) continue;
+        const restType = { fontSize: restSize, leading: TITLE_REST.leading };
+        const segments: CoverTitleSegment[] = [
+          ...(split.pre ? [{ text: split.pre, type: restType, hero: false }] : []),
+          { text: split.hero, type: { fontSize: heroSize, leading: TITLE_HERO.leading }, hero: true },
+          ...(split.post ? [{ text: split.post, type: restType, hero: false }] : []),
+        ];
+        return { segments, height, showSubtitle: false, fits: true };
+      }
+    }
+  }
+  let last: CoverTitleLockup | null = null;
+  for (let size = TITLE_UNIFORM.max; size >= TITLE_UNIFORM.min - 1e-6; size -= 0.5) {
+    const lines = countLines(title, size, width, TITLE_VARIANT);
+    const height = lines * size * TITLE_UNIFORM.leading;
+    last = { segments: [{ text: title, type: { fontSize: size, leading: TITLE_UNIFORM.leading }, hero: false }], height, showSubtitle: !split };
+    if (lines <= MAX_TITLE_LINES && height <= maxHeight - (split ? 0 : subtitleReserve)) return { ...last, fits: true };
+  }
+  return { ...last!, fits: false };
 }
 
 /** Fits the cover copy for a panel of the given visible width. Fonts must be loaded. */
@@ -49,6 +142,7 @@ export function fitCoverTexts(args: {
   subtitle: string;
   name: string;
   synopsis: string;
+  locale: string | undefined;
   visibleWidth: number;
   safe: number;
 }): { texts: CoverTexts; overflow: string[] } {
@@ -56,19 +150,27 @@ export function fitCoverTexts(args: {
   const synopsis = sanitizePrintText(args.synopsis);
   const inner = args.visibleWidth - 2 * args.safe;
   const overflow: string[] = [];
-  const titleFit = fitText({ text: title, variant: { role: "display", weight: 600 }, width: inner, height: 3 * 28 * 1.2 + 1, maxSize: 28, minSize: 18, leading: 1.2, minLeading: 1.12 });
-  if (!titleFit.fits) overflow.push("front cover title");
+  const subtitle = sanitizePrintText(args.subtitle);
+  const name = sanitizePrintText(args.name);
+  // Subtitle (only printed when the title does not name the child): body 11 pt, up to 2 lines
+  const subtitleLines = countLines(joinName(subtitle, name), COVER_SUBTITLE.fontSize, inner, { role: "body", weight: 600 });
+  const subtitleReserve = COVER_SUBTITLE.gap + subtitleLines * COVER_SUBTITLE.fontSize * COVER_SUBTITLE.leading;
+  // Square panels: the zone height derives from the width
+  const { fits: titleFits, ...titleLockup } = fitTitleLockup(title, name, inner, args.visibleWidth * TITLE_ZONE_RATIO - args.safe, subtitleReserve);
+  if (!titleFits) overflow.push("front cover title");
   const backTitleFit = fitText({ text: title, variant: { role: "display", weight: 600 }, width: inner, height: 2 * 14 * 1.3 + 1, maxSize: 14, minSize: 10, leading: 1.3, minLeading: 1.2 });
   if (!backTitleFit.fits) overflow.push("back cover title");
-  const synopsisFit = fitText({ text: `“${synopsis}”`, variant: { role: "display" }, width: inner * 0.86, height: args.visibleWidth * 0.4, maxSize: 11, minSize: 8, leading: 1.6, minLeading: 1.4 });
+  const synopsisQuotes = printQuotes(args.locale);
+  const synopsisFit = fitText({ text: `${synopsisQuotes[0]}${synopsis}${synopsisQuotes[1]}`, variant: { role: "display" }, width: inner * 0.86, height: args.visibleWidth * 0.4, maxSize: 11, minSize: 8, leading: 1.6, minLeading: 1.4 });
   if (!synopsisFit.fits) overflow.push("back cover synopsis");
   return {
     texts: {
       title,
-      titleType: { fontSize: titleFit.fontSize, leading: titleFit.leading },
-      subtitle: sanitizePrintText(args.subtitle),
-      name: sanitizePrintText(args.name),
+      titleLockup,
+      subtitle,
+      name,
       synopsis,
+      synopsisQuotes,
       synopsisType: { fontSize: synopsisFit.fontSize, leading: synopsisFit.leading },
       backTitleType: { fontSize: backTitleFit.fontSize, leading: backTitleFit.leading },
     },
@@ -98,18 +200,20 @@ export function FrontCoverDesign({
   texts,
   image,
   overlayUri,
-  logoUri,
 }: {
   frame: PanelFrame;
   theme: TemplateTheme;
   texts: CoverTexts;
   image: PrintImage | null;
   overlayUri?: string;
-  logoUri?: string;
 }) {
   const { art, visible, safe } = frame;
   const { fx, fy } = focusOnVisible(image, frame);
-  const logoH = 26;
+  const { titleLockup } = texts;
+  const blockHeight = titleLockup.height + (titleLockup.showSubtitle ? COVER_SUBTITLE.gap + 2 * COVER_SUBTITLE.fontSize * COVER_SUBTITLE.leading : 0);
+  // Scrim from the visible top edge, fading out well below the title (≥ half the panel, so the
+  // fade is gentle and never reads as a box); the wrap / bleed above keeps the first-stop opacity
+  const scrimHeight = Math.min(visible.height, Math.max(visible.height * 0.5, (safe + blockHeight) * 1.9));
   return (
     <>
       {/* Background: artwork (or theme colour) over the whole art box */}
@@ -120,41 +224,30 @@ export function FrontCoverDesign({
           <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: theme.coverGradientEnd, opacity: 0.4 }} />
         )}
         {image && overlayUri && (
-          // Gradient ends at the bottom of the VISIBLE panel (so the title sits on its darkest part);
-          // the wrap/bleed below keeps the final opacity
           <>
-            <Image src={overlayUri} style={{ position: "absolute", left: 0, top: 0, width: art.width, height: visible.top + visible.height - art.top }} />
-            <View style={{ position: "absolute", left: 0, right: 0, top: visible.top + visible.height - art.top, bottom: 0, backgroundColor: "#000000", opacity: COVER_OVERLAY_BOTTOM_ALPHA }} />
+            <View style={{ position: "absolute", left: 0, right: 0, top: 0, height: visible.top - art.top, backgroundColor: "#000000", opacity: COVER_OVERLAY_TOP_ALPHA }} />
+            <Image src={overlayUri} style={{ position: "absolute", left: 0, top: visible.top - art.top, width: art.width, height: scrimHeight }} />
           </>
         )}
       </View>
 
-      {/* Brand logo — top of the visible panel */}
-      {logoUri && (
-        <View style={{ position: "absolute", left: visible.left, top: visible.top + safe, width: visible.width, alignItems: "center" }}>
-          <Image src={logoUri} style={{ height: logoH, width: logoH * BRAND_LOGO_ASPECT, opacity: 0.85 }} />
-        </View>
-      )}
-
-      {/* Subtitle + title — bottom of the visible panel, inside the safe area */}
-      <View
-        style={{
-          position: "absolute",
-          left: visible.left + safe,
-          width: visible.width - 2 * safe,
-          top: visible.top + visible.height - safe - 190,
-          height: 190,
-          justifyContent: "flex-end",
-          alignItems: "center",
-        }}
-      >
-        <Text style={{ fontFamily: FONTS.body, fontSize: 11, color: "#ffffffcc", marginBottom: 6, letterSpacing: 0.5, textAlign: "center" }}>
-          {texts.subtitle}{" "}
-          <Text style={{ fontWeight: 600, color: "#ffffff" }}>{texts.name}</Text>
-        </Text>
-        <Text style={{ fontFamily: FONTS.display, fontSize: texts.titleType.fontSize, fontWeight: 600, color: "#ffffff", lineHeight: texts.titleType.leading, textAlign: "center" }}>
-          {texts.title}
-        </Text>
+      {/* Title lockup — top of the visible panel, inside the safe area. The brand lives on the back cover and spine. */}
+      {/* Children stretch to the full width (not alignItems:center): a shrink-wrapped Text can be laid out wider than the box */}
+      <View style={{ position: "absolute", left: visible.left + safe, width: visible.width - 2 * safe, top: visible.top + safe }}>
+        {titleLockup.segments.map((seg, i) => (
+          <Text
+            key={i}
+            style={{ fontFamily: FONTS.display, fontSize: seg.type.fontSize, fontWeight: 600, color: seg.hero ? "#ffffff" : "#fffffff0", lineHeight: seg.type.leading, textAlign: "center" }}
+          >
+            {seg.text}
+          </Text>
+        ))}
+        {titleLockup.showSubtitle && (
+          <Text style={{ fontFamily: FONTS.body, fontSize: COVER_SUBTITLE.fontSize, color: "#ffffffd9", marginTop: COVER_SUBTITLE.gap, letterSpacing: 0.5, lineHeight: COVER_SUBTITLE.leading, textAlign: "center" }}>
+            {texts.subtitle}{texts.subtitle.endsWith("'") ? "" : " "}
+            <Text style={{ fontWeight: 600, color: "#ffffff" }}>{texts.name}</Text>
+          </Text>
+        )}
       </View>
     </>
   );
@@ -204,15 +297,15 @@ export function BackCoverDesign({
             {texts.title}
           </Text>
           <Text style={{ fontFamily: FONTS.body, fontSize: 9, color: "#ffffff99", marginTop: 4, letterSpacing: 0.5, textAlign: "center" }}>
-            {texts.subtitle} {texts.name}
+            {joinName(texts.subtitle, texts.name)}
           </Text>
         </View>
 
         <View style={{ alignItems: "center", maxWidth: (visible.width - 2 * safe) * 0.86 }}>
           <Paragraphs
             text={texts.synopsis}
-            prefix={"\u201C"}
-            suffix={"\u201D"}
+            prefix={texts.synopsisQuotes[0]}
+            suffix={texts.synopsisQuotes[1]}
             style={{ fontFamily: FONTS.display, fontSize: texts.synopsisType.fontSize, color: "#ffffffcc", textAlign: "center", lineHeight: texts.synopsisType.leading }}
           />
           <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginTop: 14 }}>
