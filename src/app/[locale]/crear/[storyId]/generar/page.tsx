@@ -18,7 +18,7 @@ const POLL_INTERVAL_MS = 3000;
 // A real backend failure reverts status to "draft" (handled immediately), so
 // this only guards a true hang.
 const STUCK_TIMEOUT_MS = 480_000; // 8 min
-const SLOW_NOTICE_MS = 180_000; // 3 min: say honestly that it's taking longer
+const SLOW_NOTICE_MS = 90_000; // measured ~40–50 s: past 90 s say honestly that it's taking longer
 
 const DONE_STATUSES = new Set(["preview", "ready", "ordered", "shipped"]);
 
@@ -450,12 +450,26 @@ export default function GenerarPage() {
               </div>
 
               {known && (
-                <ol className="mt-3 grid grid-cols-4 gap-2" aria-label={t("scenesLabel")} data-testid="progress-scenes">
+                <ol
+                  className="mt-3 grid gap-2"
+                  style={{ gridTemplateColumns: `repeat(${total + 1}, minmax(0, 1fr))` }}
+                  aria-label={t("scenesLabel")}
+                  data-testid="progress-scenes"
+                >
+                  {/* Cover first (it is a step of the bar too), then scene slots */}
+                  <li className="relative aspect-square overflow-hidden rounded-lg bg-create-neutral" data-slot="cover">
+                    {coverUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img key={progress?.coverKey ?? coverUrl} src={coverUrl} alt={t("coverThumbAlt")} className="cover-art-in absolute inset-0 h-full w-full object-cover" />
+                    ) : (
+                      <span aria-hidden className="material-symbols-outlined absolute inset-0 flex items-center justify-center text-base text-create-text-sub/50">auto_stories</span>
+                    )}
+                  </li>
                   {Array.from({ length: total }, (_, i) => {
                     // Slot = scene number (scenes can land out of order)
                     const scene = progress?.scenes.find((s) => s.index === i + 1);
                     return (
-                      <li key={i} className="relative aspect-square overflow-hidden rounded-lg bg-create-neutral">
+                      <li key={i} className="relative aspect-square overflow-hidden rounded-lg bg-create-neutral" data-slot="scene">
                         {scene ? (
                           // Signed URL of the private bucket: plain <img>, never the optimizer.
                           // eslint-disable-next-line @next/next/no-img-element

@@ -251,6 +251,7 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
         });
         expect(latency).toBeLessThan(100);
         await expect(page.getByTestId("live-cover-name")).toHaveText(NAME);
+        await expect(page.getByRole("radio", { name: /^1 / })).toHaveCount(0); // ages 2–12 only
         await page.getByRole("radio", { name: /^6/ }).click();
         await page.getByRole("radio", { name: locale === "es" ? "Una niña" : "Una nena" }).click();
         await shot(page, `${tag}-1-name-filled`);
@@ -277,6 +278,10 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
         // Real pre-rendered matrix, not the vector fallback
         await expect(portrait.locator('img[src*="/images/avatar/"]').first()).toBeVisible();
         await expect(portrait.locator("svg")).toHaveCount(0);
+        // Colour choices carry names: accessible + visible under the row
+        await expect(page.getByTestId("selected-skin")).toHaveText(/\S/);
+        await expect(page.getByTestId("selected-glasses-frame")).toHaveText(/\S/);
+        await expect(page.locator('[aria-labelledby="lbl-eyes"] [role=radio]:not([aria-label])')).toHaveCount(0);
         await shot(page, `${tag}-2-protagonist`);
         if (vpName === "mobile") {
           // the portrait stays in view while scrolling the traits
@@ -316,7 +321,7 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
         const storyChar = post.character as Record<string, unknown>;
         for (const k of look) expect(storyChar[k], k).toEqual(prep[k]);
         expect(post.avatarAssetPath ?? null).toEqual(prep.avatarAssetPath ?? null);
-        expect(String(post.dedication)).toContain(NAME);
+        expect(String(post.dedication)).toMatch(locale === "es" ? /^Para ti, Lucía: / : /^Per a tu, Lucía: /);
         expect((post.decisions as { treePath: unknown[] }).treePath).toHaveLength(3);
 
         // 4 — Painting: real progress, cover first, then scenes
@@ -326,24 +331,30 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
         await expect(page.getByTestId("progress-cover").locator(`img[src*="space-c1-ship"]`)).toBeVisible({ timeout: 15_000 });
         await shot(page, `${tag}-4-painting-first-scene`);
         await expect(page.getByTestId("progress-cover").locator(`img[src*="space-c1-crystal"]`)).toBeVisible({ timeout: 15_000 });
+        await expect(page.getByTestId("progress-scenes").locator("[data-slot=cover] img")).toBeVisible();
         await shot(page, `${tag}-4-painting-cover`);
-        await expect(page.getByTestId("progress-scenes").locator("img")).toHaveCount(2, { timeout: 15_000 });
+        await expect(page.getByTestId("progress-scenes").locator("[data-slot=scene] img")).toHaveCount(2, { timeout: 15_000 });
         // Fresh signatures on every poll must not swap the <img> already shown
-        const firstSrc = await page.getByTestId("progress-scenes").locator("img").first().getAttribute("src");
-        await expect(page.getByTestId("progress-scenes").locator("img")).toHaveCount(4, { timeout: 15_000 });
-        await expect(page.getByTestId("progress-scenes").locator("img").first()).toHaveAttribute("src", firstSrc!);
+        const firstSrc = await page.getByTestId("progress-scenes").locator("[data-slot=scene] img").first().getAttribute("src");
+        await expect(page.getByTestId("progress-scenes").locator("[data-slot=scene] img")).toHaveCount(4, { timeout: 15_000 });
+        await expect(page.getByTestId("progress-scenes").locator("[data-slot=scene] img").first()).toHaveAttribute("src", firstSrc!);
         await shot(page, `${tag}-4-painting-scenes`);
 
         // Dedication: pre-filled, live on the page mock, counter, saved verbatim
         const textarea = page.locator("textarea");
-        await expect(textarea).toHaveValue(new RegExp(NAME));
-        const custom = "  Per a tu, estrella:\nque mai deixis de somiar. ✨ ";
+        // Default dedication: first name only, no emoji
+        await expect(textarea).toHaveValue(/Lucía/);
+        await expect(textarea).not.toHaveValue(/Núria|✨/);
+        const custom = "Per a tu, Lucía:\nque mai deixis de somiar.";
         await textarea.fill(custom);
         await expect(page.getByTestId("dedication-page")).toContainText("que mai deixis de somiar");
         await expect(page.getByTestId("dedication-counter")).toHaveText(`${custom.length}/500`);
-        await page.locator('input[type="text"]').last().fill("Mamà i papà");
+        // Sender is never pre-filled (single parents, grandparents…): only a placeholder
+        await expect(page.locator('input[type="text"]').last()).toHaveValue("");
+        await expect(page.getByTestId("dedication-page")).not.toContainText(/mam|papa|àvi|abuel/i);
+        await page.locator('input[type="text"]').last().fill("L'àvia Carme");
         await expect.poll(() => mock.dedication).toBe(custom);
-        await expect.poll(() => mock.sender).toBe("Mamà i papà");
+        await expect.poll(() => mock.sender).toBe("L'àvia Carme");
         await shot(page, `${tag}-4-dedication`);
 
         // Ready → open the book

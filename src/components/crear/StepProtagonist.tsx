@@ -64,6 +64,7 @@ function SwatchGroup({
   labelFor: (id: string) => string;
   onChange: (color: string) => void;
 }) {
+  const selectedId = options.find((o) => o.color === value)?.id ?? null;
   return (
     <div className="flex flex-col gap-2.5">
       <span className="text-xs font-bold uppercase tracking-wide text-create-text" id={`lbl-${id}`}>
@@ -100,6 +101,10 @@ function SwatchGroup({
           );
         })}
       </div>
+      {/* Visible name of the current choice (colour alone is not enough) */}
+      <span aria-hidden className="text-xs font-semibold text-create-text-sub" data-testid={`selected-${id}`}>
+        {selectedId ? labelFor(selectedId) : "\u00a0"}
+      </span>
     </div>
   );
 }
@@ -305,6 +310,9 @@ export default function StepProtagonist({
                         />
                       );
                     })}
+                    <span aria-hidden className="text-xs font-semibold text-create-text-sub" data-testid="selected-glasses-frame">
+                      {t(`glassesFrame_${glassesFrame}`)}
+                    </span>
                   </div>
                 )}
               </div>

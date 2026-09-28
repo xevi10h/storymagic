@@ -41,7 +41,7 @@ Landing Page
 ### 1 · Nombre ✅
 
 **Component:** `StepName` + `LiveCover`
-- Big name field (any Unicode letters, accents, ñ, l·l, apostrophes, compound names; 50-char cap; never rejected). Age as 1–12 chips (radiogroup). "Es…": Una niña / Un niño / Prefiero no decirlo (only drives feminine/masculine/neutral wording).
+- Big name field (any Unicode letters, accents, ñ, l·l, apostrophes, compound names; 50-char cap; never rejected). Age as 2–12 chips (radiogroup; the youngest book plan is written for 2–4, age 1 is not offered; 2–6 use the "small" avatar band). "Es…": Una niña / Un niño / Prefiero no decirlo (only drives feminine/masculine/neutral wording).
 - `LiveCover`: square book cover = template art + "La aventura de" + the name, re-rendered client-side on every keystroke (measured < 100 ms in e2e). Name size scales with length (`coverNameFontSize`), never breaks inside a word. Catalan/French elide "de" before vowels (`L'aventura d'Àlex`). Fonts load `latin` + `latin-ext` subsets.
 
 ### 2 · Protagonista ✅
@@ -57,14 +57,14 @@ Landing Page
 **Component:** `StepAdventure`
 - World picker (10 templates, horizontal scroller on mobile, grid on desktop; "Para su edad" badge from `getRecommendedTemplates`), then chapter 1 → 2 → 3 of the template's branching tree (`story-trees/loaders.ts`, art from `art-manifest.ts`) on the same screen. Each chapter appears after the previous choice and scrolls into view; changing an earlier chapter drops only the choices that no longer follow.
 - The cover (sticky on desktop, mini on mobile) switches to the chosen world's art. "Crear su libro" enables once world + 3 chapters are set.
-- Creating the story sends the pre-filled dedication (`crear.dedication.default` with the name) so the parent's text is always the verbatim dedication. Back → Create with an unchanged draft reuses the same story (no duplicate book).
+- Creating the story sends the pre-filled dedication (`crear.dedication.default`, "Para ti, {firstName}: …", first given name only, no emoji) so the parent's text is always the verbatim dedication. Back → Create with an unchanged draft reuses the same story (no duplicate book).
 - The per-template ending picker was dropped (the LLM closes the story from the chosen path).
 
 ### 4 · Dedicatoria (while the preview is painted) ✅
 
 **Route:** `/crear/[storyId]/generar` · **Components:** `LiveCover`, `DedicationEditor`, `useDedicationAutosave`
-- Real progress only: polls `GET /api/stories/{id}?light=true` every 3 s and reads the signed `preview_progress { coverUrl?, coverKey?, scenes[{index,url,key}], total }` (images kept while their `key` is unchanged, so polls never swap them). The first image to land dresses the hero: usually scene 1 (with a "painting the cover" badge), then the painted cover the moment `coverUrl` exists; scene thumbnails fill their scene slot as they arrive; the bar is determinate only when `total` is known (indeterminate otherwise), plus an honest elapsed timer. No fake curve.
-- Dedication: pre-filled, rendered live on a page mock, 500-char counter, "De parte de"; autosaved (debounced) to `PATCH /api/stories/{id}/dedication`, stored verbatim; mirrored into the draft.
+- Real progress only: polls `GET /api/stories/{id}?light=true` every 3 s and reads the signed `preview_progress { coverUrl?, coverKey?, scenes[{index,url,key}], total }` (images kept while their `key` is unchanged, so polls never swap them). Copy: "usually under a minute" (slow notice after 90 s). Thumbnails: cover first, then the scene slots; the bar counts landed images / (scenes + cover). The first image to land dresses the hero: usually scene 1 (with a "painting the cover" badge), then the painted cover the moment `coverUrl` exists; scene thumbnails fill their scene slot as they arrive; the bar is determinate only when `total` is known (indeterminate otherwise), plus an honest elapsed timer. No fake curve.
+- Dedication: pre-filled, rendered live on a page mock, 500-char counter, "De parte de" never pre-filled (inclusive placeholder only; the page mock shows it once typed); autosaved (debounced) to `PATCH /api/stories/{id}/dedication`, stored verbatim; mirrored into the draft.
 - When ready: "Ver su libro" (no auto-redirect while the parent is typing). Failure state with retry; Back returns to screen 3 with everything kept.
 
 ### 5 · Su libro ✅

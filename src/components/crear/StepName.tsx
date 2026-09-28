@@ -13,7 +13,9 @@ interface StepNameProps {
   onNext: () => void;
 }
 
-const AGES = Array.from({ length: 12 }, (_, i) => i + 1);
+// 2–12: the youngest book plan is written for 2–4 (refrain mode); ages 2–6 use the
+// "small" avatar band. Age 1 is not offered (no reading plan for it).
+const AGES = Array.from({ length: 11 }, (_, i) => i + 2);
 const GENDERS: { id: Gender; key: "genderBoy" | "genderGirl" | "genderNeutral" }[] = [
   { id: "girl", key: "genderGirl" },
   { id: "boy", key: "genderBoy" },

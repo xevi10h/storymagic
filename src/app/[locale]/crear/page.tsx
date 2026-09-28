@@ -15,6 +15,7 @@ import {
 import {
   CREATE_PAGE_STEPS,
   characterPrepareBody,
+  firstName,
   migrateCreateState,
   storyCharacterBody,
   protagonistSnapshot,
@@ -249,7 +250,8 @@ function CrearPageContent() {
     try {
       await ensureGuestSession();
       const name = state.character.name.trim();
-      const dedication = state.dedication.trim() ? state.dedication : t("dedication.default", { name });
+      // Pre-filled, editable on the next screen; addressed to the first name only.
+      const dedication = state.dedication.trim() ? state.dedication : t("dedication.default", { name: firstName(name) });
       const res = await fetch("/api/stories", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

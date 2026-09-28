@@ -65,6 +65,8 @@ export function migrateCreateState(raw: unknown): CreateBookState {
     ...base.character,
     ...(rawChar as Partial<CharacterData>),
     name: str(rawChar.name, "").slice(0, MAX_NAME_LENGTH),
+    // UI offers 2–12 (older drafts could hold 1)
+    age: typeof rawChar.age === "number" ? Math.min(12, Math.max(2, Math.round(rawChar.age))) : base.character.age,
     glasses: migrateGlasses(glasses),
     freckles: rawChar.freckles === true,
     interests: Array.isArray(rawChar.interests)
@@ -266,6 +268,14 @@ export function coverNameFontSize(name: string, width: number): number {
   const max = width * 0.2;
   const min = Math.max(14, width * 0.075);
   return Math.round(Math.min(max, Math.max(min, Math.min(byWord, byTotal))));
+}
+
+/**
+ * First given name for affectionate copy (default dedication): "Lucía Núria l'Olivé" → "Lucía".
+ * The cover and the story keep the full name as typed.
+ */
+export function firstName(name: string): string {
+  return name.trim().split(/\s+/)[0] ?? "";
 }
 
 /**
