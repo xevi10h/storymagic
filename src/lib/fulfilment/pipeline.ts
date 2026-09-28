@@ -48,6 +48,7 @@ import {
   GELATO_ALERT_AFTER_ATTEMPTS,
   GELATO_MAX_ATTEMPTS,
   isFinalStage,
+  isOrderForActiveStripeMode,
   isUsableStoredImage,
   validateSourceImages,
   type SceneRow,
@@ -151,7 +152,7 @@ export async function advanceStoryFulfilment(
   if (ordersErr) throw new Error(`Failed to load orders for story ${storyId}: ${ordersErr.message}`);
 
   const allowMock = process.env.MOCK_MODE === "true" && process.env.STRIPE_ENVIRONMENT !== "live";
-  const orders = (orderRows ?? []).filter((o) => allowMock || !isMockOrder(o));
+  const orders = (orderRows ?? []).filter((o) => (allowMock && isMockOrder(o)) || isOrderForActiveStripeMode(o));
   const generationDoneAtStart = GENERATION_DONE_STATUSES.has(story.status);
   if (orders.length === 0) return { state: "not_paid", generationDone: generationDoneAtStart };
 
