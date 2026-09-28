@@ -93,3 +93,60 @@ Known residuals: legacy portraits (`portraits/{uuid}/…`) can be re-signed by a
 writes that path into their own character row — only possible for someone who already had the
 old public URL. A preview tab left open > 1 h shows broken images for pages not yet loaded
 (reload fixes it). `illustration_library` (unused cache table) was not migrated.
+
+## Payments — Stripe (2026-09-28)
+
+**Account:** Meapica has its own Stripe account (not Constrack's). Sandbox `acct_1UKcQsBD04FISl5u`
+("Meapica sandbox", ES/EUR). Live account: pending activation by the owner (public name
+"Meapica", statement descriptor "MEAPICA", branding/logo in Dashboard → Settings → Branding).
+Seller on invoices: Xavier Huix Trenco (autónomo), NIF 41649433K, Carrer Aribau 140, 5º, 08036 Barcelona.
+
+**Setup is code:** `STRIPE_KEY=sk_… npx tsx --tsconfig tsconfig.json scripts/stripe-setup-catalog.mts --webhook-url=https://meapica.com/api/webhooks/stripe`
+(idempotent, `--dry-run` available) configures, on the account behind the key:
+- Stripe Tax: head office Barcelona, ES registration `standard` / `small_seller` (Spanish VAT also on
+  EU digital sales while under the 10 000 € OSS threshold; switch to OSS with the gestor when crossed),
+  default `tax_behavior: inclusive`. Verified: 4 % (`reduced_rated`) for both tax codes, 0 % Canarias.
+- Seller tax id `es_cif 41649433K` (printed on invoices).
+- Catalog = `STRIPE_CATALOG` in `src/lib/pricing.ts` (single source): 5 VAT-inclusive Prices with lookup
+  keys `meapica_{digital_pdf,softcover,hardcover,extra_copy_softcover,extra_copy_hardcover}`
+  (9,90 / 34,90 / 49,90 / 19,90 / 29,90 €), tax codes `txcd_10302000` (digital book) and
+  `txcd_35010001` (children's book). Changing an amount: edit `STRIPE_CATALOG`, re-run the script
+  (new Price takes the lookup key, old one archived). The server refuses to sell if a Price's
+  amount/tax behaviour drifts from the code (`getStripeCatalog`).
+- Webhook endpoint (events: `checkout.session.completed`, `checkout.session.async_payment_succeeded`,
+  `checkout.session.expired`, `charge.refunded`); a NEW endpoint prints its signing secret once.
+
+**Endpoints:** both modes point at `https://meapica.com/api/webhooks/stripe`; the route verifies with
+`STRIPE_WEBHOOK_SECRET_LIVE` and `STRIPE_WEBHOOK_SECRET_TEST` and ignores events whose mode ≠
+`STRIPE_ENVIRONMENT`. Test endpoint: `we_1UKdD8BD04FISl5urkd8gXlZ` (sandbox). The old Constrack live
+endpoint `we_1T8hz2…` is obsolete once the new live account is in use.
+
+**Env (Vercel production):** `STRIPE_ENVIRONMENT` (`live`), `STRIPE_SECRET_KEY_LIVE`,
+`STRIPE_WEBHOOK_SECRET_LIVE`, `STRIPE_SECRET_KEY_TEST`, `STRIPE_WEBHOOK_SECRET_TEST` (the last two
+already hold the Meapica sandbox values). No publishable key is used (redirect Checkout).
+
+**Checkout:** `automatic_tax`, `invoice_creation` (factura with NIF; Stripe Invoicing fee applies),
+locale es/en/fr (Stripe has no Catalan → es), shipping ES only, card only, promotion codes allowed.
+Invoices are not VeriFactu-compliant: move to a VeriFactu tool before the obligation applies (2027).
+
+**Stripe-mode isolation:** local dev uses the prod database. Cron + pipeline only fulfil orders whose
+`stripe_checkout_session_id` prefix matches `STRIPE_ENVIRONMENT` (`isOrderForActiveStripeMode`,
+`src/lib/fulfilment/logic.ts`), so a paid test order is never printed by the live deployment.
+
+**Local testing:** run the dev server with `MOCK_MODE=false NEXT_PUBLIC_MOCK_MODE=false
+STRIPE_ENVIRONMENT=test STRIPE_WEBHOOK_SECRET_TEST=<stripe listen secret>` and
+`stripe listen --api-key $STRIPE_SECRET_KEY_TEST --forward-to localhost:3013/api/webhooks/stripe`.
+Real-purchase scripts: `e2e/_real-create.mjs` (guest → preview, ~$0.35), `e2e/_real-buy.mjs`
+(Checkout with 4242…; `FORMAT`, `EXTRA=1`, `VIA_API=1`), `e2e/_real-api.mjs`, `e2e/_real-dash.mjs`.
+Mocked UI suite: `npx playwright test e2e/paywall.spec.ts`.
+
+### Deploy order — commerce block (2026-09-28)
+
+| Version | File | When |
+|---|---|---|
+| 20260928120000 | `commerce_ready.sql` (statuses cancelled/refunded, download_token, consent, invoice, refunded_at, unique session id) | applied 2026-09-28 (additive) |
+| 20260928120100 | `orders_no_client_insert.sql` (drop "Users can insert own orders") | AFTER the new checkout code is live |
+
+Go-live: activate the live account → run the setup script with the live key + `--webhook-url` →
+set `STRIPE_SECRET_KEY_LIVE` / `STRIPE_WEBHOOK_SECRET_LIVE` in Vercel → deploy → apply 120100 →
+one real live payment + immediate refund (owner OK) → disable the old Constrack endpoint.

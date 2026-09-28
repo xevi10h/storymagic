@@ -158,3 +158,14 @@ export function validateSourceImages(input: SourceValidationInput): string[] {
   }
   return problems;
 }
+
+
+/**
+ * Local dev and prod share one database: a test-mode order must never be
+ * fulfilled by a live deployment (real OpenAI spend + a REAL Gelato print), nor a
+ * live order by a test one. The Checkout Session id carries the mode.
+ */
+export function isOrderForActiveStripeMode(order: { stripe_checkout_session_id: string | null }): boolean {
+  const live = process.env.STRIPE_ENVIRONMENT?.trim() === "live";
+  return (order.stripe_checkout_session_id ?? "").startsWith(live ? "cs_live_" : "cs_test_");
+}

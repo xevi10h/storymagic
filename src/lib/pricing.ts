@@ -4,48 +4,47 @@
 // Display labels are in i18n files (src/messages/{locale}.json → "pricing" section).
 // Labels here are only used as Stripe line-item names (language-neutral English).
 
-// Stripe Price IDs by environment
-// Live IDs: created via Stripe MCP (2026-03-08)
-// Test IDs: run `stripe products create` in test mode to generate
-export const STRIPE_PRICE_IDS = {
-  live: {
-    digital_pdf: "price_1T8dioKnVQxTGgOxhesJVMzi",
-    softcover: "price_1T8diFKnVQxTGgOxtSdTKFqI",
-    hardcover: "price_1T8diGKnVQxTGgOxHwVEkHQo",
-  },
-  test: {
-    digital_pdf: "price_1T8dqYKnVQxTGgOxkpTrZwuS",
-    softcover: "price_1T8dsGKnVQxTGgOxeH5mA5i8",
-    hardcover: "price_1T8dsHKnVQxTGgOx7DVtAZyY",
-  },
-} as const;
+// Stripe catalog. Prices are resolved by lookup_key (not hardcoded ids), so the
+// same code works on any Stripe account/mode: scripts/stripe-setup-catalog.mts
+// creates these Products/Prices (VAT-inclusive, B2C) on the account behind the
+// key it is given. Changing an amount = re-run that script (it moves the lookup
+// key to a new Price) + update the cents here in the same commit.
+export const TAX_CODE_PRINTED_CHILDRENS_BOOK = "txcd_35010001"; // "Books for Children" (4 % IVA in ES)
+export const TAX_CODE_DIGITAL_BOOK = "txcd_10302000"; // "Digital Books - downloaded - permanent rights" (4 % IVA in ES)
 
-export function getStripePriceId(format: keyof typeof STRIPE_PRICE_IDS.live): string {
-  const env = (process.env.STRIPE_ENVIRONMENT?.trim() ?? "test") as "test" | "live";
-  const priceId = STRIPE_PRICE_IDS[env][format];
-  if (!priceId || priceId.endsWith("_...")) {
-    throw new Error(`Stripe price ID for "${format}" not configured in ${env} mode`);
-  }
-  return priceId;
-}
+export type CatalogItemId =
+  | "digital_pdf"
+  | "softcover"
+  | "hardcover"
+  | "extra_copy_softcover"
+  | "extra_copy_hardcover";
+
+/** Customer-facing names (Checkout + invoice) are Spanish: Stripe has no Catalan locale. */
+export const STRIPE_CATALOG: Record<CatalogItemId, { lookupKey: string; amount: number; name: string; taxCode: string }> = {
+  digital_pdf: { lookupKey: "meapica_digital_pdf", amount: 990, name: "Cuento personalizado Meapica · PDF digital", taxCode: TAX_CODE_DIGITAL_BOOK },
+  softcover: { lookupKey: "meapica_softcover", amount: 3490, name: "Cuento personalizado Meapica · Tapa blanda (incluye PDF)", taxCode: TAX_CODE_PRINTED_CHILDRENS_BOOK },
+  hardcover: { lookupKey: "meapica_hardcover", amount: 4990, name: "Cuento personalizado Meapica · Tapa dura (incluye PDF)", taxCode: TAX_CODE_PRINTED_CHILDRENS_BOOK },
+  extra_copy_softcover: { lookupKey: "meapica_extra_copy_softcover", amount: 1990, name: "Ejemplar extra · Tapa blanda", taxCode: TAX_CODE_PRINTED_CHILDRENS_BOOK },
+  extra_copy_hardcover: { lookupKey: "meapica_extra_copy_hardcover", amount: 2990, name: "Ejemplar extra · Tapa dura", taxCode: TAX_CODE_PRINTED_CHILDRENS_BOOK },
+};
 
 export const PRICING = {
   digital_pdf: {
-    price: 990,
+    price: STRIPE_CATALOG.digital_pdf.amount,
     label: "Digital PDF",
     icon: "download",
     includesDigital: true,
     requiresShipping: false,
   },
   softcover: {
-    price: 3490,
+    price: STRIPE_CATALOG.softcover.amount,
     label: "Softcover",
     icon: "menu_book",
     includesDigital: true,
     requiresShipping: true,
   },
   hardcover: {
-    price: 4990,
+    price: STRIPE_CATALOG.hardcover.amount,
     label: "Hardcover",
     icon: "book",
     includesDigital: true,
@@ -55,7 +54,7 @@ export const PRICING = {
 
 export const ADDONS = {
   adventure_pack: {
-    price: 1290,
+    price: { softcover: 1290, hardcover: 1290 },
     label: "Adventure Pack",
     icon: "redeem",
     badge: true,
@@ -64,8 +63,9 @@ export const ADDONS = {
     detailIcons: ["mail", "stars", "bookmark"],
   },
   extra_copy: {
-    price: 1500,
-    label: "Extra Copy (Softcover)",
+    // Same format as the book (Gelato prints quantity 2): price depends on the format.
+    price: { softcover: STRIPE_CATALOG.extra_copy_softcover.amount, hardcover: STRIPE_CATALOG.extra_copy_hardcover.amount },
+    label: "Extra Copy",
     icon: "content_copy",
     badge: false,
     physicalOnly: true,
@@ -75,7 +75,18 @@ export const ADDONS = {
 } as const;
 
 export type BookFormat = keyof typeof PRICING;
+export type PhysicalFormat = "softcover" | "hardcover";
 export type AddonId = keyof typeof ADDONS;
+
+/** Add-ons exist only for physical formats; 0 for a digital book (never sold). */
+export function addonPrice(id: AddonId, format: BookFormat): number {
+  return format === "digital_pdf" ? 0 : ADDONS[id].price[format];
+}
+
+/** Stripe catalog item for an add-on on a given format (only sellable add-ons). */
+export function addonCatalogItem(id: AddonId, format: PhysicalFormat): CatalogItemId | null {
+  return id === "extra_copy" ? `extra_copy_${format}` : null;
+}
 
 // Add-on feature flags. The Adventure Pack (letter + stickers + bookmark) has no
 // fulfilment pipeline yet (Gelato only prints the book), so selling it would be
@@ -121,3 +132,10 @@ export const PREVIEW_ILLUSTRATION_COUNT = 3;
 
 // Total scenes in a story
 export const TOTAL_SCENE_COUNT = 12;
+
+/**
+ * Version of the withdrawal-exemption notice the buyer accepts on the paywall
+ * (art. 103 c + m LGDCU: personalised book + digital content supplied at once).
+ * Bump it whenever that copy (pricing.withdrawal.* in the message files) changes.
+ */
+export const WITHDRAWAL_CONSENT_VERSION = "2026-09-28";

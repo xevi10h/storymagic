@@ -240,3 +240,12 @@ export async function findOrdersByReference(orderReferenceId: string): Promise<G
   // Defensive: only trust exact reference matches.
   return (res.orders ?? []).filter((o) => o.orderReferenceId === orderReferenceId);
 }
+
+/**
+ * Cancel a Gelato order (refunds). Gelato only allows it before the order moves
+ * into production; afterwards it answers 4xx (GelatoApiError) and a human must
+ * handle it. Draft orders (test mode) cancel the same way.
+ */
+export async function cancelPrintOrder(gelatoOrderId: string): Promise<void> {
+  await gelatoOrderFetch<unknown>(`/v4/orders/${encodeURIComponent(gelatoOrderId)}:cancel`, { method: "POST" });
+}

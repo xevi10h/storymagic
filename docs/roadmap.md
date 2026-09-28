@@ -48,6 +48,15 @@ character lock; per-stage resolution. (commits 5ebc2f1 → a883d60)
 
 ---
 
+## Next steps from commerce block A (2026-09-28)
+- **Reorder / buy the printed book after the PDF**: a `ready`/`ordered` story shows no paywall, so a digital buyer can't upgrade to a hardcover (checkout API already accepts `ready`). Upsell "¿Lo quieres en papel?" in the ready view + book_ready email.
+- **VeriFactu-compliant invoicing** before the 2027 obligation (Stripe invoices aren't); OSS registration when EU digital sales pass 10 000 €.
+- **Refund customer email** (today refunds only change state + alert ops) and a "find my order" magic link for guests (download token already works cross-device).
+- **Harden stories RLS**: owners can UPDATE any column (status, generated_text, pdf_url); money paths no longer trust them, but restrict to title/dedication.
+- **Title edits after purchase** re-render nothing: block edits once paid or rebuild the PDF.
+- **Canarias / Ceuta / Melilla**: Stripe Tax charges 0 % (correct) but Gelato may add customs; decide ES-peninsula+Baleares only or accept.
+- Phone collection for the carrier, Bizum/PayPal (payment_method_types is card-only).
+
 ## Phase 0: Foundation
 > **Status: COMPLETE ✅**
 

@@ -10,6 +10,7 @@ import {
   ENABLED_ADDON_IDS,
   SHOW_ADDON_POPULAR_BADGE,
   DEFAULT_BOOK_FORMAT,
+  addonPrice,
   formatPrice,
   type BookFormat,
   type AddonId,
@@ -31,6 +32,7 @@ import type { GeneratedStory } from "@/lib/ai/story-generator";
 interface StoryData {
   id: string;
   status: string;
+  character_id: string;
   template_id: string;
   title: string | null;
   cover_image_url: string | null;
@@ -220,6 +222,7 @@ const PREVIEW_CLEAR_SCENES = 3;  // 3 clear scenes × 2 pages = 6 scene pages
 export default function PreviewPage() {
   const t = useTranslations("crear.preview");
   const tPricing = useTranslations("pricing");
+  const tDash = useTranslations("dashboard");
   const locale = useLocale();
   const price = useCallback((cents: number) => formatPrice(cents, locale), [locale]);
   const { storyId } = useParams<{ storyId: string }>();
@@ -250,16 +253,20 @@ export default function PreviewPage() {
   const [addons, setAddons] = useState<Set<AddonId>>(new Set());
   const [checkingOut, setCheckingOut] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
-
-  // PDF download filename built from book title
-  const pdfFilename = story?.generated_text?.bookTitle
-    ? `${story.generated_text.bookTitle.replace(/[^a-zA-Z0-9áéíóúñüàèòïçÁÉÍÓÚÑÜÀÈÒÏÇ\s-]/g, "").replace(/\s+/g, "-").toLowerCase().slice(0, 60)}-meapica.pdf`
-    : `${storyId}.pdf`;
+  // Express consent to lose the withdrawal right (art. 103 c + m LGDCU): never pre-ticked.
+  const [withdrawalConsent, setWithdrawalConsent] = useState(false);
+  const [consentMissing, setConsentMissing] = useState(false);
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
+  const [previewOutdated, setPreviewOutdated] = useState(false);
 
   // Dev bypass: instant unlock without checkout (MOCK_MODE only)
   const [bypassingUnlock, setBypassingUnlock] = useState(false);
   const isMockMode = process.env.NEXT_PUBLIC_MOCK_MODE === "true";
 
+  // Previews made by the removed image engines have no frozen image plan and can't be fulfilled.
+  const isOutdatedPreview =
+    story?.status === "preview" && (previewOutdated || !(story.generated_text as { imagePlan?: unknown }).imagePlan);
   const isPreviewMode = story?.status === "preview";
   const isFullyReady = story?.status === "ready" || story?.status === "ordered";
 
@@ -340,7 +347,7 @@ export default function PreviewPage() {
 
   const subtotal =
     PRICING[format].price +
-    Array.from(addons).reduce((sum, id) => sum + ADDONS[id].price, 0);
+    Array.from(addons).reduce((sum, id) => sum + addonPrice(id, format), 0);
 
   // Title / dedication edits from the checklist sheets update the book in place.
   const handleTitleSaved = useCallback((title: string) => {
@@ -433,6 +440,12 @@ export default function PreviewPage() {
   }, [story?.status]);
 
   const handleCheckout = useCallback(async () => {
+    if (!withdrawalConsent) {
+      setConsentMissing(true);
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      document.getElementById("withdrawal-consent")?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+      return;
+    }
     setCheckingOut(true);
     setCheckoutError(null);
 
@@ -444,11 +457,18 @@ export default function PreviewPage() {
           storyId,
           format,
           addons: Array.from(addons),
+          locale,
+          withdrawalConsent: true,
         }),
       });
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
+        if (data?.error === "preview_outdated") {
+          setPreviewOutdated(true);
+          setCheckingOut(false);
+          return;
+        }
         throw new Error(data?.error === "mock_mode_checkout_disabled" ? "mock" : "checkout");
       }
 
@@ -465,7 +485,24 @@ export default function PreviewPage() {
       );
       setCheckingOut(false);
     }
-  }, [storyId, format, addons, t]);
+  }, [storyId, format, addons, locale, withdrawalConsent, t]);
+
+  // The PDF lives in private storage: ask for a short-lived signed URL, then navigate to it.
+  const handleDownloadPdf = useCallback(async () => {
+    setDownloadingPdf(true);
+    setDownloadError(null);
+    try {
+      const res = await fetch(`/api/stories/${storyId}/pdf`);
+      const data = (await res.json().catch(() => ({}))) as { url?: string; error?: string };
+      if (!res.ok || !data.url) throw new Error(data.error ?? `pdf_${res.status}`);
+      window.location.href = data.url;
+    } catch (err) {
+      console.warn("[preview] PDF download failed:", err);
+      setDownloadError(tDash("pdfNotReady"));
+    } finally {
+      setDownloadingPdf(false);
+    }
+  }, [storyId, tDash]);
 
   // Dev-only: bypass checkout and unlock all illustrations instantly
   const handleDevUnlock = useCallback(async () => {
@@ -592,7 +629,7 @@ export default function PreviewPage() {
         </ErrorBoundary>
       </section>
 
-      {isPreviewMode && (
+      {isPreviewMode && !isOutdatedPreview && (
         <div className="mx-auto hidden max-w-4xl justify-center px-4 pb-8 sm:flex">
           <button
             type="button"
@@ -608,24 +645,46 @@ export default function PreviewPage() {
       {/* PDF Download — only for fully ready stories */}
       {isFullyReady && (
         <div className="mx-auto max-w-3xl px-4 pb-6">
-          <a
-            href={`/api/stories/${storyId}/pdf${process.env.NEXT_PUBLIC_MOCK_MODE === "true" ? "?force=true" : ""}`}
-            download={pdfFilename}
-            className="group mx-auto flex w-full max-w-md items-center justify-center gap-2.5 rounded-xl border-2 border-border-light bg-white px-6 py-3.5 text-sm font-bold text-secondary transition-all hover:border-create-primary hover:bg-create-primary/5 hover:text-create-primary active:scale-[0.98] shadow-sm"
+          <button
+            type="button"
+            onClick={handleDownloadPdf}
+            disabled={downloadingPdf}
+            className="group mx-auto flex w-full max-w-md items-center justify-center gap-2.5 rounded-xl border-2 border-border-light bg-white px-6 py-3.5 text-sm font-bold text-secondary transition-all hover:border-create-primary hover:bg-create-primary/5 hover:text-create-primary active:scale-[0.98] disabled:opacity-60 shadow-sm"
           >
-            <span className="material-symbols-outlined text-lg">
-              picture_as_pdf
+            <span className={`material-symbols-outlined text-lg ${downloadingPdf ? "animate-spin" : ""}`}>
+              {downloadingPdf ? "progress_activity" : "picture_as_pdf"}
             </span>
             {t("downloadPdf")}
-          </a>
+          </button>
           <p className="mt-2 text-center text-xs text-text-muted">
             {t("downloadHint")}
           </p>
+          {downloadError && (
+            <p className="mt-2 text-center text-xs text-red-600" role="alert">{downloadError}</p>
+          )}
         </div>
       )}
 
+      {/* ── Outdated preview (old engine): can't be bought, offer a fresh one ── */}
+      {isOutdatedPreview && (
+        <section id="checkout-section" className="border-t border-border-light bg-white">
+          <div className="mx-auto max-w-md px-4 py-10 text-center">
+            <span aria-hidden className="material-symbols-outlined mb-3 text-4xl text-create-primary">history</span>
+            <h2 className="font-display text-xl font-bold text-secondary">{t("previewOutdatedTitle")}</h2>
+            <p className="mt-2 text-sm text-text-muted">{t("previewOutdatedBody")}</p>
+            <Link
+              href={`/crear?characterId=${story.character_id}`}
+              className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-create-primary px-6 py-3.5 text-sm font-bold text-white transition-colors hover:bg-create-primary-hover"
+            >
+              <span aria-hidden className="material-symbols-outlined text-lg">auto_stories</span>
+              {t("previewOutdatedCta")}
+            </Link>
+          </div>
+        </section>
+      )}
+
       {/* ── Paywall / Checkout Section ────────────────────────────────────── */}
-      {isPreviewMode && (
+      {isPreviewMode && !isOutdatedPreview && (
         <section id="checkout-section" className="border-t border-border-light bg-white">
           <div className="mx-auto max-w-3xl px-4 py-10">
             {/* Paywall hook message */}
@@ -759,7 +818,7 @@ export default function PreviewPage() {
                             <div className="flex items-center gap-2 shrink-0">
                               <span className="flex flex-col items-end leading-tight">
                                 <span className="text-base font-bold text-secondary tabular-nums">
-                                  +{price(val.price)}
+                                  +{price(addonPrice(key, format))}
                                 </span>
                                 <span className="text-[10px] text-text-muted">
                                   {tPricing("vatIncluded")}
@@ -844,7 +903,7 @@ export default function PreviewPage() {
                     {tPricing(`addons.${id}.label`)}
                   </span>
                   <span className="text-sm tabular-nums">
-                    {price(ADDONS[id].price)}
+                    {price(addonPrice(id, format))}
                   </span>
                 </div>
               ))}
@@ -862,11 +921,35 @@ export default function PreviewPage() {
                   : tPricing("vatIncluded")}
               </p>
 
+              <label
+                id="withdrawal-consent"
+                className={`mt-5 flex cursor-pointer items-start gap-3 rounded-lg border p-3 text-left text-xs leading-relaxed text-text-soft transition-colors ${
+                  consentMissing && !withdrawalConsent ? "border-red-400 bg-red-50" : "border-border-light bg-white"
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  checked={withdrawalConsent}
+                  onChange={(e) => {
+                    setWithdrawalConsent(e.target.checked);
+                    if (e.target.checked) setConsentMissing(false);
+                  }}
+                  className="mt-0.5 h-4 w-4 shrink-0 accent-create-primary"
+                  aria-describedby={consentMissing && !withdrawalConsent ? "withdrawal-consent-error" : undefined}
+                />
+                <span>{tPricing("withdrawal.label")}</span>
+              </label>
+              {consentMissing && !withdrawalConsent && (
+                <p id="withdrawal-consent-error" className="mt-1.5 text-xs text-red-600" role="alert">
+                  {tPricing("withdrawal.required")}
+                </p>
+              )}
+
               <button
                 ref={mainCtaRef}
                 onClick={handleCheckout}
                 disabled={checkingOut}
-                className="mt-6 w-full rounded-xl bg-create-primary px-6 py-4 text-base font-bold text-white transition-all hover:bg-create-primary-hover active:scale-[0.98] disabled:opacity-60 shadow-lg shadow-create-primary/20"
+                className="mt-4 w-full rounded-xl bg-create-primary px-6 py-4 text-base font-bold text-white transition-all hover:bg-create-primary-hover active:scale-[0.98] disabled:opacity-60 shadow-lg shadow-create-primary/20"
               >
                 {checkingOut ? (
                   <span className="flex items-center justify-center gap-2">
@@ -930,7 +1013,7 @@ export default function PreviewPage() {
       )}
 
       {/* Mobile sticky buy bar — keeps the CTA reachable without scrolling */}
-      {isPreviewMode && !mainCtaVisible && (
+      {isPreviewMode && !isOutdatedPreview && !mainCtaVisible && (
         <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border-light bg-white/95 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-4px_20px_rgba(0,0,0,0.08)] backdrop-blur sm:hidden">
           <div className="flex items-center gap-3">
             <div className="min-w-0 flex-1 leading-tight">

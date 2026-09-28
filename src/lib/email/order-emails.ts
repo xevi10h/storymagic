@@ -39,6 +39,8 @@ export interface OrderEmailContext {
   downloadUrl?: string | null;
   /** Physical order (book_ready copy mentions the printed edition) */
   isPhysical?: boolean;
+  /** Stripe hosted invoice (order_confirmed*) */
+  invoiceUrl?: string | null;
 }
 
 interface Strings {
@@ -48,6 +50,9 @@ interface Strings {
   trackingCta: string;
   trackingLabel: string;
   downloadCta: string;
+  /** Durable-medium confirmation of the express consent (art. 98.7 + 103 m LGDCU). */
+  withdrawalConfirmation: string;
+  invoiceLink: string;
   events: Record<
     OrderEmailEvent,
     { subject: (book: string) => string; heading: string; paragraphs: (ctx: OrderEmailContext) => string[] }
@@ -62,6 +67,9 @@ const CONTENT: Record<Locale, Strings> = {
     trackingCta: "Seguir el envío",
     trackingLabel: "Número de seguimiento",
     downloadCta: "Ver y descargar mi libro",
+    withdrawalConfirmation:
+      "Como aceptaste antes de pagar, este libro se crea a medida y el PDF se entrega en cuanto está listo, por lo que no tiene derecho de desistimiento (art. 103 c y m de la LGDCU). Si algo llega mal, escríbenos a hola@meapica.com y lo solucionamos.",
+    invoiceLink: "Descargar la factura",
     events: {
       order_confirmed_digital: {
         subject: (b) => `Hemos recibido tu pedido — ${b}`,
@@ -122,6 +130,9 @@ const CONTENT: Record<Locale, Strings> = {
     trackingCta: "Seguir l'enviament",
     trackingLabel: "Número de seguiment",
     downloadCta: "Veure i descarregar el meu llibre",
+    withdrawalConfirmation:
+      "Com vas acceptar abans de pagar, aquest llibre es crea a mida i el PDF s'entrega quan està llest, per això no té dret de desistiment (art. 103 c i m de la LGDCU). Si alguna cosa arriba malament, escriu-nos a hola@meapica.com i ho solucionem.",
+    invoiceLink: "Descarregar la factura",
     events: {
       order_confirmed_digital: {
         subject: (b) => `Hem rebut la teva comanda — ${b}`,
@@ -182,6 +193,9 @@ const CONTENT: Record<Locale, Strings> = {
     trackingCta: "Track shipment",
     trackingLabel: "Tracking number",
     downloadCta: "View & download my book",
+    withdrawalConfirmation:
+      "As you accepted before paying, this book is made to order and the PDF is delivered as soon as it is ready, so it carries no right of withdrawal (art. 103 c and m, Spanish consumer law). If anything arrives wrong, write to hola@meapica.com and we will fix it.",
+    invoiceLink: "Download the invoice",
     events: {
       order_confirmed_digital: {
         subject: (b) => `We've received your order — ${b}`,
@@ -242,6 +256,9 @@ const CONTENT: Record<Locale, Strings> = {
     trackingCta: "Suivre l'envoi",
     trackingLabel: "Numéro de suivi",
     downloadCta: "Voir et télécharger mon livre",
+    withdrawalConfirmation:
+      "Comme vous l'avez accepté avant de payer, ce livre est fabriqué sur mesure et le PDF est livré dès qu'il est prêt : il n'ouvre donc pas de droit de rétractation (art. 103 c et m, droit espagnol de la consommation). Si quelque chose arrive abîmé, écrivez-nous à hola@meapica.com et nous le réglerons.",
+    invoiceLink: "Télécharger la facture",
     events: {
       order_confirmed_digital: {
         subject: (b) => `Nous avons reçu votre commande — ${b}`,
@@ -327,11 +344,15 @@ export function buildOrderEmail(event: OrderEmailEvent, ctx: OrderEmailContext):
         ? { label: s.downloadCta, url: ctx.downloadUrl }
         : { label: s.dashboardCta, url: dashboardUrl };
 
-  // Tracking number info block (shipped only, when present)
+  // Info block: tracking number (shipped) / consent confirmation + invoice (order confirmed).
+  const isConfirmation = event === "order_confirmed" || event === "order_confirmed_digital";
   const infoHtml =
     event === "shipped" && ctx.trackingNumber
       ? `<strong>${s.trackingLabel}:</strong> ${escapeHtml(ctx.trackingNumber)}`
-      : undefined;
+      : isConfirmation
+        ? escapeHtml(s.withdrawalConfirmation) +
+          (ctx.invoiceUrl ? `<br><br><a href="${escapeHtml(ctx.invoiceUrl)}">${s.invoiceLink}</a>` : "")
+        : undefined;
 
   const html = renderEmailLayout({
     heading: ev.heading,
@@ -349,7 +370,12 @@ export function buildOrderEmail(event: OrderEmailEvent, ctx: OrderEmailContext):
     s.greeting(ctx.childName),
     ...paragraphs.map(stripTags),
   ];
-  if (infoHtml) textLines.push(stripTags(infoHtml));
+  if (isConfirmation) {
+    textLines.push(s.withdrawalConfirmation);
+    if (ctx.invoiceUrl) textLines.push(`${s.invoiceLink}: ${ctx.invoiceUrl}`);
+  } else if (infoHtml) {
+    textLines.push(stripTags(infoHtml));
+  }
   textLines.push(`${cta.label}: ${cta.url}`, "---", s.signoff);
 
   return {

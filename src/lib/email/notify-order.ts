@@ -30,6 +30,8 @@ export interface NotifyOrderParams {
   downloadUrl?: string | null;
   /** book_ready: physical order (copy mentions the printed edition) */
   isPhysical?: boolean;
+  /** order_confirmed*: Stripe hosted invoice (factura) */
+  invoiceUrl?: string | null;
 }
 
 /**
@@ -91,6 +93,7 @@ export async function notifyOrderEmail(params: NotifyOrderParams): Promise<boole
       trackingUrl: params.trackingUrl,
       downloadUrl: params.downloadUrl,
       isPhysical: params.isPhysical,
+      invoiceUrl: params.invoiceUrl,
     });
 
     const ok = await sendEmail({ to: email, subject: built.subject, html: built.html, text: built.text });

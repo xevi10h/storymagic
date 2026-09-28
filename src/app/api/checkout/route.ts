@@ -1,111 +1,97 @@
+import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
+import type Stripe from "stripe";
 import { createClient } from "@/lib/supabase/server";
-import { getStripe, PRICING, ADDONS, type BookFormat, type AddonId } from "@/lib/stripe";
-import { getStripePriceId, isAddonEnabled } from "@/lib/pricing";
+import { createFulfilmentClient } from "@/lib/fulfilment/db";
+import { getStripe, getStripeCatalog, PRICING, type BookFormat, type AddonId } from "@/lib/stripe";
+import {
+  addonCatalogItem,
+  addonPrice,
+  isAddonEnabled,
+  WITHDRAWAL_CONSENT_VERSION,
+  type PhysicalFormat,
+} from "@/lib/pricing";
+import { routing, type Locale } from "@/i18n/routing";
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// Stripe Checkout has no Catalan: Catalan buyers get the Spanish page.
+const CHECKOUT_LOCALE: Record<Locale, Stripe.Checkout.SessionCreateParams.Locale> = {
+  es: "es",
+  ca: "es",
+  en: "en",
+  fr: "fr",
+};
+
+// Shown above the Pay button (Stripe renders it as-is; our paywall already
+// collected the express consent, this repeats it on the payment page).
+const WITHDRAWAL_NOTICE: Record<Locale, string> = {
+  es: "Libro personalizado: sin derecho de desistimiento (art. 103 c y m LGDCU). Has aceptado recibir el PDF en cuanto esté listo. IVA incluido.",
+  ca: "Llibre personalitzat: sense dret de desistiment (art. 103 c i m LGDCU). Has acceptat rebre el PDF quan estigui llest. IVA inclòs.",
+  en: "Personalised book: no right of withdrawal (art. 103 c and m, Spanish consumer law). You agreed to receive the PDF as soon as it is ready. VAT included.",
+  fr: "Livre personnalisé : pas de droit de rétractation (art. 103 c et m, droit espagnol). Vous avez accepté de recevoir le PDF dès qu'il est prêt. TVA incluse.",
+};
+
+const INVOICE_FOOTER =
+  "Xavier Huix Trenco (Meapica) · NIF 41649433K · Carrer Aribau 140, 5º, 08036 Barcelona · IVA incluido (4 %, libros) · hola@meapica.com";
+
+/** ponytail: 2-min idempotency window — a double click reuses the session; a
+ * deliberate second purchase after 2 min gets a new one. Per-click client keys
+ * if that window ever proves too short. */
+function idempotencyKey(parts: string[]): string {
+  const bucket = Math.floor(Date.now() / 120_000);
+  return `checkout-${createHash("sha256").update([...parts, bucket].join("|")).digest("hex").slice(0, 40)}`;
+}
 
 export async function POST(request: Request) {
   try {
     const supabase = await createClient();
-
     const {
       data: { user },
     } = await supabase.auth.getUser();
-
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await request.json();
-    const { storyId, format, addons: addonIds = [] } = body as {
-      storyId: string;
-      format: BookFormat;
-      addons: AddonId[];
+    const body = (await request.json().catch(() => ({}))) as {
+      storyId?: string;
+      format?: BookFormat;
+      addons?: AddonId[];
+      locale?: string;
+      withdrawalConsent?: boolean;
     };
+    const { storyId, format } = body;
+    const addonIds = Array.isArray(body.addons) ? body.addons : [];
 
-    // Validate storyId is a valid UUID
-    const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (!storyId || !UUID_RE.test(storyId)) {
       return NextResponse.json({ error: "Invalid story ID" }, { status: 400 });
     }
-
-    // Validate format
-    if (!PRICING[format]) {
+    if (!format || !Object.hasOwn(PRICING, format)) {
       return NextResponse.json({ error: "Invalid format" }, { status: 400 });
     }
+    // Express consent (art. 103 m LGDCU) must precede the purchase: never default it.
+    if (body.withdrawalConsent !== true) {
+      return NextResponse.json({ error: "withdrawal_consent_required" }, { status: 400 });
+    }
 
-    // Validate story exists and belongs to user
     const { data: story, error: storyError } = await supabase
       .from("stories")
-      .select("id, status, generated_text, characters(name)")
+      .select("id, status, locale, generated_text")
       .eq("id", storyId)
       .eq("user_id", user.id)
       .single();
-
     if (storyError || !story) {
       return NextResponse.json({ error: "Story not found" }, { status: 404 });
     }
-
-    if (!story.generated_text) {
-      return NextResponse.json(
-        { error: "Story not yet generated" },
-        { status: 400 }
-      );
-    }
-
-    // Accept both preview and ready stories for purchase
     if (story.status !== "preview" && story.status !== "ready") {
-      return NextResponse.json(
-        { error: "Story is not ready for purchase" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Story is not ready for purchase" }, { status: 400 });
     }
-
-    // Determine if format requires shipping
-    const formatConfig = PRICING[format];
-    const requiresShipping = formatConfig.requiresShipping;
-
-    // Build line items for Stripe
-    const lineItems: (
-      | { price: string; quantity: number }
-      | { price_data: { currency: string; product_data: { name: string }; unit_amount: number }; quantity: number }
-    )[] = [
-      {
-        // Use registered Stripe price ID — switches automatically between test/live
-        price: getStripePriceId(format),
-        quantity: 1,
-      },
-    ];
-
-    // Filter addons: only allow physical-only addons when format requires shipping
-    // Deduplicate to prevent double-charging
-    const validAddons: AddonId[] = [];
-    const seenAddons = new Set<string>();
-    if (requiresShipping) {
-      for (const addonId of addonIds) {
-        if (seenAddons.has(addonId)) continue;
-        seenAddons.add(addonId);
-
-        // Only sell add-ons we can actually fulfil (see ADDON_ENABLED in pricing.ts)
-        if (isAddonEnabled(addonId)) {
-          const addon = ADDONS[addonId as AddonId];
-          validAddons.push(addonId as AddonId);
-          lineItems.push({
-            price_data: {
-              currency: "eur",
-              product_data: {
-                name: addon.label,
-              },
-              unit_amount: addon.price,
-            },
-            quantity: 1,
-          });
-        }
-      }
+    // The final book is rendered from the preview's frozen image plan; previews made
+    // by the removed engines have none and could never be fulfilled.
+    const generated = story.generated_text as { imagePlan?: unknown } | null;
+    if (!generated?.imagePlan) {
+      return NextResponse.json({ error: "preview_outdated" }, { status: 409 });
     }
-
-    const subtotal =
-      formatConfig.price +
-      validAddons.reduce((sum, id) => sum + ADDONS[id].price, 0);
 
     // MOCK_MODE: refuse checkout. Local dev shares the production Supabase, and the
     // fulfil-orders cron picks up every `status="paid"` order and sends it to Gelato,
@@ -113,56 +99,97 @@ export async function POST(request: Request) {
     // local dev use the preview's "DEV — Mock Mode" button (POST /complete, which
     // has its own mock path and creates no order).
     if (process.env.MOCK_MODE === "true") {
-      return NextResponse.json(
-        { error: "mock_mode_checkout_disabled" },
-        { status: 403 },
-      );
+      return NextResponse.json({ error: "mock_mode_checkout_disabled" }, { status: 403 });
     }
 
-    const origin = new URL(request.url).origin;
+    const locale: Locale = (routing.locales as readonly string[]).includes(body.locale ?? "")
+      ? (body.locale as Locale)
+      : (routing.locales as readonly string[]).includes(story.locale ?? "")
+        ? (story.locale as Locale)
+        : routing.defaultLocale;
 
-    // Build Stripe session options — shipping only for physical formats
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const sessionOptions: Record<string, any> = {
+    const catalog = await getStripeCatalog();
+    const requiresShipping = PRICING[format].requiresShipping;
+    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [{ price: catalog.prices[format], quantity: 1 }];
+
+    // Only sellable add-ons, only on physical formats, deduplicated.
+    const validAddons: AddonId[] = [];
+    if (requiresShipping) {
+      for (const id of new Set(addonIds)) {
+        if (!isAddonEnabled(id)) continue;
+        const item = addonCatalogItem(id, format as PhysicalFormat);
+        if (!item) continue;
+        validAddons.push(id);
+        lineItems.push({ price: catalog.prices[item], quantity: 1 });
+      }
+    }
+    const totalCents = PRICING[format].price + validAddons.reduce((sum, id) => sum + addonPrice(id, format), 0);
+
+    const origin = new URL(request.url).origin;
+    const sessionParams: Stripe.Checkout.SessionCreateParams = {
       mode: "payment",
       payment_method_types: ["card"],
       // Promotion codes are managed in the Stripe Dashboard (schools/AMPA, gifts).
       allow_promotion_codes: true,
       line_items: lineItems,
       customer_email: user.email || undefined,
+      locale: CHECKOUT_LOCALE[locale],
+      // Prices are VAT-inclusive (B2C); Stripe Tax extracts the 4 % book rate.
+      automatic_tax: { enabled: true },
+      // Invoice (factura) for every order, with the seller NIF.
+      invoice_creation: {
+        enabled: true,
+        invoice_data: {
+          account_tax_ids: catalog.sellerTaxId ? [catalog.sellerTaxId] : undefined,
+          footer: INVOICE_FOOTER,
+          metadata: { story_id: storyId },
+        },
+      },
+      custom_text: { submit: { message: WITHDRAWAL_NOTICE[locale] } },
       metadata: {
         story_id: storyId,
         user_id: user.id,
         format,
         addons: JSON.stringify(validAddons),
+        locale,
+        withdrawal_consent_version: WITHDRAWAL_CONSENT_VERSION,
       },
-      success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/crear/${storyId}/preview`,
+      payment_intent_data: { metadata: { story_id: storyId, format } },
+      success_url: `${origin}/${locale}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}/${locale}/crear/${storyId}/preview`,
     };
-
     if (requiresShipping) {
-      sessionOptions.shipping_address_collection = {
-        allowed_countries: [
-          "ES", "FR", "DE", "IT", "PT", "GB", "NL", "BE", "AT", "CH",
-          "IE", "SE", "DK", "NO", "FI", "PL", "CZ", "GR",
-        ],
-      };
+      // Decision 2026-09-28: Spain only (Gelato ships from an EU plant; no customs).
+      sessionParams.shipping_address_collection = { allowed_countries: ["ES"] };
     }
 
-    const session = await getStripe().checkout.sessions.create(sessionOptions);
-
-    // Create pending order in DB
-    const { error: orderError } = await supabase.from("orders").insert({
-      user_id: user.id,
-      story_id: storyId,
-      stripe_checkout_session_id: session.id,
-      format,
-      addons: JSON.parse(JSON.stringify(validAddons)),
-      subtotal: subtotal / 100,
-      total: subtotal / 100,
-      status: "pending",
+    const session = await getStripe().checkout.sessions.create(sessionParams, {
+      idempotencyKey: idempotencyKey([user.id, storyId, format, [...validAddons].sort().join(","), locale]),
     });
 
+    // An idempotent replay of a session that has since completed/expired has no URL.
+    if (!session.url) {
+      return NextResponse.json({ error: "checkout_session_closed" }, { status: 409 });
+    }
+
+    // Service role: users can't write orders (RLS). A replayed idempotent create
+    // returns the same session → the row already exists → no duplicate.
+    const admin = createFulfilmentClient();
+    const { error: orderError } = await admin.from("orders").upsert(
+      {
+        user_id: user.id,
+        story_id: storyId,
+        stripe_checkout_session_id: session.id,
+        format,
+        addons: validAddons,
+        subtotal: totalCents / 100,
+        total: totalCents / 100,
+        status: "pending",
+        withdrawal_consent_at: new Date().toISOString(),
+        withdrawal_consent_version: WITHDRAWAL_CONSENT_VERSION,
+      },
+      { onConflict: "stripe_checkout_session_id", ignoreDuplicates: true },
+    );
     if (orderError) {
       try {
         await getStripe().checkout.sessions.expire(session.id);
@@ -170,18 +197,12 @@ export async function POST(request: Request) {
         console.error("Failed to expire Stripe session after order insert failure:", session.id);
       }
       console.error("Failed to create order:", orderError);
-      return NextResponse.json(
-        { error: "Failed to create order" },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: "Failed to create order" }, { status: 500 });
     }
 
     return NextResponse.json({ url: session.url });
   } catch (err) {
     console.error("Checkout error:", err instanceof Error ? { message: err.message, stack: err.stack } : err);
-    return NextResponse.json(
-      { error: "Checkout failed" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Checkout failed" }, { status: 500 });
   }
 }

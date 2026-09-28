@@ -1,0 +1,16 @@
+import { chromium } from "@playwright/test";
+const STORY = process.env.STORY;
+const browser = await chromium.launch();
+const page = await (await browser.newContext()).newPage();
+await page.goto("http://localhost:3013/es/auth/login");
+await page.locator("#email").fill("meapica-e2e-1@resend.dev");
+await page.locator("#password").fill("E2e-test-Meapica-2026!");
+await page.locator('button[type="submit"]').click();
+await page.waitForURL((u) => !u.pathname.includes("/auth/login"));
+const call = (b) => page.evaluate(async (b) => { const r = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(b) }); return { s: r.status, j: await r.json() }; }, b);
+const base = { storyId: STORY, format: "softcover", addons: ["extra_copy", "extra_copy", "adventure_pack"], locale: "ca" };
+console.log("no consent", JSON.stringify(await call(base)));
+console.log("bad format", JSON.stringify(await call({ ...base, format: "toString", withdrawalConsent: true })));
+const [a, b] = await Promise.all([call({ ...base, withdrawalConsent: true }), call({ ...base, withdrawalConsent: true })]);
+console.log("double click", JSON.stringify(a), JSON.stringify(b).slice(0,200));
+await browser.close();

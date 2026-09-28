@@ -8,7 +8,8 @@
 //
 //   lease → final images via src/lib/ai/final-book.ts (final sheet → 12 scenes +
 //   print-size cover, each checkpointed → QA passes, checkpointed)
-//   → finalize (story 'ready', "book ready" email)
+//   → finalize (story 'ready') → customer book PDF (every format, book-pdfs)
+//   → per order: "book ready" email with its tokenised download link
 //   → per physical order: build print files → validation gate → Gelato submit
 //
 // Concurrency: a story-level lease (conditional UPDATE, affected rows checked).
@@ -29,6 +30,7 @@ import {
   getSignedPdfUrlForGelato,
 } from "@/lib/supabase/storage";
 import {
+  renderBookPdf,
   renderPrintFiles,
   PrintValidationError,
   prefetchAllIllustrations,
@@ -43,11 +45,13 @@ import type { FulfilmentClient, FulfilmentDatabase } from "./db";
 import { alertOperator, alertProviderUnavailable } from "./alerts";
 import { sendOrderEmailOnce } from "./emails";
 import { classifyProviderError } from "./provider-errors";
+import { cancelGelatoForRefund } from "./payments";
 import {
   backoffMs,
   GELATO_ALERT_AFTER_ATTEMPTS,
   GELATO_MAX_ATTEMPTS,
   isFinalStage,
+  isOrderForActiveStripeMode,
   isUsableStoredImage,
   validateSourceImages,
   type SceneRow,
@@ -60,6 +64,8 @@ const LEASE_MS = 330_000;
 // Image-stage budgets (sheet / scene / QA pass) live in src/lib/ai/final-book.ts.
 /** PDF render (32 pages, 12 print-res images) + 3 uploads. */
 const PRINT_BUILD_MIN_MS = 100_000;
+/** Customer PDF only (one render + upload). */
+const BOOK_PDF_MIN_MS = 60_000;
 const GELATO_SUBMIT_MIN_MS = 45_000;
 /** Alert the operator after this many failed completion invocations of one story. */
 const COMPLETION_ALERT_AFTER_ATTEMPTS = 6;
@@ -151,7 +157,7 @@ export async function advanceStoryFulfilment(
   if (ordersErr) throw new Error(`Failed to load orders for story ${storyId}: ${ordersErr.message}`);
 
   const allowMock = process.env.MOCK_MODE === "true" && process.env.STRIPE_ENVIRONMENT !== "live";
-  const orders = (orderRows ?? []).filter((o) => allowMock || !isMockOrder(o));
+  const orders = (orderRows ?? []).filter((o) => (allowMock && isMockOrder(o)) || isOrderForActiveStripeMode(o));
   const generationDoneAtStart = GENERATION_DONE_STATUSES.has(story.status);
   if (orders.length === 0) return { state: "not_paid", generationDone: generationDoneAtStart };
 
@@ -386,29 +392,53 @@ async function finalizeGeneration(ctx: RunContext): Promise<void> {
 
 // ── Orders ───────────────────────────────────────────────────────────────────
 
+/** Per-order download link for emails: the token IS the credential (guests have no account). */
+export function orderDownloadUrl(order: Pick<OrderRow, "download_token">): string {
+  return `${getSiteUrl()}/api/downloads/${order.download_token}`;
+}
+
 /** Returns true when some order still has work that a later run must do soon. */
 async function runOrderFulfilment(ctx: RunContext): Promise<boolean> {
-  let pending = false;
-  const downloadUrl = `${getSiteUrl()}/api/stories/${ctx.storyId}/pdf`;
+  // Fresh statuses: an order refunded while the images were rendering must not get
+  // the "ready" email or reach Gelato.
+  const { data: fresh, error } = await ctx.supabase
+    .from("orders")
+    .select("*")
+    .in("id", ctx.orders.map((o) => o.id))
+    .in("status", ACTIVE_ORDER_STATUSES);
+  if (error) throw new Error(`Failed to reload orders: ${error.message}`);
+  ctx.orders = fresh ?? [];
+  if (ctx.orders.length === 0) return false;
 
+  // The customer PDF (digital edition, included with every format) is built once
+  // per story here, stored in book-pdfs and only ever served by signed URL.
+  if (!ctx.story.pdf_url) {
+    if (remaining(ctx) < BOOK_PDF_MIN_MS) return true;
+    await buildCustomerPdf(ctx);
+  }
+
+  let pending = false;
   for (const order of ctx.orders) {
     const isPhysical = PHYSICAL_FORMATS.has(order.format);
-
-    // Digital orders are fulfilled by the download itself.
-    if (!isPhysical && order.status === "paid") {
-      await ctx.supabase.from("orders").update({ status: "producing" }).eq("id", order.id).eq("status", "paid");
-    }
 
     // "Your book is ready" — only for books finished by this pipeline (legacy
     // 'ready' stories predate it and must not re-email old customers).
     if (ctx.story.final_generated_at && !order.ready_email_sent_at) {
-      await sendOrderEmailOnce(ctx.supabase, {
+      const sent = await sendOrderEmailOnce(ctx.supabase, {
         order,
         column: "ready_email_sent_at",
         event: "book_ready",
-        downloadUrl,
+        downloadUrl: orderDownloadUrl(order),
         isPhysical,
       });
+      if (sent) order.ready_email_sent_at = nowIso();
+      else pending = true; // retried by the next run
+    }
+
+    // Digital orders are fulfilled by the email + download; only then leave 'paid'
+    // (the cron only picks up 'paid', so an unsent email would never be retried).
+    if (!isPhysical && order.status === "paid" && order.ready_email_sent_at) {
+      await ctx.supabase.from("orders").update({ status: "producing" }).eq("id", order.id).eq("status", "paid");
     }
 
     if (isPhysical && order.status === "paid" && !order.gelato_order_id) {
@@ -417,6 +447,60 @@ async function runOrderFulfilment(ctx: RunContext): Promise<boolean> {
     }
   }
   return pending;
+}
+
+async function buildCustomerPdf(ctx: RunContext): Promise<void> {
+  const input = await buildPdfInput(ctx);
+  const pdf = await renderBookPdf(input);
+  const path = await uploadBookPdf(ctx.supabase, ctx.story.user_id, ctx.storyId, pdf);
+  const { error } = await ctx.supabase.from("stories").update({ pdf_url: path }).eq("id", ctx.storyId);
+  if (error) throw new Error(`Failed to save customer PDF path: ${error.message}`);
+  ctx.story.pdf_url = path;
+  console.log(`[fulfilment] Story ${ctx.storyId}: customer PDF stored (${(pdf.byteLength / 1_048_576).toFixed(1)} MB)`);
+}
+
+/** Renderer input shared by the customer PDF and the print files (images as data URIs). */
+async function buildPdfInput(ctx: RunContext): Promise<BookPdfInput> {
+  const { supabase, storyId, story } = ctx;
+  const character = story.characters;
+  if (!character) throw new Error("Story has no character");
+  const rawGenerated = story.generated_text as unknown as GeneratedStory | null;
+  if (!rawGenerated?.scenes?.length) throw new Error("Story has no generated text");
+  const generatedText: GeneratedStory = story.title ? { ...rawGenerated, bookTitle: story.title } : rawGenerated;
+
+  const { data: rows, error } = await supabase
+    .from("story_illustrations")
+    .select("scene_number, image_url")
+    .eq("story_id", storyId)
+    .order("scene_number");
+  if (error) throw new Error(`Failed to load illustrations: ${error.message}`);
+
+  const [prefetched, coverImageUrl] = await Promise.all([
+    prefetchAllIllustrations((rows ?? []).map((r) => ({ sceneNumber: r.scene_number, imageUrl: r.image_url }))),
+    story.cover_image_url ? prefetchImageAsDataUri(story.cover_image_url) : Promise.resolve(null),
+  ]);
+
+  return {
+    story: generatedText,
+    templateId: story.template_id,
+    characterName: character.name,
+    characterAge: character.age,
+    characterGender: character.gender,
+    characterCity: character.city,
+    characterInterests: character.interests ?? [],
+    favoriteColor: character.favorite_color,
+    favoriteCompanion: character.favorite_companion,
+    futureDream: character.future_dream,
+    dedicationText: story.dedication_text, // printed verbatim
+    senderName: story.sender_name,
+    storyId,
+    coverImageUrl,
+    // Current portraits are ~107 dpi and fail the print gate — omitted until they
+    // are generated at print resolution.
+    portraitUrl: null,
+    illustrations: prefetched,
+    locale: story.locale,
+  };
 }
 
 type OrderStepResult = "submitted" | "deferred" | "backoff" | "failed" | "gave_up";
@@ -454,12 +538,6 @@ async function buildAndValidatePrintFiles(
   order: OrderRow,
 ): Promise<{ interiorPath: string; coverPath: string } | { problems: string[] }> {
   const { supabase, storyId, story } = ctx;
-  const character = story.characters;
-  if (!character) throw new Error("Story has no character");
-  const rawGenerated = story.generated_text as unknown as GeneratedStory | null;
-  if (!rawGenerated?.scenes?.length) throw new Error("Story has no generated text");
-  const generatedText: GeneratedStory = story.title ? { ...rawGenerated, bookTitle: story.title } : rawGenerated;
-
   const productUid = process.env[order.format === "hardcover" ? "GELATO_PRODUCT_UID_HARDCOVER" : "GELATO_PRODUCT_UID_SOFTCOVER"];
   if (!productUid) throw new Error("Gelato product UID not configured");
 
@@ -469,45 +547,18 @@ async function buildAndValidatePrintFiles(
     .eq("story_id", storyId)
     .order("scene_number");
   if (error) throw new Error(`Failed to load illustrations: ${error.message}`);
-  const rows = allIllustrations ?? [];
 
   // Source gate (cheap, before rendering): every scene is a final-stage image
   // from our own storage — never a preview-quality or placeholder picture.
   const sourceProblems = validateSourceImages({
     expectedScenes: FINAL_SCENES,
-    scenes: rows,
+    scenes: allIllustrations ?? [],
     requireFinalStage: !!story.final_generated_at,
     isUsable: (url) => isUsableStoredImage(url, ctx.supabaseUrl),
   });
   if (sourceProblems.length > 0) return { problems: sourceProblems };
 
-  // The renderer and its print gate require data URIs for every image.
-  const [prefetched, coverImageUrl] = await Promise.all([
-    prefetchAllIllustrations(rows.map((r) => ({ sceneNumber: r.scene_number, imageUrl: r.image_url }))),
-    story.cover_image_url ? prefetchImageAsDataUri(story.cover_image_url) : Promise.resolve(null),
-  ]);
-
-  const pdfInput: BookPdfInput = {
-    story: generatedText,
-    templateId: story.template_id,
-    characterName: character.name,
-    characterAge: character.age,
-    characterGender: character.gender,
-    characterCity: character.city,
-    characterInterests: character.interests ?? [],
-    favoriteColor: character.favorite_color,
-    favoriteCompanion: character.favorite_companion,
-    futureDream: character.future_dream,
-    dedicationText: story.dedication_text, // printed verbatim
-    senderName: story.sender_name,
-    storyId,
-    coverImageUrl,
-    // Current portraits are ~107 dpi and fail the print gate — omitted until they
-    // are generated at print resolution.
-    portraitUrl: null,
-    illustrations: prefetched,
-    locale: story.locale,
-  };
+  const pdfInput = await buildPdfInput(ctx);
 
   // Print gate: geometry from Gelato → validate → render → re-validate (DPI,
   // page count/size, cover layout). Throws PrintValidationError instead of
@@ -525,14 +576,13 @@ async function buildAndValidatePrintFiles(
     console.warn(`[fulfilment] Print warning for order ${order.id}: ${w.message}`);
   }
 
+  // files.bookPdf is ignored: the customer PDF was already stored by buildCustomerPdf.
   const ownerId = story.user_id;
-  const [fullBookPath, interiorPath, coverPath] = await Promise.all([
-    uploadBookPdf(supabase, ownerId, storyId, files.bookPdf), // customer download (digital edition)
+  const [interiorPath, coverPath] = await Promise.all([
     uploadInteriorPdf(supabase, ownerId, storyId, order.id, files.interiorPdf),
     uploadCoverSpreadPdf(supabase, ownerId, storyId, order.id, files.coverPdf),
   ]);
 
-  await supabase.from("stories").update({ pdf_url: fullBookPath }).eq("id", storyId);
   const { error: saveErr } = await supabase
     .from("orders")
     .update({ print_interior_path: interiorPath, print_cover_path: coverPath, print_files_validated_at: nowIso() })
@@ -632,10 +682,19 @@ async function submitToGelato(ctx: RunContext, order: OrderRow): Promise<OrderSt
         gelato_last_error: null,
       })
       .eq("id", order.id)
+      .eq("status", "paid")
       .is("gelato_order_id", null)
       .select("id");
     if (recordErr) throw new Error(`Gelato order ${gelatoOrderId} created but not recorded: ${recordErr.message}`);
-    if (!recorded || recorded.length === 0) return "submitted";
+    if (!recorded || recorded.length === 0) {
+      // Refunded while we were submitting → the print must not go ahead.
+      const { data: now } = await supabase.from("orders").select("status, gelato_order_id").eq("id", order.id).maybeSingle();
+      if (now?.status === "refunded") {
+        await supabase.from("orders").update({ gelato_order_id: gelatoOrderId, gelato_status: gelatoStatus }).eq("id", order.id).is("gelato_order_id", null);
+        await cancelGelatoForRefund(supabase, order.id, gelatoOrderId, "paid (refunded during Gelato submission)");
+      }
+      return "submitted";
+    }
     order.status = "producing";
     order.gelato_order_id = gelatoOrderId;
 

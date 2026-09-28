@@ -46,7 +46,9 @@ async function gelatoFetch<T>(
     throw new GelatoApiError(response.status, path, body);
   }
 
-  return response.json() as Promise<T>;
+  // Some endpoints (e.g. :cancel) may answer with an empty body.
+  const text = await response.text();
+  return (text ? JSON.parse(text) : null) as T;
 }
 
 /** Call the Gelato Orders API (order.gelatoapis.com) */

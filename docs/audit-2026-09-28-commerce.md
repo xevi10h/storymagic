@@ -6,6 +6,17 @@ Verify every file:line before acting — code moves.
 
 ## 1. Purchase: Stripe + final book
 
+> **Status 2026-09-28 (block A):** fixed in code and tested end to end in Stripe test mode — webhook
+> (4 events, live+test secrets, test endpoint created), customer PDF for every format in the pipeline +
+> signed URLs + per-order tokenised email link, VAT (inclusive Prices by lookup_key, tax codes, Stripe
+> Tax 4 %, invoices with NIF), refunds (cancel generation/print, Gelato cancel), extra copy priced per
+> format, idempotent session create, Checkout locale + localized success/cancel URLs, withdrawal
+> consent (paywall checkbox + Checkout notice + email confirmation), old-preview message, ES-only
+> shipping. Also found and fixed: `cancelled` rejected by the status CHECK (expired webhook retried
+> forever), client INSERT policy on `orders` (free "paid" orders; drop migration pending deploy), test
+> orders printable by the live cron (mode isolation, hotfix 6e2e8cf). Pending: new live Stripe account
+> activation → see `docs/stack.md` → Payments. Details below are the original findings.
+
 Works: checkout creates order + Stripe session with story/user/format metadata
 (`src/app/api/checkout/route.ts:126-164`); webhook and `/checkout/verify` flip `pending → paid`
 with a CAS update and exactly-once confirmation email; cron every 5 min calls `/complete`;

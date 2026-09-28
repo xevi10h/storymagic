@@ -338,7 +338,7 @@ function StoryCard({
   const templateTitle = template ? td(`templates.${template.id}.title`) : undefined;
   const title = story.title ?? story.generated_text?.bookTitle ?? templateTitle ?? t("untitledStory");
   const characterName = story.characters?.name ?? t("character");
-  const hasReadyPdf = (story.status === "ready" || story.status === "ordered") && story.pdf_url;
+  const hasReadyPdf = ["ready", "ordered", "shipped", "delivered"].includes(story.status) && !!story.pdf_url;
 
   const actionHref =
     story.status === "preview"
@@ -385,17 +385,14 @@ function StoryCard({
   async function handleDownloadPdf() {
     setDownloading(true);
     try {
+      // Private storage: the API answers a short-lived signed URL (Content-Disposition: attachment).
       const res = await fetch(`/api/stories/${story.id}/pdf`);
-      if (!res.ok) throw new Error("PDF generation failed");
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${title.replace(/[^a-zA-Z0-9\s]/g, "").trim() || "story"}.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
+      const data = (await res.json().catch(() => ({}))) as { url?: string; error?: string };
+      if (!res.ok || !data.url) throw new Error(data.error ?? `pdf_${res.status}`);
+      window.location.href = data.url;
     } catch (err) {
       console.error("PDF download error:", err);
+      window.alert(t("pdfNotReady"));
     } finally {
       setDownloading(false);
     }
@@ -570,8 +567,8 @@ function OrdersTab({
         const bookTitle =
           order.stories?.generated_text?.bookTitle ?? t("untitledStory");
         const characterName = order.stories?.characters?.name ?? "";
-        const formatLabel = order.format === "hardcover" ? t("orderFormat.hardcover") : t("orderFormat.softcover");
-        const isCancelled = order.status === "cancelled";
+        const formatLabel = t(`orderFormat.${order.format === "hardcover" || order.format === "digital_pdf" ? order.format : "softcover"}`);
+        const isCancelled = order.status === "cancelled" || order.status === "refunded";
         const currentStep = getStepIndex(order.status);
         const statusMsg = getStatusMessage(order.status, order.shipping_name);
 
@@ -693,7 +690,7 @@ function OrdersTab({
               <div className="border-t border-red-100 bg-red-50/50 px-5 py-3">
                 <div className="flex items-center gap-2">
                   <span className="material-symbols-outlined text-base text-red-500">cancel</span>
-                  <span className="text-xs font-semibold text-red-700">{t("orderStatus.cancelled")}</span>
+                  <span className="text-xs font-semibold text-red-700">{t(order.status === "refunded" ? "orderStatus.refunded" : "orderStatus.cancelled")}</span>
                 </div>
               </div>
             )}

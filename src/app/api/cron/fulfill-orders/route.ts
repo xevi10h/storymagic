@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createFulfilmentClient } from "@/lib/fulfilment/db";
 import { alertOperator } from "@/lib/fulfilment/alerts";
-import { GELATO_MAX_ATTEMPTS } from "@/lib/fulfilment/logic";
+import { GELATO_MAX_ATTEMPTS, isOrderForActiveStripeMode } from "@/lib/fulfilment/logic";
 
 /**
  * Fulfilment driver. Every 5 min it finds paid orders that still need work and
@@ -80,8 +80,8 @@ export async function GET(request: Request) {
   const skipped: Array<{ orderId: string; reason: string }> = [];
 
   for (const order of orders ?? []) {
-    if ((order.stripe_checkout_session_id ?? "").startsWith("mock_")) {
-      skipped.push({ orderId: order.id, reason: "mock order" });
+    if (!isOrderForActiveStripeMode(order)) {
+      skipped.push({ orderId: order.id, reason: "other Stripe mode / mock order" });
       continue;
     }
     const ageHours = (now - new Date(order.created_at).getTime()) / 3_600_000;

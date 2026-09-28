@@ -50,6 +50,13 @@ export type OrderFulfilmentColumns = {
   gelato_last_error: string | null;
   gelato_status: string | null;
   fulfilment_alerted_at: string | null;
+  // 20260928120000_commerce_ready.sql
+  download_token: string;
+  withdrawal_consent_at: string | null;
+  withdrawal_consent_version: string | null;
+  stripe_invoice_id: string | null;
+  invoice_url: string | null;
+  refunded_at: string | null;
 };
 
 export type FulfilmentDatabase = Omit<Database, "public"> & {

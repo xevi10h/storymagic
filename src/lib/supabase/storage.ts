@@ -48,7 +48,7 @@ export async function uploadBookPdf(
   storyId: string,
   pdfBuffer: Buffer,
 ): Promise<string> {
-  const path = `${userId}/${storyId}.pdf`;
+  const path = bookPdfPath(userId, storyId);
 
   const { error } = await supabase.storage
     .from("book-pdfs")
@@ -65,23 +65,40 @@ export async function uploadBookPdf(
   return path;
 }
 
+/** Object path of a story's customer PDF (never read from stories.pdf_url, which owners can edit). */
+export function bookPdfPath(userId: string, storyId: string): string {
+  return `${userId}/${storyId}.pdf`;
+}
+
 /**
- * Get a signed download URL for a private PDF.
- * Valid for 1 hour — used for user-facing downloads.
+ * Short-lived (10 min) signed download URL for the customer PDF, served straight
+ * from Storage with Content-Disposition: attachment — the bytes never pass through
+ * a Vercel function (4.5 MB response cap; print-quality books are 5-30 MB).
  */
-export async function getSignedPdfUrl(
+export async function getSignedBookDownloadUrl(
   supabase: SupabaseClient,
-  storagePath: string,
+  userId: string,
+  storyId: string,
+  filename: string,
 ): Promise<string> {
   const { data, error } = await supabase.storage
     .from("book-pdfs")
-    .createSignedUrl(storagePath, 3600);
-
-  if (error || !data?.signedUrl) {
-    throw new Error(`Failed to sign PDF URL: ${error?.message}`);
-  }
-
+    .createSignedUrl(bookPdfPath(userId, storyId), 600, { download: filename });
+  if (error || !data?.signedUrl) throw new Error(`Failed to sign book PDF: ${error?.message}`);
   return data.signedUrl;
+}
+
+/** ASCII file name for a book download: "el-bosque-de-martina-meapica.pdf". */
+export function bookPdfFilename(title: string | null | undefined): string {
+  const slug = (title ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .toLowerCase()
+    .slice(0, 60);
+  return `${slug || "cuento"}-meapica.pdf`;
 }
 
 /**

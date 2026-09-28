@@ -20,6 +20,7 @@ export async function sendOrderEmailOnce(
     email?: string | null;
     downloadUrl?: string;
     isPhysical?: boolean;
+    invoiceUrl?: string | null;
   },
 ): Promise<boolean> {
   const { order, column } = params;
@@ -44,6 +45,7 @@ export async function sendOrderEmailOnce(
     email: params.email,
     downloadUrl: params.downloadUrl,
     isPhysical: params.isPhysical,
+    invoiceUrl: params.invoiceUrl,
   });
   if (!sent) {
     await supabase.from("orders").update({ [column]: null }).eq("id", order.id);

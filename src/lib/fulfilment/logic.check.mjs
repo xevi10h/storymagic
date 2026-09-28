@@ -5,6 +5,7 @@ import {
   backoffMs,
   decideGelatoTransition,
   finalStageMarker,
+  isOrderForActiveStripeMode,
   isUsableStoredImage,
   selectScenesToRender,
   validateSourceImages,
@@ -93,3 +94,19 @@ assert.equal(classifyProviderError(new Error("Timeout after 120s waiting for FLU
 assert.equal(classifyProviderError(new Error("scene 4030 failed"), "bfl"), null);
 
 console.log("fulfilment logic: all checks passed");
+
+// ── Stripe mode isolation (shared DB between local test and prod live) ───────
+{
+  const prev = process.env.STRIPE_ENVIRONMENT;
+  process.env.STRIPE_ENVIRONMENT = "live";
+  assert.equal(isOrderForActiveStripeMode({ stripe_checkout_session_id: "cs_live_a1" }), true);
+  assert.equal(isOrderForActiveStripeMode({ stripe_checkout_session_id: "cs_test_a1" }), false);
+  assert.equal(isOrderForActiveStripeMode({ stripe_checkout_session_id: "mock_1" }), false);
+  assert.equal(isOrderForActiveStripeMode({ stripe_checkout_session_id: null }), false);
+  process.env.STRIPE_ENVIRONMENT = "test";
+  assert.equal(isOrderForActiveStripeMode({ stripe_checkout_session_id: "cs_test_a1" }), true);
+  assert.equal(isOrderForActiveStripeMode({ stripe_checkout_session_id: "cs_live_a1" }), false);
+  if (prev === undefined) delete process.env.STRIPE_ENVIRONMENT;
+  else process.env.STRIPE_ENVIRONMENT = prev;
+}
+console.log("stripe mode isolation ✓");

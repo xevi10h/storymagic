@@ -506,7 +506,7 @@
     "description": "La màgia s'estén fora del llibre. Inclou",
     "letter": "carta física personalitzada",
     "descriptionEnd": "del personatge principal, full d'adhesius mat i punt de llibre de fusta.",
-    "cta": "Afegir extres físics (+12.90€)",
+    "cta": "Afegir extres físics (+12,90 € IVA incl.)",
     "imageCaption": "El regal perfecte"
   },
   "collectionOffer": {
@@ -569,9 +569,9 @@
       "section3Title": "3. Propietat intel·lectual",
       "section3Text": "Les il·lustracions es creen específicament per a cada llibre. El comprador rep una llicència d'ús personal no comercial del llibre adquirit.",
       "section4Title": "4. Preus i pagaments",
-      "section4Text": "Els preus inclouen IVA i es mostren en euros. El pagament es processa de forma segura a través de Stripe.",
+      "section4Text": "Tots els preus són finals, amb l'IVA inclòs, i es mostren en euros. En els llibres impresos, l'enviament a Espanya està inclòs en el preu. El pagament es processa de forma segura a través de Stripe.",
       "section5Title": "5. Enviaments i devolucions",
-      "section5Text": "Els llibres s'imprimeixen sota demanda a Espanya. Espanya peninsular: 5-8 dies laborables. Balears, Canàries i resta d'Europa: 7-12 dies laborables. En ser productes personalitzats, no s'accepten devolucions excepte defectes de fabricació.",
+      "section5Text": "Els llibres s'imprimeixen sota demanda a Espanya i, de moment, només fem enviaments a adreces d'Espanya. Espanya peninsular: 5-8 dies laborables. Balears i Canàries: 7-12 dies laborables. En ser productes personalitzats, no s'accepten devolucions excepte defectes de fabricació.",
       "section6Title": "6. Limitació de responsabilitat",
       "section6Text": "Meapica no garanteix la disponibilitat ininterrompuda del servei. Les il·lustracions poden variar i no es garanteix un resultat específic."
     },
@@ -593,7 +593,7 @@
       "section1Title": "Com es crea el meu conte?",
       "section1Text": "Tu tries l'aventura, personalitzes el personatge amb el nom, l'edat i les característiques del teu fill, i la nostra tecnologia escriu una història única amb il·lustracions originals. Cap altre nen al món tindrà mai el mateix llibre.",
       "section2Title": "Quant triga l'enviament?",
-      "section2Text": "Cada llibre s'imprimeix sota demanda a Espanya tan bon punt fas la comanda. Espanya peninsular: 5-8 dies laborables. Balears, Canàries i resta d'Europa: 7-12 dies laborables. Rebràs un correu amb el número de seguiment quan el paquet estigui en camí.",
+      "section2Text": "Cada llibre s'imprimeix sota demanda a Espanya tan bon punt fas la comanda. De moment només enviem a Espanya. Espanya peninsular: 5-8 dies laborables. Balears i Canàries: 7-12 dies laborables. Rebràs un correu amb el número de seguiment quan el paquet estigui en camí.",
       "section3Title": "Puc personalitzar el personatge?",
       "section3Text": "Sí! Pots triar el nom, l'edat, el color de cabell, ulls i pell, el pentinat, el gènere, i fins i tot afegir la seva mascota, menjar preferit o somni de futur. Tot apareix a la història i a les il·lustracions.",
       "section4Title": "Quin paper utilitzeu?",
@@ -607,9 +607,9 @@
       "title": "Enviaments i Embalatge",
       "intro": "Cada llibre de Meapica és un regal. Per això, l'experiència de rebre'l a casa ha de ser tan especial com obrir-lo.",
       "section1Title": "Terminis d'enviament",
-      "section1Text": "Espanya peninsular: 5-8 dies laborables. Balears, Canàries i resta d'Europa: 7-12 dies laborables. Cada llibre s'imprimeix sota demanda a Espanya, per això el termini inclou la impressió.",
+      "section1Text": "De moment només enviem a Espanya. Espanya peninsular: 5-8 dies laborables. Balears i Canàries: 7-12 dies laborables. Cada llibre s'imprimeix sota demanda a Espanya, per això el termini inclou la impressió.",
       "section2Title": "Cost d'enviament",
-      "section2Text": "L'enviament estàndard està inclòs en el preu del llibre. No hi ha costos ocults ni sorpreses a la caixa.",
+      "section2Text": "L'enviament estàndard està inclòs en el preu del llibre, que ja porta l'IVA inclòs. No hi ha costos ocults ni sorpreses a la caixa.",
       "section3Title": "Embalatge protector",
       "section3Text": "El teu llibre viatja en un embalatge de cartró pensat perquè arribi en perfecte estat, a punt per regalar.",
       "section4Title": "Seguiment de la comanda",
@@ -812,7 +812,10 @@
       "stickyCtaDigital": "Descarregar",
       "shippingIncluded": "Enviament inclòs",
       "bestForGifting": "Ideal per regalar",
-      "wantIt": "El vull"
+      "wantIt": "El vull",
+      "previewOutdatedTitle": "Aquesta previsualització ja no es pot comprar",
+      "previewOutdatedBody": "Es va crear amb una versió anterior de Meapica i no la podem il·lustrar amb la qualitat final. Crea el llibre de nou amb el mateix protagonista: només triga un minut i la previsualització és gratuïta.",
+      "previewOutdatedCta": "Crear de nou"
     },
     "errors": {
       "saveFailed": "No hem pogut desar el conte. Revisa la connexió i torna a prémer el botó: tot el que has escrit continua aquí.",
@@ -984,7 +987,7 @@
       "nextStepsTitle": "Llibre físic en camí",
       "nextStepsDescription": "L'imprimim sota demanda i t'avisarem per correu amb el seguiment quan surti.",
       "deliveryTitle": "Temps de lliurament",
-      "deliveryDescription": "Espanya peninsular: 5-8 dies laborables. Balears, Canàries i resta d'Europa: 7-12 dies laborables.",
+      "deliveryDescription": "Espanya peninsular: 5-8 dies laborables. Balears i Canàries: 7-12 dies laborables.",
       "formatLabel": "Format: {format}",
       "formatDigital": "PDF Digital",
       "formatHardcover": "Tapa dura",
@@ -1003,7 +1006,8 @@
       "processingDescriptionNamed": "Estem acabant el llibre de {name}: pintem les escenes que falten amb tot detall. Sol trigar una estona.",
       "processingEmailDigital": "T'escriurem tan bon punt estigui llest amb l'enllaç per descarregar el PDF.",
       "processingEmailPhysical": "T'escriurem quan estigui llest i un altre cop quan surti cap a casa teva, amb el seguiment de l'enviament.",
-      "processingSafeToLeave": "Pots tancar aquesta pàgina tranquil·lament."
+      "processingSafeToLeave": "Pots tancar aquesta pàgina tranquil·lament.",
+      "viewInvoice": "Veure la factura"
     }
   },
   "dashboard": {
@@ -1041,7 +1045,8 @@
       "producing": "En producció",
       "shipped": "Enviat",
       "delivered": "Lliurat",
-      "cancelled": "Cancel·lat"
+      "cancelled": "Cancel·lat",
+      "refunded": "Reemborsat"
     },
     "orderFormat": {
       "digital_pdf": "PDF Digital",
@@ -1087,7 +1092,8 @@
     "newAdventuresFor": "Nova aventura per a {name}",
     "newAdventuresHint": "Basant-nos en la seva edat i interessos, aquestes històries li encantaran.",
     "recommendedFor": "Perfecta per a {name}",
-    "allAdventuresDone": "{name} ja ha viscut totes les aventures disponibles! Pots crear un nou llibre repetint una que li hagi encantat."
+    "allAdventuresDone": "{name} ja ha viscut totes les aventures disponibles! Pots crear un nou llibre repetint una que li hagi encantat.",
+    "pdfNotReady": "El teu PDF encara s'està preparant. T'avisarem per correu."
   },
   "profile": {
     "title": "El meu perfil",
@@ -1166,6 +1172,10 @@
           "Ideal per a avis, padrins o separats"
         ]
       }
+    },
+    "withdrawal": {
+      "label": "Accepto que el llibre es crea a mida i que el PDF se m'entregui quan estigui llest, i entenc que per això no tindré dret de desistiment (art. 103 c i m LGDCU).",
+      "required": "Marca la casella per continuar amb el pagament."
     }
   },
   "data": {

@@ -10,6 +10,7 @@ interface OrderDetails {
   bookTitle: string | null;
   characterName: string | null;
   storyId: string;
+  invoiceUrl?: string | null;
 }
 
 type CompletionStatus = "verifying" | "completing" | "processing" | "ready" | "error";
@@ -444,6 +445,18 @@ export default function SuccessClient({
                   {t("viewBook")}
                 </Link>
               </div>
+            )}
+
+            {order?.invoiceUrl && (
+              <a
+                href={order.invoiceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 flex items-center gap-3 text-sm font-medium text-text-main hover:text-create-primary"
+              >
+                <span aria-hidden className="material-symbols-outlined text-xl text-create-primary">receipt_long</span>
+                {t("viewInvoice")}
+              </a>
             )}
 
             {/* Shipping info — only for physical formats */}

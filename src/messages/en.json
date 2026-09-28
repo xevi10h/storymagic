@@ -496,7 +496,7 @@
     "description": "The magic extends beyond the book. Includes a",
     "letter": "personalized handwritten letter",
     "descriptionEnd": "from the main character, a sheet of matte stickers, and a wooden bookmark.",
-    "cta": "Add physical extras (+12.90€)",
+    "cta": "Add physical extras (+€12.90 incl. VAT)",
     "imageCaption": "The perfect gift"
   },
   "collectionOffer": {
@@ -559,9 +559,9 @@
       "section3Title": "3. Intellectual property",
       "section3Text": "Illustrations are created specifically for each book. The buyer receives a personal, non-commercial use license for the purchased book.",
       "section4Title": "4. Prices and payments",
-      "section4Text": "Prices include VAT and are displayed in euros. Payment is processed securely through Stripe.",
+      "section4Text": "All prices are final, VAT included, and shown in euros. For printed books, shipping within Spain is included in the price. Payment is processed securely through Stripe.",
       "section5Title": "5. Shipping and returns",
-      "section5Text": "Books are printed on demand in Spain. Mainland Spain: 5-8 business days. Balearic and Canary Islands and the rest of Europe: 7-12 business days. As personalized products, returns are not accepted except for manufacturing defects.",
+      "section5Text": "Books are printed on demand in Spain, and for now we only ship to addresses in Spain. Mainland Spain: 5-8 business days. Balearic and Canary Islands: 7-12 business days. As personalized products, returns are not accepted except for manufacturing defects.",
       "section6Title": "6. Limitation of liability",
       "section6Text": "Meapica does not guarantee uninterrupted service availability. Illustrations may vary and a specific result is not guaranteed."
     },
@@ -583,7 +583,7 @@
       "section1Title": "How is my book created?",
       "section1Text": "You choose the adventure, customize the character with your child's name, age and features, and our technology writes a unique story with original illustrations. No other child in the world will ever have the same book.",
       "section2Title": "How long does shipping take?",
-      "section2Text": "Each book is printed on demand in Spain as soon as you order. Mainland Spain: 5-8 business days. Balearic and Canary Islands and the rest of Europe: 7-12 business days. You'll receive an email with the tracking number once your parcel is on its way.",
+      "section2Text": "Each book is printed on demand in Spain as soon as you order. For now we only ship within Spain. Mainland Spain: 5-8 business days. Balearic and Canary Islands: 7-12 business days. You'll receive an email with the tracking number once your parcel is on its way.",
       "section3Title": "Can I customize the character?",
       "section3Text": "Yes! You can choose the name, age, hair/eye/skin color, hairstyle, gender, and even add their pet, favorite food, or future dream. Everything appears in the story and illustrations.",
       "section4Title": "What paper do you use?",
@@ -597,9 +597,9 @@
       "title": "Shipping & Packaging",
       "intro": "Every Meapica book is a gift. That's why the experience of receiving it at home should be as special as opening it.",
       "section1Title": "Shipping times",
-      "section1Text": "Mainland Spain: 5-8 business days. Balearic and Canary Islands and the rest of Europe: 7-12 business days. Each book is printed on demand in Spain, so the timeframe includes printing.",
+      "section1Text": "For now we only ship within Spain. Mainland Spain: 5-8 business days. Balearic and Canary Islands: 7-12 business days. Each book is printed on demand in Spain, so the timeframe includes printing.",
       "section2Title": "Shipping cost",
-      "section2Text": "Standard shipping is included in the book price. No hidden costs or surprises in the box.",
+      "section2Text": "Standard shipping is included in the book price, which already includes VAT. No hidden costs or surprises in the box.",
       "section3Title": "Protective packaging",
       "section3Text": "Your book travels in cardboard packaging designed to get it to you in perfect condition, ready to give.",
       "section4Title": "Order tracking",
@@ -802,7 +802,10 @@
       "stickyCtaDigital": "Download",
       "shippingIncluded": "Free shipping",
       "bestForGifting": "Best for gifting",
-      "wantIt": "I want it"
+      "wantIt": "I want it",
+      "previewOutdatedTitle": "This preview can no longer be purchased",
+      "previewOutdatedBody": "It was made with an earlier version of Meapica and we cannot illustrate it at final quality. Create the book again with the same main character: it only takes a minute and the preview is free.",
+      "previewOutdatedCta": "Create it again"
     },
     "errors": {
       "saveFailed": "We couldn't save your book. Check your connection and tap the button again: everything you've entered is still here.",
@@ -974,7 +977,7 @@
       "nextStepsTitle": "Physical book on its way",
       "nextStepsDescription": "We print it on demand and will email you the tracking link once it ships.",
       "deliveryTitle": "Delivery time",
-      "deliveryDescription": "Mainland Spain: 5-8 business days. Balearic and Canary Islands and the rest of Europe: 7-12 business days.",
+      "deliveryDescription": "Mainland Spain: 5-8 business days. Balearic and Canary Islands: 7-12 business days.",
       "formatLabel": "Format: {format}",
       "formatDigital": "Digital PDF",
       "formatHardcover": "Hardcover",
@@ -993,7 +996,8 @@
       "processingDescriptionNamed": "We're finishing {name}'s book: painting the remaining scenes in full detail. It usually takes a little while.",
       "processingEmailDigital": "We'll email you the PDF download link as soon as it's ready.",
       "processingEmailPhysical": "We'll email you when it's ready and again when it ships, with tracking.",
-      "processingSafeToLeave": "You can safely close this page."
+      "processingSafeToLeave": "You can safely close this page.",
+      "viewInvoice": "View invoice"
     }
   },
   "dashboard": {
@@ -1031,7 +1035,8 @@
       "producing": "In production",
       "shipped": "Shipped",
       "delivered": "Delivered",
-      "cancelled": "Cancelled"
+      "cancelled": "Cancelled",
+      "refunded": "Refunded"
     },
     "orderFormat": {
       "digital_pdf": "Digital PDF",
@@ -1077,7 +1082,8 @@
     "newAdventuresFor": "New adventure for {name}",
     "newAdventuresHint": "Based on their age and interests, these stories will be a hit.",
     "recommendedFor": "Perfect for {name}",
-    "allAdventuresDone": "{name} has already lived all available adventures! You can create a new book by revisiting a favourite."
+    "allAdventuresDone": "{name} has already lived all available adventures! You can create a new book by revisiting a favourite.",
+    "pdfNotReady": "Your PDF is still being prepared. We will email you."
   },
   "profile": {
     "title": "My profile",
@@ -1156,6 +1162,10 @@
           "Perfect for grandparents, godparents, or separated households"
         ]
       }
+    },
+    "withdrawal": {
+      "label": "I agree that the book is made to order and that the PDF is delivered to me as soon as it is ready, and I understand that I therefore lose the right of withdrawal (art. 103 c and m, Spanish consumer law).",
+      "required": "Tick the box to continue to payment."
     }
   },
   "data": {

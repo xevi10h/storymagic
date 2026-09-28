@@ -113,10 +113,10 @@ orders
 ├── id (uuid, PK)
 ├── user_id (FK → profiles)
 ├── story_id (FK → stories)
-├── stripe_payment_id
-├── stripe_checkout_session_id
-├── format (softcover / hardcover)
-├── addons (jsonb — pack aventura, digital pdf, extra copy)
+├── stripe_payment_id (PaymentIntent — refunds are matched on it)
+├── stripe_checkout_session_id (unique; cs_test_… / cs_live_… = the Stripe mode)
+├── format (digital_pdf / softcover / hardcover)
+├── addons (jsonb — ["extra_copy"] = a 2nd copy of the same format)
 ├── subtotal (decimal)
 ├── total (decimal)
 ├── currency (EUR)
@@ -124,13 +124,18 @@ orders
 ├── shipping_address (jsonb)
 ├── gelato_order_id (nullable, unique)
 ├── tracking_number (nullable)
-├── status (pending / paid / producing / shipped / delivered / cancelled)
+├── status (pending / paid / producing / shipped / delivered / cancelled = checkout expired / refunded)
 ├── customer_email (Stripe Checkout email — the only address guests have)
 ├── confirmation_email_sent_at / ready_email_sent_at (exactly-once email claims)
 ├── print_interior_path / print_cover_path / print_files_validated_at (per-order print files)
 ├── gelato_submit_attempts / gelato_submit_started_at / gelato_next_attempt_at / gelato_last_error
 ├── gelato_status (raw last Gelato fulfillmentStatus)
-└── fulfilment_alerted_at (operator alerted: retries exhausted)
+├── fulfilment_alerted_at (operator alerted: retries exhausted)
+├── download_token (uuid, unique — the credential of the email download link /api/downloads/{token})
+├── withdrawal_consent_at / withdrawal_consent_version (art. 103 c+m LGDCU express consent, paywall checkbox)
+├── stripe_invoice_id / invoice_url (Stripe invoice created by Checkout, hosted URL)
+└── refunded_at
+RLS: owners SELECT only. Rows are inserted by /api/checkout with the service role (no client INSERT).
 
 photo_consents (parental consent per child photo — service role only, RLS on, no policies)
 ├── id (uuid, PK)
@@ -236,13 +241,22 @@ Screen 3 "Crear su libro" (world + 3 chapters)
 
 User clicks "Buy" in the preview
   │
-  └─→ POST /api/checkout
-        └─→ Stripe Checkout Session created
-              └─→ On success: POST /api/webhooks/stripe (or /api/checkout/verify if it wins the race)
+  └─→ Paywall: format + extra copy (price per format) + REQUIRED withdrawal-consent checkbox
+        └─→ POST /api/checkout { storyId, format, addons, locale, withdrawalConsent: true }
+              ├─→ 400 withdrawal_consent_required · 409 preview_outdated (no imagePlan: old engine)
+              ├─→ Prices by lookup_key (getStripeCatalog, 10-min cache; amount/tax drift → error)
+              ├─→ Session: automatic_tax (Stripe Tax, 4 % books), invoice_creation (seller NIF),
+              │     locale es/en/fr (ca → es), shipping ES only, custom_text withdrawal notice,
+              │     success/cancel URLs with the locale, idempotency key (2-min window: double click
+              │     = same session) → order row upserted 'pending' (service role)
+              └─→ On payment: POST /api/webhooks/stripe (or /api/checkout/verify if it wins the race),
+                    both via recordPaidSession (src/lib/fulfilment/payments.ts)
                     ├─→ payment_status must be 'paid' (async methods: checkout.session.async_payment_succeeded)
-                    ├─→ Order pending → 'paid' (conditional update) + customer_email from customer_details.email
+                    ├─→ Order pending → 'paid' (conditional update) + customer_email, invoice id/url, total
                     └─→ Email "order_confirmed" (physical) / "order_confirmed_digital", exactly-once
-                          via orders.confirmation_email_sent_at
+                          via orders.confirmation_email_sent_at — includes the consent confirmation
+                          (durable medium, art. 98.7) and the invoice link
+        checkout.session.expired → 'cancelled' · charge.refunded (full) → 'refunded' (see below)
 
 Post-purchase fulfilment — resumable (src/lib/fulfilment/pipeline.ts)
   │
@@ -254,19 +268,31 @@ Post-purchase fulfilment — resumable (src/lib/fulfilment/pipeline.ts)
   │     │     all scenes without a final render_stage + print-size cover, in parallel, each
   │     │     uploaded + checkpointed as soon as it finishes
   │     ├─→ QA judge (OpenAI vision) + repair-by-edit passes (final_qa_pass checkpoint) → story 'ready'
-  │     ├─→ Email "book_ready" (download link /api/stories/{id}/pdf), exactly-once per order
-  │     ├─→ Digital order → 'producing'
+  │     ├─→ Orders re-read (a refund during rendering stops here)
+  │     ├─→ Customer PDF (34 p, every format) rendered once → book-pdfs/{user}/{story}.pdf,
+  │     │     stories.pdf_url (never served through a function: 5-30 MB)
+  │     ├─→ Email "book_ready" (link /api/downloads/{order.download_token}), exactly-once per order
+  │     ├─→ Digital order → 'producing' (only after that email went out)
   │     └─→ Physical order ('paid', no gelato_order_id):
   │           ├─→ Source gate: 12 final-stage scenes from our storage (no preview/placeholder art)
-  │           ├─→ renderPrintFiles() → interior (30 p) + cover (catalog geometry) + 34-page digital
-  │           │     book; validatePrintableBook() gate (DPI, pages, geometry) — on failure: no submit,
+  │           ├─→ renderPrintFiles() → interior (30 p) + cover (catalog geometry);
+  │           │     validatePrintableBook() gate (DPI, pages, geometry) — on failure: no submit,
   │           │     operator alerted
-  │           ├─→ Upload: {user}/{story}-interior-{orderId}.pdf, -cover-{orderId}.pdf, {story}.pdf
+  │           ├─→ Upload: {user}/{story}-interior-{orderId}.pdf, -cover-{orderId}.pdf
   │           ├─→ Gelato: claim attempt → search by orderReferenceId (Gelato doesn't dedupe; adopt an
-  │           │     existing order) → create → record gelato_order_id → order 'producing', story 'ordered'
+  │           │     existing order) → create (quantity 2 with extra_copy) → record gelato_order_id
+  │           │     (CAS on 'paid'; refunded meanwhile → cancel at Gelato) → 'producing', story 'ordered'
   │           ├─→ Email "in_production" (only from the run that recorded the Gelato id)
   │           └─→ Failure: backoff 5 min → 6 h; operator alert from attempt 3 (or at once on 4xx /
   │                 gate failure); give up + alert at attempt 8 (order stays 'paid')
+  │
+  ├─→ Refund (charge.refunded, full): order → 'refunded' (cron/pipeline/Gelato claims all CAS on
+  │     'paid', download token dead) + Gelato order cancelled if it has one (only possible before
+  │     production; else operator alert). Partial refund → operator alert only. An image run already
+  │     in flight finishes its ≤ 270 s batch; nothing after it runs.
+  │
+  ├─→ Stripe-mode isolation: local dev shares the prod DB, so cron + pipeline only take orders whose
+  │     session id matches STRIPE_ENVIRONMENT (cs_live_ in prod, cs_test_ locally)
   │
   ├─→ GET /api/cron/fulfill-orders (every 5 min): orders 'paid' + no gelato_order_id (any story
   │     status, < 48 h) → /complete per story IN PARALLEL (max 5); skips held leases and backoffs;
@@ -353,10 +379,11 @@ src/
 │   │       ├── title/route.ts            — POST: update story title
 │   │       ├── dedication/route.ts       — PATCH: verbatim dedication + sender (until ordered)
 │   │       ├── send-preview/route.ts     — POST: "Envíame la preview" email (3/h per user, address not stored)
-│   │       └── pdf/route.ts              — GET: render + cache PDF
-│   ├── checkout/route.ts                 — POST: create Stripe session
-│   ├── checkout/verify/route.ts          — GET: confirm payment (webhook fallback) + order_confirmed email
-│   ├── webhooks/stripe/route.ts          — POST: Stripe webhook → 'paid' (conditional) + customer_email + confirmation email (all formats)
+│   │       └── pdf/route.ts              — GET: owner + paid order → { url } (10-min signed Storage URL); never renders
+│   ├── checkout/route.ts                 — POST: create Stripe session (tax, invoice, consent, idempotent)
+│   ├── checkout/verify/route.ts          — GET: confirm payment (webhook fallback) via recordPaidSession
+│   ├── webhooks/stripe/route.ts          — POST: live + test secrets; completed/async_succeeded → paid, expired → cancelled, charge.refunded → refunded
+│   ├── downloads/[token]/route.ts        — GET: email download link → 302 to a 10-min signed Storage URL (paid orders only)
 │   ├── cron/fulfill-orders/route.ts      — GET (Vercel cron, 5 min): fan out /complete for paid, unfulfilled orders
 │   ├── cron/purge-photos/route.ts        — GET (Vercel cron, hourly :17): delete child photos > 24 h, mark photo_consents.deleted_at
 │   ├── characters/photo/route.ts         — POST: child photo upload (consent + sharp re-encode, flag-gated) · DELETE: withdraw consent
@@ -425,11 +452,12 @@ src/
 │   │   ├── provider-errors.ts            — Typed ProviderUnavailableError + classifier (402/403/credits/locked)
 │   │   ├── alerts.ts                     — Deduped operator alerts (OPS_ALERT_EMAIL / GELATO_OWNER_EMAIL)
 │   │   ├── emails.ts                     — sendOrderEmailOnce (claims an orders.*_email_sent_at column)
+│   │   ├── payments.ts                   — recordPaidSession / recordExpiredSession / recordRefund (+ Gelato cancel)
 │   │   └── db.ts                         — Service client typed with the fulfilment columns (until types are regenerated)
 │   ├── waitlist-email.ts                 — Resend email template for waitlist confirmation
 │   ├── create-store.ts                   — Creation-flow state + path/beat helpers (getTemplateBeats, getRecommendedTemplates)
 │   ├── pricing.ts                        — Shared pricing constants
-│   ├── stripe.ts                         — Stripe singleton
+│   ├── stripe.ts                         — Stripe singleton, webhook secrets, getStripeCatalog (prices by lookup_key)
 │   └── database.types.ts                 — Auto-generated Supabase types
 ├── i18n/
 │   ├── routing.ts                        — Locale config (es/ca/en/fr)

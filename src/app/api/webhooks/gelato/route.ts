@@ -115,6 +115,8 @@ async function applyGelatoStatus(
         .from("orders")
         .update({ gelato_status: decision.gelatoStatus, ...trackingUpdate })
         .eq("id", order.id);
+      // We cancelled it ourselves after a Stripe refund: expected, no alert.
+      if (order.status === "refunded" && decision.gelatoStatus.startsWith("cancel")) return;
       await alertOperator(supabase, {
         key: `gelato-exception:${order.id}:${decision.gelatoStatus}`,
         subject: `Gelato order ${gelatoOrderId} is ${decision.gelatoStatus}`,

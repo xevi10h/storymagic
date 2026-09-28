@@ -4,7 +4,6 @@ import { Link } from "@/i18n/navigation";
 
 export default function AdventurePack() {
   const t = useTranslations("adventurePack");
-  const tPricing = useTranslations("pricing");
 
   return (
     <section className="relative overflow-hidden bg-pack-bg py-24 text-pack-text">
@@ -35,7 +34,6 @@ export default function AdventurePack() {
               <span className="material-symbols-outlined">card_giftcard</span>
               {t("cta")}
             </Link>
-            <p className="mt-3 text-xs text-pack-muted">{tPricing("vatIncluded")}</p>
           </div>
 
           {/* Right — Polaroid image */}

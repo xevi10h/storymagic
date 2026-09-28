@@ -24,6 +24,8 @@ export async function GET() {
       .from("orders")
       .select("id, format, status, subtotal, total, tracking_number, tracking_url, shipping_name, created_at, story_id, stories(generated_text, characters(name))")
       .eq("user_id", user.id)
+      // Abandoned checkouts (pending / expired) are not orders to the customer.
+      .not("status", "in", "(pending,cancelled)")
       .order("created_at", { ascending: false }),
     supabase
       .from("characters")

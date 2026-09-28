@@ -56,6 +56,7 @@ function generatedText() {
     coverImagePrompt: "",
     dedication: "",
     finalMessage: "Y colorín colorado, este cuento se ha terminado.",
+    imagePlan: { bible: "mock" }, // purchasable preview (made by the current engine)
     synopsis: "Una aventura entre estrellas.",
     scenes: Array.from({ length: 12 }, (_, i) => ({
       sceneNumber: i + 1,
