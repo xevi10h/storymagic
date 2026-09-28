@@ -59,11 +59,15 @@ interface GelatoQuoteRequest {
 
 export interface GelatoOrderResponse {
   id: string;
+  orderType?: "order" | "draft";
   orderReferenceId: string;
   fulfillmentStatus: string;
   financialStatus: string;
   currency: string;
   items: { id: string; itemReferenceId: string; fulfillmentStatus: string }[];
+  shipment?: { shipmentMethodName?: string; packages?: { trackingCode?: string | null; trackingUrl?: string | null }[] };
+  /** Set when Gelato split the order across production hubs (split orders). */
+  connectedOrderIds?: string[];
 }
 
 export interface GelatoQuoteShipmentMethod {
@@ -182,6 +186,33 @@ export async function quotePrintOrder(
 }
 
 /**
+ * Cheapest shipment method for this address (the one our "shipping included"
+ * price assumes). Not always type "normal": to Baleares (2026-09-28) the
+ * "express" domestic parcel is both cheaper (4,80 € vs 5,66 €) and faster
+ * (7-8 vs 9-14 days). Falls back to "normal" if the quote fails.
+ */
+async function cheapestShipmentMethod(params: PrintOrderParams, address: GelatoAddress): Promise<string> {
+  try {
+    const quote = await gelatoOrderFetch<GelatoQuoteResponse>("/v4/orders:quote", {
+      method: "POST",
+      body: JSON.stringify({
+        orderReferenceId: params.orderReferenceId,
+        customerReferenceId: params.storyId,
+        currency: "EUR",
+        products: [{ itemReferenceId: `${params.storyId}-book`, productUid: getProductUid(params.format), pageCount: INNER_PAGE_COUNT, quantity: params.quantity ?? 1 }],
+        recipient: address,
+      }),
+    });
+    const methods = (quote.quotes ?? []).flatMap((q) => q.shipmentMethods).filter((m) => m.type !== "pallet");
+    methods.sort((a, b) => a.price - b.price || a.maxDeliveryDays - b.maxDeliveryDays);
+    if (methods[0]) return methods[0].shipmentMethodUid;
+  } catch (err) {
+    console.warn(`[gelato] shipping quote failed for ${params.orderReferenceId}, using "normal":`, err);
+  }
+  return "normal";
+}
+
+/**
  * Submit a print order to Gelato.
  * Phase 1: ships to owner (GELATO_FULFILLMENT_MODE=owner).
  * Phase 2: ships to customer (GELATO_FULFILLMENT_MODE=direct).
@@ -211,7 +242,7 @@ export async function createPrintOrder(
         quantity: params.quantity ?? 1,
       },
     ],
-    shipmentMethodUid: "normal",
+    shipmentMethodUid: await cheapestShipmentMethod(params, address),
     shippingAddress: address,
   };
   return gelatoOrderFetch<GelatoOrderResponse>("/v4/orders", {
@@ -239,6 +270,11 @@ export async function findOrdersByReference(orderReferenceId: string): Promise<G
   });
   // Defensive: only trust exact reference matches.
   return (res.orders ?? []).filter((o) => o.orderReferenceId === orderReferenceId);
+}
+
+/** GET /v4/orders/{id} — used by the reconciliation sweep (webhooks are retried only 3×). */
+export function getPrintOrder(gelatoOrderId: string): Promise<GelatoOrderResponse> {
+  return gelatoOrderFetch<GelatoOrderResponse>(`/v4/orders/${encodeURIComponent(gelatoOrderId)}`);
 }
 
 /**

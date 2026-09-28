@@ -100,6 +100,49 @@ Open: VAT 4 % vs 21 % (≈6,7 € margin swing), keep softcover?, countries (GB/
 FR/DE/IT need translated books; ES-only or ES+PT?), extra copy real softcover vs reprice,
 manual approval enabled in the Gelato account?, glued vs layflat/sewn binding (earlier "cosido" claims).
 
+### Block B status (2026-09-28)
+
+Decisions: standard shipping included in the price; Spain = península + Baleares (Canarias,
+Ceuta, Melilla excluded: postcode guard before print + Checkout notice); test = draft only.
+
+Fixed: tracking read from `order_status_updated.items[].fulfillments[]` and
+`order_item_tracking_code_updated` (types match the docs; shared `fulfilment/gelato-status.ts`);
+`pending_approval`/`on_hold`/`not_connected` → ops alert, no fake progress; hourly reconciliation
+via `GET /v4/orders/{id}` + "not shipped 5 days after purchase" alert; split (connected) orders
+alert instead of being dropped or flagged as duplicates; phone collected in Checkout and sent to
+Gelato; cheapest shipment method chosen from a live quote (we sent `normal`, which to Baleares
+is 5,66 € / 9-14 days vs 4,80 € / 7-8 via the domestic parcel). File rejection: 4xx on create
+already alerts immediately; `failed` after acceptance alerts via the webhook/reconciliation.
+Webhook: prod logs show **every Gelato event → 401** (URL registered without `?secret=`);
+dashboard change needed (launch-checklist item 5). Draft e2e (`88fc7f19…`, Barcelona, kept for
+review): files accepted, cover/spine/back previews correct.
+
+Full e2e 2026-09-28 (local, real generation, Stripe test → Gelato **draft** `6c846751…`, story
+`047ba4d0…`, script `e2e/_real-full.mjs`): logged-in creation → preview (59 s) → hardcover
+checkout with phone + Palma 07001 → paid webhook → final images (QA 8.7/10) → print PDFs (30 pp
++ cover spread, visually checked) → Gelato draft with `package_24_48_domestic` 4,80 € / 7-8 days,
+phone `+34…`, cost 16,56 € → emails confirmed / book ready / in production / shipped / delivered,
+each once. Simulated Gelato webhooks: no/wrong secret → 401; tracking stored; stale
+`in_transit` after `delivered` changes nothing (fixed: it used to rewind `gelato_status`).
+Canarias 35002 → not submitted + ops alert. Delivery copy aligned to the quote: **7-10 business
+days** everywhere (was 5-8). Removed dead order/quote types from `gelato/types.ts`.
+Open: page 27 ("La heroína") prints an empty purple block: the portrait is deliberately omitted
+(`pipeline.ts` `portraitUrl: null`, avatars are ~107 dpi) — needs a print-res image or a redesign.
+
+Live Gelato numbers (30 inner pages, ES, excl. VAT): hardcover 11,76 €, softcover 8,92 €;
+shipping 4,80 € (softcover 4,69 €) península/Baleares, 7-8 days door to door; a 2nd copy adds
+~1,90 € shipping. Margin per order (price incl. 4 % IVA, Stripe ~1,5 % + 0,25 €, OpenAI ~1,55 €):
+
+| Item | Net of IVA | Gelato + ship | Stripe | OpenAI | Margin |
+|---|---|---|---|---|---|
+| Hardcover 49,90 € | 47,98 € | 16,56 € | 1,00 € | 1,55 € | **28,87 €** |
+| Softcover 34,90 € | 33,56 € | 13,61 € | 0,77 € | 1,55 € | **17,63 €** |
+| Extra copy dura 29,90 € | 28,75 € | 13,69 € | 0,45 € | — | **14,61 €** |
+| Extra copy blanda 19,90 € | 19,13 € | 10,80 € | 0,30 € | — | **8,03 €** |
+| PDF 9,90 € | 9,52 € | — | 0,40 € | 1,55 € | **7,57 €** |
+
+No format loses money. Gelato's own VAT on its invoice is assumed deductible.
+
 ## 3. Post-purchase + user area
 
 Works: Resend REST emails es/ca/en/fr for order confirmed (physical/digital), book ready, in

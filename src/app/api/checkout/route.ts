@@ -32,6 +32,13 @@ const WITHDRAWAL_NOTICE: Record<Locale, string> = {
   fr: "Livre personnalisé : pas de droit de rétractation (art. 103 c et m, droit espagnol). Vous avez accepté de recevoir le PDF dès qu'il est prêt. TVA incluse.",
 };
 
+const SHIPPING_AREA_NOTICE: Record<Locale, string> = {
+  es: "Envío estándar incluido a la península y Baleares (7-10 días laborables). De momento no enviamos a Canarias, Ceuta ni Melilla.",
+  ca: "Enviament estàndard inclòs a la península i les Balears (7-10 dies laborables). De moment no enviem a Canàries, Ceuta ni Melilla.",
+  en: "Standard shipping included to mainland Spain and the Balearic Islands (7-10 business days). We don't ship to the Canary Islands, Ceuta or Melilla yet.",
+  fr: "Livraison standard incluse en Espagne péninsulaire et aux Baléares (7 à 10 jours ouvrés). Pas encore de livraison aux Canaries, à Ceuta ni à Melilla.",
+};
+
 const INVOICE_FOOTER =
   "Xavier Huix Trenco (Meapica) · NIF 41649433K · Carrer Aribau 140, 5º, 08036 Barcelona · IVA incluido (4 %, libros) · hola@meapica.com";
 
@@ -161,6 +168,11 @@ export async function POST(request: Request) {
     if (requiresShipping) {
       // Decision 2026-09-28: Spain only (Gelato ships from an EU plant; no customs).
       sessionParams.shipping_address_collection = { allowed_countries: ["ES"] };
+      // The carrier calls if a delivery fails.
+      sessionParams.phone_number_collection = { enabled: true };
+      // Canarias, Ceuta and Melilla are excluded (outside the EU VAT area); Stripe
+      // can't restrict postcodes, so say it here and enforce it before printing.
+      sessionParams.custom_text = { ...sessionParams.custom_text, shipping_address: { message: SHIPPING_AREA_NOTICE[locale] } };
     }
 
     const session = await getStripe().checkout.sessions.create(sessionParams, {

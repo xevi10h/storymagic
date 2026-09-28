@@ -29,7 +29,13 @@
 >    notes below), then verify + set EMAIL_FROM.
 > 4. **Sprint 2 (performance)** then **Sprint 3 (conversion/SEO)** —
 >    `docs/web-audit-2026-07-20.md`.
-> 5. Gelato webhook registration check (dashboard-only, no API) + real e2e order.
+> 5. 🔴 **Gelato webhook returns 401 in prod** (Vercel logs 2026-09-28: every event). The URL
+>    registered in Gelato (Developer → Webhooks) lacks `?secret=`. Register
+>    `https://meapica.com/api/webhooks/gelato?secret=<GELATO_WEBHOOK_SECRET>` for
+>    `order_status_updated` + `order_item_tracking_code_updated` (verified: prod answers 200 with it).
+>    Until then the hourly reconciliation in the fulfilment cron keeps status/tracking in sync.
+>    Full e2e passed 2026-09-28 (book generated → test payment → Gelato draft → simulated webhooks → all
+>    emails; see audit Block B). A real paid print is still pending. Page 27 prints without portrait (open).
 >
 > ---
 >
@@ -71,9 +77,9 @@
 > - **P0-3 ✅ DONE — all 390 path images generated, fully uniform.** All via **fal FLUX.2 [dev]** ($0.012/MP, rich watercolor). 270 missing first (~$3.24), then the original 120 BFL regenerated on fal for full style uniformity (~$1.44) → **390/390 fal, total ≈ $4.68, 0 failures** (2026-06-15). Provenance in `src/lib/story-trees/art-provenance.json`. fal schnell was rejected (flat/white-bg look).
 >
 > **Prod-config findings (from `vercel env` + Resend) — need YOUR action:**
-> - 🔴 **`STRIPE_ENVIRONMENT="test\n"`** → prod is in Stripe TEST mode; no real payments, and Gelato orders are drafts. Flip to `live` (+ live Stripe keys) at go-live.
+> - ✅ (superseded 2026-09-28: prod is `live`) ~~`STRIPE_ENVIRONMENT="test\n"`~~ → prod is in Stripe TEST mode; no real payments, and Gelato orders are drafts. Flip to `live` (+ live Stripe keys) at go-live.
 > - 🔴 **FLUX.2 is NOT active in prod** — `BFL_API_KEY` and `ILLUSTRATION_PROVIDER` are **missing** in prod → the generator falls back to the **Recraft** pipeline (RECRAFT_API_TOKEN is set). To run the FLUX.2 visual-bible pipeline in prod, set `ILLUSTRATION_PROVIDER=flux2` + `BFL_API_KEY` (with credits). Otherwise prod ships Recraft illustrations.
-> - 🟠 **`GELATO_FULFILLMENT_MODE="owner"`** — every book ships to the owner's address (phase-1 manual repackaging). Set `direct` to ship to customers.
+> - ✅ (superseded 2026-09-28: prod is `direct` + `STRIPE_ENVIRONMENT=live`) ~~`GELATO_FULFILLMENT_MODE="owner"`~~ — every book ships to the owner's address (phase-1 manual repackaging). Set `direct` to ship to customers.
 > - 🔴 **Resend `meapica.com` = verification FAILED** — can't send from meapica.com; emails currently send from `constrack.pro` (verified). Fix the DNS records + re-verify, then set `EMAIL_FROM` to a meapica.com address.
 > - ✅ Set: `RESEND_API_KEY`, `GELATO_WEBHOOK_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`, `GEMINI_API_KEY`, `OPENAI_API_KEY`, `RECRAFT_API_TOKEN`, `CRON_SECRET` (added today).
 >

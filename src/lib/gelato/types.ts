@@ -14,118 +14,46 @@ export interface GelatoAddress {
   phone?: string;
 }
 
-export interface GelatoFileItem {
-  // "default" = cover spread PDF, "inside" = interior pages PDF
-  type: "default" | "inside";
-  url: string; // publicly accessible URL; Gelato fetches this
+// Webhook events (Gelato dashboard → Developer → Webhooks). Shapes verified
+// against dashboard.gelato.com/docs/webhooks on 2026-09-28. Gelato sends no
+// signature: the endpoint is authenticated by ?secret= in the registered URL.
+
+export interface GelatoWebhookFulfillment {
+  trackingCode?: string | null;
+  trackingUrl?: string | null;
+  shipmentMethodName?: string;
+  shipmentMethodUid?: string;
 }
 
-export interface GelatoOrderItem {
-  itemReferenceId: string;
-  productUid: string;
-  pageCount: number; // required for photo books — inner pages only (e.g. 30)
-  files: GelatoFileItem[];
-  quantity: number;
-}
-
-export interface GelatoOrderRequest {
-  orderType: "order" | "draft";
-  orderReferenceId: string;
-  customerReferenceId?: string;
-  currency: string;
-  items: GelatoOrderItem[];
-  shipmentMethodUid: string;
-  shippingAddress: GelatoAddress;
-}
-
-export interface GelatoOrderItem_Response {
+interface GelatoWebhookBase {
   id: string;
-  itemReferenceId: string;
-  fulfillmentStatus: string;
-}
-
-export interface GelatoOrderResponse {
-  id: string;
-  orderReferenceId: string;
-  customerReferenceId?: string;
-  fulfillmentStatus: string;
-  financialStatus: string;
-  currency: string;
-  items: GelatoOrderItem_Response[];
-  shipment?: {
-    id: string;
-    trackingCode?: string;
-    trackingUrl?: string;
-    carrierName?: string;
-  };
-  created: string;
-  updated: string;
-}
-
-export interface GelatoQuoteItem {
-  itemReferenceId: string;
-  productUid: string;
-  pageCount: number;
-  files: GelatoFileItem[];
-  quantity: number;
-}
-
-export interface GelatoQuoteRequest {
-  orderReferenceId: string;
-  customerReferenceId: string;
-  currency: string;
-  products: GelatoQuoteItem[]; // v4 quote uses "products", not "items"
-  recipient: GelatoAddress;    // v4 quote uses "recipient", not "shippingAddress"
-}
-
-export interface GelatoQuoteShipmentMethod {
-  shipmentMethodUid: string;
-  displayName: string;
-  currency: string;
-  price: number;
-  minDeliveryDays: number;
-  maxDeliveryDays: number;
-}
-
-export interface GelatoQuoteProduct {
-  itemReferenceId: string;
-  productUid: string;
-  currency: string;
-  price: number;
-}
-
-export interface GelatoQuoteResponse {
-  orderReferenceId: string;
-  products: GelatoQuoteProduct[];
-  shipmentMethods: GelatoQuoteShipmentMethod[];
-}
-
-// Webhook event types (configured in Gelato dashboard → Developer → Webhooks)
-export type GelatoWebhookEventType =
-  | "order_status_updated"
-  | "order_item_status_updated";
-
-export interface GelatoWebhookItemShipment {
-  trackingCode?: string;
-  trackingUrl?: string;
-  carrierName?: string;
-}
-
-export interface GelatoWebhookItem {
-  id: string;
-  itemReferenceId: string;
-  fulfillmentStatus?: string;
-  shipment?: GelatoWebhookItemShipment;
-}
-
-export interface GelatoWebhookEvent {
-  id: string;
-  event: GelatoWebhookEventType;
   orderId: string;
   orderReferenceId: string;
-  fulfillmentStatus?: string;
-  items?: GelatoWebhookItem[];
+  storeId?: string | null;
 }
+
+export interface GelatoOrderStatusUpdatedEvent extends GelatoWebhookBase {
+  event: "order_status_updated";
+  fulfillmentStatus: string;
+  items?: { itemReferenceId: string; fulfillmentStatus?: string; fulfillments?: GelatoWebhookFulfillment[] }[];
+}
+
+/** Item-level status (flat, field is `status`). Redundant for our one-item orders. */
+export interface GelatoOrderItemStatusUpdatedEvent extends GelatoWebhookBase {
+  event: "order_item_status_updated";
+  itemReferenceId: string;
+  status: string;
+}
+
+export interface GelatoOrderItemTrackingCodeUpdatedEvent extends GelatoWebhookBase, GelatoWebhookFulfillment {
+  event: "order_item_tracking_code_updated";
+  itemReferenceId: string;
+}
+
+export type GelatoWebhookEvent =
+  | GelatoOrderStatusUpdatedEvent
+  | GelatoOrderItemStatusUpdatedEvent
+  | GelatoOrderItemTrackingCodeUpdatedEvent;
 
 // ── Catalog: cover dimensions (GET /v3/products/{uid}/cover-dimensions?pageCount=N) ──
 // Verified against the live API 2026-09-27. Units: mm, origin top-left of the cover file.

@@ -5,12 +5,15 @@ import {
   backoffMs,
   decideGelatoTransition,
   finalStageMarker,
+  isExcludedSpanishPostcode,
   isOrderForActiveStripeMode,
   isUsableStoredImage,
+  pickTracking,
   selectScenesToRender,
   validateSourceImages,
 } from "./logic.ts";
 import { classifyProviderError } from "./provider-errors.ts";
+import { lastOrderDate } from "../shipping.ts";
 
 const SB = "https://proj.supabase.co";
 const img = (n) => `${SB}/storage/v1/object/public/illustrations/story/${n}.png`;
@@ -36,6 +39,26 @@ for (const s of ["canceled", "cancelled", "failed", "returned"]) {
   assert.equal(decideGelatoTransition("producing", s).kind, "exception");
 }
 assert.equal(decideGelatoTransition("producing", "draft").kind, "unknown");
+// paused at Gelato waiting on us → alert, never shown as progress
+for (const s of ["pending_approval", "On_Hold", "not_connected"]) {
+  assert.equal(decideGelatoTransition("producing", s).kind, "attention");
+}
+
+// ── Tracking (order_status_updated items[].fulfillments[]) ───────────────────
+assert.equal(pickTracking(undefined), null);
+assert.equal(pickTracking([{ fulfillments: [] }, { fulfillmentStatus: "printed" }]), null);
+assert.deepEqual(
+  pickTracking([{ fulfillments: [{ trackingCode: "" }] }, { fulfillments: [{ trackingCode: "PK1", trackingUrl: "https://t/PK1" }] }]),
+  { trackingNumber: "PK1", trackingUrl: "https://t/PK1" },
+);
+assert.deepEqual(pickTracking([{ fulfillments: [{ trackingCode: "PK2", trackingUrl: "" }] }]), { trackingNumber: "PK2", trackingUrl: null });
+
+// ── Shipping area + Reyes cut-off ────────────────────────────────────────────
+for (const pc of ["35001", "38 001", "51001", "52006"]) assert.equal(isExcludedSpanishPostcode(pc), true, pc);
+for (const pc of ["08036", "07001", "28001", "3500", "", null]) assert.equal(isExcludedSpanishPostcode(pc), false, String(pc));
+assert.equal(lastOrderDate("2027-01-05", "hardcover", "peninsula"), "2026-12-22");
+assert.equal(lastOrderDate("2027-01-05", "softcover", "baleares", 0), "2026-12-28");
+console.log("gelato status/tracking/shipping ✓");
 
 // ── Backoff ──────────────────────────────────────────────────────────────────
 assert.equal(backoffMs(1), 5 * 60_000);

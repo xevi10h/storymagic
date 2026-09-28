@@ -154,3 +154,20 @@ real payment + refund by the owner; the old Constrack endpoint `we_1T8hz2…` wa
 Go-live (done): activate the live account → run the setup script with the live key + `--webhook-url` →
 set `STRIPE_SECRET_KEY_LIVE` / `STRIPE_WEBHOOK_SECRET_LIVE` in Vercel → deploy → apply 120100 →
 one real live payment + immediate refund (owner OK) → disable the old Constrack endpoint.
+
+## Gelato (print + shipping)
+
+**Env (Vercel prod):** `GELATO_API_KEY`, `GELATO_PRODUCT_UID_HARDCOVER` / `_SOFTCOVER` (glued-left,
+170 g silk, matt), `GELATO_FULFILLMENT_MODE=direct` (ships to the customer), `GELATO_WEBHOOK_SECRET`.
+No Gelato sandbox: orders are `draft` unless `STRIPE_ENVIRONMENT=live`.
+
+**Webhook:** register in Gelato → Developer → Webhooks
+`https://meapica.com/api/webhooks/gelato?secret=<GELATO_WEBHOOK_SECRET>` (Gelato sends no signature
+or custom headers) for `order_status_updated` and `order_item_tracking_code_updated`. Gelato retries
+a failed delivery only 3×, so the fulfilment cron also reconciles every hour via `GET /v4/orders/{id}`.
+**2026-09-28: the registered URL returns 401 (no/incorrect secret) — must be fixed in the dashboard.**
+
+**Shipping:** Spain only, península + Baleares; Canarias/Ceuta/Melilla excluded (postcode guard
+before print). Standard shipping included in the price; at submit a live quote picks the cheapest
+method. Phone collected in Checkout and sent to Gelato for the carrier. Delivery times and Reyes
+order cut-offs: `src/lib/shipping.ts` (re-quote before each campaign).

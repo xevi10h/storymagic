@@ -54,8 +54,14 @@ character lock; per-stage resolution. (commits 5ebc2f1 → a883d60)
 - **Refund customer email** (today refunds only change state + alert ops) and a "find my order" magic link for guests (download token already works cross-device).
 - **Harden stories RLS**: owners can UPDATE any column (status, generated_text, pdf_url); money paths no longer trust them, but restrict to title/dedication.
 - **Title edits after purchase** re-render nothing: block edits once paid or rebuild the PDF.
-- **Canarias / Ceuta / Melilla**: Stripe Tax charges 0 % (correct) but Gelato may add customs; decide ES-peninsula+Baleares only or accept.
-- Phone collection for the carrier, Bizum/PayPal (payment_method_types is card-only).
+- Bizum/PayPal (payment_method_types is card-only).
+
+## Next steps from commerce block B — Gelato (2026-09-28)
+- **Real paid print** of one hardcover to validate paper, colour and binding (drafts don't print; ~21 € incl. VAT).
+- **Canarias/Ceuta/Melilla** are excluded (decision 2026-09-28) but only enforced after payment (ops alert). Block it before paying: ask the postcode on the paywall, or move to Checkout `ui_mode: custom` with server-side shipping-address validation.
+- **Reyes page (block D)**: consume `orderCutoffs(reyesDeliverBy(2027))` from `src/lib/shipping.ts`; re-quote Gelato and check its peak-season cut-offs in November.
+- **Paid express option** for December (Gelato express 5,40-5,76 € península, 4 days to Barcelona).
+- Re-send the "shipped" email if the tracking code arrives after the status (today only the dashboard gets it).
 
 ## Phase 0: Foundation
 > **Status: COMPLETE ✅**

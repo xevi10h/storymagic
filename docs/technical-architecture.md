@@ -13,7 +13,7 @@
 | Image AI | OpenAI gpt-image-2.5 (Images API) | Only image provider: avatar + preview `gpt-image-2.5-flare` medium, final book `gpt-image-2.5-sunburst` high at print size; character-sheet references (see docs/generation-pipeline.md) |
 | Illustration QA | OpenAI vision (`QA_JUDGE_MODEL`, gpt-5.4-mini) | Per-scene judge vs character sheet + page text; failing scenes repaired by image edit |
 | Book Layout | @react-pdf/renderer + pdf-lib | Print PDFs: 30-page interior + Gelato cover file; 34-page digital book |
-| Printing | Gelato API | Print-on-demand, global fulfillment |
+| Printing | Gelato API | Print-on-demand from a Spanish plant; ships to mainland Spain + Baleares only. Delivery times / Reyes cut-offs: `src/lib/shipping.ts` |
 | i18n | next-intl | 4 locales: ES (default), CA, EN, FR |
 | Email | Resend | Transactional emails (waitlist + order lifecycle: confirmed/producing/shipped/delivered) |
 | Domain | TBD | meapica.com (not yet registered) |
@@ -296,14 +296,28 @@ Post-purchase fulfilment — resumable (src/lib/fulfilment/pipeline.ts)
   │
   ├─→ GET /api/cron/fulfill-orders (every 5 min): orders 'paid' + no gelato_order_id (any story
   │     status, < 48 h) → /complete per story IN PARALLEL (max 5); skips held leases and backoffs;
-  │     alerts for orders stranded > 48 h and stories with 12 consecutive failed runs
+  │     alerts for orders stranded > 48 h and stories with 12 consecutive failed runs.
+  │     First tick of each hour: reconcile orders 'producing'/'shipped' (< 45 days) with
+  │     GET /v4/orders/{id} (status + shipment.packages[] tracking) through the same
+  │     applyGelatoStatus as the webhook; alert if still not shipped > 5 days after purchase
   │
-  └─→ POST /api/webhooks/gelato (order_status_updated / order_item_status_updated)
+  ├─→ Before print: postcode 35/38/51/52 (Canarias/Ceuta/Melilla) → not submitted, attempts
+  │     maxed, operator alerted (Checkout can only restrict by country)
+  ├─→ Gelato submit: shipping quote first → cheapest shipmentMethodUid (Baleares' cheapest is
+  │     the "express" domestic parcel); phone from Checkout passed to the carrier
+  │
+  └─→ POST /api/webhooks/gelato?secret=… → src/lib/fulfilment/gelato-status.ts applyGelatoStatus
+        ├─→ order_status_updated: fulfillmentStatus + tracking from items[].fulfillments[]
+        ├─→ order_item_tracking_code_updated: tracking code ⇒ at least 'shipped'
+        ├─→ order_item_status_updated ignored (flat, redundant for one-item orders)
         ├─→ Ranked transitions (paid < producing < shipped < delivered), compare-and-set on the
         │     status read → a late/retried event never moves an order backwards; tracking stored
         ├─→ Emails only from the event that performed the transition:
         │     producing→in_production · shipped→shipped (w/ tracking) · delivered→delivered
-        └─→ canceled/failed/returned → gelato_status recorded, status unchanged, operator alerted
+        ├─→ canceled/failed/returned → gelato_status recorded, status unchanged, operator alerted
+        ├─→ pending_approval/on_hold/not_connected → same: recorded + "Gelato is waiting for us" alert
+        └─→ Unknown Gelato id whose orderReferenceId (meapica-<orderId>) points at an order with
+              another Gelato id = split (connected) order → operator alerted, never auto-applied
 
 Operator alerts (src/lib/fulfilment/alerts.ts) → OPS_ALERT_EMAIL (fallback GELATO_OWNER_EMAIL),
 deduped via claim_ops_alert. AI provider out of credits / 401-403 / locked → typed
@@ -387,7 +401,7 @@ src/
 │   ├── cron/fulfill-orders/route.ts      — GET (Vercel cron, 5 min): fan out /complete for paid, unfulfilled orders
 │   ├── cron/purge-photos/route.ts        — GET (Vercel cron, hourly :17): delete child photos > 24 h, mark photo_consents.deleted_at
 │   ├── characters/photo/route.ts         — POST: child photo upload (consent + sharp re-encode, flag-gated) · DELETE: withdraw consent
-│   ├── webhooks/gelato/route.ts          — POST: Gelato webhook → ranked status/tracking + lifecycle emails
+│   ├── webhooks/gelato/route.ts          — POST (?secret=): order_status_updated + order_item_tracking_code_updated → applyGelatoStatus
 │   ├── dashboard/route.ts                — GET: user stories/orders/characters
 │   └── profile/route.ts                  — GET/PATCH: user profile
 ├── components/
@@ -447,7 +461,8 @@ src/
 │   │   └── notify-order.ts               — Resolve recipient (passed email → orders.customer_email → auth user) + send
 │   ├── fulfilment/
 │   │   ├── pipeline.ts                   — Resumable post-purchase pipeline (lease, scene checkpoints, QA, print, Gelato)
-│   │   ├── logic.ts                      — Pure rules: Gelato transition ranking, backoff, resume selection, source gate
+│   │   ├── logic.ts                      — Pure rules: Gelato transition ranking, tracking pick, excluded postcodes, backoff, resume selection, source gate
+│   │   ├── gelato-status.ts              — applyGelatoStatus: shared by the Gelato webhook and the hourly reconciliation
 │   │   ├── logic.check.mjs               — Runnable check: node --experimental-strip-types src/lib/fulfilment/logic.check.mjs
 │   │   ├── provider-errors.ts            — Typed ProviderUnavailableError + classifier (402/403/credits/locked)
 │   │   ├── alerts.ts                     — Deduped operator alerts (OPS_ALERT_EMAIL / GELATO_OWNER_EMAIL)

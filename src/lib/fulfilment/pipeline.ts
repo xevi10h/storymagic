@@ -37,7 +37,7 @@ import {
   prefetchImageAsDataUri,
   type BookPdfInput,
 } from "@/lib/pdf";
-import { createPrintOrder, findOrdersByReference } from "@/lib/gelato/orders";
+import { createPrintOrder, findOrdersByReference, getPrintOrder } from "@/lib/gelato/orders";
 import { GelatoApiError } from "@/lib/gelato/client";
 import { notifyOrderEmail } from "@/lib/email/notify-order";
 import { getSiteUrl } from "@/lib/email/send";
@@ -50,6 +50,7 @@ import {
   backoffMs,
   GELATO_ALERT_AFTER_ATTEMPTS,
   GELATO_MAX_ATTEMPTS,
+  isExcludedSpanishPostcode,
   isFinalStage,
   isOrderForActiveStripeMode,
   isUsableStoredImage,
@@ -509,6 +510,26 @@ async function fulfilPhysicalOrder(ctx: RunContext, order: OrderRow): Promise<Or
   if (order.gelato_submit_attempts >= GELATO_MAX_ATTEMPTS) return "gave_up";
   if (order.gelato_next_attempt_at && new Date(order.gelato_next_attempt_at).getTime() > Date.now()) return "backoff";
 
+  // 0. Shipping area (Checkout can only restrict by country). Parked for a human:
+  // attempts maxed so neither the cron nor a re-run submits it.
+  const postcode = (order.shipping_address as { postal_code?: string } | null)?.postal_code;
+  if (isExcludedSpanishPostcode(postcode)) {
+    await ctx.supabase
+      .from("orders")
+      .update({ gelato_submit_attempts: GELATO_MAX_ATTEMPTS, gelato_last_error: `excluded shipping area (postcode ${postcode})` })
+      .eq("id", order.id);
+    await alertOperator(ctx.supabase, {
+      key: `excluded-area:${order.id}`,
+      subject: `Order ${order.id} ships to an excluded area (postcode ${postcode}) — NOT sent to print`,
+      lines: [
+        `Story ${ctx.storyId} · format ${order.format} · ${order.customer_email ?? "no email"}`,
+        "Canarias/Ceuta/Melilla are not served. Contact the customer: refund the printed part in Stripe (they keep the PDF) or get a mainland address, then reset orders.gelato_submit_attempts = 0.",
+      ],
+      dedupeSeconds: 7 * 24 * 3600,
+    });
+    return "gave_up";
+  }
+
   // 1. Print files (built + validated once per order).
   if (!order.print_files_validated_at || !order.print_interior_path || !order.print_cover_path) {
     if (remaining(ctx) < PRINT_BUILD_MIN_MS) return "deferred";
@@ -594,7 +615,7 @@ async function buildAndValidatePrintFiles(
 function buildShippingAddress(order: OrderRow) {
   if (process.env.GELATO_FULFILLMENT_MODE !== "direct" || !order.shipping_address) return undefined;
   const addr = order.shipping_address as {
-    line1?: string; line2?: string; city?: string; state?: string; postal_code?: string; country?: string;
+    line1?: string; line2?: string; city?: string; state?: string; postal_code?: string; country?: string; phone?: string;
   };
   const [firstName, ...rest] = (order.shipping_name ?? "").split(" ");
   return {
@@ -607,6 +628,7 @@ function buildShippingAddress(order: OrderRow) {
     postCode: addr.postal_code ?? "",
     country: addr.country ?? "ES",
     email: order.customer_email ?? "",
+    phone: addr.phone || undefined,
   };
 }
 
@@ -635,7 +657,9 @@ async function submitToGelato(ctx: RunContext, order: OrderRow): Promise<OrderSt
     const existing = (await findOrdersByReference(orderReferenceId)).filter(
       (o) => !["canceled", "cancelled", "failed"].includes(o.fulfillmentStatus?.toLowerCase()),
     );
-    if (existing.length > 1) {
+    // Split (connected) orders share our reference but are one purchase, not duplicates.
+    const connected = existing.length > 1 ? new Set((await getPrintOrder(existing[0].id)).connectedOrderIds ?? []) : new Set<string>();
+    if (existing.slice(1).some((o) => !connected.has(o.id))) {
       await alertOperator(supabase, {
         key: `gelato-duplicate:${order.id}`,
         subject: `Duplicate Gelato orders for ${orderReferenceId}`,

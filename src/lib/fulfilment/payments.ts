@@ -48,6 +48,8 @@ export async function recordPaidSession(
         state: shipping.address.state ?? "",
         postal_code: shipping.address.postal_code ?? "",
         country: shipping.address.country ?? "",
+        // For the carrier (Gelato passes it on); collected by Checkout for physical books.
+        phone: session.customer_details?.phone ?? "",
       }
     : null;
   if (!shippingAddress && session.metadata?.format !== "digital_pdf") {

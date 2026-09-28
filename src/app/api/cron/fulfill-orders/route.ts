@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { createFulfilmentClient } from "@/lib/fulfilment/db";
 import { alertOperator } from "@/lib/fulfilment/alerts";
-import { GELATO_MAX_ATTEMPTS, isOrderForActiveStripeMode } from "@/lib/fulfilment/logic";
+import { applyGelatoStatus } from "@/lib/fulfilment/gelato-status";
+import { GELATO_MAX_ATTEMPTS, GELATO_STUCK_PRODUCING_HOURS, isOrderForActiveStripeMode } from "@/lib/fulfilment/logic";
+import { getPrintOrder } from "@/lib/gelato/orders";
 
 /**
  * Fulfilment driver. Every 5 min it finds paid orders that still need work and
@@ -38,7 +40,10 @@ function baseUrl(): string {
   return "http://localhost:3013";
 }
 
-const isFuture = (iso: string | null, now: number) => !!iso && new Date(iso).getTime() > now;
+/** Orders already at Gelato are reconciled for this long after purchase. */
+const RECONCILE_MAX_AGE_DAYS = 45;
+
+const isFuture =(iso: string | null, now: number) => !!iso && new Date(iso).getTime() > now;
 
 export async function GET(request: Request) {
   const secret = process.env.CRON_SECRET;
@@ -178,10 +183,68 @@ export async function GET(request: Request) {
     }
   }
 
+  // Hourly (first tick of the hour): reconcile orders already at Gelato. Gelato
+  // retries a failed webhook only 3× in 15 s, so a missed event would otherwise
+  // leave the order (and the customer's tracking) stuck forever.
+  const reconciled = new Date(now).getUTCMinutes() < 5 ? await reconcileGelatoOrders(admin, now) : null;
+
   return NextResponse.json({
     scanned: orders?.length ?? 0,
     triggered,
     skipped,
     escalated: (escalate ?? []).map((o) => o.id),
+    reconciled,
   });
+}
+
+async function reconcileGelatoOrders(admin: ReturnType<typeof createFulfilmentClient>, now: number) {
+  const since = new Date(now - RECONCILE_MAX_AGE_DAYS * 24 * 3_600_000).toISOString();
+  const { data: active, error } = await admin
+    .from("orders")
+    .select("id, story_id, status, created_at, gelato_order_id, gelato_status, stripe_checkout_session_id")
+    .in("status", ["producing", "shipped"])
+    .not("gelato_order_id", "is", null)
+    .gte("created_at", since)
+    .limit(100);
+  if (error) {
+    console.error("[cron/fulfill] reconcile query failed:", error.message);
+    return { error: error.message };
+  }
+
+  const result = { checked: 0, failed: 0, stuck: 0 };
+  for (const order of active ?? []) {
+    if (!order.gelato_order_id || !isOrderForActiveStripeMode(order)) continue;
+    result.checked++;
+    let remoteStatus = order.gelato_status ?? "";
+    try {
+      const remote = await getPrintOrder(order.gelato_order_id);
+      remoteStatus = remote.fulfillmentStatus?.toLowerCase() ?? remoteStatus;
+      const pkg = remote.shipment?.packages?.find((p) => p.trackingCode);
+      await applyGelatoStatus(
+        admin,
+        order.gelato_order_id,
+        remote.fulfillmentStatus,
+        pkg ? { trackingNumber: pkg.trackingCode, trackingUrl: pkg.trackingUrl || null } : undefined,
+      );
+    } catch (err) {
+      result.failed++;
+      console.error(`[cron/fulfill] reconcile ${order.gelato_order_id} failed:`, err);
+    }
+
+    const ageHours = (now - new Date(order.created_at).getTime()) / 3_600_000;
+    const shipped = ["shipped", "in_transit", "delivered"].includes(remoteStatus);
+    if (order.status === "producing" && !shipped && ageHours > GELATO_STUCK_PRODUCING_HOURS) {
+      result.stuck++;
+      await alertOperator(admin, {
+        key: `gelato-stuck:${order.id}`,
+        subject: `Order ${order.id} still not shipped ${Math.round(ageHours / 24)} days after purchase`,
+        lines: [
+          `Gelato order ${order.gelato_order_id} · Gelato status: ${remoteStatus || "unknown"} · story ${order.story_id}`,
+          "Check it in the Gelato dashboard (approval pending? file problem? production delay?) and tell the customer if it will be late.",
+        ],
+        dedupeSeconds: 48 * 3600,
+      });
+    }
+  }
+  return result;
 }

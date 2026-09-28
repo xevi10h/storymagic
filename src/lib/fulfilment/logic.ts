@@ -17,7 +17,6 @@ const GELATO_TO_ORDER_STATUS: Readonly<Record<string, string>> = {
   created: "producing",
   uploading: "producing",
   passed: "producing",
-  pending_approval: "producing",
   in_production: "producing",
   printed: "producing",
   shipped: "shipped",
@@ -28,11 +27,19 @@ const GELATO_TO_ORDER_STATUS: Readonly<Record<string, string>> = {
 /** Gelato statuses that need a human (no automatic status change). */
 const GELATO_EXCEPTION_STATUSES = new Set(["canceled", "cancelled", "failed", "returned"]);
 
+/**
+ * Gelato statuses where the order is paused waiting on us (manual approval in the
+ * dashboard, merchant action, store connection). The order keeps its status; the
+ * operator is alerted.
+ */
+const GELATO_ATTENTION_STATUSES = new Set(["pending_approval", "on_hold", "not_connected"]);
+
 export type GelatoTransition =
   | { kind: "advance"; to: string }
   | { kind: "same"; to: string }
   | { kind: "stale"; to: string }
   | { kind: "exception"; gelatoStatus: string }
+  | { kind: "attention"; gelatoStatus: string }
   | { kind: "unknown"; gelatoStatus: string };
 
 /**
@@ -42,6 +49,7 @@ export type GelatoTransition =
 export function decideGelatoTransition(currentStatus: string, gelatoStatus: string): GelatoTransition {
   const status = gelatoStatus.trim().toLowerCase();
   if (GELATO_EXCEPTION_STATUSES.has(status)) return { kind: "exception", gelatoStatus: status };
+  if (GELATO_ATTENTION_STATUSES.has(status)) return { kind: "attention", gelatoStatus: status };
   const to = GELATO_TO_ORDER_STATUS[status];
   if (!to) return { kind: "unknown", gelatoStatus: status };
   const currentRank = ORDER_STATUS_RANK[currentStatus];
@@ -51,6 +59,36 @@ export function decideGelatoTransition(currentStatus: string, gelatoStatus: stri
   if (targetRank > currentRank) return { kind: "advance", to };
   if (targetRank === currentRank) return { kind: "same", to };
   return { kind: "stale", to };
+}
+
+/**
+ * An order handed to Gelato but not shipped after this long is escalated.
+ * Gelato's own quote for ES photobooks is 7-8 days door to door (2026-09-28),
+ * i.e. ~3-4 days in production, so 5 days means something is wrong.
+ */
+export const GELATO_STUCK_PRODUCING_HOURS = 5 * 24;
+
+/** First tracking code in a Gelato order_status_updated items[].fulfillments[] list. */
+export function pickTracking(
+  items: ReadonlyArray<{ fulfillments?: ReadonlyArray<{ trackingCode?: string | null; trackingUrl?: string | null }> }> | undefined,
+): { trackingNumber: string; trackingUrl: string | null } | null {
+  for (const item of items ?? []) {
+    for (const f of item.fulfillments ?? []) {
+      if (f.trackingCode) return { trackingNumber: f.trackingCode, trackingUrl: f.trackingUrl || null };
+    }
+  }
+  return null;
+}
+
+// ── Shipping area ────────────────────────────────────────────────────────────
+
+/**
+ * Decision 2026-09-28: Spain only, and not Canarias (35, 38), Ceuta (51) or
+ * Melilla (52): they are outside the EU VAT area (IGIC / customs on delivery).
+ * Stripe Checkout can only restrict by country, so this is enforced after payment.
+ */
+export function isExcludedSpanishPostcode(postcode: string | null | undefined): boolean {
+  return /^(35|38|51|52)\d{3}$/.test((postcode ?? "").replace(/\s/g, ""));
 }
 
 // ── Retry backoff ────────────────────────────────────────────────────────────
