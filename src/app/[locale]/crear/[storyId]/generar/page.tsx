@@ -315,7 +315,9 @@ export default function GenerarPage() {
 
   const elapsedMs = startedAt ? now - startedAt : 0;
   const isSlow = elapsedMs > SLOW_NOTICE_MS;
-  const coverUrl = finalCover ?? progress?.coverUrl ?? null;
+  // Prefer the progress cover already on screen (same image): switching to the
+  // freshly signed final URL re-downloads it and flashes an empty cover.
+  const coverUrl = progress?.coverUrl ?? finalCover ?? null;
   // Show whichever image lands first: scene 1 is often ready seconds before the
   // cover, so it dresses the hero until the painted cover arrives.
   const firstScene = progress?.scenes[0] ?? null;

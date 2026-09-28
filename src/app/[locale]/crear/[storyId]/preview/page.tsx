@@ -355,20 +355,42 @@ export default function PreviewPage() {
   }, []);
 
   // Screen 5 (the book) vs screen 6 (format + payment): the progress indicator
-  // follows the checkout section into view.
+  // follows the checkout section once its top passes the middle of the viewport.
+  // Measured on scroll/resize instead of an IntersectionObserver band: the
+  // observer latched "in view" while the flipbook was still loading (short page)
+  // and the header showed step 6 on arrival.
   const [checkoutInView, setCheckoutInView] = useState(false);
   const [seenCheckout, setSeenCheckout] = useState(false);
   useEffect(() => {
-    const el = document.getElementById("checkout-section");
-    if (!el || typeof IntersectionObserver === "undefined") return;
-    const io = new IntersectionObserver(([entry]) => {
-      setCheckoutInView(entry.isIntersecting);
-      if (entry.isIntersecting) setSeenCheckout(true);
-    }, {
-      rootMargin: "-45% 0px -45% 0px",
-    });
-    io.observe(el);
-    return () => io.disconnect();
+    let frame = 0;
+    let scrolled = false;
+    const update = () => {
+      frame = 0;
+      const el = document.getElementById("checkout-section");
+      const inView = !!el && el.getBoundingClientRect().top < window.innerHeight * 0.5;
+      setCheckoutInView(inView);
+      // Only a real scroll counts as "seen" (not a short page while the book loads).
+      if (inView && scrolled) setSeenCheckout(true);
+    };
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    const onScroll = () => {
+      scrolled = true;
+      schedule();
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", schedule);
+    // Layout grows as the flipbook loads without any scroll event: re-measure then too.
+    const ro = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(schedule);
+    ro?.observe(document.body);
+    schedule();
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", schedule);
+      ro?.disconnect();
+      if (frame) cancelAnimationFrame(frame);
+    };
   }, [story?.status]);
   const scrollToCheckout = useCallback(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
