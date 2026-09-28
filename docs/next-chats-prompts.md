@@ -23,7 +23,7 @@ Objetivos:
 
 Decisiones ya tomadas (28-09): envío solo a España; el cliente elige tapa blanda o tapa dura; la copia extra es del mismo formato que el libro y su precio depende del formato (confirmado: tapa dura +29,90 €, tapa blanda +19,90 €, IVA incluido); encuadernación encolada.
 
-IVA: 4 % confirmado por el gestor (libro impreso y PDF). Stripe: Meapica tendrá su PROPIA cuenta nueva (no la de Constrack): migra precios, webhook, claves test/live en Vercel y `stripe login` a la cuenta nueva (si necesitas que yo haga login o verificación, dímelo con el comando exacto); comprueba nombre público "Meapica" y descriptor "MEAPICA".
+IVA: 4 % confirmado por el gestor (libro impreso y PDF). Stripe: Meapica tendrá su PROPIA cuenta nueva (no la de Constrack): migra precios, webhook, claves test/live en Vercel y `stripe login` a la cuenta nueva (si necesitas que yo haga login o verificación, dímelo con el comando exacto); comprueba nombre público "Meapica" y descriptor "MEAPICA". La cuenta test ya existe (acct_1UKcQsBD04FISl5u, "Meapica sandbox", ES/EUR) y sus claves test ya están en .env.local (STRIPE_SECRET_KEY_TEST y NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY_TEST); todavía no tiene productos ni precios ni webhook, y la cuenta live aún no está activada.
 
 Antes de implementar pregúntame: (c) factura con Stripe o con herramienta española, (d) precios finales (digital 9,90 / blanda 34,90 / dura 49,90?).
 
