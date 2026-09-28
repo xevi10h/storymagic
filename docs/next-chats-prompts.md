@@ -21,7 +21,9 @@ Objetivos:
 5. Copia extra con precio correcto por formato, idempotencia en sessions.create, locale es/ca en Checkout y en success/cancel URL, aviso de desistimiento (art. 103 LGDCU) con consentimiento expreso para el PDF digital.
 6. Mensaje claro si una preview antigua no se puede comprar.
 
-Antes de implementar pregúntame: (a) IVA 4 % confirmado por gestor, (b) cuenta de Stripe separada para Meapica o renombrar la compartida (hoy sale "Constrack" y mi nombre en el extracto), (c) factura con Stripe o con herramienta española, (d) formatos y precios finales (digital 9,90 / blanda 34,90 / dura 49,90?) y precio de la copia extra.
+Decisiones ya tomadas (28-09): envío solo a España; el cliente elige tapa blanda o tapa dura; la copia extra es del mismo formato que el libro y su precio depende del formato (propuesta: tapa dura +29,90 €, tapa blanda +19,90 €, IVA incluido; confírmamelo con el margen calculado); encuadernación encolada.
+
+Antes de implementar pregúntame: (a) IVA 4 % confirmado por gestor, (b) cuenta de Stripe separada para Meapica o renombrar la compartida (hoy sale "Constrack" y mi nombre en el extracto), (c) factura con Stripe o con herramienta española, (d) precios finales (digital 9,90 / blanda 34,90 / dura 49,90?).
 
 Tope de gasto en OpenAI para pruebas: 5 $ (dímelo antes de cada lote). Pruebas de pago en modo test; un único pago live real al final con reembolso inmediato, solo con mi OK. QA e2e con Playwright en es/ca, desktop y móvil. Actualiza docs.
 ```
@@ -44,7 +46,9 @@ Ya funciona (no rehacer): productUid, geometría de portada, paridad, DPI, dedup
 4. Margen por libro: coste Gelato + envío + OpenAI (~1,8 $) vs precio con IVA. Si algún formato pierde dinero, avísame con números.
 5. Alertas a ops si Gelato rechaza un fichero o un pedido se atasca > X horas.
 
-Antes de implementar pregúntame: países de envío, ¿envío incluido o aparte?, ¿tapa blanda sí o no?, tope de coste para el pedido de prueba real.
+Decisiones ya tomadas (28-09): solo España (quitar los otros 17 países de Stripe), tapa blanda y tapa dura a elegir, copia extra del mismo formato con precio por formato (dura +29,90 €, blanda +19,90 €, pendiente de confirmar), encuadernación encolada (glued-left, la actual).
+
+Antes de implementar pregúntame: ¿envío incluido o aparte?, tope de coste para el pedido de prueba real.
 
 No hagas pedidos reales sin mi OK. Actualiza docs.
 ```
