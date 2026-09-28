@@ -1,9 +1,8 @@
 # Launch Readiness Checklist
 
 > ## 💳 2026-09-28 — commerce block A (Stripe) — status
-> Code + test-mode E2E done (see `docs/stack.md` → Payments). **Blocker for real sales:** the new
-> Meapica live Stripe account must be activated by the owner; then run the go-live runbook in
-> `docs/stack.md`. Until that deploy, prod keeps the OLD checkout on the Constrack account.
+> LIVE on the new Meapica Stripe account since 2026-09-28 (see `docs/stack.md` → Payments).
+> Pending: one real owner payment + refund to confirm invoice/email/download on live.
 
 > ## 🧭 RESUME HERE — session summary 2026-07-20
 > **Full web audit + Sprint 1 fixes shipped.** See **`docs/web-audit-2026-07-20.md`**

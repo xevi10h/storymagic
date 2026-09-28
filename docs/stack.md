@@ -97,8 +97,8 @@ old public URL. A preview tab left open > 1 h shows broken images for pages not 
 ## Payments — Stripe (2026-09-28)
 
 **Account:** Meapica has its own Stripe account (not Constrack's). Sandbox `acct_1UKcQsBD04FISl5u`
-("Meapica sandbox", ES/EUR). Live account: pending activation by the owner (public name
-"Meapica", statement descriptor "MEAPICA", branding/logo in Dashboard → Settings → Branding).
+("Meapica sandbox", ES/EUR). Live `acct_1UKcQRAyKcfLUpfG` ("Meapica", descriptor "MEAPICA"),
+activated and configured 2026-09-28 (setup script run; live webhook `we_1UKekqAyKcfLUpfGWsbB0sRn`).
 Seller on invoices: Xavier Huix Trenco (autónomo), NIF 41649433K, Carrer Aribau 140, 5º, 08036 Barcelona.
 
 **Setup is code:** `STRIPE_KEY=sk_… npx tsx --tsconfig tsconfig.json scripts/stripe-setup-catalog.mts --webhook-url=https://meapica.com/api/webhooks/stripe`
@@ -145,8 +145,12 @@ Mocked UI suite: `npx playwright test e2e/paywall.spec.ts`.
 | Version | File | When |
 |---|---|---|
 | 20260928120000 | `commerce_ready.sql` (statuses cancelled/refunded, download_token, consent, invoice, refunded_at, unique session id) | applied 2026-09-28 (additive) |
-| 20260928120100 | `orders_no_client_insert.sql` (drop "Users can insert own orders") | AFTER the new checkout code is live |
+| 20260928120100 | `orders_no_client_insert.sql` (drop "Users can insert own orders") | applied 2026-09-28 after the deploy |
 
-Go-live: activate the live account → run the setup script with the live key + `--webhook-url` →
+**Status 2026-09-28: LIVE.** Deployed (1770b50), live keys + webhook secret in Vercel, prod smoke test
+OK (live session 79,80 € / IVA 3,07 €; expired event delivered → order `cancelled`). Remaining: one
+real payment + refund by the owner; the old Constrack endpoint `we_1T8hz2…` was already disabled.
+
+Go-live (done): activate the live account → run the setup script with the live key + `--webhook-url` →
 set `STRIPE_SECRET_KEY_LIVE` / `STRIPE_WEBHOOK_SECRET_LIVE` in Vercel → deploy → apply 120100 →
 one real live payment + immediate refund (owner OK) → disable the old Constrack endpoint.
