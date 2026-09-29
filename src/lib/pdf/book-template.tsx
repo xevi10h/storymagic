@@ -281,53 +281,17 @@ function OverlayTitle({ text, fontSize, leading }: { text: string; fontSize: num
   );
 }
 
-function TitleStrip({ theme, text, height }: { theme: TemplateTheme; text: string; height: number }) {
-  return (
-    <View style={{ height, justifyContent: "center", paddingHorizontal: M }}>
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-        <View style={{ width: 2, height: 28, borderRadius: 1, backgroundColor: theme.accent }} />
-        <Text style={{ fontFamily: FONTS.display, fontSize: 16, fontWeight: 600, color: theme.titleColor, lineHeight: 1.3, maxWidth: W - 2 * M - 12 }}>
-          {text}
-        </Text>
-      </View>
-    </View>
-  );
-}
-
+/**
+ * Full-bleed illustration. The scene title is drawn over the art only when the planner
+ * says so (the facing page has no heading); otherwise the art stands alone.
+ */
 function IllustrationPage({ page, ctx }: { page: PageOf<"illustration">; ctx: BookRenderContext }) {
-  const { theme, images } = ctx;
-  const image = images.scenes.get(page.image.sceneNumber);
-  const title = sanitizePrintText(page.scene.title);
-  const box = page.image;
-
-  if (page.layout === "split_top" || page.layout === "split_bottom") {
-    const strip = H - box.boxHeight;
-    const img = <PlacedImage image={image} boxWidth={box.boxWidth} boxHeight={box.boxHeight} />;
-    return (
-      <BookPage background={COLORS.cream}>
-        {page.layout === "split_top" ? (
-          <>
-            {img}
-            <TitleStrip theme={theme} text={title} height={strip} />
-          </>
-        ) : (
-          <>
-            <TitleStrip theme={theme} text={title} height={strip} />
-            {img}
-          </>
-        )}
-        {/* split_bottom: the folio falls on the illustration */}
-        <PageNumber num={page.pageNumber} variant={page.layout === "split_bottom" ? "art" : "paper"} />
-      </BookPage>
-    );
-  }
-
-  // immersive (title over art) / full_illustration (art only)
+  const image = ctx.images.scenes.get(page.image.sceneNumber);
   return (
     <BookPage>
-      <PlacedImage image={image} boxWidth={W} boxHeight={H} />
-      {page.layout === "immersive" && <BottomGradient uri={ctx.titleGradient} width={W} height={H * 0.5} />}
-      {page.layout === "immersive" && <OverlayTitle text={title} fontSize={page.titleType.fontSize} leading={page.titleType.leading} />}
+      <PlacedImage image={image} boxWidth={page.image.boxWidth} boxHeight={page.image.boxHeight} />
+      {page.title && <BottomGradient uri={ctx.titleGradient} width={W} height={H * 0.5} />}
+      {page.title && <OverlayTitle text={sanitizePrintText(page.scene.title)} fontSize={page.title.fontSize} leading={page.title.leading} />}
       <PageNumber num={page.pageNumber} variant="art" />
     </BookPage>
   );
@@ -460,7 +424,10 @@ function TextPage({ page, ctx }: { page: PageOf<"text">; ctx: BookRenderContext 
   const colW = GEOMETRY.textColumnWidth;
   const bodyStyle = { fontFamily: FONTS.body, fontSize: page.bodyType.fontSize, color: COLORS.textDark, lineHeight: page.bodyType.leading };
   const titleStyle = { fontFamily: FONTS.display, fontSize: page.titleType.fontSize, fontWeight: 600 as const, color: theme.titleColor, lineHeight: page.titleType.leading };
-  const column = { position: "absolute" as const, top: M, bottom: M, left: (W - colW) / 2, width: colW, justifyContent: "center" as const };
+  // Chrome (gaps, ornaments) grows with the body type (layout.ts growBodyType); the block sits
+  // on the optical centre, a little above the geometric one (page.lift, from free space only).
+  const k = page.scale;
+  const column = { position: "absolute" as const, top: M, bottom: M, left: (W - colW) / 2, width: colW, justifyContent: "center" as const, paddingBottom: page.lift };
 
   switch (page.variant) {
     case "puente":
@@ -472,11 +439,11 @@ function TextPage({ page, ctx }: { page: PageOf<"text">; ctx: BookRenderContext 
           <CornerDot color={theme.accent} bottom={M + 4} left={M + 4} />
           <CornerDot color={theme.accent} bottom={M + 4} right={M + 4} />
           <View style={{ ...column, alignItems: "center" }}>
-            <OrnamentalDivider color={theme.ornamentColor} width={60} />
-            <View style={{ marginVertical: 28, width: BOOK.trimWidth * 0.7 }}>
-              <Paragraphs text={page.body} style={{ fontFamily: FONTS.display, fontSize: page.bodyType.fontSize, fontWeight: 600, color: theme.titleColor, textAlign: "center", lineHeight: page.bodyType.leading }} />
+            <OrnamentalDivider color={theme.ornamentColor} width={60 * k} />
+            <View style={{ marginVertical: 28 * k, width: BOOK.trimWidth * 0.7 }}>
+              <Paragraphs text={page.body} style={{ fontFamily: FONTS.display, fontSize: page.bodyType.fontSize, fontWeight: 600, color: theme.titleColor, textAlign: "center", lineHeight: page.bodyType.leading }} balance={{ width: BOOK.trimWidth * 0.7, variant: { role: "display", weight: 600 } }} />
             </View>
-            <WavyDots color={theme.ornamentColor} />
+            <WavyDots color={theme.ornamentColor} size={4 * k} />
           </View>
           <PageNumber num={page.pageNumber} />
         </BookPage>
@@ -487,11 +454,11 @@ function TextPage({ page, ctx }: { page: PageOf<"text">; ctx: BookRenderContext 
         <BookPage background={theme.accentLight}>
           <FrameBorder color={theme.ornamentColor} />
           <View style={column}>
-            <Text style={{ ...titleStyle, marginBottom: 10 }}>{title}</Text>
-            <View style={{ width: BOOK.trimWidth * 0.35, height: 1, backgroundColor: theme.accent, borderRadius: 1, marginBottom: 14, opacity: 0.8 }} />
+            <Text style={{ ...titleStyle, marginBottom: 10 * k }}>{title}</Text>
+            <View style={{ width: BOOK.trimWidth * 0.35, height: 1, backgroundColor: theme.accent, borderRadius: 1, marginBottom: 14 * k, opacity: 0.8 }} />
             <Paragraphs text={page.body} style={bodyStyle} />
-            <View style={{ marginTop: 16 }}>
-              <WavyDots color={theme.ornamentColor} />
+            <View style={{ marginTop: 16 * k }}>
+              <WavyDots color={theme.ornamentColor} size={4 * k} />
             </View>
           </View>
           <PageNumber num={page.pageNumber} />
@@ -503,10 +470,10 @@ function TextPage({ page, ctx }: { page: PageOf<"text">; ctx: BookRenderContext 
         <BookPage background={COLORS.cream}>
           <FrameBorder color={theme.ornamentColor} />
           <View style={column}>
-            <Text style={{ ...titleStyle, marginBottom: 14 }}>{title}</Text>
+            <Text style={{ ...titleStyle, marginBottom: 14 * k }}>{title}</Text>
             <DropCapParagraphs text={page.body} style={bodyStyle} width={colW} color={theme.accent} />
-            <View style={{ marginTop: 14, alignItems: "center" }}>
-              <OrnamentalDivider color={theme.ornamentColor} width={70} />
+            <View style={{ marginTop: 14 * k, alignItems: "center" }}>
+              <OrnamentalDivider color={theme.ornamentColor} width={70 * k} />
             </View>
           </View>
           <PageNumber num={page.pageNumber} />
@@ -519,13 +486,13 @@ function TextPage({ page, ctx }: { page: PageOf<"text">; ctx: BookRenderContext 
         <BookPage background={COLORS.cream}>
           <FrameBorder color={theme.ornamentColor} />
           <View style={{ ...column, alignItems: "center" }}>
-            <Text style={{ ...titleStyle, textAlign: "center", marginBottom: 12 }}>{title}</Text>
-            <OrnamentalDivider color={theme.ornamentColor} width={80} />
-            <View style={{ marginTop: 12, width: colW }}>
-              <Paragraphs text={page.body} style={{ ...bodyStyle, textAlign: "center" }} />
+            <Text style={{ ...titleStyle, textAlign: "center", marginBottom: 12 * k }}>{title}</Text>
+            <OrnamentalDivider color={theme.ornamentColor} width={80 * k} />
+            <View style={{ marginTop: 12 * k, width: colW }}>
+              <Paragraphs text={page.body} style={{ ...bodyStyle, textAlign: "center" }} balance={{ width: colW, variant: { role: "body" } }} />
             </View>
-            <View style={{ marginTop: 14 }}>
-              <StarCluster color={COLORS.gold} size={24} />
+            <View style={{ marginTop: 14 * k }}>
+              <StarCluster color={COLORS.gold} size={24 * k} />
             </View>
           </View>
           <PageNumber num={page.pageNumber} />
@@ -541,43 +508,46 @@ function TextPage({ page, ctx }: { page: PageOf<"text">; ctx: BookRenderContext 
 function TitleDedicationPage({ page, ctx }: { page: PageOf<"title-dedication">; ctx: BookRenderContext }) {
   const { theme, input } = ctx;
   const [quoteOpen, quoteClose] = printQuotes(input.locale);
+  // Sizes + gaps scale with the book's body type (layout.ts planTitlePage)
+  const { scale: k, kicker, display, sender, logo } = page.front;
   return (
     <BookPage background={COLORS.cream}>
       <FrameBorder color={theme.ornamentColor} />
       <View style={{ position: "absolute", top: M, bottom: M, left: M, right: M, justifyContent: "center", alignItems: "center" }}>
-        <Image src={ctx.logoOrnament} style={{ height: 14, width: 14 * BRAND_LOGO_ASPECT, marginBottom: 16, opacity: 0.7 }} />
+        <Image src={ctx.logoOrnament} style={{ height: logo, width: logo * BRAND_LOGO_ASPECT, marginBottom: 16 * k, opacity: 0.7 }} />
 
         <Text style={{ fontFamily: FONTS.display, fontSize: page.titleType.fontSize, fontWeight: 600, color: theme.titleColor, textAlign: "center", lineHeight: page.titleType.leading, maxWidth: GEOMETRY.textColumnWidth }}>
           {page.title}
         </Text>
 
-        <View style={{ marginTop: 10, marginBottom: 10 }}>
-          <OrnamentalDivider color={theme.ornamentColor} width={60} />
+        <View style={{ marginTop: 10 * k, marginBottom: 10 * k }}>
+          <OrnamentalDivider color={theme.ornamentColor} width={60 * k} />
         </View>
 
-        <Text style={{ fontFamily: FONTS.body, fontSize: 11, color: COLORS.textMedium, textAlign: "center" }}>{pdfForName(input.locale, "personalizedAdventure", input.characterName, input.characterGender)}</Text>
-        <Text style={{ fontFamily: FONTS.display, fontSize: 18, fontWeight: 600, color: theme.accent, marginTop: 4, textAlign: "center" }}>
+        <Text style={{ fontFamily: FONTS.body, fontSize: kicker, lineHeight: 1.3, color: COLORS.textMedium, textAlign: "center", maxWidth: GEOMETRY.textColumnWidth }}>{pdfForName(input.locale, "personalizedAdventure", input.characterName, input.characterGender)}</Text>
+        <Text style={{ fontFamily: FONTS.display, fontSize: display, lineHeight: 1.3, fontWeight: 600, color: theme.accent, marginTop: 4 * k, textAlign: "center", maxWidth: GEOMETRY.textColumnWidth }}>
           {sanitizePrintText(input.characterName)}
         </Text>
 
         {page.dedication ? (
           <>
             {/* Heart divider — vector heart (the text fonts have no ♥ glyph) */}
-            <View style={{ flexDirection: "row", alignItems: "center", marginTop: 20, marginBottom: 20, gap: 8 }}>
-              <View style={{ width: 30, height: 0.5, backgroundColor: COLORS.gold, opacity: 0.5 }} />
-              <HeartIcon color={COLORS.gold} size={9} opacity={0.7} />
-              <View style={{ width: 30, height: 0.5, backgroundColor: COLORS.gold, opacity: 0.5 }} />
+            <View style={{ flexDirection: "row", alignItems: "center", marginTop: 20 * k, marginBottom: 20 * k, gap: 8 * k }}>
+              <View style={{ width: 30 * k, height: 0.5, backgroundColor: COLORS.gold, opacity: 0.5 }} />
+              <HeartIcon color={COLORS.gold} size={9 * k} opacity={0.7} />
+              <View style={{ width: 30 * k, height: 0.5, backgroundColor: COLORS.gold, opacity: 0.5 }} />
             </View>
 
-            <View style={{ alignItems: "center", width: BOOK.trimWidth * 0.62 }}>
+            <View style={{ alignItems: "center", width: BOOK.trimWidth * 0.66 }}>
               <Paragraphs
                 text={page.dedication}
                 prefix={quoteOpen}
                 suffix={quoteClose}
                 style={{ fontFamily: FONTS.body, fontStyle: "italic", fontSize: page.dedicationType.fontSize, color: theme.titleColor, opacity: 0.85, textAlign: "center", lineHeight: page.dedicationType.leading }}
+                balance={{ width: BOOK.trimWidth * 0.66, variant: { role: "body", italic: true } }}
               />
               {page.sender && (
-                <Text style={{ fontFamily: FONTS.body, fontSize: 10, color: COLORS.textMuted, marginTop: 8, textAlign: "center" }}>
+                <Text style={{ fontFamily: FONTS.body, fontSize: sender, lineHeight: 1.3, color: COLORS.textMuted, marginTop: 8 * k, textAlign: "center" }}>
                   {"—"} {page.sender}
                 </Text>
               )}
@@ -585,29 +555,9 @@ function TitleDedicationPage({ page, ctx }: { page: PageOf<"title-dedication">; 
           </>
         ) : null}
 
-        <View style={{ marginTop: 20 }}>
-          <StarCluster color={COLORS.gold} size={24} />
+        <View style={{ marginTop: 20 * k }}>
+          <StarCluster color={COLORS.gold} size={24 * k} />
         </View>
-      </View>
-    </BookPage>
-  );
-}
-
-function EndpapersPage({ theme }: { theme: TemplateTheme }) {
-  const SPACING = 20;
-  const cols = Math.ceil(W / SPACING) + 1;
-  const rows = Math.ceil(H / SPACING) + 1;
-  return (
-    <BookPage background={theme.coverGradientStart}>
-      <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: theme.coverGradientEnd, opacity: 0.3 }} />
-      <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}>
-        <Svg width={W} height={H} viewBox={`0 0 ${W} ${H}`}>
-          {Array.from({ length: rows }).map((_, r) =>
-            Array.from({ length: cols }).map((_, c) => (
-              <Circle key={`${r}-${c}`} cx={c * SPACING} cy={r * SPACING} r={0.75} fill="#ffffff" fillOpacity={0.08} />
-            )),
-          )}
-        </Svg>
       </View>
     </BookPage>
   );
@@ -697,33 +647,82 @@ function MapPage({ page, ctx }: { page: PageOf<"map">; ctx: BookRenderContext })
   );
 }
 
+/** Solid mix of two #rrggbb colours (t = 0 → a, 1 → b). Solid inks print predictably; no transparency. */
+function mixHex(a: string, b: string, t: number): string {
+  const parse = (h: string) => {
+    const n = /^#[0-9a-f]{6}$/i.test(h) ? parseInt(h.slice(1), 16) : 0xfdf8f0;
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  };
+  const [x, y] = [parse(a), parse(b)];
+  return `#${x.map((v, i) => Math.round(v + (y[i] - v) * t).toString(16).padStart(2, "0")).join("")}`;
+}
+
 /**
- * pp. 28–29 of books without a map: light paper in the theme's tint with a sparse
- * lattice of tiny stars and dots, continuous across the fold (`offsetX` = this
- * page's x in spread coordinates).
+ * Meapica endpaper — the pastedowns of the printed book (first and last page of the Gelato
+ * inside file), the digital book's endpapers, and pp. 28–29 of books without a map.
+ * Light paper in the theme's tint with a calm, gently scattered half-drop lattice of our ornament
+ * vocabulary (four-point sparkles, crescent moons, small stars, dots), in solid inks mixed toward
+ * the ground so it reads clearly in print but never competes with the facing page (< 5 % coverage).
+ * Continuous across a fold: `offsetX` = this page's x in spread coordinates.
  */
-function PatternEndpaperPage({ theme, offsetX }: { theme: TemplateTheme; offsetX: number }) {
-  const STEP = 38;
+function EndpaperPage({ theme, offsetX }: { theme: TemplateTheme; offsetX: number }) {
+  const STEP = 50; // half-drop lattice: neighbours ≈ 35 pt (12 mm) apart
+  const ground = mixHex(theme.pageTint, theme.accentLight, 0.7);
+  const ink = {
+    sparkle: mixHex(ground, theme.ornamentColor, 0.85),
+    moon: mixHex(ground, theme.accent, 0.38),
+    star: mixHex(ground, COLORS.gold, 0.62),
+    dot: mixHex(ground, theme.ornamentColor, 0.6),
+  };
+  // Deterministic scatter in SPREAD coordinates → identical on both sides of a fold
+  const hash = (r: number, c: number, salt: number) => {
+    let h = (Math.imul(r, 374761393) + Math.imul(c, 668265263) + Math.imul(salt, 1442695041)) | 0;
+    h = Math.imul(h ^ (h >>> 13), 1274126177);
+    return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
+  };
+  // Crescent: outer circle minus an offset inner one (opening to the upper right)
+  const moon = (x: number, y: number, R: number) => {
+    const r2 = R * 0.85;
+    const [dx, dy] = [R * 0.45, -R * 0.35];
+    const d = Math.hypot(dx, dy);
+    const [ux, uy] = [dx / d, dy / d];
+    const a = (R * R - r2 * r2 + d * d) / (2 * d);
+    const h = Math.sqrt(R * R - a * a);
+    const p1 = [x + a * ux - h * uy, y + a * uy + h * ux].map((v) => v.toFixed(2)).join(" ");
+    const p2 = [x + a * ux + h * uy, y + a * uy - h * ux].map((v) => v.toFixed(2)).join(" ");
+    return `M${p1} A${R} ${R} 0 1 1 ${p2} A${r2} ${r2} 0 0 0 ${p1} Z`;
+  };
   const first = Math.floor(offsetX / STEP) - 1;
   const cols = Math.ceil(W / STEP) + 3;
   const rows = Math.ceil(H / (STEP / 2)) + 2;
   const marks: JSX.Element[] = [];
   for (let r = 0; r < rows; r++) {
     for (let c = first; c < first + cols; c++) {
-      const x = c * STEP + (r % 2 ? STEP / 2 : 0) - offsetX;
-      const y = r * (STEP / 2);
-      if (x < -6 || x > W + 6) continue;
-      // Stars on every other lattice point, dots between
-      if ((r + c) % 2 === 0) {
-        const k = 3.2;
-        marks.push(<Path key={`${r}-${c}`} d={`M${x} ${y - k} Q${x} ${y} ${x + k} ${y} Q${x} ${y} ${x} ${y + k} Q${x} ${y} ${x - k} ${y} Q${x} ${y} ${x} ${y - k} Z`} fill={theme.ornamentColor} fillOpacity={0.55} />);
+      const x = c * STEP + (r % 2 ? STEP / 2 : 0) - offsetX + (hash(r, c, 1) - 0.5) * 7;
+      const y = r * (STEP / 2) - 8 + (hash(r, c, 2) - 0.5) * 7;
+      if (x < -10 || x > W + 10) continue;
+      const key = `${r}:${c}`;
+      const pick = hash(r, c, 3);
+      if (pick < 0.34) {
+        const k = 4.2; // four-point sparkle (same curve as the patterned spread before)
+        marks.push(<Path key={key} d={`M${x} ${y - k} Q${x} ${y} ${x + k} ${y} Q${x} ${y} ${x} ${y + k} Q${x} ${y} ${x - k} ${y} Q${x} ${y} ${x} ${y - k} Z`} fill={ink.sparkle} />);
+      } else if (pick < 0.5) {
+        marks.push(<Path key={key} d={moon(x, y, 3.9)} fill={ink.moon} />);
+      } else if (pick < 0.78) {
+        const o = 2.5; // small five-point star (StarCluster's star)
+        const pts = Array.from({ length: 10 }, (_, i) => {
+          const ang = (Math.PI / 5) * i - Math.PI / 2;
+          const rr = i % 2 ? o * 0.45 : o;
+          return `${(x + rr * Math.cos(ang)).toFixed(2)} ${(y + rr * Math.sin(ang)).toFixed(2)}`;
+        });
+        marks.push(<Path key={key} d={`M${pts.join(" L")} Z`} fill={ink.star} />);
       } else {
-        marks.push(<Circle key={`${r}-${c}`} cx={x} cy={y} r={0.9} fill={theme.ornamentColor} fillOpacity={0.5} />);
+        marks.push(<Circle key={key} cx={x} cy={y} r={1.2} fill={ink.dot} />);
       }
     }
   }
   return (
-    <BookPage background={theme.pageTint}>
+    <BookPage background={ground}>
       <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}>
         <Svg width={W} height={H} viewBox={`0 0 ${W} ${H}`}>
           {marks}
@@ -735,23 +734,24 @@ function PatternEndpaperPage({ theme, offsetX }: { theme: TemplateTheme; offsetX
 
 function FinalPage({ page, ctx }: { page: PageOf<"final">; ctx: BookRenderContext }) {
   const { theme, input } = ctx;
+  const { scale: k, kicker, display } = page.front; // layout.ts planFinalPage
   return (
     <BookPage background={COLORS.cream}>
       <FrameBorder color={theme.ornamentColor} />
       <View style={{ position: "absolute", top: M, bottom: M, left: M, right: M, justifyContent: "center", alignItems: "center" }}>
         <View style={{ alignItems: "center", width: BOOK.trimWidth * 0.7 }}>
-          <StarCluster color={COLORS.gold} size={40} />
-          <View style={{ marginTop: 20, marginBottom: 20 }}>
-            <OrnamentalDivider color={COLORS.gold} width={100} />
+          <StarCluster color={COLORS.gold} size={Math.min(56, 40 * k)} />
+          <View style={{ marginTop: 20 * k, marginBottom: 20 * k }}>
+            <OrnamentalDivider color={COLORS.gold} width={100 * k} />
           </View>
-          <Paragraphs text={page.message} style={{ ...TYPE.finalMessage, textAlign: "center", fontSize: page.messageType.fontSize, lineHeight: page.messageType.leading }} />
-          <View style={{ marginTop: 20 }}>
-            <WavyDots color={theme.ornamentColor} />
+          <Paragraphs text={page.message} style={{ ...TYPE.finalMessage, textAlign: "center", fontSize: page.messageType.fontSize, lineHeight: page.messageType.leading }} balance={{ width: BOOK.trimWidth * 0.7, variant: { role: "display", weight: 600 } }} />
+          <View style={{ marginTop: 20 * k }}>
+            <WavyDots color={theme.ornamentColor} size={4 * k} />
           </View>
-          <Text style={{ fontFamily: FONTS.body, fontSize: 9, color: COLORS.textMuted, marginTop: 28, textAlign: "center" }}>
+          <Text style={{ fontFamily: FONTS.body, fontSize: kicker, lineHeight: 1.3, color: COLORS.textMuted, marginTop: 28 * k, textAlign: "center" }}>
             {joinName(pdfForName(input.locale, "createdFor", input.characterName, input.characterGender), sanitizePrintText(input.characterName))}
           </Text>
-          <Text style={{ fontFamily: FONTS.display, fontSize: 16, fontWeight: 600, color: theme.accent, marginTop: 8 }}>{pdfT(input.locale, "end")}</Text>
+          <Text style={{ fontFamily: FONTS.display, fontSize: display, lineHeight: 1.2, fontWeight: 600, color: theme.accent, marginTop: 8 * k }}>{pdfT(input.locale, "end")}</Text>
         </View>
       </View>
       <PageNumber num={page.pageNumber} />
@@ -909,7 +909,7 @@ export function backCoverImage(ctx: Pick<BookRenderContext, "images" | "input">)
 function BackCoverPage({ ctx }: { ctx: BookRenderContext }) {
   return (
     <BookPage background={ctx.theme.coverGradientStart}>
-      <BackCoverDesign frame={DIGITAL_FRAME} theme={ctx.theme} texts={ctx.coverTexts} image={backCoverImage(ctx)} logoUri={ctx.logoWhite} />
+      <BackCoverDesign frame={DIGITAL_FRAME} theme={ctx.theme} texts={ctx.coverTexts} image={backCoverImage(ctx)} logoUri={ctx.logoOrnament} />
     </BookPage>
   );
 }
@@ -938,7 +938,7 @@ function renderPlannedPage(page: PlannedPage, ctx: BookRenderContext): JSX.Eleme
     case "map":
       return <MapPage key={key} page={page} ctx={ctx} />;
     case "endpaper":
-      return <PatternEndpaperPage key={key} theme={ctx.theme} offsetX={page.side === "right" ? GEOMETRY.spreadRightOffset : 0} />;
+      return <EndpaperPage key={key} theme={ctx.theme} offsetX={page.side === "right" ? GEOMETRY.spreadRightOffset : 0} />;
     case "colophon":
       return <ColophonPage key={key} ctx={ctx} />;
   }
@@ -949,9 +949,9 @@ export function InteriorOnlyPdf({ ctx }: { ctx: BookRenderContext }) {
   // Pastedowns first and last (glued to the boards), as in Teo's printed book (layout.ts).
   return (
     <Document title={ctx.input.story.bookTitle} author="Meapica" creator="Meapica — meapica.com" producer="Meapica">
-      <EndpapersPage theme={ctx.theme} />
+      <EndpaperPage theme={ctx.theme} offsetX={0} />
       {ctx.plan.pages.map((p) => renderPlannedPage(p, ctx))}
-      <EndpapersPage theme={ctx.theme} />
+      <EndpaperPage theme={ctx.theme} offsetX={GEOMETRY.spreadRightOffset} />
     </Document>
   );
 }
@@ -968,9 +968,9 @@ export function BookPdf({ ctx }: { ctx: BookRenderContext }) {
       producer="Meapica"
     >
       <CoverPage ctx={ctx} />
-      <EndpapersPage theme={theme} />
+      <EndpaperPage theme={theme} offsetX={0} />
       {ctx.plan.pages.map((p) => renderPlannedPage(p, ctx))}
-      <EndpapersPage theme={theme} />
+      <EndpaperPage theme={theme} offsetX={GEOMETRY.spreadRightOffset} />
       <BackCoverPage ctx={ctx} />
     </Document>
   );

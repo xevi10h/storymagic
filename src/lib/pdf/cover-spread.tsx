@@ -6,10 +6,13 @@
  *   Softcover  [bleed][ back ][spine][ front ][bleed]
  *   Hardcover  [wrap][ back ][joint][spine][joint][ front ][wrap]
  *
- * Front/back artwork is drawn with uniform cover-fit over the whole panel
- * INCLUDING bleed / wrap-around / joint, centred on the visible panel.
+ * Front artwork is drawn with uniform cover-fit over the whole panel
+ * INCLUDING bleed / wrap-around / joint, centred on the visible panel. The back
+ * is cream paper (BackCoverDesign) with the spine colour carried over its joint.
  * All text stays ≥ 15 mm inside the visible panel; the bottom band of the
- * back cover is kept free for the printer's barcode.
+ * back cover (BARCODE_RESERVE_MM above the safe margin) is left empty for the
+ * barcode Gelato's print partners add to the back cover to match cover and
+ * inside file (Gelato's own editor marks "Space reserved for the barcode").
  */
 
 import { createElement, type JSX } from "react";
@@ -20,7 +23,7 @@ import { MM_TO_PT, coverFit, type Placement } from "./images";
 import { rootBoxHeight } from "./primitives";
 import { BRAND_LOGO_ASPECT } from "./assets";
 import { fitText } from "./text";
-import { BackCoverDesign, FrontCoverDesign, fitCoverTexts, type CoverTexts, type PanelFrame, type Rect } from "./cover-art";
+import { BackCoverDesign, FrontCoverDesign, fitCoverTexts, vignetteBox, type CoverTexts, type PanelFrame, type Rect } from "./cover-art";
 import { backCoverImage, pdfForName, pdfT, prepareBookRender, type BookPdfInput, type BookRenderContext } from "./book-template";
 
 /** Text keep-out from the visible panel edges */
@@ -29,6 +32,12 @@ const COVER_SAFE_MM = 15;
 export const BARCODE_RESERVE_MM = 25;
 /** Spines thinner than this get colour only — text would risk sliding onto the covers */
 export const MIN_SPINE_TEXT_MM = 5;
+/**
+ * The spine colour continues this far onto the back (softcover): the cream back meets a dark
+ * spine, and a fold that lands ±1.5 mm off would otherwise show a sliver of the wrong colour.
+ * Hardcover: the whole back joint (hinge groove) takes the spine colour instead.
+ */
+const SPINE_BAND_SOFT_MM = 3;
 /** Clear space at each end of the spine title */
 const SPINE_END_MARGIN_MM = 20;
 
@@ -42,6 +51,8 @@ export interface CoverLayout {
   front: PanelFrame;
   back: PanelFrame;
   spine: Rect;
+  /** Spine colour continued onto the back panel next to the spine, pt */
+  spineBand: number;
   spineText: { title: string; fontSize: number; showBrand: boolean } | null;
   texts: CoverTexts;
   /** Front artwork placement (for DPI checks); null when no cover image */
@@ -82,6 +93,7 @@ export function planCoverSpread(ctx: BookRenderContext, geometry: CoverGeometry)
     locale: ctx.input.locale,
     visibleWidth: Math.min(frontVisible.width, backVisible.width),
     safe,
+    backHeight: backVisible.height - 2 * safe - (back.bottomReserve ?? 0),
   });
   issues.push(...overflow.map((o) => `Cover text does not fit: ${o}`));
 
@@ -97,16 +109,19 @@ export function planCoverSpread(ctx: BookRenderContext, geometry: CoverGeometry)
 
   const coverImg = ctx.images.cover;
   const backImg = backCoverImage(ctx);
+  const backBox = vignetteBox(backImg, texts.back.vignette);
   return {
     pageWidth,
     pageHeight,
     front,
     back,
     spine,
+    spineBand: (geometry.jointBack?.width ?? SPINE_BAND_SOFT_MM) * MM_TO_PT,
     spineText,
     texts,
     frontPlacement: coverImg?.dims ? coverFit(coverImg.dims, front.art.width, front.art.height) : null,
-    backPlacement: backImg?.dims ? coverFit(backImg.dims, back.art.width, back.art.height) : null,
+    // The back prints the closing scene in the arch vignette (0 when there was no room for it)
+    backPlacement: backImg?.dims && backBox ? coverFit(backImg.dims, backBox.width, backBox.height) : null,
     issues,
   };
 }
@@ -122,11 +137,12 @@ function CoverSpreadDocument({ ctx, layout }: { ctx: BookRenderContext; layout: 
     <Document title={ctx.input.story.bookTitle} author="Meapica" creator="Meapica — meapica.com" producer="Meapica">
       <Page size={[layout.pageWidth, layout.pageHeight]} style={{ backgroundColor: theme.coverGradientStart }}>
         <View wrap={false} style={{ width: "100%", height: rootBoxHeight(layout.pageHeight), position: "relative", overflow: "hidden", backgroundColor: theme.coverGradientStart }}>
-        <BackCoverDesign frame={layout.back} theme={theme} texts={layout.texts} image={backCoverImage(ctx)} logoUri={ctx.logoWhite} />
+        <BackCoverDesign frame={layout.back} theme={theme} texts={layout.texts} image={backCoverImage(ctx)} logoUri={ctx.logoOrnament} />
         <FrontCoverDesign frame={layout.front} theme={theme} texts={layout.texts} image={ctx.images.cover} overlayUri={ctx.coverGradient} />
 
-        {/* Spine — solid theme colour over the full file height (incl. wrap/bleed) */}
-        <View style={{ position: "absolute", left: spine.left, top: 0, width: spine.width, height: layout.pageHeight, backgroundColor: theme.coverGradientStart }} />
+        {/* Spine — solid theme colour over the full file height (incl. wrap/bleed), continued over
+            the back joint / fold tolerance (quarter-binding look; always outside the back safe area) */}
+        <View style={{ position: "absolute", left: spine.left - layout.spineBand, top: 0, width: spine.width + layout.spineBand, height: layout.pageHeight, backgroundColor: theme.coverGradientStart }} />
 
         {spineText && (
           // Reads top → bottom (ISO 6357): a horizontal row rotated 90° clockwise around the spine centre

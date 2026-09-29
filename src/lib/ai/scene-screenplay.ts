@@ -7,7 +7,7 @@
 import { SCENE_LAYOUT_PAIRS } from "@/components/book-viewer/types";
 
 export type ShotScale = "close" | "medium" | "wide";
-/** Print frame of an image: square page, landscape band (split layouts), two-page panorama, cover, the hero portrait page, or the adventure map spread (pp. 28–29). */
+/** Print frame of an image: square page, landscape (text under a secondary illustration), two-page panorama, cover, the hero portrait page, or the adventure map spread (pp. 28–29). */
 export type ShotFrame = "square" | "landscape" | "panorama" | "cover" | "hero" | "map";
 
 export interface ShotSpec {
@@ -34,10 +34,15 @@ export interface ShotList {
   cover: ShotSpec;
 }
 
-/** Frame of a scene image from the print layout (never from the LLM). */
+/**
+ * Frame of a scene image from the print layout (never from the LLM). Every non-panorama
+ * scene prints full bleed on a square page (src/lib/pdf/layout.ts — split layouts print
+ * full page since 2026-09-29), so split scenes render square too; the web viewer's split
+ * band cover-crops them.
+ */
 export function frameForScene(sceneNumber: number): ShotFrame {
   const layout = SCENE_LAYOUT_PAIRS[(sceneNumber - 1) % SCENE_LAYOUT_PAIRS.length][0];
   if (layout === "spread_left") return "panorama";
-  if (layout === "split_top" || layout === "split_bottom" || layout === "illustration_text") return "landscape";
+  if (layout === "illustration_text") return "landscape";
   return "square";
 }

@@ -31,7 +31,13 @@ import { generateOpenAIImage, type ImageQuality, type ImageReference, type OpenA
 import type { ShotFrame, ShotSpec } from "./scene-screenplay";
 import type { CastMember, WorldAsset } from "./visual-assets";
 import { MAP_SHOT, mapShot, type MapGame } from "./adventure-map";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import { toServerFetchUrl } from "@/lib/storage/illustration-urls";
+import { isIllustrationRef } from "@/lib/storage/illustration-refs";
+import { avatarAssetUrl, isAvatarAssetPath } from "@/lib/character-look";
+import { describeError, fetchWithRetry } from "./net-retry";
+import type { QAVerdict } from "./qa-judge";
 
 export { buildCharacterBible, type CharacterBible, type CharacterDescriptionInput };
 export type { ImageReference, OpenAIImageResult };
@@ -74,7 +80,16 @@ export interface BookImageAssets {
   finalMap?: { url: string; model: string; createdAt: string };
   /** The map's search-and-find game (book language), decided before the map is painted */
   mapGame?: MapGame;
+  /**
+   * QA judge verdicts of the final images, keyed by shot number ("1"…"12", "0"
+   * cover, "-1" hero, "-2" map). Each is valid only for the exact image `url` it
+   * judged: a resumed run reuses it instead of re-rolling the judgement of an
+   * unchanged image, and a repaired image (new url) is judged afresh.
+   */
+  qaVerdicts?: Record<string, StoredQaVerdict>;
 }
+
+export type StoredQaVerdict = QAVerdict & { url: string; judgedAt: string };
 
 // ── Stage configuration (env) ────────────────────────────────────────────────
 
@@ -118,7 +133,9 @@ export function finalRenderStage(): string {
 //
 // Final sizes are print sizes (src/lib/pdf: 208 mm bleed page, 408×208 mm panorama):
 //   square    2432×2432 → 297 dpi on a full page
-//   landscape 2432×1904 → 297 dpi on the 78%-height split band (same 1.28:1 ratio, no crop)
+//   landscape 2432×1904 → 1.28:1; no current scene frame asks for it (frameForScene: split
+//                         scenes print full bleed and render square since 2026-09-29). Kept
+//                         for "illustration_text" frames; the print band (42 % height) cover-crops it
 //   panorama  3840×1920 → ~235 dpi over both pages (model max width; soft-dpi warning only)
 //   hero      2432×2432 → 297 dpi on the full-bleed "about the reader" page (p27)
 //   map       3840×1920 → ~235 dpi over the adventure-map spread (pp. 28–29), like a panorama
@@ -157,12 +174,67 @@ export function sizeFor(stage: "preview" | "final", key: SizeKey): string {
 
 // ── References ───────────────────────────────────────────────────────────────
 
-/** Download a stored image as a reference (illustration ref / our own storage URL). */
+const referenceMime = (mime: string): string => (mime === "image/png" || mime === "image/webp" ? mime : "image/jpeg");
+
+/**
+ * Download a stored image as a reference (illustration ref / our own storage URL).
+ * Transient failures (connectivity, timeouts, 429/5xx) are retried; anything that
+ * still fails throws — callers never get a silently missing reference.
+ */
 export async function loadReference(url: string): Promise<ImageReference> {
-  const res = await fetch(await toServerFetchUrl(url), { signal: AbortSignal.timeout(30_000) });
+  const res = await fetchWithRetry(await toServerFetchUrl(url), { timeoutMs: 30_000, label: `reference ${url.slice(0, 120)}` });
   if (!res.ok) throw new Error(`Reference download failed (${res.status}): ${url.slice(0, 120)}`);
   const mime = (res.headers.get("content-type") ?? "image/jpeg").split(";")[0].trim();
-  return { data: Buffer.from(await res.arrayBuffer()), mime: mime === "image/png" || mime === "image/webp" ? mime : "image/jpeg" };
+  return { data: Buffer.from(await res.arrayBuffer()), mime: referenceMime(mime) };
+}
+
+/** "/images/avatar/…" of a pre-rendered avatar asset, given its path or its absolute URL on our site. */
+function avatarAssetPathOf(ref: string): string | null {
+  const m = ref.match(/^(?:https?:\/\/[^/?#]+)?(\/images\/avatar\/[^?#]+)$/);
+  return m && isAvatarAssetPath(m[1]) ? m[1] : null;
+}
+
+/**
+ * The avatar the parent approved — the face anchor of every character sheet.
+ *
+ *   null   the story has no raster avatar (none chosen, or a legacy DiceBear SVG):
+ *          the sheet is drawn from the Character Bible alone, as it always was.
+ *   throws the avatar exists but could not be loaded after retries. Never
+ *          "continue without it": a sheet without the anchor draws a child that
+ *          need not match the one the parent approved. The caller's step fails
+ *          and its own retry machinery (preview → draft + retry button, fulfilment
+ *          → next run) tries again.
+ *
+ * Pre-rendered avatar assets (/images/avatar/…, shipped in /public) are read
+ * from disk when the files are present (local dev, self-hosted): no dependency on
+ * NEXT_PUBLIC_SITE_URL being reachable or already serving the latest assets. On
+ * Vercel /public is not in the function bundle, so they are downloaded from the
+ * site URL (avatarAssetUrl — never a request-derived host).
+ */
+export async function loadAvatarReference(ref: string | null | undefined): Promise<ImageReference | null> {
+  if (!ref) return null;
+  if (/\.svg(\?|$)|\/svg\?/.test(ref)) return null;
+  const assetPath = avatarAssetPathOf(ref);
+  if (assetPath) {
+    const file = path.join(process.cwd(), "public", assetPath);
+    try {
+      const data = await readFile(file);
+      const ext = path.extname(assetPath).slice(1);
+      return { data, mime: referenceMime(ext === "jpg" ? "image/jpeg" : `image/${ext}`) };
+    } catch (err) {
+      if ((err as NodeJS.ErrnoException).code !== "ENOENT") console.warn(`[Avatar] ${assetPath}: local read failed (${describeError(err)}) — downloading`);
+    }
+  } else if (!/^https?:\/\//.test(ref) && !isIllustrationRef(ref)) {
+    // Not a URL, not a stored portrait, not an avatar asset: nothing we could ever load.
+    console.warn(`[Avatar] unsupported avatar ref "${ref.slice(0, 80)}" — sheet drawn from the Bible only`);
+    return null;
+  }
+  const url = assetPath ? (avatarAssetUrl(assetPath) as string) : ref;
+  try {
+    return await loadReference(url);
+  } catch (err) {
+    throw new Error(`Approved avatar unavailable (${url.slice(0, 120)}): ${describeError(err)}`, { cause: err });
+  }
 }
 
 /** Combined layout (final book): main sheet = child + 2 companions, extra sheet = companions 3–5. */

@@ -819,7 +819,8 @@
     },
     "errors": {
       "saveFailed": "No hem pogut desar el conte. Revisa la connexió i torna a prémer el botó: tot el que has escrit continua aquí.",
-      "dismiss": "Tancar"
+      "dismiss": "Tancar",
+      "retry": "Tornar-ho a provar"
     },
     "cover": {
       "titlePrefix": "L'aventura de",

@@ -15,14 +15,15 @@
 | Page(s) | Content |
 |---|---|
 | Cover | Front: the child's name + title at the top over the cover art (no logo); spine title (hardcover); back: synopsis + brand |
-| 1 | Title + dedication (right page alone) |
-| 2–25 | 12 scenes, one spread each (illustration ↔ text; panoramas across both pages) |
-| 26 | "The End" + closing line |
+| 1 | Title + dedication (right page alone). Scales with the book's body type (`planTitlePage`): the parent's dedication prints at the body size, never below 14 pt, when it fits (Júlia 20.25 pt, Leo 14 pt), with the title (up to 36 pt), name and ornaments scaled alongside. Long dedications (max 500 chars, API + editor) step the page down; the worst case, 500 chars in 5 paragraphs plus a long sender, prints at about 11 pt |
+| 2–25 | 12 scenes, one spread each: full-bleed illustration (left) ↔ text page (right); panoramas across both pages. The scene title prints ONCE per spread — on the text page; it goes on the art (bottom gradient) only when the facing page has no heading (bridge page, text under a secondary illustration) and never on `full_illustration` pages. The old split layouts (78 % art band + cream strip repeating the title) are retired (2026-09-29): split scenes print full bleed, and new books render them square (`frameForScene`); older books' 2432×1904 split art cover-crops 22 % horizontally (233 dpi, soft-dpi warning only) |
+| 26 | "The End" + closing line (`planFinalPage`): closing line at least at the body size (Júlia 23.5 pt, Leo 16 pt), "Fin" as a display word (26–36 pt) |
 | 27 | "About the reader" — print-size hero portrait of the child + age, favourite colour, etc. |
-| 28–29 | Illustrated adventure map + age-adapted "busca y encuentra" game (2-4: 4 items · 5-6: 6 items + follow the path · 7-12: 8 items + 3 questions, answers upside down). Books made before 2026-09-28: light patterned endpaper |
+| 28–29 | Illustrated adventure map + age-adapted "busca y encuentra" game (2-4: 4 items · 5-6: 6 items + follow the path · 7-12: 8 items + 3 questions, answers upside down). Books made before 2026-09-28: Meapica endpaper spread |
+| Pastedowns | First + last page of the Gelato inside file (glued to the boards) and the digital book's endpapers: the Meapica endpaper — theme-tinted light paper with a calm scattered lattice of sparkles, crescent moons, small gold stars and dots (solid inks, no transparency; `EndpaperPage`) |
 | 30 | Colophon + QR to meapica.com (left page alone) |
 
-Body type grows with the reader's age band (2-4: 17 pt · 5-6: 15.5 · 7-9: 13 · 10-12: 11.5) and the LLM's word budgets are calibrated to fit at that size (docs/generation-pipeline.md).
+Body type grows with the reader's age band (2-4: 17 pt · 5-6: 15.5 · 7-9: 13 · 10-12: 11.5) and the LLM's word budgets are calibrated to fit at that size (docs/generation-pipeline.md). Young books then GROW their type to fill the page (2-4 up to 24 pt, 5-6 up to 19 pt): one size per book, the largest at which every body block fits (text pages, text under a secondary illustration, panorama text — which must stay on its gradient). Titles, ornaments and bridge text scale along; text blocks sit on the optical centre; centred text is set with balanced lines and no paragraph ends on a lone word. Reference: Júlia (3) prints at 21.5 pt, limited by her 4-line panorama.
 
 ## Narrative Structure (Block-Based, Age-Adaptive)
 

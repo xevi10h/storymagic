@@ -809,7 +809,8 @@
     },
     "errors": {
       "saveFailed": "We couldn't save your book. Check your connection and tap the button again: everything you've entered is still here.",
-      "dismiss": "Dismiss"
+      "dismiss": "Dismiss",
+      "retry": "Try again"
     },
     "cover": {
       "titlePrefix": "The adventure of",

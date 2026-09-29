@@ -32,7 +32,7 @@ import {
 import { buildCharacterBible, type CharacterBible, type CharacterDescriptionInput } from "./character-description";
 import { frameForScene } from "./scene-screenplay";
 import {
-  loadReference,
+  loadAvatarReference,
   renderChildSheet,
   renderCompanionSheet,
   renderShot,
@@ -46,7 +46,6 @@ import {
 } from "./book-images";
 import type { CastMember, VisualCast } from "./visual-assets";
 import { uploadGeneratedImage } from "@/lib/supabase/storage";
-import { isIllustrationRef } from "@/lib/storage/illustration-refs";
 import { PREVIEW_ILLUSTRATION_COUNT } from "@/lib/pricing";
 import { ProviderUnavailableError } from "@/lib/fulfilment/provider-errors";
 
@@ -117,17 +116,6 @@ export interface PreviewSessionArgs {
   onEvent?: (event: PreviewEvent) => void;
 }
 
-/** Reference from a stored ref/URL, or null when it is missing / not a raster image (e.g. old DiceBear SVG avatars). */
-export async function optionalReference(url: string | null | undefined, what: string): Promise<ImageReference | null> {
-  if (!url || !(/^https?:\/\//.test(url) || isIllustrationRef(url)) || /\.svg(\?|$)|\/svg\?/.test(url)) return null;
-  try {
-    return await loadReference(url);
-  } catch (err) {
-    console.warn(`[Preview] ${what} unavailable (${err instanceof Error ? err.message : String(err)}) — continuing without it`);
-    return null;
-  }
-}
-
 // ── Keys (dedup across Book Plan progress reports and retries) ───────────────
 
 type BibleSource = Pick<BookPlanDraft, "cast" | "world">;
@@ -187,7 +175,6 @@ export class PreviewSession {
   readonly previewScenes: number[];
   private readonly args: PreviewSessionArgs;
   private readonly started = Date.now();
-  private readonly anchors: Promise<{ avatar: ImageReference | null }>;
   private readonly childSheet: Promise<StoredSheet>;
   private companion: CompanionEntry | null = null;
   private readonly renders = new Map<number, RenderEntry>();
@@ -200,9 +187,6 @@ export class PreviewSession {
     this.bible = buildCharacterBible({ ...args.input, ...args.extraTraits });
     this.previewScenes = Array.from({ length: PREVIEW_ILLUSTRATION_COUNT }, (_, i) => i + 1);
     this.progress = { scenes: [], total: this.previewScenes.length };
-    this.anchors = args.anchors
-      ? Promise.resolve(args.anchors)
-      : optionalReference(args.avatarUrl, "avatar").then((avatar) => ({ avatar }));
     // Starts immediately: the child sheet never depends on the Book Plan.
     this.childSheet = this.resolveChildSheet();
     quiet(this.childSheet);
@@ -236,7 +220,9 @@ export class PreviewSession {
         return prepared;
       }
     }
-    const anchors = await this.anchors;
+    // Only now (the prepared sheet already carries it): a missing avatar fails the
+    // preview instead of drawing a child the parent never approved.
+    const anchors = this.args.anchors ?? { avatar: await loadAvatarReference(this.args.avatarUrl) };
     const r = await renderChildSheet(this.bible, "preview", anchors, { label: this.label("") });
     this.costUsd += r.costUsd;
     const url = await this.args.upload("sheet-child", r.image, r.mime);

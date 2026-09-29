@@ -8,7 +8,7 @@ import { PRICING, formatPrice } from "@/lib/pricing";
 import BookViewerSwitch from "@/components/book-viewer/BookViewerSwitch";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import type { BookPage } from "@/components/book-viewer/types";
-import { SCENE_LAYOUT_PAIRS, getActLabel, getSpreadType } from "@/components/book-viewer/types";
+import { SCENE_LAYOUT_PAIRS, artCarriesTitle, getActLabel, getSpreadType } from "@/components/book-viewer/types";
 import type { GeneratedStory } from "@/lib/ai/story-generator";
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -82,15 +82,16 @@ function buildPages(story: ShowcaseStoryData): BookPage[] {
     const secondaryImageUrl = hasSecondary ? secondaryIllustration!.image_url : null;
     const actLabel = getActLabel(scene.sceneNumber);
 
-    pages.push({ type: "scene", scene, imageUrl, locked: false, layout: pair[0], actLabel, characterAge: story.characters.age, spreadType });
-
-    if (isSpread) {
-      pages.push({ type: "scene", scene, imageUrl, locked: false, layout: "spread_right", characterAge: story.characters.age, spreadType });
-    } else if (secondaryImageUrl) {
-      pages.push({ type: "scene", scene, imageUrl: secondaryImageUrl, locked: false, layout: "illustration_text", characterAge: story.characters.age, spreadType });
-    } else {
-      pages.push({ type: "scene", scene, imageUrl: null, locked: false, layout: pair[1], characterAge: story.characters.age, spreadType });
-    }
+    const characterAge = story.characters.age;
+    const facing: Extract<BookPage, { type: "scene" }> = isSpread
+      ? { type: "scene", scene, imageUrl, locked: false, layout: "spread_right", characterAge, spreadType }
+      : secondaryImageUrl
+        ? { type: "scene", scene, imageUrl: secondaryImageUrl, locked: false, layout: "illustration_text", characterAge, spreadType }
+        : { type: "scene", scene, imageUrl: null, locked: false, layout: pair[1], characterAge, spreadType };
+    // As in print, the scene title goes on the art only when the facing page has no heading.
+    const artTitle = artCarriesTitle(pair[0], facing);
+    pages.push({ type: "scene", scene, imageUrl, locked: false, layout: pair[0], actLabel, characterAge, spreadType, artTitle });
+    pages.push(facing);
 
     if (!isBridge) sceneOnlyIndex++;
   }

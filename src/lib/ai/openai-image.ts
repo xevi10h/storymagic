@@ -16,6 +16,7 @@
 //     so we cap in-flight calls per process and back off on 429.
 
 import { ProviderUnavailableError } from "@/lib/fulfilment/provider-errors";
+import { describeError, isNetworkError } from "./net-retry";
 
 const API_BASE = "https://api.openai.com/v1/images";
 const PROVIDER = "openai";
@@ -87,6 +88,15 @@ function numberEnv(name: string, fallback: number): number {
 /** Per-attempt timeout. `max` quality measured 172 s; 240 s leaves headroom. */
 const timeoutMs = () => numberEnv("OPENAI_IMAGE_TIMEOUT_MS", 240_000);
 const maxAttempts = () => numberEnv("OPENAI_IMAGE_MAX_ATTEMPTS", 3);
+/**
+ * Attempts when the request never reached OpenAI (DNS failure, refused/reset
+ * connection: `TypeError: fetch failed`). Such a failure costs nothing and a
+ * connectivity blip routinely lasts longer than the 2 s + 4 s of the HTTP
+ * retry policy, so it gets its own, longer budget (backoff 2, 4, 8, 15, 15 s ≈ 44 s),
+ * still bounded by the caller's deadline.
+ */
+const maxNetworkAttempts = () => numberEnv("OPENAI_IMAGE_NETWORK_ATTEMPTS", 6);
+const MAX_BACKOFF_MS = 15_000;
 /** In-flight calls per process. A book is ~14 parallel calls; tier 3 allows 50/min. */
 const concurrency = () => numberEnv("OPENAI_IMAGE_CONCURRENCY", 14);
 
@@ -142,6 +152,8 @@ class RetryableError extends Error {
   constructor(
     message: string,
     readonly retryAfterMs?: number,
+    /** No HTTP response at all (connectivity) — see maxNetworkAttempts */
+    readonly network = false,
   ) {
     super(message);
   }
@@ -220,8 +232,8 @@ async function attempt(req: OpenAIImageRequest, key: string, ms: number): Promis
     res = await fetch(url, { ...init, signal: AbortSignal.timeout(ms) });
   } catch (err) {
     const name = err instanceof Error ? err.name : "";
-    const reason = name === "TimeoutError" || name === "AbortError" ? `timed out after ${Math.round(ms / 1000)}s` : String(err);
-    throw new RetryableError(`OpenAI images request ${reason}`);
+    if (name === "TimeoutError" || name === "AbortError") throw new RetryableError(`OpenAI images request timed out after ${Math.round(ms / 1000)}s`);
+    throw new RetryableError(`OpenAI images request failed: ${describeError(err)}`, undefined, isNetworkError(err));
   }
   const text = await res.text();
   if (!res.ok) throw toError(res.status, text, res.headers.get("retry-after"));
@@ -232,8 +244,9 @@ async function attempt(req: OpenAIImageRequest, key: string, ms: number): Promis
 }
 
 /**
- * One image. Retries 429 / 5xx / network / timeouts with exponential backoff
- * (honours Retry-After) while the deadline allows. Throws
+ * One image. Retries 429 / 5xx / timeouts (OPENAI_IMAGE_MAX_ATTEMPTS) and
+ * connectivity failures (OPENAI_IMAGE_NETWORK_ATTEMPTS) with exponential
+ * backoff (honours Retry-After) while the deadline allows. Throws
  * ProviderUnavailableError for auth/billing problems (retrying cannot fix them)
  * and ImageRequestError for rejected requests (moderation, parameters).
  */
@@ -249,7 +262,7 @@ export async function generateOpenAIImage(req: OpenAIImageRequest): Promise<Open
 
   await acquire();
   try {
-    for (let n = 1; n <= maxAttempts(); n++) {
+    for (let n = 1; ; n++) {
       const left = req.deadline ? req.deadline - Date.now() : Infinity;
       if (left < 20_000) break;
       const t0 = Date.now();
@@ -266,9 +279,12 @@ export async function generateOpenAIImage(req: OpenAIImageRequest): Promise<Open
       } catch (err) {
         lastErr = err;
         if (!(err instanceof RetryableError)) throw err;
-        if (n === maxAttempts()) break;
-        const wait = Math.min(err.retryAfterMs ?? 2_000 * 2 ** (n - 1), 30_000) + Math.random() * 1_000;
-        console.warn(`[OpenAI Image] ${req.label}: ${err.message} — retry ${n + 1} in ${(wait / 1000).toFixed(1)}s`);
+        const limit = err.network ? Math.max(maxNetworkAttempts(), maxAttempts()) : maxAttempts();
+        if (n >= limit) break;
+        const wait = Math.min(err.retryAfterMs ?? 2_000 * 2 ** (n - 1), err.retryAfterMs ? 30_000 : MAX_BACKOFF_MS) + Math.random() * 1_000;
+        // Sleeping past the deadline only delays the inevitable failure.
+        if (req.deadline && req.deadline - Date.now() - wait < 20_000) break;
+        console.warn(`[OpenAI Image] ${req.label}: ${err.message} — retry ${n + 1}/${limit} in ${(wait / 1000).toFixed(1)}s`);
         await sleep(wait);
       }
     }

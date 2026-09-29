@@ -2,9 +2,9 @@
 // phone + Baleares address. Stripe test mode ⇒ Gelato order is a DRAFT (never printed).
 // Spends ~$2.3 of OpenAI (preview + final images). Run the dev server with MOCK_MODE=false and
 // STRIPE_ENVIRONMENT=test, plus `stripe listen --forward-to localhost:3013/api/webhooks/stripe`.
-// Usage: OUT=/tmp/x [NAME=Leo AGE=8 GENDER=boy] [POSTCODE=07001] [STORY=<id> to skip creation] node e2e/_real-full.mjs
+// Usage: OUT=/tmp/x [NAME=Leo AGE=8 GENDER=boy WORLD=Bosque CHOICE=1] [POSTCODE=07001] [STORY=<id> to skip creation] node e2e/_real-full.mjs
 import { chromium } from "@playwright/test";
-const OUT = process.env.OUT, BASE = "http://localhost:3013";
+const OUT = process.env.OUT, BASE = `http://localhost:${process.env.PORT ?? 3013}`;
 const browser = await chromium.launch();
 const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, locale: "es-ES" });
 const page = await ctx.newPage();
@@ -30,9 +30,11 @@ await page.getByRole("radio", { name: process.env.GENDER === "boy" ? "Un niño" 
 await page.getByRole("button", { name: /Siguiente/ }).click();
 await page.getByTestId("protagonist-portrait").waitFor();
 await page.getByRole("button", { name: /Siguiente/ }).click();
-await page.getByRole("radio", { name: /Espacial/i }).first().click();
+await page.getByRole("radio", { name: new RegExp(process.env.WORLD ?? "Espacial", "i") }).first().click();
 for (let ch = 1; ch <= 3; ch++) {
-  const o = page.locator(`section[aria-labelledby="adv-ch-${ch}"] [role=radio]`).first();
+  const opts = page.locator(`section[aria-labelledby="adv-ch-${ch}"] [role=radio]`);
+  await opts.first().waitFor({ state: "visible", timeout: 15000 });
+  const o = opts.nth(Math.min(Number(process.env.CHOICE ?? 0), (await opts.count()) - 1));
   await o.waitFor({ state: "visible", timeout: 15000 });
   await o.click();
 }
@@ -51,8 +53,8 @@ await page.locator("#checkout-section").waitFor({ timeout: 30000 });
 await page.locator("#checkout-section button").filter({ hasText: /dura/i }).first().click();
 await page.locator("#withdrawal-consent input").check();
 await page.locator("#checkout-section button").filter({ hasText: /IVA incl\./ }).first().click();
-await page.waitForURL(/checkout\.stripe\.com/, { timeout: 30000 });
-await page.waitForLoadState("networkidle");
+await page.waitForURL(/checkout\.stripe\.com/, { timeout: 90000 });
+await page.locator("#cardNumber").waitFor({ timeout: 90000 }); // Stripe polls: networkidle may never settle
 await shot("2-stripe");
 
 await page.locator("#email").fill("delivered@resend.dev").catch(() => {});
@@ -72,7 +74,7 @@ await page.locator("#cardCvc").fill("123");
 await page.locator("#billingName").fill("Marta Prueba García").catch(() => {});
 await shot("3-stripe-filled");
 await page.locator(".SubmitButton, button[type=submit]").first().click();
-await page.waitForURL(/localhost:3013\/es\/checkout\/success/, { timeout: 90000 });
+await page.waitForURL(/\/es\/checkout\/success/, { timeout: 90000 });
 await page.waitForTimeout(8000);
 await shot("4-success");
 console.log("errors", JSON.stringify(errors.slice(0, 10)));

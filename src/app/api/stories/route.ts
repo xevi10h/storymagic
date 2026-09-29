@@ -34,6 +34,21 @@ const storyInputSchema = z.object({
   characterPrepId: z.string().uuid().nullish(),
 });
 
+/** A retry of the same creation arrives within seconds; a deliberate second identical book later is still a new draft. */
+const DRAFT_REUSE_WINDOW_MS = 10 * 60_000;
+
+/** JSON with sorted keys: jsonb does not keep the client's key order. */
+function stableJson(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(stableJson).join(",")}]`;
+  if (value && typeof value === "object") {
+    return `{${Object.keys(value as Record<string, unknown>)
+      .sort()
+      .map((k) => `${JSON.stringify(k)}:${stableJson((value as Record<string, unknown>)[k])}`)
+      .join(",")}}`;
+  }
+  return JSON.stringify(value ?? null);
+}
+
 export async function POST(request: Request) {
   const supabase = await createClient();
 
@@ -151,7 +166,35 @@ export async function POST(request: Request) {
     ownPrepId = prep?.id ?? null;
   }
 
-  // 2. Create story draft
+  // 2. Idempotent create: a client that timed out and retries (or a double tap)
+  // gets the draft its first request already created instead of a second one.
+  // Same user + character + world + path + language within the last few minutes
+  // and still an untouched draft = the same request.
+  const { data: recentDrafts } = await supabase
+    .from("stories")
+    .select("id, story_decisions")
+    .eq("user_id", user.id)
+    .eq("character_id", characterId)
+    .eq("template_id", templateId)
+    .eq("creation_mode", creationMode)
+    .eq("locale", locale)
+    .eq("status", "draft")
+    .gte("created_at", new Date(Date.now() - DRAFT_REUSE_WINDOW_MS).toISOString())
+    .order("created_at", { ascending: false })
+    .limit(5);
+  const decisionsKey = stableJson(decisions || {});
+  const reusable = recentDrafts?.find((d) => stableJson(d.story_decisions ?? {}) === decisionsKey);
+  if (reusable) {
+    // Refresh what the parent may have edited in between (dedication, prep link).
+    await supabase
+      .from("stories")
+      .update({ dedication_text: dedication || null, sender_name: senderName || null, ending_choice: ending || null, character_prep_id: ownPrepId })
+      .eq("id", reusable.id)
+      .eq("status", "draft");
+    return NextResponse.json({ storyId: reusable.id, characterId });
+  }
+
+  // 3. Create story draft
   const draft = {
     user_id: user.id,
     character_id: characterId,

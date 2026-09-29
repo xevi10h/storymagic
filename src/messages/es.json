@@ -809,7 +809,8 @@
     },
     "errors": {
       "saveFailed": "No hemos podido guardar tu cuento. Revisa tu conexión y vuelve a pulsar el botón: todo lo que has escrito sigue aquí.",
-      "dismiss": "Cerrar"
+      "dismiss": "Cerrar",
+      "retry": "Reintentar"
     },
     "cover": {
       "titlePrefix": "La aventura de",

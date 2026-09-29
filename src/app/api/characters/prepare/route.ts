@@ -2,8 +2,7 @@ import { NextResponse, after } from "next/server";
 import { z } from "zod";
 import { createClient as createServiceClient, type SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
-import { renderChildSheet, type ImageReference } from "@/lib/ai/book-images";
-import { optionalReference } from "@/lib/ai/preview-book";
+import { loadAvatarReference, renderChildSheet, type ImageReference } from "@/lib/ai/book-images";
 import {
   CHARACTER_PREPS_TABLE,
   PREP_STALE_MS,
@@ -208,7 +207,9 @@ async function renderPrep(
   const started = Date.now();
   const { photo, photoPath } = anchors;
   try {
-    const avatar = await optionalReference(anchors.avatarUrl, "avatar");
+    // A prep without the approved avatar would be reused as the book's child sheet:
+    // failing here makes the story render its own (with the avatar) instead.
+    const avatar = await loadAvatarReference(anchors.avatarUrl);
     const result = await renderChildSheet(bible, "preview", { avatar, photo }, { label: `prep ${prepId.slice(0, 8)}`, deadline: started + 110_000 });
     const url = await uploadGeneratedImage(admin, `character-preps/${prepId}`, "sheet-child", result.image, result.mime);
     const { error } = await admin

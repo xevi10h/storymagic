@@ -38,6 +38,12 @@ export const SECONDARY_SCENE_OFFSET = 12;
 export type IllustrationLayout = "immersive" | "split_top" | "split_bottom" | "full_illustration";
 type SceneLayout = IllustrationLayout | "spread";
 
+/**
+ * Every illustration page prints full bleed (split layouts used to hold a 78 % art band over
+ * a cream strip repeating the scene title — retired 2026-09-29). The names are kept because
+ * they still decide whether the art may carry the scene title (see planInteriorPages) and
+ * the web viewer shares them.
+ */
 const SCENE_LAYOUTS: SceneLayout[] = [
   "immersive", // 1 dramatic opening
   "split_top", // 2 world building
@@ -73,8 +79,6 @@ export const GEOMETRY = {
   pageWidth: W,
   pageHeight: H,
   margin: M,
-  /** Split layouts: image share of the page height */
-  splitImageHeight: H * 0.78,
   /** Illustration + text page: image height */
   illTextImageHeight: H * 0.42,
   /**
@@ -133,8 +137,21 @@ export type PlannedPage = PageBase &
         dedication: string;
         dedicationType: FittedType;
         sender: string | null;
+        /** Page scale (ornaments, gaps) + the small lines' sizes — grows with the book's body type */
+        front: FrontMatterType;
       }
-    | { kind: "illustration"; scene: GeneratedScene; layout: IllustrationLayout; image: ImageBox; titleType: FittedType }
+    | {
+        kind: "illustration";
+        scene: GeneratedScene;
+        layout: IllustrationLayout;
+        image: ImageBox;
+        /**
+         * Scene title over the art — only when the facing page has no heading of its own
+         * (bridge / text under a secondary illustration) and the layout allows a title
+         * (full_illustration never). A title is printed once per spread, never twice.
+         */
+        title: FittedType | null;
+      }
     | {
         kind: "spread";
         half: "left" | "right";
@@ -143,9 +160,20 @@ export type PlannedPage = PageBase &
         /** left half: scene title; right half: body text */
         overlay: { text: string; type: FittedType; role: "title" | "body"; mode: "gradient" | "panel"; blockHeight: number };
       }
-    | { kind: "text"; scene: GeneratedScene; variant: TextVariant; body: string; titleType: FittedType; bodyType: FittedType }
+    | {
+        kind: "text";
+        scene: GeneratedScene;
+        variant: TextVariant;
+        body: string;
+        titleType: FittedType;
+        bodyType: FittedType;
+        /** Chrome scale (gaps, ornaments, drop-cap allowance) — grows with the body type (growBodyType) */
+        scale: number;
+        /** Bottom padding of the text column that lifts the block to the optical centre (≤ opticalLift) */
+        lift: number;
+      }
     | { kind: "illustration-text"; scene: GeneratedScene; image: ImageBox; body: string; bodyType: FittedType }
-    | { kind: "final"; message: string; messageType: FittedType }
+    | { kind: "final"; message: string; messageType: FittedType; front: FrontMatterType }
     | { kind: "about-reader" }
     /** Adventure map spread; the game panel is drawn on the right half */
     | { kind: "map"; half: "left" | "right"; panel: MapPanel | null }
@@ -155,8 +183,28 @@ export type PlannedPage = PageBase &
 
 type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
 
+/**
+ * Title/dedication page (p1) and "The End" page (p26) scale with the book's body type, so a
+ * 21.5 pt read-aloud book does not open on 11 pt small print. `scale` multiplies ornaments and
+ * gaps; the other fields are the small lines' sizes (pt).
+ */
+export interface FrontMatterType {
+  scale: number;
+  /** p1 "A personalised adventure for" · p26 "A story created especially for" */
+  kicker: number;
+  /** p1 child's name · p26 "The End" */
+  display: number;
+  sender: number;
+  logo: number;
+}
+type PageOf<K extends PlannedPage["kind"]> = Extract<PlannedPage, { kind: K }>;
+
 export const PANEL_PADDING = 16;
 export const ILL_TEXT_WIDTH = 460;
+/** Body room under a secondary illustration (image, gap, bottom margin, ornaments). */
+const ILL_TEXT_BODY_HEIGHT = H - GEOMETRY.illTextImageHeight - 8 - M - 36;
+/** Body room inside a panorama's paper panel. */
+const SPREAD_PANEL_BODY_HEIGHT = H - 2 * M - 2 * PANEL_PADDING - 40;
 
 export interface PlanIssue {
   severity: "error" | "warning";
@@ -296,6 +344,21 @@ function lineCapHeight(maxLines: number, size: number, leading: number): number 
   return maxLines * size * leading + 0.5;
 }
 
+/**
+ * No lone word on a paragraph's last line: the last two words are joined with a no-break
+ * space (the line breaker only breaks at ASCII spaces, so the planner measures exactly what
+ * prints). Skipped when the pair is long enough to leave a gappy line.
+ */
+function tieLastWords(text: string): string {
+  return text
+    .split("\n")
+    .map((p) => {
+      const m = /^(.*\S) (\S+) (\S+)$/.exec(p);
+      return m && m[2].length + m[3].length <= 18 ? `${m[1]} ${m[2]}\u00A0${m[3]}` : p;
+    })
+    .join("\n");
+}
+
 function toType(r: FitResult): FittedType {
   return { fontSize: r.fontSize, leading: r.leading };
 }
@@ -313,12 +376,61 @@ function bodyLimits(tc: PdfTextConfig) {
 /** Shrink below the band's body size that is still invisible (fitter works in 0.25 pt steps). */
 export const BODY_SHRINK_WARN_PT = 0.6;
 
-/** Height a text page's fixed chrome takes (title handled separately). */
-const TEXT_PAGE_CHROME = {
+/** Height a text page's fixed chrome takes at scale 1 (title handled separately). */
+export const TEXT_PAGE_CHROME = {
   titleGap: 12, // title → divider
   divider: 12 + 12, // divider + gap to body (galeria/ventana) ≈ rule + gap (pergamino)
   bottomOrnament: 14 + 24,
+  /**
+   * Text pages sit their block slightly above the geometric centre (optical centre): the
+   * column carries up to this much bottom padding (PlannedPage.lift), taken only from
+   * leftover space — it never costs type size.
+   */
+  opticalLift: 18,
 } as const;
+
+/** Bridge (puente) page chrome at scale 1: divider + 2 × gap + wavy dots. */
+const BRIDGE_CHROME = 60 + 2 * 28 + 20;
+
+function scaledChrome(scale: number): number {
+  return (TEXT_PAGE_CHROME.titleGap + TEXT_PAGE_CHROME.divider + TEXT_PAGE_CHROME.bottomOrnament) * scale;
+}
+
+/** Room for body text on a text page, below a title block `titleHeight` tall. */
+function textPageBodyHeight(titleHeight: number, scale: number): number {
+  return GEOMETRY.textInnerHeight - titleHeight - scaledChrome(scale);
+}
+
+/** Body width of a text page (ventana reserves room for the two-line drop cap, which grows with the type). */
+function textPageBodyWidth(variant: TextVariant, tc: PdfTextConfig, scale: number): number {
+  return GEOMETRY.textColumnWidth - (variant === "ventana" ? tc.dropCap * scale * 0.9 + 6 : 0);
+}
+
+function fitSceneTitle(title: string, maxSize: number) {
+  return fitText({
+    text: title,
+    variant: { role: "display", weight: 600 },
+    width: GEOMETRY.textColumnWidth,
+    height: lineCapHeight(2, maxSize, 1.3),
+    maxSize,
+    minSize: 13,
+    leading: 1.3,
+    minLeading: 1.2,
+  });
+}
+
+function fitBridge(text: string, maxSize: number, scale: number) {
+  return fitText({
+    text,
+    variant: { role: "display", weight: 600 },
+    width: BOOK.trimWidth * 0.7,
+    height: GEOMETRY.textInnerHeight - BRIDGE_CHROME * scale,
+    maxSize,
+    minSize: 13,
+    leading: 1.5,
+    minLeading: 1.3,
+  });
+}
 
 // ── Planner ──────────────────────────────────────────────────────────────
 
@@ -347,40 +459,16 @@ export function planInteriorPages(input: PlanInput): InteriorPlan {
   } else if (!verbatim) {
     issues.push({ severity: "warning", code: "dedication_generated", message: "No parent dedication — printing the generated one", pageNumber: 1 });
   }
-  const titleFit = fitText({
-    text: title,
-    variant: { role: "display", weight: 600 },
-    width: GEOMETRY.textColumnWidth,
-    height: lineCapHeight(3, 26, 1.3),
-    maxSize: 26,
-    minSize: 17,
-    leading: 1.3,
-    minLeading: 1.2,
-  });
-  if (!titleFit.fits) issues.push({ severity: "error", code: "text_overflow", message: "Book title too long for the title page", pageNumber: 1 });
-  // Dedication box: what is left after logo, title, divider, subtitle, name, heart, sender, stars
-  const dedicationHeight = GEOMETRY.textInnerHeight - 30 - titleFit.height - 30 - 16 - 26 - 44 - (input.senderName ? 22 : 0) - 48;
-  const dedicationFit = fitText({
-    text: dedication,
-    variant: { role: "body", italic: true },
-    width: BOOK.trimWidth * 0.62,
-    height: dedicationHeight,
-    maxSize: 12,
-    minSize: 8.5,
-    leading: 1.8,
-    minLeading: 1.4,
-  });
-  if (!dedicationFit.fits) {
-    issues.push({ severity: "error", code: "text_overflow", message: `Dedication too long to print (${dedication.length} chars)`, pageNumber: 1 });
-  }
   push({
     kind: "title-dedication",
     pageNumber: 1,
     title,
-    titleType: toType(titleFit),
+    // Fitted once the book's body size is known (planFrontMatter, below)
+    titleType: { fontSize: 26, leading: 1.3 },
     dedication,
-    dedicationType: toType(dedicationFit),
+    dedicationType: { fontSize: 12, leading: 1.8 },
     sender: input.senderName ? sanitizePrintText(input.senderName) : null,
+    front: { scale: 1, kicker: 11, display: 18, sender: 10, logo: 14 },
   });
 
   // p2–p25 — one spread per scene
@@ -394,7 +482,7 @@ export function planInteriorPages(input: PlanInput): InteriorPlan {
     const layout = SCENE_LAYOUTS[i];
     const isBridge = scene.type === "bridge";
     const sceneTitle = sanitizePrintText(scene.title);
-    const sceneText = sanitizePrintText(scene.text);
+    const sceneText = tieLastWords(sanitizePrintText(scene.text));
 
     if (!input.availableImages.has(scene.sceneNumber)) {
       issues.push({ severity: "error", code: "missing_illustration", message: `Scene ${scene.sceneNumber} has no illustration`, pageNumber: left });
@@ -431,7 +519,7 @@ export function planInteriorPages(input: PlanInput): InteriorPlan {
       if (gradientFit.fits) {
         overlay = { type: toType(gradientFit), mode: "gradient", blockHeight: gradientFit.height };
       } else {
-        const panelFit = fitText({ text: sceneText, variant: { role: "body" }, width: bodyW - 2 * PANEL_PADDING, height: H - 2 * M - 2 * PANEL_PADDING - 40, maxSize: body.max, minSize: body.min, leading: body.leading, minLeading: body.minLeading });
+        const panelFit = fitText({ text: sceneText, variant: { role: "body" }, width: bodyW - 2 * PANEL_PADDING, height: SPREAD_PANEL_BODY_HEIGHT, maxSize: body.max, minSize: body.min, leading: body.leading, minLeading: body.minLeading });
         if (!panelFit.fits) issues.push({ severity: "error", code: "text_overflow", message: `Scene ${scene.sceneNumber} text does not fit the panorama page`, pageNumber: right });
         overlay = { type: toType(panelFit), mode: "panel", blockHeight: panelFit.height };
       }
@@ -447,33 +535,23 @@ export function planInteriorPages(input: PlanInput): InteriorPlan {
       return;
     }
 
+    // Full-bleed art. The title goes on the art only while the facing page has no heading
+    // (set below once the facing page is known); full_illustration pages stay pure art.
+    const artTitle: FittedType | null = layout === "full_illustration" ? null : toType(overlayTitleFit);
     push({
       kind: "illustration",
       pageNumber: left,
       scene,
       layout,
-      image: {
-        sceneNumber: scene.sceneNumber,
-        boxWidth: W,
-        boxHeight: layout === "split_top" || layout === "split_bottom" ? GEOMETRY.splitImageHeight : H,
-        windowLeft: 0,
-      },
-      titleType: toType(overlayTitleFit),
+      image: { sceneNumber: scene.sceneNumber, boxWidth: W, boxHeight: H, windowLeft: 0 },
+      title: artTitle,
     });
+    const artPage = pages[pages.length - 1] as PageOf<"illustration">;
 
     if (isBridge) {
-      const bridgeFit = fitText({
-        text: sceneText,
-        variant: { role: "display", weight: 600 },
-        width: BOOK.trimWidth * 0.7,
-        height: GEOMETRY.textInnerHeight - 60 - 2 * 28 - 20,
-        maxSize: tc.bridgeText,
-        minSize: 13,
-        leading: 1.5,
-        minLeading: 1.3,
-      });
+      const bridgeFit = fitBridge(sceneText, tc.bridgeText, 1);
       if (!bridgeFit.fits) issues.push({ severity: "error", code: "text_overflow", message: `Bridge ${scene.sceneNumber} text too long`, pageNumber: right });
-      push({ kind: "text", pageNumber: right, scene, variant: "puente", body: sceneText, titleType: toType(overlayTitleFit), bodyType: toType(bridgeFit) });
+      push({ kind: "text", pageNumber: right, scene, variant: "puente", body: sceneText, titleType: toType(overlayTitleFit), bodyType: toType(bridgeFit), scale: 1, lift: 0 });
       return;
     }
 
@@ -487,7 +565,7 @@ export function planInteriorPages(input: PlanInput): InteriorPlan {
         text: sceneText,
         variant: { role: "body" },
         width: ILL_TEXT_WIDTH,
-        height: H - GEOMETRY.illTextImageHeight - 8 - M - 36,
+        height: ILL_TEXT_BODY_HEIGHT,
         maxSize: body.max,
         minSize: Math.max(body.min, body.max - 1.5),
         leading: body.leading,
@@ -507,23 +585,15 @@ export function planInteriorPages(input: PlanInput): InteriorPlan {
       issues.push({ severity: "warning", code: "secondary_image_dropped", message: `Scene ${scene.sceneNumber}: text too long for the secondary illustration, using a full text page`, pageNumber: right });
     }
 
-    const titleType = fitText({
-      text: sceneTitle,
-      variant: { role: "display", weight: 600 },
-      width: GEOMETRY.textColumnWidth,
-      height: lineCapHeight(2, tc.title, 1.3),
-      maxSize: tc.title,
-      minSize: 13,
-      leading: 1.3,
-      minLeading: 1.2,
-    });
+    const titleType = fitSceneTitle(sceneTitle, tc.title);
     if (!titleType.fits) issues.push({ severity: "error", code: "text_overflow", message: `Scene ${scene.sceneNumber} title too long`, pageNumber: right });
-    const dropCapWidth = variant === "ventana" ? tc.dropCap * 0.9 + 6 : 0;
+    // The text page carries the scene title: never repeat it on the facing art.
+    artPage.title = null;
     const bodyFit = fitText({
       text: sceneText,
       variant: { role: "body" },
-      width: GEOMETRY.textColumnWidth - dropCapWidth,
-      height: GEOMETRY.textInnerHeight - titleType.height - TEXT_PAGE_CHROME.titleGap - TEXT_PAGE_CHROME.divider - TEXT_PAGE_CHROME.bottomOrnament,
+      width: textPageBodyWidth(variant, tc, 1),
+      height: textPageBodyHeight(titleType.height, 1),
       maxSize: body.max,
       minSize: body.min,
       leading: body.leading,
@@ -532,29 +602,25 @@ export function planInteriorPages(input: PlanInput): InteriorPlan {
     if (!bodyFit.fits) {
       issues.push({ severity: "error", code: "text_overflow", message: `Scene ${scene.sceneNumber} text too long (${sceneText.split(/\s+/).length} words) even at ${body.min}pt`, pageNumber: right });
     }
-    push({ kind: "text", pageNumber: right, scene, variant, body: sceneText, titleType: toType(titleType), bodyType: toType(bodyFit) });
+    push({ kind: "text", pageNumber: right, scene, variant, body: sceneText, titleType: toType(titleType), bodyType: toType(bodyFit), scale: 1, lift: 0 });
   });
 
-  const bodyType = harmonizeBodyType(pages);
+  const harmonized = harmonizeBodyType(pages);
+  const bodyType = harmonized ? growBodyType(pages, tc, harmonized) : null;
+  setOpticalLift(pages, tc);
   if (bodyType && bodyType.fontSize < tc.body - BODY_SHRINK_WARN_PT) {
     issues.push({ severity: "warning", code: "body_type_shrunk", message: `Body text set at ${bodyType.fontSize}pt instead of the age band's ${tc.body}pt (the longest page does not fit at full size)` });
   }
 
+  const bookBody = bodyType?.fontSize ?? tc.body;
+  planTitlePage(pages[0] as PageOf<"title-dedication">, bookBody, issues);
+
   // p26–p30 — closing pages
   const message = sanitizePrintText(story.finalMessage ?? "");
-  const messageFit = fitText({
-    text: message,
-    variant: { role: "display", weight: 600 },
-    width: BOOK.trimWidth * 0.7,
-    height: GEOMETRY.textInnerHeight - 40 - 40 - 20 - 50 - 30 - 20,
-    maxSize: 16,
-    minSize: 10,
-    leading: 1.5,
-    minLeading: 1.3,
-  });
-  if (!messageFit.fits) issues.push({ severity: "error", code: "text_overflow", message: "Final message too long" });
+  const closing = planFinalPage(message, bookBody);
+  if (!closing.fits) issues.push({ severity: "error", code: "text_overflow", message: "Final message too long" });
   const closingStart = 2 + SCENE_COUNT * 2; // 26
-  push({ kind: "final", pageNumber: closingStart, message, messageType: toType(messageFit) });
+  push({ kind: "final", pageNumber: closingStart, message, messageType: closing.messageType, front: closing.front });
   push({ kind: "about-reader", pageNumber: closingStart + 1 });
   if (input.map) {
     push({ kind: "map", pageNumber: closingStart + 2, half: "left", panel: null });
@@ -606,6 +672,196 @@ function harmonizeBodyType(pages: PlannedPage[]): FittedType | null {
     }
   }
   return target;
+}
+
+/** Body leading at `size`: eases from the band's leading to `bodyMaxLeading` as the type grows. */
+function grownLeading(tc: PdfTextConfig, size: number): number {
+  const g = tc.bodyMax > tc.body ? (size - tc.body) / (tc.bodyMax - tc.body) : 0;
+  return Math.floor((tc.bodyLeading + (tc.bodyMaxLeading - tc.bodyLeading) * g) * 100) / 100;
+}
+
+/**
+ * Young bands (2–6) write very short pages: at the band size they sit as a few small
+ * lines in a large empty frame. Grow the WHOLE book's body type — still one size per
+ * book — to the largest size (0.5 pt steps, capped at tc.bodyMax) at which EVERY body
+ * block still fits its box: text pages (title and chrome grown with it), text under a
+ * secondary illustration, and panorama body text (a gradient overlay must stay within
+ * the gradient's limit — it never flips to a paper panel to grow). Scene titles, the
+ * text-page chrome and the bridge pages scale along. Never below the harmonized size;
+ * books already shrunk below the band size are left alone.
+ */
+function growBodyType(pages: PlannedPage[], tc: PdfTextConfig, base: FittedType): FittedType {
+  if (tc.bodyMax <= tc.body || base.fontSize < tc.body) return base;
+  const body = { role: "body" } as const;
+  const blockHeight = (text: string, width: number, size: number, leading: number) => countLines(text, size, width, body) * size * leading;
+  for (let size = tc.bodyMax; size > tc.body + 1e-6; size -= 0.5) {
+    const leading = grownLeading(tc, size);
+    const g = (size - tc.body) / (tc.bodyMax - tc.body);
+    const scale = size / tc.body;
+    const titleMax = Math.round((tc.title + (tc.titleMax - tc.title) * g) * 2) / 2;
+    const apply: (() => void)[] = [];
+    let fits = true;
+    for (const p of pages) {
+      if (p.kind === "text" && p.variant !== "puente") {
+        const title = fitSceneTitle(sanitizePrintText(p.scene.title), titleMax);
+        const room = textPageBodyHeight(title.height, scale);
+        if (!title.fits || blockHeight(p.body, textPageBodyWidth(p.variant, tc, scale), size, leading) > room) fits = false;
+        else apply.push(() => Object.assign(p, { titleType: toType(title), scale }));
+      } else if (p.kind === "illustration-text") {
+        if (blockHeight(p.body, ILL_TEXT_WIDTH, size, leading) > ILL_TEXT_BODY_HEIGHT) fits = false;
+      } else if (p.kind === "spread" && p.overlay.role === "body") {
+        const gradient = p.overlay.mode === "gradient";
+        const width = gradient ? GEOMETRY.overlayTextWidth : GEOMETRY.overlayTextWidth - 2 * PANEL_PADDING;
+        const h = blockHeight(p.overlay.text, width, size, leading);
+        if (h > (gradient ? GEOMETRY.maxGradientTextHeight : SPREAD_PANEL_BODY_HEIGHT)) fits = false;
+        else apply.push(() => void (p.overlay.blockHeight = h));
+      }
+      if (!fits) break;
+    }
+    if (!fits) continue;
+    const grown: FittedType = { fontSize: size, leading };
+    for (const f of apply) f();
+    const bridgeMax = Math.round((tc.bridgeText + (tc.bridgeMax - tc.bridgeText) * g) * 2) / 2;
+    for (const p of pages) {
+      if (p.kind === "text" && p.variant === "puente") {
+        const bridge = fitBridge(p.body, bridgeMax, scale);
+        // Grown only when it still fits; otherwise the page keeps its band-size fit.
+        if (bridge.fits) Object.assign(p, { bodyType: toType(bridge), scale });
+      } else if ((p.kind === "text" && p.variant !== "puente") || p.kind === "illustration-text") {
+        p.bodyType = grown;
+      } else if (p.kind === "spread" && p.overlay.role === "body") {
+        p.overlay.type = grown;
+      }
+    }
+    return grown;
+  }
+  return base;
+}
+
+/** Final pass: each text page's optical lift, from the room its block leaves free. */
+function setOpticalLift(pages: PlannedPage[], tc: PdfTextConfig) {
+  for (const p of pages) {
+    if (p.kind !== "text") continue;
+    const size = p.bodyType.fontSize;
+    const block =
+      p.variant === "puente"
+        ? countLines(p.body, size, BOOK.trimWidth * 0.7, { role: "display", weight: 600 }) * size * p.bodyType.leading + BRIDGE_CHROME * p.scale
+        : countLines(sanitizePrintText(p.scene.title), p.titleType.fontSize, GEOMETRY.textColumnWidth, { role: "display", weight: 600 }) * p.titleType.fontSize * p.titleType.leading +
+          scaledChrome(p.scale) +
+          countLines(p.body, size, textPageBodyWidth(p.variant, tc, p.scale), { role: "body" }) * size * p.bodyType.leading;
+    p.lift = Math.max(0, Math.min(TEXT_PAGE_CHROME.opticalLift, GEOMETRY.textInnerHeight - block));
+  }
+}
+
+// ── Title / dedication (p1) and "The End" (p26) ──────────────────────────
+
+/**
+ * Front-matter scales, largest first: the dedication target steps from the book's body size
+ * (never below 14 pt) down to 12 pt in 0.5 pt steps; scale = target ÷ 12 (1 = the historical layout).
+ */
+function frontScales(bookBody: number): number[] {
+  const out: number[] = [];
+  for (let size = Math.round(Math.max(14, bookBody) * 2) / 2; size > 12 + 1e-6; size -= 0.5) out.push(size / 12);
+  out.push(1);
+  return out;
+}
+
+const half = (pt: number) => Math.round(pt * 2) / 2;
+
+function frontType(k: number): FrontMatterType {
+  return { scale: k, kicker: half(Math.min(16, 11 * k)), display: half(Math.min(28, 18 * k)), sender: half(Math.min(14, 10 * k)), logo: half(Math.min(20, 14 * k)) };
+}
+
+/** Line pitch of a single-line label (template sets lineHeight 1.3 on these). */
+const LABEL_LEADING = 1.3;
+
+/**
+ * p1: the dedication is the gift's emotional centre — it prints at the book's body size
+ * (never below 14 pt) when it fits, with the title, name and ornaments scaled alongside.
+ * Long dedications step the whole page down (scale 1 = the historical layout, dedication
+ * floor 8.5 pt), so a 500-character dedication always still fits.
+ */
+function planTitlePage(page: PageOf<"title-dedication">, bookBody: number, issues: PlanIssue[]) {
+  const dedicationWidth = BOOK.trimWidth * 0.66;
+  let last: { titleFit: FitResult; dedicationFit: FitResult; front: FrontMatterType } | null = null;
+  for (const k of frontScales(bookBody)) {
+    const front = frontType(k);
+    const titleMax = half(Math.min(36, 26 * k));
+    const titleFit = fitText({
+      text: page.title,
+      variant: { role: "display", weight: 600 },
+      width: GEOMETRY.textColumnWidth,
+      height: lineCapHeight(3, titleMax, 1.3),
+      maxSize: titleMax,
+      minSize: 17,
+      leading: 1.3,
+      minLeading: 1.2,
+    });
+    // Everything drawn above/below the dedication (same stack as TitleDedicationPage) + 10 pt safety
+    const chrome =
+      front.logo + 16 * k + // logo
+      titleFit.height +
+      (10 + 9 + 10) * k + // divider
+      front.kicker * LABEL_LEADING +
+      4 * k + front.display * LABEL_LEADING + // name
+      (page.dedication ? (20 + 9 + 20) * k : 0) + // heart row
+      (page.sender ? 8 * k + front.sender * LABEL_LEADING : 0) +
+      (20 + 24) * k + // stars
+      10;
+    const dedicationMax = 12 * k;
+    const dedicationFit = fitText({
+      text: page.dedication || " ",
+      variant: { role: "body", italic: true },
+      width: dedicationWidth,
+      height: GEOMETRY.textInnerHeight - chrome,
+      maxSize: dedicationMax,
+      // Scaled pages keep the dedication within 10 % of its target; only scale 1 may go to the floor
+      minSize: k > 1 ? Math.max(8.5, dedicationMax * 0.9) : 8.5,
+      leading: 1.7,
+      minLeading: 1.4,
+    });
+    last = { titleFit, dedicationFit, front };
+    if (titleFit.fits && dedicationFit.fits) break;
+  }
+  if (!last) return;
+  if (!last.titleFit.fits) issues.push({ severity: "error", code: "text_overflow", message: "Book title too long for the title page", pageNumber: 1 });
+  if (page.dedication && !last.dedicationFit.fits) {
+    issues.push({ severity: "error", code: "text_overflow", message: `Dedication too long to print (${page.dedication.length} chars)`, pageNumber: 1 });
+  }
+  page.titleType = toType(last.titleFit);
+  page.dedicationType = toType(last.dedicationFit);
+  page.front = last.front;
+}
+
+/** p26: the closing line at least at the book's body size, "The End" as a real display word. */
+function planFinalPage(message: string, bookBody: number): { messageType: FittedType; front: FrontMatterType; fits: boolean } {
+  let out: { messageType: FittedType; front: FrontMatterType; fits: boolean } | null = null;
+  for (let k of frontScales(bookBody)) {
+    // Gaps grow less than the type here: the closing stack is tall and must clear the folio
+    const front: FrontMatterType = { ...frontType(Math.min(k, 1.35)), kicker: half(Math.min(14, 9.5 * k)), display: half(Math.min(36, 26 * k)) };
+    k = front.scale;
+    const messageMax = half(Math.min(28, Math.max(16, bookBody * 1.1)));
+    const chrome =
+      Math.min(56, 40 * k) + // star cluster
+      (20 + 15 + 20) * k + // divider
+      (20 + 4) * k + // wavy dots
+      28 * k + front.kicker * LABEL_LEADING + // "created for"
+      8 * k + front.display * 1.2 + // "The End"
+      10;
+    const fit = fitText({
+      text: message || " ",
+      variant: { role: "display", weight: 600 },
+      width: BOOK.trimWidth * 0.7,
+      height: GEOMETRY.textInnerHeight - chrome,
+      maxSize: messageMax,
+      minSize: k > 1 ? Math.max(10, Math.min(messageMax, bookBody) * 0.9) : 10,
+      leading: 1.5,
+      minLeading: 1.3,
+    });
+    out = { messageType: toType(fit), front, fits: fit.fits };
+    if (fit.fits) break;
+  }
+  return out!;
 }
 
 /** Image boxes drawn on a planned page (for DPI checks and rendering). */

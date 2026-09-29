@@ -6,11 +6,12 @@
  */
 
 import { View, Text, Image } from "@react-pdf/renderer";
-import { FONTS, type TemplateTheme } from "./theme";
-import { coverFit } from "./images";
+import { COLORS, FONTS, TYPE, type TemplateTheme } from "./theme";
+import { MM_TO_PT, coverFit } from "./images";
 import { countLines, fitText, joinName, printQuotes, sanitizePrintText } from "./text";
 import { BRAND_LOGO_ASPECT, COVER_OVERLAY_STOPS, type PrintImage } from "./assets";
 import { Paragraphs, PlacedImage } from "./primitives";
+import { OrnamentalDivider } from "./decorations";
 import type { FittedType } from "./layout";
 
 /** Scrim opacity above the visible panel (wrap / bleed), continuing the gradient's first stop. */
@@ -62,8 +63,8 @@ export interface CoverTexts {
   synopsis: string;
   /** Locale-appropriate quotation marks around the synopsis */
   synopsisQuotes: [open: string, close: string];
-  synopsisType: FittedType;
-  backTitleType: FittedType;
+  /** Back-cover sizes (title, synopsis, vignette) for the panel they were fitted to */
+  back: BackCoverLayout;
 }
 
 // ── Front-cover title lockup ─────────────────────────────────────────────
@@ -136,6 +137,117 @@ export function fitTitleLockup(title: string, name: string, width: number, maxHe
   return { ...last!, fits: false };
 }
 
+// ── Back cover (paper back: arch vignette, title, "for {name}", synopsis, brand) ──
+
+/** Back-cover measurements, pt unless noted. The stack is sized so it always fits its column. */
+const BACK = {
+  title: { max: 16, min: 11, leading: 1.2, minLeading: 1.15, maxLines: 2 },
+  /** "Una historia personalizada para {name}" */
+  forLine: { fontSize: 10, leading: 1.35, gap: 5 },
+  /** Ornamental divider (OrnamentalDivider is 0.15 × its width tall) and the space around it */
+  divider: { width: 60, gap: 10 },
+  /** Synopsis in the body face, like the interior text */
+  synopsis: { max: 12.5, min: 9.5, comfortableMin: 10.5, leading: 1.55, minLeading: 1.45 },
+  /** Synopsis measure: ≤ 82 % of the column and ≤ 132 mm (~60 characters a line) */
+  measureRatio: 0.82,
+  measureMaxMm: 132,
+  /** Arch vignette (image window with a round top) height budget, mm; its width follows the image */
+  vignetteMaxMm: 70,
+  vignetteMaxWidthMm: 80,
+  /** Image aspect range shown whole; beyond it the window crops (cover-fit, centred) */
+  aspectRange: [0.75, 1.6],
+  vignetteComfortableMm: 44,
+  vignetteMinMm: 28,
+  /** Hairline frame drawn this far outside the vignette */
+  ring: 5,
+  vignetteGap: 14,
+  /** Brand signature: logo + url, pinned to the bottom of the column */
+  brand: { logo: 12, urlSize: 6.5, gapAboveMin: 16 },
+  /** Absorbs rounding between the measured model and react-pdf's layout */
+  slack: 6,
+} as const;
+
+export interface BackCoverLayout {
+  titleType: FittedType;
+  synopsisType: FittedType;
+  /** Synopsis column width, pt */
+  measure: number;
+  /** Height budget of the arch vignette, pt (0: no room, printed without art) — see vignetteBox */
+  vignette: number;
+}
+
+/**
+ * Arch vignette box for an image within the fitted height budget: the window takes the
+ * image's own proportions (clamped to BACK.aspectRange) so the whole scene shows — a
+ * centred square crop could cut off a face near the sides of a landscape scene.
+ */
+export function vignetteBox(image: PrintImage | null, budget: number): { width: number; height: number } | null {
+  if (!image || budget <= 0) return null;
+  const [lo, hi] = BACK.aspectRange;
+  const aspect = image.dims ? Math.min(hi, Math.max(lo, image.dims.widthPx / image.dims.heightPx)) : 1;
+  const width = Math.min(budget * aspect, BACK.vignetteMaxWidthMm * MM_TO_PT);
+  return { width, height: width / aspect };
+}
+
+function backBrandHeight(): number {
+  return BACK.brand.logo + 3 + BACK.brand.urlSize * 1.3;
+}
+
+/**
+ * Sizes the back-cover stack for a text column `inner` × `height` (inside the safe
+ * area, above any barcode keep-out). The synopsis gets the largest comfortable size first;
+ * the vignette takes what is left (capped), and only shrinks to its minimum for very long copy.
+ */
+function fitBackCover(args: { title: string; forLine: string; quotedSynopsis: string; inner: number; height: number }): { layout: BackCoverLayout; overflow: string[] } {
+  const overflow: string[] = [];
+  const { inner, height } = args;
+  const titleFit = fitText({
+    text: args.title,
+    variant: { role: "display", weight: 600 },
+    width: inner * 0.9,
+    height: BACK.title.maxLines * BACK.title.max * BACK.title.leading + 1,
+    maxSize: BACK.title.max,
+    minSize: BACK.title.min,
+    leading: BACK.title.leading,
+    minLeading: BACK.title.minLeading,
+  });
+  if (!titleFit.fits || titleFit.lines > BACK.title.maxLines) overflow.push("back cover title");
+  const forLines = countLines(args.forLine, BACK.forLine.fontSize, inner, { role: "body", weight: 600 });
+  const measure = Math.min(inner * BACK.measureRatio, BACK.measureMaxMm * MM_TO_PT);
+  const artHeight = BACK.ring * 2 + BACK.vignetteGap;
+  const textFixed =
+    titleFit.height +
+    BACK.forLine.gap +
+    forLines * BACK.forLine.fontSize * BACK.forLine.leading +
+    2 * BACK.divider.gap +
+    BACK.divider.width * 0.15 +
+    BACK.brand.gapAboveMin +
+    backBrandHeight() +
+    BACK.slack;
+
+  const s = BACK.synopsis;
+  const titleType = { fontSize: titleFit.fontSize, leading: titleFit.leading };
+  /** Largest synopsis size ≥ minSize leaving a vignette ≥ minVignette (minVignette 0: no art). */
+  const trySizes = (minSize: number, minVignette: number): BackCoverLayout | null => {
+    for (let size = s.max; size >= minSize - 1e-6; size -= 0.25) {
+      const t = (s.max - size) / (s.max - s.min);
+      const leading = Math.floor((s.leading - (s.leading - s.minLeading) * t) * 100) / 100;
+      const textHeight = countLines(args.quotedSynopsis, size, measure, { role: "body" }) * size * leading;
+      const free = height - textFixed - textHeight;
+      const vignette = minVignette > 0 ? Math.floor(Math.min(BACK.vignetteMaxMm * MM_TO_PT, free - artHeight)) : 0;
+      if (minVignette > 0 ? vignette >= minVignette : free >= 0) return { titleType, synopsisType: { fontSize: size, leading }, measure, vignette };
+    }
+    return null;
+  };
+  // 1) comfortable type + a generous vignette, 2) smaller type + small vignette, 3) no vignette
+  let layout = trySizes(s.comfortableMin, BACK.vignetteComfortableMm * MM_TO_PT) ?? trySizes(s.min, BACK.vignetteMinMm * MM_TO_PT) ?? trySizes(s.min, 0);
+  if (!layout) {
+    overflow.push("back cover synopsis");
+    layout = { titleType, synopsisType: { fontSize: s.min, leading: s.minLeading }, measure, vignette: 0 };
+  }
+  return { layout, overflow };
+}
+
 /** Fits the cover copy for a panel of the given visible width. Fonts must be loaded. */
 export function fitCoverTexts(args: {
   title: string;
@@ -145,6 +257,8 @@ export function fitCoverTexts(args: {
   locale: string | undefined;
   visibleWidth: number;
   safe: number;
+  /** Height of the back-cover text column (inside the safe area, above the barcode keep-out). Default: square panel, no keep-out. */
+  backHeight?: number;
 }): { texts: CoverTexts; overflow: string[] } {
   const title = sanitizePrintText(args.title);
   const synopsis = sanitizePrintText(args.synopsis);
@@ -158,22 +272,17 @@ export function fitCoverTexts(args: {
   // Square panels: the zone height derives from the width
   const { fits: titleFits, ...titleLockup } = fitTitleLockup(title, name, inner, args.visibleWidth * TITLE_ZONE_RATIO - args.safe, subtitleReserve);
   if (!titleFits) overflow.push("front cover title");
-  const backTitleFit = fitText({ text: title, variant: { role: "display", weight: 600 }, width: inner, height: 2 * 14 * 1.3 + 1, maxSize: 14, minSize: 10, leading: 1.3, minLeading: 1.2 });
-  if (!backTitleFit.fits) overflow.push("back cover title");
   const synopsisQuotes = printQuotes(args.locale);
-  const synopsisFit = fitText({ text: `${synopsisQuotes[0]}${synopsis}${synopsisQuotes[1]}`, variant: { role: "display" }, width: inner * 0.86, height: args.visibleWidth * 0.4, maxSize: 11, minSize: 8, leading: 1.6, minLeading: 1.4 });
-  if (!synopsisFit.fits) overflow.push("back cover synopsis");
+  const back = fitBackCover({
+    title,
+    forLine: joinName(subtitle, name),
+    quotedSynopsis: `${synopsisQuotes[0]}${synopsis}${synopsisQuotes[1]}`,
+    inner,
+    height: args.backHeight ?? inner,
+  });
+  overflow.push(...back.overflow);
   return {
-    texts: {
-      title,
-      titleLockup,
-      subtitle,
-      name,
-      synopsis,
-      synopsisQuotes,
-      synopsisType: { fontSize: synopsisFit.fontSize, leading: synopsisFit.leading },
-      backTitleType: { fontSize: backTitleFit.fontSize, leading: backTitleFit.leading },
-    },
+    texts: { title, titleLockup, subtitle, name, synopsis, synopsisQuotes, back: back.layout },
     overflow,
   };
 }
@@ -253,6 +362,13 @@ export function FrontCoverDesign({
   );
 }
 
+/**
+ * Back cover on the book's cream paper (same stock as the title page), not a veiled scene:
+ * an arch-window vignette of the closing illustration (whole image, nothing printed over it),
+ * the title and "A personalised story for {name}", the synopsis in the body face at reading
+ * size, and the brand signature at the foot of the column. The column ends above
+ * `frame.bottomReserve`, so the printer's barcode band stays empty.
+ */
 export function BackCoverDesign({
   frame,
   theme,
@@ -264,22 +380,17 @@ export function BackCoverDesign({
   theme: TemplateTheme;
   texts: CoverTexts;
   image: PrintImage | null;
+  /** Brand logo tinted in theme.ornamentColor (as on the title page) */
   logoUri?: string;
 }) {
   const { art, visible, safe } = frame;
   const reserve = frame.bottomReserve ?? 0;
-  const { fx, fy } = focusOnVisible(image, frame);
+  const { back } = texts;
+  const box = vignetteBox(image, back.vignette);
+  const ring = BACK.ring;
   return (
     <>
-      <View style={{ position: "absolute", left: art.left, top: art.top, width: art.width, height: art.height, backgroundColor: theme.coverGradientStart }}>
-        <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: theme.coverGradientEnd, opacity: 0.3 }} />
-        {image && (
-          <>
-            <PlacedImage image={image} boxWidth={art.width} boxHeight={art.height} focusX={fx} focusY={fy} opacity={0.35} style={{ position: "absolute", left: 0, top: 0 }} />
-            <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "#000000", opacity: 0.45 }} />
-          </>
-        )}
-      </View>
+      <View style={{ position: "absolute", left: art.left, top: art.top, width: art.width, height: art.height, backgroundColor: COLORS.cream }} />
 
       <View
         style={{
@@ -288,40 +399,68 @@ export function BackCoverDesign({
           top: visible.top + safe,
           width: visible.width - 2 * safe,
           height: visible.height - 2 * safe - reserve,
-          justifyContent: "space-between",
           alignItems: "center",
         }}
       >
-        <View style={{ alignItems: "center" }}>
-          <Text style={{ fontFamily: FONTS.display, fontSize: texts.backTitleType.fontSize, fontWeight: 600, color: "#ffffffdd", textAlign: "center", lineHeight: texts.backTitleType.leading }}>
+        <View style={{ flexGrow: 1, width: "100%", alignItems: "center", justifyContent: "center" }}>
+          {box && image && (
+            <View style={{ width: box.width + 2 * ring, height: box.height + 2 * ring, marginBottom: BACK.vignetteGap }}>
+              {/* Arch window: the whole scene, round top — the hairline echoes the interior page frame */}
+              <View
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  top: 0,
+                  width: box.width + 2 * ring,
+                  height: box.height + 2 * ring,
+                  borderWidth: 0.75,
+                  borderColor: theme.ornamentColor,
+                  borderTopLeftRadius: box.width / 2 + ring,
+                  borderTopRightRadius: box.width / 2 + ring,
+                  borderBottomLeftRadius: 4 + ring,
+                  borderBottomRightRadius: 4 + ring,
+                }}
+              />
+              <PlacedImage
+                image={image}
+                boxWidth={box.width}
+                boxHeight={box.height}
+                style={{ position: "absolute", left: ring, top: ring, borderTopLeftRadius: box.width / 2, borderTopRightRadius: box.width / 2, borderBottomLeftRadius: 4, borderBottomRightRadius: 4 }}
+              />
+            </View>
+          )}
+
+          <Text style={{ fontFamily: FONTS.display, fontSize: back.titleType.fontSize, fontWeight: 600, color: theme.titleColor, textAlign: "center", lineHeight: back.titleType.leading, width: "90%" }}>
             {texts.title}
           </Text>
-          <Text style={{ fontFamily: FONTS.body, fontSize: 9, color: "#ffffff99", marginTop: 4, letterSpacing: 0.5, textAlign: "center" }}>
-            {joinName(texts.subtitle, texts.name)}
+          <Text style={{ fontFamily: FONTS.body, fontSize: BACK.forLine.fontSize, color: COLORS.textMedium, marginTop: BACK.forLine.gap, lineHeight: BACK.forLine.leading, textAlign: "center", width: "100%" }}>
+            {texts.subtitle}
+            {texts.subtitle.endsWith("'") ? "" : " "}
+            <Text style={{ fontWeight: 600, color: theme.accent }}>{texts.name}</Text>
           </Text>
-        </View>
 
-        <View style={{ alignItems: "center", maxWidth: (visible.width - 2 * safe) * 0.86 }}>
-          <Paragraphs
-            text={texts.synopsis}
-            prefix={texts.synopsisQuotes[0]}
-            suffix={texts.synopsisQuotes[1]}
-            style={{ fontFamily: FONTS.display, fontSize: texts.synopsisType.fontSize, color: "#ffffffcc", textAlign: "center", lineHeight: texts.synopsisType.leading }}
-          />
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginTop: 14 }}>
-            <View style={{ width: 24, height: 0.5, backgroundColor: "#ffffff33" }} />
-            <View style={{ width: 3, height: 3, borderRadius: 1.5, backgroundColor: "#ffffff44" }} />
-            <View style={{ width: 24, height: 0.5, backgroundColor: "#ffffff33" }} />
+          <View style={{ marginVertical: BACK.divider.gap }}>
+            <OrnamentalDivider color={theme.ornamentColor} width={BACK.divider.width} />
+          </View>
+
+          <View style={{ width: back.measure }}>
+            <Paragraphs
+              text={texts.synopsis}
+              prefix={texts.synopsisQuotes[0]}
+              suffix={texts.synopsisQuotes[1]}
+              style={{ fontFamily: FONTS.body, fontSize: back.synopsisType.fontSize, color: TYPE.sceneText.color, textAlign: "center", lineHeight: back.synopsisType.leading }}
+            />
           </View>
         </View>
 
-        <View style={{ alignItems: "center" }}>
+        {/* Brand signature — discreet, above the barcode band */}
+        <View style={{ alignItems: "center", marginTop: BACK.brand.gapAboveMin }}>
           {logoUri ? (
-            <Image src={logoUri} style={{ height: 16, width: 16 * BRAND_LOGO_ASPECT, opacity: 0.5 }} />
+            <Image src={logoUri} style={{ height: BACK.brand.logo, width: BACK.brand.logo * BRAND_LOGO_ASPECT }} />
           ) : (
-            <Text style={{ fontFamily: FONTS.display, fontSize: 12, color: "#ffffff66", letterSpacing: 1 }}>Meapica</Text>
+            <Text style={{ fontFamily: FONTS.display, fontSize: BACK.brand.logo, color: theme.ornamentColor, lineHeight: 1 }}>Meapica</Text>
           )}
-          <Text style={{ fontFamily: FONTS.body, fontSize: 6.5, color: "#ffffff66", marginTop: 3, letterSpacing: 2 }}>meapica.com</Text>
+          <Text style={{ fontFamily: FONTS.body, fontSize: BACK.brand.urlSize, color: COLORS.textMuted, marginTop: 3, letterSpacing: 1.5, lineHeight: 1.3 }}>meapica.com</Text>
         </View>
       </View>
     </>

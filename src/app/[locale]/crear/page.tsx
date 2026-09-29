@@ -28,6 +28,9 @@ import StepName from "@/components/crear/StepName";
 import StepProtagonist from "@/components/crear/StepProtagonist";
 import StepAdventure from "@/components/crear/StepAdventure";
 
+/** POST /api/stories answers in < 1 s; past this the connection is considered stalled. */
+const CREATE_TIMEOUT_MS = 30_000;
+
 export default function CrearPage() {
   return (
     <Suspense>
@@ -48,6 +51,8 @@ function CrearPageContent() {
   const [saving, setSaving] = useState(false);
   const [navigating, setNavigating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  /** The error came from creating the book: the alert offers a retry. */
+  const [createFailed, setCreateFailed] = useState(false);
 
   // Entry links can pre-fill the draft: ?template= (catalog/SEO: world pre-chosen)
   // and ?characterId= (dashboard: reuse a saved character). Hold rendering until
@@ -207,6 +212,7 @@ function CrearPageContent() {
           if (res.status === 410) {
             // The photo was already used and deleted — ask for it again.
             setState((prev) => ({ ...prev, photoPath: null }));
+            setCreateFailed(false);
             setError(t("photo.errors.photo_unavailable"));
             return;
           }
@@ -247,6 +253,7 @@ function CrearPageContent() {
     }
     setSaving(true);
     setError(null);
+    setCreateFailed(false);
     try {
       await ensureGuestSession();
       const name = state.character.name.trim();
@@ -255,6 +262,9 @@ function CrearPageContent() {
       const res = await fetch("/api/stories", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        // Normally < 1 s. A stalled connection must end in the retry alert, never an
+        // endless spinner; the server reuses the draft if the first try landed anyway.
+        signal: AbortSignal.timeout(CREATE_TIMEOUT_MS),
         body: JSON.stringify({
           ...storyCharacterBody(state),
           templateId: state.selectedTemplate,
@@ -281,6 +291,7 @@ function CrearPageContent() {
     } catch (err) {
       console.warn("[crear] create failed:", err);
       setError(t("errors.saveFailed"));
+      setCreateFailed(true);
       setSaving(false);
     }
   }, [saving, state, locale, router, setState, t]);
@@ -353,8 +364,23 @@ function CrearPageContent() {
           role="alert"
           className="fixed bottom-24 left-1/2 z-50 flex w-[calc(100%-2rem)] max-w-md -translate-x-1/2 items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 shadow-lg"
         >
-          <span className="flex-1">{error}</span>
-          <button type="button" onClick={() => setError(null)} aria-label={t("errors.dismiss")} className="font-bold hover:text-red-900">
+          <div className="flex-1">
+            <p>{error}</p>
+            {createFailed && (
+              <button
+                type="button"
+                onClick={() => void handleCreate()}
+                disabled={saving}
+                className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-red-600 px-4 py-1.5 text-xs font-bold text-white transition-colors hover:bg-red-700 disabled:opacity-60"
+              >
+                <span aria-hidden className={`material-symbols-outlined text-base ${saving ? "animate-spin" : ""}`}>
+                  {saving ? "progress_activity" : "refresh"}
+                </span>
+                {t("errors.retry")}
+              </button>
+            )}
+          </div>
+          <button type="button" onClick={() => { setError(null); setCreateFailed(false); }} aria-label={t("errors.dismiss")} className="font-bold hover:text-red-900">
             ×
           </button>
         </div>

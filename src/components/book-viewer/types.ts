@@ -1,17 +1,18 @@
 import type { GeneratedScene } from "@/lib/ai/story-generator";
 
 /**
- * Scene page layouts — designed for a 200×200mm square book.
- * Each layout type specifies how illustration + text are arranged on the page
- * AND what image size Recraft should generate to avoid cropping.
+ * Scene page layouts — a 200×200 mm square book, mirroring the print template
+ * (src/lib/pdf/layout.ts, same layout names).
  *
- *   immersive         — full-bleed square image + text overlaid at bottom (1024×1024)
- *   split_top         — landscape image top ~55%, text below (1820×1024)
- *   split_bottom      — text top, landscape image bottom ~55% (1820×1024)
- *   full_illustration  — image fills entire page, scene badge only (1024×1024)
- *   text_only          — decorated text page, no illustration
- *   spread_left        — left half of a panoramic double-page spread (2048×1024)
- *   spread_right       — right half of same panoramic image (no separate generation)
+ *   immersive / split_top / split_bottom / full_illustration
+ *                      — full-bleed illustration page. Print retired the split band
+ *                        (art over a cream title strip) on 2026-09-29: the split names only
+ *                        survive for the rotation and for whether the art may carry the
+ *                        scene title (see artCarriesTitle). New books render these square;
+ *                        older books have 1.28:1 art that is cover-cropped (centred).
+ *   text_only          — decorated text page (galeria / pergamino / ventana / puente)
+ *   illustration_text  — secondary illustration band + body text (no title)
+ *   spread_left/right  — the two halves of a panoramic double-page spread (2:1 art)
  */
 export type ScenePageLayout =
   | "immersive"
@@ -41,36 +42,11 @@ export function getSpreadType(sceneType: string, sceneOnlyIndex: number): Spread
 }
 
 /**
- * Recraft V3 image size for each layout that generates an illustration.
- * Sizes chosen to match the aspect ratio of the image container within a square page,
- * so `object-cover` causes minimal or zero cropping.
- *
- * Container ratios (square page = 1:1):
- *   immersive / full_illustration: 100% × 100% → 1:1
- *   split_top / split_bottom:      100% × 78%  → 1.28:1
- *   illustration_text:              100% × 56%  → 1.79:1
- *   spread_left/right:              200% × 100% → 2:1
- */
-export const LAYOUT_IMAGE_SIZE: Partial<Record<ScenePageLayout, string>> = {
-  immersive: "1024x1024",        // 1:1 — full square page, zero crop
-  split_top: "1280x1024",        // 5:4 (1.25:1) — matches 78% height container (1.28:1), minimal crop
-  split_bottom: "1280x1024",     // 5:4 (1.25:1) — matches 78% height container (1.28:1), minimal crop
-  full_illustration: "1024x1024", // 1:1 — full square page, zero crop
-  illustration_text: "1820x1024", // ~16:9 (1.78:1) — matches 56% height container (1.79:1), minimal crop
-  spread_left: "2048x1024",      // 2:1 — panoramic spanning two square pages, zero crop
-  // spread_right: uses same image as spread_left
-  // text_only: no image
-};
-
-/**
  * Layout pairs for each of the 12 scenes.
  * pair[0] = primary page (gets illustration), pair[1] = secondary page.
  *
- * Variety pattern inspired by real children's books:
- * - Immersive for emotional/dramatic beats
- * - Splits for world-building and dialogue scenes
- * - Full illustration for visual-only moments
- * - Spreads for the two most impactful scenes (adventure opening + climax)
+ * Must stay in step with SCENE_LAYOUTS in src/lib/pdf/layout.ts (print) — the image
+ * frame (scene-screenplay frameForScene) and the viewer both read this table.
  */
 export const SCENE_LAYOUT_PAIRS: [ScenePageLayout, ScenePageLayout][] = [
   ["immersive", "text_only"],           // Scene 1: dramatic opening
@@ -86,6 +62,22 @@ export const SCENE_LAYOUT_PAIRS: [ScenePageLayout, ScenePageLayout][] = [
   ["split_bottom", "text_only"],        // Scene 11: breakthrough
   ["immersive", "text_only"],           // Scene 12: resolution / homecoming
 ];
+
+/**
+ * Whether a full-bleed illustration page carries the scene title over the art — the
+ * print rule (src/lib/pdf/layout.ts planInteriorPages, IllustrationPage) replicated here
+ * because layout.ts pulls in @react-pdf font measuring and cannot ship to the browser:
+ * a title is shown once per spread, so the art carries it only when the facing page has
+ * no heading of its own (a bridge page or text under a secondary illustration), and
+ * full_illustration pages are always pure art. Panoramas keep their own title (spread_left).
+ */
+export function artCarriesTitle(
+  layout: ScenePageLayout,
+  facing: { layout: ScenePageLayout; spreadType?: SpreadType },
+): boolean {
+  if (layout !== "immersive" && layout !== "split_top" && layout !== "split_bottom") return false;
+  return facing.layout === "illustration_text" || (facing.layout === "text_only" && facing.spreadType === "puente");
+}
 
 /**
  * 3-act structure mapped to the 12 content slots.
@@ -118,6 +110,8 @@ export type BookPage =
       actLabel?: string;
       characterAge: number;
       spreadType?: SpreadType;
+      /** Full-bleed art only: draw the scene title over the art (artCarriesTitle). */
+      artTitle?: boolean;
     }
   | { type: "final"; message: string; characterName: string }
   | {

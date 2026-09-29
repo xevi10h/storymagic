@@ -24,7 +24,7 @@ import { clearStoredDraft, deName, patchStoredDraft, readStoredDraft } from "@/l
 import BookViewerSwitch from "@/components/book-viewer/BookViewerSwitch";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import type { BookPage } from "@/components/book-viewer/types";
-import { SCENE_LAYOUT_PAIRS, getActLabel, getSpreadType } from "@/components/book-viewer/types";
+import { SCENE_LAYOUT_PAIRS, artCarriesTitle, getActLabel, getSpreadType } from "@/components/book-viewer/types";
 import type { GeneratedStory } from "@/lib/ai/story-generator";
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -143,20 +143,18 @@ function buildPages(story: StoryData, synopsisFallback: string): BookPage[] {
 
     const characterAge = story.characters.age;
 
-    // Page 1: primary layout with primary illustration + optional act label
-    pages.push({ type: "scene", scene, imageUrl, locked, layout: pair[0], actLabel, characterAge, spreadType });
+    // Page 2 (facing page): panorama right half, secondary illustration + text, or text page
+    const facing: Extract<BookPage, { type: "scene" }> = isSpread
+      ? { type: "scene", scene, imageUrl, locked, layout: "spread_right", characterAge, spreadType }
+      : secondaryImageUrl
+        ? { type: "scene", scene, imageUrl: secondaryImageUrl, locked, layout: "illustration_text", characterAge, spreadType }
+        : { type: "scene", scene, imageUrl: null, locked, layout: pair[1], characterAge, spreadType };
 
-    // Page 2: depends on layout type
-    if (isSpread) {
-      // Panoramic spread — same image, right half
-      pages.push({ type: "scene", scene, imageUrl, locked, layout: "spread_right", characterAge, spreadType });
-    } else if (secondaryImageUrl) {
-      // Secondary illustration exists → show it WITH scene text (never pure immersive)
-      pages.push({ type: "scene", scene, imageUrl: secondaryImageUrl, locked, layout: "illustration_text", characterAge, spreadType });
-    } else {
-      // No secondary → pure text page
-      pages.push({ type: "scene", scene, imageUrl: null, locked, layout: pair[1], characterAge, spreadType });
-    }
+    // Page 1: full-bleed art (or panorama left half) + optional act label. As in print, the
+    // scene title goes on the art only when the facing page has no heading.
+    const artTitle = artCarriesTitle(pair[0], facing);
+    pages.push({ type: "scene", scene, imageUrl, locked, layout: pair[0], actLabel, characterAge, spreadType, artTitle });
+    pages.push(facing);
 
     if (!isBridge) sceneOnlyIndex++;
   }

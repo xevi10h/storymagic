@@ -15,6 +15,7 @@ import sharp from "sharp";
 import { parseJsonResponse } from "./story-generator";
 import { openAIKey } from "./openai-image";
 import { toServerFetchUrl } from "@/lib/storage/illustration-urls";
+import { describeError, fetchWithRetry, isNetworkError } from "./net-retry";
 
 export interface QAVerdict {
   sceneNumber: number;
@@ -72,7 +73,7 @@ type Content = ({ type: "text"; text: string } | { type: "image_url"; image_url:
 
 async function loadImage(input: Buffer | string): Promise<Buffer> {
   if (typeof input !== "string") return input;
-  const res = await fetch(await toServerFetchUrl(input), { signal: AbortSignal.timeout(30_000) });
+  const res = await fetchWithRetry(await toServerFetchUrl(input), { timeoutMs: 30_000, label: "QA image" });
   if (!res.ok) throw new Error(`QA image download failed (${res.status})`);
   return Buffer.from(await res.arrayBuffer());
 }
@@ -97,30 +98,40 @@ Must NOT be in frame: ${scene.absent.join(", ") || "(nobody excluded)"}.
 ${scene.text ? `Page text (the reader sees this next to the picture): "${scene.text}"\n` : ""}
 Score 1–10:
 - consistencyScore: every recurring character in frame matches the sheet — same face, skin tone, hair colour AND style, eye colour, outfit, gender and apparent age. A different-looking child is 1–3.
-- coherenceScore: the picture shows the moment of the page text and the shot (right action, setting, who is present).
+- coherenceScore: the picture shows the moment of the page text and the shot (right action, setting, who is present). A character listed as NOT in frame that is clearly visible → coherenceScore at most 5 (name them in "issues").
 - qualityScore: hand-painted watercolor look, art reaches every edge (no border/frame/white margin), no anatomy errors.
 "score" = overall, weighted toward consistency and coherence.
-Set "hardFail": true if ANY of: letters/words/text/signature anywhere in the image; a recurring character appears twice; the child's gender or identity is different; a character listed as NOT in frame is visible, or any other figure the brief forbids; it copies the model-sheet layout (turnaround poses on plain paper).
+Set "hardFail": true if ANY of: letters/words/text/signature anywhere in the image; a recurring character appears twice; the child's gender or identity is different; it copies the model-sheet layout (turnaround poses on plain paper).
 "issues": short concrete problems. "fix": ONE imperative instruction that tells an illustrator exactly what to change (empty if nothing).
 
 Return ONLY JSON: {"score":8,"consistencyScore":8,"coherenceScore":8,"qualityScore":8,"hardFail":false,"issues":[],"fix":""}`;
 }
 
-/** One JSON chat call with the retry policy of the judge (429 / 5xx). */
+/** One JSON chat call with the retry policy of the judge (429 / 5xx / connectivity; a 90 s timeout is not repeated). */
 async function callJson<T>(key: string, model: string, content: Content, label: string, effort: "low" | "medium" = "low"): Promise<T> {
   let lastErr = "";
+  const body = JSON.stringify({
+    model,
+    reasoning_effort: effort,
+    response_format: { type: "json_object" },
+    messages: [{ role: "user", content }],
+  });
   for (let attempt = 0; attempt < 3; attempt++) {
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model,
-        reasoning_effort: effort,
-        response_format: { type: "json_object" },
-        messages: [{ role: "user", content }],
-      }),
-      signal: AbortSignal.timeout(90_000),
-    });
+    let res: Response;
+    try {
+      res = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+        body,
+        signal: AbortSignal.timeout(90_000),
+      });
+    } catch (err) {
+      // A review lost to a network blip would leave its image unreviewed (see judgeScenes).
+      if (!isNetworkError(err)) throw err;
+      lastErr = describeError(err);
+      await new Promise((r) => setTimeout(r, 2_000 * 2 ** attempt));
+      continue;
+    }
     const text = await res.text();
     if (res.ok) {
       const out = (JSON.parse(text) as { choices?: { message?: { content?: string } }[] }).choices?.[0]?.message?.content ?? "";
@@ -197,34 +208,99 @@ async function inspectAnatomy(key: string, buf: Buffer, uri: string, label: stri
   return findings.filter((x): x is AnatomyFinding => x !== null);
 }
 
+interface ArtDirection {
+  score: number;
+  consistencyScore: number;
+  coherenceScore: number;
+  qualityScore: number;
+  hardFail: boolean;
+  issues: string[];
+  fix: string;
+}
+
+/** The art director's call (sheet + image + brief), normalised. */
+async function artDirection(key: string, sheetUri: string, imageUri: string, scene: QAScene, characters: string, label: string): Promise<ArtDirection> {
+  const v = await callJson<Partial<QAVerdict>>(key, judgeModel(), [{ type: "text", text: buildPrompt(scene, characters) }, image(sheetUri), image(imageUri)], label);
+  const num = (x: unknown) => (typeof x === "number" && Number.isFinite(x) ? Math.max(1, Math.min(10, x)) : 1);
+  return {
+    score: num(v.score),
+    consistencyScore: num(v.consistencyScore),
+    coherenceScore: num(v.coherenceScore),
+    qualityScore: num(v.qualityScore),
+    hardFail: v.hardFail === true,
+    issues: Array.isArray(v.issues) ? v.issues.map(String) : [],
+    fix: typeof v.fix === "string" ? v.fix.trim() : "",
+  };
+}
+
+/**
+ * Fails by at most one point on the soft thresholds, with no hard failure. The
+ * judge's scores wobble by about a point between identical calls (measured: the
+ * same map scored 6 → repair, then 8 → pass), and a repair is a $0.10–0.17 edit
+ * that can also degrade a good picture, so such a call is confirmed first.
+ */
+function isBorderlineFail(v: ArtDirection): boolean {
+  return failsQa(v) && !v.hardFail && v.score >= SCORE_THRESHOLD - 1 && v.consistencyScore >= CONSISTENCY_THRESHOLD - 1;
+}
+
+/**
+ * Second opinion on a borderline fail (one extra ~$0.003 mini call): the verdict
+ * is the mean of both scores, and a hard failure from either call stands. The
+ * first call's issues/fix are kept (the second's are added when it saw a hard failure).
+ */
+function mergeOpinions(a: ArtDirection, b: ArtDirection): ArtDirection {
+  const mean = (x: number, y: number) => Math.round(((x + y) / 2) * 10) / 10;
+  return {
+    score: mean(a.score, b.score),
+    consistencyScore: mean(a.consistencyScore, b.consistencyScore),
+    coherenceScore: mean(a.coherenceScore, b.coherenceScore),
+    qualityScore: mean(a.qualityScore, b.qualityScore),
+    hardFail: a.hardFail || b.hardFail,
+    issues: b.hardFail ? [...a.issues, ...b.issues] : a.issues,
+    fix: b.hardFail ? [a.fix, b.fix].filter(Boolean).join(" ") : a.fix,
+  };
+}
+
 async function judgeOne(key: string, sheetUri: string, scene: QAScene, characters: string): Promise<QAVerdict> {
   const label = `QA scene ${scene.sceneNumber}`;
   const buf = await loadImage(scene.imageUrl);
   const imageUri = await toDataUri(buf, 1024);
-  const [v, anatomy] = await Promise.all([
-    callJson<Partial<QAVerdict>>(key, judgeModel(), [{ type: "text", text: buildPrompt(scene, characters) }, image(sheetUri), image(imageUri)], label),
+  const [first, anatomy] = await Promise.all([
+    artDirection(key, sheetUri, imageUri, scene, characters, label),
     // An anatomy inspection that cannot run leaves the main verdict standing.
     inspectAnatomy(key, buf, imageUri, label).catch((err: unknown) => {
       console.error(`[QA Judge] ${label} anatomy check skipped: ${err instanceof Error ? err.message : String(err)}`);
       return [] as AnatomyFinding[];
     }),
   ]);
-  const num = (x: unknown) => (typeof x === "number" && Number.isFinite(x) ? Math.max(1, Math.min(10, x)) : 1);
-  const fix = typeof v.fix === "string" ? v.fix.trim() : "";
+  let v = first;
+  // Anatomy findings are a hard fail on their own: no second opinion needed then.
+  if (anatomy.length === 0 && isBorderlineFail(first)) {
+    const second = await artDirection(key, sheetUri, imageUri, scene, characters, `${label} second opinion`).catch((err: unknown) => {
+      console.error(`[QA Judge] ${label} second opinion failed (${err instanceof Error ? err.message : String(err)}) — first verdict stands`);
+      return null;
+    });
+    if (second) {
+      v = mergeOpinions(first, second);
+      console.log(
+        `[QA Judge] ${label}: borderline ${first.score}/${first.consistencyScore} → second opinion ${second.score}/${second.consistencyScore}${second.hardFail ? " HARD" : ""} → ${v.score}/${v.consistencyScore}`,
+      );
+    }
+  }
   return {
     sceneNumber: scene.sceneNumber,
-    score: num(v.score),
-    consistencyScore: num(v.consistencyScore),
-    coherenceScore: num(v.coherenceScore),
-    qualityScore: anatomy.length ? 1 : num(v.qualityScore),
-    hardFail: v.hardFail === true || anatomy.length > 0,
-    issues: [...(Array.isArray(v.issues) ? v.issues.map(String) : []), ...anatomy.map((a) => `${a.name}: ${a.problem}`)],
+    score: v.score,
+    consistencyScore: v.consistencyScore,
+    coherenceScore: v.coherenceScore,
+    qualityScore: anatomy.length ? 1 : v.qualityScore,
+    hardFail: v.hardFail || anatomy.length > 0,
+    issues: [...v.issues, ...anatomy.map((a) => `${a.name}: ${a.problem}`)],
     // Anatomy first: it is the defect the edit must not skip.
-    fix: [...anatomy.map((a) => a.fix.trim()), fix].filter(Boolean).join(" "),
+    fix: [...anatomy.map((a) => a.fix.trim()), v.fix].filter(Boolean).join(" "),
   };
 }
 
-export function failsQa(v: QAVerdict): boolean {
+export function failsQa(v: Pick<QAVerdict, "hardFail" | "score" | "consistencyScore">): boolean {
   return v.hardFail || v.score < SCORE_THRESHOLD || v.consistencyScore < CONSISTENCY_THRESHOLD;
 }
 

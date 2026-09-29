@@ -9,6 +9,7 @@
 import * as https from "node:https";
 import * as http from "node:http";
 import { z } from "zod";
+import { isNetworkError } from "./net-retry";
 
 // ── Native HTTPS fetch ───────────────────────────────────────────────────────
 
@@ -231,12 +232,19 @@ export function toOpenAIJsonSchema(schema: z.ZodType): Record<string, unknown> {
   return json;
 }
 
-function isTransient(err: unknown): boolean {
-  return (
-    err instanceof Error &&
-    /socket|timed out|ECONNRESET|EPIPE|ETIMEDOUT|EAI_AGAIN/.test(err.message)
-  );
+/** Our own per-request timeout (nativeFetch / nativeStream). */
+function isTimeout(err: unknown): boolean {
+  return err instanceof Error && /timed out/.test(err.message);
 }
+
+/**
+ * Attempts per failure kind. A timeout or a 429/5xx is retried once (a timed-out
+ * Book Plan already burnt up to 240 s). A connectivity failure (DNS, refused or
+ * reset connection) is cheap, never billed when it happens before the response,
+ * and often outlasts a single 3 s pause, so it gets more tries.
+ */
+const MAX_ATTEMPTS = 2;
+const MAX_NETWORK_ATTEMPTS = 4;
 
 export async function callOpenAIStructured<T>(opts: StructuredCallOptions<T>): Promise<StructuredCallResult<T>> {
   const apiKey = getOpenAIKey();
@@ -263,10 +271,9 @@ export async function callOpenAIStructured<T>(opts: StructuredCallOptions<T>): P
   }
   const body = JSON.stringify(payload);
   const start = Date.now();
-  const MAX_ATTEMPTS = 2;
   let lastError: unknown;
 
-  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+  for (let attempt = 1; ; attempt++) {
     try {
       const { content, finishReason, refusal, usageRaw, modelName } = opts.onPartial
         ? await streamCompletion(apiKey, body, opts.timeoutMs ?? 240_000, opts.onPartial, label, opts.model)
@@ -300,12 +307,12 @@ export async function callOpenAIStructured<T>(opts: StructuredCallOptions<T>): P
       return { data: parsed.data, model: modelName ?? opts.model, elapsedMs, usage, costUsd };
     } catch (err) {
       lastError = err;
-      if ((isTransient(err) || err instanceof RetryableHttpError) && attempt < MAX_ATTEMPTS) {
-        console.warn(`[LLM] ${label} attempt ${attempt} failed: ${err instanceof Error ? err.message : err}. Retrying...`);
-        await new Promise((r) => setTimeout(r, 3000 * attempt));
-        continue;
-      }
-      throw err;
+      const network = isNetworkError(err);
+      const limit = network ? MAX_NETWORK_ATTEMPTS : isTimeout(err) || err instanceof RetryableHttpError ? MAX_ATTEMPTS : 1;
+      if (attempt >= limit) break;
+      const wait = network ? 2000 * 2 ** (attempt - 1) : 3000 * attempt;
+      console.warn(`[LLM] ${label} attempt ${attempt}/${limit} failed: ${err instanceof Error ? err.message : err}. Retrying in ${wait / 1000}s...`);
+      await new Promise((r) => setTimeout(r, wait));
     }
   }
   throw lastError instanceof Error ? lastError : new Error(`All attempts failed [${label}]`);

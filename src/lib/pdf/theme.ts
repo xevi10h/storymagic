@@ -225,23 +225,33 @@ export interface PdfTextConfig {
   dropCap: number;
   /** Bridge (puente) display text size (pt) */
   bridgeText: number;
+  /**
+   * Growth ceiling for short read-aloud texts (layout.ts growBodyType): the whole book's
+   * body grows toward `bodyMax` (leading easing toward `bodyMaxLeading`, scene titles toward
+   * `titleMax`, bridges toward `bridgeMax`) as far as its LONGEST page allows. Equal to the
+   * band sizes where no growth is wanted (7+).
+   */
+  bodyMax: number;
+  bodyMaxLeading: number;
+  titleMax: number;
+  bridgeMax: number;
 }
 
 export function getPdfTextConfig(age: number): PdfTextConfig {
   if (age <= 4) {
     // read-aloud refrain book → large, spacious text
-    return { body: 17, bodyLeading: 1.85, title: 24, dropCap: 40, bridgeText: 30 };
+    return { body: 17, bodyLeading: 1.85, title: 24, dropCap: 40, bridgeText: 30, bodyMax: 24, bodyMaxLeading: 1.6, titleMax: 31, bridgeMax: 36 };
   }
   if (age <= 6) {
     // picture book → medium-large, still easy to read
-    return { body: 15.5, bodyLeading: 1.8, title: 23, dropCap: 38, bridgeText: 28 };
+    return { body: 15.5, bodyLeading: 1.8, title: 23, dropCap: 38, bridgeText: 28, bodyMax: 19, bodyMaxLeading: 1.65, titleMax: 26, bridgeMax: 31 };
   }
   if (age <= 9) {
     // first chapter-book readers → medium
-    return { body: 13, bodyLeading: 1.7, title: 21, dropCap: 34, bridgeText: 25 };
+    return { body: 13, bodyLeading: 1.7, title: 21, dropCap: 34, bridgeText: 25, bodyMax: 13, bodyMaxLeading: 1.7, titleMax: 21, bridgeMax: 25 };
   }
   // confident readers → compact
-  return { body: 11.5, bodyLeading: 1.65, title: 19, dropCap: 31, bridgeText: 23 };
+  return { body: 11.5, bodyLeading: 1.65, title: 19, dropCap: 31, bridgeText: 23, bodyMax: 11.5, bodyMaxLeading: 1.65, titleMax: 19, bridgeMax: 23 };
 }
 
 // ── Shared colors ──────────────────────────────────────────────────────────

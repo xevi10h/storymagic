@@ -15,6 +15,7 @@ import {
   HERO_SHOT,
   MAP_SHOT,
   finalRenderStage,
+  loadAvatarReference,
   loadReference,
   renderSheets,
   renderShot,
@@ -27,8 +28,7 @@ import {
 } from "./book-images";
 import { buildScenePrompt } from "./image-prompts";
 import { buildMapGame, mapChecklist, type MapGame } from "./adventure-map";
-import { failsQa, judgeScenes, type QAResult, type QAScene } from "./qa-judge";
-import { optionalReference } from "./preview-book";
+import { failsQa, judgeScenes, type QAResult, type QAScene, type QAVerdict } from "./qa-judge";
 import { CHILD_ID } from "./visual-assets";
 import { uploadGeneratedImage } from "@/lib/supabase/storage";
 import { classifyProviderError, ProviderUnavailableError } from "@/lib/fulfilment/provider-errors";
@@ -145,7 +145,8 @@ async function ensureSheets(ctx: Ctx): Promise<boolean> {
   }
   if (remaining(ctx) < SHEET_MIN_MS) return false;
 
-  const avatar = await optionalReference(state.plan.avatarUrl, "avatar");
+  // Throws when the approved avatar exists but cannot be loaded: this run fails and the next one retries.
+  const avatar = await loadAvatarReference(state.plan.avatarUrl);
   const sheets = await renderSheets(state.plan, "final", { avatar }, { label: `story ${state.storyId}`, deadline: callDeadline(ctx) });
   ctx.costUsd += sheets.main.costUsd + (sheets.extra?.costUsd ?? 0);
   const [mainUrl, extraUrl] = await Promise.all([
@@ -318,7 +319,11 @@ export function qaSceneFor(plan: BookImagePlan, story: GeneratedStory, sceneNumb
     text: scene ? `${scene.title}. ${scene.text}` : "",
     shot: `${page}${shot.camera}. ${shot.action} Setting: ${shot.setting}. Light: ${shot.light}.${shot.frame === "panorama" ? " (Double-page panorama; nothing important on the vertical centre line.)" : ""}${rule}`,
     present: presentIds.map((id) => label(plan, id)),
-    absent: [CHILD_ID, ...plan.cast.map((c) => c.id)].filter((id) => !presentIds.includes(id)).map((id) => label(plan, id)),
+    // The cover may show any of the book's characters (a story character on it is never a defect).
+    absent:
+      sceneNumber === COVER
+        ? []
+        : [CHILD_ID, ...plan.cast.map((c) => c.id)].filter((id) => !presentIds.includes(id)).map((id) => label(plan, id)),
   };
 }
 
@@ -326,32 +331,64 @@ export function qaCharacters(plan: BookImagePlan): string {
   return [`THE CHILD: ${plan.bible.description}.`, ...plan.cast.map((c) => `${c.name.toUpperCase()}: ${c.description}`)].join("\n");
 }
 
+/** Stored verdicts that still describe the image on the page (same URL). */
+function currentVerdicts(state: FinalBookState, shots: number[]): { judged: QAVerdict[]; unjudged: number[] } {
+  const stored = state.assets.qaVerdicts ?? {};
+  const judged: QAVerdict[] = [];
+  const unjudged: number[] = [];
+  for (const n of shots) {
+    const url = finalUrl(state, n);
+    if (!url) continue;
+    const v = stored[String(n)];
+    if (v && v.url === url) judged.push(v);
+    else unjudged.push(n);
+  }
+  return { judged, unjudged };
+}
+
+function summarise(verdicts: QAVerdict[], iterationNumber: number): QAResult {
+  const overallScore = verdicts.length ? Math.round((verdicts.reduce((s, v) => s + v.score, 0) / verdicts.length) * 10) / 10 : 0;
+  return { overallScore, verdicts, scenesToRegenerate: verdicts.filter(failsQa).map((v) => v.sceneNumber), iterationNumber };
+}
+
 async function runQa(ctx: Ctx, progress: FinalBookProgress): Promise<boolean> {
   const { state } = ctx;
   if (state.qaDone) return true;
   const refs = ctx.refs as SheetRefs;
-  // First judgement covers every image (scenes, cover, hero); after a repair pass
-  // only the edited ones are re-judged. A resumed run starts with a full judgement:
-  // repairs are checkpointed as they finish, so it sees the repaired images.
-  let toJudge: Set<number> | null = null;
+  const shots = [...state.plan.shots.map((s) => s.sceneNumber), COVER, HERO_SHOT, MAP_SHOT];
+  // Every verdict is checkpointed in imageAssets.qaVerdicts together with the URL
+  // it judged, so only images WITHOUT a verdict for their current URL are judged:
+  // all of them the first time, then the repaired ones. A resumed run (the
+  // previous one ran out of time between the judgement and the repair) repairs
+  // what was already judged failing instead of re-rolling the judgement.
 
   for (;;) {
     if (remaining(ctx) < QA_PASS_MIN_MS) return false;
-    const scenes = [...state.plan.shots.map((s) => s.sceneNumber), COVER, HERO_SHOT, MAP_SHOT]
-      .filter((n) => !toJudge || toJudge.has(n))
-      .flatMap((n) => {
-        const url = finalUrl(state, n);
-        return url ? [qaSceneFor(state.plan, state.story, n, url, state.assets.mapGame)] : [];
-      });
-    const qa = await judgeScenes({ scenes, sheet: refs.sheet.data, characters: qaCharacters(state.plan), iterationNumber: state.qaPass + 1 });
-    progress.qa = qa;
-    if (qa.skipped) {
-      console.error(`[Final images] ⚠️ QA SKIPPED for story ${state.storyId} (${qa.skipReason}) — book ships UNREVIEWED`);
-      await ctx.store.onQaSkipped(qa.skipReason ?? "unknown");
-      break;
+    const { unjudged } = currentVerdicts(state, shots);
+    if (unjudged.length > 0) {
+      const scenes = unjudged.map((n) => qaSceneFor(state.plan, state.story, n, finalUrl(state, n) as string, state.assets.mapGame));
+      const qa = await judgeScenes({ scenes, sheet: refs.sheet.data, characters: qaCharacters(state.plan), iterationNumber: state.qaPass + 1 });
+      if (qa.skipped) {
+        progress.qa = qa;
+        console.error(`[Final images] ⚠️ QA SKIPPED for story ${state.storyId} (${qa.skipReason}) — book ships UNREVIEWED`);
+        await ctx.store.onQaSkipped(qa.skipReason ?? "unknown");
+        break;
+      }
+      const judgedAt = new Date().toISOString();
+      const stored = { ...(state.assets.qaVerdicts ?? {}) };
+      for (const v of qa.verdicts) {
+        const url = scenes.find((s) => s.sceneNumber === v.sceneNumber)?.imageUrl;
+        if (url) stored[String(v.sceneNumber)] = { ...v, url, judgedAt };
+      }
+      state.assets = { ...state.assets, qaVerdicts: stored };
+      await saveAssets(ctx);
     }
-    for (const v of qa.verdicts.filter(failsQa)) console.log(`[QA] ${shotName(v.sceneNumber)}: ${v.score}/${v.consistencyScore}/${v.coherenceScore}${v.hardFail ? " HARD" : ""} — ${v.issues.join("; ")} → ${v.fix}`);
-    const failing = qa.verdicts.filter(failsQa);
+
+    // Images whose individual review failed have no verdict: they are not repaired (never blocks the book).
+    const { judged } = currentVerdicts(state, shots);
+    progress.qa = summarise(judged, state.qaPass + 1);
+    const failing = judged.filter(failsQa);
+    for (const v of failing) console.log(`[QA] ${shotName(v.sceneNumber)}: ${v.score}/${v.consistencyScore}/${v.coherenceScore}${v.hardFail ? " HARD" : ""} — ${v.issues.join("; ")} → ${v.fix}`);
     if (failing.length === 0) break;
     if (state.qaPass >= MAX_REPAIR_PASSES) {
       console.warn(`[Final images] story ${state.storyId}: [${failing.map((v) => shotName(v.sceneNumber)).join(", ")}] still below the bar after ${MAX_REPAIR_PASSES} repair passes`);
@@ -377,12 +414,12 @@ async function runQa(ctx: Ctx, progress: FinalBookProgress): Promise<boolean> {
     const err = firstError(failed);
     // An outage stops the run; ordinary repair failures keep the (final-quality) previous image.
     if (err instanceof ProviderUnavailableError) throw err;
-    if (stoppedEarly) return false; // redo this pass next run
+    if (stoppedEarly) return false; // the stored verdicts make the next run repair exactly these
 
     state.qaPass += 1;
     await ctx.store.saveQaPass(state.qaPass);
-    toJudge = new Set(done);
-    if (toJudge.size === 0) break;
+    // Nothing was edited (every repair failed): judging again would only re-read the same verdicts.
+    if (done.length === 0) break;
   }
 
   state.qaDone = true;

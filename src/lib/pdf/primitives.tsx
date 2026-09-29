@@ -8,6 +8,8 @@ import type { Style } from "@react-pdf/types";
 import { BOOK, COLORS, TYPE } from "./theme";
 import { coverFit } from "./images";
 import type { PrintImage } from "./assets";
+import { countLines } from "./text";
+import type { FontVariant } from "./fonts";
 
 /**
  * Height for a page's root box. Yoga lays out in float32: a box exactly as tall
@@ -141,26 +143,46 @@ export function PageNumber({ num, variant = "paper" }: { num: number; variant?: 
  * line becomes a one-line spacer): a literal "\n" inside a react-pdf <Text>
  * pulls a NON-embedded Helvetica into the PDF, which print preflight rejects.
  * Line accounting matches countLines() in text.ts.
+ *
+ * `balance`: a paragraph that wraps is set in the narrowest measure that keeps its line
+ * count (same breaker as the planner, so the block height never changes) — no lone word
+ * left on a last line ("…junto a la / ventana.").
  */
 export function Paragraphs({
   text,
   style,
   prefix = "",
   suffix = "",
+  balance,
 }: {
   text: string;
   style: Style & { fontSize: number; lineHeight: number };
   prefix?: string;
   suffix?: string;
+  /** Column width + font the text is set in — enables balanced wrapping */
+  balance?: { width: number; variant: FontVariant };
 }) {
   const lines = text.split("\n");
+  const measure = (line: string): Style => {
+    if (!balance) return {};
+    const n = countLines(line, style.fontSize, balance.width, balance.variant);
+    if (n < 2) return {};
+    let lo = balance.width / n;
+    let hi = balance.width;
+    for (let i = 0; i < 14; i++) {
+      const mid = (lo + hi) / 2;
+      if (countLines(line, style.fontSize, mid, balance.variant) <= n) hi = mid;
+      else lo = mid;
+    }
+    return { width: Math.ceil(hi), alignSelf: style.textAlign === "center" ? "center" : "flex-start" };
+  };
   return (
     <>
       {lines.map((line, i) =>
         line.trim() === "" ? (
           <View key={i} style={{ height: style.fontSize * style.lineHeight }} />
         ) : (
-          <Text key={i} style={style}>
+          <Text key={i} style={{ ...style, ...measure(line) }}>
             {i === 0 ? prefix : ""}
             {line}
             {i === lines.length - 1 ? suffix : ""}

@@ -164,8 +164,8 @@ export async function validatePrintableBook(input: BookPdfInput, options: Valida
       }
       const backImg = backCoverImage(ctx);
       if (layout.backPlacement && backImg?.dims) {
-        // Printed at 35% opacity under a dark veil — softness is far less visible
-        checkDpi(out, "Back cover (faded art)", backImg.dims, layout.backPlacement.dpi, {}, "warning");
+        // Small arch vignette (≤ 62 mm) — any stored scene prints well above 300 dpi there
+        checkDpi(out, "Back cover vignette", backImg.dims, layout.backPlacement.dpi, {});
       }
     }
   } else {
