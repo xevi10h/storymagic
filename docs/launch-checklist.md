@@ -29,7 +29,7 @@
 >    notes below), then verify + set EMAIL_FROM.
 > 4. **Sprint 2 (performance)** then **Sprint 3 (conversion/SEO)** —
 >    `docs/web-audit-2026-07-20.md`.
-> 5. 🔴 **Gelato webhook returns 401 in prod** (Vercel logs 2026-09-28: every event). The URL
+> 5. ✅ **Fixed 2026-09-29** (webhook re-registered with `?secret=`, test event → 200). Was: **Gelato webhook returns 401 in prod** (Vercel logs 2026-09-28: every event). The URL
 >    registered in Gelato (Developer → Webhooks) lacks `?secret=`. Register
 >    `https://meapica.com/api/webhooks/gelato?secret=<GELATO_WEBHOOK_SECRET>` for
 >    `order_status_updated` + `order_item_tracking_code_updated` (verified: prod answers 200 with it).
