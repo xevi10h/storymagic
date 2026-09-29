@@ -12,7 +12,7 @@
 | Story AI | OpenAI gpt-5.5 (Book Plan, strict json_schema) | Whole manuscript + shot plan in one call (`src/lib/ai/book-plan.ts`) |
 | Image AI | OpenAI gpt-image-2.5 (Images API) | Only image provider: avatar + preview `gpt-image-2.5-flare` medium, final book `gpt-image-2.5-sunburst` high at print size; character-sheet references (see docs/generation-pipeline.md) |
 | Illustration QA | OpenAI vision (`QA_JUDGE_MODEL`, gpt-5.4-mini) | Per-image judge (12 scenes + cover + hero) vs character sheet + page text, plus per-figure anatomy check on zoomed crops (`QA_ANATOMY_MODEL`, gpt-5.4); failing images repaired by image edit |
-| Book Layout | @react-pdf/renderer + pdf-lib | Print PDFs: 30-page interior + Gelato cover file; 34-page digital book |
+| Book Layout | @react-pdf/renderer + pdf-lib | Print PDFs: 32-page Gelato inside file (pastedown + 30 inner + pastedown, pageCount 30 — Teo order layout) + cover file; 34-page digital book |
 | Printing | Gelato API | Print-on-demand from a Spanish plant; ships to mainland Spain + Baleares only. Delivery times / Reyes cut-offs: `src/lib/shipping.ts` |
 | i18n | next-intl | 4 locales: ES (default), CA, EN, FR |
 | Email | Resend | Transactional emails (waitlist + order lifecycle: confirmed/producing/shipped/delivered) |

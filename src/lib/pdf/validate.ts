@@ -9,7 +9,7 @@ import { PDFDocument } from "pdf-lib";
 import type { CoverGeometry } from "@/lib/gelato/catalog";
 import { backCoverImage, prepareBookRender, type BookPdfInput, type BookRenderContext } from "./book-template";
 import { planCoverSpread } from "./cover-spread";
-import { GEOMETRY, INTERIOR_PAGE_COUNT, SCENE_COUNT, imageBoxesOf, type PlanIssue } from "./layout";
+import { GEOMETRY, INSIDE_FILE_PAGE_COUNT, INTERIOR_PAGE_COUNT, SCENE_COUNT, imageBoxesOf, type PlanIssue } from "./layout";
 import { MIN_PRINT_DPI, MM_TO_PT, TARGET_PRINT_DPI, coverFit, type ImageDims } from "./images";
 import { unprintableCharacters } from "./text";
 import { BOOK } from "./theme";
@@ -192,8 +192,8 @@ export async function validatePrintableBook(input: BookPdfInput, options: Valida
   if (options.interiorPdf) {
     const doc = await PDFDocument.load(options.interiorPdf);
     const count = doc.getPageCount();
-    if (count !== INTERIOR_PAGE_COUNT) {
-      out.errors.push({ severity: "error", code: "page_count", message: `Rendered interior has ${count} pages, expected ${INTERIOR_PAGE_COUNT}` });
+    if (count !== INSIDE_FILE_PAGE_COUNT) {
+      out.errors.push({ severity: "error", code: "page_count", message: `Rendered inside file has ${count} pages, expected ${INSIDE_FILE_PAGE_COUNT} (pastedown + ${INTERIOR_PAGE_COUNT} + pastedown)` });
     }
     doc.getPages().forEach((p, i) => {
       const { width, height } = p.getSize();

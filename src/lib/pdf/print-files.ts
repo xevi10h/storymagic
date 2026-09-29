@@ -14,10 +14,9 @@ import { prepareBookRender, renderBookPdf, renderInteriorPdf, type BookPdfInput 
 import { renderCoverSpreadPdf } from "./cover-spread";
 import { INTERIOR_PAGE_COUNT } from "./layout";
 import { PrintValidationError, validatePrintableBook, type PrintValidationResult } from "./validate";
-import { BOOK } from "./theme";
 
 export interface PrintFiles {
-  /** Gelato "inside" file — 30 pages, 208×208 mm (200 mm trim + 4 mm bleed) */
+  /** Gelato "inside" file — 32 pages (pastedown + 30 inner + pastedown), 208×208 mm (200 mm trim + 4 mm bleed) */
   interiorPdf: Buffer;
   /** Gelato cover file — one page, exact geometry from the catalog API */
   coverPdf: Buffer;
@@ -54,7 +53,7 @@ export async function renderPrintFiles(args: {
 
 /**
  * Single-file variant of Gelato's photobook template:
- *   page 1 cover spread · page 2 blank (inside front cover) · 30 inner pages · last page blank.
+ *   page 1 cover spread · then the inside file (pastedown · 30 inner pages · pastedown).
  * Use it if the order is submitted with one "default" file instead of cover + "inside".
  */
 export async function buildGelatoSingleFilePdf(coverPdf: Buffer, interiorPdf: Buffer): Promise<Buffer> {
@@ -63,8 +62,6 @@ export async function buildGelatoSingleFilePdf(coverPdf: Buffer, interiorPdf: Bu
   const interior = await PDFDocument.load(interiorPdf);
   const [coverPage] = await out.copyPages(cover, [0]);
   out.addPage(coverPage);
-  out.addPage([BOOK.pageWidth, BOOK.pageHeight]);
   for (const p of await out.copyPages(interior, interior.getPageIndices())) out.addPage(p);
-  out.addPage([BOOK.pageWidth, BOOK.pageHeight]);
   return Buffer.from(await out.save());
 }

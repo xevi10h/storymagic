@@ -3,7 +3,10 @@
  * pages, image boxes and fitted type sizes. Used by the PDF template AND by
  * validatePrintableBook, so what is validated is exactly what is printed.
  *
- * Gelato photobook = [cover] [blank endpaper] [30 inner pages] [blank endpaper].
+ * Gelato photobook = [cover] [pastedown] [30 inner pages] [pastedown]. The Gelato
+ * "inside" file carries the two pastedowns (glued to the boards, not counted in
+ * pageCount) — exactly the layout of Teo's book (order 34d619c2, delivered
+ * 2026-04-01, printed perfectly): 32-page file, pageCount 30.
  * Inner page 1 is therefore a RIGHT-hand page, and spreads are (2,3) … (28,29):
  * even page = left, odd page = right, page 30 = left facing the back endpaper.
  *
@@ -24,6 +27,8 @@ import { countLines, fitText, sanitizePrintText, type FitResult } from "./text";
 import type { FontVariant } from "./fonts";
 
 export const INTERIOR_PAGE_COUNT = 30;
+/** Pages in the Gelato "inside" file: front pastedown + 30 inner pages + back pastedown. */
+export const INSIDE_FILE_PAGE_COUNT = INTERIOR_PAGE_COUNT + 2;
 export const SCENE_COUNT = 12;
 /** Secondary illustration of scene N is stored as scene N + 12 */
 export const SECONDARY_SCENE_OFFSET = 12;

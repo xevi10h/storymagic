@@ -5,7 +5,7 @@
  * Page order, facing pages, image boxes and type sizes come from the page plan
  * in layout.ts (shared with validatePrintableBook). This file only draws.
  *
- * Interior (Gelato "inside" file, 30 pages, page 1 = right-hand page):
+ * Interior (Gelato "inside" file = pastedown + these 30 pages + pastedown; page 1 = right-hand page):
  *   p1        Title + dedication (verbatim parent text)
  *   p2–p25    12 scenes — illustration LEFT ↔ text RIGHT; panoramas span p(even)+p(odd)
  *   p26 · p27 Final "The End" ↔ About the reader
@@ -946,9 +946,12 @@ function renderPlannedPage(page: PlannedPage, ctx: BookRenderContext): JSX.Eleme
 
 /** Interior-only PDF for Gelato — exactly the 30 planned inner pages. */
 export function InteriorOnlyPdf({ ctx }: { ctx: BookRenderContext }) {
+  // Pastedowns first and last (glued to the boards), as in Teo's printed book (layout.ts).
   return (
     <Document title={ctx.input.story.bookTitle} author="Meapica" creator="Meapica — meapica.com" producer="Meapica">
+      <EndpapersPage theme={ctx.theme} />
       {ctx.plan.pages.map((p) => renderPlannedPage(p, ctx))}
+      <EndpapersPage theme={ctx.theme} />
     </Document>
   );
 }
@@ -985,7 +988,7 @@ export async function renderBookPdf(input: BookPdfInput, prepared?: BookRenderCo
 }
 
 /**
- * Interior PDF for Gelato (30 pages). Call validatePrintableBook first —
+ * Gelato "inside" PDF (32 pages: pastedown + 30 inner + pastedown). Call validatePrintableBook first —
  * this renderer draws whatever it is given.
  */
 export async function renderInteriorPdf(input: BookPdfInput, prepared?: BookRenderContext): Promise<Buffer> {

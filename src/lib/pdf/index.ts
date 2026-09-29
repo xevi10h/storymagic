@@ -17,6 +17,6 @@ export {
   type ValidateOptions,
 } from "./validate";
 export { renderPrintFiles, buildGelatoSingleFilePdf, type PrintFiles } from "./print-files";
-export { INTERIOR_PAGE_COUNT, SCENE_COUNT, SECONDARY_SCENE_OFFSET, planInteriorPages } from "./layout";
+export { INSIDE_FILE_PAGE_COUNT, INTERIOR_PAGE_COUNT, SCENE_COUNT, SECONDARY_SCENE_OFFSET, planInteriorPages } from "./layout";
 export { MIN_PRINT_DPI, TARGET_PRINT_DPI } from "./images";
 export { prefetchAllIllustrations, prefetchImageAsDataUri, type IllustrationRef } from "./prefetch";

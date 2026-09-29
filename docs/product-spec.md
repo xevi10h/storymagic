@@ -5,7 +5,7 @@
 | Attribute | Value |
 |-----------|-------|
 | Size | 20×20 cm square (Gelato photobook 200×200 mm), 4 mm bleed |
-| Pages | Cover + 30 inner pages (Gelato adds blank endpapers) |
+| Pages | Cover + 30 inner pages; the Gelato inside file also carries the 2 pastedowns glued to the boards (32 pages, pageCount 30 — same as Teo's printed book, order 34d619c2) |
 | Binding | Softcover or hardcover (Gelato); PDF-only format too |
 | Interior | Full colour, 170 g coated paper |
 | Print partner | Gelato (print-on-demand; we ship Spain península + Baleares) |
