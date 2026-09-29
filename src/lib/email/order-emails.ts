@@ -1,16 +1,22 @@
-// Localized transactional emails for the physical-book order lifecycle.
+// Localized transactional emails for the order lifecycle (es / ca / en / fr).
 //
 // Lifecycle (physical order):
-//   paid       → order_confirmed   ("we got your order, the book is being prepared")
+//   paid       → order_confirmed   ("we got your order" + receipt)
 //   producing  → in_production     ("it's at the print studio")
 //   shipped    → shipped           ("it's on its way" + tracking)
-//   delivered  → delivered         ("it arrived — enjoy")
+//   delivered  → delivered         ("it arrived, enjoy")
 //
-// Digital order: order_confirmed_digital on payment.
+// Digital order: order_confirmed_digital on payment (+ receipt).
 // Every order: book_ready once the final illustrations are done (download link).
+//
+// The recipient is the adult who paid, never the child: the greeting uses the
+// buyer's first name when we know it (see notify-order.ts), else a neutral "Hola,".
+// The child's name only appears in the body ("el cuento de Teo").
+// Voice: warm, direct, short paragraphs, no em-dashes (owner's canonical email voice).
 
-import { renderEmailLayout, escapeHtml } from "./layout";
+import { EMAIL_COLORS, renderEmailLayout, escapeHtml } from "./layout";
 import { getSiteUrl } from "./send";
+import { formatPrice, SELLER_IDENTITY, type CatalogItemId } from "@/lib/pricing";
 
 export type OrderEmailEvent =
   | "order_confirmed"
@@ -24,10 +30,30 @@ type Locale = "es" | "ca" | "en" | "fr";
 
 const LOCALES: Locale[] = ["es", "ca", "en", "fr"];
 
+/** Receipt data for the order-confirmation email, taken from the paid Checkout Session. */
+export interface OrderReceipt {
+  /** Short human reference of our order (see orderReference) */
+  reference: string;
+  /** Payment time, ISO 8601 */
+  paidAt: string;
+  items: { catalogId: CatalogItemId | null; description: string; amountCents: number }[];
+  discountCents: number;
+  totalCents: number;
+  /** VAT contained in the (VAT-inclusive) total */
+  taxCents: number;
+  /** Physical order: shows the included shipping row */
+  physical: boolean;
+  shipping: { name: string; line1: string; line2?: string; postalCode: string; city: string } | null;
+  invoiceUrl?: string | null;
+  invoiceNumber?: string | null;
+}
+
 export interface OrderEmailContext {
-  /** Recipient locale — falls back to "es" if unsupported */
+  /** Recipient locale, falls back to "es" if unsupported */
   locale: string;
-  /** Child / protagonist name, used to personalize copy */
+  /** The adult who paid (full or first name). Null/empty → neutral greeting. */
+  buyerName?: string | null;
+  /** Child / protagonist name, used in the body copy */
   childName: string;
   /** Book title */
   bookTitle: string;
@@ -39,12 +65,46 @@ export interface OrderEmailContext {
   downloadUrl?: string | null;
   /** Physical order (book_ready copy mentions the printed edition) */
   isPhysical?: boolean;
-  /** Stripe hosted invoice (order_confirmed*) */
-  invoiceUrl?: string | null;
+  /** order_confirmed*: receipt block */
+  receipt?: OrderReceipt | null;
+}
+
+/** Short, stable order reference shown to the customer: first 8 hex of the order id. */
+export function orderReference(orderId: string): string {
+  return orderId.replace(/-/g, "").slice(0, 8).toUpperCase();
+}
+
+/**
+ * First name for the greeting. "MARTA PRUEBA GARCÍA" → "Marta", "maría josé" → "María".
+ * Returns null for anything that does not look like a name (emails, digits).
+ */
+export function buyerFirstName(name: string | null | undefined): string | null {
+  const first = name?.trim().split(/\s+/)[0] ?? "";
+  if (!first || first.length < 2 || /[@\d]/.test(first)) return null;
+  const shouting = first === first.toUpperCase() || first === first.toLowerCase();
+  if (!shouting) return first;
+  return first
+    .toLowerCase()
+    .replace(/(^|[-'’])(\p{L})/gu, (_, sep: string, ch: string) => sep + ch.toUpperCase());
+}
+
+interface ReceiptStrings {
+  title: string;
+  reference: string;
+  date: string;
+  items: Record<CatalogItemId, string>;
+  shipping: string;
+  shippingIncluded: string;
+  discount: string;
+  total: string;
+  vat: (rate: string | null) => string;
+  shipTo: string;
+  invoice: (num: string | null) => string;
+  soldBy: string;
 }
 
 interface Strings {
-  greeting: (name: string) => string;
+  greeting: (firstName: string | null) => string;
   signoff: string;
   dashboardCta: string;
   trackingCta: string;
@@ -52,262 +112,385 @@ interface Strings {
   downloadCta: string;
   /** Durable-medium confirmation of the express consent (art. 98.7 + 103 m LGDCU). */
   withdrawalConfirmation: string;
-  invoiceLink: string;
+  receipt: ReceiptStrings;
   events: Record<
     OrderEmailEvent,
-    { subject: (book: string) => string; heading: string; paragraphs: (ctx: OrderEmailContext) => string[] }
+    { subject: (ctx: OrderEmailContext) => string; heading: string; paragraphs: (ctx: OrderEmailContext) => string[] }
   >;
 }
 
+const b = (c: OrderEmailContext) => `<strong>${escapeHtml(c.bookTitle)}</strong>`;
+const child = (c: OrderEmailContext) => escapeHtml(c.childName.trim());
+
 const CONTENT: Record<Locale, Strings> = {
   es: {
-    greeting: (n) => `Hola ${n},`,
-    signoff: "Con cariño,\nEl equipo de Meapica",
+    greeting: (n) => (n ? `Hola ${n},` : "Hola,"),
+    signoff: "Un abrazo,\nEl equipo de Meapica",
     dashboardCta: "Ver mi pedido",
     trackingCta: "Seguir el envío",
     trackingLabel: "Número de seguimiento",
-    downloadCta: "Ver y descargar mi libro",
+    downloadCta: "Ver y descargar el libro",
     withdrawalConfirmation:
       "Como aceptaste antes de pagar, este libro se crea a medida y el PDF se entrega en cuanto está listo, por lo que no tiene derecho de desistimiento (art. 103 c y m de la LGDCU). Si algo llega mal, escríbenos a hola@meapica.com y lo solucionamos.",
-    invoiceLink: "Descargar la factura",
+    receipt: {
+      title: "Resumen del pedido",
+      reference: "Pedido",
+      date: "Fecha",
+      items: {
+        digital_pdf: "Cuento personalizado en PDF",
+        softcover: "Cuento personalizado, tapa blanda (incluye el PDF)",
+        hardcover: "Cuento personalizado, tapa dura (incluye el PDF)",
+        extra_copy_softcover: "Ejemplar extra, tapa blanda",
+        extra_copy_hardcover: "Ejemplar extra, tapa dura",
+      },
+      shipping: "Envío estándar",
+      shippingIncluded: "Incluido",
+      discount: "Descuento",
+      total: "Total pagado",
+      vat: (r) => (r ? `IVA incluido (${r})` : "IVA incluido"),
+      shipTo: "Dirección de envío",
+      invoice: (n) => (n ? `Descargar la factura ${n}` : "Descargar la factura"),
+      soldBy: "Vendido por",
+    },
     events: {
-      order_confirmed_digital: {
-        subject: (b) => `Hemos recibido tu pedido — ${b}`,
+      order_confirmed: {
+        subject: (c) => `Pedido confirmado: ${c.bookTitle}`,
         heading: "¡Gracias por tu pedido!",
         paragraphs: (c) => [
-          `Hemos recibido tu pedido de <strong>${escapeHtml(c.bookTitle)}</strong>, el cuento personalizado de ${escapeHtml(c.childName)}.`,
-          "Ahora estamos pintando las ilustraciones finales de cada página. En cuanto el libro esté listo te enviaremos un correo con el enlace para descargarlo.",
+          c.childName.trim()
+            ? `Ya tenemos tu pedido de ${b(c)}, el cuento de ${child(c)}.`
+            : `Ya tenemos tu pedido de ${b(c)}.`,
+          "Ahora pintamos las ilustraciones finales y te mandamos el PDF. Después el libro pasa a imprenta y te avisamos en cada paso hasta que llegue a casa.",
+          "Aquí abajo tienes el resumen. Guarda este correo, es tu comprobante.",
+        ],
+      },
+      order_confirmed_digital: {
+        subject: (c) => `Pedido confirmado: ${c.bookTitle}`,
+        heading: "¡Gracias por tu pedido!",
+        paragraphs: (c) => [
+          c.childName.trim()
+            ? `Ya tenemos tu pedido de ${b(c)}, el cuento de ${child(c)}.`
+            : `Ya tenemos tu pedido de ${b(c)}.`,
+          "Ahora pintamos las ilustraciones finales de cada página. En cuanto esté listo te mandamos el enlace para descargarlo.",
+          "Aquí abajo tienes el resumen. Guarda este correo, es tu comprobante.",
         ],
       },
       book_ready: {
-        subject: (b) => `Tu libro ya está listo — ${b}`,
+        subject: (c) => (c.childName.trim() ? `El libro de ${c.childName.trim()} ya está listo` : "Tu libro ya está listo"),
         heading: "¡Tu libro está listo!",
         paragraphs: (c) => [
-          `Ya hemos terminado de ilustrar <strong>${escapeHtml(c.bookTitle)}</strong>, el cuento de ${escapeHtml(c.childName)}.`,
+          c.childName.trim()
+            ? `Ya hemos terminado de ilustrar ${b(c)}, el cuento de ${child(c)}.`
+            : `Ya hemos terminado de ilustrar ${b(c)}.`,
           c.isPhysical
-            ? "Puedes verlo y descargarlo en PDF con el botón de abajo. La versión impresa pasa ahora a imprenta y te avisaremos cuando salga."
-            : "Puedes verlo y descargarlo en PDF con el botón de abajo, siempre que quieras.",
-        ],
-      },
-      order_confirmed: {
-        subject: (b) => `Hemos recibido tu pedido — ${b}`,
-        heading: "¡Gracias por tu pedido!",
-        paragraphs: (c) => [
-          `Hemos recibido tu pedido de <strong>${escapeHtml(c.bookTitle)}</strong>, el cuento personalizado de ${escapeHtml(c.childName)}.`,
-          "Ahora preparamos cada página con todo el detalle antes de enviarlo a imprenta. Te avisaremos en cada paso del camino.",
+            ? "Puedes verlo y descargar el PDF con el botón de abajo. El libro impreso pasa ahora a imprenta y te avisaremos cuando salga."
+            : "Puedes verlo y descargar el PDF con el botón de abajo, siempre que quieras.",
         ],
       },
       in_production: {
-        subject: (b) => `Tu libro ya se está imprimiendo — ${b}`,
+        subject: (c) => `Ya estamos imprimiendo ${c.bookTitle}`,
         heading: "Tu libro está en la imprenta",
         paragraphs: (c) => [
-          `Buenas noticias: <strong>${escapeHtml(c.bookTitle)}</strong> ya está en producción.`,
-          "Nuestro estudio de impresión lo está creando con papel de alta calidad y encuadernación profesional. En cuanto salga de imprenta y se envíe, te mandaremos el número de seguimiento.",
+          `Buenas noticias: ${b(c)} ya se está imprimiendo.`,
+          "Lo hacemos con papel de calidad y encuadernación profesional. Cuando salga hacia casa te mandamos el seguimiento.",
         ],
       },
       shipped: {
-        subject: (b) => `¡Tu libro va en camino! — ${b}`,
-        heading: "Tu libro está en camino",
+        subject: (c) => `¡${c.bookTitle} va de camino!`,
+        heading: "Tu libro va de camino",
         paragraphs: (c) => [
-          `<strong>${escapeHtml(c.bookTitle)}</strong> ya ha salido de la imprenta y viaja hacia ti.`,
-          `Pronto ${escapeHtml(c.childName)} tendrá su propio cuento entre las manos. Puedes seguir el envío en tiempo real con el botón de abajo.`,
+          `${b(c)} ya ha salido de la imprenta y va hacia ti.`,
+          (c.childName.trim() ? `Muy pronto ${child(c)} tendrá su cuento entre las manos. ` : "") +
+            (c.trackingUrl ? "Puedes seguir el envío con el botón de abajo." : "Llega en pocos días laborables."),
         ],
       },
       delivered: {
-        subject: (b) => `Tu libro ya ha llegado — ${b}`,
+        subject: (c) => `${c.bookTitle} ya ha llegado`,
         heading: "¡Tu libro ha llegado!",
         paragraphs: (c) => [
-          `<strong>${escapeHtml(c.bookTitle)}</strong> ya ha sido entregado. Esperamos que a ${escapeHtml(c.childName)} le encante leerlo una y otra vez.`,
-          "Si te ha hecho ilusión, nos encantaría que compartieras una foto o crearas otro cuento para una nueva aventura.",
+          c.childName.trim()
+            ? `${b(c)} ya está en casa. Ojalá ${child(c)} lo lea una y otra vez.`
+            : `${b(c)} ya está en casa. Ojalá lo disfrutéis una y otra vez.`,
+          "Y cuando os apetezca otra aventura, aquí estamos para crear el siguiente cuento.",
         ],
       },
     },
   },
   ca: {
-    greeting: (n) => `Hola ${n},`,
-    signoff: "Amb afecte,\nL'equip de Meapica",
+    greeting: (n) => (n ? `Hola ${n},` : "Hola,"),
+    signoff: "Una abraçada,\nL'equip de Meapica",
     dashboardCta: "Veure la meva comanda",
     trackingCta: "Seguir l'enviament",
     trackingLabel: "Número de seguiment",
-    downloadCta: "Veure i descarregar el meu llibre",
+    downloadCta: "Veure i descarregar el llibre",
     withdrawalConfirmation:
       "Com vas acceptar abans de pagar, aquest llibre es crea a mida i el PDF s'entrega quan està llest, per això no té dret de desistiment (art. 103 c i m de la LGDCU). Si alguna cosa arriba malament, escriu-nos a hola@meapica.com i ho solucionem.",
-    invoiceLink: "Descarregar la factura",
+    receipt: {
+      title: "Resum de la comanda",
+      reference: "Comanda",
+      date: "Data",
+      items: {
+        digital_pdf: "Conte personalitzat en PDF",
+        softcover: "Conte personalitzat, tapa tova (inclou el PDF)",
+        hardcover: "Conte personalitzat, tapa dura (inclou el PDF)",
+        extra_copy_softcover: "Exemplar extra, tapa tova",
+        extra_copy_hardcover: "Exemplar extra, tapa dura",
+      },
+      shipping: "Enviament estàndard",
+      shippingIncluded: "Inclòs",
+      discount: "Descompte",
+      total: "Total pagat",
+      vat: (r) => (r ? `IVA inclòs (${r})` : "IVA inclòs"),
+      shipTo: "Adreça d'enviament",
+      invoice: (n) => (n ? `Descarregar la factura ${n}` : "Descarregar la factura"),
+      soldBy: "Venut per",
+    },
     events: {
-      order_confirmed_digital: {
-        subject: (b) => `Hem rebut la teva comanda — ${b}`,
+      order_confirmed: {
+        subject: (c) => `Comanda confirmada: ${c.bookTitle}`,
         heading: "Gràcies per la teva comanda!",
         paragraphs: (c) => [
-          `Hem rebut la teva comanda de <strong>${escapeHtml(c.bookTitle)}</strong>, el conte personalitzat de ${escapeHtml(c.childName)}.`,
-          "Ara estem pintant les il·lustracions finals de cada pàgina. Quan el llibre estigui llest t'enviarem un correu amb l'enllaç per descarregar-lo.",
+          c.childName.trim()
+            ? `Ja tenim la teva comanda de ${b(c)}, el conte de ${child(c)}.`
+            : `Ja tenim la teva comanda de ${b(c)}.`,
+          "Ara pintem les il·lustracions finals i t'enviem el PDF. Després el llibre passa a impremta i t'avisem a cada pas fins que arribi a casa.",
+          "Aquí sota tens el resum. Guarda aquest correu, és el teu comprovant.",
+        ],
+      },
+      order_confirmed_digital: {
+        subject: (c) => `Comanda confirmada: ${c.bookTitle}`,
+        heading: "Gràcies per la teva comanda!",
+        paragraphs: (c) => [
+          c.childName.trim()
+            ? `Ja tenim la teva comanda de ${b(c)}, el conte de ${child(c)}.`
+            : `Ja tenim la teva comanda de ${b(c)}.`,
+          "Ara pintem les il·lustracions finals de cada pàgina. Quan estigui llest t'enviem l'enllaç per descarregar-lo.",
+          "Aquí sota tens el resum. Guarda aquest correu, és el teu comprovant.",
         ],
       },
       book_ready: {
-        subject: (b) => `El teu llibre ja està llest — ${b}`,
+        subject: (c) => (c.childName.trim() ? `El llibre de ${c.childName.trim()} ja està llest` : "El teu llibre ja està llest"),
         heading: "El teu llibre ja està llest!",
         paragraphs: (c) => [
-          `Ja hem acabat d'il·lustrar <strong>${escapeHtml(c.bookTitle)}</strong>, el conte de ${escapeHtml(c.childName)}.`,
+          c.childName.trim()
+            ? `Ja hem acabat d'il·lustrar ${b(c)}, el conte de ${child(c)}.`
+            : `Ja hem acabat d'il·lustrar ${b(c)}.`,
           c.isPhysical
-            ? "Pots veure'l i descarregar-lo en PDF amb el botó de sota. La versió impresa passa ara a impremta i t'avisarem quan surti."
-            : "Pots veure'l i descarregar-lo en PDF amb el botó de sota, sempre que vulguis.",
-        ],
-      },
-      order_confirmed: {
-        subject: (b) => `Hem rebut la teva comanda — ${b}`,
-        heading: "Gràcies per la teva comanda!",
-        paragraphs: (c) => [
-          `Hem rebut la teva comanda de <strong>${escapeHtml(c.bookTitle)}</strong>, el conte personalitzat de ${escapeHtml(c.childName)}.`,
-          "Ara preparem cada pàgina amb tot el detall abans d'enviar-lo a impremta. T'avisarem a cada pas del camí.",
+            ? "Pots veure'l i descarregar el PDF amb el botó de sota. El llibre imprès passa ara a impremta i t'avisarem quan surti."
+            : "Pots veure'l i descarregar el PDF amb el botó de sota, sempre que vulguis.",
         ],
       },
       in_production: {
-        subject: (b) => `El teu llibre ja s'està imprimint — ${b}`,
+        subject: (c) => `Ja estem imprimint ${c.bookTitle}`,
         heading: "El teu llibre és a la impremta",
         paragraphs: (c) => [
-          `Bones notícies: <strong>${escapeHtml(c.bookTitle)}</strong> ja està en producció.`,
-          "El nostre estudi d'impressió l'està creant amb paper d'alta qualitat i enquadernació professional. Quan surti d'impremta i s'enviï, t'enviarem el número de seguiment.",
+          `Bones notícies: ${b(c)} ja s'està imprimint.`,
+          "El fem amb paper de qualitat i enquadernació professional. Quan surti cap a casa t'enviem el seguiment.",
         ],
       },
       shipped: {
-        subject: (b) => `El teu llibre va de camí! — ${b}`,
-        heading: "El teu llibre està en camí",
+        subject: (c) => `${c.bookTitle} ja és de camí!`,
+        heading: "El teu llibre és de camí",
         paragraphs: (c) => [
-          `<strong>${escapeHtml(c.bookTitle)}</strong> ja ha sortit de la impremta i viatja cap a tu.`,
-          `Aviat ${escapeHtml(c.childName)} tindrà el seu propi conte a les mans. Pots seguir l'enviament en temps real amb el botó de sota.`,
+          `${b(c)} ja ha sortit de la impremta i va cap a tu.`,
+          (c.childName.trim() ? `Molt aviat ${child(c)} tindrà el seu conte a les mans. ` : "") +
+            (c.trackingUrl ? "Pots seguir l'enviament amb el botó de sota." : "Arriba en pocs dies laborables."),
         ],
       },
       delivered: {
-        subject: (b) => `El teu llibre ja ha arribat — ${b}`,
+        subject: (c) => `${c.bookTitle} ja ha arribat`,
         heading: "El teu llibre ha arribat!",
         paragraphs: (c) => [
-          `<strong>${escapeHtml(c.bookTitle)}</strong> ja s'ha entregat. Esperem que a ${escapeHtml(c.childName)} li encanti llegir-lo una vegada i una altra.`,
-          "Si t'ha fet il·lusió, ens encantaria que compartissis una foto o que creessis un altre conte per a una nova aventura.",
+          c.childName.trim()
+            ? `${b(c)} ja és a casa. Tant de bo ${child(c)} el llegeixi una vegada i una altra.`
+            : `${b(c)} ja és a casa. Tant de bo el gaudiu una vegada i una altra.`,
+          "I quan us vingui de gust una altra aventura, aquí som per crear el següent conte.",
         ],
       },
     },
   },
   en: {
-    greeting: (n) => `Hi ${n},`,
-    signoff: "With love,\nThe Meapica team",
+    greeting: (n) => (n ? `Hi ${n},` : "Hi there,"),
+    signoff: "Warmly,\nThe Meapica team",
     dashboardCta: "View my order",
-    trackingCta: "Track shipment",
+    trackingCta: "Track the parcel",
     trackingLabel: "Tracking number",
-    downloadCta: "View & download my book",
+    downloadCta: "View and download the book",
     withdrawalConfirmation:
       "As you accepted before paying, this book is made to order and the PDF is delivered as soon as it is ready, so it carries no right of withdrawal (art. 103 c and m, Spanish consumer law). If anything arrives wrong, write to hola@meapica.com and we will fix it.",
-    invoiceLink: "Download the invoice",
+    receipt: {
+      title: "Order summary",
+      reference: "Order",
+      date: "Date",
+      items: {
+        digital_pdf: "Personalised storybook, PDF",
+        softcover: "Personalised storybook, softcover (PDF included)",
+        hardcover: "Personalised storybook, hardcover (PDF included)",
+        extra_copy_softcover: "Extra copy, softcover",
+        extra_copy_hardcover: "Extra copy, hardcover",
+      },
+      shipping: "Standard shipping",
+      shippingIncluded: "Included",
+      discount: "Discount",
+      total: "Total paid",
+      vat: (r) => (r ? `VAT included (${r})` : "VAT included"),
+      shipTo: "Shipping address",
+      invoice: (n) => (n ? `Download invoice ${n}` : "Download the invoice"),
+      soldBy: "Sold by",
+    },
     events: {
-      order_confirmed_digital: {
-        subject: (b) => `We've received your order — ${b}`,
+      order_confirmed: {
+        subject: (c) => `Order confirmed: ${c.bookTitle}`,
         heading: "Thank you for your order!",
         paragraphs: (c) => [
-          `We've received your order for <strong>${escapeHtml(c.bookTitle)}</strong>, ${escapeHtml(c.childName)}'s personalized storybook.`,
-          "We're now painting the final illustrations for every page. As soon as the book is ready we'll email you a link to download it.",
+          c.childName.trim()
+            ? `We've got your order for ${b(c)}, ${child(c)}'s storybook.`
+            : `We've got your order for ${b(c)}.`,
+          "We're now painting the final illustrations and will send you the PDF. Then the book goes to print and we'll update you at every step until it reaches your door.",
+          "Your summary is below. Keep this email, it's your receipt.",
+        ],
+      },
+      order_confirmed_digital: {
+        subject: (c) => `Order confirmed: ${c.bookTitle}`,
+        heading: "Thank you for your order!",
+        paragraphs: (c) => [
+          c.childName.trim()
+            ? `We've got your order for ${b(c)}, ${child(c)}'s storybook.`
+            : `We've got your order for ${b(c)}.`,
+          "We're now painting the final illustrations for every page. As soon as it's ready we'll email you the download link.",
+          "Your summary is below. Keep this email, it's your receipt.",
         ],
       },
       book_ready: {
-        subject: (b) => `Your book is ready — ${b}`,
+        subject: (c) => (c.childName.trim() ? `${c.childName.trim()}'s book is ready` : "Your book is ready"),
         heading: "Your book is ready!",
         paragraphs: (c) => [
-          `We've finished illustrating <strong>${escapeHtml(c.bookTitle)}</strong>, ${escapeHtml(c.childName)}'s story.`,
+          c.childName.trim()
+            ? `We've finished illustrating ${b(c)}, ${child(c)}'s story.`
+            : `We've finished illustrating ${b(c)}.`,
           c.isPhysical
-            ? "You can view and download the PDF with the button below. The printed edition now goes to print and we'll let you know when it ships."
-            : "You can view and download the PDF with the button below, whenever you like.",
-        ],
-      },
-      order_confirmed: {
-        subject: (b) => `We've received your order — ${b}`,
-        heading: "Thank you for your order!",
-        paragraphs: (c) => [
-          `We've received your order for <strong>${escapeHtml(c.bookTitle)}</strong>, ${escapeHtml(c.childName)}'s personalized storybook.`,
-          "We're now preparing every page with care before sending it to print. We'll keep you posted at each step.",
+            ? "You can view it and download the PDF with the button below. The printed book now goes to print and we'll let you know when it ships."
+            : "You can view it and download the PDF with the button below, whenever you like.",
         ],
       },
       in_production: {
-        subject: (b) => `Your book is being printed — ${b}`,
+        subject: (c) => `We're printing ${c.bookTitle}`,
         heading: "Your book is at the print studio",
         paragraphs: (c) => [
-          `Good news: <strong>${escapeHtml(c.bookTitle)}</strong> is now in production.`,
-          "Our print studio is crafting it with high-quality paper and professional binding. As soon as it ships, we'll send you the tracking number.",
+          `Good news: ${b(c)} is being printed right now.`,
+          "We use quality paper and professional binding. As soon as it ships we'll send you the tracking.",
         ],
       },
       shipped: {
-        subject: (b) => `Your book is on its way! — ${b}`,
+        subject: (c) => `${c.bookTitle} is on its way!`,
         heading: "Your book is on its way",
         paragraphs: (c) => [
-          `<strong>${escapeHtml(c.bookTitle)}</strong> has left the print studio and is heading your way.`,
-          `Soon ${escapeHtml(c.childName)} will be holding their very own storybook. You can follow the shipment in real time with the button below.`,
+          `${b(c)} has left the print studio and is heading your way.`,
+          (c.childName.trim() ? `Very soon ${child(c)} will be holding their own storybook. ` : "") +
+            (c.trackingUrl ? "You can follow the parcel with the button below." : "It arrives within a few business days."),
         ],
       },
       delivered: {
-        subject: (b) => `Your book has arrived — ${b}`,
+        subject: (c) => `${c.bookTitle} has arrived`,
         heading: "Your book has arrived!",
         paragraphs: (c) => [
-          `<strong>${escapeHtml(c.bookTitle)}</strong> has been delivered. We hope ${escapeHtml(c.childName)} loves reading it again and again.`,
-          "If it made you smile, we'd love for you to share a photo or create another story for a brand-new adventure.",
+          c.childName.trim()
+            ? `${b(c)} is home. We hope ${child(c)} reads it again and again.`
+            : `${b(c)} is home. We hope you enjoy it again and again.`,
+          "And whenever you fancy another adventure, we're here to make the next story.",
         ],
       },
     },
   },
   fr: {
-    greeting: (n) => `Bonjour ${n},`,
-    signoff: "Avec amour,\nL'équipe Meapica",
+    greeting: (n) => (n ? `Bonjour ${n},` : "Bonjour,"),
+    signoff: "Bien à vous,\nL'équipe Meapica",
     dashboardCta: "Voir ma commande",
-    trackingCta: "Suivre l'envoi",
+    trackingCta: "Suivre le colis",
     trackingLabel: "Numéro de suivi",
-    downloadCta: "Voir et télécharger mon livre",
+    downloadCta: "Voir et télécharger le livre",
     withdrawalConfirmation:
       "Comme vous l'avez accepté avant de payer, ce livre est fabriqué sur mesure et le PDF est livré dès qu'il est prêt : il n'ouvre donc pas de droit de rétractation (art. 103 c et m, droit espagnol de la consommation). Si quelque chose arrive abîmé, écrivez-nous à hola@meapica.com et nous le réglerons.",
-    invoiceLink: "Télécharger la facture",
+    receipt: {
+      title: "Récapitulatif de commande",
+      reference: "Commande",
+      date: "Date",
+      items: {
+        digital_pdf: "Livre personnalisé en PDF",
+        softcover: "Livre personnalisé, couverture souple (PDF inclus)",
+        hardcover: "Livre personnalisé, couverture rigide (PDF inclus)",
+        extra_copy_softcover: "Exemplaire supplémentaire, couverture souple",
+        extra_copy_hardcover: "Exemplaire supplémentaire, couverture rigide",
+      },
+      shipping: "Livraison standard",
+      shippingIncluded: "Incluse",
+      discount: "Remise",
+      total: "Total payé",
+      vat: (r) => (r ? `TVA incluse (${r})` : "TVA incluse"),
+      shipTo: "Adresse de livraison",
+      invoice: (n) => (n ? `Télécharger la facture ${n}` : "Télécharger la facture"),
+      soldBy: "Vendu par",
+    },
     events: {
-      order_confirmed_digital: {
-        subject: (b) => `Nous avons reçu votre commande — ${b}`,
+      order_confirmed: {
+        subject: (c) => `Commande confirmée : ${c.bookTitle}`,
         heading: "Merci pour votre commande !",
         paragraphs: (c) => [
-          `Nous avons reçu votre commande de <strong>${escapeHtml(c.bookTitle)}</strong>, le livre personnalisé de ${escapeHtml(c.childName)}.`,
-          "Nous peignons maintenant les illustrations finales de chaque page. Dès que le livre sera prêt, nous vous enverrons un e-mail avec le lien de téléchargement.",
+          c.childName.trim()
+            ? `Nous avons bien reçu votre commande de ${b(c)}, le livre de ${child(c)}.`
+            : `Nous avons bien reçu votre commande de ${b(c)}.`,
+          "Nous peignons maintenant les illustrations finales et vous envoyons le PDF. Ensuite le livre part à l'impression et nous vous tenons informé à chaque étape jusqu'à la livraison.",
+          "Le récapitulatif est ci-dessous. Gardez cet e-mail, c'est votre justificatif.",
+        ],
+      },
+      order_confirmed_digital: {
+        subject: (c) => `Commande confirmée : ${c.bookTitle}`,
+        heading: "Merci pour votre commande !",
+        paragraphs: (c) => [
+          c.childName.trim()
+            ? `Nous avons bien reçu votre commande de ${b(c)}, le livre de ${child(c)}.`
+            : `Nous avons bien reçu votre commande de ${b(c)}.`,
+          "Nous peignons maintenant les illustrations finales de chaque page. Dès qu'il est prêt, nous vous envoyons le lien de téléchargement.",
+          "Le récapitulatif est ci-dessous. Gardez cet e-mail, c'est votre justificatif.",
         ],
       },
       book_ready: {
-        subject: (b) => `Votre livre est prêt — ${b}`,
+        subject: (c) => (c.childName.trim() ? `Le livre de ${c.childName.trim()} est prêt` : "Votre livre est prêt"),
         heading: "Votre livre est prêt !",
         paragraphs: (c) => [
-          `Nous avons terminé d'illustrer <strong>${escapeHtml(c.bookTitle)}</strong>, l'histoire de ${escapeHtml(c.childName)}.`,
+          c.childName.trim()
+            ? `Nous avons terminé d'illustrer ${b(c)}, l'histoire de ${child(c)}.`
+            : `Nous avons terminé d'illustrer ${b(c)}.`,
           c.isPhysical
-            ? "Vous pouvez le consulter et le télécharger en PDF avec le bouton ci-dessous. La version imprimée part maintenant à l'impression et nous vous préviendrons dès son expédition."
-            : "Vous pouvez le consulter et le télécharger en PDF avec le bouton ci-dessous, quand vous le souhaitez.",
-        ],
-      },
-      order_confirmed: {
-        subject: (b) => `Nous avons reçu votre commande — ${b}`,
-        heading: "Merci pour votre commande !",
-        paragraphs: (c) => [
-          `Nous avons reçu votre commande de <strong>${escapeHtml(c.bookTitle)}</strong>, le livre personnalisé de ${escapeHtml(c.childName)}.`,
-          "Nous préparons maintenant chaque page avec soin avant de l'envoyer à l'impression. Nous vous tiendrons informé à chaque étape.",
+            ? "Vous pouvez le consulter et télécharger le PDF avec le bouton ci-dessous. Le livre imprimé part maintenant à l'impression et nous vous préviendrons dès son expédition."
+            : "Vous pouvez le consulter et télécharger le PDF avec le bouton ci-dessous, quand vous le souhaitez.",
         ],
       },
       in_production: {
-        subject: (b) => `Votre livre est en cours d'impression — ${b}`,
-        heading: "Votre livre est à l'atelier d'impression",
+        subject: (c) => `Nous imprimons ${c.bookTitle}`,
+        heading: "Votre livre est à l'impression",
         paragraphs: (c) => [
-          `Bonne nouvelle : <strong>${escapeHtml(c.bookTitle)}</strong> est désormais en production.`,
-          "Notre atelier le crée avec un papier de haute qualité et une reliure professionnelle. Dès qu'il sera expédié, nous vous enverrons le numéro de suivi.",
+          `Bonne nouvelle : ${b(c)} est en cours d'impression.`,
+          "Nous utilisons un papier de qualité et une reliure professionnelle. Dès son expédition, nous vous envoyons le suivi.",
         ],
       },
       shipped: {
-        subject: (b) => `Votre livre est en route ! — ${b}`,
+        subject: (c) => `${c.bookTitle} est en route !`,
         heading: "Votre livre est en route",
         paragraphs: (c) => [
-          `<strong>${escapeHtml(c.bookTitle)}</strong> a quitté l'atelier et arrive vers vous.`,
-          `Bientôt, ${escapeHtml(c.childName)} tiendra son propre livre entre ses mains. Vous pouvez suivre l'envoi en temps réel avec le bouton ci-dessous.`,
+          `${b(c)} a quitté l'atelier et arrive chez vous.`,
+          (c.childName.trim() ? `Très bientôt, ${child(c)} tiendra son propre livre entre ses mains. ` : "") +
+            (c.trackingUrl ? "Vous pouvez suivre le colis avec le bouton ci-dessous." : "Il arrive en quelques jours ouvrés."),
         ],
       },
       delivered: {
-        subject: (b) => `Votre livre est arrivé — ${b}`,
+        subject: (c) => `${c.bookTitle} est arrivé`,
         heading: "Votre livre est arrivé !",
         paragraphs: (c) => [
-          `<strong>${escapeHtml(c.bookTitle)}</strong> a été livré. Nous espérons que ${escapeHtml(c.childName)} adorera le lire encore et encore.`,
-          "S'il vous a plu, nous serions ravis que vous partagiez une photo ou que vous créiez une autre histoire pour une nouvelle aventure.",
+          c.childName.trim()
+            ? `${b(c)} est à la maison. Nous espérons que ${child(c)} le lira encore et encore.`
+            : `${b(c)} est à la maison. Nous espérons que vous le lirez encore et encore.`,
+          "Et quand vous aurez envie d'une nouvelle aventure, nous serons là pour créer la prochaine histoire.",
         ],
       },
     },
@@ -318,20 +501,114 @@ function resolveLocale(locale: string): Locale {
   return (LOCALES.includes(locale as Locale) ? locale : "es") as Locale;
 }
 
+const INTL_LOCALE: Record<Locale, string> = { es: "es-ES", ca: "ca-ES", en: "en-GB", fr: "fr-FR" };
+
+/** VAT rate implied by a VAT-inclusive total, e.g. 192 of 4990 → "4 %". Null when there is no tax. */
+function vatRateLabel(taxCents: number, totalCents: number, loc: Locale): string | null {
+  const net = totalCents - taxCents;
+  if (taxCents <= 0 || net <= 0) return null;
+  const rate = Math.round((taxCents / net) * 1000) / 10; // one decimal: 4, 10, 21, 5.5
+  const num = new Intl.NumberFormat(INTL_LOCALE[loc], { maximumFractionDigits: 1 }).format(rate);
+  return loc === "en" ? `${num}%` : `${num} %`;
+}
+
+function formatDate(iso: string, loc: Locale): string {
+  return new Intl.DateTimeFormat(INTL_LOCALE[loc], { dateStyle: "long", timeZone: "Europe/Madrid" }).format(new Date(iso));
+}
+
+interface ReceiptRow {
+  label: string;
+  value: string;
+  strong?: boolean;
+  muted?: boolean;
+}
+
+function receiptRows(r: OrderReceipt, s: ReceiptStrings, loc: Locale): ReceiptRow[] {
+  const money = (cents: number) => formatPrice(cents, loc);
+  const rows: ReceiptRow[] = r.items.map((it) => ({
+    label: it.catalogId ? s.items[it.catalogId] : it.description,
+    value: money(it.amountCents),
+  }));
+  if (r.physical) rows.push({ label: s.shipping, value: s.shippingIncluded });
+  if (r.discountCents > 0) rows.push({ label: s.discount, value: `-${money(r.discountCents)}` });
+  rows.push({ label: s.total, value: money(r.totalCents), strong: true });
+  rows.push({ label: s.vat(vatRateLabel(r.taxCents, r.totalCents, loc)), value: r.taxCents > 0 ? money(r.taxCents) : "", muted: true });
+  return rows;
+}
+
+function addressLines(r: OrderReceipt): string[] {
+  const a = r.shipping;
+  if (!a) return [];
+  return [a.name, a.line1, a.line2 ?? "", `${a.postalCode} ${a.city}`.trim()].filter((l) => l.trim());
+}
+
+/** The receipt block (inline styles, table layout for email clients). */
+function renderReceiptHtml(r: OrderReceipt, s: ReceiptStrings, loc: Locale): string {
+  const C = EMAIL_COLORS;
+  const cell = "padding:6px 0;font-size:14px;line-height:1.5;vertical-align:top;";
+  const rows = receiptRows(r, s, loc)
+    .map((row) => {
+      const color = row.muted ? C.muted : row.strong ? C.heading : C.body;
+      const weight = row.strong ? "font-weight:700;" : "";
+      const border = row.strong ? `border-top:1px solid ${C.border};padding-top:10px;` : "";
+      return `<tr>
+        <td style="${cell}${border}color:${color};${weight}padding-right:16px;">${escapeHtml(row.label)}</td>
+        <td style="${cell}${border}color:${color};${weight}text-align:right;white-space:nowrap;">${escapeHtml(row.value)}</td>
+      </tr>`;
+    })
+    .join("");
+
+  const meta = `<p style="margin:0 0 12px;font-size:13px;line-height:1.5;color:${C.muted};">
+      ${escapeHtml(s.reference)} <strong style="color:${C.body};">${escapeHtml(r.reference)}</strong>
+      &nbsp;·&nbsp; ${escapeHtml(s.date)} ${escapeHtml(formatDate(r.paidAt, loc))}
+    </p>`;
+
+  const address = addressLines(r);
+  const addressHtml = address.length
+    ? `<p style="margin:16px 0 0;font-size:13px;line-height:1.6;color:${C.body};">
+        <span style="color:${C.muted};">${escapeHtml(s.shipTo)}</span><br>${address.map(escapeHtml).join("<br>")}
+      </p>`
+    : "";
+
+  const invoiceHtml = r.invoiceUrl
+    ? `<p style="margin:16px 0 0;font-size:14px;"><a href="${escapeHtml(r.invoiceUrl)}" style="color:${C.primary};font-weight:600;text-decoration:underline;">${escapeHtml(s.invoice(r.invoiceNumber ?? null))}</a></p>`
+    : "";
+
+  return `<div style="margin:0 0 24px;padding:18px 20px;border:1px solid ${C.border};border-radius:12px;">
+    <p style="margin:0 0 4px;font-size:15px;font-weight:700;color:${C.heading};">${escapeHtml(s.title)}</p>
+    ${meta}
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">${rows}</table>
+    ${addressHtml}
+    ${invoiceHtml}
+    <p style="margin:16px 0 0;font-size:12px;line-height:1.5;color:${C.muted};">${escapeHtml(s.soldBy)} ${escapeHtml(SELLER_IDENTITY)}</p>
+  </div>`;
+}
+
+function renderReceiptText(r: OrderReceipt, s: ReceiptStrings, loc: Locale): string {
+  const lines = [
+    s.title,
+    `${s.reference} ${r.reference} · ${s.date} ${formatDate(r.paidAt, loc)}`,
+    ...receiptRows(r, s, loc).map((row) => (row.value ? `${row.label}: ${row.value}` : row.label)),
+  ];
+  const address = addressLines(r);
+  if (address.length) lines.push("", `${s.shipTo}:`, ...address);
+  if (r.invoiceUrl) lines.push("", `${s.invoice(r.invoiceNumber ?? null)}: ${r.invoiceUrl}`);
+  lines.push("", `${s.soldBy} ${SELLER_IDENTITY}`);
+  return lines.join("\n");
+}
+
 export interface BuiltEmail {
   subject: string;
   html: string;
   text: string;
 }
 
-/**
- * Build a localized order-lifecycle email.
- * For the "shipped" event a tracking CTA/info block is added when a tracking URL/number exists.
- */
+/** Build a localized order-lifecycle email (HTML + text alternative). */
 export function buildOrderEmail(event: OrderEmailEvent, ctx: OrderEmailContext): BuiltEmail {
   const loc = resolveLocale(ctx.locale);
   const s = CONTENT[loc];
   const ev = s.events[event];
+  const firstName = buyerFirstName(ctx.buyerName);
 
   const dashboardUrl = `${getSiteUrl()}/${loc}/dashboard`;
   const paragraphs = ev.paragraphs(ctx);
@@ -344,42 +621,44 @@ export function buildOrderEmail(event: OrderEmailEvent, ctx: OrderEmailContext):
         ? { label: s.downloadCta, url: ctx.downloadUrl }
         : { label: s.dashboardCta, url: dashboardUrl };
 
-  // Info block: tracking number (shipped) / consent confirmation + invoice (order confirmed).
   const isConfirmation = event === "order_confirmed" || event === "order_confirmed_digital";
+  const colon = loc === "fr" ? "\u00a0:" : ":";
+  const receipt = isConfirmation ? ctx.receipt ?? null : null;
+  const infoText =
+    event === "shipped" && ctx.trackingNumber
+      ? `${s.trackingLabel}${colon} ${ctx.trackingNumber}`
+      : isConfirmation
+        ? s.withdrawalConfirmation
+        : null;
   const infoHtml =
     event === "shipped" && ctx.trackingNumber
-      ? `<strong>${s.trackingLabel}:</strong> ${escapeHtml(ctx.trackingNumber)}`
-      : isConfirmation
-        ? escapeHtml(s.withdrawalConfirmation) +
-          (ctx.invoiceUrl ? `<br><br><a href="${escapeHtml(ctx.invoiceUrl)}">${s.invoiceLink}</a>` : "")
+      ? `<strong>${s.trackingLabel}${colon}</strong> ${escapeHtml(ctx.trackingNumber)}`
+      : infoText
+        ? escapeHtml(infoText)
         : undefined;
 
+  const greeting = s.greeting(firstName);
   const html = renderEmailLayout({
     heading: ev.heading,
-    greeting: s.greeting(escapeHtml(ctx.childName)),
+    greeting: escapeHtml(greeting),
     paragraphs,
     cta,
+    detailsHtml: receipt ? renderReceiptHtml(receipt, s.receipt, loc) : undefined,
     infoHtml,
     signoff: s.signoff,
     lang: loc,
   });
 
-  // Plain-text fallback — strip simple tags from paragraphs.
-  const stripTags = (str: string) => str.replace(/<[^>]+>/g, "");
-  const textLines = [
-    s.greeting(ctx.childName),
-    ...paragraphs.map(stripTags),
-  ];
-  if (isConfirmation) {
-    textLines.push(s.withdrawalConfirmation);
-    if (ctx.invoiceUrl) textLines.push(`${s.invoiceLink}: ${ctx.invoiceUrl}`);
-  } else if (infoHtml) {
-    textLines.push(stripTags(infoHtml));
-  }
-  textLines.push(`${cta.label}: ${cta.url}`, "---", s.signoff);
+  // Text alternative (multipart/alternative): strip the simple tags used in paragraphs.
+  const stripTags = (str: string) =>
+    str.replace(/<[^>]+>/g, "").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+  const textLines = [greeting, ...paragraphs.map(stripTags), `${cta.label}: ${cta.url}`];
+  if (receipt) textLines.push(renderReceiptText(receipt, s.receipt, loc));
+  if (infoText) textLines.push(infoText);
+  textLines.push("---", s.signoff);
 
   return {
-    subject: ev.subject(ctx.bookTitle),
+    subject: ev.subject(ctx),
     html,
     text: textLines.join("\n\n"),
   };

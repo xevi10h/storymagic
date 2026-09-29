@@ -7,7 +7,10 @@
 // Required env:
 //   RESEND_API_KEY        — Resend API key
 // Optional env:
-//   EMAIL_FROM            — sender (default: "Meapica <hola@constrack.pro>")
+//   EMAIL_FROM            — sender (default: "Meapica <hola@constrack.pro>"; switch to
+//                           hola@meapica.com only once meapica.com is verified in Resend)
+//   EMAIL_REPLY_TO        — reply-to for every email (unset by default = replies go to
+//                           EMAIL_FROM); set to hola@meapica.com once that mailbox receives
 //   NEXT_PUBLIC_SITE_URL  — public site origin (default: "https://meapica.com")
 
 const DEFAULT_FROM = "Meapica <hola@constrack.pro>";
@@ -40,6 +43,7 @@ export async function sendEmail(params: SendEmailParams): Promise<boolean> {
   }
 
   const from = process.env.EMAIL_FROM?.trim() || DEFAULT_FROM;
+  const replyTo = params.replyTo || process.env.EMAIL_REPLY_TO?.trim() || undefined;
 
   try {
     const res = await fetch("https://api.resend.com/emails", {
@@ -54,7 +58,7 @@ export async function sendEmail(params: SendEmailParams): Promise<boolean> {
         subject: params.subject,
         html: params.html,
         text: params.text,
-        ...(params.replyTo ? { reply_to: params.replyTo } : {}),
+        ...(replyTo ? { reply_to: replyTo } : {}),
       }),
     });
 

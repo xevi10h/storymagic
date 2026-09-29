@@ -8,6 +8,7 @@ import {
   addonCatalogItem,
   addonPrice,
   isAddonEnabled,
+  SELLER_IDENTITY,
   WITHDRAWAL_CONSENT_VERSION,
   type PhysicalFormat,
 } from "@/lib/pricing";
@@ -39,8 +40,7 @@ const SHIPPING_AREA_NOTICE: Record<Locale, string> = {
   fr: "Livraison standard incluse en Espagne péninsulaire et aux Baléares (7 à 10 jours ouvrés). Pas encore de livraison aux Canaries, à Ceuta ni à Melilla.",
 };
 
-const INVOICE_FOOTER =
-  "Xavier Huix Trenco (Meapica) · NIF 41649433K · Carrer Aribau 140, 5º, 08036 Barcelona · IVA incluido (4 %, libros) · hola@meapica.com";
+const INVOICE_FOOTER = `${SELLER_IDENTITY} · IVA incluido (4 %, libros) · hola@meapica.com`;
 
 /** ponytail: 2-min idempotency window — a double click reuses the session; a
  * deliberate second purchase after 2 min gets a new one. Per-click client keys

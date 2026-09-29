@@ -146,6 +146,13 @@ No format loses money. Gelato's own VAT on its invoice is assumed deductible.
 
 ## 3. Post-purchase + user area
 
+> **Status 2026-09-29 (emails):** fixed — greeting now addresses the buyer (account name → Stripe
+> Checkout name → neutral "Hola,"), never the child, in all 6 lifecycle emails; the confirmation is a
+> receipt (items, shipping included, total, "IVA incluido (4 %)" + amount, address, order reference,
+> date, seller NIF line, Stripe invoice link + number); em-dashes removed, copy rewritten in the owner's
+> voice, es/ca/en/fr rendered and checked desktop + mobile. Still open: no customer email on
+> refund/cancel/delay (only ops alerts); no reply-to set (see technical-architecture Resend note).
+
 Works: Resend REST emails es/ca/en/fr for order confirmed (physical/digital), book ready, in
 production, shipped (tracking), delivered; exactly-once via CAS columns
 (`fulfilment/emails.ts:28-51`, `pipeline.ts:646`, `webhooks/gelato/route.ts:140-166`); guest
@@ -156,7 +163,7 @@ characters tabs, title edit, 4-step order stepper, PDF download, "new book with 
 P0
 - **meapica.com has no email DNS**: no SPF, DKIM (`resend._domainkey`), DMARC, `send.` MX, no MX
   for replies. Emails come from `hola@constrack.pro`.
-- **Emails greet the child** ("Hola Teo,") instead of the parent (`order-emails.ts:59,119,338`).
+- ~~**Emails greet the child**~~ ("Hola Teo,") instead of the parent — FIXED 2026-09-29.
 - **"Book ready" link** `/api/stories/{id}/pdf` (`pipeline.ts:392`): 404 for a logged-in different
   account (`pdf/route.ts:64-70`); **anyone without a session gets the PDF of any paid storyId**, no
   token (`pdf/route.ts:45-60`); `?force=true` re-renders unthrottled. Need per-order tokenised link.
@@ -164,7 +171,7 @@ P0
   consent + acknowledgement of losing the right).
 
 P1
-- Confirmation email is not a receipt: no amount, VAT line, items, address (`order-emails.ts:84-90`)
+- ~~Confirmation email is not a receipt~~ (FIXED 2026-09-29; Stripe invoice = factura, linked): no amount, VAT line, items, address (`order-emails.ts:84-90`)
   while the success page calls it "tu comprobante". No invoice (factura simplificada) anywhere.
 - No customer email on failure/delay/refund/cancel (ops alerts only, `fulfilment/alerts.ts`).
 - Guests can't recover books on another device: anonymous sessions (`guest-session.ts:18`), upgrade

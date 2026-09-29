@@ -6,7 +6,7 @@
 
 import { getSiteUrl } from "./send";
 
-const COLORS = {
+export const EMAIL_COLORS = {
   bg: "#F9F5F0",
   card: "#ffffff",
   primary: "#D2691E",
@@ -15,6 +15,7 @@ const COLORS = {
   border: "#E6C9A8",
   muted: "#A1887F",
 };
+const COLORS = EMAIL_COLORS;
 
 export interface EmailLayoutParams {
   /** Big title at the top of the card */
@@ -25,6 +26,8 @@ export interface EmailLayoutParams {
   paragraphs: string[];
   /** Optional call-to-action button */
   cta?: { label: string; url: string };
+  /** Optional structured block (e.g. an order receipt) rendered below the CTA (raw HTML) */
+  detailsHtml?: string;
   /** Optional secondary info block rendered above the sign-off (raw HTML) */
   infoHtml?: string;
   /** Sign-off text (supports \n for line breaks) */
@@ -46,7 +49,7 @@ export function escapeHtml(value: string): string {
 /** Render the branded HTML shell. Returns a full HTML document string. */
 export function renderEmailLayout(params: EmailLayoutParams): string {
   const site = getSiteUrl();
-  const { heading, greeting, paragraphs, cta, infoHtml, signoff, lang } = params;
+  const { heading, greeting, paragraphs, cta, detailsHtml, infoHtml, signoff, lang } = params;
 
   const greetingHtml = greeting
     ? `<p style="margin:0 0 20px;font-size:16px;color:${COLORS.body};">${greeting}</p>`
@@ -62,7 +65,7 @@ export function renderEmailLayout(params: EmailLayoutParams): string {
   const ctaHtml = cta
     ? `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:8px 0 28px;">
          <tr><td style="border-radius:10px;background-color:${COLORS.primary};">
-           <a href="${cta.url}" style="display:inline-block;padding:14px 28px;font-size:16px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:10px;">${cta.label}</a>
+           <a href="${escapeHtml(cta.url)}" style="display:inline-block;padding:14px 28px;font-size:16px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:10px;">${cta.label}</a>
          </td></tr>
        </table>`
     : "";
@@ -86,6 +89,7 @@ export function renderEmailLayout(params: EmailLayoutParams): string {
           ${greetingHtml}
           ${paragraphsHtml}
           ${ctaHtml}
+          ${detailsHtml ?? ""}
           ${infoBlock}
           <div style="border-top:1px solid ${COLORS.border};padding-top:24px;">
             <p style="margin:0;font-size:14px;color:${COLORS.muted};white-space:pre-line;">${signoff}</p>

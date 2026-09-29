@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { getWaitlistEmail } from "@/lib/waitlist-email";
+import { sendEmail } from "@/lib/email/send";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -75,25 +76,11 @@ export async function POST(request: Request) {
       .select("*", { count: "exact", head: true });
 
     // Send confirmation email via Resend
-    const resendKey = process.env.RESEND_API_KEY;
-    if (resendKey) {
+    if (process.env.RESEND_API_KEY) {
       const emailContent = getWaitlistEmail(locale || "es", name?.trim());
 
       try {
-        await fetch("https://api.resend.com/emails", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${resendKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            from: "Meapica <hola@constrack.pro>",
-            to: [email.toLowerCase().trim()],
-            subject: emailContent.subject,
-            html: emailContent.html,
-            text: emailContent.text,
-          }),
-        });
+        await sendEmail({ to: email.toLowerCase().trim(), subject: emailContent.subject, html: emailContent.html, text: emailContent.text });
       } catch (emailErr) {
         // Don't fail the request if email fails — subscriber is already saved
         console.error("Waitlist email error:", emailErr);

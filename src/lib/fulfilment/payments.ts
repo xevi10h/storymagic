@@ -7,6 +7,8 @@ import { getStripe } from "@/lib/stripe";
 import { cancelPrintOrder } from "@/lib/gelato/orders";
 import { alertOperator } from "./alerts";
 import { sendOrderEmailOnce } from "./emails";
+import { orderReference, type OrderReceipt } from "@/lib/email/order-emails";
+import { catalogItemByLookupKey } from "@/lib/pricing";
 import type { FulfilmentClient, FulfilmentDatabase } from "./db";
 
 type OrderRow = FulfilmentDatabase["public"]["Tables"]["orders"]["Row"];
@@ -29,7 +31,7 @@ export async function recordPaidSession(
   sessionId: string,
   opts: { fallbackEmail?: string | null } = {},
 ): Promise<PaidSessionResult> {
-  const session = await getStripe().checkout.sessions.retrieve(sessionId, { expand: ["invoice"] });
+  const session = await getStripe().checkout.sessions.retrieve(sessionId, { expand: ["invoice", "line_items"] });
   // Delayed payment methods complete the session unpaid; the money arrives later
   // with checkout.session.async_payment_succeeded. no_payment_required = 100 % promo code.
   if (session.payment_status !== "paid" && session.payment_status !== "no_payment_required") {
@@ -65,8 +67,13 @@ export async function recordPaidSession(
   // Measured: the invoice is finalized by the time checkout.session.completed arrives;
   // re-read once in case Stripe is a beat late (no invoice webhook needed).
   let invoiceUrl = invoice?.hosted_invoice_url ?? null;
+  let invoiceNumber = invoice?.number ?? null;
+  let invoicePaidAt = invoice?.status_transitions?.paid_at ?? null;
   if (invoiceId && !invoiceUrl) {
-    invoiceUrl = (await getStripe().invoices.retrieve(invoiceId).catch(() => null))?.hosted_invoice_url ?? null;
+    const fresh = await getStripe().invoices.retrieve(invoiceId).catch(() => null);
+    invoiceUrl = fresh?.hosted_invoice_url ?? null;
+    invoiceNumber = fresh?.number ?? invoiceNumber;
+    invoicePaidAt = fresh?.status_transitions?.paid_at ?? invoicePaidAt;
   }
   const paymentId =
     (typeof session.payment_intent === "string" ? session.payment_intent : session.payment_intent?.id) ?? null;
@@ -120,13 +127,40 @@ export async function recordPaidSession(
     order = existing;
   }
 
-  // Confirmation email for EVERY format, exactly once across webhook + verify.
+  // Confirmation email (with receipt) for EVERY format, exactly once across webhook + verify.
+  const physical = PHYSICAL_FORMATS.has(order.format);
+  const receipt: OrderReceipt = {
+    reference: orderReference(order.id),
+    paidAt: new Date((invoicePaidAt ?? session.created) * 1000).toISOString(),
+    items: (session.line_items?.data ?? []).map((li) => ({
+      catalogId: catalogItemByLookupKey(li.price?.lookup_key),
+      description: li.description ?? "",
+      amountCents: li.amount_subtotal,
+    })),
+    discountCents: session.total_details?.amount_discount ?? 0,
+    totalCents: session.amount_total ?? 0,
+    taxCents: session.total_details?.amount_tax ?? 0,
+    physical,
+    shipping:
+      physical && shippingAddress
+        ? {
+            name: shipping?.name ?? "",
+            line1: shippingAddress.line1,
+            line2: shippingAddress.line2,
+            postalCode: shippingAddress.postal_code,
+            city: shippingAddress.city,
+          }
+        : null,
+    invoiceUrl,
+    invoiceNumber,
+  };
   await sendOrderEmailOnce(supabase, {
     order,
     column: "confirmation_email_sent_at",
-    event: PHYSICAL_FORMATS.has(order.format) ? "order_confirmed" : "order_confirmed_digital",
+    event: physical ? "order_confirmed" : "order_confirmed_digital",
     email: customerEmail,
-    invoiceUrl,
+    buyerName: session.customer_details?.name ?? null,
+    receipt,
   });
   return { state: "paid", order, processedHere };
 }

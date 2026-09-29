@@ -2,7 +2,7 @@
 // Lightweight on purpose (no PDF/AI imports) so webhooks can use it.
 
 import { notifyOrderEmail } from "@/lib/email/notify-order";
-import type { OrderEmailEvent } from "@/lib/email/order-emails";
+import type { OrderEmailEvent, OrderReceipt } from "@/lib/email/order-emails";
 import type { FulfilmentClient, FulfilmentDatabase } from "./db";
 
 type OrderRow = FulfilmentDatabase["public"]["Tables"]["orders"]["Row"];
@@ -20,7 +20,9 @@ export async function sendOrderEmailOnce(
     email?: string | null;
     downloadUrl?: string;
     isPhysical?: boolean;
-    invoiceUrl?: string | null;
+    /** Confirmation emails: name given at Checkout + receipt from the paid session */
+    buyerName?: string | null;
+    receipt?: OrderReceipt | null;
   },
 ): Promise<boolean> {
   const { order, column } = params;
@@ -45,7 +47,8 @@ export async function sendOrderEmailOnce(
     email: params.email,
     downloadUrl: params.downloadUrl,
     isPhysical: params.isPhysical,
-    invoiceUrl: params.invoiceUrl,
+    buyerName: params.buyerName,
+    receipt: params.receipt,
   });
   if (!sent) {
     await supabase.from("orders").update({ [column]: null }).eq("id", order.id);

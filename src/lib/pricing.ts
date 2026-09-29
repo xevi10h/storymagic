@@ -28,6 +28,16 @@ export const STRIPE_CATALOG: Record<CatalogItemId, { lookupKey: string; amount: 
   extra_copy_hardcover: { lookupKey: "meapica_extra_copy_hardcover", amount: 2990, name: "Ejemplar extra · Tapa dura", taxCode: TAX_CODE_PRINTED_CHILDRENS_BOOK },
 };
 
+/** Catalog item behind a Stripe Price lookup_key (receipts), or null if unknown. */
+export function catalogItemByLookupKey(lookupKey: string | null | undefined): CatalogItemId | null {
+  if (!lookupKey) return null;
+  const hit = (Object.keys(STRIPE_CATALOG) as CatalogItemId[]).find((id) => STRIPE_CATALOG[id].lookupKey === lookupKey);
+  return hit ?? null;
+}
+
+/** Seller identity printed on Stripe invoices and on the order-confirmation receipt. */
+export const SELLER_IDENTITY = "Xavier Huix Trenco (Meapica) · NIF 41649433K · Carrer Aribau 140, 5º, 08036 Barcelona";
+
 export const PRICING = {
   digital_pdf: {
     price: STRIPE_CATALOG.digital_pdf.amount,
