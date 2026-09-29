@@ -25,7 +25,7 @@
 >    top-up.
 > 2. **NIF pending** for the Aviso Legal (user to provide; identity published
 >    without it).
-> 3. **Resend DNS for meapica.com** — 3 records to add in Spaceship (see 2026-06
+> 3. (Interim 2026-09-29: prod sends as `Meapica <admin@casmar.tech>` with reply-to admin@casmar.tech — casmar.tech is verified in Resend and has Google MX.) **Resend DNS for meapica.com** — 3 records to add in Spaceship (see 2026-06
 >    notes below), then verify + set EMAIL_FROM.
 > 4. **Sprint 2 (performance)** then **Sprint 3 (conversion/SEO)** —
 >    `docs/web-audit-2026-07-20.md`.
