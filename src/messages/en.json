@@ -2095,5 +2095,77 @@
     "empty": "New articles coming soon.",
     "relatedHeading": "Keep exploring",
     "author": "By {author}"
+  },
+  "christmasDelivery": {
+    "metaTitle": "Will it arrive by Three Kings' Day {reyesYear}? Order deadlines",
+    "metaDescription": "Last order dates for a printed personalized children's book to arrive by Christmas Eve or Three Kings' Day in Spain. Dates per format, mainland Spain and the Balearic Islands. The PDF always arrives in time.",
+    "ogEyebrow": "Christmas and Three Kings {christmasYear}-{reyesYear}",
+    "breadcrumb": "Will it arrive in time?",
+    "eyebrow": "Christmas and Three Kings {christmasYear}-{reyesYear}",
+    "h1": "Will it arrive in time for Three Kings' Day?",
+    "intro": "These are the last order dates to get your printed personalized book home by Christmas Eve or before the night of the Three Kings. We base them on real printing and delivery times, with extra margin for December.",
+    "countdownLabel": "Countdown",
+    "daysLeft": "{days, plural, =0 {Today is the last day} one {# day left} other {# days left}}",
+    "countdownDetail": {
+      "christmas": "to order it printed and have it home by Christmas Eve. Last day: {date}.",
+      "reyes": "to order it printed and have it home before Three Kings' Day. Last day: {date}."
+    },
+    "digitalTitle": "The printed book won't arrive in time any more",
+    "digitalDetail": "The PDF will: it reaches your inbox after payment, usually in under an hour, ready to print at home or read together on a tablet.",
+    "ctaDigital": "Give the PDF story",
+    "formatsHeading": "Order deadlines by format",
+    "formatsSub": "Delivery included in the price to mainland Spain and the Balearic Islands.",
+    "occasion": {
+      "christmas": "Christmas Eve",
+      "reyes": "Three Kings"
+    },
+    "homeBy": "Home by {date}",
+    "orderBy": "Order by {date}",
+    "closed": "Closed",
+    "regions": {
+      "peninsula": "Mainland",
+      "baleares": "Balearics"
+    },
+    "regionsAll": "Mainland Spain and Balearics",
+    "pdfAlwaysOnTime": "Always in time",
+    "pdfDetail": "It reaches your inbox after payment, usually in under an hour. You can order it even on 5 January.",
+    "regionNote": "We don't ship to the Canary Islands, Ceuta or Melilla yet. If the gift is for there, the PDF story works just as well.",
+    "methodHeading": "How we work out these dates",
+    "method": [
+      "Every book is printed on demand in Spain. Today, printing plus delivery takes {min}-{max} calendar days door to door.",
+      "In December we add {buffer} days of margin for carrier backlogs and the 8 December, Christmas and New Year holidays.",
+      "The clock starts when you complete payment, not when you start creating the story.",
+      "These are estimates based on current carrier times, not a guarantee. If they change, we update this page."
+    ],
+    "lateHeading": "Missed the date?",
+    "lateText": "The PDF story is the same book: the same illustrations and their name on every page. It reaches your inbox after payment, so it arrives in time for Christmas Eve and Three Kings' Day even if you order on the day. Print it at home or at a print shop, or read it together on a tablet.",
+    "faqHeading": "Frequently asked questions",
+    "faq": {
+      "reyesQ": "What is the last day to order a personalized book for Three Kings' Day?",
+      "reyesA": "To have the printed book home before 5 January, order by {date}. The PDF story can be ordered even on 5 January.",
+      "christmasQ": "And to have it by Christmas Eve?",
+      "christmasA": "To have the printed book home on 24 December, order by {date}. After that you can still give the PDF story.",
+      "timeQ": "How long does the printed book take to arrive?",
+      "timeA": "We print it on demand in Spain as soon as you order. Mainland Spain and the Balearic Islands: 7-10 working days, with delivery included in the price. You'll get the tracking number by email.",
+      "regionQ": "Do you ship to the Canary Islands, Ceuta or Melilla?",
+      "regionA": "Not yet. If the gift is for there, the PDF story reaches your inbox and you can print it or read it on a tablet."
+    },
+    "finalHeading": "A gift they'll keep for life",
+    "banner": {
+      "physical": {
+        "christmas": "Christmas Eve: order by {date}",
+        "reyes": "Three Kings: order by {date}"
+      },
+      "physicalMore": "to have it printed at home",
+      "digital": {
+        "christmas": "Still in time for Christmas: the PDF story",
+        "reyes": "Still in time for Three Kings: the PDF story"
+      },
+      "digitalMore": "it reaches your inbox the same day",
+      "link": "See dates",
+      "dismiss": "Dismiss notice"
+    },
+    "footerLink": "Will it arrive by Three Kings' Day?",
+    "seoCallout": "Will it arrive in time? See the Christmas and Three Kings order deadlines"
   }
 }

@@ -128,6 +128,14 @@ All prices above (and the base book prices) are final VAT-inclusive consumer pri
 - Emotional expressions must match scene context
 - Character must be recognizable by physical attributes across all pages
 
+## Christmas / Reyes delivery deadlines (block D, 2026-09-29)
+
+- **Page** `/[locale]/christmas-delivery` ("¿Llega a tiempo para Reyes?", es/ca/en/fr, copy in `christmasDelivery` messages): live countdown to the nearest printed cut-off, last order date per format (tapa dura, tapa blanda, PDF) for Nochebuena (24 Dec) and Reyes (5 Jan), península + Baleares (Canarias/Ceuta/Melilla not served, stated), how dates are calculated (honest "estimates" copy), PDF fallback, FAQ (FAQPage JSON-LD), breadcrumb JSON-LD, OG image, sitemap entry. ISR hourly; countdown re-evaluated client-side every minute (Spain time).
+- **Date logic** in `src/lib/shipping.ts` (`giftSeason`, `formatDeadlines`, `nextPhysicalCutoff`, `seasonBanner`, `spainToday`): cut-off = deliver-by − max delivery days − `PEAK_BUFFER_DAYS` (today 10 Dec for Nochebuena, 22 Dec for Reyes). A season runs 6 Jan → 5 Jan (rolls over on 6 Jan). Check: `node --experimental-strip-types src/lib/shipping.check.mjs`.
+- **Site-wide banner** (`src/components/seasonal/SeasonalBanner.tsx`, rendered by the marketing `Navbar`): visible 1 Nov – 5 Jan, shows the nearest open cut-off, then promotes the PDF once no printed book arrives; hidden on the page itself; dismissible per message (localStorage `meapica.seasonBanner.dismissed`, try/catch + in-memory fallback).
+- **Dev preview**: append `?now=YYYY-MM-DD` to any page (ignored in production).
+- Linked from the footer and the `gifts/christmas` + `gifts/three-kings` SEO pages.
+
 ## Waitlist (Pre-Launch Gate)
 
 The entire site is gated behind a pre-launch waiting list when `WAITLIST_MODE=true`. This allows building an audience and collecting leads before the product is publicly available.

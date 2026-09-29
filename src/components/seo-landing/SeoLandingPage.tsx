@@ -15,11 +15,15 @@ import {
   seoHubPath,
   SEO_HUB_HEADING_KEY,
 } from "@/lib/seo-landing";
+import { CHRISTMAS_DELIVERY_PATH } from "@/lib/shipping";
 
 const BASE_URL = "https://meapica.com";
 
 // Conversion-ordered subset of the legal FAQ reused on every SEO page.
 const FAQ_ORDER = [2, 3, 1, 4] as const;
+
+// Gift pages that link to the Christmas / Reyes delivery deadlines.
+const SEASONAL_GIFT_SLUGS = new Set(["christmas", "three-kings"]);
 
 type Props = {
   type: SeoPageType;
@@ -31,6 +35,7 @@ export default async function SeoLandingPage({ type, slug, locale }: Props) {
   const t = await getTranslations({ locale, namespace: "seo" });
   const td = await getTranslations({ locale, namespace: "data" });
   const tf = await getTranslations({ locale, namespace: "legal" });
+  const tcd = await getTranslations({ locale, namespace: "christmasDelivery" });
 
   const k = (field: string) => t(`${type}.${slug}.${field}`);
   const ctaHref = seoCtaHref(type, slug);
@@ -105,6 +110,20 @@ export default async function SeoLandingPage({ type, slug, locale }: Props) {
                 <span>{tf("faq.section4Title")}</span>
               </div>
             </div>
+
+            {type === "gifts" && SEASONAL_GIFT_SLUGS.has(slug) && (
+              <Link
+                href={CHRISTMAS_DELIVERY_PATH}
+                className="group mt-6 inline-flex items-start gap-2 text-sm font-bold text-secondary transition-colors hover:text-primary"
+              >
+                <span aria-hidden className="material-symbols-outlined text-lg leading-5 text-primary">
+                  local_shipping
+                </span>
+                <span className="underline decoration-border-medium underline-offset-4 group-hover:decoration-primary">
+                  {tcd("seoCallout")}
+                </span>
+              </Link>
+            )}
           </div>
         </header>
 

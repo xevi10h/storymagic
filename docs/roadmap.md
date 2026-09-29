@@ -59,7 +59,8 @@ character lock; per-stage resolution. (commits 5ebc2f1 → a883d60)
 ## Next steps from commerce block B — Gelato (2026-09-28)
 - **Real paid print** of one hardcover to validate paper, colour and binding (drafts don't print; ~21 € incl. VAT).
 - **Canarias/Ceuta/Melilla** are excluded (decision 2026-09-28) but only enforced after payment (ops alert). Block it before paying: ask the postcode on the paywall, or move to Checkout `ui_mode: custom` with server-side shipping-address validation.
-- **Reyes page (block D)**: consume `orderCutoffs(reyesDeliverBy(2027))` from `src/lib/shipping.ts`; re-quote Gelato and check its peak-season cut-offs in November.
+- ~~Reyes page (block D)~~ DONE 2026-09-29 (`/[locale]/christmas-delivery` + site-wide `SeasonalBanner`). Still to do: re-quote Gelato and check its peak-season cut-offs in November, then adjust `DELIVERY_DAYS` / `PEAK_BUFFER_DAYS` (page, banner, FAQ and JSON-LD update automatically).
+- **Block D follow-ups (Christmas campaign)**: the Reyes cut-off (22 Dec) leaves ~8 business days to 5 Jan while the written promise is "7-10 días laborables": decide whether to keep 6 buffer days or move to 20 Dec; PDF upgrade-to-print path so late PDF buyers can still get the paper book after Reyes; a Christmas/Reyes story world; Catalan-specific Tió / Nadal angle.
 - **Paid express option** for December (Gelato express 5,40-5,76 € península, 4 days to Barcelona).
 - Re-send the "shipped" email if the tracking code arrives after the status (today only the dashboard gets it).
 
@@ -292,7 +293,7 @@ Initiative to improve organic ranking and landing conversion. Audited 2026-06-02
 - [x] FAQ accordion on landing (`FaqSection`, native `<details>`, reuses `legal.faq` copy) — between Testimonials and final offer
 - [x] Mobile sticky CTA (`MobileStickyCta`, `md:hidden` pinned pill) — global on landing + SEO pages
 - [ ] Social proof with scale ("+X familias · 4,8★") once real reviews exist
-- [ ] Seasonal urgency banner (Reyes / Navidad delivery deadlines) — needs real Gelato order-by deadlines (product decision)
+- [x] Seasonal banner (1 Nov – 5 Jan, dismissible) + `/christmas-delivery` "¿Llega a tiempo para Reyes?" page — block D, 2026-09-29; cut-offs from `src/lib/shipping.ts`
 - [ ] Post-purchase account offer (claim/save anonymous order → permanent account via `supabase.auth.updateUser`)
 
 **Launch access (decided, NOT yet applied to prod):** open from day one — `WAITLIST_MODE=false` in Vercel prod + remove gate. Already off in local `.env.local`. Prod flip pending user go-live signal.

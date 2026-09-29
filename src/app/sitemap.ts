@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { routing } from "@/i18n/routing";
 import { allSeoPaths } from "@/lib/seo-landing";
 import { getAllPublishedPostRefs } from "@/lib/blog";
+import { CHRISTMAS_DELIVERY_PATH } from "@/lib/shipping";
 
 const BASE_URL = "https://meapica.com";
 
@@ -21,6 +22,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: { path: string; changeFrequency: "weekly" | "monthly"; priority: number }[] = [
     { path: "", changeFrequency: "weekly", priority: 1.0 },
     { path: "/gifts", changeFrequency: "monthly", priority: 0.9 },
+    { path: CHRISTMAS_DELIVERY_PATH, changeFrequency: "weekly", priority: 0.8 },
     { path: "/personalized-books", changeFrequency: "monthly", priority: 0.9 },
     { path: "/themes", changeFrequency: "monthly", priority: 0.9 },
     { path: "/ejemplo", changeFrequency: "weekly", priority: 0.7 },

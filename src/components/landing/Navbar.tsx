@@ -6,6 +6,7 @@ import { Link, usePathname } from "@/i18n/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import LocaleSwitcher from "@/components/LocaleSwitcher";
 import BrandLogo from "@/components/BrandLogo";
+import SeasonalBanner from "@/components/seasonal/SeasonalBanner";
 
 function UserMenu({
   user,
@@ -127,6 +128,7 @@ export default function Navbar() {
 
   return (
     <nav className="fixed top-0 z-50 w-full px-4 py-4 transition-all duration-300">
+      <SeasonalBanner />
       <div className="mx-auto flex max-w-6xl items-center justify-between rounded-lg border border-border-light bg-white/95 px-6 py-3 shadow-sm backdrop-blur-sm">
         <Link href="/" className="flex items-center">
           <BrandLogo className="h-6 text-secondary" />

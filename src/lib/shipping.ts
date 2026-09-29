@@ -11,6 +11,7 @@ import type { PhysicalFormat } from "./pricing";
 
 /** Where we ship (decision 2026-09-28: Spain without Canarias, Ceuta, Melilla). */
 export type ShippingRegion = "peninsula" | "baleares";
+export const SHIPPING_REGIONS: ShippingRegion[] = ["peninsula", "baleares"];
 
 export const DELIVERY_DAYS: Record<PhysicalFormat, Record<ShippingRegion, { min: number; max: number }>> = {
   hardcover: { peninsula: { min: 7, max: 8 }, baleares: { min: 7, max: 8 } },
@@ -41,4 +42,129 @@ export function orderCutoffs(deliverBy: string): Array<{ format: PhysicalFormat;
       lastOrderDate: lastOrderDate(deliverBy, format, region),
     })),
   );
+}
+
+// ── Gift season (Christmas + Reyes) ───────────────────────────────────────────
+// Pure date logic for the /christmas-delivery page and the seasonal banner. All
+// dates are Spanish calendar days as "YYYY-MM-DD" strings (ISO strings compare
+// correctly with < / >). A season runs from 6 January to the next 5 January:
+// on 6 January it rolls over to the next Christmas.
+
+/** Route of the "¿Llega a tiempo para Reyes?" page (linked from the banner, footer, SEO pages). */
+export const CHRISTMAS_DELIVERY_PATH = "/christmas-delivery";
+
+export type SeasonOccasion = "christmas" | "reyes";
+export const SEASON_OCCASIONS: SeasonOccasion[] = ["christmas", "reyes"];
+
+/** Today's date (YYYY-MM-DD) in Spain, whatever the server/browser time zone. */
+export function spainToday(now: Date = new Date()): string {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/Madrid",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(now);
+  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
+  return `${get("year")}-${get("month")}-${get("day")}`;
+}
+
+/** Whole days from `from` to `to` (both YYYY-MM-DD); negative when `to` is past. */
+export function daysBetween(from: string, to: string): number {
+  return Math.round((Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86_400_000);
+}
+
+export interface GiftSeason {
+  /** Year of the Christmas in this season (Reyes falls on 5 Jan of the next year). */
+  christmasYear: number;
+  /** Date the book must be home by, per occasion. */
+  deliverBy: Record<SeasonOccasion, string>;
+  /** First day the seasonal banner shows. */
+  bannerFrom: string;
+  /** Last day of the season (Reyes eve); the next day rolls over. */
+  ends: string;
+}
+
+/** The season `today` belongs to (up to 5 Jan = the running one, from 6 Jan = the next). */
+export function giftSeason(today: string): GiftSeason {
+  const year = Number(today.slice(0, 4));
+  const christmasYear = today <= reyesDeliverBy(year) ? year - 1 : year;
+  const reyes = reyesDeliverBy(christmasYear + 1);
+  return {
+    christmasYear,
+    deliverBy: { christmas: `${christmasYear}-12-24`, reyes },
+    bannerFrom: `${christmasYear}-11-01`,
+    ends: reyes,
+  };
+}
+
+export interface FormatDeadline {
+  /** Regions sharing this cut-off (grouped so identical dates show once). */
+  regions: ShippingRegion[];
+  lastOrderDate: string;
+  /** Days left to order (0 = today is the last day, < 0 = closed). */
+  daysLeft: number;
+  open: boolean;
+}
+
+/** Cut-offs for one printed format and occasion in the season of `today`, grouped by date. */
+export function formatDeadlines(today: string, format: PhysicalFormat, occasion: SeasonOccasion): FormatDeadline[] {
+  const deliverBy = giftSeason(today).deliverBy[occasion];
+  const byDate = new Map<string, ShippingRegion[]>();
+  for (const c of orderCutoffs(deliverBy)) {
+    if (c.format !== format) continue;
+    byDate.set(c.lastOrderDate, [...(byDate.get(c.lastOrderDate) ?? []), c.region]);
+  }
+  return [...byDate.entries()]
+    .sort(([a], [b]) => (a < b ? -1 : 1))
+    .map(([lastOrderDate, regions]) => {
+      const daysLeft = daysBetween(today, lastOrderDate);
+      return { regions, lastOrderDate, daysLeft, open: daysLeft >= 0 };
+    });
+}
+
+export interface NextCutoff {
+  occasion: SeasonOccasion;
+  lastOrderDate: string;
+  daysLeft: number;
+}
+
+/**
+ * The nearest printed-book cut-off still open this season (Christmas first, then
+ * Reyes). Within an occasion it is the earliest cut-off still open across formats
+ * and regions. null = no printed book arrives in time any more (PDF only).
+ */
+export function nextPhysicalCutoff(today: string): NextCutoff | null {
+  const season = giftSeason(today);
+  for (const occasion of SEASON_OCCASIONS) {
+    const open = orderCutoffs(season.deliverBy[occasion])
+      .map((c) => c.lastOrderDate)
+      .filter((d) => d >= today)
+      .sort();
+    if (open.length > 0) return { occasion, lastOrderDate: open[0], daysLeft: daysBetween(today, open[0]) };
+  }
+  return null;
+}
+
+export type SeasonBanner =
+  | { kind: "physical"; occasion: SeasonOccasion; lastOrderDate: string; daysLeft: number }
+  | { kind: "digital"; occasion: SeasonOccasion }
+  | null;
+
+/**
+ * What the site-wide seasonal banner shows: nothing outside 1 Nov – 5 Jan, the
+ * nearest printed cut-off while one is open, then the instant PDF until Reyes.
+ */
+export function seasonBanner(today: string): SeasonBanner {
+  const season = giftSeason(today);
+  if (today < season.bannerFrom || today > season.ends) return null;
+  const next = nextPhysicalCutoff(today);
+  if (next) return { kind: "physical", ...next };
+  return { kind: "digital", occasion: today <= season.deliverBy.christmas ? "christmas" : "reyes" };
+}
+
+/** Dev-only "?now=YYYY-MM-DD" override (callers must gate on NODE_ENV). */
+export function parseDateOverride(value: string | null | undefined): string | null {
+  if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+  const d = new Date(`${value}T00:00:00Z`);
+  return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === value ? value : null;
 }

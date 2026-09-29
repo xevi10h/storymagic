@@ -3,11 +3,13 @@ import { Link } from "@/i18n/navigation";
 import BrandLogo from "@/components/BrandLogo";
 import NewsletterForm from "@/components/landing/NewsletterForm";
 import { SEO_GIFT_SLUGS, SEO_AGE_SLUGS, seoPath } from "@/lib/seo-landing";
+import { CHRISTMAS_DELIVERY_PATH } from "@/lib/shipping";
 
 export default function Footer() {
   const t = useTranslations("footer");
   const ts = useTranslations("seo");
   const tsc = useTranslations("showcase");
+  const tcd = useTranslations("christmasDelivery");
 
   return (
     <footer className="mt-12 border-t-8 border-footer-accent bg-footer-bg pt-20 pb-10 text-footer-text">
@@ -40,6 +42,11 @@ export default function Footer() {
               <li>
                 <Link className="transition-colors hover:text-primary" href="/legal#shipping">
                   {t("shippingPackaging")}
+                </Link>
+              </li>
+              <li>
+                <Link className="transition-colors hover:text-primary" href={CHRISTMAS_DELIVERY_PATH}>
+                  {tcd("footerLink")}
                 </Link>
               </li>
             </ul>

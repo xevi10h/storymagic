@@ -2105,5 +2105,77 @@
     "empty": "De nouveaux articles arrivent bientôt.",
     "relatedHeading": "Continuez à explorer",
     "author": "Par {author}"
+  },
+  "christmasDelivery": {
+    "metaTitle": "Arrivera-t-il pour les Rois {reyesYear} ? Dates limites de commande",
+    "metaDescription": "Jusqu'à quand commander un livre personnalisé imprimé pour le recevoir avant le réveillon ou la fête des Rois en Espagne. Dates par format, Espagne péninsulaire et Baléares. Le PDF arrive toujours à temps.",
+    "ogEyebrow": "Noël et Rois mages {christmasYear}-{reyesYear}",
+    "breadcrumb": "Arrivera-t-il à temps ?",
+    "eyebrow": "Noël et Rois mages {christmasYear}-{reyesYear}",
+    "h1": "Arrivera-t-il à temps pour les Rois mages ?",
+    "intro": "Voici les dates limites pour commander votre livre personnalisé imprimé et le recevoir avant le réveillon de Noël ou la nuit des Rois mages. Nous les calculons à partir des délais réels d'impression et de livraison, avec une marge supplémentaire en décembre.",
+    "countdownLabel": "Compte à rebours",
+    "daysLeft": "{days, plural, =0 {C'est le dernier jour} one {Encore # jour} other {Encore # jours}}",
+    "countdownDetail": {
+      "christmas": "pour le commander imprimé et le recevoir avant le réveillon. Dernier jour : {date}.",
+      "reyes": "pour le commander imprimé et le recevoir avant les Rois mages. Dernier jour : {date}."
+    },
+    "digitalTitle": "Le livre imprimé n'arrivera plus à temps",
+    "digitalDetail": "Le PDF, si : il arrive par e-mail après le paiement, généralement en moins d'une heure, prêt à imprimer ou à lire ensemble sur une tablette.",
+    "ctaDigital": "Offrir le conte en PDF",
+    "formatsHeading": "Dates limites par format",
+    "formatsSub": "Livraison incluse dans le prix vers l'Espagne péninsulaire et les Baléares.",
+    "occasion": {
+      "christmas": "Réveillon",
+      "reyes": "Rois mages"
+    },
+    "homeBy": "Chez vous au plus tard le {date}",
+    "orderBy": "Commandez jusqu'au {date}",
+    "closed": "Délai dépassé",
+    "regions": {
+      "peninsula": "Péninsule",
+      "baleares": "Baléares"
+    },
+    "regionsAll": "Péninsule et Baléares",
+    "pdfAlwaysOnTime": "Toujours à temps",
+    "pdfDetail": "Il arrive par e-mail après le paiement, généralement en moins d'une heure. Vous pouvez le commander même le 5 janvier.",
+    "regionNote": "Nous ne livrons pas encore les Canaries, Ceuta ni Melilla. Si le cadeau est pour là-bas, le conte en PDF fonctionne tout aussi bien.",
+    "methodHeading": "Comment nous calculons ces dates",
+    "method": [
+      "Chaque livre est imprimé à la demande en Espagne. Aujourd'hui, impression et livraison prennent {min} à {max} jours calendaires jusqu'à votre porte.",
+      "En décembre, nous ajoutons {buffer} jours de marge pour la saturation des transporteurs et les jours fériés du 8 décembre, de Noël et du Nouvel An.",
+      "Le délai commence quand vous finalisez le paiement, pas quand vous commencez à créer le conte.",
+      "Ce sont des estimations basées sur les délais actuels du transporteur, pas une garantie. S'ils changent, nous mettons cette page à jour."
+    ],
+    "lateHeading": "La date est passée ?",
+    "lateText": "Le conte en PDF, c'est le même livre : les mêmes illustrations et son prénom à chaque page. Il arrive par e-mail après le paiement, donc à temps pour le réveillon et pour les Rois mages même si vous le commandez le jour même. Imprimez-le chez vous ou chez un imprimeur, ou lisez-le ensemble sur une tablette.",
+    "faqHeading": "Questions fréquentes",
+    "faq": {
+      "reyesQ": "Jusqu'à quand puis-je commander un livre personnalisé pour les Rois mages ?",
+      "reyesA": "Pour recevoir le livre imprimé avant le 5 janvier, commandez jusqu'au {date}. Le conte en PDF peut être commandé même le 5 janvier.",
+      "christmasQ": "Et pour le recevoir avant le réveillon ?",
+      "christmasA": "Pour recevoir le livre imprimé le 24 décembre, commandez jusqu'au {date}. Après cette date, vous pouvez encore offrir le conte en PDF.",
+      "timeQ": "Combien de temps met le livre imprimé à arriver ?",
+      "timeA": "Nous l'imprimons à la demande en Espagne dès votre commande. Espagne péninsulaire et Baléares : 7 à 10 jours ouvrés, livraison incluse dans le prix. Vous recevrez le numéro de suivi par e-mail.",
+      "regionQ": "Livrez-vous les Canaries, Ceuta ou Melilla ?",
+      "regionA": "Pas encore. Si le cadeau est pour là-bas, le conte en PDF arrive par e-mail et vous pouvez l'imprimer ou le lire sur une tablette."
+    },
+    "finalHeading": "Un cadeau que l'on garde toute la vie",
+    "banner": {
+      "physical": {
+        "christmas": "Noël : commandez d'ici le {date}",
+        "reyes": "Rois : commandez d'ici le {date}"
+      },
+      "physicalMore": "pour le recevoir imprimé",
+      "digital": {
+        "christmas": "Encore à temps pour Noël : le conte en PDF",
+        "reyes": "Encore à temps pour les Rois : le conte en PDF"
+      },
+      "digitalMore": "il arrive par e-mail le jour même",
+      "link": "Voir les dates",
+      "dismiss": "Fermer l'avis"
+    },
+    "footerLink": "Arrivera-t-il pour les Rois mages ?",
+    "seoCallout": "Arrivera-t-il à temps ? Voir les dates limites de Noël et des Rois mages"
   }
 }

@@ -2095,5 +2095,77 @@
     "empty": "Pronto publicaremos nuevos artículos.",
     "relatedHeading": "Sigue explorando",
     "author": "Por {author}"
+  },
+  "christmasDelivery": {
+    "metaTitle": "¿Llega a tiempo para Reyes {reyesYear}? Fechas límite de pedido",
+    "metaDescription": "Hasta cuándo pedir un cuento personalizado impreso para tenerlo en casa en Nochebuena o antes de Reyes. Fechas por formato, envío a península y Baleares. El PDF llega siempre a tiempo.",
+    "ogEyebrow": "Navidad y Reyes {christmasYear}-{reyesYear}",
+    "breadcrumb": "¿Llega a tiempo?",
+    "eyebrow": "Navidad y Reyes {christmasYear}-{reyesYear}",
+    "h1": "¿Llega a tiempo para Reyes?",
+    "intro": "Estas son las fechas límite para pedir tu cuento personalizado impreso y tenerlo en casa en Nochebuena o antes de la noche de Reyes. Las calculamos con los plazos reales de impresión y envío, y con margen extra para diciembre.",
+    "countdownLabel": "Cuenta atrás",
+    "daysLeft": "{days, plural, =0 {Hoy es el último día} one {Queda # día} other {Quedan # días}}",
+    "countdownDetail": {
+      "christmas": "para pedirlo impreso y tenerlo en casa en Nochebuena. Último día: {date}.",
+      "reyes": "para pedirlo impreso y tenerlo en casa antes de Reyes. Último día: {date}."
+    },
+    "digitalTitle": "El libro impreso ya no llega a tiempo",
+    "digitalDetail": "El cuento en PDF, sí: te llega por correo tras el pago, normalmente en menos de una hora, listo para imprimir en casa o leer juntos en la tableta.",
+    "ctaDigital": "Regalar el cuento en PDF",
+    "formatsHeading": "Fechas límite por formato",
+    "formatsSub": "Envío incluido en el precio a España peninsular y Baleares.",
+    "occasion": {
+      "christmas": "Nochebuena",
+      "reyes": "Reyes"
+    },
+    "homeBy": "En casa como tarde el {date}",
+    "orderBy": "Pide hasta el {date}",
+    "closed": "Plazo cerrado",
+    "regions": {
+      "peninsula": "Península",
+      "baleares": "Baleares"
+    },
+    "regionsAll": "Península y Baleares",
+    "pdfAlwaysOnTime": "Siempre a tiempo",
+    "pdfDetail": "Te llega por correo tras el pago, normalmente en menos de una hora. Puedes pedirlo incluso el mismo 5 de enero.",
+    "regionNote": "De momento no enviamos a Canarias, Ceuta ni Melilla. Si el regalo es para allí, el cuento en PDF llega igual.",
+    "methodHeading": "Cómo calculamos estas fechas",
+    "method": [
+      "Imprimimos cada libro bajo demanda en España. Hoy, entre la impresión y el envío, un pedido tarda {min}-{max} días naturales en llegar a casa.",
+      "En diciembre sumamos {buffer} días de margen por la saturación de la paquetería y los festivos del 8 de diciembre, Navidad y Año Nuevo.",
+      "El plazo empieza cuando completas el pago, no cuando empiezas a crear el cuento.",
+      "Son estimaciones basadas en los plazos actuales del transportista, no una garantía. Si cambian, actualizamos esta página."
+    ],
+    "lateHeading": "¿Se te ha pasado la fecha?",
+    "lateText": "El cuento en PDF es el mismo libro: las mismas ilustraciones y su nombre en cada página. Te llega por correo tras el pago, así que llega a tiempo para Nochebuena y para Reyes aunque lo pidas ese mismo día. Puedes imprimirlo en casa o en una copistería, o leerlo juntos en la tableta.",
+    "faqHeading": "Preguntas frecuentes",
+    "faq": {
+      "reyesQ": "¿Hasta cuándo puedo pedir un cuento personalizado para Reyes?",
+      "reyesA": "Para tener el libro impreso en casa antes del 5 de enero, pídelo hasta el {date}. El cuento en PDF puedes pedirlo incluso el mismo 5 de enero.",
+      "christmasQ": "¿Y para tenerlo en Nochebuena?",
+      "christmasA": "Para tener el libro impreso en casa el 24 de diciembre, pídelo hasta el {date}. Después de esa fecha aún puedes regalar el cuento en PDF.",
+      "timeQ": "¿Cuánto tarda en llegar el libro impreso?",
+      "timeA": "Lo imprimimos bajo demanda en España en cuanto haces el pedido. España peninsular y Baleares: 7-10 días laborables, con el envío incluido en el precio. Recibirás el número de seguimiento por correo.",
+      "regionQ": "¿Enviáis a Canarias, Ceuta o Melilla?",
+      "regionA": "De momento no. Si el regalo es para allí, el cuento en PDF te llega por correo y puedes imprimirlo o leerlo en la tableta."
+    },
+    "finalHeading": "Un regalo que se guarda toda la vida",
+    "banner": {
+      "physical": {
+        "christmas": "Nochebuena: pide hasta el {date}",
+        "reyes": "Reyes: pide hasta el {date}"
+      },
+      "physicalMore": "para tenerlo impreso en casa",
+      "digital": {
+        "christmas": "Aún a tiempo para Navidad: el cuento en PDF",
+        "reyes": "Aún a tiempo para Reyes: el cuento en PDF"
+      },
+      "digitalMore": "te llega por correo el mismo día",
+      "link": "Ver fechas",
+      "dismiss": "Cerrar aviso"
+    },
+    "footerLink": "¿Llega a tiempo para Reyes?",
+    "seoCallout": "¿Llega a tiempo? Consulta las fechas límite de Navidad y Reyes"
   }
 }

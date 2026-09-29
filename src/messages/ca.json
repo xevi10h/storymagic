@@ -2105,5 +2105,77 @@
     "empty": "Aviat publicarem nous articles.",
     "relatedHeading": "Continua explorant",
     "author": "Per {author}"
+  },
+  "christmasDelivery": {
+    "metaTitle": "Arriba a temps per Reis {reyesYear}? Dates límit de comanda",
+    "metaDescription": "Fins quan pots demanar un conte personalitzat imprès per tenir-lo a casa per Nadal o abans de Reis. Dates per format, enviament a la península i les Balears. El PDF sempre arriba a temps.",
+    "ogEyebrow": "Nadal i Reis {christmasYear}-{reyesYear}",
+    "breadcrumb": "Arriba a temps?",
+    "eyebrow": "Nadal i Reis {christmasYear}-{reyesYear}",
+    "h1": "Arriba a temps per Reis?",
+    "intro": "Aquestes són les dates límit per demanar el teu conte personalitzat imprès i tenir-lo a casa per Nadal o abans de la nit de Reis. Les calculem amb els terminis reals d'impressió i enviament, i amb marge extra per al desembre.",
+    "countdownLabel": "Compte enrere",
+    "daysLeft": "{days, plural, =0 {Avui és l'últim dia} one {Queda # dia} other {Queden # dies}}",
+    "countdownDetail": {
+      "christmas": "per demanar-lo imprès i tenir-lo a casa la nit de Nadal. Últim dia: {date}.",
+      "reyes": "per demanar-lo imprès i tenir-lo a casa abans de Reis. Últim dia: {date}."
+    },
+    "digitalTitle": "El llibre imprès ja no arriba a temps",
+    "digitalDetail": "El conte en PDF, sí: t'arriba per correu després del pagament, normalment en menys d'una hora, a punt per imprimir a casa o llegir junts a la tauleta.",
+    "ctaDigital": "Regalar el conte en PDF",
+    "formatsHeading": "Dates límit per format",
+    "formatsSub": "Enviament inclòs en el preu a l'Espanya peninsular i les Balears.",
+    "occasion": {
+      "christmas": "Nadal",
+      "reyes": "Reis"
+    },
+    "homeBy": "A casa com a molt tard el {date}",
+    "orderBy": "Demana'l fins al {date}",
+    "closed": "Termini tancat",
+    "regions": {
+      "peninsula": "Península",
+      "baleares": "Balears"
+    },
+    "regionsAll": "Península i Balears",
+    "pdfAlwaysOnTime": "Sempre a temps",
+    "pdfDetail": "T'arriba per correu després del pagament, normalment en menys d'una hora. Pots demanar-lo fins i tot el mateix 5 de gener.",
+    "regionNote": "De moment no enviem a les Canàries, Ceuta ni Melilla. Si el regal és per allà, el conte en PDF hi arriba igual.",
+    "methodHeading": "Com calculem aquestes dates",
+    "method": [
+      "Imprimim cada llibre sota demanda a Espanya. Avui, entre la impressió i l'enviament, una comanda triga {min}-{max} dies naturals a arribar a casa.",
+      "Al desembre hi sumem {buffer} dies de marge per la saturació de la paqueteria i els festius del 8 de desembre, Nadal i Cap d'Any.",
+      "El termini comença quan completes el pagament, no quan comences a crear el conte.",
+      "Són estimacions basades en els terminis actuals del transportista, no una garantia. Si canvien, actualitzem aquesta pàgina."
+    ],
+    "lateHeading": "Se t'ha passat la data?",
+    "lateText": "El conte en PDF és el mateix llibre: les mateixes il·lustracions i el seu nom a cada pàgina. T'arriba per correu després del pagament, així que arriba a temps per Nadal i per Reis encara que el demanis el mateix dia. Pots imprimir-lo a casa o en una copisteria, o llegir-lo junts a la tauleta.",
+    "faqHeading": "Preguntes freqüents",
+    "faq": {
+      "reyesQ": "Fins quan puc demanar un conte personalitzat per Reis?",
+      "reyesA": "Per tenir el llibre imprès a casa abans del 5 de gener, demana'l fins al {date}. El conte en PDF el pots demanar fins i tot el mateix 5 de gener.",
+      "christmasQ": "I per tenir-lo per Nadal?",
+      "christmasA": "Per tenir el llibre imprès a casa el 24 de desembre, demana'l fins al {date}. Després d'aquesta data encara pots regalar el conte en PDF.",
+      "timeQ": "Quant triga a arribar el llibre imprès?",
+      "timeA": "L'imprimim sota demanda a Espanya tan bon punt fas la comanda. Espanya peninsular i Balears: 7-10 dies laborables, amb l'enviament inclòs en el preu. Rebràs el número de seguiment per correu.",
+      "regionQ": "Envieu a les Canàries, Ceuta o Melilla?",
+      "regionA": "De moment no. Si el regal és per allà, el conte en PDF t'arriba per correu i pots imprimir-lo o llegir-lo a la tauleta."
+    },
+    "finalHeading": "Un regal que es guarda tota la vida",
+    "banner": {
+      "physical": {
+        "christmas": "Nadal: demana'l fins al {date}",
+        "reyes": "Reis: demana'l fins al {date}"
+      },
+      "physicalMore": "per tenir-lo imprès a casa",
+      "digital": {
+        "christmas": "Encara a temps per Nadal: el conte en PDF",
+        "reyes": "Encara a temps per Reis: el conte en PDF"
+      },
+      "digitalMore": "t'arriba per correu el mateix dia",
+      "link": "Veure dates",
+      "dismiss": "Tancar avís"
+    },
+    "footerLink": "Arriba a temps per Reis?",
+    "seoCallout": "Arriba a temps? Consulta les dates límit de Nadal i Reis"
   }
 }
