@@ -1,6 +1,16 @@
 # Launch Readiness Checklist
 
-> ## 👤 2026-09-30 — accounts, orders & data (branch `integration/accounts-orders`, NOT deployed)
+> ## 👤 2026-09-30 — accounts, orders & data — DEPLOYED to prod 2026-09-30 (47f6378)
+> Done by Claude: migrations 130000–156000 (before) + 160000–180000 (after) applied and recorded in
+> schema_migrations; `ADMIN_EMAILS=admin@casmar.tech` in Vercel; Stripe live + test webhooks now send
+> `charge.dispute.created` + `checkout.session.async_payment_failed`; live upgrade Prices created
+> (`meapica_upgrade_softcover` price_1ULVDPAyKcfLUpfGmmFeqd64 25,00 €, `_hardcover` price_1ULVDQAyKcfLUpfGcTwpmHuh 40,00 €).
+> Prod smoke `node e2e/_prod-smoke.mjs` (guest → draft → title/dedication → dashboard → direct DB writes/reads
+> refused → self-service erasure): ALL PASS. Anon key can no longer read newsletter_subscribers / rate_limits.
+> **Still owner-only:** Supabase SMTP (login emails are broken for customers until then), OTP length 6,
+> manual linking, Site URL + allow-list, the 2 templates; Turnstile widget + `NEXT_PUBLIC_TURNSTILE_SITE_KEY`
+> then CAPTCHA on in Supabase. Stripe webhooks still point at meapica.com (legacy DNS): move to meapica.shop.
+> Original plan below, kept for reference.
 > Built: passwordless login (email code/link + Google) with guest linking, customer order detail +
 > reorder + bad-outcome emails, invoices with NIF + credit notes, `/admin` operator panel,
 > account erasure + 30-day guest purge, RLS/storage hardening. See technical-architecture.md →
