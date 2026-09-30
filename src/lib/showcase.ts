@@ -1,8 +1,11 @@
 import { createClient } from "@supabase/supabase-js";
-import { toShowcaseUrl } from "@/lib/storage/illustration-refs";
+import { illustrationPath, toShowcaseUrl } from "@/lib/storage/illustration-refs";
 
-// Read-side helper for showcase example stories (is_showcase + ready).
+// Read-side helper for showcase example stories (is_showcase + finished book).
 // Mirrors /api/showcase mapping but runs server-side for the /ejemplo index.
+
+/** A finished book stays a valid example after it is ordered (the owner's print-checked books are). */
+export const SHOWCASE_STATUSES = ["ready", "ordered"];
 
 export interface ShowcaseStory {
   id: string;
@@ -42,14 +45,14 @@ function mapStory(story: any): ShowcaseStory {
     templateId: story.template_id,
     title: (generated as any)?.bookTitle ?? "Untitled",
     // Public `showcase` bucket mirror — children's originals are private.
-    coverImage: toShowcaseUrl(illustrations[0]?.image_url, process.env.NEXT_PUBLIC_SUPABASE_URL!),
+    coverImage: toShowcaseUrl((illustrationPath(story.cover_image_url) && story.cover_image_url) || illustrations[0]?.image_url, process.env.NEXT_PUBLIC_SUPABASE_URL!),
     characterName: character?.name ?? "",
     characterAge: character?.age ?? 0,
   };
 }
 
 const SELECT =
-  "id, template_id, generated_text, locale, characters (name, age, gender), story_illustrations (scene_number, image_url)";
+  "id, template_id, generated_text, locale, cover_image_url, characters (name, age, gender), story_illustrations (scene_number, image_url)";
 
 export async function getShowcaseStories(
   locale: string,
@@ -62,7 +65,7 @@ export async function getShowcaseStories(
       .from("stories")
       .select(SELECT)
       .eq("is_showcase", true)
-      .eq("status", "ready")
+      .in("status", SHOWCASE_STATUSES)
       .order("created_at", { ascending: false })
       .limit(limit);
 

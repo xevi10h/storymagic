@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/database.types";
 import { toShowcaseUrl } from "@/lib/storage/illustration-refs";
+import { SHOWCASE_STATUSES } from "@/lib/showcase";
 
 const BASE_URL = "https://meapica.com";
 
@@ -33,7 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     `)
     .eq("id", storyId)
     .eq("is_showcase", true)
-    .eq("status", "ready")
+    .in("status", SHOWCASE_STATUSES)
     .single();
 
   if (!story) {

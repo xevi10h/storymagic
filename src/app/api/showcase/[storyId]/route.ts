@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/database.types";
 import { toShowcaseUrl } from "@/lib/storage/illustration-refs";
+import { SHOWCASE_STATUSES } from "@/lib/showcase";
 
 function createPublicClient() {
   return createClient<Database>(
@@ -35,7 +36,7 @@ export async function GET(
     `)
     .eq("id", storyId)
     .eq("is_showcase", true)
-    .eq("status", "ready")
+    .in("status", SHOWCASE_STATUSES)
     .single();
 
   if (error || !story) {
