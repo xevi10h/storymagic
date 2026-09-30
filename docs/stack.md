@@ -170,6 +170,12 @@ user `resend`); Email OTP length 6, expiry 3600; manual linking ON; Google provi
 `http://localhost:3013/**`. Templates "Magic Link" and "Change Email Address" = `supabase/templates/*.html`
 (+ `.subject.txt`).
 
+**Anti-abuse (Cloudflare Turnstile + daily cap):** `NEXT_PUBLIC_TURNSTILE_SITE_KEY` (Vercel, all envs,
+inlined at build → redeploy after changing; unset = no captcha). The Turnstile secret lives only in Supabase
+→ Auth → Attack Protection (enable only after the site key is deployed). Captcha tokens are sent on
+`signInAnonymously` and `signInWithOtp` (the only calls Supabase checks). `DAILY_PREVIEW_CAP` (default 300,
+0 = off): global per-UTC-day ceiling on new AI previews; ops alert at 80 % and 100 % via `OPS_ALERT_EMAIL`.
+
 **Env (Vercel prod):** `ADMIN_EMAILS` (comma-separated; empty = nobody gets into `/admin`).
 `CRON_SECRET` also guards `/api/cron/purge-guests` (vercel.json, daily 03:40 UTC). Guest-merge cookie
 key is derived from `SUPABASE_SERVICE_ROLE_KEY` (no new var).
@@ -182,6 +188,8 @@ key is derived from `SUPABASE_SERVICE_ROLE_KEY` (no new var).
 | 20260930140000 | `order_notifications.sql` (notice email claims, `disputed_at`, `fulfilment_hold_reason`) | before the deploy (code selects them) |
 | 20260930150000 | `admin_and_retention.sql` (requeue/reprint columns, `order_status_history`, `admin_audit_log`, `account_erasures`) | before the deploy |
 | 20260930160000 | `security_hardening.sql` (no browser writes, locked showcase, book-pdfs server-only, orders FKs SET NULL, newsletter/rate_limits closed) | **after** the deploy |
+| 20260930170000 | `daily_preview_cap.sql` (atomic per-day counter RPC; code falls back to an approximate count without it) | after the deploy |
+| 20260930180000 | `paywall_columns.sql` (revoke client read of `stories.generated_text` / `story_illustrations.prompt_used`; drop owner direct-read storage policy) | **after** the deploy |
 
 ## Gelato (print + shipping)
 
