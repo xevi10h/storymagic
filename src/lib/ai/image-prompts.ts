@@ -14,6 +14,7 @@ import type { CharacterBible } from "./character-description";
 import type { ShotSpec } from "./scene-screenplay";
 import { CHILD_ID, type CastMember, type WorldAsset } from "./visual-assets";
 import { FULL_BLEED, WATERCOLOR_STYLE } from "./style";
+import { castLabel, worldLabel } from "./entity-label";
 
 /** What each attached reference image is, in attachment order. */
 export type ReferenceRole =
@@ -39,8 +40,9 @@ const CHILD_LABEL = "THE CHILD";
 /** Recurring characters drawn on the main sheet (the rest go on the extra sheet). */
 export const MAIN_SHEET_CAST = 2;
 
-function label(member: CastMember): string {
-  return member.name.toUpperCase();
+/** English prompt label of a cast member (also used for the sheet roles and the QA judge). */
+export function label(member: CastMember): string {
+  return castLabel(member).toUpperCase();
 }
 
 function namesList(names: string[]): string {
@@ -107,7 +109,7 @@ function characterBlock(plan: PromptCast, shot: ShotSpec): string {
 function worldBlock(plan: PromptCast, shot: ShotSpec): string {
   return plan.world
     .filter((w) => shot.world.includes(w.id))
-    .map((w) => `The ${w.name} looks like this: ${w.description}`)
+    .map((w) => `The ${worldLabel(w)} looks like this: ${w.description}`)
     .join(" ");
 }
 
@@ -127,8 +129,17 @@ const MAP_RULES =
   "The picture will be folded exactly down the vertical centre line: no character, item or face in the central strip (the middle eighth of the width); only landscape or the trail may cross it. " +
   "Absolutely no text of any kind: no place names, no labels, no banners or scrolls with writing, no letters on a compass rose, no numbers, no signature.";
 
-function sceneBody(plan: PromptCast, shot: ShotSpec): string {
-  const lines = [`${sentence(shot.camera)} ${sentence(shot.action)} Setting: ${sentence(shot.setting)} Light: ${sentence(shot.light)}`];
+/**
+ * The scene paragraph. `withAction: false` (repairs) leaves out what the figures
+ * do: the image being edited already shows it, and re-stating the brief's pose
+ * re-created the very defect being fixed (a cover whose brief asked for both
+ * hands at the mouth AND a toy held to the chest kept its third hand through two
+ * repair edits).
+ */
+function sceneBody(plan: PromptCast, shot: ShotSpec, withAction = true): string {
+  const moment = withAction && shot.moment ? `The moment of the story: ${sentence(shot.moment)} ` : "";
+  const action = withAction ? `${sentence(shot.action)} ` : "";
+  const lines = [`${sentence(shot.camera)} ${moment}${action}Setting: ${sentence(shot.setting)} Light: ${sentence(shot.light)}`];
   if (shot.shotScale === "wide" && shot.cast.includes(CHILD_ID) && shot.frame !== "map") {
     lines.push(`Long shot: ${CHILD_LABEL} is small in the frame — less than one tenth of the image height, in the lower-left third — and the environment fills the picture.`);
   }
@@ -189,7 +200,7 @@ export function buildRepairPrompt(plan: PromptCast, shot: ShotSpec, roles: Refer
     ]
       .filter(Boolean)
       .join(" "),
-    `SCENE (for reference): ${sceneBody(plan, shot)}`,
+    `SCENE (for reference): ${sceneBody(plan, shot, false)}`,
     characterBlock(plan, shot),
     `${WATERCOLOR_STYLE} ${FULL_BLEED}`,
   ]

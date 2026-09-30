@@ -26,7 +26,7 @@ import {
   type BookImagePlan,
   type SheetRefs,
 } from "./book-images";
-import { buildScenePrompt } from "./image-prompts";
+import { buildScenePrompt, label as promptLabel } from "./image-prompts";
 import { buildMapGame, mapChecklist, type MapGame } from "./adventure-map";
 import { failsQa, judgeScenes, type QAResult, type QAScene, type QAVerdict } from "./qa-judge";
 import { CHILD_ID } from "./visual-assets";
@@ -291,7 +291,8 @@ async function renderMissing(ctx: Ctx, progress: FinalBookProgress): Promise<boo
 
 function label(plan: BookImagePlan, id: string): string {
   if (id === CHILD_ID) return "THE CHILD";
-  return plan.cast.find((c) => c.id === id)?.name.toUpperCase() ?? id;
+  const member = plan.cast.find((c) => c.id === id);
+  return member ? promptLabel(member) : id;
 }
 
 export function qaSceneFor(plan: BookImagePlan, story: GeneratedStory, sceneNumber: number, imageUrl: string, mapGame?: MapGame): QAScene {
@@ -310,13 +311,15 @@ export function qaSceneFor(plan: BookImagePlan, story: GeneratedStory, sceneNumb
     sceneNumber === HERO_SHOT
       ? " THE CHILD is the only figure in the picture: no other people, animals or creatures, not even tiny ones in the background."
       : sceneNumber === MAP_SHOT && mapGame
-        ? ` The reader is asked to FIND each of these, so each must be clearly visible and recognisable in the picture: ${mapChecklist(plan, mapGame)}. Any one missing or unrecognisable → coherenceScore at most 5, and the fix must add it on open ground. Double page: nothing important on the vertical centre line (the fold). Place names, labels or letters (even on a compass) → hardFail. Figures are small on a map: judge the child's identity by hair, skin tone and outfit colours, not facial detail.`
+        ? ` The reader is asked to FIND the listed items, so each must be clearly visible and recognisable; a missing one must be added on open ground. Double page: nothing important on the vertical centre line (the fold). Place names, labels or letters (even on a compass) are text in the image. Figures are small on a map: judge the child's identity by hair, skin tone and outfit colours, not facial detail.`
         : "";
   const presentIds = shot.cast;
   return {
     sceneNumber,
     imageUrl,
     text: scene ? `${scene.title}. ${scene.text}` : "",
+    moment: shot.moment,
+    mustShow: sceneNumber === MAP_SHOT && mapGame ? mapChecklist(plan, mapGame).split("; ") : undefined,
     shot: `${page}${shot.camera}. ${shot.action} Setting: ${shot.setting}. Light: ${shot.light}.${shot.frame === "panorama" ? " (Double-page panorama; nothing important on the vertical centre line.)" : ""}${rule}`,
     present: presentIds.map((id) => label(plan, id)),
     // The cover may show any of the book's characters (a story character on it is never a defect).
@@ -328,7 +331,7 @@ export function qaSceneFor(plan: BookImagePlan, story: GeneratedStory, sceneNumb
 }
 
 export function qaCharacters(plan: BookImagePlan): string {
-  return [`THE CHILD: ${plan.bible.description}.`, ...plan.cast.map((c) => `${c.name.toUpperCase()}: ${c.description}`)].join("\n");
+  return [`THE CHILD: ${plan.bible.description}.`, ...plan.cast.map((c) => `${promptLabel(c)}: ${c.description}`)].join("\n");
 }
 
 /** Stored verdicts that still describe the image on the page (same URL). */
@@ -367,7 +370,14 @@ async function runQa(ctx: Ctx, progress: FinalBookProgress): Promise<boolean> {
     const { unjudged } = currentVerdicts(state, shots);
     if (unjudged.length > 0) {
       const scenes = unjudged.map((n) => qaSceneFor(state.plan, state.story, n, finalUrl(state, n) as string, state.assets.mapGame));
-      const qa = await judgeScenes({ scenes, sheet: refs.sheet.data, characters: qaCharacters(state.plan), iterationNumber: state.qaPass + 1 });
+      const qa = await judgeScenes({
+        scenes,
+        sheet: refs.sheet.data,
+        extraSheet: refs.extraSheet?.data ?? null,
+        characters: qaCharacters(state.plan),
+        iterationNumber: state.qaPass + 1,
+      });
+      ctx.costUsd += qa.costUsd ?? 0;
       if (qa.skipped) {
         progress.qa = qa;
         console.error(`[Final images] ⚠️ QA SKIPPED for story ${state.storyId} (${qa.skipReason}) — book ships UNREVIEWED`);

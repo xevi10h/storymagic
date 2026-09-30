@@ -1,0 +1,31 @@
+{
+  "note": "QA judge recall/precision set (2026-09-30). Images are versioned storage paths (pre-repair versions kept). textReplace re-creates the page text the image was judged against (the showcase text was edited afterwards). Labels from the owner's page-by-page review.",
+  "items": [
+    { "id": "dino-cover-orig", "label": "bad", "story": "159f5965-7601-478d-8590-cda0d8253d62", "shot": 0, "image": "159f5965-7601-478d-8590-cda0d8253d62/final/cover-muo2nxp0-1d7123.jpg", "defect": "third hand holding the toy" },
+    { "id": "dino-cover-fix1", "label": "bad", "story": "159f5965-7601-478d-8590-cda0d8253d62", "shot": 0, "image": "159f5965-7601-478d-8590-cda0d8253d62/final/cover-fix1-muo2vm0u-734347.jpg", "defect": "third hand after repair 1" },
+    { "id": "dino-cover-fix2", "label": "bad", "story": "159f5965-7601-478d-8590-cda0d8253d62", "shot": 0, "image": "159f5965-7601-478d-8590-cda0d8253d62/final/cover-fix2-muo2x2wx-755522.jpg", "defect": "third hand after repair 2 (shipped by the pipeline)" },
+    { "id": "pirates-7-orig", "label": "bad", "story": "5f4ace1a-0f90-4e2c-bf72-9f2a15ff84a6", "shot": 7, "image": "5f4ace1a-0f90-4e2c-bf72-9f2a15ff84a6/final/scene-7-muo2pfy6-64e8a0.jpg", "defect": "whale eye open, text: Bruma is asleep" },
+    { "id": "pirates-8-orig", "label": "bad", "story": "5f4ace1a-0f90-4e2c-bf72-9f2a15ff84a6", "shot": 8, "image": "5f4ace1a-0f90-4e2c-bf72-9f2a15ff84a6/final/scene-8-muo2owoj-97c8bd.jpg", "defect": "whale eye open, she is still asleep" },
+    { "id": "pirates-10-orig", "label": "bad", "story": "5f4ace1a-0f90-4e2c-bf72-9f2a15ff84a6", "shot": 10, "image": "5f4ace1a-0f90-4e2c-bf72-9f2a15ff84a6/final/scene-10-muo2pbck-3b05ec.jpg", "defect": "dolphin with an extra arm-like fin (text: the whale's fin brings the pearl)" },
+    { "id": "castle-10-maestra", "label": "bad", "story": "461c6578-404b-4362-8dff-afcae81f6141", "shot": 10, "image": "461c6578-404b-4362-8dff-afcae81f6141/final/scene-10-muo2snlx-e8e7e1.jpg", "textReplace": [["El maestro Miga", "La maestra Miga"], ["el pastel de miel", "el pastelito de miel"]], "defect": "text: a woman cook (la maestra); painted: a man" },
+    { "id": "dino-1-in-hand", "label": "bad", "story": "159f5965-7601-478d-8590-cda0d8253d62", "shot": 1, "image": "159f5965-7601-478d-8590-cda0d8253d62/final/scene-1-muo2nv29-8fb1ff.jpg", "textReplace": [["Le encantaba el naranja, y su dinosaurio de juguete también era naranja.", "Le encantaba el naranja y llevaba en la mano su dinosaurio naranja."]], "defect": "text: toy in his hand; painted: toy on the wall" },
+    { "id": "dino-2-pillow", "label": "bad", "story": "159f5965-7601-478d-8590-cda0d8253d62", "shot": 2, "image": "159f5965-7601-478d-8590-cda0d8253d62/final/scene-2-muo2nww4-2f87c7.jpg", "textReplace": [["Leo se arrodilló junto a la cama con su dinosaurio.", "Leo colocó el dinosaurio junto a la almohada."]], "defect": "text: toy placed by the pillow; painted: kneeling on the floor, toy on the rug" },
+    { "id": "carla-7-lighthouse", "label": "bad", "story": "e1a4d845-42e8-4307-b3d1-23d8bc3058a2", "shot": 7, "image": "e1a4d845-42e8-4307-b3d1-23d8bc3058a2/final/scene-7-mumowd5i-0c2bfb.jpg", "defect": "inside the lighthouse, a second lighthouse is visible through the window" },
+    { "id": "carla-11-lighthouse", "label": "bad", "story": "e1a4d845-42e8-4307-b3d1-23d8bc3058a2", "shot": 11, "image": "e1a4d845-42e8-4307-b3d1-23d8bc3058a2/final/scene-11-mumowird-cde275.jpg", "defect": "inside the lighthouse lantern room, a second lit lighthouse outside" },
+    { "id": "pau-3-sock", "label": "bad", "story": "ddcbef5e-018b-4abe-85a2-626eefab7c11", "shot": 3, "image": "ddcbef5e-018b-4abe-85a2-626eefab7c11/final/scene-3-mumo3uzd-57454c.jpg", "defect": "text: one sock on, the other in his hand, a sneaker left under the bed; painted: sneakers on" },
+
+    { "id": "dino-cover-fixm", "label": "good", "story": "159f5965-7601-478d-8590-cda0d8253d62", "shot": 0, "image": "159f5965-7601-478d-8590-cda0d8253d62/final/cover-fixm-muo33ios-93cd2b.jpg" },
+    { "id": "pirates-7-fixm", "label": "good", "story": "5f4ace1a-0f90-4e2c-bf72-9f2a15ff84a6", "shot": 7, "image": "5f4ace1a-0f90-4e2c-bf72-9f2a15ff84a6/final/scene-7-fixm-muo2yxjh-859ed4.jpg" },
+    { "id": "pirates-8-fixm", "label": "good", "story": "5f4ace1a-0f90-4e2c-bf72-9f2a15ff84a6", "shot": 8, "image": "5f4ace1a-0f90-4e2c-bf72-9f2a15ff84a6/final/scene-8-fixm-muo2ypqe-305057.jpg" },
+    { "id": "pirates-10-rerender", "label": "good", "story": "5f4ace1a-0f90-4e2c-bf72-9f2a15ff84a6", "shot": 10, "image": "5f4ace1a-0f90-4e2c-bf72-9f2a15ff84a6/final/scene-10-muo318yp-d6646d.jpg" },
+    { "id": "castle-10-maestro", "label": "good", "story": "461c6578-404b-4362-8dff-afcae81f6141", "shot": 10, "image": "461c6578-404b-4362-8dff-afcae81f6141/final/scene-10-muo2snlx-e8e7e1.jpg" },
+    { "id": "dino-1-fixed-text", "label": "good", "story": "159f5965-7601-478d-8590-cda0d8253d62", "shot": 1, "image": "159f5965-7601-478d-8590-cda0d8253d62/final/scene-1-muo2nv29-8fb1ff.jpg" },
+    { "id": "dino-2-fixed-text", "label": "good", "story": "159f5965-7601-478d-8590-cda0d8253d62", "shot": 2, "image": "159f5965-7601-478d-8590-cda0d8253d62/final/scene-2-muo2nww4-2f87c7.jpg" },
+    { "id": "space-3", "label": "good", "story": "31ada3cf-f98d-40f3-b978-d5f84ee99ef1", "shot": 3, "image": "31ada3cf-f98d-40f3-b978-d5f84ee99ef1/final/scene-3-muo2r7mm-efa688.jpg" },
+    { "id": "space-6", "label": "good", "story": "31ada3cf-f98d-40f3-b978-d5f84ee99ef1", "shot": 6, "image": "31ada3cf-f98d-40f3-b978-d5f84ee99ef1/final/scene-6-muo2tsid-20f9c2.jpg" },
+    { "id": "forest-5", "label": "good", "story": "bc6e2dbd-fd14-4c5d-a9d0-07b10cffdbf2", "shot": 5, "image": "bc6e2dbd-fd14-4c5d-a9d0-07b10cffdbf2/final/scene-5-muo2qknw-ad62a1.jpg" },
+    { "id": "forest-9", "label": "good", "story": "bc6e2dbd-fd14-4c5d-a9d0-07b10cffdbf2", "shot": 9, "image": "bc6e2dbd-fd14-4c5d-a9d0-07b10cffdbf2/final/scene-9-muo2ql1q-f04404.jpg" },
+    { "id": "forest-map", "label": "good", "story": "bc6e2dbd-fd14-4c5d-a9d0-07b10cffdbf2", "shot": -2, "image": "bc6e2dbd-fd14-4c5d-a9d0-07b10cffdbf2/final/map-muo2te72-eee445.jpg" },
+    { "id": "castle-4", "label": "good", "story": "461c6578-404b-4362-8dff-afcae81f6141", "shot": 4, "image": "461c6578-404b-4362-8dff-afcae81f6141/final/scene-4-muo2shqo-80b427.jpg" }
+  ]
+}

@@ -19,6 +19,12 @@ export interface ShotSpec {
   shotScale: ShotScale;
   /** The single key moment: what the characters present do */
   action: string;
+  /**
+   * The Book Plan's illustratedMoment: the instant of the page text the picture
+   * shows, incl. states the action may not repeat ("Bruma sleeps"). Absent on
+   * plans frozen before 2026-09-30.
+   */
+  moment?: string;
   /** Full background environment */
   setting: string;
   /** Light, time of day, mood */

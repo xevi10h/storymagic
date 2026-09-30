@@ -21,6 +21,8 @@ import type { GeneratedStory } from "./story-generator";
 import type { ShotSpec } from "./scene-screenplay";
 import { CHILD_ID } from "./visual-assets";
 import { callOpenAIStructured } from "./openai-http";
+import { label as promptLabel } from "./image-prompts";
+import { worldLabel } from "./entity-label";
 
 export type MapGameBand = "little" | "middle" | "big";
 
@@ -266,11 +268,17 @@ export const MAP_SHOT = -2;
  * (panel zone, fold, no text) live in image-prompts' "map" branch.
  */
 export function mapShot(plan: BookImagePlan, game: MapGame): ShotSpec {
-  // English labels from the ids (plan names are in the book language), like book-plan toShotSpec;
+  // English labels (plan names are in the book language), like book-plan toShotSpec;
   // the world block of the prompt still describes each recurring place/object in full.
-  const english = (id: string) => `the ${id.replace(/_/g, " ")}`;
+  const english = (id: string) => {
+    const w = plan.world.find((x) => x.id === id);
+    return `the ${w ? worldLabel(w) : id.replace(/_/g, " ")}`;
+  };
   const inWorld = (id: string) => plan.world.some((w) => w.id === id);
-  const castLabel = (id: string) => plan.cast.find((c) => c.id === id)?.name.toUpperCase();
+  const castLabel = (id: string) => {
+    const c = plan.cast.find((x) => x.id === id);
+    return c ? promptLabel(c) : undefined;
+  };
   const trailNames = game.trail.filter(inWorld).map(english);
   const trail =
     trailNames.length === 0
@@ -305,7 +313,7 @@ export function mapChecklist(plan: BookImagePlan, game: MapGame): string {
     .map((it) => {
       if (it.id === CHILD_ID) return "THE CHILD";
       const cast = plan.cast.find((c) => c.id === it.id);
-      if (cast) return cast.name.toUpperCase();
+      if (cast) return promptLabel(cast);
       return it.drawing.trim().replace(/[.\s]+$/, "");
     })
     .join("; ");

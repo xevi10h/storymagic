@@ -30,6 +30,7 @@ import {
 } from "@/lib/create-store";
 import { getStoryTree, tx } from "@/lib/story-trees";
 import { buildCharacterVisualDescription } from "./character-description";
+import { castLabel, worldLabel } from "./entity-label";
 import { callOpenAIStructured, type LLMUsage, type ReasoningEffort } from "./openai-http";
 import type { StoryInput, GeneratedStory, GeneratedScene, ArchitectOutput } from "./story-generator";
 import type { CastMember, VisualCast, WorldAsset } from "./visual-assets";
@@ -172,13 +173,16 @@ const SceneSchema = z.object({
 const CastSchema = z.object({
   id: ID,
   name: z.string().describe("Name as used in the text (book language)."),
+  label: z.string().describe('English name for the illustrator, without article: a proper name stays as it is ("Coral"), a title or common noun is translated ("Miga the cook", "squirrels", "Bruno the owl"). Never the main child\'s name.'),
   kind: z.enum(["character", "creature"]).describe('"creature" for animals, magical beings, robots; "character" for people.'),
+  gender: z.enum(["female", "male", "none"]).describe('For people: the gender the text gives them (e.g. "la maestra" → female, "el panadero" → male). "none" for groups, animals and beings.'),
   visual: z.string().describe("English, 1–2 sentences. Species or body type, size relative to a small child, main colours, face details, ONE distinctive accessory. No personality, no actions, no written text."),
 });
 
 const WorldSchema = z.object({
   id: ID,
   name: z.string(),
+  label: z.string().describe('English name for the illustrator, without article ("moss chest", "child\'s bedroom", "orange toy dinosaur"). Never the main child\'s name.'),
   kind: z.enum(["location", "object"]),
   visual: z.string().describe("English. Locations: architecture or landscape, landmarks, colours. Objects: shape, material, colours, markings. No written text."),
 });
@@ -819,23 +823,28 @@ export interface BookPlanProgress {
 
 // ── Normalisation (ids, types, spreads) ──────────────────────────────────────
 
-function scrubChildName(text: string, childName: string): string {
+export function scrubChildName(text: string, childName: string): string {
   const name = childName.trim();
   if (!name) return text;
   return text.replace(new RegExp(`(?<![${LETTER}])${escapeRegex(name)}(?![${LETTER}])('s)?`, "giu"), (_m, poss: string | undefined) => (poss ? "the child's" : "the child"));
 }
 
 /**
- * Ids leaking into English prose confuse the image model: cast ids become the
- * character's name ("tin" → "Tin"), world ids plain words ("toy_rocket" → "toy rocket").
+ * Ids leaking into English prose confuse the image model: every id becomes the
+ * entity's English label ("tin" → "Tin", "ardillas" → "squirrels", "casa_de_noa"
+ * → "child's house"), never its book-language name.
  */
-function humanizeIds(text: string, cast: PlanCastMember[], world: PlanWorldAsset[]): string {
+export function humanizeIds(text: string, cast: PlanCastMember[], world: PlanWorldAsset[]): string {
   let out = text;
   const swap = (id: string, label: string) => {
-    out = out.replace(new RegExp(`(?<![\\w'’])${escapeRegex(id)}(?![\\w'’])`, "g"), label);
+    // A proper name takes no article ("the coral" → "Coral"); a common noun keeps the prose's own ("the ardillas" → "the squirrels").
+    const proper = /^\p{Lu}/u.test(label);
+    out = out.replace(new RegExp(`(?<![\\w'’])(?:([Tt]he)\\s+)?${escapeRegex(id)}(?![\\w'’])`, "g"), (_m, article: string | undefined) =>
+      article && !proper ? `${article} ${label}` : label,
+    );
   };
-  for (const c of cast) swap(c.id, c.name.replace(/^(el|la|los|las|els|les|en|l'|l’|le|the)\s*/i, ""));
-  for (const w of world) if (w.id.includes("_")) swap(w.id, w.id.replace(/_/g, " "));
+  for (const c of cast) swap(c.id, castLabel(c));
+  for (const w of world) swap(w.id, worldLabel(w));
   return out;
 }
 
@@ -866,8 +875,10 @@ function normalizeShot(shot: PlanShot, n: number, cast: PlanCastMember[], world:
 /** Cast/world exactly as normalizeDraft stores them (shared with the streaming view so both agree byte for byte). */
 function normalizeBible(draftCast: PlanCastMember[], draftWorld: PlanWorldAsset[], childName: string): { cast: PlanCastMember[]; world: PlanWorldAsset[] } {
   return {
-    cast: draftCast.filter((c) => c.id !== PLAN_CHILD_ID).map((c) => ({ ...c, visual: scrubChildName(c.visual, childName) })),
-    world: draftWorld.map((w) => ({ ...w, visual: scrubChildName(w.visual, childName) })),
+    cast: draftCast
+      .filter((c) => c.id !== PLAN_CHILD_ID)
+      .map((c) => ({ ...c, label: castLabel({ ...c, label: scrubChildName(c.label ?? "", childName) }), visual: scrubChildName(c.visual, childName) })),
+    world: draftWorld.map((w) => ({ ...w, label: worldLabel({ ...w, label: scrubChildName(w.label ?? "", childName) }), visual: scrubChildName(w.visual, childName) })),
   };
 }
 
@@ -1139,6 +1150,17 @@ export async function generateBookPlan(
 export const VISUAL_MAX_CAST = 5;
 export const VISUAL_MAX_WORLD = 5;
 
+/**
+ * A cast member's visual description for the illustrator. People carry the
+ * gender the text gives them: a Spanish title ("la maestra Miga") is invisible
+ * to an English image prompt, which painted the head cook as a man.
+ */
+export function castDescription(c: Pick<PlanCastMember, "kind" | "visual"> & { gender?: PlanCastMember["gender"] }): string {
+  const visual = c.visual.trim();
+  if (c.kind !== "character" || !c.gender || c.gender === "none") return visual;
+  return `${visual.replace(/[.\s]*$/, ".")} ${c.gender === "female" ? "She is female (a woman or girl)." : "He is male (a man or boy)."}`;
+}
+
 function scenesWith(plan: BookPlanDraft, pred: (shot: PlanShot) => boolean): number[] {
   return plan.scenes.filter((s) => pred(s.shot)).map((s) => s.sceneNumber);
 }
@@ -1151,12 +1173,12 @@ function scenesWith(plan: BookPlanDraft, pred: (shot: PlanShot) => boolean): num
 export function planToVisualCast(plan: BookPlanDraft): VisualCast {
   const byUse = <T extends { scenes: number[] }>(a: T, b: T) => b.scenes.length - a.scenes.length;
   const cast: CastMember[] = plan.cast
-    .map((c) => ({ id: c.id, name: c.name, kind: c.kind, description: c.visual, scenes: scenesWith(plan, (sh) => sh.castIds.includes(c.id)) }))
+    .map((c) => ({ id: c.id, name: c.name, label: castLabel(c), kind: c.kind, description: castDescription(c), scenes: scenesWith(plan, (sh) => sh.castIds.includes(c.id)) }))
     .filter((c) => c.scenes.length >= 2)
     .sort(byUse)
     .slice(0, VISUAL_MAX_CAST);
   const world: WorldAsset[] = plan.world
-    .map((w) => ({ id: w.id, name: w.name, kind: w.kind, description: w.visual, scenes: scenesWith(plan, (sh) => sh.worldIds.includes(w.id)) }))
+    .map((w) => ({ id: w.id, name: w.name, label: worldLabel(w), kind: w.kind, description: w.visual, scenes: scenesWith(plan, (sh) => sh.worldIds.includes(w.id)) }))
     .filter((w) => w.scenes.length >= 2)
     .sort(byUse)
     .slice(0, VISUAL_MAX_WORLD);
@@ -1168,23 +1190,30 @@ export function planToVisualCast(plan: BookPlanDraft): VisualCast {
  * preview, which builds specs from a partial plan (BookPlanProgress) with a
  * provisional visual cast.
  */
-export function toShotSpec(plan: Pick<BookPlanDraft, "cast" | "world">, shot: PlanShot, sceneNumber: number, frame: ShotFrame, visual: VisualCast): ShotSpec {
+export function toShotSpec(plan: Pick<BookPlanDraft, "cast" | "world">, shot: PlanShot, sceneNumber: number, frame: ShotFrame, visual: VisualCast, moment?: string): ShotSpec {
   const castKept = new Set(visual.cast.map((c) => c.id));
   const worldKept = new Set(visual.world.map((w) => w.id));
   // Characters/objects without a reference sheet are described inline so they still look right.
+  // English labels (the names are in the book language); people carry their gender.
   const inline = [
-    ...shot.castIds.filter((id) => id !== PLAN_CHILD_ID && !castKept.has(id)).map((id) => plan.cast.find((c) => c.id === id)),
-    ...shot.worldIds.filter((id) => !worldKept.has(id)).map((id) => plan.world.find((w) => w.id === id)),
-  ]
-    .filter((x): x is PlanCastMember | PlanWorldAsset => !!x)
-    // Cast keep their proper name; world items get an English label (their name is in the book language).
-    .map((x) => `${"kind" in x && (x.kind === "location" || x.kind === "object") ? x.id.replace(/_/g, " ") : x.name}: ${x.visual}`);
+    ...shot.castIds
+      .filter((id) => id !== PLAN_CHILD_ID && !castKept.has(id))
+      .map((id) => plan.cast.find((c) => c.id === id))
+      .filter((c): c is PlanCastMember => !!c)
+      .map((c) => `${castLabel(c)}: ${castDescription(c)}`),
+    ...shot.worldIds
+      .filter((id) => !worldKept.has(id))
+      .map((id) => plan.world.find((w) => w.id === id))
+      .filter((w): w is PlanWorldAsset => !!w)
+      .map((w) => `${worldLabel(w)}: ${w.visual}`),
+  ];
   return {
     sceneNumber,
     frame,
     camera: shot.camera,
     shotScale: frame === "panorama" ? "wide" : shot.shotScale,
     action: inline.length ? `${shot.action} (${inline.join(" ")})` : shot.action,
+    ...(moment?.trim() ? { moment: moment.trim() } : {}),
     setting: shot.setting,
     light: shot.light,
     cast: shot.castIds.filter((id) => id === PLAN_CHILD_ID || castKept.has(id)),
@@ -1198,7 +1227,7 @@ export function toShotSpec(plan: Pick<BookPlanDraft, "cast" | "world">, shot: Pl
  */
 export function planToShotList(plan: BookPlanDraft, frameFor: (sceneNumber: number) => ShotFrame, visual: VisualCast = planToVisualCast(plan)): ShotList {
   return {
-    shots: plan.scenes.map((s) => toShotSpec(plan, s.shot, s.sceneNumber, frameFor(s.sceneNumber), visual)),
+    shots: plan.scenes.map((s) => toShotSpec(plan, s.shot, s.sceneNumber, frameFor(s.sceneNumber), visual, s.illustratedMoment)),
     cover: toShotSpec(plan, plan.cover, 0, "cover", visual),
   };
 }

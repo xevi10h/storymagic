@@ -59,7 +59,10 @@ character lock; per-stage resolution. (commits 5ebc2f1 → a883d60)
 
 - [ ] **HIGH — Next session: platform-wide SEO review** (every public route × 4 locales: titles/meta/OG, hreflang + canonicals, JSON-LD incl. `Offer` VAT flags, sitemap, internal links, Core Web Vitals, the new showcase books on `/ejemplo` + theme pages)
 - [ ] Showcase v2 for the remaining 5 worlds (superhero, chef, safari, inventor, candy) with the same rule: production pipeline + page-by-page QA in 4 locales; a `castle` theme SEO page (`THEME_TEMPLATE` has no castle slug yet)
-- [ ] Pipeline findings from the showcase QA (customer-facing): the QA judge passed a cover with a third hand twice (dinosaurs) and a text/art contradiction (whale "asleep" with open eyes); prompt text shows article glitches ("The s ardillas", "casa de the child"). Done 2026-09-30: U+202F (narrow no-break space) now prints — the embedded fonts gained the glyph (`scripts/patch-font-nnbsp.py`), the web viewer uses the same one
+- [ ] Pipeline findings from the showcase QA (customer-facing): the renderer strips U+202F (narrow no-break space) that French LLM text can contain — normalise it to U+00A0 before print
+- [x] QA judge rework (2026-09-30): claims from the page text → per-check vision verdicts → pass/fail in code, limb counting on crops, full-res image, extra sheet; the repair prompt no longer re-states the shot action. Labelled set recall 2/12 → 11/12, false alarms 0 → 2/12, judge ~$0.35 → ~$0.67 per book (`docs/generation-pipeline.md` §QA, `scripts/qa-eval/`)
+- [x] Prompt article glitches ("The s ardillas", "The el dinosaurio naranja", "casa de the child"): English `label` per cast/world entity + `gender` for people in the Book Plan (`entity-label.ts`); the illustrated moment now reaches the image prompt and the judge
+- [ ] QA leftovers: small details on panoramas (a far whale's eye) need a zoomed check; the judge sometimes reads a toy as the character it resembles; the Book Plan can still write physically impossible shots (both hands at the mouth + a toy held to the chest) — a plan-time feasibility check would prevent the render instead of repairing it
 - [ ] Admin "publish showcase" action (flag + mirror + translations) instead of scripts
 
 ## Next steps from commerce block A (2026-09-28)
