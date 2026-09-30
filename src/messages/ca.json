@@ -97,7 +97,7 @@
       },
       "baptism": {
         "metaTitle": "Conte personalitzat de bateig | Meapica",
-        "metaDescription": "Un conte imprès personalitzat amb el nom del nen, regal de bateig per a tota la vida. Padrins i família. Edició única, impresa a la UE.",
+        "metaDescription": "Un conte imprès personalitzat amb el nom del nen, regal de bateig per a tota la vida. Padrins i família. Edició única, impresa a Europa.",
         "h1": "El conte de bateig que creixerà amb ell",
         "heroIntro": "Un record de bateig que no s'oblida dins un calaix. Un conte imprès, amb el seu nom, que el petit anirà descobrint a mesura que creix.",
         "bodyHeading": "Un regal de bateig per recordar tota la vida",
@@ -173,7 +173,7 @@
       },
       "first-birthday": {
         "metaTitle": "Conte personalitzat de primer aniversari | Meapica",
-        "metaDescription": "El seu primer llibre, amb el seu nom. Conte imprès personalitzat per al primer aniversari. Record per a tota la vida. Edició única, impresa a la UE.",
+        "metaDescription": "El seu primer llibre, amb el seu nom. Conte imprès personalitzat per al primer aniversari. Record per a tota la vida. Edició única, impresa a Europa.",
         "h1": "El seu primer llibre, amb el seu nom",
         "heroIntro": "Compleix un any. Regala-li el primer llibre de la seva vida, un conte imprès amb el seu nom que serà el record d'aquest primer aniversari per sempre.",
         "bodyHeading": "El record del primer aniversari",
@@ -474,10 +474,10 @@
         "text": "Tapa dura o tova, amb enviament gratuït. En 7–10 dies feiners és a la teva porta."
       }
     },
-    "lookAlt": "Retrat a l'aquarel·la d'en {name}",
-    "previewAlt": "Una pàgina de la previsualització del llibre d'en {name}",
+    "lookAlt": "Retrat a l'aquarel·la {gender, select, girl {de la} other {d'en}} {name}",
+    "previewAlt": "Una pàgina de la previsualització del llibre {gender, select, girl {de la} other {d'en}} {name}",
     "previewBadge": "Gratis",
-    "printAlt": "El llibre d'en {name} imprès en tapa dura",
+    "printAlt": "El llibre {gender, select, girl {de la} other {d'en}} {name} imprès en tapa dura",
     "cta": "Crear el seu llibre"
   },
   "moments": {
@@ -552,7 +552,7 @@
     "eyebrow": "El llibre imprès",
     "title": "Per llegir-lo cada nit i guardar-lo sempre",
     "subtitle": "Fet per aguantar mil lectures i quedar-se al seu prestatge quan es faci gran. I amb el seu PDF inclòs, per als viatges.",
-    "mockupAlt": "El llibre d'en {name} en tapa dura, de 20 × 20 cm",
+    "mockupAlt": "El llibre {gender, select, girl {de la} other {d'en}} {name} en tapa dura, de 20 × 20 cm",
     "specs": {
       "size": { "label": "Format", "value": "20 × 20 cm · 30 pàgines · 12 escenes il·lustrades" },
       "paper": { "label": "Paper", "value": "Estucat setinat de 170 g, a tot color" },
@@ -567,7 +567,7 @@
   "uniqueEdition": {
     "eyebrow": "Només seu",
     "title": "No és una plantilla amb la seva cara enganxada",
-    "subtitle": "Escrivim el seu conte i el pintem escena a escena, amb la seva cara a cada pàgina. Així va quedar el llibre d'en {name}, de {age} anys:",
+    "subtitle": "Escrivim el seu conte i el pintem escena a escena, amb la seva cara a cada pàgina. Així va quedar el llibre {gender, select, girl {de la} other {d'en}} {name}, de {age} anys:",
     "sceneAlt": "{name} a la seva aventura, escena {n}",
     "caption": "Pàgines reals de «{title}»",
     "points": {
@@ -577,7 +577,7 @@
       "dedication": { "title": "Amb les teves paraules", "text": "La teva dedicatòria obre el llibre, perquè sempre sàpiga de qui va ser el regal." }
     },
     "cta": "Crear el seu llibre",
-    "seeInside": "Veure el llibre d'en {name} per dins"
+    "seeInside": "Veure el llibre {gender, select, girl {de la} other {d'en}} {name} per dins"
   },
   "adventurePack": {
     "badge": "Experiència Completa",
@@ -598,7 +598,7 @@
     "likenessQ": "I si no s'assembla al meu fill o filla?",
     "likenessA": "Tu decideixes com és: pell, color de cabell, pentinat, ulls, ulleres i pigues, i veus el seu retrat abans de continuar. Si a la vista prèvia el vols canviar, canvies el seu aspecte i tornem a pintar el llibre amb el nou personatge; tota la resta es manté. L'imprimim tal com el veus.",
     "deliveryQ": "Quan arriba? Arriba per a Reis?",
-    "deliveryA": "L'imprimim sota demanda a la UE tan bon punt fas la comanda i arriba en 7-10 dies laborables, amb l'enviament inclòs. Enviem a l'Espanya peninsular i a les Balears (de moment no a Canàries, Ceuta ni Melilla).",
+    "deliveryA": "L'imprimim sota demanda a Europa tan bon punt fas la comanda i arriba en 7-10 dies laborables, amb l'enviament inclòs. Enviem a l'Espanya peninsular i a les Balears (de moment no a Canàries, Ceuta ni Melilla).",
     "deliverySeason": "Per tenir-lo a casa per Nadal, demana'l fins al {christmasDate}; per a Reis, fins al {reyesDate}.",
     "deliverySeasonReyes": "Per tenir-lo a casa abans de Reis, demana'l fins al {reyesDate}.",
     "deliverySeasonPdf": "El llibre imprès ja no arriba a temps per a Reis, però el conte en PDF sí: t'arriba per correu després del pagament, normalment en menys d'una hora.",
@@ -606,7 +606,7 @@
     "priceQ": "Quant costa i què inclou?",
     "priceA": "Tapa tova, {softcover}. Tapa dura, {hardcover}. Només el PDF, {pdf}. Tots els preus porten l'IVA inclòs. El llibre imprès inclou l'enviament i el PDF del conte complet.",
     "returnsQ": "El puc retornar?",
-    "returnsA": "Com que és un llibre fet a mida, amb el seu nom i el seu retrat, no admet devolucions; per això t'ensenyem el llibre sencer abans de pagar. Però si arriba amb qualsevol defecte d'impressió o es malmet durant l'enviament, t'enviem un altre de nou sense cost.",
+    "returnsA": "Com que és un llibre fet a mida, amb el seu nom i el seu retrat, no admet devolucions; per això t'ensenyem el llibre sencer abans de pagar. Però si arriba amb qualsevol defecte d'impressió o es malmet durant l'enviament, t'enviem un altre de nou sense cost. Només cal que ens escriguis en els 30 dies següents a rebre'l, amb una foto del llibre i de l'embalatge.",
     "moreQuestions": "Tens un altre dubte? Escriu-nos a"
   },
   "finalCta": {
@@ -620,7 +620,7 @@
     "meta": "Llibre imprès des de {price} · IVA inclòs · Enviament inclòs"
   },
   "footer": {
-    "tagline": "Contes personalitzats, escrits i il·lustrats per a cada infant.\nImpresos a la UE i enviats a casa teva.\nSense bateries, només imaginació.",
+    "tagline": "Contes personalitzats, escrits i il·lustrats per a cada infant.\nImpresos a Europa i enviats a casa teva.\nSense bateries, només imaginació.",
     "workshop": "El llibre",
     "ourPapers": "Paper i acabats",
     "artisanalProcess": "Com es fa",
@@ -638,7 +638,8 @@
     "copyright": "© 2026 Meapica. Fet amb amor.",
     "legalNotice": "Avís Legal",
     "privacy": "Privacitat",
-    "cookies": "Cookies"
+    "cookies": "Cookies",
+    "cookieSettings": "Configurar cookies"
   },
   "legal": {
     "backHome": "Tornar a l'inici",
@@ -647,15 +648,15 @@
       "title": "Política de Privacitat",
       "intro": "A Meapica, la privacitat dels nostres usuaris —especialment quan es tracta de dades de menors— és la nostra màxima prioritat.",
       "section1Title": "1. Responsable del tractament",
-      "section1Text": "El responsable del tractament de les dades personals recollides a través de meapica.com és Xavier Huix Trenco (Meapica), NIF 41649433K, amb domicili a Carrer Aribau 140, 5è, 08036 Barcelona (Espanya). Per a qualsevol qüestió sobre privadesa pots escriure'ns a admin@casmar.tech.",
+      "section1Text": "El responsable del tractament de les dades personals recollides a través de meapica.shop és Xavier Huix Trenco (Meapica), NIF 41649433K, amb domicili a Carrer Aribau 140, 5è, 08036 Barcelona (Espanya). Per a qualsevol qüestió sobre privadesa pots escriure'ns a admin@casmar.tech.",
       "section2Title": "2. Dades que recollim",
       "section2Text": "Recollim les dades necessàries per crear el teu llibre personalitzat: nom de l'infant, edat, ciutat, interessos i característiques físiques per a la il·lustració i, només si decideixes pujar-la, una foto de l'infant (vegeu l'apartat 8). També recollim el correu electrònic i l'adreça d'enviament per processar les comandes.",
       "section3Title": "3. Finalitat del tractament",
       "section3Text": "Utilitzem les teves dades exclusivament per: generar el conte personalitzat i el seu personatge il·lustrat, processar el pagament i l'enviament, i comunicar-nos amb tu sobre la teva comanda. Mai no venem dades a tercers.",
       "section4Title": "4. Base legal",
-      "section4Text": "Crear, previsualitzar i imprimir el teu llibre, gestionar el teu compte, el pagament i l'enviament: execució del contracte que ens demanes (art. 6.1.b RGPD). Foto de l'infant: consentiment explícit de la seva mare, pare o tutor legal (art. 6.1.a RGPD i art. 7 LOPDGDD), que pots retirar en qualsevol moment. Butlletí i llista d'espera: el teu consentiment (art. 6.1.a RGPD), que pots retirar quan vulguis. Conservació de factures i registres comptables: obligació legal (art. 6.1.c RGPD). Seguretat del servei i prevenció d'abusos (per exemple, límits d'ús): interès legítim (art. 6.1.f RGPD).",
+      "section4Text": "Crear, previsualitzar i imprimir el teu llibre, gestionar el teu compte, el pagament i l'enviament: execució del contracte que ens demanes (art. 6.1.b RGPD). Foto de l'infant: consentiment explícit de la seva mare, pare o tutor legal (art. 6.1.a RGPD i art. 7 LOPDGDD), que pots retirar en qualsevol moment. Butlletí i llista d'espera: el teu consentiment (art. 6.1.a RGPD), que pots retirar quan vulguis. Conservació de factures i registres comptables: obligació legal (art. 6.1.c RGPD). Seguretat del servei i prevenció d'abusos (per exemple, límits d'ús): interès legítim (art. 6.1.f RGPD). Mesura dels nostres anuncis amb Meta (cookies publicitàries i esdeveniment de compra): el teu consentiment (art. 6.1.a RGPD), que pots retirar des de «Configurar cookies».",
       "section5Title": "5. Encarregats del tractament i transferències internacionals",
-      "section5Text": "Per prestar el servei treballem amb proveïdors que tracten les dades només seguint les nostres instruccions: OpenAI Ireland Ltd. (generació del text i les il·lustracions del conte i, si la puges, del personatge a partir de la foto), Supabase (base de dades i emmagatzematge), Vercel (allotjament web), Stripe Payments Europe Ltd. (pagaments), Gelato (impressió i enviament) i Resend (correus de la comanda). OpenAI no fa servir les dades que li enviem per entrenar els seus models i les pot conservar fins a 30 dies per detectar abusos. Quan un proveïdor o els seus subencarregats tracten dades fora de l'Espai Econòmic Europeu (per exemple, als Estats Units), la transferència s'empara en les clàusules contractuals tipus aprovades per la Comissió Europea o en el Marc de Privadesa de Dades UE-EUA.",
+      "section5Text": "Per prestar el servei treballem amb proveïdors que tracten les dades només seguint les nostres instruccions: OpenAI Ireland Ltd. (generació del text i les il·lustracions del conte i, si la puges, del personatge a partir de la foto), Supabase (base de dades i emmagatzematge), Vercel (allotjament web), Stripe Payments Europe Ltd. (pagaments), Gelato (impressió i enviament) Resend (correus de la comanda) i, només si acceptes les cookies publicitàries, Meta Platforms Ireland Ltd. (mesura dels nostres anuncis). OpenAI no fa servir les dades que li enviem per entrenar els seus models i les pot conservar fins a 30 dies per detectar abusos. Quan un proveïdor o els seus subencarregats tracten dades fora de l'Espai Econòmic Europeu (per exemple, als Estats Units), la transferència s'empara en les clàusules contractuals tipus aprovades per la Comissió Europea o en el Marc de Privadesa de Dades UE-EUA.",
       "section6Title": "6. Els teus drets",
       "section6Text": "Pots exercir els teus drets d'accés, rectificació, supressió, oposició, limitació del tractament i portabilitat, i retirar el teu consentiment en qualsevol moment, escrivint a admin@casmar.tech. Et respondrem en el termini màxim d'un mes. Si consideres que no hem tractat les teves dades correctament, pots presentar una reclamació davant l'Agència Espanyola de Protecció de Dades (www.aepd.es).",
       "section7Title": "7. Protecció de dades de menors",
@@ -665,7 +666,7 @@
     },
     "terms": {
       "title": "Avís Legal i Condicions d'Ús",
-      "intro": "En utilitzar meapica.com acceptes les següents condicions.",
+      "intro": "En utilitzar meapica.shop acceptes les següents condicions.",
       "section1Title": "1. Identificació",
       "section1Text": "Meapica és una plataforma de creació de llibres infantils personalitzats operada des d'Espanya per Xavier Huix Trenco, amb domicili al Carrer Aribau 140, 5è, 08036 Barcelona (Espanya). Contacte: admin@casmar.tech.",
       "section2Title": "2. Servei",
@@ -675,21 +676,21 @@
       "section4Title": "4. Preus i pagaments",
       "section4Text": "Tots els preus són finals, amb l'IVA inclòs, i es mostren en euros. En els llibres impresos, l'enviament a Espanya està inclòs en el preu. El pagament es processa de forma segura a través de Stripe.",
       "section5Title": "5. Enviaments i devolucions",
-      "section5Text": "Els llibres s'imprimeixen sota demanda a la UE i, de moment, només fem enviaments a adreces d'Espanya. Espanya peninsular: 7-10 dies laborables. Balears: 7-10 dies laborables. De moment no enviem a Canàries, Ceuta ni Melilla. En ser productes personalitzats, els llibres estan exclosos del dret de desistiment (art. 103 c) del text refós de la Llei general per a la defensa dels consumidors i usuaris) i no admeten devolucions. Si un llibre arriba amb qualsevol defecte d'impressió o de fabricació, o es malmet durant l'enviament, escriu-nos amb una foto i t'enviem un altre de nou sense cost. Això no limita els drets de garantia que et reconeix la llei.",
+      "section5Text": "Els llibres s'imprimeixen sota demanda a Europa i, de moment, només fem enviaments a adreces d'Espanya. Espanya peninsular: 7-10 dies laborables. Balears: 7-10 dies laborables. De moment no enviem a Canàries, Ceuta ni Melilla. En ser productes personalitzats, els llibres estan exclosos del dret de desistiment (art. 103 c) del text refós de la Llei general per a la defensa dels consumidors i usuaris) i no admeten devolucions. Si un llibre arriba amb qualsevol defecte d'impressió o de fabricació, o es malmet durant l'enviament, escriu-nos en els 30 dies següents a rebre'l, amb una foto del llibre i de l'embalatge, i t'enviem un altre de nou sense cost. Això no limita els drets de garantia que et reconeix la llei.",
       "section6Title": "6. Limitació de responsabilitat",
       "section6Text": "Meapica no garanteix la disponibilitat ininterrompuda del servei. Les il·lustracions poden variar i no es garanteix un resultat específic."
     },
     "cookies": {
       "title": "Política de Cookies",
-      "intro": "Meapica utilitza cookies estrictament necessàries per al funcionament del servei.",
+      "intro": "Meapica fa servir cookies tècniques necessàries perquè el servei funcioni i, només si ho acceptes, cookies publicitàries de Meta.",
       "section1Title": "1. Què són les cookies?",
       "section1Text": "Les cookies són petits arxius de text que s'emmagatzemen al teu navegador en visitar un lloc web.",
       "section2Title": "2. Cookies que utilitzem",
-      "section2Text": "Utilitzem únicament cookies tècniques necessàries per: mantenir la teva sessió d'usuari activa, recordar l'idioma seleccionat i gestionar el procés de compra. No utilitzem cookies de màrqueting ni de seguiment de tercers.",
+      "section2Text": "Tècniques (sempre actives): mantenir la teva sessió, recordar l'idioma, gestionar la compra i desar la teva elecció sobre cookies (meapica_consent, 12 mesos). Publicitàries (només amb el teu consentiment): el píxel de Meta (_fbp i _fbc, 90 dies) mesura quins anuncis d'Instagram i Facebook acaben en una compra i ajuda a mostrar-los a qui li poden interessar; meapica_utm (30 dies) recorda des de quin anunci o publicació has arribat per associar-ho a la teva comanda.",
       "section3Title": "3. Cookies de tercers",
-      "section3Text": "Stripe (processador de pagaments) pot establir les seves pròpies cookies durant el procés de checkout. Consulta la política de cookies de Stripe per a més informació.",
+      "section3Text": "Meta Platforms Ireland Ltd., només si acceptes les cookies publicitàries: rep dades de navegació i, si compres, l'import de la comanda i el teu correu i telèfon xifrats (hash) per mesurar els nostres anuncis. Meta pot tractar dades als EUA a l'empara del Marc de Privadesa de Dades UE-EUA. Stripe (processador de pagaments) pot establir les seves pròpies cookies durant el pagament.",
       "section4Title": "4. Gestió de cookies",
-      "section4Text": "Pots configurar el teu navegador per rebutjar cookies, tot i que això pot afectar el funcionament del servei."
+      "section4Text": "Pots acceptar o rebutjar les cookies publicitàries a l'avís de la primera visita i canviar d'opinió quan vulguis des de «Configurar cookies», al peu de cada pàgina. Si les rebutges, la web funciona igual. També les pots esborrar des del teu navegador."
     },
     "faq": {
       "title": "Preguntes Freqüents",
@@ -697,7 +698,7 @@
       "section1Title": "Com es crea el meu conte?",
       "section1Text": "Tu tries l'aventura, personalitzes el personatge amb el nom, l'edat i les característiques del teu fill, i la nostra tecnologia escriu una història única amb il·lustracions originals. Cap altre nen al món tindrà mai el mateix llibre.",
       "section2Title": "Quant triga l'enviament?",
-      "section2Text": "Cada llibre s'imprimeix sota demanda a la UE tan bon punt fas la comanda. De moment només enviem a Espanya. Espanya peninsular: 7-10 dies laborables. Balears: 7-10 dies laborables. De moment no enviem a Canàries, Ceuta ni Melilla. Rebràs un correu amb el número de seguiment quan el paquet estigui en camí.",
+      "section2Text": "Cada llibre s'imprimeix sota demanda a Europa tan bon punt fas la comanda. De moment només enviem a Espanya. Espanya peninsular: 7-10 dies laborables. Balears: 7-10 dies laborables. De moment no enviem a Canàries, Ceuta ni Melilla. Rebràs un correu amb el número de seguiment quan el paquet estigui en camí.",
       "section3Title": "Puc personalitzar el personatge?",
       "section3Text": "Sí! Pots triar el nom, l'edat, el color de cabell, ulls i pell, el pentinat, el gènere, i fins i tot afegir la seva mascota, menjar preferit o somni de futur. Tot apareix a la història i a les il·lustracions.",
       "section4Title": "Quin paper utilitzeu?",
@@ -711,13 +712,13 @@
       "title": "Enviaments i Embalatge",
       "intro": "Cada llibre de Meapica és un regal. Per això, l'experiència de rebre'l a casa ha de ser tan especial com obrir-lo.",
       "section1Title": "Terminis d'enviament",
-      "section1Text": "De moment només enviem a Espanya. Espanya peninsular: 7-10 dies laborables. Balears: 7-10 dies laborables. De moment no enviem a Canàries, Ceuta ni Melilla. Cada llibre s'imprimeix sota demanda a la UE, per això el termini inclou la impressió.",
+      "section1Text": "De moment només enviem a Espanya. Espanya peninsular: 7-10 dies laborables. Balears: 7-10 dies laborables. De moment no enviem a Canàries, Ceuta ni Melilla. Cada llibre s'imprimeix sota demanda a Europa, per això el termini inclou la impressió.",
       "section2Title": "Cost d'enviament",
       "section2Text": "L'enviament estàndard està inclòs en el preu del llibre, que ja porta l'IVA inclòs. No hi ha costos ocults ni sorpreses a la caixa.",
       "section3Title": "Embalatge protector",
       "section3Text": "El teu llibre viatja en un embalatge de cartró pensat perquè arribi en perfecte estat, a punt per regalar. Si tot i així arriba malmès, escriu-nos i t'enviem un altre de nou sense cost.",
       "section4Title": "Seguiment de la comanda",
-      "section4Text": "Quan el llibre surti d'impremta, rebràs un correu electrònic amb el número de seguiment. També pots consultar l'estat de les teves comandes des del teu panell d'usuari a meapica.com."
+      "section4Text": "Quan el llibre surti d'impremta, rebràs un correu electrònic amb el número de seguiment. També pots consultar l'estat de les teves comandes des del teu panell d'usuari a meapica.shop."
     }
   },
   "notFound": {
@@ -1047,7 +1048,7 @@
       "editLinks": "Canviar <title>títol</title>, <dedication>dedicatòria</dedication> o <look>aspecte</look>",
       "desktopHint": "Fes clic a les pàgines o fes servir les fletxes ← → del teclat",
       "headline": "El llibre {deName}, imprès i a casa teva",
-      "specs": "30 pàgines · 12 escenes il·lustrades · 20 × 20 cm · imprès a la UE",
+      "specs": "30 pàgines · 12 escenes il·lustrades · 20 × 20 cm · imprès a Europa",
       "mockupAlt": "Així serà el llibre {deName} en {format}: {title}",
       "formatsLegend": "Tria el format",
       "hardcoverGap": "Només {diff} més que la tova",
@@ -1066,11 +1067,11 @@
       "ctaNoteDigital": "IVA inclòs",
       "trustPreview": "Has vist el seu llibre abans de pagar",
       "trustPayment": "Pagament segur amb Stripe",
-      "trustMadeIn": "Fet a Barcelona, imprès a la UE",
+      "trustMadeIn": "Fet a Barcelona, imprès a Europa",
       "trustReprint": "Arriba malmès o amb un defecte d'impressió? Te'l reposem sense cost",
       "help": "Dubtes? Escriu-nos a",
       "teaserComingTitle": "El que ve a la història",
-      "teaserComingMore": "…i el final, amb la fitxa d'heroi {deName}",
+      "teaserComingMore": "…i el final: la fitxa d'heroi {deName} i el mapa del seu món, amb un joc de busca i troba",
       "teaserOrderTitle": "El llibre {deName}, complet",
       "teaserOrderBody": "12 escenes il·lustrades, imprès i a casa teva",
       "teaserOrderPrice": "Des de {price}",
@@ -1099,7 +1100,7 @@
         },
         "returns": {
           "q": "I si arriba amb algun problema?",
-          "a": "Com que és un llibre fet a mida no admet desistiment, però si arriba amb un defecte d'impressió o malmès per l'enviament, t'enviem un altre de nou sense cost."
+          "a": "Com que és un llibre fet a mida no admet desistiment, però si arriba amb un defecte d'impressió o malmès per l'enviament, t'enviem un altre de nou sense cost. Només cal que ens escriguis en els 30 dies següents a rebre'l, amb una foto del llibre i de l'embalatge."
         }
       },
       "softcoverNote": "Coberta flexible, més lleugera",
@@ -2324,7 +2325,7 @@
     "feature1Description": "Impressió de qualitat amb colors vius, en un llibre fet per rellegir-se una vegada i una altra.",
     "feature2Title": "Il·lustracions úniques",
     "feature2Description": "Cada conte amb il·lustracions personalitzades que fan únic al teu fill.",
-    "feature3Title": "Imprès a la UE i enviat a casa",
+    "feature3Title": "Imprès a Europa i enviat a casa",
     "feature3Description": "Arriba ben protegit, a punt per regalar o guardar com un tresor.",
     "copyright": "© 2026 Meapica. Tots els drets reservats."
   },
@@ -2373,7 +2374,7 @@
     "regionNote": "De moment no enviem a les Canàries, Ceuta ni Melilla. Si el regal és per allà, el conte en PDF hi arriba igual.",
     "methodHeading": "Com calculem aquestes dates",
     "method": [
-      "Imprimim cada llibre sota demanda a la UE. Avui, entre la impressió i l'enviament, una comanda triga {min}-{max} dies naturals a arribar a casa.",
+      "Imprimim cada llibre sota demanda a Europa. Avui, entre la impressió i l'enviament, una comanda triga {min}-{max} dies naturals a arribar a casa.",
       "Al desembre hi sumem {buffer} dies de marge per la saturació de la paqueteria i els festius del 8 de desembre, Nadal i Cap d'Any.",
       "El termini comença quan completes el pagament, no quan comences a crear el conte.",
       "Són estimacions basades en els terminis actuals del transportista, no una garantia. Si canvien, actualitzem aquesta pàgina."
@@ -2387,7 +2388,7 @@
       "christmasQ": "I per tenir-lo per Nadal?",
       "christmasA": "Per tenir el llibre imprès a casa el 24 de desembre, demana'l fins al {date}. Després d'aquesta data encara pots regalar el conte en PDF.",
       "timeQ": "Quant triga a arribar el llibre imprès?",
-      "timeA": "L'imprimim sota demanda a la UE tan bon punt fas la comanda. Espanya peninsular i Balears: 7-10 dies laborables, amb l'enviament inclòs en el preu. Rebràs el número de seguiment per correu.",
+      "timeA": "L'imprimim sota demanda a Europa tan bon punt fas la comanda. Espanya peninsular i Balears: 7-10 dies laborables, amb l'enviament inclòs en el preu. Rebràs el número de seguiment per correu.",
       "regionQ": "Envieu a les Canàries, Ceuta o Melilla?",
       "regionA": "De moment no. Si el regal és per allà, el conte en PDF t'arriba per correu i pots imprimir-lo o llegir-lo a la tauleta."
     },
@@ -2458,5 +2459,12 @@
     },
     "error": "No t'hem pogut donar de baixa ara. Torna-ho a provar o escriu-nos a <mail></mail>.",
     "backHome": "Anar a Meapica"
+  },
+  "cookieConsent": {
+    "title": "Cookies",
+    "text": "Fem servir cookies necessàries perquè la web funcioni i, si ho acceptes, cookies de Meta per mesurar els nostres anuncis a Instagram i Facebook.",
+    "policy": "Més informació",
+    "accept": "Acceptar",
+    "reject": "Rebutjar"
   }
 }

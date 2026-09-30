@@ -9,33 +9,10 @@
 
 import { findMissingGlyphs, measureTextWidth, type FontVariant } from "./fonts";
 
-// Emoji and pictographs we cannot print (no colour-emoji font is embedded).
-// Symbols covered by the embedded Noto Sans Symbols 2 subset are kept.
-const KEPT_SYMBOLS = new Set(["♥", "♡", "★", "☆", "❤", "✿", "☀", "☁", "✓", "✶", "❀"]);
-const PICTOGRAPHIC = /\p{Extended_Pictographic}/u;
-// Variation selectors, ZWJ, skin-tone modifiers, keycap combiner, tag chars
-const INVISIBLE_MODIFIERS = /[︎️‍⃣]|[\u{1F3FB}-\u{1F3FF}]|[\u{E0020}-\u{E007F}]/gu;
+import { KEPT_SYMBOLS, PICTOGRAPHIC, sanitizePrintText } from "@/lib/book/print-text";
 
-/**
- * Normalises text for print without changing its meaning:
- * - NFC composition (é typed as e + ◌́ becomes é)
- * - ŀ/Ŀ (U+0140/U+013F) → l·/L· (their canonical compatibility form)
- * - emoji are dropped (they would print as blank boxes); kept: ♥ ★ ✿ …
- * - collapses the whitespace left behind, preserves paragraph breaks
- */
-export function sanitizePrintText(input: string): string {
-  let text = input.normalize("NFC").replace(/ŀ/g, "l·").replace(/Ŀ/g, "L·");
-  text = text.replace(INVISIBLE_MODIFIERS, "");
-  text = Array.from(text)
-    .filter((ch) => KEPT_SYMBOLS.has(ch) || !PICTOGRAPHIC.test(ch))
-    .join("");
-  return text
-    .replace(/\r\n?/g, "\n")
-    .replace(/[ \t]+/g, " ")
-    .replace(/ *\n */g, "\n")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
-}
+// Pure text helpers live in src/lib/book/print-text.ts (shared with the web viewer).
+export { joinName, printQuotes, sanitizePrintText } from "@/lib/book/print-text";
 
 /** Returns the characters sanitizePrintText would drop plus glyphs no embedded font has. */
 export function unprintableCharacters(input: string, variant: FontVariant): string[] {
@@ -126,25 +103,6 @@ export function fitText(opts: FitOptions): FitResult {
   return last ?? { fontSize: opts.minSize, leading: minLeading, lines: 0, height: 0, fits: false };
 }
 
-// ── Locale typography ────────────────────────────────────────────────────
-
-/**
- * Opening / closing quotation marks for printed quotes (dedication, back-cover synopsis).
- * es/ca: «angle quotes»; fr: « guillemets » with a no-break space (U+00A0 — the embedded
- * fonts have no U+202F narrow no-break space, and a breaking space could orphan the »);
- * en: “curly quotes”. Unknown locales fall back to Spanish, like pdfT().
- */
-export function printQuotes(locale: string | undefined): [open: string, close: string] {
-  switch (locale) {
-    case "en":
-      return ["“", "”"];
-    case "fr":
-      return ["« ", " »"];
-    default:
-      return ["«", "»"];
-  }
-}
-
 /**
  * Splits `text` after its first `lineCount` visual lines at `width`, with the same greedy
  * breaker (and safety margin) as countLines — so the head is guaranteed to fit in that many
@@ -192,9 +150,4 @@ export function splitLeadingLines(
     }
   }
   return { head: head.join("\n"), tail: "" };
-}
-
-/** "…per a l'" + "Anna" → no space after an elided article; otherwise one space. */
-export function joinName(phrase: string, name: string): string {
-  return phrase.endsWith("'") ? `${phrase}${name}` : `${phrase} ${name}`;
 }

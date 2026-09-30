@@ -43,7 +43,7 @@ export function BackCoverFace({ back, title, childName }: { back: BackCoverSourc
       </div>
       <div className={s.backBrand}>
         <BrandLogo className={s.backLogo} />
-        <span>meapica.com</span>
+        <span>meapica.shop</span>
       </div>
     </div>
   );

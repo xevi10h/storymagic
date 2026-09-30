@@ -11,7 +11,7 @@ import { cx, focusRing } from "@/components/ui";
 import { Breadcrumbs, PageHero, kicker, marketingH1, marketingLead } from "@/components/seo-landing/MarketingHeader";
 import { getPublishedPosts } from "@/lib/blog";
 
-const BASE_URL = "https://meapica.com";
+const BASE_URL = "https://meapica.shop";
 const PATH = "/blog";
 
 type PageProps = { params: Promise<{ locale: string }> };

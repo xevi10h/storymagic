@@ -1,7 +1,7 @@
 /**
  * Local print check — renders the Gelato interior + cover files (soft + hard)
- * and the digital book for a real story, validates them, and rasterises
- * spread contact sheets for visual review.
+ * and the digital book (trim-size reader edition) for a real story, validates them,
+ * and rasterises spread contact sheets of both editions for visual review.
  *
  * READ-ONLY: Supabase GET via service role (PROD — never writes), Gelato
  * catalog GET only (never creates orders).
@@ -15,6 +15,8 @@
  *   --stress         Catalan/Spanish edge-case strings in name, dedication, title
  *   --age=N          override the child's age (text sizing)
  *   --out=DIR        output dir (default artifacts/print-test/<storyId>)
+ *   --locale=xx      print the book's own copy (title page, "The End", map game…) in es/ca/en/fr
+ *                    instead of stories.locale (the story text stays as written)
  *   --map-game=FILE  print pp. 28–29 with this MapGame JSON instead of the stored one
  *                    (same map image — layout check of the other age bands)
  *   --color=X        override the child's favourite colour (palette check): a FAVORITE_COLORS
@@ -44,7 +46,7 @@ const storyId = args.find((a) => !a.startsWith("--")) ?? "458956ca-2f76-4b2e-906
 const flag = (f: string) => args.includes(f);
 const opt = (name: string) => args.find((a) => a.startsWith(`--${name}=`))?.split("=")[1];
 const colorOpt = opt("color");
-const outDir = resolve(process.cwd(), opt("out") ?? `artifacts/print-test/${storyId}${flag("--upscale") ? "-upscaled" : ""}${flag("--stress") ? "-stress" : ""}${colorOpt ? `-${colorOpt.replace("#", "")}` : ""}`);
+const outDir = resolve(process.cwd(), opt("out") ?? `artifacts/print-test/${storyId}${opt("locale") ? `-${opt("locale")}` : ""}${flag("--upscale") ? "-upscaled" : ""}${flag("--stress") ? "-stress" : ""}${colorOpt ? `-${colorOpt.replace("#", "")}` : ""}`);
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -163,7 +165,7 @@ const input: BookPdfInput = {
   mapImageUrl,
   mapGame: mapImageUrl ? mapGame : null,
   illustrations,
-  locale: story.locale ?? "es",
+  locale: opt("locale") ?? story.locale ?? "es",
 };
 
 // ── geometry (live, read-only) ─────────────────────────────────────────────
@@ -218,21 +220,43 @@ for (const p of prepared.plan.pages) {
   console.log(`  p${String(p.pageNumber).padStart(2)} ${p.side.padEnd(5)} ${p.kind}${"layout" in p ? `:${p.layout}` : ""}${"variant" in p ? `:${p.variant}` : ""}${"half" in p ? `:${p.half}` : ""}${extra}${type}`);
 }
 
+// ── digital edition preflight ─────────────────────────────────────────────
+{
+  const { PDFDocument } = await import("pdf-lib");
+  const doc = await PDFDocument.load(book);
+  const sizes = [...new Set(doc.getPages().map((p) => `${((p.getWidth() * 25.4) / 72).toFixed(1)}×${((p.getHeight() * 25.4) / 72).toFixed(1)} mm`))];
+  const fonts = execFileSync("pdffonts", [join(outDir, "book.pdf")], { encoding: "utf8" }).split("\n").slice(2).filter(Boolean);
+  const embedded = fonts.every((r) => / yes +yes +yes /.test(r));
+  const ok = doc.getPageCount() === 34 && sizes.length === 1 && sizes[0] === "200.0×200.0 mm" && embedded;
+  console.log(`\n[digital] ok=${ok} pages=${doc.getPageCount()} size=${sizes.join(", ")} fonts embedded=${embedded}`);
+}
+
 // ── rasterise + spread contact sheets ─────────────────────────────────────
 const png = join(outDir, "png");
 mkdirSync(png, { recursive: true });
 execFileSync("pdftoppm", ["-r", "45", "-png", join(outDir, "interior.pdf"), join(png, "in")]);
+execFileSync("pdftoppm", ["-r", "45", "-png", join(outDir, "book.pdf"), join(png, "dg")]);
 execFileSync("pdftoppm", ["-r", "60", "-png", join(outDir, "cover-softcover.pdf"), join(png, "cover-soft")]);
 execFileSync("pdftoppm", ["-r", "60", "-png", join(outDir, "cover-hardcover.pdf"), join(png, "cover-hard")]);
 const pages = readdirSync(png).filter((f) => f.startsWith("in-")).sort();
+// Print (bleed pages): [inside cover | p1], [p2 | p3] … [p30 | inside cover]
+const printSpreads: [string | null, string | null][] = [[null, pages[0]]];
+for (let i = 1; i < pages.length; i += 2) printSpreads.push([pages[i], pages[i + 1] ?? null]);
+await contactSheets("spreads", pages, printSpreads);
+// Digital (trim pages): [cover], [endpaper | p1] … [p30 | endpaper], [back cover]
+const dPages = readdirSync(png).filter((f) => f.startsWith("dg-")).sort();
+const digitalSpreads: [string | null, string | null][] = [[null, dPages[0]]];
+for (let i = 1; i < dPages.length - 1; i += 2) digitalSpreads.push([dPages[i], dPages[i + 1] ?? null]);
+digitalSpreads.push([dPages[dPages.length - 1], null]);
+await contactSheets("digital-spreads", dPages, digitalSpreads);
+
+async function contactSheets(name: string, pages: string[], spreads: [string | null, string | null][]) {
 const first = await sharp(join(png, pages[0])).metadata();
 const pw = first.width!;
 const ph = first.height!;
-// Spreads as the reader sees them: [inside cover | p1], [p2 | p3] … [p30 | inside cover]
-const spreads: [string | null, string | null][] = [[null, pages[0]]];
-for (let i = 1; i < pages.length; i += 2) spreads.push([pages[i], pages[i + 1] ?? null]);
 const gap = 16;
 const perSheet = 8;
+const blank = name === "spreads" ? "inside cover" : "—"; // print: labels are inside-file pages; digital: reading-order pages
 for (let s = 0; s < spreads.length; s += perSheet) {
   const chunk = spreads.slice(s, s + perSheet);
   const cols = 2;
@@ -244,7 +268,7 @@ for (let s = 0; s < spreads.length; s += perSheet) {
     const x = gap + (i % cols) * (2 * pw + gap);
     const y = gap + Math.floor(i / cols) * (ph + 22 + gap);
     const [l, r] = chunk[i];
-    const label = `<svg width="${2 * pw}" height="20"><text x="4" y="15" font-family="Helvetica" font-size="13" fill="#333">${l ? `p${pages.indexOf(l) + 1}` : "inside cover"} | ${r ? `p${pages.indexOf(r) + 1}` : "inside cover"}</text></svg>`;
+    const label = `<svg width="${2 * pw}" height="20"><text x="4" y="15" font-family="Helvetica" font-size="13" fill="#333">${l ? `p${pages.indexOf(l) + 1}` : blank} | ${r ? `p${pages.indexOf(r) + 1}` : blank}</text></svg>`;
     composites.push({ input: Buffer.from(label), left: x, top: y });
     for (const [side, f] of [[0, l], [1, r]] as const) {
       const input = f
@@ -258,6 +282,7 @@ for (let s = 0; s < spreads.length; s += perSheet) {
   await sharp({ create: { width: sheetW, height: sheetH, channels: 3, background: "#f4f4f4" } })
     .composite(composites)
     .png()
-    .toFile(join(outDir, `spreads-${String(s / perSheet + 1).padStart(2, "0")}.png`));
+    .toFile(join(outDir, `${name}-${String(s / perSheet + 1).padStart(2, "0")}.png`));
+}
 }
 console.log(`\nOutput: ${outDir}`);

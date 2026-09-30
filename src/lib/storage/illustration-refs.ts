@@ -94,11 +94,11 @@ export function showcasePublicUrl(supabaseUrl: string, path: string): string {
 }
 
 /** Origins that serve our own static assets (pre-rendered avatars under /images/). */
-const SITE_ORIGINS = new Set(["https://meapica.com", "https://www.meapica.com"]);
+const SITE_ORIGINS = new Set(["https://meapica.shop", "https://www.meapica.shop", "https://meapica.com", "https://www.meapica.com"]);
 
 /**
  * A non-illustration ref a showcase page may pass through as is: our own public
- * `showcase` bucket, or a site asset under /images/ (relative or on meapica.com).
+ * `showcase` bucket, or a site asset under /images/ (relative or on meapica.shop / meapica.com).
  */
 function isTrustedShowcaseAsset(ref: string, supabaseUrl: string): boolean {
   if (ref.startsWith("/images/")) return !ref.startsWith("//") && !ref.split(/[/?#]/).includes("..");

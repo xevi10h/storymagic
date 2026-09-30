@@ -5,7 +5,7 @@
 //   src/lib/pricing.ts, incl. the PDF → printed upgrade) and the webhook endpoint.
 //
 //   STRIPE_KEY=sk_test_... npx tsx --tsconfig tsconfig.json scripts/stripe-setup-catalog.mts \
-//     [--webhook-url=https://meapica.com/api/webhooks/stripe] [--dry-run]
+//     [--webhook-url=https://meapica.shop/api/webhooks/stripe] [--dry-run]
 //
 // Re-run after changing an amount in STRIPE_CATALOG: a new Price takes over the
 // lookup key (transfer_lookup_key) and the old one is archived.

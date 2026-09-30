@@ -16,7 +16,7 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    sitemap: "https://meapica.com/sitemap.xml",
-    host: "https://meapica.com",
+    sitemap: "https://meapica.shop/sitemap.xml",
+    host: "https://meapica.shop",
   };
 }

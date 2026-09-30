@@ -206,9 +206,9 @@ export function generateMockStory(input: StoryInput): GeneratedStory {
     setupPayoff: { detail: "a small glowing red cape found by a street lamp", setupScene: 2, payoffScene: 11 },
     cast: [],
     world: [
-      { id: "home_city", name: city, kind: "location", visual: "A sunny Mediterranean city street with cobblestones, balconies with flowers and a warm stone facade." },
-      { id: "magic_city", name: "La ciudad secreta", kind: "location", visual: "The same city transformed by magic: glowing colours, floating lanterns, rooftops that sparkle." },
-      { id: "red_cape", name: "La capa roja", kind: "object", visual: "A small bright red cape with a golden clasp that glows softly." },
+      { id: "home_city", name: city, label: "home city", kind: "location", visual: "A sunny Mediterranean city street with cobblestones, balconies with flowers and a warm stone facade." },
+      { id: "magic_city", name: "La ciudad secreta", label: "secret city", kind: "location", visual: "The same city transformed by magic: glowing colours, floating lanterns, rooftops that sparkle." },
+      { id: "red_cape", name: "La capa roja", label: "red cape", kind: "object", visual: "A small bright red cape with a golden clasp that glows softly." },
     ],
     scenes: sceneTemplates.map((scene, index) => {
       const n = index + 1;

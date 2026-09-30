@@ -20,89 +20,40 @@
  */
 
 import type { GeneratedScene, GeneratedStory } from "@/lib/ai/story-generator";
-import type { MapGame, MapGameBand } from "@/lib/ai/adventure-map";
-import { BOOK, getPdfTextConfig, type PdfTextConfig } from "./theme";
-import { MM_TO_PT } from "./images";
-import { countLines, fitText, sanitizePrintText, type FitResult } from "./text";
-import type { FontVariant } from "./fonts";
+import type { MapGame } from "@/lib/ai/adventure-map";
+import {
+  BOOK,
+  GEOMETRY,
+  ILL_TEXT_WIDTH,
+  MAP_PANEL,
+  PANEL_PADDING,
+  getPdfTextConfig,
+  type FittedType,
+  type FrontMatterType,
+  type MapPanel,
+  type PdfTextConfig,
+  type DropCapPlan,
+} from "@/lib/book/print-spec";
+import { SCENE_COUNT, sequenceInterior, INTERIOR_PAGE_COUNT, type IllustrationLayout, type TextVariant } from "@/lib/book/sequence";
+import { sanitizePrintText, tieLastWords } from "@/lib/book/print-text";
+import { countLines, fitText, splitLeadingLines, type FitResult } from "./text";
+import { fontMetrics, measureTextWidth, type FontVariant } from "./fonts";
 
-export const INTERIOR_PAGE_COUNT = 30;
-/** Pages in the Gelato "inside" file: front pastedown + 30 inner pages + back pastedown. */
-export const INSIDE_FILE_PAGE_COUNT = INTERIOR_PAGE_COUNT + 2;
-export const SCENE_COUNT = 12;
-/** Secondary illustration of scene N is stored as scene N + 12 */
-export const SECONDARY_SCENE_OFFSET = 12;
-
-// ── Layout vocabulary (same names as the web viewer) ──────────────────────
-
-export type IllustrationLayout = "immersive" | "split_top" | "split_bottom" | "full_illustration";
-type SceneLayout = IllustrationLayout | "spread";
-
-/**
- * Every illustration page prints full bleed (split layouts used to hold a 78 % art band over
- * a cream strip repeating the scene title — retired 2026-09-29). The names are kept because
- * they still decide whether the art may carry the scene title (see planInteriorPages) and
- * the web viewer shares them.
- */
-const SCENE_LAYOUTS: SceneLayout[] = [
-  "immersive", // 1 dramatic opening
-  "split_top", // 2 world building
-  "spread", // 3 first adventure — panorama
-  "full_illustration", // 4 new encounter
-  "split_bottom", // 5 meeting ally
-  "immersive", // 6 exploring wonders
-  "split_top", // 7 first test
-  "spread", // 8 climactic moment — panorama
-  "full_illustration", // 9 big obstacle
-  "immersive", // 10 darkest moment
-  "split_bottom", // 11 breakthrough
-  "immersive", // 12 resolution
-];
-
-export type TextVariant = "galeria" | "pergamino" | "ventana" | "puente";
-const TEXT_CYCLE: TextVariant[] = ["galeria", "pergamino", "ventana"];
-
-export function getActLabel(sceneNumber: number): string | undefined {
-  if (sceneNumber === 1) return "I";
-  if (sceneNumber === 4) return "II";
-  if (sceneNumber === 10) return "III";
-  return undefined;
-}
-
-// ── Geometry (pt) — shared by template + validator ───────────────────────
+// Pure spec + sequence live in src/lib/book (shared with the web viewer); re-exported for the print code.
+export { GEOMETRY, ILL_TEXT_WIDTH, MAP_PANEL, PANEL_PADDING } from "@/lib/book/print-spec";
+export type { FittedType, FrontMatterType, MapPanel } from "@/lib/book/print-spec";
+export {
+  INTERIOR_PAGE_COUNT,
+  INSIDE_FILE_PAGE_COUNT,
+  SCENE_COUNT,
+  SECONDARY_SCENE_OFFSET,
+  type IllustrationLayout,
+  type TextVariant,
+} from "@/lib/book/sequence";
 
 const W = BOOK.pageWidth;
 const H = BOOK.pageHeight;
 const M = BOOK.contentMargin; // 19 mm from page edge = 15 mm inside trim
-
-export const GEOMETRY = {
-  pageWidth: W,
-  pageHeight: H,
-  margin: M,
-  /** Illustration + text page: image height */
-  illTextImageHeight: H * 0.42,
-  /**
-   * Panorama: the image covers both pages' outer bleeds + both trims (4 + 200 + 200 + 4 mm).
-   * Each page shows a 208 mm window; the right page starts 200 mm in, so the 4 mm gutter
-   * bleeds overlap and the art is continuous across the fold.
-   */
-  spreadWidth: (4 + 200 + 200 + 4) * MM_TO_PT,
-  spreadRightOffset: 200 * MM_TO_PT,
-  /** Text pages: fixed text column */
-  textColumnWidth: 440,
-  textInnerHeight: H - 2 * M,
-  /** Title over artwork */
-  overlayTextWidth: W - 2 * M,
-  /** Longest body text drawn in white over a gradient (≈ 6 lines); longer → paper panel */
-  maxGradientTextHeight: H * 0.26,
-  /**
-   * Adventure map game panel (right page, p29). The map prompt keeps the RIGHT QUARTER of the
-   * image free (image-prompts MAP_RULES): the panel starts 5 mm inside that zone and ends at
-   * the text safe margin. 408 mm × 0.75 − 200 mm + 5 mm = 111 mm from the right page's edge.
-   */
-  mapPanelLeft: ((4 + 200 + 200 + 4) * 0.75 - 200 + 5) * MM_TO_PT,
-  mapPanelWidth: W - M - ((4 + 200 + 200 + 4) * 0.75 - 200 + 5) * MM_TO_PT,
-} as const;
 
 export type ImageRole = "scene" | "spread";
 
@@ -116,11 +67,6 @@ export interface ImageBox {
 }
 
 // ── Page plan types ──────────────────────────────────────────────────────
-
-export interface FittedType {
-  fontSize: number;
-  leading: number;
-}
 
 interface PageBase {
   /** 1-based inner page number */
@@ -171,6 +117,8 @@ export type PlannedPage = PageBase &
         scale: number;
         /** Bottom padding of the text column that lifts the block to the optical centre (≤ opticalLift) */
         lift: number;
+        /** Ventana pages: the two-line drop cap (null → plain paragraphs) */
+        dropCap?: DropCapPlan | null;
       }
     | { kind: "illustration-text"; scene: GeneratedScene; image: ImageBox; body: string; bodyType: FittedType }
     | { kind: "final"; message: string; messageType: FittedType; front: FrontMatterType }
@@ -181,26 +129,8 @@ export type PlannedPage = PageBase &
     | { kind: "colophon" }
   );
 
-type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never;
-
-/**
- * Title/dedication page (p1) and "The End" page (p26) scale with the book's body type, so a
- * 21.5 pt read-aloud book does not open on 11 pt small print. `scale` multiplies ornaments and
- * gaps; the other fields are the small lines' sizes (pt).
- */
-export interface FrontMatterType {
-  scale: number;
-  /** p1 "A personalised adventure for" · p26 "A story created especially for" */
-  kicker: number;
-  /** p1 child's name · p26 "The End" */
-  display: number;
-  sender: number;
-  logo: number;
-}
 type PageOf<K extends PlannedPage["kind"]> = Extract<PlannedPage, { kind: K }>;
 
-export const PANEL_PADDING = 16;
-export const ILL_TEXT_WIDTH = 460;
 /** Body room under a secondary illustration (image, gap, bottom margin, ornaments). */
 const ILL_TEXT_BODY_HEIGHT = H - GEOMETRY.illTextImageHeight - 8 - M - 36;
 /** Body room inside a panorama's paper panel. */
@@ -225,43 +155,13 @@ export interface MapPanelStrings {
   kicker: string;
   /** "Where is…?" (2–4) or "Seek and find" (5–12) */
   title: string;
+  /** How to play, one line ("Find these 6 things hidden on the map."), count already filled in */
+  howTo: string;
   /** Generic "follow the trail" line, when the game has none of its own */
   trail: string;
   questions: string;
   answers: string;
 }
-
-export interface MapPanel {
-  band: MapGameBand;
-  kicker: string;
-  title: string;
-  items: string[];
-  trail: string | null;
-  questionsTitle: string;
-  questions: string[];
-  /** One line, printed upside down under the questions */
-  answers: string | null;
-  /** Multiplies every MAP_PANEL size so the panel fits the page */
-  scale: number;
-  height: number;
-}
-
-/** Panel metrics — shared by the planner (fitting) and the template (drawing). */
-export const MAP_PANEL = {
-  padding: 16,
-  kicker: 6.5,
-  kickerGap: 6,
-  titleGap: 8,
-  dividerGap: 10,
-  sectionGap: 12,
-  itemLeading: 1.3,
-  noteLeading: 1.4,
-  sizes: {
-    little: { title: 22, item: 16, itemGap: 11, dot: 13, note: 0, qTitle: 0, question: 0, answer: 0 },
-    middle: { title: 18, item: 13, itemGap: 7, dot: 10, note: 10.5, qTitle: 0, question: 0, answer: 0 },
-    big: { title: 16, item: 11, itemGap: 4.5, dot: 8.5, note: 0, qTitle: 12.5, question: 9.5, answer: 6.8 },
-  },
-} as const;
 
 const MAP_FONT = {
   title: { role: "display", weight: 600 } as FontVariant,
@@ -283,6 +183,7 @@ export function mapPanelHeight(p: Omit<MapPanel, "scale" | "height">, scale: num
   let h = 2 * MAP_PANEL.padding;
   h += MAP_PANEL.kicker * 1.3 + MAP_PANEL.kickerGap;
   h += lines(p.title, z.title * scale, inner, MAP_FONT.title) * z.title * scale * 1.2 + MAP_PANEL.titleGap;
+  if (p.howTo) h += lines(p.howTo, MAP_PANEL.howTo.size * scale, inner, MAP_FONT.question) * MAP_PANEL.howTo.size * scale * MAP_PANEL.howTo.leading + MAP_PANEL.howTo.gap - MAP_PANEL.titleGap / 2; // drawn tucked under the title
   h += 1 + MAP_PANEL.dividerGap; // divider
   const itemW = inner - z.dot * scale - 7;
   for (const item of p.items) {
@@ -306,6 +207,7 @@ function planMapPanel(game: MapGame, strings: MapPanelStrings, issues: PlanIssue
     band,
     kicker: strings.kicker,
     title: strings.title,
+    howTo: strings.howTo,
     // 2–4: labels complete the title "Where is…?"; 5–12: a checklist starts upper-case
     items: game.items.map((it) => (band === "little" ? label(it.label) : capitalise(label(it.label)))),
     trail: band === "middle" ? label(game.trailLine) || strings.trail : null,
@@ -342,21 +244,6 @@ export interface PlanInput {
 
 function lineCapHeight(maxLines: number, size: number, leading: number): number {
   return maxLines * size * leading + 0.5;
-}
-
-/**
- * No lone word on a paragraph's last line: the last two words are joined with a no-break
- * space (the line breaker only breaks at ASCII spaces, so the planner measures exactly what
- * prints). Skipped when the pair is long enough to leave a gappy line.
- */
-function tieLastWords(text: string): string {
-  return text
-    .split("\n")
-    .map((p) => {
-      const m = /^(.*\S) (\S+) (\S+)$/.exec(p);
-      return m && m[2].length + m[3].length <= 18 ? `${m[1]} ${m[2]}\u00A0${m[3]}` : p;
-    })
-    .join("\n");
 }
 
 function toType(r: FitResult): FittedType {
@@ -445,51 +332,41 @@ export function planInteriorPages(input: PlanInput): InteriorPlan {
   const body = bodyLimits(tc);
   const issues: PlanIssue[] = [];
   const pages: PlannedPage[] = [];
-  const push = (p: DistributiveOmit<PlannedPage, "side">) => {
-    const side: PageBase["side"] = p.pageNumber % 2 === 0 ? "left" : "right";
-    pages.push({ ...p, side } as PlannedPage);
-  };
 
-  // p1 — title + dedication (verbatim when the parent wrote one)
-  const title = sanitizePrintText(story.bookTitle);
-  const verbatim = input.dedicationText?.trim();
-  const dedication = sanitizePrintText(verbatim ? verbatim : story.dedication ?? "");
-  if (!dedication) {
-    issues.push({ severity: "warning", code: "dedication_missing", message: "No dedication at all — title page printed without one", pageNumber: 1 });
-  } else if (!verbatim) {
-    issues.push({ severity: "warning", code: "dedication_generated", message: "No parent dedication — printing the generated one", pageNumber: 1 });
-  }
-  push({
-    kind: "title-dedication",
-    pageNumber: 1,
-    title,
-    // Fitted once the book's body size is known (planFrontMatter, below)
-    titleType: { fontSize: 26, leading: 1.3 },
-    dedication,
-    dedicationType: { fontSize: 12, leading: 1.8 },
-    sender: input.senderName ? sanitizePrintText(input.senderName) : null,
-    front: { scale: 1, kicker: 11, display: 18, sender: 10, logo: 14 },
-  });
-
-  // p2–p25 — one spread per scene
   if (story.scenes.length !== SCENE_COUNT) {
     issues.push({ severity: "error", code: "scene_count", message: `Story has ${story.scenes.length} scenes, print layout needs ${SCENE_COUNT}` });
   }
-  let textIndex = 0;
-  story.scenes.slice(0, SCENE_COUNT).forEach((scene, i) => {
-    const left = 2 + i * 2;
-    const right = left + 1;
-    const layout = SCENE_LAYOUTS[i];
-    const isBridge = scene.type === "bridge";
-    const sceneTitle = sanitizePrintText(scene.title);
-    const sceneText = tieLastWords(sanitizePrintText(scene.text));
 
-    if (!input.availableImages.has(scene.sceneNumber)) {
-      issues.push({ severity: "error", code: "missing_illustration", message: `Scene ${scene.sceneNumber} has no illustration`, pageNumber: left });
+  // Secondary illustration + text, only while the text still fits comfortably under the image
+  const secondaryFit = new Map<number, FitResult>();
+  const sceneText = (scene: GeneratedScene) => tieLastWords(sanitizePrintText(scene.text));
+  const secondaryFits = (scene: GeneratedScene): boolean => {
+    const fit = fitText({
+      text: sceneText(scene),
+      variant: { role: "body" },
+      width: ILL_TEXT_WIDTH,
+      height: ILL_TEXT_BODY_HEIGHT,
+      maxSize: body.max,
+      minSize: Math.max(body.min, body.max - 1.5),
+      leading: body.leading,
+      minLeading: Math.max(body.minLeading, body.leading - 0.25),
+    });
+    secondaryFit.set(scene.sceneNumber, fit);
+    if (!fit.fits) {
+      issues.push({ severity: "warning", code: "secondary_image_dropped", message: `Scene ${scene.sceneNumber}: text too long for the secondary illustration, using a full text page`, pageNumber: 1 + scene.sceneNumber * 2 });
     }
+    return fit.fits;
+  };
 
-    const overlayTitleFit = fitText({
-      text: sceneTitle,
+  // The page ORDER is decided by the shared sequence (src/lib/book/sequence.ts, also used by
+  // the web viewer); this planner adds boxes and fitted type to each page.
+  const sequence = sequenceInterior({ scenes: story.scenes, availableImages: input.availableImages, hasMap: !!input.map, secondaryFits });
+  const overlayTitleFits = new Map<number, FitResult>();
+  const overlayTitleOf = (scene: GeneratedScene): FitResult => {
+    const cached = overlayTitleFits.get(scene.sceneNumber);
+    if (cached) return cached;
+    const fit = fitText({
+      text: sanitizePrintText(scene.title),
       variant: { role: "display", weight: 600 },
       width: GEOMETRY.overlayTextWidth,
       height: lineCapHeight(2, 20, 1.25),
@@ -498,116 +375,144 @@ export function planInteriorPages(input: PlanInput): InteriorPlan {
       leading: 1.25,
       minLeading: 1.15,
     });
-    if (!overlayTitleFit.fits) issues.push({ severity: "error", code: "text_overflow", message: `Scene ${scene.sceneNumber} title too long`, pageNumber: left });
-
-    if (layout === "spread") {
-      const image: ImageBox = { sceneNumber: scene.sceneNumber, boxWidth: GEOMETRY.spreadWidth, boxHeight: H, windowLeft: 0 };
-      push({
-        kind: "spread",
-        pageNumber: left,
-        half: "left",
-        scene,
-        image,
-        overlay: { text: sceneTitle, type: toType(overlayTitleFit), role: "title", mode: "gradient", blockHeight: overlayTitleFit.height },
-      });
-      // Body over the right half: white text on the viewer's dark gradient only while it is short
-      // (the gradient must stay dark behind every line); longer text goes on a readable paper panel.
-      const bodyW = GEOMETRY.overlayTextWidth;
-      // Gradient text only at the band's body size (never shrunk to stay on the gradient).
-      const gradientFit = fitText({ text: sceneText, variant: { role: "body" }, width: bodyW, height: GEOMETRY.maxGradientTextHeight, maxSize: body.max, minSize: body.max, leading: body.leading, minLeading: body.leading });
-      let overlay: { type: FittedType; mode: "gradient" | "panel"; blockHeight: number };
-      if (gradientFit.fits) {
-        overlay = { type: toType(gradientFit), mode: "gradient", blockHeight: gradientFit.height };
-      } else {
-        const panelFit = fitText({ text: sceneText, variant: { role: "body" }, width: bodyW - 2 * PANEL_PADDING, height: SPREAD_PANEL_BODY_HEIGHT, maxSize: body.max, minSize: body.min, leading: body.leading, minLeading: body.minLeading });
-        if (!panelFit.fits) issues.push({ severity: "error", code: "text_overflow", message: `Scene ${scene.sceneNumber} text does not fit the panorama page`, pageNumber: right });
-        overlay = { type: toType(panelFit), mode: "panel", blockHeight: panelFit.height };
-      }
-      push({
-        kind: "spread",
-        pageNumber: right,
-        half: "right",
-        scene,
-        image: { ...image, windowLeft: GEOMETRY.spreadRightOffset },
-        overlay: { text: sceneText, role: "body", ...overlay },
-      });
-      if (!isBridge) textIndex++;
-      return;
+    if (!fit.fits) issues.push({ severity: "error", code: "text_overflow", message: `Scene ${scene.sceneNumber} title too long`, pageNumber: 2 * scene.sceneNumber });
+    if (!input.availableImages.has(scene.sceneNumber)) {
+      issues.push({ severity: "error", code: "missing_illustration", message: `Scene ${scene.sceneNumber} has no illustration`, pageNumber: 2 * scene.sceneNumber });
     }
+    overlayTitleFits.set(scene.sceneNumber, fit);
+    return fit;
+  };
 
-    // Full-bleed art. The title goes on the art only while the facing page has no heading
-    // (set below once the facing page is known); full_illustration pages stay pure art.
-    const artTitle: FittedType | null = layout === "full_illustration" ? null : toType(overlayTitleFit);
-    push({
-      kind: "illustration",
-      pageNumber: left,
-      scene,
-      layout,
-      image: { sceneNumber: scene.sceneNumber, boxWidth: W, boxHeight: H, windowLeft: 0 },
-      title: artTitle,
-    });
-    const artPage = pages[pages.length - 1] as PageOf<"illustration">;
-
-    if (isBridge) {
-      const bridgeFit = fitBridge(sceneText, tc.bridgeText, 1);
-      if (!bridgeFit.fits) issues.push({ severity: "error", code: "text_overflow", message: `Bridge ${scene.sceneNumber} text too long`, pageNumber: right });
-      push({ kind: "text", pageNumber: right, scene, variant: "puente", body: sceneText, titleType: toType(overlayTitleFit), bodyType: toType(bridgeFit), scale: 1, lift: 0 });
-      return;
-    }
-
-    const variant = TEXT_CYCLE[textIndex % TEXT_CYCLE.length];
-    textIndex++;
-
-    // Secondary illustration + text, when the text still fits comfortably under the image
-    const secondary = scene.sceneNumber + SECONDARY_SCENE_OFFSET;
-    if (input.availableImages.has(secondary)) {
-      const illTextFit = fitText({
-        text: sceneText,
-        variant: { role: "body" },
-        width: ILL_TEXT_WIDTH,
-        height: ILL_TEXT_BODY_HEIGHT,
-        maxSize: body.max,
-        minSize: Math.max(body.min, body.max - 1.5),
-        leading: body.leading,
-        minLeading: Math.max(body.minLeading, body.leading - 0.25),
-      });
-      if (illTextFit.fits) {
-        push({
-          kind: "illustration-text",
-          pageNumber: right,
-          scene,
-          image: { sceneNumber: secondary, boxWidth: W, boxHeight: GEOMETRY.illTextImageHeight, windowLeft: 0 },
-          body: sceneText,
-          bodyType: toType(illTextFit),
+  for (const seq of sequence) {
+    const base = { pageNumber: seq.pageNumber, side: seq.side };
+    switch (seq.kind) {
+      case "title-dedication": {
+        // p1 — title + dedication (verbatim when the parent wrote one)
+        const verbatim = input.dedicationText?.trim();
+        const dedication = sanitizePrintText(verbatim ? verbatim : story.dedication ?? "");
+        if (!dedication) {
+          issues.push({ severity: "warning", code: "dedication_missing", message: "No dedication at all — title page printed without one", pageNumber: 1 });
+        } else if (!verbatim) {
+          issues.push({ severity: "warning", code: "dedication_generated", message: "No parent dedication — printing the generated one", pageNumber: 1 });
+        }
+        pages.push({
+          ...base,
+          kind: "title-dedication",
+          title: sanitizePrintText(story.bookTitle),
+          // Fitted once the book's body size is known (planTitlePage, below)
+          titleType: { fontSize: 26, leading: 1.3 },
+          dedication,
+          dedicationType: { fontSize: 12, leading: 1.8 },
+          sender: input.senderName ? sanitizePrintText(input.senderName) : null,
+          front: { scale: 1, kicker: 11, display: 18, sender: 10, logo: 14 },
         });
-        return;
+        break;
       }
-      issues.push({ severity: "warning", code: "secondary_image_dropped", message: `Scene ${scene.sceneNumber}: text too long for the secondary illustration, using a full text page`, pageNumber: right });
+      case "spread": {
+        const { scene } = seq;
+        const titleFit = overlayTitleOf(scene);
+        const image: ImageBox = { sceneNumber: scene.sceneNumber, boxWidth: GEOMETRY.spreadWidth, boxHeight: H, windowLeft: 0 };
+        if (seq.half === "left") {
+          pages.push({
+            ...base,
+            kind: "spread",
+            half: "left",
+            scene,
+            image,
+            overlay: { text: sanitizePrintText(scene.title), type: toType(titleFit), role: "title", mode: "gradient", blockHeight: titleFit.height },
+          });
+          break;
+        }
+        // Body over the right half: white text on the viewer's dark gradient only while it is short
+        // (the gradient must stay dark behind every line); longer text goes on a readable paper panel.
+        const text = sceneText(scene);
+        const bodyW = GEOMETRY.overlayTextWidth;
+        // Gradient text only at the band's body size (never shrunk to stay on the gradient).
+        const gradientFit = fitText({ text, variant: { role: "body" }, width: bodyW, height: GEOMETRY.maxGradientTextHeight, maxSize: body.max, minSize: body.max, leading: body.leading, minLeading: body.leading });
+        let overlay: { type: FittedType; mode: "gradient" | "panel"; blockHeight: number };
+        if (gradientFit.fits) {
+          overlay = { type: toType(gradientFit), mode: "gradient", blockHeight: gradientFit.height };
+        } else {
+          const panelFit = fitText({ text, variant: { role: "body" }, width: bodyW - 2 * PANEL_PADDING, height: SPREAD_PANEL_BODY_HEIGHT, maxSize: body.max, minSize: body.min, leading: body.leading, minLeading: body.minLeading });
+          if (!panelFit.fits) issues.push({ severity: "error", code: "text_overflow", message: `Scene ${scene.sceneNumber} text does not fit the panorama page`, pageNumber: seq.pageNumber });
+          overlay = { type: toType(panelFit), mode: "panel", blockHeight: panelFit.height };
+        }
+        pages.push({ ...base, kind: "spread", half: "right", scene, image: { ...image, windowLeft: GEOMETRY.spreadRightOffset }, overlay: { text, role: "body", ...overlay } });
+        break;
+      }
+      case "illustration": {
+        // Full-bleed art; the title goes on the art only while the facing page has no heading.
+        const titleFit = overlayTitleOf(seq.scene);
+        pages.push({
+          ...base,
+          kind: "illustration",
+          scene: seq.scene,
+          layout: seq.layout,
+          image: { sceneNumber: seq.scene.sceneNumber, boxWidth: W, boxHeight: H, windowLeft: 0 },
+          title: seq.artTitle ? toType(titleFit) : null,
+        });
+        break;
+      }
+      case "illustration-text": {
+        const fit = secondaryFit.get(seq.scene.sceneNumber)!;
+        pages.push({
+          ...base,
+          kind: "illustration-text",
+          scene: seq.scene,
+          image: { sceneNumber: seq.secondarySceneNumber, boxWidth: W, boxHeight: GEOMETRY.illTextImageHeight, windowLeft: 0 },
+          body: sceneText(seq.scene),
+          bodyType: toType(fit),
+        });
+        break;
+      }
+      case "text": {
+        const { scene, variant } = seq;
+        const text = sceneText(scene);
+        if (variant === "puente") {
+          const bridgeFit = fitBridge(text, tc.bridgeText, 1);
+          if (!bridgeFit.fits) issues.push({ severity: "error", code: "text_overflow", message: `Bridge ${scene.sceneNumber} text too long`, pageNumber: seq.pageNumber });
+          pages.push({ ...base, kind: "text", scene, variant, body: text, titleType: toType(overlayTitleOf(scene)), bodyType: toType(bridgeFit), scale: 1, lift: 0 });
+          break;
+        }
+        const titleType = fitSceneTitle(sanitizePrintText(scene.title), tc.title);
+        if (!titleType.fits) issues.push({ severity: "error", code: "text_overflow", message: `Scene ${scene.sceneNumber} title too long`, pageNumber: seq.pageNumber });
+        const bodyFit = fitText({
+          text,
+          variant: { role: "body" },
+          width: textPageBodyWidth(variant, tc, 1),
+          height: textPageBodyHeight(titleType.height, 1),
+          maxSize: body.max,
+          minSize: body.min,
+          leading: body.leading,
+          minLeading: body.minLeading,
+        });
+        if (!bodyFit.fits) {
+          issues.push({ severity: "error", code: "text_overflow", message: `Scene ${scene.sceneNumber} text too long (${text.split(/\s+/).length} words) even at ${body.min}pt`, pageNumber: seq.pageNumber });
+        }
+        pages.push({ ...base, kind: "text", scene, variant, body: text, titleType: toType(titleType), bodyType: toType(bodyFit), scale: 1, lift: 0 });
+        break;
+      }
+      case "final":
+        // Fitted once the book's body size is known (planFinalPage, below)
+        pages.push({ ...base, kind: "final", message: sanitizePrintText(story.finalMessage ?? ""), messageType: { fontSize: 16, leading: 1.5 }, front: { scale: 1, kicker: 9.5, display: 26, sender: 10, logo: 14 } });
+        break;
+      case "map":
+        pages.push({ ...base, kind: "map", half: seq.half, panel: seq.half === "right" && input.map ? planMapPanel(input.map.game, input.map.strings, issues) : null });
+        break;
+      case "about-reader":
+      case "endpaper":
+      case "colophon":
+        pages.push({ ...base, kind: seq.kind });
+        break;
     }
-
-    const titleType = fitSceneTitle(sceneTitle, tc.title);
-    if (!titleType.fits) issues.push({ severity: "error", code: "text_overflow", message: `Scene ${scene.sceneNumber} title too long`, pageNumber: right });
-    // The text page carries the scene title: never repeat it on the facing art.
-    artPage.title = null;
-    const bodyFit = fitText({
-      text: sceneText,
-      variant: { role: "body" },
-      width: textPageBodyWidth(variant, tc, 1),
-      height: textPageBodyHeight(titleType.height, 1),
-      maxSize: body.max,
-      minSize: body.min,
-      leading: body.leading,
-      minLeading: body.minLeading,
-    });
-    if (!bodyFit.fits) {
-      issues.push({ severity: "error", code: "text_overflow", message: `Scene ${scene.sceneNumber} text too long (${sceneText.split(/\s+/).length} words) even at ${body.min}pt`, pageNumber: right });
-    }
-    push({ kind: "text", pageNumber: right, scene, variant, body: sceneText, titleType: toType(titleType), bodyType: toType(bodyFit), scale: 1, lift: 0 });
-  });
+  }
 
   const harmonized = harmonizeBodyType(pages);
   const bodyType = harmonized ? growBodyType(pages, tc, harmonized) : null;
   setOpticalLift(pages, tc);
+  for (const p of pages) {
+    if (p.kind === "text" && p.variant === "ventana") p.dropCap = planDropCap(p.body, p.bodyType, GEOMETRY.textColumnWidth);
+  }
   if (bodyType && bodyType.fontSize < tc.body - BODY_SHRINK_WARN_PT) {
     issues.push({ severity: "warning", code: "body_type_shrunk", message: `Body text set at ${bodyType.fontSize}pt instead of the age band's ${tc.body}pt (the longest page does not fit at full size)` });
   }
@@ -615,21 +520,14 @@ export function planInteriorPages(input: PlanInput): InteriorPlan {
   const bookBody = bodyType?.fontSize ?? tc.body;
   planTitlePage(pages[0] as PageOf<"title-dedication">, bookBody, issues);
 
-  // p26–p30 — closing pages
-  const message = sanitizePrintText(story.finalMessage ?? "");
-  const closing = planFinalPage(message, bookBody);
-  if (!closing.fits) issues.push({ severity: "error", code: "text_overflow", message: "Final message too long" });
-  const closingStart = 2 + SCENE_COUNT * 2; // 26
-  push({ kind: "final", pageNumber: closingStart, message, messageType: closing.messageType, front: closing.front });
-  push({ kind: "about-reader", pageNumber: closingStart + 1 });
-  if (input.map) {
-    push({ kind: "map", pageNumber: closingStart + 2, half: "left", panel: null });
-    push({ kind: "map", pageNumber: closingStart + 3, half: "right", panel: planMapPanel(input.map.game, input.map.strings, issues) });
-  } else {
-    push({ kind: "endpaper", pageNumber: closingStart + 2 });
-    push({ kind: "endpaper", pageNumber: closingStart + 3 });
+  // p26 — the closing line at least at the book's body size
+  const finalPage = pages.find((p): p is PageOf<"final"> => p.kind === "final");
+  if (finalPage) {
+    const closing = planFinalPage(finalPage.message, bookBody);
+    if (!closing.fits) issues.push({ severity: "error", code: "text_overflow", message: "Final message too long" });
+    finalPage.messageType = closing.messageType;
+    finalPage.front = closing.front;
   }
-  push({ kind: "colophon", pageNumber: closingStart + 4 });
 
   if (pages.length !== INTERIOR_PAGE_COUNT) {
     issues.push({ severity: "error", code: "page_count", message: `Interior has ${pages.length} pages, Gelato product needs ${INTERIOR_PAGE_COUNT}` });
@@ -874,4 +772,40 @@ export function imageBoxesOf(page: PlannedPage): ImageBox[] {
     default:
       return [];
   }
+}
+
+// ── Drop cap (ventana pages) ─────────────────────────────────────────────
+
+/** Opening punctuation that travels with the initial ("¿Qué", "«Hola"); dashes (dialogue) get no drop cap. */
+const DROP_CAP_INITIAL = /^[¿¡«"“'‘]?[\p{L}\p{N}]/u;
+
+/**
+ * Two-line drop cap. react-pdf cannot float text around a box, so the first two lines are
+ * measured off and set beside the initial; the rest continues at full width. The initial's
+ * cap height spans from line 1's cap line to line 2's baseline, its baseline sitting exactly
+ * on line 2's. The planner fits ventana bodies at a narrower width, so this never grows the
+ * block. Null (plain paragraphs) when the first paragraph does not fill both lines beside it.
+ */
+export function planDropCap(text: string, type: FittedType, width: number): DropCapPlan | null {
+  const initial = DROP_CAP_INITIAL.exec(text)?.[0];
+  if (!initial) return null;
+  const fs = type.fontSize;
+  const pitch = fs * type.leading;
+  const bodyFont = fontMetrics({ role: "body" });
+  const capVariant = { role: "display" as const, weight: 600 as const };
+  const capFont = fontMetrics(capVariant);
+  const capSize = (pitch + bodyFont.capHeight * fs) / capFont.capHeight;
+  // react-pdf baseline = line top + ascent·size → offset that puts the initial's baseline on line 2's
+  const capTop = pitch + bodyFont.ascent * fs - capFont.ascent * capSize;
+  const capWidth = measureTextWidth(initial, capSize, capVariant) + fs * 0.35;
+  const lineWidth = width - capWidth;
+  const { head, tail } = splitLeadingLines(text.slice(initial.length), 2, fs, lineWidth, { role: "body" });
+  // Only when the first paragraph itself fills both lines beside the initial: a one-line
+  // opening paragraph would leave the initial hanging into the blank gap below it.
+  // splitLeadingLines breaks early (safety margin), so a head it spreads over 2 lines can
+  // still render on ONE — require the head to overflow the REAL line width by a margin;
+  // borderline cases fall back to plain paragraphs (no drop cap beats an empty line).
+  const headOverflows = measureTextWidth(head, fs, { role: "body" }) > lineWidth * 1.04;
+  if (!head || head.includes("\n") || !headOverflows) return null;
+  return { initial, capSize, capTop, capWidth, head, tail };
 }

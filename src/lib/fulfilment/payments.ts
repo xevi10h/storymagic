@@ -11,6 +11,7 @@ import { orderReference, type OrderReceipt } from "@/lib/email/order-emails";
 import { catalogItemByLookupKey } from "@/lib/pricing";
 import { decideFullRefund } from "./logic";
 import { suppressEmail } from "@/lib/marketing/suppression";
+import { sendMetaPurchase } from "@/lib/tracking/meta-capi";
 import type { FulfilmentClient, FulfilmentDatabase } from "./db";
 
 type OrderRow = FulfilmentDatabase["public"]["Tables"]["orders"]["Row"];
@@ -129,6 +130,10 @@ export async function recordPaidSession(
     order = existing;
   }
 
+  // Ad conversion exactly once (the pending → paid flip happened here). Before the
+  // email: a failing email makes Stripe retry, and a retry is no longer processedHere.
+  // sendMetaPurchase never throws.
+  if (processedHere) await sendMetaPurchase(session);
   // Checkout opt-out ("No quiero recibir ofertas…"): the order flag already keeps offers
   // out of this order's emails; the suppression list extends it to the address (other
   // orders, the reminder). Idempotent. A failure is logged, never blocks the payment.

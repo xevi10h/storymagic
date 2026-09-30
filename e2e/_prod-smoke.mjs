@@ -3,7 +3,7 @@ import { chromium } from "@playwright/test";
 const OUT = process.env.OUT;
 const browser = await chromium.launch();
 const page = await (await browser.newContext({ locale: "es-ES" })).newPage();
-await page.goto("https://meapica.com/es/auth/login");
+await page.goto("https://meapica.shop/es/auth/login");
 await page.locator("#email").fill("meapica-e2e-1@resend.dev");
 await page.locator("#password").fill("E2e-test-Meapica-2026!");
 await page.locator('button[type="submit"]').click();

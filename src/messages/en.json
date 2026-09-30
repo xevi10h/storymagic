@@ -97,7 +97,7 @@
       },
       "baptism": {
         "metaTitle": "Personalized Baptism Book | A Keepsake to Grow Into",
-        "metaDescription": "A christening keepsake starring the child by name. 170 g coated silk paper, printed in the EU. Full preview before you buy. From €9.90 (VAT included).",
+        "metaDescription": "A christening keepsake starring the child by name. 170 g coated silk paper, printed in Europe. Full preview before you buy. From €9.90 (VAT included).",
         "h1": "A christening keepsake the child grows into",
         "heroIntro": "A printed book written for one child alone, kept on the shelf long after the day itself has passed. The kind of gift a godparent gives once and is remembered for.",
         "bodyHeading": "A gift that outlasts the day",
@@ -114,7 +114,7 @@
       },
       "end-of-school": {
         "metaTitle": "End-of-School Gift Book | Reward the Reader in Them",
-        "metaDescription": "Celebrate the school year with a story starring your child by name. 30 pages, printed in the EU, full preview before you buy. From €9.90 (VAT included).",
+        "metaDescription": "Celebrate the school year with a story starring your child by name. 30 pages, printed in Europe, full preview before you buy. From €9.90 (VAT included).",
         "h1": "Close the school year with an adventure of their own",
         "heroIntro": "A personalized book to mark the end of term, where the child who worked all year becomes the hero of the summer ahead. From parents who are proud, or a teacher who noticed.",
         "bodyHeading": "The reward that keeps them reading",
@@ -131,7 +131,7 @@
       },
       "name-day": {
         "metaTitle": "Name Day Gift Book | A Story That Bears Their Name",
-        "metaDescription": "Celebrate their saint's day with a personalized book starring the child by name. Printed in the EU, full preview before you buy. From €9.90 (VAT included).",
+        "metaDescription": "Celebrate their saint's day with a personalized book starring the child by name. Printed in Europe, full preview before you buy. From €9.90 (VAT included).",
         "h1": "A book that carries their name, for the day that does too",
         "heroIntro": "The saint's day is a second birthday in everything but cake. This is the gift that makes the day truly personal, with the child written in as the hero of their own story.",
         "bodyHeading": "A gift as personal as the day itself",
@@ -148,7 +148,7 @@
       },
       "graduation": {
         "metaTitle": "Graduation Keepsake Book | A Milestone in Print",
-        "metaDescription": "Mark a milestone with a personalized story starring the child, ages 8-12. Printed in the EU, full preview before you buy. From €9.90 (VAT included).",
+        "metaDescription": "Mark a milestone with a personalized story starring the child, ages 8-12. Printed in Europe, full preview before you buy. From €9.90 (VAT included).",
         "h1": "A milestone kept, for the child who reached it",
         "heroIntro": "For the older child crossing a threshold, a book that holds who they were at this moment, and the values you hope they carry forward. A keepsake, not a trophy.",
         "bodyHeading": "Who they were, kept in print",
@@ -165,7 +165,7 @@
       },
       "first-birthday": {
         "metaTitle": "First Birthday Book | Their First Book, With Their Name",
-        "metaDescription": "Their very first book, starring them by name. A first birthday keepsake, printed in the EU. Full preview before you buy. From €9.90 (VAT included).",
+        "metaDescription": "Their very first book, starring them by name. A first birthday keepsake, printed in Europe. Full preview before you buy. From €9.90 (VAT included).",
         "h1": "Their first book, with their name on every page",
         "heroIntro": "A first birthday is remembered by everyone but the child. This is the keepsake that lets them hold it later: their very first book, written for them alone.",
         "bodyHeading": "A treasure for the years to come",
@@ -588,7 +588,7 @@
     "likenessQ": "What if it doesn't look like my child?",
     "likenessA": "You decide how they look: skin, hair colour, hairstyle, eyes, glasses and freckles, and you see their portrait before moving on. If you want to change it in the preview, change their look and we paint the book again with the new character; everything else stays. We print it exactly as you see it.",
     "deliveryQ": "When does it arrive? Will it arrive for Christmas?",
-    "deliveryA": "We print it on demand in the EU as soon as you order, and it arrives in 7-10 business days, shipping included. We ship to mainland Spain and the Balearic Islands (not yet to the Canary Islands, Ceuta or Melilla).",
+    "deliveryA": "We print it on demand in Europe as soon as you order, and it arrives in 7-10 business days, shipping included. We ship to mainland Spain and the Balearic Islands (not yet to the Canary Islands, Ceuta or Melilla).",
     "deliverySeason": "To have it at home for Christmas Eve, order by {christmasDate}; for Three Kings' Day, by {reyesDate}.",
     "deliverySeasonReyes": "To have it at home before Three Kings' Day, order by {reyesDate}.",
     "deliverySeasonPdf": "The printed book no longer arrives in time for Three Kings' Day, but the PDF story does: it reaches your inbox after payment, usually in under an hour.",
@@ -596,7 +596,7 @@
     "priceQ": "How much is it and what's included?",
     "priceA": "Softcover, {softcover}. Hardcover, {hardcover}. PDF only, {pdf}. All prices include VAT. The printed book includes shipping and the PDF of the full story.",
     "returnsQ": "Can I return it?",
-    "returnsA": "As a made-to-order book with their name and portrait, it can't be returned, which is why you see the whole book before paying. But if it arrives with any printing defect or gets damaged in transit, we'll send you a new one free of charge.",
+    "returnsA": "As a made-to-order book with their name and portrait, it can't be returned, which is why you see the whole book before paying. But if it arrives with any printing defect or gets damaged in transit, we'll send you a new one free of charge. Just write to us within 30 days of receiving it, with a photo of the book and the packaging.",
     "moreQuestions": "Another question? Write to us at"
   },
   "finalCta": {
@@ -610,7 +610,7 @@
     "meta": "Printed book from {price} · VAT included · Shipping included"
   },
   "footer": {
-    "tagline": "Personalized storybooks, written and illustrated for each child.\nPrinted in the EU and shipped to your door.\nNo batteries, just imagination.",
+    "tagline": "Personalized storybooks, written and illustrated for each child.\nPrinted in Europe and shipped to your door.\nNo batteries, just imagination.",
     "workshop": "The book",
     "ourPapers": "Paper and finish",
     "artisanalProcess": "How it's made",
@@ -628,7 +628,8 @@
     "copyright": "© 2026 Meapica. Made with love.",
     "legalNotice": "Legal Notice",
     "privacy": "Privacy",
-    "cookies": "Cookies"
+    "cookies": "Cookies",
+    "cookieSettings": "Cookie settings"
   },
   "legal": {
     "backHome": "Back to home",
@@ -637,15 +638,15 @@
       "title": "Privacy Policy",
       "intro": "At Meapica, the privacy of our users — especially when it comes to children's data — is our top priority.",
       "section1Title": "1. Data controller",
-      "section1Text": "The data controller for personal data collected through meapica.com is Xavier Huix Trenco (Meapica), tax ID 41649433K, address Carrer Aribau 140, 5º, 08036 Barcelona (Spain). For any privacy question, write to admin@casmar.tech.",
+      "section1Text": "The data controller for personal data collected through meapica.shop is Xavier Huix Trenco (Meapica), tax ID 41649433K, address Carrer Aribau 140, 5º, 08036 Barcelona (Spain). For any privacy question, write to admin@casmar.tech.",
       "section2Title": "2. Data we collect",
       "section2Text": "We collect the data needed to create your personalised book: the child's name, age, city, interests and physical features for the illustrations and, only if you choose to upload one, a photo of the child (see section 8). We also collect your email and shipping address to process orders.",
       "section3Title": "3. Purpose of processing",
       "section3Text": "We use your data only to: create the personalised story and its illustrated character, process payment and shipping, and contact you about your order. We never sell data to third parties.",
       "section4Title": "4. Legal basis",
-      "section4Text": "Creating, previewing and printing your book, managing your account, payment and shipping: performance of the contract you request (Art. 6(1)(b) GDPR). The child's photo: explicit consent of the child's parent or legal guardian (Art. 6(1)(a) GDPR and Art. 7 of Spain's LOPDGDD), which you can withdraw at any time. Newsletter and waitlist: your consent (Art. 6(1)(a) GDPR), which you can withdraw whenever you like. Keeping invoices and accounting records: legal obligation (Art. 6(1)(c) GDPR). Service security and abuse prevention (for example, usage limits): legitimate interest (Art. 6(1)(f) GDPR).",
+      "section4Text": "Creating, previewing and printing your book, managing your account, payment and shipping: performance of the contract you request (Art. 6(1)(b) GDPR). The child's photo: explicit consent of the child's parent or legal guardian (Art. 6(1)(a) GDPR and Art. 7 of Spain's LOPDGDD), which you can withdraw at any time. Newsletter and waitlist: your consent (Art. 6(1)(a) GDPR), which you can withdraw whenever you like. Keeping invoices and accounting records: legal obligation (Art. 6(1)(c) GDPR). Service security and abuse prevention (for example, usage limits): legitimate interest (Art. 6(1)(f) GDPR). Measuring our ads with Meta (advertising cookies and purchase event): your consent (Art. 6(1)(a) GDPR), which you can withdraw from \"Cookie settings\".",
       "section5Title": "5. Processors and international transfers",
-      "section5Text": "To provide the service we work with providers that process data only on our instructions: OpenAI Ireland Ltd. (generating the story text and illustrations and, if you upload one, the character from the photo), Supabase (database and storage), Vercel (web hosting), Stripe Payments Europe Ltd. (payments), Gelato (printing and shipping) and Resend (order emails). OpenAI does not use the data we send it to train its models and may keep it for up to 30 days to detect abuse. When a provider or its sub-processors process data outside the European Economic Area (for example, in the United States), the transfer relies on the European Commission's Standard Contractual Clauses or the EU-US Data Privacy Framework.",
+      "section5Text": "To provide the service we work with providers that process data only on our instructions: OpenAI Ireland Ltd. (generating the story text and illustrations and, if you upload one, the character from the photo), Supabase (database and storage), Vercel (web hosting), Stripe Payments Europe Ltd. (payments), Gelato (printing and shipping) Resend (order emails) and, only if you accept advertising cookies, Meta Platforms Ireland Ltd. (measuring our ads). OpenAI does not use the data we send it to train its models and may keep it for up to 30 days to detect abuse. When a provider or its sub-processors process data outside the European Economic Area (for example, in the United States), the transfer relies on the European Commission's Standard Contractual Clauses or the EU-US Data Privacy Framework.",
       "section6Title": "6. Your rights",
       "section6Text": "You can exercise your rights of access, rectification, erasure, objection, restriction of processing and portability, and withdraw your consent at any time, by writing to admin@casmar.tech. We will reply within one month at the latest. If you believe we have not handled your data properly, you can lodge a complaint with the Spanish Data Protection Agency (AEPD, www.aepd.es).",
       "section7Title": "7. Children's data protection",
@@ -655,7 +656,7 @@
     },
     "terms": {
       "title": "Legal Notice and Terms of Use",
-      "intro": "By using meapica.com you accept the following terms.",
+      "intro": "By using meapica.shop you accept the following terms.",
       "section1Title": "1. Identification",
       "section1Text": "Meapica is a personalized children's book creation platform operated from Spain by Xavier Huix Trenco, with registered address at Carrer Aribau 140, 5º, 08036 Barcelona (Spain). Contact: admin@casmar.tech.",
       "section2Title": "2. Service",
@@ -665,21 +666,21 @@
       "section4Title": "4. Prices and payments",
       "section4Text": "All prices are final, VAT included, and shown in euros. For printed books, shipping within Spain is included in the price. Payment is processed securely through Stripe.",
       "section5Title": "5. Shipping and returns",
-      "section5Text": "Books are printed on demand in the EU, and for now we only ship to addresses in Spain. Mainland Spain: 7-10 business days. Balearic Islands: 7-10 business days. We don't ship to the Canary Islands, Ceuta or Melilla yet. As personalized products, books are excluded from the right of withdrawal (Art. 103(c) of the Spanish consolidated consumer protection law, TRLGDCU) and cannot be returned. If a book arrives with any printing or manufacturing defect, or is damaged in transit, write to us with a photo and we will send you a new one free of charge. This does not limit your statutory warranty rights.",
+      "section5Text": "Books are printed on demand in Europe, and for now we only ship to addresses in Spain. Mainland Spain: 7-10 business days. Balearic Islands: 7-10 business days. We don't ship to the Canary Islands, Ceuta or Melilla yet. As personalized products, books are excluded from the right of withdrawal (Art. 103(c) of the Spanish consolidated consumer protection law, TRLGDCU) and cannot be returned. If a book arrives with any printing or manufacturing defect, or is damaged in transit, write to us within 30 days of receiving it, with a photo of the book and the packaging, and we will send you a new one free of charge. This does not limit your statutory warranty rights.",
       "section6Title": "6. Limitation of liability",
       "section6Text": "Meapica does not guarantee uninterrupted service availability. Illustrations may vary and a specific result is not guaranteed."
     },
     "cookies": {
       "title": "Cookie Policy",
-      "intro": "Meapica uses strictly necessary cookies for the operation of the service.",
+      "intro": "Meapica uses technical cookies the service needs to work and, only if you accept them, advertising cookies from Meta.",
       "section1Title": "1. What are cookies?",
       "section1Text": "Cookies are small text files stored in your browser when visiting a website.",
       "section2Title": "2. Cookies we use",
-      "section2Text": "We only use technical cookies necessary to: keep your user session active, remember the selected language, and manage the purchase process. We do not use marketing or third-party tracking cookies.",
+      "section2Text": "Technical (always on): keeping you signed in, remembering your language, handling the purchase and storing your cookie choice (meapica_consent, 12 months). Advertising (only with your consent): the Meta Pixel (_fbp and _fbc, 90 days) measures which Instagram and Facebook ads lead to a purchase and helps show them to people who may be interested; meapica_utm (30 days) remembers which ad or post brought you here so it can be linked to your order.",
       "section3Title": "3. Third-party cookies",
-      "section3Text": "Stripe (payment processor) may set its own cookies during the checkout process. Please refer to Stripe's cookie policy for more information.",
+      "section3Text": "Meta Platforms Ireland Ltd., only if you accept advertising cookies: receives browsing data and, if you buy, the order amount and your hashed email and phone number to measure our ads. Meta may process data in the US under the EU-US Data Privacy Framework. Stripe (payment processor) may set its own cookies during payment.",
       "section4Title": "4. Cookie management",
-      "section4Text": "You can configure your browser to reject cookies, although this may affect the operation of the service."
+      "section4Text": "You can accept or reject advertising cookies in the notice shown on your first visit and change your mind at any time from \"Cookie settings\" at the bottom of every page. If you reject them, the site works just the same. You can also delete them from your browser."
     },
     "faq": {
       "title": "Frequently Asked Questions",
@@ -687,7 +688,7 @@
       "section1Title": "How is my book created?",
       "section1Text": "You choose the adventure, customize the character with your child's name, age and features, and our technology writes a unique story with original illustrations. No other child in the world will ever have the same book.",
       "section2Title": "How long does shipping take?",
-      "section2Text": "Each book is printed on demand in the EU as soon as you order. For now we only ship within Spain. Mainland Spain: 7-10 business days. Balearic Islands: 7-10 business days. We don't ship to the Canary Islands, Ceuta or Melilla yet. You'll receive an email with the tracking number once your parcel is on its way.",
+      "section2Text": "Each book is printed on demand in Europe as soon as you order. For now we only ship within Spain. Mainland Spain: 7-10 business days. Balearic Islands: 7-10 business days. We don't ship to the Canary Islands, Ceuta or Melilla yet. You'll receive an email with the tracking number once your parcel is on its way.",
       "section3Title": "Can I customize the character?",
       "section3Text": "Yes! You can choose the name, age, hair/eye/skin color, hairstyle, gender, and even add their pet, favorite food, or future dream. Everything appears in the story and illustrations.",
       "section4Title": "What paper do you use?",
@@ -701,13 +702,13 @@
       "title": "Shipping & Packaging",
       "intro": "Every Meapica book is a gift. That's why the experience of receiving it at home should be as special as opening it.",
       "section1Title": "Shipping times",
-      "section1Text": "For now we only ship within Spain. Mainland Spain: 7-10 business days. Balearic Islands: 7-10 business days. We don't ship to the Canary Islands, Ceuta or Melilla yet. Each book is printed on demand in the EU, so the timeframe includes printing.",
+      "section1Text": "For now we only ship within Spain. Mainland Spain: 7-10 business days. Balearic Islands: 7-10 business days. We don't ship to the Canary Islands, Ceuta or Melilla yet. Each book is printed on demand in Europe, so the timeframe includes printing.",
       "section2Title": "Shipping cost",
       "section2Text": "Standard shipping is included in the book price, which already includes VAT. No hidden costs or surprises in the box.",
       "section3Title": "Protective packaging",
       "section3Text": "Your book travels in cardboard packaging designed to get it to you in perfect condition, ready to give. If it still arrives damaged, write to us and we'll send you a new one free of charge.",
       "section4Title": "Order tracking",
-      "section4Text": "Once the book leaves the printer, you'll receive an email with the tracking number. You can also check your order status from your user dashboard at meapica.com."
+      "section4Text": "Once the book leaves the printer, you'll receive an email with the tracking number. You can also check your order status from your user dashboard at meapica.shop."
     }
   },
   "notFound": {
@@ -1037,7 +1038,7 @@
       "editLinks": "Change the <title>title</title>, <dedication>dedication</dedication> or <look>look</look>",
       "desktopHint": "Click the pages or use the ← → keys",
       "headline": "{name}'s book, printed and delivered to your door",
-      "specs": "30 pages · 12 illustrated scenes · 20 × 20 cm · printed in the EU",
+      "specs": "30 pages · 12 illustrated scenes · 20 × 20 cm · printed in Europe",
       "mockupAlt": "{name}'s book as a {format}: {title}",
       "formatsLegend": "Choose the format",
       "hardcoverGap": "Only {diff} more than the softcover",
@@ -1056,11 +1057,11 @@
       "ctaNoteDigital": "VAT included",
       "trustPreview": "You've seen the book before paying",
       "trustPayment": "Secure payment with Stripe",
-      "trustMadeIn": "Made in Barcelona, printed in the EU",
+      "trustMadeIn": "Made in Barcelona, printed in Europe",
       "trustReprint": "Arrived damaged or with a printing defect? We replace it free of charge",
       "help": "Questions? Write to",
       "teaserComingTitle": "Still to come in the story",
-      "teaserComingMore": "…and the ending, with {name}'s hero card",
+      "teaserComingMore": "…and the ending: {name}'s hero card and a map of their world, with a seek-and-find game",
       "teaserOrderTitle": "{name}'s complete book",
       "teaserOrderBody": "12 illustrated scenes, printed and delivered to your door",
       "teaserOrderPrice": "From {price}",
@@ -1089,7 +1090,7 @@
         },
         "returns": {
           "q": "What if something is wrong with it?",
-          "a": "As a made-to-order book it has no right of withdrawal, but if it arrives with a printing defect or damaged in transit, we'll send you a new one free of charge."
+          "a": "As a made-to-order book it has no right of withdrawal, but if it arrives with a printing defect or damaged in transit, we'll send you a new one free of charge. Just write to us within 30 days of receiving it, with a photo of the book and the packaging."
         }
       },
       "softcoverNote": "Flexible cover, lighter",
@@ -2314,7 +2315,7 @@
     "feature1Description": "Quality printing in vivid colour, in a book made to be read again and again.",
     "feature2Title": "Unique illustrations",
     "feature2Description": "Each story with personalized illustrations that make your child unique.",
-    "feature3Title": "Printed in the EU, delivered to your door",
+    "feature3Title": "Printed in Europe, delivered to your door",
     "feature3Description": "It arrives well protected, ready to give or keep as a treasure.",
     "copyright": "© 2026 Meapica. All rights reserved."
   },
@@ -2363,7 +2364,7 @@
     "regionNote": "We don't ship to the Canary Islands, Ceuta or Melilla yet. If the gift is for there, the PDF story works just as well.",
     "methodHeading": "How we work out these dates",
     "method": [
-      "Every book is printed on demand in the EU. Today, printing plus delivery takes {min}-{max} calendar days door to door.",
+      "Every book is printed on demand in Europe. Today, printing plus delivery takes {min}-{max} calendar days door to door.",
       "In December we add {buffer} days of margin for carrier backlogs and the 8 December, Christmas and New Year holidays.",
       "The clock starts when you complete payment, not when you start creating the story.",
       "These are estimates based on current carrier times, not a guarantee. If they change, we update this page."
@@ -2377,7 +2378,7 @@
       "christmasQ": "And to have it by Christmas Eve?",
       "christmasA": "To have the printed book home on 24 December, order by {date}. After that you can still give the PDF story.",
       "timeQ": "How long does the printed book take to arrive?",
-      "timeA": "We print it on demand in the EU as soon as you order. Mainland Spain and the Balearic Islands: 7-10 working days, with delivery included in the price. You'll get the tracking number by email.",
+      "timeA": "We print it on demand in Europe as soon as you order. Mainland Spain and the Balearic Islands: 7-10 working days, with delivery included in the price. You'll get the tracking number by email.",
       "regionQ": "Do you ship to the Canary Islands, Ceuta or Melilla?",
       "regionA": "Not yet. If the gift is for there, the PDF story reaches your inbox and you can print it or read it on a tablet."
     },
@@ -2448,5 +2449,12 @@
     },
     "error": "We couldn't unsubscribe you just now. Try again or write to <mail></mail>.",
     "backHome": "Go to Meapica"
+  },
+  "cookieConsent": {
+    "title": "Cookies",
+    "text": "We use cookies the site needs to work and, if you accept, Meta cookies to measure our ads on Instagram and Facebook.",
+    "policy": "Learn more",
+    "accept": "Accept",
+    "reject": "Reject"
   }
 }

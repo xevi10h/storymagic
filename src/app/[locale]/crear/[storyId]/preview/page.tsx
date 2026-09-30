@@ -33,6 +33,7 @@ import { BrandLoader } from "@/components/ui/BrandLoader";
 import { Spinner } from "@/components/ui/Spinner";
 import { OfferCallout, ReorderSheet } from "@/components/dashboard/OrdersTab";
 import type { StoryUpsell } from "@/lib/upsell";
+import { trackEvent } from "@/lib/tracking/consent";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -359,6 +360,7 @@ export default function PreviewPage() {
     }
     setCheckingOut(true);
     setCheckoutError(null);
+    trackEvent("InitiateCheckout", { content_ids: [format], content_type: "product" });
 
     try {
       const res = await fetch("/api/checkout", {

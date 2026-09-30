@@ -109,7 +109,7 @@ export function renderEmailLayout(params: EmailLayoutParams): string {
           </div>
         </td></tr>
         <tr><td style="padding-top:24px;text-align:center;">
-          ${footerNote}<p style="margin:0;font-size:12px;color:${COLORS.muted};">&copy; 2026 Meapica. meapica.com</p>
+          ${footerNote}<p style="margin:0;font-size:12px;color:${COLORS.muted};">&copy; 2026 Meapica. meapica.shop</p>
         </td></tr>
       </table>
     </td></tr>

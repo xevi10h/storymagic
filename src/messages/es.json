@@ -588,7 +588,7 @@
     "likenessQ": "¿Y si no se parece a mi hijo o hija?",
     "likenessA": "Tú decides cómo es: piel, color de pelo, peinado, ojos, gafas y pecas, y ves su retrato antes de seguir. Si en la vista previa quieres cambiarlo, cambias su aspecto y volvemos a pintar el libro con el nuevo personaje; todo lo demás se mantiene. Lo imprimimos tal cual lo ves.",
     "deliveryQ": "¿Cuándo llega? ¿Llega para Reyes?",
-    "deliveryA": "Lo imprimimos bajo demanda en la UE en cuanto haces el pedido y llega en 7-10 días laborables, con el envío incluido. Enviamos a España peninsular y Baleares (de momento no a Canarias, Ceuta ni Melilla).",
+    "deliveryA": "Lo imprimimos bajo demanda en Europa en cuanto haces el pedido y llega en 7-10 días laborables, con el envío incluido. Enviamos a España peninsular y Baleares (de momento no a Canarias, Ceuta ni Melilla).",
     "deliverySeason": "Para tenerlo en casa en Nochebuena, pídelo hasta el {christmasDate}; para Reyes, hasta el {reyesDate}.",
     "deliverySeasonReyes": "Para tenerlo en casa antes de Reyes, pídelo hasta el {reyesDate}.",
     "deliverySeasonPdf": "El libro impreso ya no llega a tiempo para Reyes, pero el cuento en PDF sí: te llega por correo tras el pago, normalmente en menos de una hora.",
@@ -596,7 +596,7 @@
     "priceQ": "¿Cuánto cuesta y qué incluye?",
     "priceA": "Tapa blanda, {softcover}. Tapa dura, {hardcover}. Solo el PDF, {pdf}. Todos los precios llevan el IVA incluido. El libro impreso incluye el envío y el PDF del cuento completo.",
     "returnsQ": "¿Puedo devolverlo?",
-    "returnsA": "Al ser un libro hecho a medida, con su nombre y su retrato, no admite devoluciones; por eso te enseñamos el libro entero antes de pagar. Pero si llega con cualquier defecto de impresión o se daña en el envío, te enviamos otro nuevo sin coste.",
+    "returnsA": "Al ser un libro hecho a medida, con su nombre y su retrato, no admite devoluciones; por eso te enseñamos el libro entero antes de pagar. Pero si llega con cualquier defecto de impresión o se daña en el envío, te enviamos otro nuevo sin coste. Solo tienes que escribirnos en los 30 días siguientes a recibirlo, con una foto del libro y del embalaje.",
     "moreQuestions": "¿Tienes otra duda? Escríbenos a"
   },
   "finalCta": {
@@ -610,7 +610,7 @@
     "meta": "Libro impreso desde {price} · IVA incluido · Envío incluido"
   },
   "footer": {
-    "tagline": "Cuentos personalizados, escritos e ilustrados para cada niño.\nImpresos en la UE y enviados a tu casa.\nSin baterías, solo imaginación.",
+    "tagline": "Cuentos personalizados, escritos e ilustrados para cada niño.\nImpresos en Europa y enviados a tu casa.\nSin baterías, solo imaginación.",
     "workshop": "El libro",
     "ourPapers": "Papel y acabados",
     "artisanalProcess": "Cómo se hace",
@@ -628,7 +628,8 @@
     "copyright": "© 2026 Meapica. Hecho con amor.",
     "legalNotice": "Aviso Legal",
     "privacy": "Privacidad",
-    "cookies": "Cookies"
+    "cookies": "Cookies",
+    "cookieSettings": "Configurar cookies"
   },
   "legal": {
     "backHome": "Volver al inicio",
@@ -637,15 +638,15 @@
       "title": "Política de Privacidad",
       "intro": "En Meapica, la privacidad de nuestros usuarios —especialmente cuando se trata de datos de menores— es nuestra máxima prioridad.",
       "section1Title": "1. Responsable del tratamiento",
-      "section1Text": "El responsable del tratamiento de los datos personales recogidos a través de meapica.com es Xavier Huix Trenco (Meapica), NIF 41649433K, con domicilio en Carrer Aribau 140, 5º, 08036 Barcelona (España). Para cualquier cuestión sobre privacidad puedes escribirnos a admin@casmar.tech.",
+      "section1Text": "El responsable del tratamiento de los datos personales recogidos a través de meapica.shop es Xavier Huix Trenco (Meapica), NIF 41649433K, con domicilio en Carrer Aribau 140, 5º, 08036 Barcelona (España). Para cualquier cuestión sobre privacidad puedes escribirnos a admin@casmar.tech.",
       "section2Title": "2. Datos que recogemos",
       "section2Text": "Recogemos los datos necesarios para crear tu libro personalizado: nombre del niño/a, edad, ciudad, intereses y características físicas para la ilustración y, solo si decides subirla, una foto del niño/a (ver el apartado 8). También recogemos email y dirección de envío para procesar pedidos.",
       "section3Title": "3. Finalidad del tratamiento",
       "section3Text": "Utilizamos tus datos exclusivamente para: generar el cuento personalizado y su personaje ilustrado, procesar el pago y envío, y comunicarnos contigo sobre tu pedido. Nunca vendemos datos a terceros.",
       "section4Title": "4. Base legal",
-      "section4Text": "Crear, previsualizar e imprimir tu libro, gestionar tu cuenta, el pago y el envío: ejecución del contrato que nos pides (art. 6.1.b RGPD). Foto del niño/a: consentimiento explícito de su madre, padre o tutor legal (art. 6.1.a RGPD y art. 7 LOPDGDD), que puedes retirar en cualquier momento. Newsletter y lista de espera: tu consentimiento (art. 6.1.a RGPD), que puedes retirar cuando quieras. Conservación de facturas y registros contables: obligación legal (art. 6.1.c RGPD). Seguridad del servicio y prevención de abusos (por ejemplo, límites de uso): interés legítimo (art. 6.1.f RGPD).",
+      "section4Text": "Crear, previsualizar e imprimir tu libro, gestionar tu cuenta, el pago y el envío: ejecución del contrato que nos pides (art. 6.1.b RGPD). Foto del niño/a: consentimiento explícito de su madre, padre o tutor legal (art. 6.1.a RGPD y art. 7 LOPDGDD), que puedes retirar en cualquier momento. Newsletter y lista de espera: tu consentimiento (art. 6.1.a RGPD), que puedes retirar cuando quieras. Conservación de facturas y registros contables: obligación legal (art. 6.1.c RGPD). Seguridad del servicio y prevención de abusos (por ejemplo, límites de uso): interés legítimo (art. 6.1.f RGPD). Medición de nuestros anuncios con Meta (cookies publicitarias y evento de compra): tu consentimiento (art. 6.1.a RGPD), que puedes retirar desde «Configurar cookies».",
       "section5Title": "5. Encargados del tratamiento y transferencias internacionales",
-      "section5Text": "Para prestar el servicio trabajamos con proveedores que tratan los datos solo siguiendo nuestras instrucciones: OpenAI Ireland Ltd. (generación del texto y las ilustraciones del cuento y, si la subes, del personaje a partir de la foto), Supabase (base de datos y almacenamiento), Vercel (alojamiento web), Stripe Payments Europe Ltd. (pagos), Gelato (impresión y envío) y Resend (correos del pedido). OpenAI no usa los datos que le enviamos para entrenar sus modelos y puede conservarlos hasta 30 días para detectar abusos. Cuando un proveedor o sus subencargados tratan datos fuera del Espacio Económico Europeo (por ejemplo, en Estados Unidos), la transferencia se ampara en las cláusulas contractuales tipo aprobadas por la Comisión Europea o en el Marco de Privacidad de Datos UE-EE. UU.",
+      "section5Text": "Para prestar el servicio trabajamos con proveedores que tratan los datos solo siguiendo nuestras instrucciones: OpenAI Ireland Ltd. (generación del texto y las ilustraciones del cuento y, si la subes, del personaje a partir de la foto), Supabase (base de datos y almacenamiento), Vercel (alojamiento web), Stripe Payments Europe Ltd. (pagos), Gelato (impresión y envío) Resend (correos del pedido) y, solo si aceptas las cookies publicitarias, Meta Platforms Ireland Ltd. (medición de nuestros anuncios). OpenAI no usa los datos que le enviamos para entrenar sus modelos y puede conservarlos hasta 30 días para detectar abusos. Cuando un proveedor o sus subencargados tratan datos fuera del Espacio Económico Europeo (por ejemplo, en Estados Unidos), la transferencia se ampara en las cláusulas contractuales tipo aprobadas por la Comisión Europea o en el Marco de Privacidad de Datos UE-EE. UU.",
       "section6Title": "6. Tus derechos",
       "section6Text": "Puedes ejercer tus derechos de acceso, rectificación, supresión, oposición, limitación del tratamiento y portabilidad, y retirar tu consentimiento en cualquier momento, escribiendo a admin@casmar.tech. Te responderemos en el plazo máximo de un mes. Si consideras que no hemos tratado tus datos correctamente, puedes presentar una reclamación ante la Agencia Española de Protección de Datos (www.aepd.es).",
       "section7Title": "7. Protección de datos de menores",
@@ -655,7 +656,7 @@
     },
     "terms": {
       "title": "Aviso Legal y Condiciones de Uso",
-      "intro": "Al usar meapica.com aceptas las siguientes condiciones.",
+      "intro": "Al usar meapica.shop aceptas las siguientes condiciones.",
       "section1Title": "1. Identificación",
       "section1Text": "Meapica es una plataforma de creación de libros infantiles personalizados operada desde España por Xavier Huix Trenco, con domicilio en Carrer Aribau 140, 5º, 08036 Barcelona (España). Contacto: admin@casmar.tech.",
       "section2Title": "2. Servicio",
@@ -665,21 +666,21 @@
       "section4Title": "4. Precios y pagos",
       "section4Text": "Todos los precios son finales, con el IVA incluido, y se muestran en euros. En los libros impresos, el envío a España está incluido en el precio. El pago se procesa de forma segura a través de Stripe.",
       "section5Title": "5. Envíos y devoluciones",
-      "section5Text": "Los libros se imprimen bajo demanda en la UE y, por ahora, solo realizamos envíos a direcciones de España. España peninsular: 7-10 días laborables. Baleares: 7-10 días laborables. De momento no enviamos a Canarias, Ceuta ni Melilla. Al ser productos personalizados, los libros están excluidos del derecho de desistimiento (art. 103 c) del texto refundido de la Ley General para la Defensa de los Consumidores y Usuarios) y no admiten devoluciones. Si un libro llega con cualquier defecto de impresión o fabricación, o se daña durante el envío, escríbenos con una foto y te enviamos otro nuevo sin coste. Esto no limita los derechos de garantía que te reconoce la ley.",
+      "section5Text": "Los libros se imprimen bajo demanda en Europa y, por ahora, solo realizamos envíos a direcciones de España. España peninsular: 7-10 días laborables. Baleares: 7-10 días laborables. De momento no enviamos a Canarias, Ceuta ni Melilla. Al ser productos personalizados, los libros están excluidos del derecho de desistimiento (art. 103 c) del texto refundido de la Ley General para la Defensa de los Consumidores y Usuarios) y no admiten devoluciones. Si un libro llega con cualquier defecto de impresión o fabricación, o se daña durante el envío, escríbenos en los 30 días siguientes a recibirlo, con una foto del libro y del embalaje, y te enviamos otro nuevo sin coste. Esto no limita los derechos de garantía que te reconoce la ley.",
       "section6Title": "6. Limitación de responsabilidad",
       "section6Text": "Meapica no garantiza la disponibilidad ininterrumpida del servicio. Las ilustraciones pueden variar y no se garantiza un resultado específico."
     },
     "cookies": {
       "title": "Política de Cookies",
-      "intro": "Meapica utiliza cookies estrictamente necesarias para el funcionamiento del servicio.",
+      "intro": "Meapica usa cookies técnicas necesarias para que el servicio funcione y, solo si lo aceptas, cookies publicitarias de Meta.",
       "section1Title": "1. ¿Qué son las cookies?",
       "section1Text": "Las cookies son pequeños archivos de texto que se almacenan en tu navegador al visitar un sitio web.",
       "section2Title": "2. Cookies que utilizamos",
-      "section2Text": "Utilizamos únicamente cookies técnicas necesarias para: mantener tu sesión de usuario activa, recordar el idioma seleccionado y gestionar el proceso de compra. No utilizamos cookies de marketing ni de seguimiento de terceros.",
+      "section2Text": "Técnicas (siempre activas): mantener tu sesión, recordar el idioma, gestionar la compra y guardar tu elección sobre cookies (meapica_consent, 12 meses). Publicitarias (solo con tu consentimiento): el píxel de Meta (_fbp y _fbc, 90 días) mide qué anuncios de Instagram y Facebook terminan en una compra y ayuda a mostrarlos a quien le pueden interesar; meapica_utm (30 días) recuerda desde qué anuncio o publicación llegaste para asociarlo a tu pedido.",
       "section3Title": "3. Cookies de terceros",
-      "section3Text": "Stripe (procesador de pagos) puede establecer sus propias cookies durante el proceso de checkout. Consulta la política de cookies de Stripe para más información.",
+      "section3Text": "Meta Platforms Ireland Ltd., solo si aceptas las cookies publicitarias: recibe datos de navegación y, si compras, el importe del pedido y tu correo y teléfono cifrados (hash) para medir nuestros anuncios. Meta puede tratar datos en EE. UU. al amparo del Marco de Privacidad de Datos UE-EE. UU. Stripe (procesador de pagos) puede establecer sus propias cookies durante el pago.",
       "section4Title": "4. Gestión de cookies",
-      "section4Text": "Puedes configurar tu navegador para rechazar cookies, aunque esto puede afectar al funcionamiento del servicio."
+      "section4Text": "Puedes aceptar o rechazar las cookies publicitarias en el aviso de tu primera visita y cambiar de opinión cuando quieras desde «Configurar cookies», al pie de cada página. Si las rechazas, la web funciona igual. También puedes borrarlas desde tu navegador."
     },
     "faq": {
       "title": "Preguntas Frecuentes",
@@ -687,7 +688,7 @@
       "section1Title": "¿Cómo se crea mi cuento?",
       "section1Text": "Tú eliges la aventura, personalizas al protagonista con el nombre, la edad y las características de tu hijo, y nuestra tecnología escribe una historia única con ilustraciones originales. Ningún otro niño en el mundo tendrá jamás el mismo libro.",
       "section2Title": "¿Cuánto tarda el envío?",
-      "section2Text": "Cada libro se imprime bajo demanda en la UE en cuanto haces el pedido. Por ahora solo enviamos a España. España peninsular: 7-10 días laborables. Baleares: 7-10 días laborables. De momento no enviamos a Canarias, Ceuta ni Melilla. Recibirás un correo con el número de seguimiento cuando tu paquete esté en camino.",
+      "section2Text": "Cada libro se imprime bajo demanda en Europa en cuanto haces el pedido. Por ahora solo enviamos a España. España peninsular: 7-10 días laborables. Baleares: 7-10 días laborables. De momento no enviamos a Canarias, Ceuta ni Melilla. Recibirás un correo con el número de seguimiento cuando tu paquete esté en camino.",
       "section3Title": "¿Puedo personalizar el personaje?",
       "section3Text": "¡Sí! Puedes elegir el nombre, la edad, el color de pelo, ojos y piel, el peinado, el género, e incluso añadir su mascota, comida favorita o sueño de futuro. Todo aparece en la historia y en las ilustraciones.",
       "section4Title": "¿Qué papel utilizáis?",
@@ -701,13 +702,13 @@
       "title": "Envíos y Empaquetado",
       "intro": "Cada libro de Meapica es un regalo. Por eso, la experiencia de recibirlo en casa tiene que ser tan especial como abrirlo.",
       "section1Title": "Plazos de envío",
-      "section1Text": "Por ahora solo enviamos a España. España peninsular: 7-10 días laborables. Baleares: 7-10 días laborables. De momento no enviamos a Canarias, Ceuta ni Melilla. Cada libro se imprime bajo demanda en la UE, por eso el plazo incluye la impresión.",
+      "section1Text": "Por ahora solo enviamos a España. España peninsular: 7-10 días laborables. Baleares: 7-10 días laborables. De momento no enviamos a Canarias, Ceuta ni Melilla. Cada libro se imprime bajo demanda en Europa, por eso el plazo incluye la impresión.",
       "section2Title": "Coste de envío",
       "section2Text": "El envío estándar está incluido en el precio del libro, que ya lleva el IVA incluido. No hay costes ocultos ni sorpresas en la caja.",
       "section3Title": "Embalaje protector",
       "section3Text": "Tu libro viaja en un embalaje de cartón pensado para que llegue en perfecto estado, listo para regalar. Si aun así llega dañado, escríbenos y te enviamos otro nuevo sin coste.",
       "section4Title": "Seguimiento del pedido",
-      "section4Text": "Cuando el libro salga de imprenta, recibirás un correo electrónico con el número de seguimiento. También puedes consultar el estado de tus pedidos desde tu panel de usuario en meapica.com."
+      "section4Text": "Cuando el libro salga de imprenta, recibirás un correo electrónico con el número de seguimiento. También puedes consultar el estado de tus pedidos desde tu panel de usuario en meapica.shop."
     }
   },
   "notFound": {
@@ -1037,7 +1038,7 @@
       "editLinks": "Cambiar <title>título</title>, <dedication>dedicatoria</dedication> o <look>aspecto</look>",
       "desktopHint": "Haz clic en las páginas o usa las flechas ← → del teclado",
       "headline": "El libro {deName}, impreso y en tu casa",
-      "specs": "30 páginas · 12 escenas ilustradas · 20 × 20 cm · impreso en la UE",
+      "specs": "30 páginas · 12 escenas ilustradas · 20 × 20 cm · impreso en Europa",
       "mockupAlt": "Así será el libro {deName} en {format}: {title}",
       "formatsLegend": "Elige el formato",
       "hardcoverGap": "Solo {diff} más que la blanda",
@@ -1056,11 +1057,11 @@
       "ctaNoteDigital": "IVA incluido",
       "trustPreview": "Has visto su libro antes de pagar",
       "trustPayment": "Pago seguro con Stripe",
-      "trustMadeIn": "Hecho en Barcelona, impreso en la UE",
+      "trustMadeIn": "Hecho en Barcelona, impreso en Europa",
       "trustReprint": "¿Llega dañado o con un defecto de impresión? Te lo reponemos sin coste",
       "help": "¿Dudas? Escríbenos a",
       "teaserComingTitle": "Lo que viene en la historia",
-      "teaserComingMore": "…y el final, con la ficha de héroe {deName}",
+      "teaserComingMore": "…y el final: la ficha de héroe {deName} y el mapa de su mundo, con un juego de busca y encuentra",
       "teaserOrderTitle": "El libro {deName}, completo",
       "teaserOrderBody": "12 escenas ilustradas, impreso y en tu casa",
       "teaserOrderPrice": "Desde {price}",
@@ -1089,7 +1090,7 @@
         },
         "returns": {
           "q": "¿Y si llega con algún problema?",
-          "a": "Al ser un libro hecho a medida no admite desistimiento, pero si llega con un defecto de impresión o dañado por el envío, te enviamos otro nuevo sin coste."
+          "a": "Al ser un libro hecho a medida no admite desistimiento, pero si llega con un defecto de impresión o dañado por el envío, te enviamos otro nuevo sin coste. Solo tienes que escribirnos en los 30 días siguientes a recibirlo, con una foto del libro y del embalaje."
         }
       },
       "softcoverNote": "Portada flexible, más ligera",
@@ -2314,7 +2315,7 @@
     "feature1Description": "Impresión de calidad con colores vivos, en un libro hecho para releerse una y otra vez.",
     "feature2Title": "Ilustraciones únicas",
     "feature2Description": "Cada cuento con ilustraciones personalizadas que hacen único a tu hijo.",
-    "feature3Title": "Impreso en la UE y enviado a casa",
+    "feature3Title": "Impreso en Europa y enviado a casa",
     "feature3Description": "Llega bien protegido, listo para regalar o guardar como un tesoro.",
     "copyright": "© 2026 Meapica. Todos los derechos reservados."
   },
@@ -2363,7 +2364,7 @@
     "regionNote": "De momento no enviamos a Canarias, Ceuta ni Melilla. Si el regalo es para allí, el cuento en PDF llega igual.",
     "methodHeading": "Cómo calculamos estas fechas",
     "method": [
-      "Imprimimos cada libro bajo demanda en la UE. Hoy, entre la impresión y el envío, un pedido tarda {min}-{max} días naturales en llegar a casa.",
+      "Imprimimos cada libro bajo demanda en Europa. Hoy, entre la impresión y el envío, un pedido tarda {min}-{max} días naturales en llegar a casa.",
       "En diciembre sumamos {buffer} días de margen por la saturación de la paquetería y los festivos del 8 de diciembre, Navidad y Año Nuevo.",
       "El plazo empieza cuando completas el pago, no cuando empiezas a crear el cuento.",
       "Son estimaciones basadas en los plazos actuales del transportista, no una garantía. Si cambian, actualizamos esta página."
@@ -2377,7 +2378,7 @@
       "christmasQ": "¿Y para tenerlo en Nochebuena?",
       "christmasA": "Para tener el libro impreso en casa el 24 de diciembre, pídelo hasta el {date}. Después de esa fecha aún puedes regalar el cuento en PDF.",
       "timeQ": "¿Cuánto tarda en llegar el libro impreso?",
-      "timeA": "Lo imprimimos bajo demanda en la UE en cuanto haces el pedido. España peninsular y Baleares: 7-10 días laborables, con el envío incluido en el precio. Recibirás el número de seguimiento por correo.",
+      "timeA": "Lo imprimimos bajo demanda en Europa en cuanto haces el pedido. España peninsular y Baleares: 7-10 días laborables, con el envío incluido en el precio. Recibirás el número de seguimiento por correo.",
       "regionQ": "¿Enviáis a Canarias, Ceuta o Melilla?",
       "regionA": "De momento no. Si el regalo es para allí, el cuento en PDF te llega por correo y puedes imprimirlo o leerlo en la tableta."
     },
@@ -2448,5 +2449,12 @@
     },
     "error": "No hemos podido darte de baja ahora. Prueba otra vez o escríbenos a <mail></mail>.",
     "backHome": "Ir a Meapica"
+  },
+  "cookieConsent": {
+    "title": "Cookies",
+    "text": "Usamos cookies necesarias para que la web funcione y, si aceptas, cookies de Meta para medir nuestros anuncios en Instagram y Facebook.",
+    "policy": "Más información",
+    "accept": "Aceptar",
+    "reject": "Rechazar"
   }
 }

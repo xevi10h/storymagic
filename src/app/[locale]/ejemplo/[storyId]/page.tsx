@@ -9,9 +9,9 @@ import BrandLogo from "@/components/BrandLogo";
 import { Button, buttonClass, cx, focusRing } from "@/components/ui";
 import BookViewerSwitch from "@/components/book-viewer/BookViewerSwitch";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import type { BookPage } from "@/components/book-viewer/types";
-import { SCENE_LAYOUT_PAIRS, artCarriesTitle, getActLabel, getSpreadType } from "@/components/book-viewer/types";
 import type { GeneratedStory } from "@/lib/ai/story-generator";
+import type { BookPlan } from "@/lib/book/book-plan";
+import { buildBookPages } from "@/lib/book-pages";
 import { BrandLoader } from "@/components/ui/BrandLoader";
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -42,94 +42,8 @@ interface ShowcaseStoryData {
     image_url: string | null;
     status: string;
   }[];
-}
-
-// ── Page builder (same logic as preview) ──────────────────────────────────
-
-function buildPages(story: ShowcaseStoryData): BookPage[] {
-  const generated = story.generated_text;
-  const illustrations = story.story_illustrations.sort(
-    (a, b) => a.scene_number - b.scene_number
-  );
-
-  const pages: BookPage[] = [
-    {
-      type: "cover",
-      title: story.title ?? generated.bookTitle,
-      characterName: story.characters.name,
-      templateId: story.template_id,
-      imageUrl: story.cover_image_url ?? null,
-    },
-    { type: "endpaper", templateId: story.template_id },
-    {
-      type: "title_dedication",
-      title: story.title ?? generated.bookTitle,
-      characterName: story.characters.name,
-      templateId: story.template_id,
-      dedicationText: story.dedication_text ?? generated.dedication,
-      senderName: story.sender_name,
-    },
-  ];
-
-  let sceneOnlyIndex = 0;
-  for (const scene of generated.scenes) {
-    const pair = SCENE_LAYOUT_PAIRS[(scene.sceneNumber - 1) % SCENE_LAYOUT_PAIRS.length];
-    const isSpread = pair[0] === "spread_left";
-    const isBridge = scene.type === "bridge";
-    const spreadType = getSpreadType(scene.type ?? "scene", sceneOnlyIndex);
-
-    const illustration = illustrations.find((i) => i.scene_number === scene.sceneNumber);
-    const secondaryIllustration = illustrations.find((i) => i.scene_number === scene.sceneNumber + 12);
-    const hasSecondary = secondaryIllustration?.status === "ready" && !!secondaryIllustration?.image_url;
-    const imageUrl = illustration?.image_url ?? null;
-    const secondaryImageUrl = hasSecondary ? secondaryIllustration!.image_url : null;
-    const actLabel = getActLabel(scene.sceneNumber);
-
-    const characterAge = story.characters.age;
-    const facing: Extract<BookPage, { type: "scene" }> = isSpread
-      ? { type: "scene", scene, imageUrl, locked: false, layout: "spread_right", characterAge, spreadType }
-      : secondaryImageUrl
-        ? { type: "scene", scene, imageUrl: secondaryImageUrl, locked: false, layout: "illustration_text", characterAge, spreadType }
-        : { type: "scene", scene, imageUrl: null, locked: false, layout: pair[1], characterAge, spreadType };
-    // As in print, the scene title goes on the art only when the facing page has no heading.
-    const artTitle = artCarriesTitle(pair[0], facing);
-    pages.push({ type: "scene", scene, imageUrl, locked: false, layout: pair[0], actLabel, characterAge, spreadType, artTitle });
-    pages.push(facing);
-
-    if (!isBridge) sceneOnlyIndex++;
-  }
-
-  pages.push({ type: "final", message: generated.finalMessage, characterName: story.characters.name });
-  pages.push({
-    type: "hero_card",
-    characterName: story.characters.name,
-    age: story.characters.age,
-    city: story.characters.city,
-    gender: story.characters.gender,
-    interests: story.characters.interests ?? [],
-    favoriteColor: story.characters.favorite_color,
-    favoriteCompanion: story.characters.favorite_companion,
-    futureDream: story.characters.future_dream,
-    avatarUrl: story.characters.avatar_url,
-    portraitUrl: story.character_portrait_url,
-    templateId: story.template_id,
-  });
-  pages.push({ type: "colophon", storyId: story.id });
-  pages.push({ type: "endpaper", templateId: story.template_id });
-
-  const lastSceneIllustration = illustrations.find((i) => i.scene_number === generated.scenes.length);
-  const backCoverImageUrl = (lastSceneIllustration?.status === "ready" && lastSceneIllustration?.image_url) || story.cover_image_url;
-  pages.push({
-    type: "back",
-    title: story.title ?? generated.bookTitle,
-    characterName: story.characters.name,
-    synopsis: generated.synopsis ?? "",
-    coverImageUrl: backCoverImageUrl,
-    templateId: story.template_id,
-    storyId: story.id,
-  });
-
-  return pages;
+  /** The printed book's plan (server, PDF font metrics) — the viewer shows exactly the PDF */
+  book_plan: BookPlan | null;
 }
 
 // ── Page Component ─────────────────────────────────────────────────────────
@@ -166,7 +80,8 @@ export default function ShowcasePage() {
     fetchStory();
   }, [storyId]);
 
-  const pages = story ? buildPages(story) : [];
+  // Same pages as the sample PDF (/api/showcase/[id]/pdf): one plan drives both.
+  const pages = story ? buildBookPages({ ...story, status: "ready" }, "", { preview: false }) : [];
   const totalPages = pages.length;
 
   const handleDownloadPdf = useCallback(async () => {

@@ -20,6 +20,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { expandScenes, type ArchitectResult, type StoryInput } from "./story-generator";
 import {
+  castDescription,
   planToShotList,
   planToVisualCast,
   toShotSpec,
@@ -141,17 +142,17 @@ function companionKey(members: CastMember[]): string {
  * Identity of a render: the normalised plan shot + how everyone in it looks.
  * Same key ⇒ the already-rendered image is valid for the final plan.
  */
-function shotKey(n: number, shot: PlanShot, src: BibleSource): string {
-  const cast = shot.castIds.map((id) => src.cast.find((c) => c.id === id)).filter(Boolean).map((c) => [c!.id, c!.name, c!.visual]);
-  const world = shot.worldIds.map((id) => src.world.find((w) => w.id === id)).filter(Boolean).map((w) => [w!.id, w!.name, w!.visual]);
-  return JSON.stringify({ n, shot, cast, world });
+function shotKey(n: number, shot: PlanShot, src: BibleSource, moment?: string): string {
+  const cast = shot.castIds.map((id) => src.cast.find((c) => c.id === id)).filter(Boolean).map((c) => [c!.id, c!.name, c!.label, c!.gender, c!.visual]);
+  const world = shot.worldIds.map((id) => src.world.find((w) => w.id === id)).filter(Boolean).map((w) => [w!.id, w!.name, w!.label, w!.visual]);
+  return JSON.stringify({ n, shot, moment: moment ?? null, cast, world });
 }
 
 /** Visual cast from a partial plan: recurrence is unknown yet, so keep the plan's cast in order. */
 function provisionalVisual(p: BookPlanProgress): VisualCast {
   return {
-    cast: p.cast.slice(0, VISUAL_MAX_CAST).map((c) => ({ id: c.id, name: c.name, kind: c.kind, description: c.visual, scenes: [] })),
-    world: p.world.slice(0, VISUAL_MAX_WORLD).map((w) => ({ id: w.id, name: w.name, kind: w.kind, description: w.visual, scenes: [] })),
+    cast: p.cast.slice(0, VISUAL_MAX_CAST).map((c) => ({ id: c.id, name: c.name, label: c.label, kind: c.kind, description: castDescription(c), scenes: [] })),
+    world: p.world.slice(0, VISUAL_MAX_WORLD).map((w) => ({ id: w.id, name: w.name, label: w.label, kind: w.kind, description: w.visual, scenes: [] })),
   };
 }
 
@@ -302,13 +303,13 @@ export class PreviewSession {
       if (visual.cast.length === 0) this.companion = null;
       else if (this.companion?.key !== companionKey(visual.cast)) this.startCompanion(visual.cast);
       const plan: SheetPlan = { bible: this.bible, cast: visual.cast, world: visual.world };
-      const targets: [number, PlanShot][] = [];
-      if (p.cover) targets.push([0, p.cover]);
-      for (const s of p.scenes) if (this.previewScenes.includes(s.sceneNumber)) targets.push([s.sceneNumber, s.shot]);
-      for (const [n, shot] of targets) {
-        const key = shotKey(n, shot, p);
+      const targets: [number, PlanShot, string | undefined][] = [];
+      if (p.cover) targets.push([0, p.cover, undefined]);
+      for (const s of p.scenes) if (this.previewScenes.includes(s.sceneNumber)) targets.push([s.sceneNumber, s.shot, s.illustratedMoment]);
+      for (const [n, shot, moment] of targets) {
+        const key = shotKey(n, shot, p, moment);
         if (this.renders.get(n)?.key === key) continue;
-        this.startRender(n, key, plan, toShotSpec(p, shot, n, n === 0 ? "cover" : frameForScene(n), visual), this.companion);
+        this.startRender(n, key, plan, toShotSpec(p, shot, n, n === 0 ? "cover" : frameForScene(n), visual, moment), this.companion);
       }
     } catch (err) {
       console.warn("[Preview] early render scheduling failed (the final pass will render):", err instanceof Error ? err.message : err);
@@ -360,9 +361,10 @@ export class PreviewSession {
 
     const targets = [...this.previewScenes, 0];
     for (const n of targets) {
-      const planShot = n === 0 ? bookPlan.cover : bookPlan.scenes.find((s) => s.sceneNumber === n)?.shot;
+      const planScene = n === 0 ? undefined : bookPlan.scenes.find((s) => s.sceneNumber === n);
+      const planShot = n === 0 ? bookPlan.cover : planScene?.shot;
       if (!planShot) continue;
-      const key = shotKey(n, planShot, bookPlan);
+      const key = shotKey(n, planShot, bookPlan, planScene?.illustratedMoment);
       const existing = this.renders.get(n);
       // Renders that waited on a failed companion sheet are known-failed: redo them.
       const doomed = !!existing?.companion && existing.companion === early && !earlyOk;

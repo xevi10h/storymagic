@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { toShowcaseUrl } from "@/lib/storage/illustration-refs";
 import { SHOWCASE_STATUSES, showcaseReadClient } from "@/lib/showcase";
 
-const BASE_URL = "https://meapica.com";
+const BASE_URL = "https://meapica.shop";
 
 type Props = {
   children: React.ReactNode;

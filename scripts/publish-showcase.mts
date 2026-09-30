@@ -3,7 +3,7 @@
  * bucket holding children's images is private since 2026-09-27).
  *
  * Copies, server side, from `illustrations` to `showcase` under the SAME object path:
- *   - every image of stories flagged is_showcase (cover, portrait, avatar, scenes)
+ *   - every image of stories flagged is_showcase (cover, portrait, avatar, scenes, hero portrait, adventure map)
  *     → the app maps their refs to the showcase mirror (toShowcaseUrl), rows untouched
  *   - waitlist covers (waitlist-covers/*, the Teo example cover) and style-samples/*
  *   - images referenced by blog_posts (cover_image_url + body_markdown); those rows
@@ -65,13 +65,16 @@ async function listPrefix(prefix: string): Promise<string[]> {
 async function collectShowcaseStoryPaths(): Promise<string[]> {
   const { data, error } = await admin
     .from("stories")
-    .select("id, cover_image_url, character_portrait_url, characters (avatar_url), story_illustrations (image_url)")
+    .select("id, cover_image_url, character_portrait_url, generated_text, characters (avatar_url), story_illustrations (image_url)")
     .eq("is_showcase", true);
   if (error) throw new Error(`showcase stories: ${error.message}`);
   const refs: (string | null)[] = [];
   for (const s of data ?? []) {
     const character = s.characters as unknown as { avatar_url: string | null } | null;
     refs.push(s.cover_image_url, s.character_portrait_url, character?.avatar_url ?? null);
+    // Hero portrait (p. 27) + adventure map (pp. 28–29) of the example PDF (/api/showcase/[id]/pdf).
+    const assets = (s.generated_text as { imageAssets?: { finalHero?: { url?: string }; finalMap?: { url?: string } } } | null)?.imageAssets;
+    refs.push(assets?.finalHero?.url ?? null, assets?.finalMap?.url ?? null);
     for (const ill of (s.story_illustrations ?? []) as { image_url: string | null }[]) refs.push(ill.image_url);
   }
   console.log(`${data?.length ?? 0} showcase stories`);

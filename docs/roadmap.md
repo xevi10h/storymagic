@@ -40,7 +40,7 @@ See **`docs/generation-pipeline.md`** and **`docs/launch-checklist.md`** for ful
       across architect/screenplay.
 - [ ] Launch P0/P1 (from launch-checklist): deploy to prod (activates the cron), go-live envs
       (`STRIPE_ENVIRONMENT=live`, live Stripe keys, `GELATO_FULFILLMENT_MODE=direct`,
-      `ILLUSTRATION_PROVIDER`/image-model envs), verify `meapica.com` in Resend, real order test.
+      `ILLUSTRATION_PROVIDER`/image-model envs), verify `meapica.shop` in Resend, real order test.
 
 **Done this session:** all 390 path-art images (fal dev, ~$4.68); fulfilment safety-net cron;
 preview-timeout fix; cover ref anchoring; QA-skipped flag; two-speed model split; per-scene
@@ -50,12 +50,29 @@ character lock; per-stage resolution. (commits 5ebc2f1 → a883d60)
 
 ## Next steps from accounts & orders block (2026-09-30)
 - **Retention for guests who paid** (never auto-purged today): e.g. anonymise child data N months after delivery.
-- Verify Resend DKIM covers the `List-Unsubscribe` headers (RFC 8058) after the meapica.com domain is verified.
+- Verify Resend DKIM covers the `List-Unsubscribe` headers (RFC 8058) after the meapica.shop domain is verified.
 - "Pack de 3 cuentos" for the same child (collection discount in business-model.md).
 - Admin: refund button + address change before print; customer "change address" request window.
 - Newsletter unsubscribe / communication preferences; saved addresses (Stripe collects them each time).
 - Reuse `PAID_ORDER_STATUSES` (src/lib/story-purchase.ts) in complete/verify/downloads/pipeline/admin (list still duplicated).
 - VeriFactu invoicing (see below) — Stripe credit notes cover refunds meanwhile.
+
+## Next steps from web = print parity (2026-09-30)
+
+- [x] Digital PDF download at trim size (2026-09-30): `renderBookPdf` renders the digital edition (34 pages of 200 mm, no bleed, panorama halves meet at the fold) for the customer PDF, the e-mailed download, the dashboard and the showcase sample; Gelato files keep the bleed (pixel-identical). Check: `scripts/check-pdf-editions.mts`.
+- Customer PDFs stored before 2026-09-30 still carry the bleed: re-render them (clear `stories.pdf_url` → the fulfilment run rebuilds) if any customer asks, or backfill once.
+- Web map spread: serve the 3840×1920 map (and 2432² pages) through a resized rendition (Supabase image transform) — the viewer downloads print-size art.
+- Balanced lines: the web approximates the PDF's measured line breaks with `text-wrap: balance`; shipping the planner's line breaks in `book_plan` would make wraps identical.
+
+## Next steps from showcase v2 (2026-09-30)
+
+- [ ] **HIGH — Next session: platform-wide SEO review** (every public route × 4 locales: titles/meta/OG, hreflang + canonicals, JSON-LD incl. `Offer` VAT flags, sitemap, internal links, Core Web Vitals, the new showcase books on `/ejemplo` + theme pages)
+- [ ] Showcase v2 for the remaining 5 worlds (superhero, chef, safari, inventor, candy) with the same rule: production pipeline + page-by-page QA in 4 locales; a `castle` theme SEO page (`THEME_TEMPLATE` has no castle slug yet)
+- [x] Pipeline findings from the showcase QA (customer-facing): Done 2026-09-30: U+202F (narrow no-break space) now prints — the embedded fonts gained the glyph (`scripts/patch-font-nnbsp.py`), the web viewer uses the same one
+- [x] QA judge rework (2026-09-30): claims from the page text → per-check vision verdicts → pass/fail in code, limb counting on crops, full-res image, extra sheet; the repair prompt no longer re-states the shot action. Labelled set recall 2/12 → 11/12, false alarms 0 → 2/12, judge ~$0.35 → ~$0.67 per book (`docs/generation-pipeline.md` §QA, `scripts/qa-eval/`)
+- [x] Prompt article glitches ("The s ardillas", "The el dinosaurio naranja", "casa de the child"): English `label` per cast/world entity + `gender` for people in the Book Plan (`entity-label.ts`); the illustrated moment now reaches the image prompt and the judge
+- [ ] QA leftovers: small details on panoramas (a far whale's eye) need a zoomed check; the judge sometimes reads a toy as the character it resembles; the Book Plan can still write physically impossible shots (both hands at the mouth + a toy held to the chest) — a plan-time feasibility check would prevent the render instead of repairing it
+- [ ] Admin "publish showcase" action (flag + mirror + translations) instead of scripts
 
 ## Next steps from commerce block A (2026-09-28)
 - **VeriFactu-compliant invoicing** before the 2027 obligation (Stripe invoices aren't); OSS registration when EU digital sales pass 10 000 €.
@@ -118,7 +135,7 @@ Brand spec in `docs/brand.md`; semantic tokens in `globals.css`; primitives in `
 - [x] Implement landing page with Meapica branding
 - [x] i18n: 4 locales (ES default, CA, EN, FR) via next-intl
 - [x] Meapica brand identity: BrandLogo + WritingAnimation components
-- [ ] Domain registration (meapica.com)
+- [ ] Domain registration (meapica.shop)
 - [ ] SEO: meta tags, Open Graph, structured data
 - [x] Email capture / waitlist (Resend confirmation emails, newsletter_subscribers table, secret access code bypass)
 - [ ] Analytics (Vercel Analytics)
@@ -231,7 +248,7 @@ Replaced Recraft V3 with **FLUX.2 [flex]** + a whole-world consistency system. D
 - [ ] Unreasonable Hospitality implementation (see below)
 - [ ] Final QA on complete flow (20+ test runs)
 - [ ] SEO basics: meta tags, Open Graph, structured data
-- [ ] Domain registration (meapica.com)
+- [ ] Domain registration (meapica.shop)
 - [ ] Analytics setup (Vercel Analytics)
 
 **Launch:**
@@ -239,7 +256,11 @@ Replaced Recraft V3 with **FLUX.2 [flex]** + a whole-world consistency system. D
 - [ ] Instagram account setup + 10 initial posts
 - [ ] 10 beta sales to family/friends (discounted, for feedback)
 - [ ] Collect and address feedback
-- [ ] Launch marketing campaign (organic + first paid ads 50-100 EUR)
+- [x] Ads tracking built (2026-09-30): cookie banner + Meta Pixel + CAPI Purchase + UTMs → Stripe metadata (off until env vars). Creative pack + organic calendar + setup guide in `docs/ads/`
+- [ ] **Owner:** create IG/FB/Meta Business/ad account/dataset + TikTok business account (`docs/ads/setup-guide.md` §1), hand over pixel id + CAPI token; then Claude sets env, verifies dedup with a test purchase
+- [ ] Produce the first creatives (V1, V2 + A1/A2 static in ES and CA) from `docs/ads/creative-pack.md`; native CA review of the copy
+- [ ] Launch marketing campaign: Meta Sales campaign, 2 ad sets (cat_ca / es_es) ≈ 8 €/day; organic IG + TikTok from 2026-10-05 (`docs/ads/organic-calendar.md`)
+- [ ] Later: TikTok Pixel + Events API only if TikTok Ads budget (≥ 50 €/day) is ever approved; UTMs/consent as order columns if Stripe metadata stops being enough
 - [ ] Contact 10 parenting micro-influencers
 - [ ] Low-CAC GTM sprint: 20-50 beta families, reaction content, referral codes, local partner outreach, and first SEO gift pages
 - [ ] Build a post-purchase referral loop with rewards for both buyer and referred family
@@ -407,7 +428,7 @@ Replaced the old "mode → template → 3 decision knobs" with a single vertical
 
 | # | Decision | Status | Resolution |
 |---|----------|--------|------------|
-| 1 | Domain name | PENDING | meapica.com (not yet registered) |
+| 1 | Domain name | PENDING | meapica.shop (not yet registered) |
 | 2 | Step 4 variants | DONE | Variant A (Juntos) + Variant C (Solo) |
 | 3 | Auth method | DONE | Supabase Auth: passwordless email (link + 6-digit code) + Google + anonymous guests linked by email (2026-09-30) |
 | 4 | Story AI provider | DONE | Claude Sonnet 4 (prod), Groq/Cerebras/Gemini (dev) |
@@ -426,7 +447,7 @@ Replaced the old "mode → template → 3 decision knobs" with a single vertical
 
 **Next actions:**
 - **Commit + deploy the FLUX.2 visual-bible illustration engine (Phase 3 v2)** — validated end-to-end; set prod env `ILLUSTRATION_PROVIDER=flux2`, `FLUX2_MODEL=flux-2-flex`, `GOOGLE_API_KEY` (QA judge), `BFL_API_KEY`.
-- Configure `meapica.com` DNS records in Resend for branded waitlist confirmation emails (currently using `constrack.pro` as temporary sender domain)
+- Configure `meapica.shop` DNS records in Resend for branded waitlist confirmation emails (currently using `constrack.pro` as temporary sender domain)
 - Add Vercel production env vars: `WAITLIST_MODE`, `WAITLIST_ACCESS_CODE`, `RESEND_API_KEY`
 - Analytics/tracking for waitlist conversions (signup funnel, email open rates)
 - Social sharing from waitlist (refer-a-friend mechanism to boost organic signups)
@@ -440,7 +461,7 @@ Replaced the old "mode → template → 3 decision knobs" with a single vertical
 - Integrated 2026-09-28 (`feat/creation-flow-v2`): real `WatercolorAvatar` (vector fallback until the matrix is rendered), `glasses`/`freckles`/`characterPrepId`/`avatarAssetPath` persisted by `POST /api/stories`, signed `preview_progress`, first image shown as soon as it lands. Pending: see "Creation flow v2 — after the integration" above.
 - "Envíame la preview" works on the same browser only (anonymous session per device): convert the guest to an email identity (magic link) so the link opens anywhere.
 - Arrow-key navigation inside the trait/world/chapter radiogroups (today: Tab + Enter/Space).
-- Print QA follow-ups (full-book review 2026-09-28): ~~back-cover synopsis runs over the child's face~~ (done 2026-09-29: paper back cover with arch vignette); scene titles printed twice on 8/12 spreads (art + text page); keepsake colophon (title, child, date, "Impreso en la UE"); paragraph spacing inconsistent (blank line vs single break from the LLM); PDF declared 1.3 while using transparency; legibility of long white text over bright panorama art (age 10-12).
+- Print QA follow-ups (full-book review 2026-09-28): ~~back-cover synopsis runs over the child's face~~ (done 2026-09-29: paper back cover with arch vignette); scene titles printed twice on 8/12 spreads (art + text page); keepsake colophon (title, child, date, "Impreso en Europa"); paragraph spacing inconsistent (blank line vs single break from the LLM); PDF declared 1.3 while using transparency; legibility of long white text over bright panorama art (age 10-12).
 - Print polish: "about the reader" page design, panorama upscale to 300 dpi. (Illustrated adventure map + search-and-find game on pp. 28–29 shipped 2026-09-28.)
 - Adventure map follow-ups: fold compliance of the map (the model tends to centre the largest landmark on the gutter — try a narrower panel for ages 2–6 or a two-half layout brief); picture thumbnails next to each item for 2–4 pre-readers (crop from the map via the QA figure locator); show the map in the web viewer / preview as a teaser.
 - **Phase 3 — sales:** analytics (GA4 + Meta pixel + funnel events); guarantee; −20% on 2+ books; Reyes positioning (cutoff ~29 Dec) + gift card; "Pedir a los abuelos" WhatsApp payment link; AMPA/school class orders; 3 real orders for photos.

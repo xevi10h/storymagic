@@ -24,6 +24,7 @@ import {
   buildRepairPrompt,
   buildScenePrompt,
   extraSheetCast,
+  label,
   mainSheetCast,
   type ReferenceRole,
 } from "./image-prompts";
@@ -286,16 +287,16 @@ function shotReferences(plan: SheetPlan, shot: ShotSpec, refs: ShotRefs): { imag
     const roles: ReferenceRole[] = [{ kind: "child-sheet" }];
     if (refs.companions) {
       images.push(refs.companions.sheet);
-      roles.push({ kind: "companion-sheet", names: refs.companions.members.map((m) => m.name.toUpperCase()) });
+      roles.push({ kind: "companion-sheet", names: refs.companions.members.map(label) });
     }
     return { images, roles };
   }
   const images: ImageReference[] = [refs.sheet];
-  const roles: ReferenceRole[] = [{ kind: "sheet", names: mainSheetCast(plan).map((m) => m.name.toUpperCase()) }];
+  const roles: ReferenceRole[] = [{ kind: "sheet", names: mainSheetCast(plan).map(label) }];
   const extras = extraSheetCast(plan).filter((m) => shot.cast.includes(m.id));
   if (refs.extraSheet && extras.length > 0) {
     images.push(refs.extraSheet);
-    roles.push({ kind: "extra-sheet", names: extraSheetCast(plan).map((m) => m.name.toUpperCase()) });
+    roles.push({ kind: "extra-sheet", names: extraSheetCast(plan).map(label) });
   }
   return { images, roles };
 }

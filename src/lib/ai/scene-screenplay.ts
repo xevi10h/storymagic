@@ -4,7 +4,7 @@
 // the child or the recurring cast look: image-prompts.ts assembles every prompt
 // deterministically from these fields + the frozen Character Bible.
 
-import { SCENE_LAYOUT_PAIRS } from "@/components/book-viewer/types";
+import { sceneLayoutOf } from "@/lib/book/sequence";
 
 export type ShotScale = "close" | "medium" | "wide";
 /** Print frame of an image: square page, landscape (text under a secondary illustration), two-page panorama, cover, the hero portrait page, or the adventure map spread (pp. 28–29). */
@@ -19,6 +19,12 @@ export interface ShotSpec {
   shotScale: ShotScale;
   /** The single key moment: what the characters present do */
   action: string;
+  /**
+   * The Book Plan's illustratedMoment: the instant of the page text the picture
+   * shows, incl. states the action may not repeat ("Bruma sleeps"). Absent on
+   * plans frozen before 2026-09-30.
+   */
+  moment?: string;
   /** Full background environment */
   setting: string;
   /** Light, time of day, mood */
@@ -37,12 +43,8 @@ export interface ShotList {
 /**
  * Frame of a scene image from the print layout (never from the LLM). Every non-panorama
  * scene prints full bleed on a square page (src/lib/pdf/layout.ts — split layouts print
- * full page since 2026-09-29), so split scenes render square too; the web viewer's split
- * band cover-crops them.
+ * full page since 2026-09-29), so split scenes render square too (src/lib/book/sequence.ts).
  */
 export function frameForScene(sceneNumber: number): ShotFrame {
-  const layout = SCENE_LAYOUT_PAIRS[(sceneNumber - 1) % SCENE_LAYOUT_PAIRS.length][0];
-  if (layout === "spread_left") return "panorama";
-  if (layout === "illustration_text") return "landscape";
-  return "square";
+  return sceneLayoutOf(sceneNumber) === "spread" ? "panorama" : "square";
 }

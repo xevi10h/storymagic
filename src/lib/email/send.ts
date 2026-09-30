@@ -8,15 +8,15 @@
 //   RESEND_API_KEY        — Resend API key
 // Optional env:
 //   EMAIL_FROM            — sender (default: "Meapica <hola@constrack.pro>"; switch to
-//                           hola@meapica.com only once meapica.com is verified in Resend)
+//                           hola@meapica.shop only once meapica.shop is verified in Resend)
 //   EMAIL_REPLY_TO        — reply-to for every email (default: SUPPORT_EMAIL from
 //                           src/lib/support.ts, the customer-facing inbox)
-//   NEXT_PUBLIC_SITE_URL  — public site origin (default: "https://meapica.com")
+//   NEXT_PUBLIC_SITE_URL  — public site origin (default: "https://meapica.shop")
 
 import { SUPPORT_EMAIL } from "../support";
 
 const DEFAULT_FROM = "Meapica <hola@constrack.pro>";
-const DEFAULT_SITE_URL = "https://meapica.com";
+const DEFAULT_SITE_URL = "https://meapica.shop";
 
 /** Public site origin without trailing slash. Used for logo + dashboard links in emails. */
 export function getSiteUrl(): string {

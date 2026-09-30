@@ -13,8 +13,10 @@ export const CHILD_ID = "child";
 export interface CastMember {
   /** snake_case id, never "child" */
   id: string;
-  /** Label used in prompts (upper-cased), e.g. "Pip" */
+  /** Name in the book language, e.g. "las ardillas" (UI, map game) */
   name: string;
+  /** English label used in prompts (upper-cased), e.g. "SQUIRRELS" — see entity-label.ts castLabel */
+  label?: string;
   kind: "character" | "creature";
   /** Species/body, size relative to the child, colours, one distinctive accessory */
   description: string;
@@ -23,7 +25,10 @@ export interface CastMember {
 
 export interface WorldAsset {
   id: string;
+  /** Name in the book language */
   name: string;
+  /** English label used in prompts — see entity-label.ts worldLabel */
+  label?: string;
   kind: "location" | "object";
   description: string;
   scenes: number[];

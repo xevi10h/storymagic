@@ -1,8 +1,14 @@
 import { NextResponse } from "next/server";
 import { renderBookPdf, type BookPdfInput } from "@/lib/pdf/book-template";
+import { prefetchAllIllustrations, prefetchImageAsDataUri } from "@/lib/pdf/prefetch";
+import type { Database } from "@/lib/database.types";
 import type { GeneratedStory } from "@/lib/ai/story-generator";
 import { toShowcaseUrl } from "@/lib/storage/illustration-refs";
 import { SHOWCASE_STATUSES, showcaseReadClient } from "@/lib/showcase";
+import type { BookImageAssets } from "@/lib/ai/book-images";
+
+type ShowcaseImageAssets = Pick<BookImageAssets, "finalHero" | "finalMap" | "mapGame">;
+
 
 export async function GET(
   _request: Request,
@@ -16,7 +22,7 @@ export async function GET(
     .from("stories")
     // Explicit whitelist: this runs with the service role.
     .select(
-      "id, template_id, generated_text, dedication_text, sender_name, status, cover_image_url, character_portrait_url, locale, characters (name, age, gender, city, favorite_color, favorite_companion, future_dream), story_illustrations (scene_number, image_url)",
+      "id, title, template_id, generated_text, dedication_text, sender_name, status, cover_image_url, character_portrait_url, locale, characters (name, age, gender, city, favorite_color, favorite_companion, future_dream, interests), story_illustrations (scene_number, image_url, status)",
     )
     .eq("id", storyId)
     .eq("is_showcase", true)
@@ -49,41 +55,56 @@ export async function GET(
     favorite_color?: string;
     favorite_companion?: string;
     future_dream?: string;
+    interests?: string[] | null;
   };
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const illustrations = (
-    story.story_illustrations as unknown as {
-      scene_number: number;
-      image_url: string | null;
-    }[]
-  ).map((ill) => ({
-    sceneNumber: ill.scene_number,
-    // Public `showcase` bucket mirror — children's originals are private.
-    imageUrl: toShowcaseUrl(ill.image_url, supabaseUrl),
-  }));
+  const rows = story.story_illustrations as unknown as { scene_number: number; image_url: string | null; status: string }[];
+
+  // Same pages as the customer's book (src/lib/fulfilment/pipeline.ts buildPdfInput): page 27 is the
+  // print-size hero portrait (cover art for books finished before it existed), pages 28–29 the adventure map.
+  // Images are pre-fetched as data URIs like the pipeline's: the renderer needs their pixel size to
+  // place them (cover-fit) — and the map spread is only printed when its image decodes.
+  const assets = (story.generated_text as unknown as { imageAssets?: ShowcaseImageAssets } | null)?.imageAssets;
+  const heroUrl = assets?.finalHero?.url ? toShowcaseUrl(assets.finalHero.url, supabaseUrl) : null;
+  const mapUrl = assets?.finalMap?.url && assets.mapGame ? toShowcaseUrl(assets.finalMap.url, supabaseUrl) : null;
+  const coverUrl = toShowcaseUrl(story.cover_image_url, supabaseUrl);
+  const [illustrations, coverImageUrl, heroImageUrl, mapImageUrl] = await Promise.all([
+    // Public `showcase` bucket mirror — children's originals are private. Only ready images (as the viewer).
+    prefetchAllIllustrations(
+      rows.filter((r) => r.status === "ready" && r.image_url).map((r) => ({ sceneNumber: r.scene_number, imageUrl: toShowcaseUrl(r.image_url, supabaseUrl) })),
+    ),
+    coverUrl ? prefetchImageAsDataUri(coverUrl) : Promise.resolve(null),
+    heroUrl ? prefetchImageAsDataUri(heroUrl) : Promise.resolve(null),
+    mapUrl ? prefetchImageAsDataUri(mapUrl) : Promise.resolve(null),
+  ]);
 
   const pdfInput: BookPdfInput = {
-    story: generatedText,
+    // An edited title replaces the generated one, as in the customer's book
+    story: story.title ? { ...generatedText, bookTitle: story.title } : generatedText,
     templateId: story.template_id,
     characterName: character.name,
     characterAge: character.age,
     characterGender: character.gender as "boy" | "girl" | undefined,
     characterCity: character.city ?? undefined,
+    characterInterests: character.interests ?? [],
     favoriteColor: character.favorite_color ?? undefined,
     favoriteCompanion: character.favorite_companion ?? undefined,
     futureDream: character.future_dream ?? undefined,
     dedicationText: story.dedication_text,
     senderName: story.sender_name,
     storyId,
-    coverImageUrl: toShowcaseUrl(story.cover_image_url, supabaseUrl),
-    portraitUrl: toShowcaseUrl(story.character_portrait_url, supabaseUrl),
+    coverImageUrl,
+    portraitUrl: heroImageUrl ?? coverImageUrl,
+    mapImageUrl,
+    mapGame: mapImageUrl ? (assets?.mapGame ?? null) : null,
     illustrations,
     locale: (story as Record<string, unknown>).locale as string | undefined,
   };
 
   try {
-    const buffer = await renderBookPdf(pdfInput);
+    // Digital (trim-size) edition — the same file a customer downloads, never the bleed print file
+    const buffer = await renderBookPdf(pdfInput, undefined, { edition: "digital" });
 
     const safeTitle = generatedText.bookTitle
       .replace(/[^a-zA-Z0-9áéíóúñüÁÉÍÓÚÑÜ\s-]/g, "")

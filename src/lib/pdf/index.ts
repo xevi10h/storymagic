@@ -6,6 +6,7 @@ export {
   prepareBookRender,
   type BookPdfInput,
   type BookRenderContext,
+  type BookEdition,
 } from "./book-template";
 export { renderCoverSpreadPdf, planCoverSpread, BARCODE_RESERVE_MM, MIN_SPINE_TEXT_MM } from "./cover-spread";
 export {

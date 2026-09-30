@@ -2,6 +2,7 @@
 
 import { useId, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import { trackEvent } from "@/lib/tracking/consent";
 
 interface SendPreviewEmailProps {
   storyId: string;
@@ -42,6 +43,7 @@ export default function SendPreviewEmail({ storyId, childName, variant = "card",
       if (res.status === 429) return setStatus("rate_limited");
       if (res.status === 400) return setStatus("invalid");
       if (!res.ok) throw new Error(`send_preview_${res.status}`);
+      trackEvent("Lead", { content_name: "send_preview" });
       setStatus("sent");
     } catch (err) {
       console.warn("[preview] send preview email failed:", err);

@@ -6,8 +6,47 @@ import { getStripe, getStripeCatalog, PRICING, type BookFormat } from "@/lib/str
 import { routing, type Locale } from "@/i18n/routing";
 import { purchaseEligibility } from "@/lib/fulfilment/logic";
 import { buildCheckoutSession, checkoutOffer } from "@/lib/checkout/session";
+import { CONSENT_COOKIE, UTM_COOKIE } from "@/lib/tracking/consent";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * Ad attribution for the Stripe webhook (Meta CAPI) and for knowing where an
+ * order came from (UTMs). Only with advertising consent; Stripe metadata values
+ * are capped at 500 chars.
+ */
+function attributionMetadata(request: Request): Record<string, string> {
+  const cookies = new Map(
+    (request.headers.get("cookie") ?? "").split(/;\s*/).map((c) => {
+      const i = c.indexOf("=");
+      const raw = c.slice(i + 1);
+      try {
+        return [c.slice(0, i), decodeURIComponent(raw)] as const;
+      } catch {
+        return [c.slice(0, i), raw] as const;
+      }
+    }),
+  );
+  if (cookies.get(CONSENT_COOKIE) !== "granted") return {};
+  const meta: Record<string, string> = {
+    ads_consent: "1",
+    fbp: cookies.get("_fbp") ?? "",
+    fbc: cookies.get("_fbc") ?? "",
+    client_ip: (request.headers.get("x-forwarded-for") ?? "").split(",")[0].trim(),
+    client_ua: request.headers.get("user-agent") ?? "",
+    source_url: request.headers.get("referer") ?? "",
+  };
+  try {
+    Object.assign(meta, JSON.parse(cookies.get(UTM_COOKIE) ?? "{}"));
+  } catch {
+    // malformed cookie: no UTMs
+  }
+  return Object.fromEntries(
+    Object.entries(meta)
+      .filter(([, v]) => typeof v === "string" && v !== "")
+      .map(([k, v]) => [k, v.slice(0, 500)]),
+  );
+}
 
 /** ponytail: 2-min idempotency window — a double click reuses the session; a
  * deliberate second purchase after 2 min gets a new one. Per-click client keys
@@ -108,6 +147,7 @@ export async function POST(request: Request) {
     }
     const offer = checkoutOffer({ orders: offerOrders, userId: user.id, storyId, format, isReorder, catalog, now: Date.now() });
 
+    const attribution = attributionMetadata(request);
     const plan = buildCheckoutSession({
       catalog,
       storyId,
@@ -121,6 +161,8 @@ export async function POST(request: Request) {
       origin: new URL(request.url).origin,
     });
     const { validAddons, totalCents } = plan;
+    // Ad attribution for the webhook (Meta CAPI) and UTMs: only with advertising consent.
+    plan.params.metadata = { ...plan.params.metadata, ...attribution };
 
     const session = await getStripe().checkout.sessions.create(plan.params, {
       idempotencyKey: idempotencyKey([
@@ -130,6 +172,8 @@ export async function POST(request: Request) {
         [...validAddons].sort().join(","),
         locale,
         plan.offer ? `${plan.offer.offer}:${plan.offer.sourceOrderId}` : "",
+        // Attribution is part of the key: same key + different params is a Stripe error.
+        JSON.stringify(attribution),
       ]),
     });
 

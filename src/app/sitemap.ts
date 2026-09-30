@@ -4,7 +4,7 @@ import { allSeoPaths } from "@/lib/seo-landing";
 import { getAllPublishedPostRefs } from "@/lib/blog";
 import { CHRISTMAS_DELIVERY_PATH } from "@/lib/shipping";
 
-const BASE_URL = "https://meapica.com";
+const BASE_URL = "https://meapica.shop";
 
 function buildAlternates(path: string): Record<string, string> {
   const languages: Record<string, string> = {};

@@ -9,9 +9,10 @@
 //    content never leaves the server; scene image prompts are stripped;
 //  - images are signed for that story's folder only, with the 1-hour UI TTL.
 
-import type { BookPage } from "@/components/book-viewer/types";
+import type { BookPage, ScenePrint } from "@/components/book-viewer/types";
 import type { GeneratedStory } from "@/lib/ai/story-generator";
 import { buildBookPages, toPreviewPages } from "@/lib/book-pages";
+import { planBook } from "@/lib/book/book-plan.server";
 import { withTeaserEnd } from "@/lib/preview-teaser";
 import { createFulfilmentClient } from "@/lib/fulfilment/db";
 import { ILLUSTRATION_URL_TTL, signIllustrationRefs, storyOnlyAccess } from "@/lib/storage/illustration-urls";
@@ -42,7 +43,7 @@ export async function loadSharedPreview(token: string): Promise<SharedPreviewRes
   const { data: row, error } = await admin
     .from("stories")
     .select(
-      "id, user_id, status, template_id, title, cover_image_url, generated_text, dedication_text, sender_name, characters(name, age, gender, favorite_color), story_illustrations(scene_number, image_url, status)",
+      "id, user_id, status, template_id, title, locale, cover_image_url, generated_text, dedication_text, sender_name, characters(name, age, gender, favorite_color), story_illustrations(scene_number, image_url, status)",
     )
     .eq("id", verified.storyId)
     .in("status", [...SHAREABLE_STORY_STATUSES])
@@ -56,9 +57,24 @@ export async function loadSharedPreview(token: string): Promise<SharedPreviewRes
   if (!generated || !Array.isArray(generated.scenes) || !character) return { ok: false, reason: "not_found" };
 
   const illustrations = (row.story_illustrations ?? []) as { scene_number: number; image_url: string | null; status: string }[];
+  // Same print plan as the owner's preview; only the preview slice of it leaves the server.
+  const plan = await planBook(
+    {
+      title: row.title,
+      locale: row.locale,
+      generated_text: generated,
+      dedication_text: row.dedication_text,
+      sender_name: row.sender_name,
+      characters: character,
+      story_illustrations: illustrations,
+    },
+    { hero: null, map: null },
+  );
   const allPages = buildBookPages(
     {
       id: row.id,
+      locale: row.locale,
+      book_plan: plan,
       status: "preview",
       template_id: row.template_id,
       title: row.title,
@@ -107,14 +123,24 @@ export async function loadSharedPreview(token: string): Promise<SharedPreviewRes
   };
 }
 
-/** Keep only what the viewer renders: no image prompts; the locked teaser carries no text. */
+/** Keep only what the viewer renders: no image prompts; a locked page carries no text at all. */
 function stripPage(page: BookPage): BookPage {
   if (page.type !== "scene") return page;
   const { sceneNumber, type, title, text } = page.scene;
-  return {
-    ...page,
-    scene: page.locked
-      ? { sceneNumber, type, title: "", text: "", imagePrompt: "" }
-      : { sceneNumber, type, title, text, imagePrompt: "" },
-  };
+  if (!page.locked) return { ...page, scene: { sceneNumber, type, title, text, imagePrompt: "" } };
+  return { ...page, scene: { sceneNumber, type, title: "", text: "", imagePrompt: "" }, print: redactPrint(page.print) };
+}
+
+/** A locked page's print data without its words (body, overlay, drop cap). */
+function redactPrint(print: ScenePrint): ScenePrint {
+  switch (print.kind) {
+    case "text":
+      return { ...print, body: "", dropCap: null };
+    case "illustration-text":
+      return { ...print, body: "" };
+    case "spread":
+      return { ...print, overlay: { ...print.overlay, text: "" } };
+    default:
+      return print;
+  }
 }

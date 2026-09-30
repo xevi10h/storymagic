@@ -38,41 +38,9 @@ export async function getBrandLogoPng(fill = "#ffffff"): Promise<string> {
 // SVG LinearGradient has id-collision bugs in multi-page react-pdf documents;
 // a 1×N PNG stretched over a box is 100% reliable.
 
-/** [position 0..1 from TOP, alpha 0..1] stops, linearly interpolated. */
-export type GradientStops = [number, number][];
-
-/** Matches the web viewer spread_right overlay (linear-gradient to top). */
-export const TEXT_OVERLAY_STOPS: GradientStops = [
-  [0, 0],
-  [0.25, 0.15],
-  [0.45, 0.45],
-  [0.7, 0.7],
-  [1, 0.82],
-];
-/** Softer fade for a title over artwork. */
-export const TITLE_OVERLAY_STOPS: GradientStops = [
-  [0, 0],
-  [0.45, 0.35],
-  [1, 0.75],
-];
-/**
- * Front cover scrim for the title at the TOP: drawn from the visible top edge down to
- * about half the panel, darkest behind the title and eased out to nothing (no hard edge),
- * so white type reads over a light wall as well as a busy sky.
- */
-export const COVER_OVERLAY_STOPS: GradientStops = [
-  [0, 0.62],
-  [0.5, 0.52],
-  [0.72, 0.26],
-  [0.9, 0.06],
-  [1, 0],
-];
-/** Portrait → cream fade on the keepsake page (colour set by caller). */
-export const CREAM_FADE_STOPS: GradientStops = [
-  [0, 0],
-  [0.5, 0.35],
-  [1, 0.95],
-];
+// Gradient stops are shared with the web viewer (src/lib/book/print-spec.ts).
+import type { GradientStops } from "@/lib/book/print-spec";
+export { COVER_OVERLAY_STOPS, CREAM_FADE_STOPS, TEXT_OVERLAY_STOPS, TITLE_OVERLAY_STOPS, type GradientStops } from "@/lib/book/print-spec";
 
 const gradientCache = new Map<string, string>();
 
@@ -119,7 +87,7 @@ export function hexToRgbTuple(hex: string): [number, number, number] {
  */
 export async function generateQrDataUrl(color: string): Promise<string> {
   try {
-    return await QRCode.toDataURL("https://meapica.com", {
+    return await QRCode.toDataURL("https://meapica.shop", {
       width: 600,
       margin: 0,
       color: { dark: color, light: "#00000000" },

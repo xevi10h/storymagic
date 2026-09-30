@@ -157,7 +157,7 @@
   background: rgba(255, 255, 255, 0.88);
   box-shadow: 0 1px 2px rgba(44, 24, 16, 0.08), 0 0 0 1px rgba(44, 24, 16, 0.06);
   color: #4a3b32;
-  font-family: var(--font-plus-jakarta), "Plus Jakarta Sans", sans-serif;
+  font-family: "Meapica Print Spaces", var(--font-plus-jakarta), "Plus Jakarta Sans", sans-serif;
   font-size: 12px;
   font-weight: 600;
   line-height: 1;
@@ -354,7 +354,7 @@
   gap: calc(var(--d) * 0.35);
   transform: translate(-50%, -50%) rotate(90deg);
   color: #fff;
-  font-family: var(--font-fredoka), "Fredoka", sans-serif;
+  font-family: "Meapica Print Spaces", var(--font-fredoka), "Fredoka", sans-serif;
   font-weight: 600;
   font-size: calc(var(--d) * 0.4);
   line-height: 1;
@@ -495,7 +495,7 @@
   background: #fdf8f0;
   color: #4a3b32;
   text-align: center;
-  font-family: var(--font-plus-jakarta), "Plus Jakarta Sans", sans-serif;
+  font-family: "Meapica Print Spaces", var(--font-plus-jakarta), "Plus Jakarta Sans", sans-serif;
 }
 
 .backColumn {
@@ -533,7 +533,7 @@
 .backTitle {
   margin: 0;
   width: 92%;
-  font-family: var(--font-fredoka), "Fredoka", sans-serif;
+  font-family: "Meapica Print Spaces", var(--font-fredoka), "Fredoka", sans-serif;
   font-weight: 600;
   font-size: 5.4cqw;
   line-height: 1.18;
@@ -618,7 +618,7 @@
   align-items: center;
   gap: 1.2cqw;
   color: #a1887f;
-  font-family: var(--font-plus-jakarta), "Plus Jakarta Sans", sans-serif;
+  font-family: "Meapica Print Spaces", var(--font-plus-jakarta), "Plus Jakarta Sans", sans-serif;
   font-weight: 600;
   font-size: max(10px, 2.1cqw);
   letter-spacing: 0.02em;
@@ -742,7 +742,7 @@
   top: 7.5cqw;
   text-align: center;
   color: #fff;
-  font-family: var(--font-fredoka), "Fredoka", sans-serif;
+  font-family: "Meapica Print Spaces", var(--font-fredoka), "Fredoka", sans-serif;
   font-weight: 600;
   text-shadow: 0 0.2cqw 1cqw rgba(0, 0, 0, 0.18);
   overflow-wrap: anywhere;
@@ -763,7 +763,7 @@
 
 .coverSubtitle {
   margin-top: 1.4cqw !important;
-  font-family: var(--font-plus-jakarta), "Plus Jakarta Sans", sans-serif;
+  font-family: "Meapica Print Spaces", var(--font-plus-jakarta), "Plus Jakarta Sans", sans-serif;
   font-weight: 400;
   font-size: 1.95cqw;
   letter-spacing: 0.09cqw;

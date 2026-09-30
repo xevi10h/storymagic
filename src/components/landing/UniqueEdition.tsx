@@ -8,7 +8,7 @@ const POINTS = ["written", "painted", "colour", "dedication"] as const;
 
 /**
  * The differentiator, with proof: not a template with a face pasted in. Four
- * real pages of one child's book (Hugo) show the same child painted scene by
+ * real pages of one child's book (Noa) show the same child painted scene by
  * scene, next to the four things that make the book theirs.
  */
 export default function UniqueEdition() {
@@ -24,7 +24,7 @@ export default function UniqueEdition() {
           as="h2"
           id="unique-edition-title"
           eyebrow={t("eyebrow")}
-          subtitle={t("subtitle", { name, age: LANDING_EXAMPLE.age })}
+          subtitle={t("subtitle", { name, age: LANDING_EXAMPLE.age, gender: LANDING_EXAMPLE.gender })}
           className="lg:col-start-2 lg:row-start-1 lg:self-end [&_h2]:text-balance"
         >
           {t("title")}
@@ -82,7 +82,7 @@ export default function UniqueEdition() {
               href={`/ejemplo/${book.storyId}`}
               className="inline-flex min-h-11 items-center text-sm font-semibold text-ink-soft underline decoration-ink-soft/30 underline-offset-2 hover:text-brand-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
             >
-              {t("seeInside", { name })}
+              {t("seeInside", { name, gender: LANDING_EXAMPLE.gender })}
             </Link>
           </div>
         </div>

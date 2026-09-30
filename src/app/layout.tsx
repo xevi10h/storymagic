@@ -35,6 +35,9 @@ export default async function RootLayout({
       data-scroll-behavior="smooth"
     >
       <head>
+        {/* Meta Business domain verification (meapica.shop, meapica.com): both domains serve this app. */}
+        <meta name="facebook-domain-verification" content="xamhnc5w6k5kwarz1luu169unzvup2" />
+        <meta name="facebook-domain-verification" content="z5fupvnf0dmkjlx3uo5mxgkz7df78s" />
         {/* Hides a seasonal banner the visitor closed before first paint (no flash, no shift). */}
         <script dangerouslySetInnerHTML={{ __html: DISMISSED_HEAD_SCRIPT }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />

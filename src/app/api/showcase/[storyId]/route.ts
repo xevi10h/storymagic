@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { toShowcaseUrl } from "@/lib/storage/illustration-refs";
 import { SHOWCASE_STATUSES, showcaseReadClient } from "@/lib/showcase";
+import { planBook } from "@/lib/book/book-plan.server";
+import { planAssetsOf, type BookPlanSource } from "@/lib/book/book-plan";
+import type { GeneratedStory } from "@/lib/ai/story-generator";
+
 
 export async function GET(
   _request: Request,
@@ -54,7 +58,14 @@ export async function GET(
     ill.image_url = toShowcaseUrl(ill.image_url, supabaseUrl);
   }
 
-  return NextResponse.json(story, {
+  // The printed book's plan (same planner + fonts as the sample PDF): the viewer draws exactly these pages.
+  const assets = planAssetsOf(story.generated_text as unknown as GeneratedStory);
+  const book_plan = await planBook(story as unknown as BookPlanSource, {
+    hero: toShowcaseUrl(assets.finalHero?.url ?? null, supabaseUrl),
+    map: assets.mapGame ? toShowcaseUrl(assets.finalMap?.url ?? null, supabaseUrl) : null,
+  });
+
+  return NextResponse.json({ ...story, book_plan }, {
     headers: {
       "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600",
     },

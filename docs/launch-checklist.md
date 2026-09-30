@@ -9,11 +9,11 @@
 > 1. Supabase dashboard (owner, needs owner access): custom SMTP = Resend (`smtp.resend.com:465`,
 >    user `resend`, pass = Resend API key; today it is null → default mailer, 2 emails/h, org members only =
 >    **login is broken for customers until this is done**); Email OTP length 6; manual linking ON;
->    Site URL `https://meapica.com`; redirect allow-list `https://meapica.com/**`, `https://www.meapica.com/**`,
+>    Site URL `https://meapica.shop`; redirect allow-list `https://meapica.shop/**`, `https://www.meapica.shop/**`, `https://meapica.com/**`, `https://www.meapica.com/**`,
 >    `http://localhost:3013/**`; templates "Magic Link" and "Change Email Address" from `supabase/templates/`.
 > 2. Apply migrations 20260930130000 (guest merge), 20260930140000 (order notices), 20260930150000 (admin + retention),
 >    20260930155000 (upsell offers), 20260930156000 (marketing opt-out, suppressions, reminder).
-> 3. Cloudflare → Turnstile: create a Managed widget (hostnames meapica.com, www.meapica.com, localhost).
+> 3. Cloudflare → Turnstile: create a Managed widget (hostnames meapica.shop, www.meapica.shop, meapica.com, www.meapica.com, localhost).
 > 4. Vercel env: `ADMIN_EMAILS=admin@casmar.tech`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY` (build-time), optional
 >    `DAILY_PREVIEW_CAP` (default 300/day, 0 = off); `OPS_ALERT_EMAIL` set. Deploy the code.
 > 5. AFTER the deploy apply 20260930160000 (security hardening; earlier breaks book creation),
@@ -42,7 +42,7 @@
 > - **11 prod env vars had trailing newlines** (Supabase URL/keys, all Stripe
 >   keys, OpenAI/Gemini/Groq/Recraft) — sanitized. This was the root cause of
 >   `\n`-poisoned illustration URLs: **497 DB rows cleaned**, storage.ts trims.
-> - Domain flip: apex `meapica.com` now primary, www → 308 (SEO signals aligned).
+> - Domain flip: apex `meapica.shop` now primary, www → 308 (SEO signals aligned).
 > - Showcase viewer i18n fixed (13 keys ×4 locales); sitemap 228→116 (empty-shell
 >   ejemplo pages out + noindex); functions → fra1; portrait endpoint
 >   rate-limited (session + 10/h user + 30/h IP); legal identity + footer contact.
@@ -53,13 +53,13 @@
 >    top-up.
 > 2. **NIF pending** for the Aviso Legal (user to provide; identity published
 >    without it).
-> 3. (Interim 2026-09-29: prod sends as `Meapica <admin@casmar.tech>` with reply-to admin@casmar.tech — casmar.tech is verified in Resend and has Google MX.) **Resend DNS for meapica.com** — 3 records to add in Spaceship (see 2026-06
+> 3. (Interim 2026-09-29: prod sends as `Meapica <admin@casmar.tech>` with reply-to admin@casmar.tech — casmar.tech is verified in Resend and has Google MX.) **Resend DNS for meapica.shop** — 3 records to add in Spaceship (see 2026-06
 >    notes below), then verify + set EMAIL_FROM.
 > 4. **Sprint 2 (performance)** then **Sprint 3 (conversion/SEO)** —
 >    `docs/web-audit-2026-07-20.md`.
 > 5. ✅ **Fixed 2026-09-29** (webhook re-registered with `?secret=`, test event → 200). Was: **Gelato webhook returns 401 in prod** (Vercel logs 2026-09-28: every event). The URL
 >    registered in Gelato (Developer → Webhooks) lacks `?secret=`. Register
->    `https://meapica.com/api/webhooks/gelato?secret=<GELATO_WEBHOOK_SECRET>` for
+>    `https://meapica.shop/api/webhooks/gelato?secret=<GELATO_WEBHOOK_SECRET>` for
 >    `order_status_updated` + `order_item_tracking_code_updated` (verified: prod answers 200 with it).
 >    Until then the hourly reconciliation in the fulfilment cron keeps status/tracking in sync.
 >    Full e2e passed 2026-09-28 (book generated → test payment → Gelato draft → simulated webhooks → all
@@ -108,7 +108,7 @@
 > - ✅ (superseded 2026-09-28: prod is `live`) ~~`STRIPE_ENVIRONMENT="test\n"`~~ → prod is in Stripe TEST mode; no real payments, and Gelato orders are drafts. Flip to `live` (+ live Stripe keys) at go-live.
 > - 🔴 **FLUX.2 is NOT active in prod** — `BFL_API_KEY` and `ILLUSTRATION_PROVIDER` are **missing** in prod → the generator falls back to the **Recraft** pipeline (RECRAFT_API_TOKEN is set). To run the FLUX.2 visual-bible pipeline in prod, set `ILLUSTRATION_PROVIDER=flux2` + `BFL_API_KEY` (with credits). Otherwise prod ships Recraft illustrations.
 > - ✅ (superseded 2026-09-28: prod is `direct` + `STRIPE_ENVIRONMENT=live`) ~~`GELATO_FULFILLMENT_MODE="owner"`~~ — every book ships to the owner's address (phase-1 manual repackaging). Set `direct` to ship to customers.
-> - 🔴 **Resend `meapica.com` = verification FAILED** — can't send from meapica.com; emails currently send from `constrack.pro` (verified). Fix the DNS records + re-verify, then set `EMAIL_FROM` to a meapica.com address.
+> - 🔴 **Resend `meapica.shop` = verification FAILED** — can't send from meapica.shop; emails currently send from `constrack.pro` (verified). Fix the DNS records + re-verify, then set `EMAIL_FROM` to a meapica.shop address.
 > - ✅ Set: `RESEND_API_KEY`, `GELATO_WEBHOOK_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`, `GEMINI_API_KEY`, `OPENAI_API_KEY`, `RECRAFT_API_TOKEN`, `CRON_SECRET` (added today).
 >
 > **Cost model (live 2026 prices) — see "Unit costs" section at the bottom.**
@@ -142,8 +142,8 @@ Decorative card art for the adventure path. Done: dinosaurs/forest/space (39 eac
 - Fallback (no new vendor): Recraft V3 is already wired (`src/lib/ai/illustrations.ts`), `child_book` style, **270 × $0.04 = $10.80**.
 
 ### 4. Email sender domain not on brand ⚠️
-`EMAIL_FROM` defaults to `Meapica <hola@constrack.pro>` (`src/lib/email/send.ts:13`); `meapica.com` DNS not yet verified in Resend (`docs/technical-architecture.md`). Deliverability + branding risk.
-- **Fix:** add + verify `meapica.com` domain in Resend, set `EMAIL_FROM` to a meapica.com address.
+`EMAIL_FROM` defaults to `Meapica <hola@constrack.pro>` (`src/lib/email/send.ts:13`); `meapica.shop` DNS not yet verified in Resend (`docs/technical-architecture.md`). Deliverability + branding risk.
+- **Fix:** add + verify `meapica.shop` domain in Resend, set `EMAIL_FROM` to a meapica.shop address.
 
 ---
 

@@ -463,7 +463,7 @@ async function runOrderFulfilment(ctx: RunContext): Promise<boolean> {
 
 async function buildCustomerPdf(ctx: RunContext): Promise<void> {
   const input = await buildPdfInput(ctx);
-  const pdf = await renderBookPdf(input);
+  const pdf = await renderBookPdf(input, undefined, { edition: "digital" }); // trim-size reader edition (no bleed)
   const path = await uploadBookPdf(ctx.supabase, ctx.story.user_id, ctx.storyId, pdf);
   const { error } = await ctx.supabase.from("stories").update({ pdf_url: path }).eq("id", ctx.storyId);
   if (error) throw new Error(`Failed to save customer PDF path: ${error.message}`);
