@@ -66,6 +66,9 @@ export type OrderFulfilmentColumns = {
   tracking_email_sent_at: string | null;
   disputed_at: string | null;
   fulfilment_hold_reason: string | null;
+  // 20260930150000_admin_and_retention.sql
+  fulfilment_requeued_at: string | null;
+  gelato_reprint_count: number;
 };
 
 export type FulfilmentDatabase = Omit<Database, "public"> & {

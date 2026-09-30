@@ -31,6 +31,7 @@ const LIMITS: Record<string, RateLimitConfig> = {
   // Per recipient (subject = rateLimitSubject(email)): the relay cannot be aimed at
   // one inbox from many throwaway guest accounts. Rows are kept 24 h (cleanup_old_rate_limits).
   send_preview_recipient: { maxRequests: 3, windowSeconds: 86_400 },
+  delete_account: { maxRequests: 5, windowSeconds: 3600 },      // 5 erasure attempts per hour
 };
 
 /**

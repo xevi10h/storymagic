@@ -4,9 +4,9 @@
 import { notifyOrderEmail } from "@/lib/email/notify-order";
 import type { OrderEmailEvent } from "@/lib/email/order-emails";
 import type { FulfilmentClient } from "./db";
-import { alertOperator } from "./alerts";
+import { adminOrderUrl, alertOperator } from "./alerts";
 import { sendOrderEmailOnce } from "./emails";
-import { decideGelatoTransition, shouldSendTrackingUpdate } from "./logic";
+import { decideGelatoTransition, parseGelatoOrderReference, shouldSendTrackingUpdate } from "./logic";
 
 // Internal order status → customer email event. "paid" has no email (manual review).
 const STATUS_EMAIL: Record<string, OrderEmailEvent | undefined> = {
@@ -19,8 +19,6 @@ export interface TrackingInfo {
   trackingNumber?: string | null;
   trackingUrl?: string | null;
 }
-
-const REFERENCE_PREFIX = "meapica-";
 
 /**
  * Transitions are ranked (paid < producing < shipped < delivered): a late or
@@ -85,7 +83,8 @@ export async function applyGelatoStatus(
           `Local order ${order.id} (story ${order.story_id}) stays at '${order.status}'.`,
           decision.kind === "attention"
             ? "Gelato paused it and is waiting for us: open the order in the Gelato dashboard and approve / resolve it, or the book never prints."
-            : "Check the order in the Gelato dashboard. To re-submit, clear orders.gelato_order_id and set status back to 'paid' — the cron will send a new order.",
+            : "Check the order in the Gelato dashboard. To send it again, use \"Reenviar a Gelato / reimprimir\" in the admin panel (it creates a new Gelato order).",
+          `Admin: ${adminOrderUrl(order.id)}`,
         ],
         dedupeSeconds: 24 * 3600,
       });
@@ -163,12 +162,18 @@ async function handleUnknownGelatoOrder(
   gelatoStatus: string,
   orderReferenceId: string | undefined,
 ): Promise<void> {
-  const localId = orderReferenceId?.startsWith(REFERENCE_PREFIX) ? orderReferenceId.slice(REFERENCE_PREFIX.length) : null;
-  const { data: parent } = localId
-    ? await supabase.from("orders").select("id, gelato_order_id").eq("id", localId).maybeSingle()
+  // "meapica-{id}" or, for a reprint, "meapica-{id}-r{n}".
+  const ref = parseGelatoOrderReference(orderReferenceId);
+  const { data: parent } = ref
+    ? await supabase.from("orders").select("id, gelato_order_id, gelato_reprint_count").eq("id", ref.orderId).maybeSingle()
     : { data: null };
   if (!parent?.gelato_order_id || parent.gelato_order_id === gelatoOrderId) {
     console.warn(`[gelato-status] No order found for gelato_order_id ${gelatoOrderId}`);
+    return;
+  }
+  if (ref && ref.reprint !== (parent.gelato_reprint_count ?? 0)) {
+    // A Gelato order an operator replaced with a reprint (/admin): its events no longer drive our order.
+    console.log(`[gelato-status] Ignoring ${gelatoStatus} for superseded Gelato order ${gelatoOrderId} (${orderReferenceId})`);
     return;
   }
   await alertOperator(supabase, {

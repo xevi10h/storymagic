@@ -42,12 +42,13 @@ import { GelatoApiError } from "@/lib/gelato/client";
 import { notifyOrderEmail } from "@/lib/email/notify-order";
 import { getSiteUrl } from "@/lib/email/send";
 import type { FulfilmentClient, FulfilmentDatabase } from "./db";
-import { alertOperator, alertProviderUnavailable } from "./alerts";
+import { adminOrderUrl, alertOperator, alertProviderUnavailable } from "./alerts";
 import { sendOrderEmailOnce } from "./emails";
 import { classifyProviderError } from "./provider-errors";
 import { cancelGelatoForRefund } from "./payments";
 import {
   backoffMs,
+  gelatoOrderReference,
   GELATO_ALERT_AFTER_ATTEMPTS,
   GELATO_MAX_ATTEMPTS,
   isAdoptableGelatoOrder,
@@ -541,7 +542,8 @@ async function fulfilPhysicalOrder(ctx: RunContext, order: OrderRow): Promise<Or
       subject: `Order ${order.id} ships to an excluded area (postcode ${postcode}) — NOT sent to print`,
       lines: [
         `Story ${ctx.storyId} · format ${order.format} · ${order.customer_email ?? "no email"}`,
-        "Canarias/Ceuta/Melilla are not served. Contact the customer: refund the printed part in Stripe (they keep the PDF) or get a mainland address, then reset orders.gelato_submit_attempts = 0.",
+        "Canarias/Ceuta/Melilla are not served. Contact the customer: refund the printed part in Stripe (they keep the PDF) or get a mainland address (update orders.shipping_address), then use \"Reenviar a Gelato\" in the admin panel.",
+        `Admin: ${adminOrderUrl(order.id)}`,
       ],
       dedupeSeconds: 7 * 24 * 3600,
     });
@@ -659,7 +661,7 @@ function buildShippingAddress(order: OrderRow) {
 
 async function submitToGelato(ctx: RunContext, order: OrderRow): Promise<OrderStepResult> {
   const { supabase } = ctx;
-  const orderReferenceId = `meapica-${order.id}`;
+  const orderReferenceId = gelatoOrderReference(order.id, order.gelato_reprint_count);
 
   // Claim this attempt (compare-and-set on the attempt counter; the story lease
   // already serializes runs, this also guards any out-of-band caller).
@@ -803,8 +805,9 @@ async function recordGelatoFailure(
         `Story: ${ctx.storyId} · format: ${order.format}`,
         `Error: ${message.slice(0, 800)}`,
         gaveUp
-          ? "The order stays 'paid'. Fix the cause, then reset orders.gelato_submit_attempts = 0 (and print_files_validated_at = NULL if files must be rebuilt) to retry."
+          ? "The order stays 'paid'. Fix the cause, then use \"Reenviar a Gelato\" in the admin panel (tick \"regenerar ficheros de impresión\" if the print files must be rebuilt)."
           : `Next automatic retry in ~${Math.round(backoffMs(countedAttempts) / 60_000)} min.`,
+        `Admin: ${adminOrderUrl(order.id)}`,
       ],
       dedupeSeconds: 6 * 3600,
     });

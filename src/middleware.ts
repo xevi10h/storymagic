@@ -12,6 +12,15 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Operator panel: English, unlocalized, outside the waitlist gate. Access is
+  // decided server-side (ADMIN_EMAILS → otherwise 404); never indexed or cached.
+  if (request.nextUrl.pathname === "/admin" || request.nextUrl.pathname.startsWith("/admin/")) {
+    const res = NextResponse.next();
+    res.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
+    res.headers.set("Cache-Control", "private, no-store");
+    return res;
+  }
+
   // Dev-only "?now=YYYY-MM-DD": forward it as a request header so server
   // components (the seasonal banner in Navbar) render that day too. next-intl
   // passes the request headers through to the page.
