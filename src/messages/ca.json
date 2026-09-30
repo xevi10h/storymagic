@@ -1404,6 +1404,10 @@
     "withdrawal": {
       "label": "Accepto rebre el PDF quan estigui llest i entenc que, com que és un llibre fet a mida, no tinc dret de desistiment.",
       "required": "Marca la casella per continuar amb el pagament."
+    },
+    "marketingOptOut": {
+      "label": "No vull rebre ofertes sobre els meus llibres per correu",
+      "note": "De tant en tant et podem escriure amb alguna oferta sobre els teus llibres. Et pots donar de baixa quan vulguis."
     }
   },
   "data": {
@@ -2434,5 +2438,25 @@
       "createCta": "Crea el teu propi conte",
       "home": "Anar a Meapica"
     }
+  },
+  "unsubscribe": {
+    "metaTitle": "Donar-se de baixa de les ofertes",
+    "confirm": {
+      "title": "Deixem d'enviar-te ofertes?",
+      "body": "No tornarem a escriure a {email} amb ofertes sobre els teus llibres.",
+      "transactional": "Continuaràs rebent els correus de les teves comandes: confirmació, llibre llest i enviament.",
+      "button": "Sí, donar-me de baixa"
+    },
+    "done": {
+      "title": "Fet, t'hem donat de baixa",
+      "body": "No enviarem més ofertes a {email}.",
+      "transactional": "Els correus de les teves comandes et continuaran arribant."
+    },
+    "invalid": {
+      "title": "Aquest enllaç no funciona",
+      "body": "Potser s'ha tallat en copiar-lo. Escriu-nos a <mail></mail> i et donem de baixa nosaltres."
+    },
+    "error": "No t'hem pogut donar de baixa ara. Torna-ho a provar o escriu-nos a <mail></mail>.",
+    "backHome": "Anar a Meapica"
   }
 }

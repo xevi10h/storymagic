@@ -108,3 +108,68 @@ export function offerCatalogItem(offer: UpsellOffer, format: UpsellFormat): Offe
 export function isUpsellOffer(value: unknown): value is UpsellOffer {
   return typeof value === "string" && (UPSELL_OFFERS as readonly string[]).includes(value);
 }
+
+// ── PDF → papel reminder email (owner decision 2026-09-30) ─────────────────────
+// ONE commercial email per PDF order, 7 days after its book_ready email, only while
+// the upgrade is still on offer for that story and the buyer may receive offers
+// (LSSI 21.2: opt-out offered at checkout and not ticked, address not suppressed).
+// A run that misses the day still sends up to REMINDER_CATCH_UP_DAYS later; older
+// orders are skipped for good (a first deploy never mails months-old customers).
+
+export const UPGRADE_REMINDER_DELAY_DAYS = 7;
+export const REMINDER_CATCH_UP_DAYS = 3;
+
+export interface ReminderOrderRow extends UpsellOrderRow {
+  customer_email: string | null;
+  /** When book_ready went out (the PDF became available to the buyer). */
+  ready_email_sent_at: string | null;
+  /** true = ticked "no offers", false = did not, null = ordered before the opt-out existed. */
+  marketing_opt_out: boolean | null;
+  upsell_reminder_sent_at: string | null;
+}
+
+export type ReminderSkipReason =
+  | "not_pdf"
+  | "detached"
+  | "no_email"
+  | "not_live"
+  | "already_sent"
+  | "opted_out"
+  | "suppressed"
+  | "not_ready"
+  | "too_early"
+  | "too_late"
+  | "offer_gone";
+
+export type ReminderDecision = { send: true } | { send: false; reason: ReminderSkipReason };
+
+/**
+ * Should this PDF order get the upgrade reminder now? `storyOrders` = the buyer's
+ * orders of the same story (a printed copy bought since, or a refund, ends the offer).
+ */
+export function upgradeReminderDecision(
+  order: ReminderOrderRow,
+  storyOrders: readonly UpsellOrderRow[],
+  opts: { now: number; upgradeAvailable: boolean; suppressed: boolean },
+): ReminderDecision {
+  if (order.format !== "digital_pdf") return { send: false, reason: "not_pdf" };
+  if (!order.user_id || !order.story_id) return { send: false, reason: "detached" };
+  if (!order.customer_email?.trim()) return { send: false, reason: "no_email" };
+  if (!isLive(order)) return { send: false, reason: "not_live" };
+  if (order.upsell_reminder_sent_at) return { send: false, reason: "already_sent" };
+  if (order.marketing_opt_out !== false) return { send: false, reason: "opted_out" };
+  if (opts.suppressed) return { send: false, reason: "suppressed" };
+  const readyAt = order.ready_email_sent_at ? Date.parse(order.ready_email_sent_at) : NaN;
+  if (!Number.isFinite(readyAt)) return { send: false, reason: "not_ready" };
+  const due = readyAt + UPGRADE_REMINDER_DELAY_DAYS * DAY_MS;
+  if (opts.now < due) return { send: false, reason: "too_early" };
+  if (opts.now >= due + REMINDER_CATCH_UP_DAYS * DAY_MS) return { send: false, reason: "too_late" };
+  const offer = upsellForStory([order, ...storyOrders.filter((o) => o.id !== order.id)], {
+    userId: order.user_id,
+    storyId: order.story_id,
+    now: opts.now,
+    upgradeAvailable: opts.upgradeAvailable,
+  });
+  if (offer?.offer !== "pdf_upgrade") return { send: false, reason: "offer_gone" };
+  return { send: true };
+}

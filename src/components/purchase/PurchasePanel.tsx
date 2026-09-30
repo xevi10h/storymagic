@@ -17,6 +17,7 @@ import {
 } from "@/lib/pricing";
 import { useDeliveryLine, useSeasonNotice } from "./delivery";
 import { Spinner } from "@/components/ui/Spinner";
+import { MarketingOptOut } from "./MarketingOptOut";
 
 /**
  * The PDF is sold as a text link under the two printed options ("¿Solo el PDF?"),
@@ -45,6 +46,9 @@ interface PurchasePanelProps {
   consent: boolean;
   consentState: ConsentState;
   onConsentChange: (checked: boolean) => void;
+  /** "No quiero recibir ofertas…" (LSSI 21.2 opt-out at collection), never pre-ticked. */
+  marketingOptOut: boolean;
+  onMarketingOptOutChange: (checked: boolean) => void;
   checkingOut: boolean;
   checkoutError: string | null;
   onCheckout: () => void;
@@ -80,6 +84,8 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
     consent,
     consentState,
     onConsentChange,
+    marketingOptOut,
+    onMarketingOptOutChange,
     checkingOut,
     checkoutError,
     onCheckout,
@@ -289,6 +295,7 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
           {tPricing("withdrawal.required")}
         </p>
       )}
+      <MarketingOptOut checked={marketingOptOut} onChange={onMarketingOptOutChange} className="mt-2.5" />
 
       <button
         ref={ctaRef}

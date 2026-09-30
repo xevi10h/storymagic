@@ -128,6 +128,8 @@ export default function PreviewPage() {
   const [formatChosen, setFormatChosen] = useState(false);
   // Express consent to lose the withdrawal right (art. 103 c + m LGDCU): never pre-ticked.
   const [withdrawalConsent, setWithdrawalConsent] = useState(false);
+  // LSSI 21.2 opt-out at collection: unticked by default.
+  const [marketingOptOut, setMarketingOptOut] = useState(false);
   const [consentState, setConsentState] = useState<ConsentState>("idle");
   const [editPanel, setEditPanel] = useState<EditPanel | null>(null);
   const isWide = useIsWide();
@@ -368,6 +370,7 @@ export default function PreviewPage() {
           addons: Array.from(addons),
           locale,
           withdrawalConsent: true,
+          marketingOptOut,
         }),
       });
 
@@ -394,7 +397,7 @@ export default function PreviewPage() {
       );
       setCheckingOut(false);
     }
-  }, [storyId, format, addons, locale, withdrawalConsent, t, scrollToConsent]);
+  }, [storyId, format, addons, locale, withdrawalConsent, marketingOptOut, t, scrollToConsent]);
 
   // Mobile sticky bar: formats first; once chosen, the consent line (softly, never
   // the red error), then straight to Stripe.
@@ -657,6 +660,8 @@ export default function PreviewPage() {
                   setWithdrawalConsent(checked);
                   if (checked) setConsentState("idle");
                 }}
+                marketingOptOut={marketingOptOut}
+                onMarketingOptOutChange={setMarketingOptOut}
                 checkingOut={checkingOut}
                 checkoutError={checkoutError}
                 onCheckout={() => void handleCheckout()}

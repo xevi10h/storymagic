@@ -10,6 +10,7 @@ import { sendOrderEmailOnce } from "./emails";
 import { orderReference, type OrderReceipt } from "@/lib/email/order-emails";
 import { catalogItemByLookupKey } from "@/lib/pricing";
 import { decideFullRefund } from "./logic";
+import { suppressEmail } from "@/lib/marketing/suppression";
 import type { FulfilmentClient, FulfilmentDatabase } from "./db";
 
 type OrderRow = FulfilmentDatabase["public"]["Tables"]["orders"]["Row"];
@@ -93,7 +94,7 @@ export async function recordPaidSession(
     })
     .eq("stripe_checkout_session_id", session.id)
     .eq("status", "pending")
-    .select("id, story_id, user_id, format");
+    .select("id, story_id, user_id, format, marketing_opt_out");
   if (error) throw new Error(`Failed to update order for session ${session.id}: ${error.message}`);
 
   let order = flipped?.[0];
@@ -102,7 +103,7 @@ export async function recordPaidSession(
     // Already paid (a retry, or the other caller won the race) — or closed.
     const { data: existing, error: readErr } = await supabase
       .from("orders")
-      .select("id, story_id, user_id, format, status, customer_email, invoice_url")
+      .select("id, story_id, user_id, format, status, customer_email, invoice_url, marketing_opt_out")
       .eq("stripe_checkout_session_id", session.id)
       .maybeSingle();
     if (readErr) throw new Error(`Failed to read order for session ${session.id}: ${readErr.message}`);
@@ -126,6 +127,17 @@ export async function recordPaidSession(
     if (!existing.invoice_url && invoiceUrl) backfill.invoice_url = invoiceUrl;
     if (Object.keys(backfill).length > 0) await supabase.from("orders").update(backfill).eq("id", existing.id);
     order = existing;
+  }
+
+  // Checkout opt-out ("No quiero recibir ofertas…"): the order flag already keeps offers
+  // out of this order's emails; the suppression list extends it to the address (other
+  // orders, the reminder). Idempotent. A failure is logged, never blocks the payment.
+  if (order.marketing_opt_out === true && customerEmail) {
+    try {
+      await suppressEmail(supabase, customerEmail, "checkout_opt_out", `order:${order.id}`);
+    } catch (err) {
+      console.error(`[payments] Could not record the marketing opt-out of order ${order.id}:`, err instanceof Error ? err.message : err);
+    }
   }
 
   // Confirmation email (with receipt) for EVERY format, exactly once across webhook + verify.

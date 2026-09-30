@@ -90,6 +90,12 @@ export interface OrderEmailContext {
    * upgrade in book_ready of a PDF order, the extra copy in delivered.
    */
   upsell?: { offer: UpsellOffer; expiresAt: string | null } | null;
+  /**
+   * Unsubscribe page for this recipient. The offer block is commercial content
+   * (LSSI 21.2): it is only rendered together with this link, and the caller only
+   * passes it when the recipient may receive offers (src/lib/marketing/suppression.ts).
+   */
+  unsubscribeUrl?: string | null;
 }
 
 // Short, stable order reference shown to the customer (shared with the library UI).
@@ -131,6 +137,13 @@ interface UpsellStrings {
   cta: string;
 }
 
+interface OfferOptOutStrings {
+  /** "¿No quieres recibir ofertas?" */
+  lead: string;
+  /** "Date de baja" (the link) */
+  link: string;
+}
+
 interface Strings {
   greeting: (firstName: string | null) => string;
   signoff: string;
@@ -142,6 +155,7 @@ interface Strings {
   withdrawalConfirmation: string;
   receipt: ReceiptStrings;
   upsell: Record<UpsellOffer, UpsellStrings>;
+  offerOptOut: OfferOptOutStrings;
   events: Record<OrderEmailEvent, NoticeEventStrings>;
 }
 
@@ -194,6 +208,7 @@ const CONTENT: Record<Locale, Strings> = {
         cta: "Pedir otro ejemplar",
       },
     },
+    offerOptOut: { lead: "¿No quieres recibir ofertas?", link: "Date de baja" },
     events: {
       order_confirmed: {
         subject: (c) => `Pedido confirmado: ${c.bookTitle}`,
@@ -304,6 +319,7 @@ const CONTENT: Record<Locale, Strings> = {
         cta: "Demanar un altre exemplar",
       },
     },
+    offerOptOut: { lead: "No vols rebre ofertes?", link: "Dona't de baixa" },
     events: {
       order_confirmed: {
         subject: (c) => `Comanda confirmada: ${c.bookTitle}`,
@@ -414,6 +430,7 @@ const CONTENT: Record<Locale, Strings> = {
         cta: "Order another copy",
       },
     },
+    offerOptOut: { lead: "Rather not get offers?", link: "Unsubscribe" },
     events: {
       order_confirmed: {
         subject: (c) => `Order confirmed: ${c.bookTitle}`,
@@ -524,6 +541,7 @@ const CONTENT: Record<Locale, Strings> = {
         cta: "Commander un autre exemplaire",
       },
     },
+    offerOptOut: { lead: "Vous ne souhaitez pas recevoir d'offres\u00a0?", link: "Désabonnez-vous" },
     events: {
       order_confirmed: {
         subject: (c) => `Commande confirmée : ${c.bookTitle}`,
@@ -700,7 +718,8 @@ function renderUpsell(
   url: string,
 ): { html: string; text: string } | null {
   const u = ctx.upsell;
-  if (!u) return null;
+  // Commercial content never goes out without its unsubscribe link (LSSI 21.2).
+  if (!u || !ctx.unsubscribeUrl) return null;
   const fits =
     (event === "book_ready" && u.offer === "pdf_upgrade" && !ctx.isPhysical) ||
     (event === "delivered" && u.offer === "extra_copy_repeat" && !!u.expiresAt);
@@ -720,14 +739,20 @@ function renderUpsell(
     <p style="margin:0 0 6px;font-size:16px;font-weight:700;color:${C.heading};">${escapeHtml(copy.title)}</p>
     <p style="margin:0 0 12px;font-size:14px;line-height:1.6;color:${C.body};">${bodyHtml}</p>
     <a href="${escapeHtml(url)}" style="font-size:15px;font-weight:700;color:${C.primaryText};text-decoration:underline;">${escapeHtml(copy.cta)}</a>
+    <p style="margin:14px 0 0;font-size:12px;line-height:1.5;color:${C.muted};">${escapeHtml(s.offerOptOut.lead)} <a href="${escapeHtml(ctx.unsubscribeUrl)}" style="color:${C.muted};text-decoration:underline;">${escapeHtml(s.offerOptOut.link)}</a></p>
   </div>`;
-  return { html, text: `${copy.title}\n${body}\n${copy.cta}: ${url}` };
+  return {
+    html,
+    text: `${copy.title}\n${body}\n${copy.cta}: ${url}\n${s.offerOptOut.lead} ${s.offerOptOut.link}: ${ctx.unsubscribeUrl}`,
+  };
 }
 
 export interface BuiltEmail {
   subject: string;
   html: string;
   text: string;
+  /** The email carries commercial content (an offer block): send List-Unsubscribe. */
+  commercial?: boolean;
 }
 
 /** Build a localized order-lifecycle email (HTML + text alternative). */
@@ -799,5 +824,6 @@ export function buildOrderEmail(event: OrderEmailEvent, ctx: OrderEmailContext):
     subject: ev.subject(ctx),
     html,
     text: textLines.join("\n\n"),
+    commercial: !!upsell,
   };
 }

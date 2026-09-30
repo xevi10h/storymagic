@@ -22,6 +22,8 @@ const COLORS = EMAIL_COLORS;
 export interface EmailLayoutParams {
   /** Big title at the top of the card */
   heading: string;
+  /** Small label above the heading (e.g. "Oferta" on commercial email, LSSI art. 20.1) */
+  kicker?: string;
   /** Optional greeting line (e.g. "Hola Marc,") */
   greeting?: string;
   /** Body paragraphs — each string becomes its own <p> */
@@ -36,6 +38,8 @@ export interface EmailLayoutParams {
   signoff: string;
   /** Document language attribute */
   lang: string;
+  /** Small print under the card (raw HTML), e.g. why we write + unsubscribe link */
+  footerNoteHtml?: string;
 }
 
 /** Escape user-provided text for safe HTML interpolation. */
@@ -51,7 +55,14 @@ export function escapeHtml(value: string): string {
 /** Render the branded HTML shell. Returns a full HTML document string. */
 export function renderEmailLayout(params: EmailLayoutParams): string {
   const site = getSiteUrl();
-  const { heading, greeting, paragraphs, cta, detailsHtml, infoHtml, signoff, lang } = params;
+  const { heading, kicker, greeting, paragraphs, cta, detailsHtml, infoHtml, signoff, lang, footerNoteHtml } = params;
+
+  const kickerHtml = kicker
+    ? `<p style="margin:0 0 6px;font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:${COLORS.primaryText};">${kicker}</p>`
+    : "";
+  const footerNote = footerNoteHtml
+    ? `<p style="margin:0 0 12px;font-size:12px;line-height:1.6;color:${COLORS.muted};">${footerNoteHtml}</p>`
+    : "";
 
   const greetingHtml = greeting
     ? `<p style="margin:0 0 20px;font-size:16px;color:${COLORS.body};">${greeting}</p>`
@@ -87,7 +98,7 @@ export function renderEmailLayout(params: EmailLayoutParams): string {
           <img src="${site}/images/meapica-logo.png" alt="Meapica" height="36" style="height:36px;width:auto;" />
         </td></tr>
         <tr><td style="background-color:${COLORS.card};border-radius:16px;padding:40px 36px;box-shadow:0 2px 12px rgba(44,24,16,0.06);">
-          <h1 style="margin:0 0 8px;font-size:26px;color:${COLORS.heading};font-weight:700;">${heading}</h1>
+          ${kickerHtml}<h1 style="margin:0 0 8px;font-size:26px;color:${COLORS.heading};font-weight:700;">${heading}</h1>
           ${greetingHtml}
           ${paragraphsHtml}
           ${ctaHtml}
@@ -98,7 +109,7 @@ export function renderEmailLayout(params: EmailLayoutParams): string {
           </div>
         </td></tr>
         <tr><td style="padding-top:24px;text-align:center;">
-          <p style="margin:0;font-size:12px;color:${COLORS.muted};">&copy; 2026 Meapica. meapica.com</p>
+          ${footerNote}<p style="margin:0;font-size:12px;color:${COLORS.muted};">&copy; 2026 Meapica. meapica.com</p>
         </td></tr>
       </table>
     </td></tr>

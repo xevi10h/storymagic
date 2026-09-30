@@ -1394,6 +1394,10 @@
     "withdrawal": {
       "label": "Acepto recibir el PDF en cuanto esté listo y entiendo que, al ser un libro hecho a medida, no tengo derecho de desistimiento.",
       "required": "Marca la casilla para continuar con el pago."
+    },
+    "marketingOptOut": {
+      "label": "No quiero recibir ofertas sobre mis libros por email",
+      "note": "De vez en cuando podemos escribirte con alguna oferta sobre tus libros. Puedes darte de baja cuando quieras."
     }
   },
   "data": {
@@ -2424,5 +2428,25 @@
       "createCta": "Crea tu propio cuento",
       "home": "Ir a Meapica"
     }
+  },
+  "unsubscribe": {
+    "metaTitle": "Darse de baja de las ofertas",
+    "confirm": {
+      "title": "¿Dejamos de enviarte ofertas?",
+      "body": "No volveremos a escribir a {email} con ofertas sobre tus libros.",
+      "transactional": "Seguirás recibiendo los correos de tus pedidos: confirmación, libro listo y envío.",
+      "button": "Sí, darme de baja"
+    },
+    "done": {
+      "title": "Listo, te hemos dado de baja",
+      "body": "No enviaremos más ofertas a {email}.",
+      "transactional": "Los correos de tus pedidos te seguirán llegando."
+    },
+    "invalid": {
+      "title": "Este enlace no funciona",
+      "body": "Puede que se haya cortado al copiarlo. Escríbenos a <mail></mail> y te damos de baja nosotros."
+    },
+    "error": "No hemos podido darte de baja ahora. Prueba otra vez o escríbenos a <mail></mail>.",
+    "backHome": "Ir a Meapica"
   }
 }

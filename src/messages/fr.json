@@ -1404,6 +1404,10 @@
     "withdrawal": {
       "label": "J'accepte de recevoir le PDF dès qu'il est prêt et je comprends que, s'agissant d'un livre sur mesure, je n'ai pas de droit de rétractation.",
       "required": "Cochez la case pour continuer vers le paiement."
+    },
+    "marketingOptOut": {
+      "label": "Je ne souhaite pas recevoir d'offres sur mes livres par e-mail",
+      "note": "De temps en temps, nous pouvons vous écrire avec une offre sur vos livres. Vous pouvez vous désabonner à tout moment."
     }
   },
   "data": {
@@ -2434,5 +2438,25 @@
       "createCta": "Créez votre propre histoire",
       "home": "Aller sur Meapica"
     }
+  },
+  "unsubscribe": {
+    "metaTitle": "Se désabonner des offres",
+    "confirm": {
+      "title": "On arrête de vous envoyer des offres ?",
+      "body": "Nous n'écrirons plus à {email} avec des offres sur vos livres.",
+      "transactional": "Vous continuerez à recevoir les e-mails de vos commandes : confirmation, livre prêt et expédition.",
+      "button": "Oui, me désabonner"
+    },
+    "done": {
+      "title": "C'est fait, vous êtes désabonné",
+      "body": "Nous n'enverrons plus d'offres à {email}.",
+      "transactional": "Les e-mails de vos commandes continueront de vous parvenir."
+    },
+    "invalid": {
+      "title": "Ce lien ne fonctionne pas",
+      "body": "Il a peut-être été coupé lors de la copie. Écrivez-nous à <mail></mail> et nous vous désabonnerons nous-mêmes."
+    },
+    "error": "Nous n'avons pas pu vous désabonner pour le moment. Réessayez ou écrivez-nous à <mail></mail>.",
+    "backHome": "Aller sur Meapica"
   }
 }

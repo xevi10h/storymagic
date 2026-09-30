@@ -72,6 +72,9 @@ export type OrderFulfilmentColumns = {
   // 20260930155000_upsell_offers.sql
   offer: "pdf_upgrade" | "extra_copy_repeat" | null;
   offer_source_order_id: string | null;
+  // 20260930156000_marketing_email.sql (null = ordered before the opt-out existed)
+  marketing_opt_out: boolean | null;
+  upsell_reminder_sent_at: string | null;
 };
 
 export type FulfilmentDatabase = Omit<Database, "public"> & {
@@ -85,6 +88,13 @@ export type FulfilmentDatabase = Omit<Database, "public"> & {
         Row: { day: string; count: number; updated_at: string };
         Insert: { day: string; count?: number; updated_at?: string };
         Update: { day?: string; count?: number; updated_at?: string };
+        Relationships: [];
+      };
+      // 20260930156000_marketing_email.sql
+      email_suppressions: {
+        Row: { id: string; email: string; reason: "unsubscribed" | "checkout_opt_out"; source: string | null; created_at: string };
+        Insert: { id?: string; email: string; reason: "unsubscribed" | "checkout_opt_out"; source?: string | null; created_at?: string };
+        Update: { id?: string; email?: string; reason?: "unsubscribed" | "checkout_opt_out"; source?: string | null; created_at?: string };
         Relationships: [];
       };
     };

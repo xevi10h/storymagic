@@ -31,6 +31,8 @@ export interface SendEmailParams {
   text: string;
   /** Optional reply-to override */
   replyTo?: string;
+  /** Extra MIME headers (Resend `headers`), e.g. List-Unsubscribe on commercial content */
+  headers?: Record<string, string>;
 }
 
 /**
@@ -61,6 +63,7 @@ export async function sendEmail(params: SendEmailParams): Promise<boolean> {
         html: params.html,
         text: params.text,
         ...(replyTo ? { reply_to: replyTo } : {}),
+        ...(params.headers && Object.keys(params.headers).length > 0 ? { headers: params.headers } : {}),
       }),
     });
 

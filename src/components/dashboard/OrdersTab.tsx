@@ -3,6 +3,7 @@
 import { useId, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import Sheet from "@/components/crear/Sheet";
+import { MarketingOptOut } from "@/components/purchase/MarketingOptOut";
 import { Button, buttonClass, cx } from "@/components/ui";
 import { formatPrice, offerPrice, PRICING, STRIPE_CATALOG, type PhysicalFormat } from "@/lib/pricing";
 import { orderReference, orderView, PRINT_STEPS, type OrderView } from "@/lib/order-view";
@@ -517,6 +518,7 @@ export function ReorderSheet({
   }
   const [consent, setConsent] = useState(false);
   const [consentMissing, setConsentMissing] = useState(false);
+  const [marketingOptOut, setMarketingOptOut] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const groupId = useId();
@@ -525,6 +527,7 @@ export function ReorderSheet({
     if (busy) return;
     setConsent(false);
     setConsentMissing(false);
+    setMarketingOptOut(false);
     setError(null);
     onClose();
   }
@@ -541,7 +544,7 @@ export function ReorderSheet({
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ storyId, format, addons: [], locale, withdrawalConsent: true }),
+        body: JSON.stringify({ storyId, format, addons: [], locale, withdrawalConsent: true, marketingOptOut }),
       });
       const data = (await res.json().catch(() => ({}))) as { url?: string };
       if (!res.ok || !data.url) throw new Error(`checkout_${res.status}`);
@@ -655,6 +658,7 @@ export function ReorderSheet({
           {tPricing("withdrawal.required")}
         </p>
       )}
+      <MarketingOptOut checked={marketingOptOut} onChange={setMarketingOptOut} className="mt-2.5" />
     </Sheet>
   );
 }

@@ -1394,6 +1394,10 @@
     "withdrawal": {
       "label": "I agree to receive the PDF as soon as it is ready and understand that, as a made-to-order book, it has no right of withdrawal.",
       "required": "Tick the box to continue to payment."
+    },
+    "marketingOptOut": {
+      "label": "I don't want offers about my books by email",
+      "note": "Now and then we may email you an offer about your books. You can unsubscribe at any time."
     }
   },
   "data": {
@@ -2424,5 +2428,25 @@
       "createCta": "Create your own story",
       "home": "Go to Meapica"
     }
+  },
+  "unsubscribe": {
+    "metaTitle": "Unsubscribe from offers",
+    "confirm": {
+      "title": "Stop sending you offers?",
+      "body": "We won't email {email} with offers about your books again.",
+      "transactional": "You'll still get the emails about your orders: confirmation, book ready and shipping.",
+      "button": "Yes, unsubscribe me"
+    },
+    "done": {
+      "title": "Done, you're unsubscribed",
+      "body": "We won't send any more offers to {email}.",
+      "transactional": "Emails about your orders will still reach you."
+    },
+    "invalid": {
+      "title": "This link doesn't work",
+      "body": "It may have been cut when copied. Write to <mail></mail> and we'll unsubscribe you ourselves."
+    },
+    "error": "We couldn't unsubscribe you just now. Try again or write to <mail></mail>.",
+    "backHome": "Go to Meapica"
   }
 }

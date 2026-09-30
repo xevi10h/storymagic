@@ -33,6 +33,8 @@ export async function POST(request: Request) {
       addons?: unknown[];
       locale?: string;
       withdrawalConsent?: boolean;
+      /** "No quiero recibir ofertas…" ticked (LSSI 21.2 opt-out at collection). */
+      marketingOptOut?: boolean;
     };
     const { storyId, format } = body;
     const addonIds = Array.isArray(body.addons) ? body.addons : [];
@@ -151,6 +153,8 @@ export async function POST(request: Request) {
         status: "pending",
         withdrawal_consent_at: new Date().toISOString(),
         withdrawal_consent_version: plan.consentVersion,
+        // Only an explicit tick opts out; the box was shown on every checkout (false = offered, not ticked).
+        marketing_opt_out: body.marketingOptOut === true,
         offer: plan.offer?.offer ?? null,
         offer_source_order_id: plan.offer?.sourceOrderId ?? null,
       },
