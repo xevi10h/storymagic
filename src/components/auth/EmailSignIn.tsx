@@ -7,6 +7,7 @@ import { Button, Eyebrow, Spinner, cx, focusRing } from "@/components/ui";
 import { authErrorKey, isExistingAccountError, type AuthErrorKey } from "@/lib/auth/auth-errors";
 import { localizedPath, sanitizeNextPath } from "@/lib/auth/next-path";
 import { SUPPORT_EMAIL } from "@/lib/support";
+import { getCaptchaToken } from "@/lib/captcha/turnstile";
 
 export type SignInStep = "email" | "code";
 
@@ -113,9 +114,11 @@ export default function EmailSignIn({ next, initialEmail = "", initialError = nu
       }
       // The email already has an account: log in to it, the guest's books follow.
     }
+    // Supabase CAPTCHA protection checks /otp (not /verify, PUT /user or OAuth).
+    const captchaToken = await getCaptchaToken({ prompt: t("captcha.prompt"), cancel: t("captcha.cancel"), locale });
     const { error: otpError } = await supabase.auth.signInWithOtp({
       email: address,
-      options: { emailRedirectTo: confirmUrl(), shouldCreateUser: true, data: { locale } },
+      options: { emailRedirectTo: confirmUrl(), shouldCreateUser: true, data: { locale }, captchaToken },
     });
     if (otpError) {
       setError(authErrorKey(otpError));
@@ -254,7 +257,7 @@ export default function EmailSignIn({ next, initialEmail = "", initialError = nu
   const errorBox = error && (
     <div id={ids.error} role="alert" className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm leading-relaxed text-red-700">
       <p>{t(`errors.${error}`)}</p>
-      {(error === "generic" || error === "emailSendFailed" || error === "blocked") && (
+      {(error === "generic" || error === "emailSendFailed" || error === "blocked" || error === "captchaFailed") && (
         <p className="mt-1">
           {t.rich("errors.help", {
             email: SUPPORT_EMAIL,

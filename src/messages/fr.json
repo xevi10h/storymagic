@@ -755,6 +755,10 @@
       "changeEmail": "Utiliser un autre e-mail",
       "spamHint": "Vous ne le voyez pas ? Regardez dans les spams ou les promotions."
     },
+    "captcha": {
+      "prompt": "Confirmez que vous êtes une personne pour continuer",
+      "cancel": "Annuler"
+    },
     "errors": {
       "invalidEmail": "Vérifiez votre e-mail : il semble manquer quelque chose.",
       "invalidCode": "Ce code est incorrect ou a expiré. Vérifiez le dernier e-mail ou demandez-en un nouveau.",
@@ -767,6 +771,7 @@
       "network": "Pas de connexion. Vérifiez votre accès internet et réessayez.",
       "blocked": "Ce compte ne peut pas se connecter. Écrivez-nous et nous regarderons.",
       "generic": "Un problème est survenu. Réessayez dans un instant.",
+      "captchaFailed": "Nous n'avons pas pu vérifier que vous êtes une personne. Rechargez la page et réessayez.",
       "help": "Toujours bloqué ? Écrivez-nous à <mail>{email}</mail>."
     }
   },
@@ -797,6 +802,8 @@
       "errorStuck": "Cela prend beaucoup plus de temps que prévu. Appuyez sur « Réessayer » et nous reprendrons.",
       "errorRateLimited": "Vous avez créé plusieurs livres d'affilée. Attendez quelques minutes et réessayez.",
       "errorNetwork": "La connexion semble interrompue. Vérifiez votre connexion internet et réessayez.",
+      "errorDailyCapTitle": "La demande a été très forte aujourd'hui",
+      "errorDailyCap": "Notre atelier a atteint sa limite de livres pour aujourd'hui. Revenez demain et nous peindrons le vôtre.",
       "errorInputSafe": "Tout ce que vous avez saisi est enregistré.",
       "retry": "Réessayer",
       "paintingTitle": "Nous peignons le livre {deName}",
@@ -888,6 +895,7 @@
       "zoomPage": "Agrandir"
     },
     "errors": {
+      "captchaFailed": "Nous n'avons pas pu vérifier que vous êtes une personne. Appuyez à nouveau sur le bouton : tout ce que vous avez écrit est conservé.",
       "saveFailed": "Nous n'avons pas pu enregistrer votre livre. Vérifiez votre connexion et appuyez à nouveau sur le bouton : tout ce que vous avez saisi est toujours là.",
       "dismiss": "Fermer",
       "retry": "Réessayer"
@@ -1028,7 +1036,8 @@
         "too_small": "La photo est trop petite. Téléchargez-en une où son visage est bien visible.",
         "photo_unavailable": "La photo a déjà été supprimée. Téléchargez-la à nouveau si vous souhaitez l'utiliser.",
         "rate_limited": "Vous avez téléchargé beaucoup de photos d'affilée. Patientez un peu et réessayez.",
-        "upload_failed": "Nous n'avons pas pu télécharger la photo. Veuillez réessayer."
+        "upload_failed": "Nous n'avons pas pu télécharger la photo. Veuillez réessayer.",
+        "captcha_failed": "Nous n'avons pas pu vérifier que vous êtes une personne. Envoyez à nouveau la photo."
       }
     },
     "purchase": {

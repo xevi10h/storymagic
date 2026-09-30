@@ -19,6 +19,8 @@ import { isOwnedPhotoPath, isPhotoUploadEnabled, isValidPhotoPath } from "@/lib/
 import { ownedPortraitPath } from "@/lib/storage/illustration-urls";
 import { avatarAssetPathSchema, avatarAssetUrl, characterLookShape } from "@/lib/character-look";
 import { isMockGeneration } from "@/lib/ai/story-generator";
+import { createFulfilmentClient } from "@/lib/fulfilment/db";
+import { DAILY_CAP_ERROR, isDailyPreviewCapFull } from "@/lib/preview-cap-server";
 
 // The child sheet (gpt-image-2.5-flare, medium, 1536×1024) takes ~15–25 s and
 // runs in after(), which lives for this route's maxDuration.
@@ -124,6 +126,10 @@ export async function POST(request: Request) {
   }
 
   // ── A new render costs money: portrait budget ────────────────────────────
+  // Global daily preview cap full: the sheet could not be used today anyway.
+  if (await isDailyPreviewCapFull(createFulfilmentClient())) {
+    return NextResponse.json({ error: DAILY_CAP_ERROR }, { status: 503 });
+  }
   const clientIp = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
   const ipLimit = checkMemoryRateLimit(`portrait:${clientIp}`, { maxRequests: 30, windowSeconds: 3600 });
   if (!ipLimit.allowed) {

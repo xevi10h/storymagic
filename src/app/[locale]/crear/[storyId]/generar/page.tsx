@@ -23,7 +23,7 @@ const SLOW_NOTICE_MS = 90_000; // measured ~40–50 s: past 90 s say honestly th
 
 const DONE_STATUSES = new Set(["preview", "ready", "ordered", "shipped"]);
 
-type FailureKind = "failed" | "stuck" | "rate_limited" | "network";
+type FailureKind = "failed" | "stuck" | "rate_limited" | "network" | "daily_cap";
 type GenerationPhase = "starting" | "generating" | "done" | "error";
 
 interface ProgressScene {
@@ -218,6 +218,11 @@ export default function GenerarPage() {
         if (res.ok) return finish();
         if (res.status === 409 && allowRecoveryRetry) return firePost(false);
         if (res.status === 429) return fail("rate_limited");
+        if (res.status === 503) {
+          // Global daily preview cap (see src/lib/preview-cap.ts): come back tomorrow.
+          const body = (await res.json().catch(() => null)) as { error?: string } | null;
+          return fail(body?.error === "daily_cap_reached" ? "daily_cap" : "failed");
+        }
         if (res.status === 400) return; // already generating/done elsewhere: polling decides
         fail("failed");
       } catch {
@@ -336,8 +341,10 @@ export default function GenerarPage() {
   // ── Error state ─────────────────────────────────────────────────────────────
 
   if (phase === "error") {
-    const errorText =
-      failure === "rate_limited"
+    const dailyCap = failure === "daily_cap";
+    const errorText = dailyCap
+      ? t("errorDailyCap")
+      : failure === "rate_limited"
         ? t("errorRateLimited")
         : failure === "stuck"
           ? t("errorStuck")
@@ -350,34 +357,47 @@ export default function GenerarPage() {
         <main className="flex flex-1 flex-col items-center justify-center px-4 py-10 text-center" role="alert">
           <div className="max-w-md">
             <span aria-hidden className="material-symbols-outlined mb-4 text-5xl text-brand-text">
-              {failure === "rate_limited" ? "schedule" : "auto_stories"}
+              {failure === "rate_limited" || dailyCap ? "schedule" : "auto_stories"}
             </span>
             <h1 className="font-display text-2xl font-bold text-create-text-dark">
-              {name ? t("errorTitleNamed", nameArgs) : t("errorTitle")}
+              {dailyCap ? t("errorDailyCapTitle") : name ? t("errorTitleNamed", nameArgs) : t("errorTitle")}
             </h1>
             <p className="mt-4 text-sm leading-relaxed text-create-text-sub">{errorText}</p>
             <p className="mt-2 text-sm leading-relaxed text-create-text-sub">{t("errorInputSafe")}</p>
             <div className="mt-8 flex flex-col gap-3">
-              <button
-                type="button"
-                onClick={handleRetry}
-                disabled={retrying}
-                className="min-h-12 flex items-center justify-center gap-2 rounded-full bg-create-primary px-8 py-3 text-[19px] font-bold leading-tight text-white transition-colors hover:bg-create-primary-hover disabled:opacity-60"
-              >
-                {retrying ? (
-                  <Spinner className="text-lg" />
-                ) : (
-                  <span aria-hidden className="material-symbols-outlined text-lg">refresh</span>
-                )}
-                {t("retry")}
-              </button>
-              <button
-                type="button"
-                onClick={() => void handleBack()}
-                className="rounded-full px-8 py-3 text-sm font-bold text-create-text-sub transition-colors hover:text-create-text"
-              >
-                {t("goBackToForm")}
-              </button>
+              {dailyCap ? (
+                // Nothing to retry until tomorrow: the way back is the main action.
+                <button
+                  type="button"
+                  onClick={() => void handleBack()}
+                  className="min-h-12 flex items-center justify-center rounded-full bg-create-primary px-8 py-3 text-[19px] font-bold leading-tight text-white transition-colors hover:bg-create-primary-hover"
+                >
+                  {t("goBackToForm")}
+                </button>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={handleRetry}
+                    disabled={retrying}
+                    className="min-h-12 flex items-center justify-center gap-2 rounded-full bg-create-primary px-8 py-3 text-[19px] font-bold leading-tight text-white transition-colors hover:bg-create-primary-hover disabled:opacity-60"
+                  >
+                    {retrying ? (
+                      <Spinner className="text-lg" />
+                    ) : (
+                      <span aria-hidden className="material-symbols-outlined text-lg">refresh</span>
+                    )}
+                    {t("retry")}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void handleBack()}
+                    className="rounded-full px-8 py-3 text-sm font-bold text-create-text-sub transition-colors hover:text-create-text"
+                  >
+                    {t("goBackToForm")}
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </main>

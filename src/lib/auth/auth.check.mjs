@@ -88,6 +88,9 @@ assert.equal(authErrorKey({ name: "AuthRetryableFetchError", status: 0 }), "netw
 assert.equal(authErrorKey({ code: "weird_new_code", message: "Something in English" }), "generic");
 assert.equal(authErrorKey(new TypeError("Failed to fetch")), "network");
 assert.equal(authErrorKey(null), "generic");
+// Supabase CAPTCHA protection refusal + our own Turnstile failure (CaptchaError)
+assert.equal(authErrorKey({ code: "captcha_failed", status: 400, message: "captcha protection: request disallowed (no captcha_token found)" }), "captchaFailed");
+assert.equal(authErrorKey({ name: "CaptchaError", message: "captcha_failed" }), "captchaFailed");
 assert.equal(isExistingAccountError({ code: "email_exists" }), true);
 assert.equal(isExistingAccountError({ message: "A user with this email address has already been registered" }), true);
 assert.equal(isExistingAccountError({ code: "manual_linking_disabled" }), true);

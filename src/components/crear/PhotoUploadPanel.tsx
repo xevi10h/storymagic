@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { PHOTO_CONSENT_VERSION, PHOTO_MAX_EDGE, PHOTO_MAX_UPLOAD_BYTES } from "@/lib/creation-flow";
 import { ensureGuestSession } from "@/lib/guest-session";
+import { isCaptchaError } from "@/lib/captcha/turnstile";
 import { buttonClass } from "@/components/ui";
 import Sheet from "./Sheet";
 import { Spinner } from "@/components/ui/Spinner";
@@ -25,6 +26,7 @@ const KNOWN_ERRORS = new Set([
   "photo_unavailable",
   "rate_limited",
   "upload_failed",
+  "captcha_failed",
 ]);
 
 function mapServerError(code: unknown, status: number): string {
@@ -94,6 +96,7 @@ async function toUploadJpeg(file: File): Promise<Blob> {
 export default function PhotoUploadPanel({ name, photoPath, onPhotoChange }: PhotoUploadPanelProps) {
   const t = useTranslations("crear.photo");
   const tu = useTranslations("crear.photoUi");
+  const tAuth = useTranslations("auth");
   const locale = useLocale();
   const uid = useId();
   const [consent, setConsent] = useState(!!photoPath);
@@ -124,7 +127,7 @@ export default function PhotoUploadPanel({ name, photoPath, onPhotoChange }: Pho
         setError(err instanceof Error && err.message === "still_too_large" ? "too_large" : "unsupported_type");
         return;
       }
-      await ensureGuestSession();
+      await ensureGuestSession({ prompt: tAuth("captcha.prompt"), cancel: tAuth("captcha.cancel"), locale });
       const body = new FormData();
       body.append("photo", jpeg, "photo.jpg");
       body.append("consent", "true");
@@ -140,7 +143,7 @@ export default function PhotoUploadPanel({ name, photoPath, onPhotoChange }: Pho
       onPhotoChange(data.photoPath);
     } catch (err) {
       console.warn("[crear] photo upload failed:", err);
-      setError("upload_failed");
+      setError(isCaptchaError(err) ? "captcha_failed" : "upload_failed");
     } finally {
       setBusy(null);
     }

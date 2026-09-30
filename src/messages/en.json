@@ -745,6 +745,10 @@
       "changeEmail": "Use another email",
       "spamHint": "Can't see it? Check your spam or promotions folder."
     },
+    "captcha": {
+      "prompt": "Confirm you're a person to continue",
+      "cancel": "Cancel"
+    },
     "errors": {
       "invalidEmail": "Check your email address: something seems to be missing.",
       "invalidCode": "That code is wrong or has expired. Check the latest email or ask for a new one.",
@@ -757,6 +761,7 @@
       "network": "No connection. Check your internet and try again.",
       "blocked": "This account can't sign in. Write to us and we'll look into it.",
       "generic": "Something went wrong. Please try again in a moment.",
+      "captchaFailed": "We couldn't confirm you're a person. Reload the page and try again.",
       "help": "Still not working? Write to us at <mail>{email}</mail>."
     }
   },
@@ -787,6 +792,8 @@
       "errorStuck": "This is taking much longer than normal. Tap \"Try again\" and we'll pick it up.",
       "errorRateLimited": "You've created several books in a row. Please wait a few minutes and try again.",
       "errorNetwork": "It looks like the connection dropped. Check your internet and try again.",
+      "errorDailyCapTitle": "We've had huge demand today",
+      "errorDailyCap": "Our workshop has reached its limit of books for today. Come back tomorrow and we'll paint yours.",
       "errorInputSafe": "Everything you entered is saved.",
       "retry": "Try again",
       "paintingTitle": "Painting {name}'s book",
@@ -878,6 +885,7 @@
       "zoomPage": "Enlarge"
     },
     "errors": {
+      "captchaFailed": "We couldn't confirm you're a person. Press the button again: everything you wrote is still here.",
       "saveFailed": "We couldn't save your book. Check your connection and tap the button again: everything you've entered is still here.",
       "dismiss": "Dismiss",
       "retry": "Try again"
@@ -1018,7 +1026,8 @@
         "too_small": "The photo is too small. Upload one where their face is clearly visible.",
         "photo_unavailable": "The photo has already been deleted. Upload it again if you want to use it.",
         "rate_limited": "You've uploaded a lot of photos in a row. Wait a while and try again.",
-        "upload_failed": "We couldn't upload the photo. Please try again."
+        "upload_failed": "We couldn't upload the photo. Please try again.",
+        "captcha_failed": "We couldn't confirm you're a person. Please upload the photo again."
       }
     },
     "purchase": {

@@ -755,6 +755,10 @@
       "changeEmail": "Fes servir un altre correu",
       "spamHint": "No el trobes? Mira a la carpeta de brossa o de promocions."
     },
+    "captcha": {
+      "prompt": "Confirma que ets una persona per continuar",
+      "cancel": "Cancel·la"
+    },
     "errors": {
       "invalidEmail": "Revisa el correu: sembla que hi falta alguna cosa.",
       "invalidCode": "El codi no és correcte o ha caducat. Mira l'últim correu o demana'n un de nou.",
@@ -767,6 +771,7 @@
       "network": "No hi ha connexió. Revisa internet i torna-ho a provar.",
       "blocked": "Aquest compte no pot entrar. Escriu-nos i ho mirem.",
       "generic": "Alguna cosa ha fallat. Torna-ho a provar d'aquí a un moment.",
+      "captchaFailed": "No hem pogut comprovar que ets una persona. Recarrega la pàgina i torna-ho a provar.",
       "help": "Encara no funciona? Escriu-nos a <mail>{email}</mail>."
     }
   },
@@ -797,6 +802,8 @@
       "errorStuck": "Està trigant molt més del normal. Prem «Tornar-ho a provar» i ho reprenem.",
       "errorRateLimited": "Has creat diversos contes seguits. Espera uns minuts i torna-ho a provar.",
       "errorNetwork": "Sembla que s'ha perdut la connexió. Comprova la connexió a internet i torna-ho a provar.",
+      "errorDailyCapTitle": "Avui hem tingut moltíssima demanda",
+      "errorDailyCap": "El nostre taller ha arribat al límit de contes per avui. Torna demà i el pintem.",
       "errorInputSafe": "Tot el que has escrit està desat.",
       "retry": "Tornar-ho a provar",
       "paintingTitle": "Pintant el llibre {deName}",
@@ -888,6 +895,7 @@
       "zoomPage": "Ampliar"
     },
     "errors": {
+      "captchaFailed": "No hem pogut comprovar que ets una persona. Torna a prémer el botó: tot el que has escrit continua aquí.",
       "saveFailed": "No hem pogut desar el conte. Revisa la connexió i torna a prémer el botó: tot el que has escrit continua aquí.",
       "dismiss": "Tancar",
       "retry": "Tornar-ho a provar"
@@ -1028,7 +1036,8 @@
         "too_small": "La foto és massa petita. Puja'n una on es vegi bé la seva cara.",
         "photo_unavailable": "La foto ja s'ha esborrat. Torna-la a pujar si la vols fer servir.",
         "rate_limited": "Has pujat moltes fotos seguides. Espera una estona i torna-ho a provar.",
-        "upload_failed": "No hem pogut pujar la foto. Torna-ho a provar."
+        "upload_failed": "No hem pogut pujar la foto. Torna-ho a provar.",
+        "captcha_failed": "No hem pogut comprovar que ets una persona. Torna a pujar la foto."
       }
     },
     "purchase": {

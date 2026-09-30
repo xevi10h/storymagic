@@ -77,9 +77,17 @@ export type FulfilmentDatabase = Omit<Database, "public"> & {
       orders: WithColumns<Tables["orders"], OrderFulfilmentColumns>;
       stories: WithColumns<Tables["stories"], StoryFulfilmentColumns>;
       story_illustrations: WithColumns<Tables["story_illustrations"], IllustrationFulfilmentColumns>;
+      // 20260930170000_daily_preview_cap.sql
+      daily_preview_counts: {
+        Row: { day: string; count: number; updated_at: string };
+        Insert: { day: string; count?: number; updated_at?: string };
+        Update: { day?: string; count?: number; updated_at?: string };
+        Relationships: [];
+      };
     };
     Functions: PublicSchema["Functions"] & {
       claim_ops_alert: { Args: { p_key: string; p_window_seconds: number }; Returns: boolean };
+      claim_daily_preview: { Args: { p_day: string; p_cap: number }; Returns: number | null };
     };
   };
 };
