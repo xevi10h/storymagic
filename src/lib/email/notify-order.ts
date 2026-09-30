@@ -13,7 +13,7 @@
 // from the order's Checkout Session) → none (neutral "Hola,").
 
 import { sendEmail } from "./send";
-import { buildOrderEmail, type OrderEmailEvent, type OrderReceipt } from "./order-emails";
+import { buildOrderEmail, orderReference, type OrderEmailEvent, type OrderReceipt } from "./order-emails";
 import type { GeneratedStory } from "@/lib/ai/story-generator";
 import { getStripe } from "@/lib/stripe";
 
@@ -40,6 +40,13 @@ export interface NotifyOrderParams {
   buyerName?: string | null;
   /** order_confirmed*: receipt block (built from the paid Checkout Session) */
   receipt?: OrderReceipt | null;
+  /** refund_issued: amount refunded (cents) + whether the order was stopped before shipping */
+  amountCents?: number | null;
+  cancelledBeforeShipping?: boolean;
+  /** print_problem: what Gelato reported */
+  problemKind?: "failed" | "returned" | null;
+  /** excluded_area: the postcode */
+  postcode?: string | null;
 }
 
 /**
@@ -110,6 +117,11 @@ export async function notifyOrderEmail(params: NotifyOrderParams): Promise<boole
       downloadUrl: params.downloadUrl,
       isPhysical: params.isPhysical,
       receipt: params.receipt,
+      reference: params.orderId ? orderReference(params.orderId) : null,
+      amountCents: params.amountCents,
+      cancelledBeforeShipping: params.cancelledBeforeShipping,
+      problemKind: params.problemKind,
+      postcode: params.postcode,
     });
 
     const ok = await sendEmail({ to: email, subject: built.subject, html: built.html, text: built.text });

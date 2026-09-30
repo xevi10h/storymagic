@@ -2,7 +2,13 @@ import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { getStripe, getStripeWebhookSecrets, isEventForActiveEnvironment } from "@/lib/stripe";
 import { createFulfilmentClient } from "@/lib/fulfilment/db";
-import { recordExpiredSession, recordPaidSession, recordRefund } from "@/lib/fulfilment/payments";
+import {
+  recordAsyncPaymentFailed,
+  recordDispute,
+  recordExpiredSession,
+  recordPaidSession,
+  recordRefund,
+} from "@/lib/fulfilment/payments";
 
 // Stripe signs the raw body.
 export const runtime = "nodejs";
@@ -64,8 +70,17 @@ export async function POST(request: Request) {
       case "checkout.session.expired":
         await recordExpiredSession(supabase, event.data.object.id);
         break;
+      case "checkout.session.async_payment_failed": {
+        const session = event.data.object;
+        if (!session.metadata?.story_id) break;
+        await recordAsyncPaymentFailed(supabase, session);
+        break;
+      }
       case "charge.refunded":
         await recordRefund(supabase, event.data.object);
+        break;
+      case "charge.dispute.created":
+        await recordDispute(supabase, event.data.object);
         break;
       default:
         break;

@@ -1,3 +1,4 @@
+import { createHash, timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import type { GelatoWebhookEvent } from "@/lib/gelato/types";
 import { createFulfilmentClient } from "@/lib/fulfilment/db";
@@ -5,6 +6,13 @@ import { applyGelatoStatus } from "@/lib/fulfilment/gelato-status";
 import { pickTracking } from "@/lib/fulfilment/logic";
 
 export const runtime = "nodejs";
+
+/** Constant-time secret check (hashing first equalises the lengths timingSafeEqual needs). */
+function secretMatches(provided: string | null | undefined, expected: string): boolean {
+  if (!provided) return false;
+  const digest = (v: string) => createHash("sha256").update(v).digest();
+  return timingSafeEqual(digest(provided), digest(expected));
+}
 
 export async function POST(request: Request) {
   // Gelato sends no signature and no custom headers: the secret travels as
@@ -15,7 +23,7 @@ export async function POST(request: Request) {
     const authHeader = request.headers.get("authorization");
     const secretParam = new URL(request.url).searchParams.get("secret");
     const providedSecret = (authHeader?.replace("Bearer ", "") ?? secretParam)?.trim();
-    if (providedSecret !== webhookSecret) {
+    if (!secretMatches(providedSecret, webhookSecret)) {
       console.warn("[Gelato webhook] Invalid or missing authorization");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

@@ -50,6 +50,7 @@ import {
   backoffMs,
   GELATO_ALERT_AFTER_ATTEMPTS,
   GELATO_MAX_ATTEMPTS,
+  isAdoptableGelatoOrder,
   isExcludedSpanishPostcode,
   isFinalStage,
   isOrderForActiveStripeMode,
@@ -158,7 +159,10 @@ export async function advanceStoryFulfilment(
   if (ordersErr) throw new Error(`Failed to load orders for story ${storyId}: ${ordersErr.message}`);
 
   const allowMock = process.env.MOCK_MODE === "true" && process.env.STRIPE_ENVIRONMENT !== "live";
-  const orders = (orderRows ?? []).filter((o) => (allowMock && isMockOrder(o)) || isOrderForActiveStripeMode(o));
+  // Orders on hold (e.g. a chargeback) are neither generated nor printed until cleared.
+  const orders = (orderRows ?? []).filter(
+    (o) => !o.fulfilment_hold_reason && ((allowMock && isMockOrder(o)) || isOrderForActiveStripeMode(o)),
+  );
   const generationDoneAtStart = GENERATION_DONE_STATUSES.has(story.status);
   if (orders.length === 0) return { state: "not_paid", generationDone: generationDoneAtStart };
 
@@ -414,7 +418,7 @@ async function runOrderFulfilment(ctx: RunContext): Promise<boolean> {
     .in("id", ctx.orders.map((o) => o.id))
     .in("status", ACTIVE_ORDER_STATUSES);
   if (error) throw new Error(`Failed to reload orders: ${error.message}`);
-  ctx.orders = fresh ?? [];
+  ctx.orders = (fresh ?? []).filter((o) => !o.fulfilment_hold_reason);
   if (ctx.orders.length === 0) return false;
 
   // The customer PDF (digital edition, included with every format) is built once
@@ -541,6 +545,13 @@ async function fulfilPhysicalOrder(ctx: RunContext, order: OrderRow): Promise<Or
       ],
       dedupeSeconds: 7 * 24 * 3600,
     });
+    // The buyer hears it from us too (once): new address or refund of the print.
+    await sendOrderEmailOnce(ctx.supabase, {
+      order,
+      column: "excluded_area_email_sent_at",
+      event: "excluded_area",
+      postcode: postcode ?? null,
+    });
     return "gave_up";
   }
 
@@ -659,6 +670,7 @@ async function submitToGelato(ctx: RunContext, order: OrderRow): Promise<OrderSt
     .eq("id", order.id)
     .eq("status", "paid")
     .is("gelato_order_id", null)
+    .is("fulfilment_hold_reason", null)
     .eq("gelato_submit_attempts", order.gelato_submit_attempts)
     .select("id");
   if (claimErr) throw new Error(`Failed to claim Gelato submission: ${claimErr.message}`);
@@ -668,9 +680,8 @@ async function submitToGelato(ctx: RunContext, order: OrderRow): Promise<OrderSt
   try {
     // Gelato does NOT dedupe orderReferenceId → always look first. This adopts an
     // order created by a previous attempt that died before recording its id.
-    const existing = (await findOrdersByReference(orderReferenceId)).filter(
-      (o) => !["canceled", "cancelled", "failed"].includes(o.fulfillmentStatus?.toLowerCase()),
-    );
+    // Dead ends (cancelled / failed / returned) are skipped: a reprint gets a new order.
+    const existing = (await findOrdersByReference(orderReferenceId)).filter((o) => isAdoptableGelatoOrder(o.fulfillmentStatus));
     // Split (connected) orders share our reference but are one purchase, not duplicates.
     const connected = existing.length > 1 ? new Set((await getPrintOrder(existing[0].id)).connectedOrderIds ?? []) : new Set<string>();
     if (existing.slice(1).some((o) => !connected.has(o.id))) {

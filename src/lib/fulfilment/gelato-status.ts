@@ -5,7 +5,8 @@ import { notifyOrderEmail } from "@/lib/email/notify-order";
 import type { OrderEmailEvent } from "@/lib/email/order-emails";
 import type { FulfilmentClient } from "./db";
 import { alertOperator } from "./alerts";
-import { decideGelatoTransition } from "./logic";
+import { sendOrderEmailOnce } from "./emails";
+import { decideGelatoTransition, shouldSendTrackingUpdate } from "./logic";
 
 // Internal order status → customer email event. "paid" has no email (manual review).
 const STATUS_EMAIL: Record<string, OrderEmailEvent | undefined> = {
@@ -41,7 +42,7 @@ export async function applyGelatoStatus(
   for (let attempt = 0; attempt < 3; attempt++) {
     const { data: order, error: readErr } = await supabase
       .from("orders")
-      .select("id, status, story_id, user_id, tracking_number, tracking_url")
+      .select("id, status, story_id, user_id, tracking_number, tracking_url, refunded_at")
       .eq("gelato_order_id", gelatoOrderId)
       .maybeSingle();
     if (readErr) throw new Error(`Failed to read order ${gelatoOrderId}: ${readErr.message}`);
@@ -67,6 +68,16 @@ export async function applyGelatoStatus(
         .eq("id", order.id);
       // We cancelled it ourselves after a Stripe refund: expected, no alert.
       if (order.status === "refunded" && decision.gelatoStatus.startsWith("cancel")) return;
+      // The print failed or the parcel came back: the customer hears it from us
+      // (once), and that a human is on it. Not for orders we already refunded.
+      if ((decision.gelatoStatus === "failed" || decision.gelatoStatus === "returned") && order.status !== "refunded" && !order.refunded_at) {
+        await sendOrderEmailOnce(supabase, {
+          order,
+          column: "problem_email_sent_at",
+          event: "print_problem",
+          problemKind: decision.gelatoStatus,
+        });
+      }
       await alertOperator(supabase, {
         key: `gelato-${decision.kind}:${order.id}:${decision.gelatoStatus}`,
         subject: `Gelato order ${gelatoOrderId} is ${decision.gelatoStatus}`,
@@ -86,6 +97,23 @@ export async function applyGelatoStatus(
       // (a late, out-of-order event must not rewind the mirrored Gelato status either).
       const refresh = { ...(decision.kind === "same" ? { gelato_status: gelatoStatus.toLowerCase() } : {}), ...trackingUpdate };
       if (Object.keys(refresh).length > 0) await supabase.from("orders").update(refresh).eq("id", order.id);
+      // The shipped email went out without a code; this event brings it.
+      if (
+        shouldSendTrackingUpdate({
+          status: order.status,
+          previousTrackingNumber: order.tracking_number,
+          newTrackingNumber: tracking?.trackingNumber,
+          advancedByThisEvent: false,
+        })
+      ) {
+        await sendOrderEmailOnce(supabase, {
+          order,
+          column: "tracking_email_sent_at",
+          event: "tracking_update",
+          trackingNumber: nextTrackingNumber,
+          trackingUrl: nextTrackingUrl,
+        });
+      }
       return;
     }
 
@@ -104,9 +132,8 @@ export async function applyGelatoStatus(
       await syncStoryStatus(supabase, order.story_id, decision.to);
     }
 
-    // ponytail: a "shipped" email sent before any tracking code exists is not re-sent
-    // when the code arrives later (the dashboard still shows it). Gelato's
-    // order_status_updated "shipped" normally carries the fulfillments already.
+    // A "shipped" email sent before any tracking code exists is followed by a
+    // "tracking_update" email when the code arrives (see the non-advance branch).
     const emailEvent = STATUS_EMAIL[decision.to];
     if (emailEvent && order.user_id && order.story_id) {
       await notifyOrderEmail({

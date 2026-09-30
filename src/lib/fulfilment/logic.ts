@@ -80,6 +80,86 @@ export function pickTracking(
   return null;
 }
 
+/**
+ * Gelato orders that can be adopted on (re)submission. Dead ends (cancelled,
+ * failed, returned) are ignored so a reprint creates a fresh Gelato order.
+ */
+export function isAdoptableGelatoOrder(fulfillmentStatus: string | null | undefined): boolean {
+  return !["canceled", "cancelled", "failed", "returned"].includes((fulfillmentStatus ?? "").trim().toLowerCase());
+}
+
+/**
+ * Send the "tracking update" email? Only when the order is (still) 'shipped', it
+ * had no tracking code before, a code arrives now, and this event did NOT itself
+ * move the order to 'shipped' (that transition sends the shipped email, which
+ * already carries the code).
+ */
+export function shouldSendTrackingUpdate(input: {
+  status: string;
+  previousTrackingNumber: string | null | undefined;
+  newTrackingNumber: string | null | undefined;
+  advancedByThisEvent: boolean;
+}): boolean {
+  return (
+    input.status === "shipped" &&
+    !input.advancedByThisEvent &&
+    !input.previousTrackingNumber &&
+    !!input.newTrackingNumber
+  );
+}
+
+// ── Refunds ──────────────────────────────────────────────────────────────────
+
+const PHYSICAL_FORMATS = new Set(["softcover", "hardcover"]);
+
+export type RefundDecision =
+  /** Already closed (refunded / cancelled / never paid): nothing to do. */
+  | { kind: "noop" }
+  /** The book is out of the door (goodwill refund): keep the status history, only record refunded_at. */
+  | { kind: "record_only" }
+  /** Stop everything: status → refunded (download dies, cron skips it), cancel at Gelato if submitted. */
+  | { kind: "close"; cancelAtGelato: boolean };
+
+/**
+ * What a FULL refund does to an order. A physical book that already left the
+ * printer (our status shipped/delivered, or Gelato says so while our status
+ * lags) can't be cancelled: the refund is a goodwill gesture and the order keeps
+ * its history. Anything earlier is a cancellation.
+ */
+export function decideFullRefund(order: {
+  status: string;
+  format: string;
+  gelato_order_id: string | null;
+  gelato_status: string | null;
+}): RefundDecision {
+  if (["refunded", "cancelled", "pending"].includes(order.status)) return { kind: "noop" };
+  if (PHYSICAL_FORMATS.has(order.format)) {
+    const gelato = (order.gelato_status ?? "").toLowerCase();
+    const outOfTheDoor =
+      order.status === "shipped" ||
+      order.status === "delivered" ||
+      ["shipped", "in_transit", "delivered", "returned"].includes(gelato);
+    if (outOfTheDoor) return { kind: "record_only" };
+  }
+  return { kind: "close", cancelAtGelato: !!order.gelato_order_id };
+}
+
+// ── Purchases ────────────────────────────────────────────────────────────────
+
+/** Story statuses a Checkout may start from: the preview, or a finished book (another copy). */
+const PURCHASABLE_STORY_STATUSES = new Set(["preview", "ready", "ordered", "shipped", "delivered"]);
+
+/**
+ * Can this story be bought in this format? A finished book already includes the
+ * PDF (every earlier order came with it), so a second digital order is refused;
+ * printed copies can be ordered again at the normal price.
+ */
+export function purchaseEligibility(storyStatus: string, format: string): "ok" | "not_ready" | "already_owned" {
+  if (!PURCHASABLE_STORY_STATUSES.has(storyStatus)) return "not_ready";
+  if (storyStatus !== "preview" && !PHYSICAL_FORMATS.has(format)) return "already_owned";
+  return "ok";
+}
+
 // ── Shipping area ────────────────────────────────────────────────────────────
 
 /**

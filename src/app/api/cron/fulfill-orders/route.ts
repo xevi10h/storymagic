@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createFulfilmentClient } from "@/lib/fulfilment/db";
 import { alertOperator } from "@/lib/fulfilment/alerts";
 import { applyGelatoStatus } from "@/lib/fulfilment/gelato-status";
+import { sendOrderEmailOnce } from "@/lib/fulfilment/emails";
 import { GELATO_MAX_ATTEMPTS, GELATO_STUCK_PRODUCING_HOURS, isOrderForActiveStripeMode } from "@/lib/fulfilment/logic";
 import { getPrintOrder } from "@/lib/gelato/orders";
 
@@ -72,6 +73,7 @@ export async function GET(request: Request) {
     .select("id, story_id, format, created_at, stripe_checkout_session_id, gelato_submit_attempts, gelato_next_attempt_at, fulfilment_alerted_at")
     .eq("status", "paid")
     .is("gelato_order_id", null)
+    .is("fulfilment_hold_reason", null) // on hold (chargeback): an operator resumes it
     .gte("created_at", escalateSince)
     .order("created_at", { ascending: true })
     .limit(50);
@@ -206,7 +208,7 @@ async function reconcileGelatoOrders(admin: ReturnType<typeof createFulfilmentCl
   const since = new Date(now - RECONCILE_MAX_AGE_DAYS * 24 * 3_600_000).toISOString();
   const { data: active, error } = await admin
     .from("orders")
-    .select("id, story_id, status, created_at, gelato_order_id, gelato_status, stripe_checkout_session_id")
+    .select("id, story_id, user_id, status, created_at, gelato_order_id, gelato_status, stripe_checkout_session_id")
     .in("status", ["producing", "shipped"])
     .not("gelato_order_id", "is", null)
     .gte("created_at", since)
@@ -249,6 +251,8 @@ async function reconcileGelatoOrders(admin: ReturnType<typeof createFulfilmentCl
         ],
         dedupeSeconds: 48 * 3600,
       });
+      // …and the customer hears it from us before they have to ask (once per order).
+      await sendOrderEmailOnce(admin, { order, column: "delay_email_sent_at", event: "print_delayed" });
     }
   }
   return result;

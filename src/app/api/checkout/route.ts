@@ -13,6 +13,8 @@ import {
   type PhysicalFormat,
 } from "@/lib/pricing";
 import { routing, type Locale } from "@/i18n/routing";
+import { purchaseEligibility } from "@/lib/fulfilment/logic";
+import { SUPPORT_EMAIL } from "@/lib/support";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -40,7 +42,7 @@ const SHIPPING_AREA_NOTICE: Record<Locale, string> = {
   fr: "Livraison standard incluse en Espagne péninsulaire et aux Baléares (7 à 10 jours ouvrés). Pas encore de livraison aux Canaries, à Ceuta ni à Melilla.",
 };
 
-const INVOICE_FOOTER = `${SELLER_IDENTITY} · IVA incluido (4 %, libros) · hola@meapica.com`;
+const INVOICE_FOOTER = `${SELLER_IDENTITY} · IVA incluido (4 %, libros) · ${SUPPORT_EMAIL}`;
 
 /** ponytail: 2-min idempotency window — a double click reuses the session; a
  * deliberate second purchase after 2 min gets a new one. Per-click client keys
@@ -90,9 +92,15 @@ export async function POST(request: Request) {
     if (storyError || !story) {
       return NextResponse.json({ error: "Story not found" }, { status: 404 });
     }
-    if (story.status !== "preview" && story.status !== "ready") {
+    // The preview, or a finished book (another printed copy at the normal price).
+    const eligibility = purchaseEligibility(story.status, format);
+    if (eligibility === "not_ready") {
       return NextResponse.json({ error: "Story is not ready for purchase" }, { status: 400 });
     }
+    if (eligibility === "already_owned") {
+      return NextResponse.json({ error: "already_owned" }, { status: 409 });
+    }
+    const isReorder = story.status !== "preview";
     // The final book is rendered from the preview's frozen image plan; previews made
     // by the removed engines have none and could never be fulfilled.
     const generated = story.generated_text as { imagePlan?: unknown } | null;
@@ -143,6 +151,10 @@ export async function POST(request: Request) {
       locale: CHECKOUT_LOCALE[locale],
       // Prices are VAT-inclusive (B2C); Stripe Tax extracts the 4 % book rate.
       automatic_tax: { enabled: true },
+      // Optional business tax ID (NIF/CIF) for a "factura completa": Checkout shows
+      // the field (with the legal name) for supported locations; no customer object
+      // needed, it lands on customer_details.tax_ids and on the invoice.
+      tax_id_collection: { enabled: true },
       // Invoice (factura) for every order, with the seller NIF.
       invoice_creation: {
         enabled: true,
@@ -160,10 +172,12 @@ export async function POST(request: Request) {
         addons: JSON.stringify(validAddons),
         locale,
         withdrawal_consent_version: WITHDRAWAL_CONSENT_VERSION,
+        reorder: isReorder ? "true" : "false",
       },
       payment_intent_data: { metadata: { story_id: storyId, format } },
       success_url: `${origin}/${locale}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/${locale}/crear/${storyId}/preview`,
+      // Another copy is bought from the library: back there if they change their mind.
+      cancel_url: isReorder ? `${origin}/${locale}/dashboard` : `${origin}/${locale}/crear/${storyId}/preview`,
     };
     if (requiresShipping) {
       // Decision 2026-09-28: Spain only (Gelato ships from an EU plant; no customs).

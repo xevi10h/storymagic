@@ -57,6 +57,15 @@ export type OrderFulfilmentColumns = {
   stripe_invoice_id: string | null;
   invoice_url: string | null;
   refunded_at: string | null;
+  // 20260930140000_order_notifications.sql
+  refund_email_sent_at: string | null;
+  cancel_email_sent_at: string | null;
+  delay_email_sent_at: string | null;
+  problem_email_sent_at: string | null;
+  excluded_area_email_sent_at: string | null;
+  tracking_email_sent_at: string | null;
+  disputed_at: string | null;
+  fulfilment_hold_reason: string | null;
 };
 
 export type FulfilmentDatabase = Omit<Database, "public"> & {

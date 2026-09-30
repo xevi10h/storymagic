@@ -23,7 +23,7 @@ const SESSION_ID_RE = /^cs_(test|live)_[A-Za-z0-9]{10,}$/;
  * complete, paid (or fully discounted) and created by our checkout
  * (metadata.story_id) renders the success state.
  */
-async function verifySession(sessionId: string | null): Promise<VerifiedSession> {
+async function verifySession(sessionId: string | null, viewerId: string | null): Promise<VerifiedSession> {
   const unverified = { verified: false, customerEmail: null, format: null };
   if (!sessionId || !SESSION_ID_RE.test(sessionId)) return unverified;
 
@@ -34,9 +34,12 @@ async function verifySession(sessionId: string | null): Promise<VerifiedSession>
       (session.payment_status === "paid" || session.payment_status === "no_payment_required");
     if (!paid || !session.metadata?.story_id) return unverified;
 
+    // The session id travels in the URL (history, shared links): only the buyer's
+    // own session gets to see the email address it was paid with.
+    const ownsSession = !!viewerId && session.metadata.user_id === viewerId;
     return {
       verified: true,
-      customerEmail: session.customer_details?.email ?? session.customer_email ?? null,
+      customerEmail: ownsSession ? (session.customer_details?.email ?? session.customer_email ?? null) : null,
       format: session.metadata?.format ?? null,
     };
   } catch (err) {
@@ -49,20 +52,15 @@ export default async function CheckoutSuccessPage({ searchParams }: Props) {
   const { session_id } = await searchParams;
   const sessionId = typeof session_id === "string" ? session_id : null;
 
-  const [session, isGuest] = await Promise.all([
-    verifySession(sessionId),
-    (async () => {
-      try {
-        const supabase = await createClient();
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        return !user || user.is_anonymous === true;
-      } catch {
-        return true;
-      }
-    })(),
-  ]);
+  let viewer: { id: string; is_anonymous?: boolean } | null = null;
+  try {
+    const supabase = await createClient();
+    viewer = (await supabase.auth.getUser()).data.user;
+  } catch {
+    viewer = null;
+  }
+  const isGuest = !viewer || viewer.is_anonymous === true;
+  const session = await verifySession(sessionId, viewer?.id ?? null);
 
   return (
     <SuccessClient
