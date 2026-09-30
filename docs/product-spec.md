@@ -147,9 +147,9 @@ Built on `docs/brand.md` + `src/components/ui/*`; components in `src/components/
 | # | Section (component, anchor) | Background | What it does |
 |---|---|---|---|
 | 1 | `Hero` | paper | H1 + "¿Cómo se llama?" field; the real `LiveCover` (LCP image, `priority`) updates on every keystroke; CTA "Crear el libro de {name}" → `/crear?name=…` (works without JS: GET form). Price "Desde 34,90 € · IVA incluido · Envío gratis" + client-side delivery window. |
-| 2 | `HowItWorks` (`#manifesto`) | surface | The five real creation steps illustrated with one example child (Sam, a real showcase book, `HowItWorksExample.ts`); step 1 is an illustration, not an input. Desktop-only CTA. |
+| 2 | `HowItWorks` (`#manifesto`) | surface | The five real creation steps illustrated with one example child (Hugo, 5, forest world — a real showcase book in all 4 locales, `HowItWorksExample.ts`); step 1 is an illustration, not an input. Desktop-only CTA. |
 | 3 | `BookCollection` (`#catalog`) | paper | 10 worlds, real showcase covers first; age filter chips (radiogroup, arrow keys); carousel < xl, 5-col grid ≥ xl. Each card is one link → `/crear?template={id}&from=catalog` (world preselected); "Ver por dentro" → `/ejemplo/{id}` when a real book exists. |
-| 4 | `UniqueEdition` (`#unique-edition`) | surface | "No es una plantilla con su cara pegada": 4 real pages of Sam's book + 4 points; link to Sam's book. |
+| 4 | `UniqueEdition` (`#unique-edition`) | surface | "No es una plantilla con su cara pegada": 4 real pages of Hugo's book + 4 points; link to Hugo's book. |
 | 5 | `QualitySection` (`#artisanal`) | paper | Open `BookMockup` + specs table (20 × 20 cm, 170 g, covers, shipping, PDF) + both prices with VAT. |
 | 6 | `AdventurePack` | — | Only when `ADDON_ENABLED.adventure_pack` (off). |
 | 7 | `FaqSection` (`#faq`) | surface | 7 questions in native `<details>`; answers built from `pricing.ts` / `shipping.ts` (season cut-offs); single `FAQPage` JSON-LD from the same list. |

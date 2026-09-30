@@ -88,6 +88,9 @@ which records the version, or the SQL editor followed by
 
 **Operational rule:** after flagging a story `is_showcase = true`, re-run `scripts/publish-showcase.mts`
 (otherwise its images 404 on public pages). Unflagging does not delete the public copy.
+Showcase stories may be `ready` or `ordered` (`SHOWCASE_STATUSES` in `src/lib/showcase.ts`). Current
+examples (2026-09-30): Hugo, Carla and Pau (ES originals, ordered 2026-09-29) plus ca/en/fr copies that
+reuse the same art rows with translated text (`story_decisions.showcaseTranslationOf` = the ES id).
 
 Known residuals: legacy portraits (`portraits/{uuid}/…`) can be re-signed by any user who
 writes that path into their own character row — only possible for someone who already had the

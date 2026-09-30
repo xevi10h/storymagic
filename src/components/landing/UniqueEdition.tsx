@@ -8,7 +8,7 @@ const POINTS = ["written", "painted", "colour", "dedication"] as const;
 
 /**
  * The differentiator, with proof: not a template with a face pasted in. Four
- * real pages of one child's book (Sam) show the same child painted scene by
+ * real pages of one child's book (Hugo) show the same child painted scene by
  * scene, next to the four things that make the book theirs.
  */
 export default function UniqueEdition() {

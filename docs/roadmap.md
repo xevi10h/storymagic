@@ -67,7 +67,7 @@ Brand spec in `docs/brand.md`; semantic tokens in `globals.css`; primitives in `
 ## Next steps from landing QA pass (2026-09-30)
 - [x] Seasonal banner CLS — DONE 2026-09-30: `Navbar` is now a server wrapper that renders the banner from `spainToday()` into the static/ISR HTML (`[locale]/layout.tsx` revalidates hourly so no marketing page serves a stale season); an inline script after the header publishes `--landing-nav-h` before paint; a dismissed message is hidden before paint via a `<head>` script (localStorage → `html[data-season-dismissed]`) + the banner's own `<style>`, no cookies read (pages stay static). Dev `?now=` reaches the server through middleware (`x-season-now`). CLS with `?now=2026-11-15`: 0.0725 → 0.0049 at 390, 0.0378 → 0.0046 at 1440 (remaining = hero web-font swap, same as off-season).
 - [ ] `LiveCover` sizes its title with JS after measuring (tiny in-cover text shift, ~0.002 CLS): switch to container-query units (`cqw`).
-- [ ] `BookMockup` serves raw `<img>` (Sam's cover + 1600 px spread at ~95–430 css px on desktop): use `next/image` or pass right-sized sources.
+- [ ] `BookMockup` serves raw `<img>` (the example's cover + 1600 px spread at ~95–430 css px on desktop): use `next/image` or pass right-sized sources.
 - [ ] Catalog filter overlap by design (a 5–8 world shows under "8–12"); consider exclusive buckets by `ageMin` if parents find it confusing.
 - [ ] "Envío gratis" (hero) vs "Envío incluido" (closing CTA, FAQ): pick one wording across locales.
 

@@ -11,15 +11,15 @@ import { LANDING_EXAMPLE, landingExampleBook } from "./HowItWorksExample";
 // Screen 2 offers "Sube una foto" only behind this flag (docs/user-experience.md).
 const PHOTO_UPLOAD_ENABLED = process.env.NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED === "true";
 
-// Chapter-1 art of the candy world, exactly as shown on screen 3 (Aventura).
-const ADVENTURE_CHOICES = ["candy-c1-bridge", "candy-c1-gummy", "candy-c1-jar"] as const;
+// Chapter-1 art of the example's world, exactly as shown on screen 3 (Aventura); the example child picked the chest.
+const ADVENTURE_CHOICES = ["forest-c1-dragon", "forest-c1-chest", "forest-c1-door"] as const;
 const CHOSEN_ADVENTURE = 1;
 
 type StepId = "name" | "look" | "adventure" | "preview" | "print";
 
 /**
  * "Cómo funciona": the real creation flow (/crear) in five cards, each with the
- * product's own art following one example child (Sam, a real showcase book).
+ * product's own art following one example child (Hugo, a real showcase book).
  * Mobile/tablet: horizontal snap carousel; desktop: 5-column grid.
  */
 export default function HowItWorks() {
@@ -79,7 +79,7 @@ export default function HowItWorks() {
                 : "relative h-[46px] overflow-hidden rounded-xl border-2 border-line opacity-70"
             }
           >
-            <Image src={`/images/path/candy/${id}.webp`} alt="" fill sizes="240px" className="object-cover" />
+            <Image src={`/images/path/${LANDING_EXAMPLE.templateId}/${id}.webp`} alt="" fill sizes="240px" className="object-cover" />
             {i === CHOSEN_ADVENTURE && (
               <span className="absolute top-1/2 right-1.5 flex size-6 -translate-y-1/2 items-center justify-center rounded-full bg-brand text-white">
                 <span className="material-symbols-outlined text-base">check</span>

@@ -470,10 +470,10 @@
         "text": "Imprès en tapa dura o tova, amb enviament gratuït. Arriba en 7–10 dies feiners."
       }
     },
-    "lookAlt": "Retrat a l'aquarel·la de {name}",
-    "previewAlt": "Una pàgina de la previsualització del llibre de {name}",
+    "lookAlt": "Retrat a l'aquarel·la d'en {name}",
+    "previewAlt": "Una pàgina de la previsualització del llibre d'en {name}",
     "previewBadge": "Gratis",
-    "printAlt": "El llibre de {name} imprès en tapa dura",
+    "printAlt": "El llibre d'en {name} imprès en tapa dura",
     "cta": "Crear el seu llibre"
   },
   "bookCollection": {
@@ -518,7 +518,7 @@
     "eyebrow": "El llibre imprès",
     "title": "Un llibre de veritat, per llegir-lo mil vegades",
     "subtitle": "Fet per a les lectures de cada nit i per guardar-lo molts anys. I amb el seu PDF, per llegir-lo també de viatge.",
-    "mockupAlt": "El llibre de {name} en tapa dura, de 20 × 20 cm",
+    "mockupAlt": "El llibre d'en {name} en tapa dura, de 20 × 20 cm",
     "specs": {
       "size": { "label": "Format", "value": "20 × 20 cm · 30 pàgines · 12 escenes il·lustrades" },
       "paper": { "label": "Paper", "value": "Estucat setinat de 170 g, a tot color" },
@@ -533,7 +533,7 @@
   "uniqueEdition": {
     "eyebrow": "Només seu",
     "title": "No és una plantilla amb la seva cara enganxada",
-    "subtitle": "Escrivim el seu conte i el pintem escena a escena. Així és el llibre de {name}, de {age} anys:",
+    "subtitle": "Escrivim el seu conte i el pintem escena a escena. Així és el llibre d'en {name}, de {age} anys:",
     "sceneAlt": "{name} a la seva aventura, escena {n}",
     "caption": "Pàgines reals de «{title}»",
     "points": {
@@ -543,7 +543,7 @@
       "dedication": { "title": "Amb les teves paraules", "text": "La teva dedicatòria obre el llibre, perquè sempre sàpiga de qui va ser el regal." }
     },
     "cta": "Crear el seu llibre",
-    "seeInside": "Veure el llibre de {name} per dins"
+    "seeInside": "Veure el llibre d'en {name} per dins"
   },
   "adventurePack": {
     "badge": "Experiència Completa",

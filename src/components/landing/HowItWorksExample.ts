@@ -1,36 +1,36 @@
 /**
  * The one example child the landing's "how / proof / print" sections follow:
- * Sam, 5, a real showcase book (candy world) that exists in every locale. Its art is copied from the public `showcase` bucket to
- * /public/images/landing/sam as right-sized webp (the originals are 1–3 MB PNGs).
- * If that story ever stops being a showcase, swap the id + art here.
+ * Hugo, 5, a real showcase book (forest world) that exists in every locale. Its art is copied from the public `showcase` bucket to
+ * /public/images/landing/hugo as right-sized webp (the originals are 2–4 MB PNGs).
+ * If that story ever stops being a showcase, swap the id + art here (and the ca strings that say "d'en {name}" if the child is a girl).
  */
 export const LANDING_EXAMPLE = {
-  childName: "Sam",
+  childName: "Hugo",
   age: 5,
-  templateId: "candy",
-  /** Closest pre-rendered portrait of the "Créalo tú" builder (boy · 3–6 · dark skin · dark-brown curls). */
-  avatarSrc: "/images/avatar/boy/small/dark/brown-dark-curly.webp",
-  skinTone: "dark",
-  coverSrc: "/images/landing/sam/cover.webp",
+  templateId: "forest",
+  /** Hugo's own pre-rendered portrait of the "Créalo tú" builder (boy · 3–6 · light skin · short dark-brown hair). */
+  avatarSrc: "/images/avatar/boy/small/light/brown-dark-short.webp",
+  skinTone: "light",
+  coverSrc: "/images/landing/hugo/cover.webp",
   /** Panorama spread (1600×800) used as "the preview before paying". */
-  previewScene: "/images/landing/sam/scene-3.webp",
+  previewScene: "/images/landing/hugo/scene-3.webp",
   /** Panorama spread (1600×800) shown in the open printed book. */
-  printSpread: "/images/landing/sam/scene-8.webp",
-  /** Scenes shown as proof that each page is painted for the story (all 1024 px tall). */
+  printSpread: "/images/landing/hugo/scene-8.webp",
+  /** Scenes shown as proof that each page is painted for the story (all 1024 px). */
   scenes: [
-    { src: "/images/landing/sam/scene-2.webp", width: 1280, height: 1024 },
-    { src: "/images/landing/sam/scene-5.webp", width: 1280, height: 1024 },
-    { src: "/images/landing/sam/scene-10.webp", width: 1024, height: 1024 },
-    { src: "/images/landing/sam/scene-12.webp", width: 1024, height: 1024 },
+    { src: "/images/landing/hugo/scene-5.webp", width: 1024, height: 1024 },
+    { src: "/images/landing/hugo/scene-7.webp", width: 1024, height: 1024 },
+    { src: "/images/landing/hugo/scene-10.webp", width: 1024, height: 1024 },
+    { src: "/images/landing/hugo/scene-11.webp", width: 1024, height: 1024 },
   ],
 } as const;
 
 /** The same book in each locale: its showcase story (for /ejemplo/{id}) and printed title. */
 const EXAMPLE_BOOK: Record<string, { storyId: string; title: string }> = {
-  es: { storyId: "fb07048b-4216-4dc5-878b-cb0dd3c24fa2", title: "Sam y la Montaña de Dulce Mar" },
-  ca: { storyId: "58d5b66b-191c-4625-bb19-57a052a713b7", title: "Sam i la Muntanya Dolça del Mar" },
-  en: { storyId: "83d12340-293c-4e0b-bd5c-2f88d5387982", title: "Sam and the Sea-Sweet Mountain" },
-  fr: { storyId: "30bd04f6-8737-4fb1-894b-345e2c644b48", title: "Sam et la Montagne Sucrée de la Mer" },
+  es: { storyId: "1a924f3c-969a-488e-9da8-1164680c57e5", title: "Hugo y la llave de flor" },
+  ca: { storyId: "2152a65e-b1f3-4a46-8f96-2c06f906d0a5", title: "En Hugo i la clau de flor" },
+  en: { storyId: "2b1d4dfb-468b-4c5a-83b2-2cf77aed3bf4", title: "Hugo and the Flower Key" },
+  fr: { storyId: "305c2236-dc03-4957-bcc0-9d931fad4466", title: "Hugo et la Clé-Fleur" },
 };
 
 export function landingExampleBook(locale: string) {
