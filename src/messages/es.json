@@ -1171,6 +1171,9 @@
       "format": "Formato",
       "extras": "Extras",
       "extraCopy": "Ejemplar extra",
+      "offerLabel": "Precio especial",
+      "offerUpgrade": "PDF descontado",
+      "offerExtraCopy": "Ejemplar extra",
       "total": "Total",
       "shipTo": "Dirección de envío",
       "invoice": "Descargar factura",
@@ -1197,13 +1200,27 @@
         "cancelled": "Pedido cancelado"
       }
     },
+    "offer": {
+      "upgradeTitle": "¿Lo quieres en papel?",
+      "upgradeLine": "Tapa dura {price} IVA incluido · te descontamos los {pdf} del PDF",
+      "upgradeCta": "Pedirlo impreso",
+      "extraTitle": "¿Una para los abuelos?",
+      "extraLine": "Otro ejemplar por {price} IVA incluido · hasta el {date}",
+      "extraCta": "Pedir otro ejemplar"
+    },
     "reorder": {
       "title": "Otra copia de {title}",
       "intro": "El mismo libro, impreso de nuevo. En el pago eliges la dirección de envío. Envío estándar incluido a la península y Baleares.",
       "formatLabel": "Formato",
       "pay": "Pagar {price}",
       "error": "No hemos podido abrir el pago. Inténtalo de nuevo en un momento.",
-      "close": "Cerrar"
+      "close": "Cerrar",
+      "titleUpgrade": "{title}, impreso",
+      "introUpgrade": "El mismo cuento, impreso y encuadernado. En el pago eliges la dirección de envío. Envío estándar incluido a la península y Baleares.",
+      "offerUpgradeNote": "Te descontamos los {pdf} del PDF que ya compraste.",
+      "offerExtraNote": "Precio de ejemplar extra hasta el {date}. Llega en un paquete aparte.",
+      "normalPrice": "Antes <s>{price}</s>",
+      "consent": "Entiendo que es un libro personalizado impreso por encargo y que, por eso, no tengo derecho de desistimiento."
     },
     "newStory": "Nuevo cuento",
     "greeting": "Hola, {name}",

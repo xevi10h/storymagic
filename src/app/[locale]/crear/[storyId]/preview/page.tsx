@@ -31,6 +31,8 @@ import { PREVIEW_CLEAR_SCENES, buildBookPages, toPreviewPages } from "@/lib/book
 import SharePreviewButton from "@/components/share/SharePreviewButton";
 import { BrandLoader } from "@/components/ui/BrandLoader";
 import { Spinner } from "@/components/ui/Spinner";
+import { OfferCallout, ReorderSheet } from "@/components/dashboard/OrdersTab";
+import type { StoryUpsell } from "@/lib/upsell";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -142,6 +144,24 @@ export default function PreviewPage() {
     story?.status === "preview" && (previewOutdated || !(story.generated_text as { imagePlan?: unknown }).imagePlan);
   const isPreviewMode = story?.status === "preview";
   const isFullyReady = story?.status === "ready" || story?.status === "ordered";
+
+  // Post-purchase offer on the owner's finished book (PDF → printed, or an extra
+  // copy within 60 days). Decided server-side; /api/checkout re-checks it.
+  const [offer, setOffer] = useState<StoryUpsell | null>(null);
+  const [offerSheetOpen, setOfferSheetOpen] = useState(false);
+  useEffect(() => {
+    if (!isFullyReady) return;
+    let cancelled = false;
+    fetch(`/api/stories/${storyId}/offer`)
+      .then((res) => (res.ok ? (res.json() as Promise<{ offer?: StoryUpsell | null }>) : null))
+      .then((data) => {
+        if (!cancelled) setOffer(data?.offer ?? null);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [isFullyReady, storyId]);
 
   // Fetch story data
   useEffect(() => {
@@ -701,6 +721,13 @@ export default function PreviewPage() {
           {downloadError && (
             <p className="mt-2 text-center text-xs text-red-600" role="alert">{downloadError}</p>
           )}
+          {offer && <OfferCallout offer={offer} onOpen={() => setOfferSheetOpen(true)} className="mx-auto mt-6 max-w-xl" />}
+          <ReorderSheet
+            storyId={offerSheetOpen ? storyId : null}
+            title={currentTitle}
+            offer={offer}
+            onClose={() => setOfferSheetOpen(false)}
+          />
         </div>
       )}
 

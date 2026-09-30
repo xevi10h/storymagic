@@ -44,6 +44,14 @@ export const ORDER_FIXTURES: Record<string, DashboardOrder> = {
     tracking_url: "https://track.example/ES2HX0000123456",
     gelato_status: "in_transit",
     stories: story("Teo y la expedición a la Luna", "shipped"),
+    // Printed order within 60 days → "¿Una para los abuelos?"
+    upsell: {
+      offer: "extra_copy_repeat",
+      storyId: "5a000000-0000-4000-8000-000000000002",
+      sourceOrderId: "8b2e11aa-2222-4000-8000-000000000002",
+      sourceFormat: "softcover",
+      expiresAt: "2026-11-17T10:00:00.000Z",
+    },
   },
   digital: {
     ...base,
@@ -56,6 +64,26 @@ export const ORDER_FIXTURES: Record<string, DashboardOrder> = {
     shipping_name: null,
     shipping_address: null,
     stories: story("Teo y el bosque que canta", "ready"),
+    // Paid PDF → "¿Lo quieres en papel?"
+    upsell: {
+      offer: "pdf_upgrade",
+      storyId: "5a000000-0000-4000-8000-000000000003",
+      sourceOrderId: "c0ffee12-3333-4000-8000-000000000003",
+      sourceFormat: "digital_pdf",
+      expiresAt: null,
+    },
+  },
+  upgraded: {
+    ...base,
+    id: "abcd0000-7777-4000-8000-000000000007",
+    format: "hardcover",
+    status: "paid",
+    offer: "pdf_upgrade",
+    subtotal: 40,
+    total: 40,
+    created_at: "2026-09-30T11:00:00Z",
+    story_id: "5a000000-0000-4000-8000-000000000007",
+    stories: story("Teo y el faro de las estrellas", "ordered"),
   },
   refunded: {
     ...base,

@@ -3,6 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { createFulfilmentClient } from "@/lib/fulfilment/db";
 import { PAID_ORDER_STATUSES } from "@/lib/preview-access";
 import { ILLUSTRATION_URL_TTL, signIllustrationRefs, userAccess } from "@/lib/storage/illustration-urls";
+import { isPdfUpgradeAvailable } from "@/lib/stripe";
+import { upsellForStory, type StoryUpsell, type UpsellOrderRow } from "@/lib/upsell";
 
 const LIVE_ORDER_STATUSES = new Set<string>(PAID_ORDER_STATUSES);
 
@@ -48,7 +50,7 @@ export async function GET() {
     db
       .from("orders")
       .select(
-        "id, format, status, subtotal, total, addons, tracking_number, tracking_url, shipping_name, shipping_address, created_at, story_id, invoice_url, download_token, refunded_at, gelato_status, stories(title, status, pdf_url, generated_text, characters(name))",
+        "id, format, status, subtotal, total, addons, offer, tracking_number, tracking_url, shipping_name, shipping_address, created_at, story_id, invoice_url, download_token, refunded_at, gelato_status, stories(title, status, pdf_url, generated_text, characters(name))",
       )
       .eq("user_id", user.id)
       // Abandoned checkouts (pending / expired) are not orders to the customer.
@@ -109,10 +111,34 @@ export async function GET() {
     };
   });
 
+  // Post-purchase offers per story (same decision as /api/checkout). The offer card
+  // shows on the order that makes the story eligible; the library's "otra copia"
+  // sheet shows the same prices.
+  const offerRows = orderRows.map((o) => ({ ...(o as unknown as UpsellOrderRow), user_id: user.id }));
+  const storyIds = [...new Set(offerRows.map((o) => o.story_id).filter((id): id is string => !!id))];
+  const now = Date.now();
+  const decide = (upgradeAvailable: boolean) =>
+    new Map(storyIds.map((id) => [id, upsellForStory(offerRows, { userId: user.id, storyId: id, now, upgradeAvailable })] as const));
+  let offersByStory = decide(true);
+  if ([...offersByStory.values()].some((u) => u?.offer === "pdf_upgrade") && !(await isPdfUpgradeAvailable())) {
+    offersByStory = decide(false);
+  }
+  const offers: Record<string, StoryUpsell> = {};
+  for (const [id, u] of offersByStory) if (u) offers[id] = u;
+
   return NextResponse.json(
     {
       stories: (storiesResult.data ?? []).map(withStorySummary),
-      orders: orders.map((o) => ({ ...o, stories: o.stories ? withStorySummary(o.stories) : null })),
+      orders: orders.map((o) => {
+        const { id, story_id } = o as typeof o & { id: string; story_id: string | null };
+        const upsell = story_id ? offers[story_id] : undefined;
+        return {
+          ...o,
+          stories: o.stories ? withStorySummary(o.stories) : null,
+          upsell: upsell && upsell.sourceOrderId === id ? upsell : null,
+        };
+      }),
+      offers,
       characters: characters.map((c) => ({
         ...c,
         stories: (c.stories ?? []).map(withStorySummary),

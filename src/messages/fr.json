@@ -1181,6 +1181,9 @@
       "format": "Format",
       "extras": "Options",
       "extraCopy": "Exemplaire supplémentaire",
+      "offerLabel": "Prix spécial",
+      "offerUpgrade": "PDF déduit",
+      "offerExtraCopy": "Exemplaire supplémentaire",
       "total": "Total",
       "shipTo": "Adresse de livraison",
       "invoice": "Télécharger la facture",
@@ -1207,13 +1210,27 @@
         "cancelled": "Commande annulée"
       }
     },
+    "offer": {
+      "upgradeTitle": "Vous le voulez en papier ?",
+      "upgradeLine": "Couverture rigide {price} TVA incluse · nous déduisons les {pdf} du PDF",
+      "upgradeCta": "Le commander imprimé",
+      "extraTitle": "Un exemplaire pour les grands-parents ?",
+      "extraLine": "Un autre exemplaire à {price} TVA incluse · jusqu'au {date}",
+      "extraCta": "Commander un autre exemplaire"
+    },
     "reorder": {
       "title": "Un autre exemplaire de {title}",
       "intro": "Le même livre, imprimé à nouveau. Vous choisissez l'adresse de livraison au paiement. Livraison standard incluse en Espagne péninsulaire et aux Baléares.",
       "formatLabel": "Format",
       "pay": "Payer {price}",
       "error": "Nous n'avons pas pu ouvrir la page de paiement. Réessayez dans un instant.",
-      "close": "Fermer"
+      "close": "Fermer",
+      "titleUpgrade": "{title}, imprimé",
+      "introUpgrade": "Le même livre, imprimé et relié. Vous choisissez l'adresse de livraison au paiement. Livraison standard incluse en Espagne péninsulaire et aux Baléares.",
+      "offerUpgradeNote": "Nous déduisons les {pdf} du PDF déjà acheté.",
+      "offerExtraNote": "Prix de l'exemplaire supplémentaire jusqu'au {date}. Expédié dans un colis séparé.",
+      "normalPrice": "Au lieu de <s>{price}</s>",
+      "consent": "Je comprends qu'il s'agit d'un livre personnalisé imprimé sur commande et qu'il n'ouvre donc pas de droit de rétractation."
     },
     "newStory": "Nouveau conte",
     "greeting": "Bonjour, {name}",

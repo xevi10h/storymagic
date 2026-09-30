@@ -40,6 +40,12 @@ export const FORMAT_LABELS: Record<string, string> = {
   hardcover: "Tapa dura",
 };
 
+/** Post-purchase offer suffix after the format ("Tapa dura · mejora PDF"). */
+export const OFFER_LABELS: Record<string, string> = {
+  pdf_upgrade: "mejora desde PDF",
+  extra_copy_repeat: "copia extra posventa",
+};
+
 const STATUS_TONES: Record<string, string> = {
   pending: "bg-line text-ink-soft",
   paid: "bg-amber-50 text-amber-800 ring-1 ring-amber-200",

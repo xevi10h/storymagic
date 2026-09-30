@@ -15,7 +15,8 @@
 import { sendEmail } from "./send";
 import { buildOrderEmail, orderReference, type OrderEmailEvent, type OrderReceipt } from "./order-emails";
 import type { GeneratedStory } from "@/lib/ai/story-generator";
-import { getStripe } from "@/lib/stripe";
+import { getStripe, isPdfUpgradeAvailable } from "@/lib/stripe";
+import { upsellForStory, type UpsellOffer, type UpsellOrderRow } from "@/lib/upsell";
 
 export interface NotifyOrderParams {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -107,6 +108,8 @@ export async function notifyOrderEmail(params: NotifyOrderParams): Promise<boole
       ? charactersRel[0]?.name ?? ""
       : charactersRel?.name ?? "";
 
+    const upsell = await resolveUpsell(supabase, event, { userId, storyId, isPhysical: params.isPhysical });
+
     const built = buildOrderEmail(event, {
       locale: (story.locale as string) || "es",
       buyerName,
@@ -123,6 +126,7 @@ export async function notifyOrderEmail(params: NotifyOrderParams): Promise<boole
       problemKind: params.problemKind,
       postcode: params.postcode,
       recipientEmail: email,
+      upsell,
     });
 
     const ok = await sendEmail({ to: email, subject: built.subject, html: built.html, text: built.text });
@@ -131,6 +135,45 @@ export async function notifyOrderEmail(params: NotifyOrderParams): Promise<boole
   } catch (err) {
     console.error(`[email] notifyOrderEmail failed (event ${event}, story ${storyId}):`, err);
     return false;
+  }
+}
+
+/**
+ * Post-purchase offer for the transactional emails that carry one (no marketing
+ * email, LSSI): book_ready of a PDF order → PDF upgrade; delivered → extra copy
+ * within its 60 days. Same decision as /api/checkout (src/lib/upsell.ts).
+ * Best-effort: any error means no block.
+ */
+async function resolveUpsell(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabase: any,
+  event: OrderEmailEvent,
+  ctx: { userId: string; storyId: string; isPhysical?: boolean },
+): Promise<{ offer: UpsellOffer; expiresAt: string | null } | null> {
+  const wanted: UpsellOffer | null =
+    event === "book_ready" && !ctx.isPhysical ? "pdf_upgrade" : event === "delivered" ? "extra_copy_repeat" : null;
+  if (!wanted) return null;
+  try {
+    const { data, error } = await supabase
+      .from("orders")
+      .select("id, user_id, story_id, format, status, refunded_at, created_at, offer")
+      .eq("user_id", ctx.userId)
+      .eq("story_id", ctx.storyId);
+    if (error) {
+      console.warn(`[email] Offer lookup failed for story ${ctx.storyId}: ${error.message}`);
+      return null;
+    }
+    const upgradeAvailable = wanted === "pdf_upgrade" ? await isPdfUpgradeAvailable() : false;
+    const u = upsellForStory((data ?? []) as UpsellOrderRow[], {
+      userId: ctx.userId,
+      storyId: ctx.storyId,
+      now: Date.now(),
+      upgradeAvailable,
+    });
+    return u && u.offer === wanted ? { offer: u.offer, expiresAt: u.expiresAt } : null;
+  } catch (err) {
+    console.warn(`[email] Offer lookup failed for story ${ctx.storyId}:`, err instanceof Error ? err.message : err);
+    return null;
   }
 }
 

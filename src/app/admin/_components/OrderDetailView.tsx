@@ -8,7 +8,7 @@ import {
   stripeModeOf,
   stripePaymentUrl,
 } from "@/lib/admin/orders-view";
-import { FORMAT_LABELS, formatDateTime, formatMoney, ProblemBadge, StatusBadge } from "./format";
+import { FORMAT_LABELS, OFFER_LABELS, formatDateTime, formatMoney, ProblemBadge, StatusBadge } from "./format";
 import { OrderActions } from "./OrderActions";
 
 type Json = Record<string, unknown>;
@@ -88,7 +88,8 @@ export function OrderDetailView({ detail, files }: OrderDetailViewProps) {
         </div>
         <p className="mt-1 text-sm text-ink-muted">
           {FORMAT_LABELS[order.format] ?? order.format}
-          {addons.includes("extra_copy") ? " + copia extra" : ""} · {formatMoney(order.total, order.currency)} ·{" "}
+          {addons.includes("extra_copy") ? " + copia extra" : ""}
+          {order.offer ? ` (${OFFER_LABELS[order.offer] ?? order.offer})` : ""} · {formatMoney(order.total, order.currency)} ·{" "}
           {formatDateTime(order.created_at)}
         </p>
       </div>
@@ -100,6 +101,23 @@ export function OrderDetailView({ detail, files }: OrderDetailViewProps) {
             <Field label="Estado">{STATUS_LABELS[order.status] ?? order.status}</Field>
             <Field label="Subtotal / total">
               {formatMoney(num(o.subtotal), order.currency)} / {formatMoney(order.total, order.currency)}
+            </Field>
+            <Field label="Oferta">
+              {order.offer ? (
+                <>
+                  {OFFER_LABELS[order.offer] ?? order.offer}
+                  {str(o.offer_source_order_id) && (
+                    <>
+                      {" · origen "}
+                      <Link href={`/admin/orders/${str(o.offer_source_order_id)}`} className="font-mono text-[12px] underline">
+                        {orderReferenceOf(str(o.offer_source_order_id)!)}
+                      </Link>
+                    </>
+                  )}
+                </>
+              ) : (
+                "—"
+              )}
             </Field>
             <Field label="Desistimiento">
               {str(o.withdrawal_consent_at) ? `${formatDateTime(str(o.withdrawal_consent_at))} (v. ${str(o.withdrawal_consent_version) ?? "?"})` : "—"}

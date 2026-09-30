@@ -7,7 +7,7 @@ import {
   type AdminOrderRow,
   type OrderFilter,
 } from "@/lib/admin/orders-view";
-import { FORMAT_LABELS, formatDateShort, formatMoney, ProblemBadge, StatusBadge } from "./format";
+import { FORMAT_LABELS, OFFER_LABELS, formatDateShort, formatMoney, ProblemBadge, StatusBadge } from "./format";
 
 const FILTERS: Array<{ value: OrderFilter; label: string }> = [
   { value: "all", label: "Todos" },
@@ -145,7 +145,9 @@ export function OrdersListView({ rows, filter, q, now, truncated, error }: Order
                       )}
                       {o.story_title && <span className="text-ink-muted"> · {o.story_title}</span>}
                     </td>
-                    <td className="whitespace-nowrap px-3 py-2.5 text-ink-soft">{FORMAT_LABELS[o.format] ?? o.format}</td>
+                    <td className="whitespace-nowrap px-3 py-2.5 text-ink-soft">{FORMAT_LABELS[o.format] ?? o.format}
+                      {o.offer && <span className="block text-[11px] text-ink-muted">{OFFER_LABELS[o.offer] ?? o.offer}</span>}
+                    </td>
                     <td className="whitespace-nowrap px-3 py-2.5 text-right tabular-nums text-ink">{formatMoney(o.total, o.currency)}</td>
                     <td className="px-3 py-2.5">
                       <StatusBadge status={o.status} />

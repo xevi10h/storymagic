@@ -4,9 +4,10 @@ import { useId, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import Sheet from "@/components/crear/Sheet";
 import { Button, buttonClass, cx } from "@/components/ui";
-import { formatPrice, PRICING, type PhysicalFormat } from "@/lib/pricing";
+import { formatPrice, offerPrice, PRICING, STRIPE_CATALOG, type PhysicalFormat } from "@/lib/pricing";
 import { orderReference, orderView, PRINT_STEPS, type OrderView } from "@/lib/order-view";
 import { SUPPORT_EMAIL } from "@/lib/support";
+import type { StoryUpsell } from "@/lib/upsell";
 
 // ── Types (shape of /api/dashboard → orders) ────────────────────────────────
 
@@ -35,6 +36,10 @@ export interface DashboardOrder {
   refunded_at: string | null;
   gelato_status: string | null;
   pdf_ready: boolean;
+  /** Offer this order was bought with (pdf_upgrade / extra_copy_repeat), null = normal price. */
+  offer?: string | null;
+  /** Post-purchase offer this order makes its story eligible for (decided by /api/dashboard). */
+  upsell?: StoryUpsell | null;
   stories: {
     title: string | null;
     status: string;
@@ -54,9 +59,17 @@ type T = ReturnType<typeof useTranslations<"dashboard">>;
 
 // ── Tab ─────────────────────────────────────────────────────────────────────
 
+export interface ReorderTarget {
+  storyId: string;
+  title: string;
+}
+
 export function OrdersTab({ orders, empty }: { orders: DashboardOrder[]; empty: React.ReactNode }) {
-  const [reorder, setReorder] = useState<{ storyId: string; title: string } | null>(null);
+  const [reorder, setReorder] = useState<ReorderTarget | null>(null);
   if (orders.length === 0) return <>{empty}</>;
+  // Every "otra copia" of a story shows the offer its eligible order carries
+  // (/api/checkout applies it to any printed copy of that story).
+  const offers = new Map(orders.filter((o) => o.upsell && o.story_id).map((o) => [o.story_id!, o.upsell!]));
   return (
     <>
       <ul className="space-y-4" data-testid="orders-list">
@@ -69,9 +82,60 @@ export function OrdersTab({ orders, empty }: { orders: DashboardOrder[]; empty: 
       <ReorderSheet
         storyId={reorder?.storyId ?? null}
         title={reorder?.title ?? ""}
+        offer={reorder ? (offers.get(reorder.storyId) ?? null) : null}
         onClose={() => setReorder(null)}
       />
     </>
+  );
+}
+
+// ── Post-purchase offer ─────────────────────────────────────────────────────
+
+/**
+ * "¿Lo quieres en papel?" (PDF order) / "¿Una para los abuelos?" (printed order,
+ * 60 days). Prices come from the same catalog the checkout charges.
+ */
+export function OfferCallout({
+  offer,
+  onOpen,
+  className,
+}: {
+  offer: StoryUpsell;
+  onOpen: () => void;
+  className?: string;
+}) {
+  const t = useTranslations("dashboard.offer");
+  const locale = useLocale();
+  const upgrade = offer.offer === "pdf_upgrade";
+  const format: PhysicalFormat = !upgrade && offer.sourceFormat === "softcover" ? "softcover" : "hardcover";
+  const price = formatPrice(offerPrice(offer.offer, format), locale);
+  const until = offer.expiresAt
+    ? new Intl.DateTimeFormat(locale, { day: "numeric", month: "long", timeZone: "Europe/Madrid" }).format(new Date(offer.expiresAt))
+    : "";
+
+  return (
+    <div
+      className={cx("flex flex-col gap-3 rounded-2xl border-2 border-brand/25 bg-brand-tint px-4 py-3.5 sm:flex-row sm:items-center", className)}
+      data-testid="order-offer"
+      data-offer={offer.offer}
+    >
+      <span aria-hidden className="hidden sm:block">
+        <span className="material-symbols-outlined !text-[26px] text-brand-text">{upgrade ? "menu_book" : "family_restroom"}</span>
+      </span>
+      <div className="min-w-0 flex-1">
+        <p className="font-display text-[15px] font-semibold leading-tight text-ink">
+          {upgrade ? t("upgradeTitle") : t("extraTitle")}
+        </p>
+        <p className="mt-1 text-[13px] leading-snug text-ink-body">
+          {upgrade
+            ? t("upgradeLine", { price, pdf: formatPrice(STRIPE_CATALOG.digital_pdf.amount, locale) })
+            : t("extraLine", { price, date: until })}
+        </p>
+      </div>
+      <Button size="sm" onClick={onOpen} className="w-full shrink-0 sm:w-auto" data-testid="order-offer-cta">
+        {upgrade ? t("upgradeCta") : t("extraCta")}
+      </Button>
+    </div>
   );
 }
 
@@ -82,7 +146,7 @@ function OrderCard({
   onReorder,
 }: {
   order: DashboardOrder;
-  onReorder: (target: { storyId: string; title: string }) => void;
+  onReorder: (target: ReorderTarget) => void;
 }) {
   const t = useTranslations("dashboard");
   const tPricing = useTranslations("pricing");
@@ -100,6 +164,8 @@ function OrderCard({
   const downloadHref = view.canDownload && order.download_token ? `/api/downloads/${order.download_token}` : null;
   const contactHref = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(t("orders.contactSubject", { ref }))}`;
   const storyId = order.story_id;
+  // The offer replaces the plain "otra copia" button once the book can be printed again.
+  const showOffer = !!order.upsell && view.canReorder && !view.refunded;
 
   return (
     <article
@@ -125,6 +191,12 @@ function OrderCard({
       </div>
 
       <OrderStatus order={order} view={view} t={t} date={date} />
+
+      {showOffer && order.upsell && storyId && (
+        <div className="border-t border-line px-4 py-3 sm:px-5">
+          <OfferCallout offer={order.upsell} onOpen={() => onReorder({ storyId, title })} />
+        </div>
+      )}
 
       {/* Tracking (print, once the carrier has a code) */}
       {order.tracking_number && view.kind === "print" && order.status !== "refunded" && (
@@ -156,7 +228,7 @@ function OrderCard({
             {t("orders.downloadPdf")}
           </a>
         )}
-        {view.canReorder && storyId && (
+        {view.canReorder && !showOffer && storyId && (
           <Button
             variant="secondary"
             size="sm"
@@ -362,6 +434,8 @@ function OrderDetail({
         {row(t("orders.date"), date)}
         {row(t("orders.format"), formatLabel)}
         {addons.includes("extra_copy") && row(t("orders.extras"), t("orders.extraCopy"))}
+        {order.offer === "pdf_upgrade" && row(t("orders.offerLabel"), t("orders.offerUpgrade"))}
+        {order.offer === "extra_copy_repeat" && row(t("orders.offerLabel"), t("orders.offerExtraCopy"))}
         {row(
           t("orders.total"),
           <span>
@@ -410,16 +484,37 @@ function OrderDetail({
 
 const REORDER_FORMATS: PhysicalFormat[] = ["hardcover", "softcover"];
 
+function offerFormat(offer: StoryUpsell | null | undefined): PhysicalFormat {
+  return offer?.offer === "extra_copy_repeat" && offer.sourceFormat === "softcover" ? "softcover" : "hardcover";
+}
+
 /**
- * "Comprar otra copia": a printed copy of a finished book at the normal price
- * (standard Checkout; the address is chosen there). Opened from an order or from
- * the library.
+ * "Comprar otra copia": a printed copy of a finished book (standard Checkout; the
+ * address is chosen there). Opened from an order, its offer card or the library.
+ * With a post-purchase offer the sheet shows the offer prices; /api/checkout
+ * decides the price again from the buyer's orders (the client never sends it).
  */
-export function ReorderSheet({ storyId, title, onClose }: { storyId: string | null; title: string; onClose: () => void }) {
+export function ReorderSheet({
+  storyId,
+  title,
+  offer = null,
+  onClose,
+}: {
+  storyId: string | null;
+  title: string;
+  offer?: StoryUpsell | null;
+  onClose: () => void;
+}) {
   const t = useTranslations("dashboard");
   const tPricing = useTranslations("pricing");
   const locale = useLocale();
   const [format, setFormat] = useState<PhysicalFormat>("hardcover");
+  // Preselect on every open (extra copy: the format of the book they bought).
+  const [openedFor, setOpenedFor] = useState<string | null>(null);
+  if (storyId !== openedFor) {
+    setOpenedFor(storyId);
+    if (storyId) setFormat(offerFormat(offer));
+  }
   const [consent, setConsent] = useState(false);
   const [consentMissing, setConsentMissing] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -458,12 +553,17 @@ export function ReorderSheet({ storyId, title, onClose }: { storyId: string | nu
     }
   }
 
-  const price = formatPrice(PRICING[format].price, locale);
+  const priceOf = (f: PhysicalFormat) => (offer ? offerPrice(offer.offer, f) : PRICING[f].price);
+  const price = formatPrice(priceOf(format), locale);
+  const upgrade = offer?.offer === "pdf_upgrade";
+  const until = offer?.expiresAt
+    ? new Intl.DateTimeFormat(locale, { day: "numeric", month: "long", timeZone: "Europe/Madrid" }).format(new Date(offer.expiresAt))
+    : "";
 
   return (
     <Sheet
       open={!!storyId}
-      title={t("reorder.title", { title })}
+      title={upgrade ? t("reorder.titleUpgrade", { title }) : t("reorder.title", { title })}
       onClose={close}
       closeLabel={t("reorder.close")}
       footer={
@@ -479,7 +579,20 @@ export function ReorderSheet({ storyId, title, onClose }: { storyId: string | nu
         </>
       }
     >
-      <p className="text-sm leading-relaxed text-ink-body">{t("reorder.intro")}</p>
+      <p className="text-sm leading-relaxed text-ink-body">{upgrade ? t("reorder.introUpgrade") : t("reorder.intro")}</p>
+      {offer && (
+        <p
+          className="mt-3 flex items-start gap-2 rounded-xl bg-brand-tint px-3 py-2.5 text-[13px] font-semibold leading-snug text-brand-text"
+          data-testid="reorder-offer-note"
+        >
+          <span aria-hidden className="material-symbols-outlined !text-lg">sell</span>
+          <span>
+            {upgrade
+              ? t("reorder.offerUpgradeNote", { pdf: formatPrice(STRIPE_CATALOG.digital_pdf.amount, locale) })
+              : t("reorder.offerExtraNote", { date: until })}
+          </span>
+        </p>
+      )}
 
       <p id={groupId} className="mt-4 text-xs font-bold uppercase tracking-wide text-ink-soft">
         {t("reorder.formatLabel")}
@@ -505,8 +618,13 @@ export function ReorderSheet({ storyId, title, onClose }: { storyId: string | nu
               </span>
               <span className="shrink-0 text-right">
                 <span className="block font-display text-base font-semibold tabular-nums text-brand-deep">
-                  {formatPrice(PRICING[f].price, locale)}
+                  {formatPrice(priceOf(f), locale)}
                 </span>
+                {offer && (
+                  <span className="block text-[11px] tabular-nums text-ink-muted">
+                    {t.rich("reorder.normalPrice", { price: formatPrice(PRICING[f].price, locale), s: (chunks) => <s>{chunks}</s> })}
+                  </span>
+                )}
                 <span className="block text-[11px] text-ink-muted">{tPricing("vatIncluded")}</span>
               </span>
             </button>
@@ -530,7 +648,7 @@ export function ReorderSheet({ storyId, title, onClose }: { storyId: string | nu
           }}
           className="mt-0.5 h-[18px] w-[18px] shrink-0 accent-brand"
         />
-        <span>{tPricing("withdrawal.label")}</span>
+        <span>{t("reorder.consent")}</span>
       </label>
       {consentMissing && !consent && (
         <p className="mt-1.5 text-xs text-red-700" role="alert">

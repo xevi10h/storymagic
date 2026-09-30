@@ -1171,6 +1171,9 @@
       "format": "Format",
       "extras": "Extras",
       "extraCopy": "Extra copy",
+      "offerLabel": "Special price",
+      "offerUpgrade": "PDF deducted",
+      "offerExtraCopy": "Extra copy",
       "total": "Total",
       "shipTo": "Shipping address",
       "invoice": "Download invoice",
@@ -1197,13 +1200,27 @@
         "cancelled": "Order cancelled"
       }
     },
+    "offer": {
+      "upgradeTitle": "Want it in print?",
+      "upgradeLine": "Hardcover {price} VAT included · we take off the {pdf} PDF",
+      "upgradeCta": "Order it printed",
+      "extraTitle": "One for the grandparents?",
+      "extraLine": "Another copy for {price} VAT included · until {date}",
+      "extraCta": "Order another copy"
+    },
     "reorder": {
       "title": "Another copy of {title}",
       "intro": "The same book, printed again. You choose the shipping address at checkout. Standard shipping included to mainland Spain and the Balearic Islands.",
       "formatLabel": "Format",
       "pay": "Pay {price}",
       "error": "We couldn't open the payment page. Please try again in a moment.",
-      "close": "Close"
+      "close": "Close",
+      "titleUpgrade": "{title}, in print",
+      "introUpgrade": "The same book, printed and bound. You choose the shipping address at checkout. Standard shipping included to mainland Spain and the Balearic Islands.",
+      "offerUpgradeNote": "We take off the {pdf} you paid for the PDF.",
+      "offerExtraNote": "Extra-copy price until {date}. It ships in its own parcel.",
+      "normalPrice": "Was <s>{price}</s>",
+      "consent": "I understand this is a personalised book printed to order and therefore has no right of withdrawal."
     },
     "newStory": "New story",
     "greeting": "Hello, {name}",

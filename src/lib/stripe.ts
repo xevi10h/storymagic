@@ -1,5 +1,11 @@
 import Stripe from "stripe";
-import { STRIPE_CATALOG, type CatalogItemId } from "./pricing";
+import {
+  OPTIONAL_CATALOG_ITEMS,
+  STRIPE_CATALOG,
+  type CatalogItemId,
+  type OptionalCatalogItemId,
+  type RequiredCatalogItemId,
+} from "./pricing";
 
 type StripeEnvironment = "test" | "live";
 
@@ -55,18 +61,30 @@ export function getStripe(): Stripe {
 // ── Catalog (prices by lookup_key, see scripts/stripe-setup-catalog.mts) ─────
 
 export interface StripeCatalog {
-  prices: Record<CatalogItemId, string>;
+  prices: Record<RequiredCatalogItemId, string>;
+  /** Items added after the first live setup: absent (offer hidden) until the setup script runs. */
+  optionalPrices: Partial<Record<OptionalCatalogItemId, string>>;
   /** Seller NIF tax id (txi_…) printed on invoices; null if not configured. */
   sellerTaxId: string | null;
+}
+
+const OPTIONAL = new Set<CatalogItemId>(OPTIONAL_CATALOG_ITEMS);
+
+/** Price id of any catalog item, or null when an optional item is not set up. */
+export function catalogPriceId(catalog: StripeCatalog, item: CatalogItemId): string | null {
+  return OPTIONAL.has(item)
+    ? (catalog.optionalPrices[item as OptionalCatalogItemId] ?? null)
+    : catalog.prices[item as RequiredCatalogItemId];
 }
 
 const CATALOG_TTL_MS = 10 * 60_000;
 let _catalog: { env: StripeEnvironment; at: number; value: StripeCatalog } | null = null;
 
 /**
- * Resolve the catalog Prices on the active account. Throws if a Price is missing
- * or its amount/tax behaviour drifted from STRIPE_CATALOG — the UI shows those
- * amounts, so Checkout must never charge something else.
+ * Resolve the catalog Prices on the active account. Throws if a required Price is
+ * missing or its amount/tax behaviour drifted from STRIPE_CATALOG — the UI shows
+ * those amounts, so Checkout must never charge something else. Optional items
+ * (OPTIONAL_CATALOG_ITEMS) fail soft: missing or drifted → left out, logged.
  */
 export async function getStripeCatalog(): Promise<StripeCatalog> {
   const env = getActiveEnvironment();
@@ -78,21 +96,41 @@ export async function getStripeCatalog(): Promise<StripeCatalog> {
     stripe.prices.list({ lookup_keys: ids.map((id) => STRIPE_CATALOG[id].lookupKey), active: true, limit: 100 }),
     stripe.taxIds.list({ limit: 100 }),
   ]);
-  const resolved = {} as Record<CatalogItemId, string>;
+  const resolved = {} as Record<RequiredCatalogItemId, string>;
+  const optionalPrices: Partial<Record<OptionalCatalogItemId, string>> = {};
   for (const id of ids) {
     const item = STRIPE_CATALOG[id];
     const price = prices.data.find((p) => p.lookup_key === item.lookupKey);
-    if (!price) throw new Error(`Stripe price "${item.lookupKey}" missing in ${env} — run scripts/stripe-setup-catalog.mts`);
-    if (price.unit_amount !== item.amount || price.currency !== "eur" || price.tax_behavior !== "inclusive") {
-      throw new Error(
-        `Stripe price "${item.lookupKey}" (${price.id}) is ${price.unit_amount} ${price.currency} ${price.tax_behavior}, expected ${item.amount} eur inclusive`,
-      );
+    const problem = !price
+      ? `Stripe price "${item.lookupKey}" missing in ${env} — run scripts/stripe-setup-catalog.mts`
+      : price.unit_amount !== item.amount || price.currency !== "eur" || price.tax_behavior !== "inclusive"
+        ? `Stripe price "${item.lookupKey}" (${price.id}) is ${price.unit_amount} ${price.currency} ${price.tax_behavior}, expected ${item.amount} eur inclusive`
+        : null;
+    if (OPTIONAL.has(id)) {
+      if (problem) console.warn(`[stripe] ${problem} (optional: its offer is hidden)`);
+      else optionalPrices[id as OptionalCatalogItemId] = price!.id;
+      continue;
     }
-    resolved[id] = price.id;
+    if (problem) throw new Error(problem);
+    resolved[id as RequiredCatalogItemId] = price!.id;
   }
-  const value = { prices: resolved, sellerTaxId: taxIds.data.find((t) => t.type === "es_cif")?.id ?? null };
+  const value = { prices: resolved, optionalPrices, sellerTaxId: taxIds.data.find((t) => t.type === "es_cif")?.id ?? null };
   _catalog = { env, at: Date.now(), value };
   return value;
+}
+
+/**
+ * Is the PDF → printed upgrade sellable on this account (both Prices set up)?
+ * Never throws: any Stripe problem hides the offer.
+ */
+export async function isPdfUpgradeAvailable(): Promise<boolean> {
+  try {
+    const catalog = await getStripeCatalog();
+    return !!catalog.optionalPrices.upgrade_hardcover && !!catalog.optionalPrices.upgrade_softcover;
+  } catch (err) {
+    console.warn("[stripe] Catalog unavailable, PDF upgrade hidden:", err instanceof Error ? err.message : err);
+    return false;
+  }
 }
 
 // Re-export pricing for convenience in server routes

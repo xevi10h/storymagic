@@ -1181,6 +1181,9 @@
       "format": "Format",
       "extras": "Extres",
       "extraCopy": "Exemplar extra",
+      "offerLabel": "Preu especial",
+      "offerUpgrade": "PDF descomptat",
+      "offerExtraCopy": "Exemplar extra",
       "total": "Total",
       "shipTo": "Adreça d'enviament",
       "invoice": "Descarregar la factura",
@@ -1207,13 +1210,27 @@
         "cancelled": "Comanda cancel·lada"
       }
     },
+    "offer": {
+      "upgradeTitle": "El vols en paper?",
+      "upgradeLine": "Tapa dura {price} IVA inclòs · et descomptem els {pdf} del PDF",
+      "upgradeCta": "Demanar-lo imprès",
+      "extraTitle": "Un per als avis?",
+      "extraLine": "Un altre exemplar per {price} IVA inclòs · fins al {date}",
+      "extraCta": "Demanar un altre exemplar"
+    },
     "reorder": {
       "title": "Una altra còpia de {title}",
       "intro": "El mateix llibre, imprès de nou. Al pagament tries l'adreça d'enviament. Enviament estàndard inclòs a la península i les Balears.",
       "formatLabel": "Format",
       "pay": "Pagar {price}",
       "error": "No hem pogut obrir el pagament. Torna-ho a provar d'aquí a un moment.",
-      "close": "Tancar"
+      "close": "Tancar",
+      "titleUpgrade": "{title}, imprès",
+      "introUpgrade": "El mateix conte, imprès i enquadernat. Al pagament tries l'adreça d'enviament. Enviament estàndard inclòs a la península i les Balears.",
+      "offerUpgradeNote": "Et descomptem els {pdf} del PDF que ja vas comprar.",
+      "offerExtraNote": "Preu d'exemplar extra fins al {date}. Arriba en un paquet a part.",
+      "normalPrice": "Abans <s>{price}</s>",
+      "consent": "Entenc que és un llibre personalitzat imprès per encàrrec i que, per això, no tinc dret de desistiment."
     },
     "newStory": "Nou conte",
     "greeting": "Hola, {name}",

@@ -1,48 +1,13 @@
 import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
-import type Stripe from "stripe";
 import { createClient } from "@/lib/supabase/server";
 import { createFulfilmentClient } from "@/lib/fulfilment/db";
-import { getStripe, getStripeCatalog, PRICING, type BookFormat, type AddonId } from "@/lib/stripe";
-import {
-  addonCatalogItem,
-  addonPrice,
-  isAddonEnabled,
-  SELLER_IDENTITY,
-  WITHDRAWAL_CONSENT_VERSION,
-  type PhysicalFormat,
-} from "@/lib/pricing";
+import { getStripe, getStripeCatalog, PRICING, type BookFormat } from "@/lib/stripe";
 import { routing, type Locale } from "@/i18n/routing";
 import { purchaseEligibility } from "@/lib/fulfilment/logic";
-import { SUPPORT_EMAIL } from "@/lib/support";
+import { buildCheckoutSession, checkoutOffer } from "@/lib/checkout/session";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-// Stripe Checkout has no Catalan: Catalan buyers get the Spanish page.
-const CHECKOUT_LOCALE: Record<Locale, Stripe.Checkout.SessionCreateParams.Locale> = {
-  es: "es",
-  ca: "es",
-  en: "en",
-  fr: "fr",
-};
-
-// Shown above the Pay button (Stripe renders it as-is; our paywall already
-// collected the express consent, this repeats it on the payment page).
-const WITHDRAWAL_NOTICE: Record<Locale, string> = {
-  es: "Libro personalizado: sin derecho de desistimiento (art. 103 c y m LGDCU). Has aceptado recibir el PDF en cuanto esté listo. IVA incluido.",
-  ca: "Llibre personalitzat: sense dret de desistiment (art. 103 c i m LGDCU). Has acceptat rebre el PDF quan estigui llest. IVA inclòs.",
-  en: "Personalised book: no right of withdrawal (art. 103 c and m, Spanish consumer law). You agreed to receive the PDF as soon as it is ready. VAT included.",
-  fr: "Livre personnalisé : pas de droit de rétractation (art. 103 c et m, droit espagnol). Vous avez accepté de recevoir le PDF dès qu'il est prêt. TVA incluse.",
-};
-
-const SHIPPING_AREA_NOTICE: Record<Locale, string> = {
-  es: "Envío estándar incluido a la península y Baleares (7-10 días laborables). De momento no enviamos a Canarias, Ceuta ni Melilla.",
-  ca: "Enviament estàndard inclòs a la península i les Balears (7-10 dies laborables). De moment no enviem a Canàries, Ceuta ni Melilla.",
-  en: "Standard shipping included to mainland Spain and the Balearic Islands (7-10 business days). We don't ship to the Canary Islands, Ceuta or Melilla yet.",
-  fr: "Livraison standard incluse en Espagne péninsulaire et aux Baléares (7 à 10 jours ouvrés). Pas encore de livraison aux Canaries, à Ceuta ni à Melilla.",
-};
-
-const INVOICE_FOOTER = `${SELLER_IDENTITY} · IVA incluido (4 %, libros) · ${SUPPORT_EMAIL}`;
 
 /** ponytail: 2-min idempotency window — a double click reuses the session; a
  * deliberate second purchase after 2 min gets a new one. Per-click client keys
@@ -65,7 +30,7 @@ export async function POST(request: Request) {
     const body = (await request.json().catch(() => ({}))) as {
       storyId?: string;
       format?: BookFormat;
-      addons?: AddonId[];
+      addons?: unknown[];
       locale?: string;
       withdrawalConsent?: boolean;
     };
@@ -125,73 +90,45 @@ export async function POST(request: Request) {
         : routing.defaultLocale;
 
     const catalog = await getStripeCatalog();
-    const requiresShipping = PRICING[format].requiresShipping;
-    const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [{ price: catalog.prices[format], quantity: 1 }];
 
-    // Only sellable add-ons, only on physical formats, deduplicated.
-    const validAddons: AddonId[] = [];
-    if (requiresShipping) {
-      for (const id of new Set(addonIds)) {
-        if (!isAddonEnabled(id)) continue;
-        const item = addonCatalogItem(id, format as PhysicalFormat);
-        if (!item) continue;
-        validAddons.push(id);
-        lineItems.push({ price: catalog.prices[item], quantity: 1 });
-      }
+    // Post-purchase offers (PDF -> printed upgrade, extra copy within 60 days):
+    // decided here from the buyer's own paid orders of this story, never the client.
+    let offerOrders: Parameters<typeof checkoutOffer>[0]["orders"] = [];
+    if (isReorder && PRICING[format].requiresShipping) {
+      const { data: rows, error: ordersError } = await createFulfilmentClient()
+        .from("orders")
+        .select("id, user_id, story_id, format, status, refunded_at, created_at, offer")
+        .eq("user_id", user.id)
+        .eq("story_id", storyId);
+      // Fail soft: without the lookup the buyer simply pays the normal price.
+      if (ordersError) console.error("[checkout] Offer lookup failed:", ordersError.message);
+      else offerOrders = rows ?? [];
     }
-    const totalCents = PRICING[format].price + validAddons.reduce((sum, id) => sum + addonPrice(id, format), 0);
+    const offer = checkoutOffer({ orders: offerOrders, userId: user.id, storyId, format, isReorder, catalog, now: Date.now() });
 
-    const origin = new URL(request.url).origin;
-    const sessionParams: Stripe.Checkout.SessionCreateParams = {
-      mode: "payment",
-      payment_method_types: ["card"],
-      // Promotion codes are managed in the Stripe Dashboard (schools/AMPA, gifts).
-      allow_promotion_codes: true,
-      line_items: lineItems,
-      customer_email: user.email || undefined,
-      locale: CHECKOUT_LOCALE[locale],
-      // Prices are VAT-inclusive (B2C); Stripe Tax extracts the 4 % book rate.
-      automatic_tax: { enabled: true },
-      // Optional business tax ID (NIF/CIF) for a "factura completa": Checkout shows
-      // the field (with the legal name) for supported locations; no customer object
-      // needed, it lands on customer_details.tax_ids and on the invoice.
-      tax_id_collection: { enabled: true },
-      // Invoice (factura) for every order, with the seller NIF.
-      invoice_creation: {
-        enabled: true,
-        invoice_data: {
-          account_tax_ids: catalog.sellerTaxId ? [catalog.sellerTaxId] : undefined,
-          footer: INVOICE_FOOTER,
-          metadata: { story_id: storyId },
-        },
-      },
-      custom_text: { submit: { message: WITHDRAWAL_NOTICE[locale] } },
-      metadata: {
-        story_id: storyId,
-        user_id: user.id,
+    const plan = buildCheckoutSession({
+      catalog,
+      storyId,
+      userId: user.id,
+      email: user.email,
+      format,
+      addonIds,
+      locale,
+      isReorder,
+      offer,
+      origin: new URL(request.url).origin,
+    });
+    const { validAddons, totalCents } = plan;
+
+    const session = await getStripe().checkout.sessions.create(plan.params, {
+      idempotencyKey: idempotencyKey([
+        user.id,
+        storyId,
         format,
-        addons: JSON.stringify(validAddons),
+        [...validAddons].sort().join(","),
         locale,
-        withdrawal_consent_version: WITHDRAWAL_CONSENT_VERSION,
-        reorder: isReorder ? "true" : "false",
-      },
-      payment_intent_data: { metadata: { story_id: storyId, format } },
-      success_url: `${origin}/${locale}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      // Another copy is bought from the library: back there if they change their mind.
-      cancel_url: isReorder ? `${origin}/${locale}/dashboard` : `${origin}/${locale}/crear/${storyId}/preview`,
-    };
-    if (requiresShipping) {
-      // Decision 2026-09-28: Spain only (Gelato ships from an EU plant; no customs).
-      sessionParams.shipping_address_collection = { allowed_countries: ["ES"] };
-      // The carrier calls if a delivery fails.
-      sessionParams.phone_number_collection = { enabled: true };
-      // Canarias, Ceuta and Melilla are excluded (outside the EU VAT area); Stripe
-      // can't restrict postcodes, so say it here and enforce it before printing.
-      sessionParams.custom_text = { ...sessionParams.custom_text, shipping_address: { message: SHIPPING_AREA_NOTICE[locale] } };
-    }
-
-    const session = await getStripe().checkout.sessions.create(sessionParams, {
-      idempotencyKey: idempotencyKey([user.id, storyId, format, [...validAddons].sort().join(","), locale]),
+        plan.offer ? `${plan.offer.offer}:${plan.offer.sourceOrderId}` : "",
+      ]),
     });
 
     // An idempotent replay of a session that has since completed/expired has no URL.
@@ -213,7 +150,9 @@ export async function POST(request: Request) {
         total: totalCents / 100,
         status: "pending",
         withdrawal_consent_at: new Date().toISOString(),
-        withdrawal_consent_version: WITHDRAWAL_CONSENT_VERSION,
+        withdrawal_consent_version: plan.consentVersion,
+        offer: plan.offer?.offer ?? null,
+        offer_source_order_id: plan.offer?.sourceOrderId ?? null,
       },
       { onConflict: "stripe_checkout_session_id", ignoreDuplicates: true },
     );

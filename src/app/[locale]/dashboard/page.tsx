@@ -10,6 +10,7 @@ import BrandIcon from "@/components/BrandIcon";
 import { BrandLoader } from "@/components/ui/BrandLoader";
 import { Spinner } from "@/components/ui/Spinner";
 import { OrdersTab, ReorderSheet, type DashboardOrder } from "@/components/dashboard/OrdersTab";
+import type { StoryUpsell } from "@/lib/upsell";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -51,6 +52,8 @@ interface DashboardData {
   stories: DashboardStory[];
   orders: DashboardOrder[];
   characters: DashboardCharacter[];
+  /** Post-purchase offer per story id (the "otra copia" sheet shows its prices). */
+  offers?: Record<string, StoryUpsell>;
 }
 
 type TabId = "stories" | "orders" | "characters";
@@ -235,6 +238,7 @@ export default function DashboardPage() {
         {activeTab === "stories" && (
           <StoriesTab
             stories={data?.stories ?? []}
+            offers={data?.offers ?? {}}
             t={t}
             formatDate={formatDate}
             onTitleUpdate={(storyId, newTitle) => {
@@ -272,11 +276,13 @@ export default function DashboardPage() {
 
 function StoriesTab({
   stories,
+  offers,
   t,
   formatDate,
   onTitleUpdate,
 }: {
   stories: DashboardStory[];
+  offers: Record<string, StoryUpsell>;
   t: ReturnType<typeof useTranslations<"dashboard">>;
   formatDate: (iso: string) => string;
   onTitleUpdate: (storyId: string, newTitle: string) => void;
@@ -306,7 +312,12 @@ function StoriesTab({
           onReorder={setReorder}
         />
       ))}
-      <ReorderSheet storyId={reorder?.storyId ?? null} title={reorder?.title ?? ""} onClose={() => setReorder(null)} />
+      <ReorderSheet
+        storyId={reorder?.storyId ?? null}
+        title={reorder?.title ?? ""}
+        offer={reorder ? (offers[reorder.storyId] ?? null) : null}
+        onClose={() => setReorder(null)}
+      />
     </div>
   );
 }

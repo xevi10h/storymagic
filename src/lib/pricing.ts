@@ -2,6 +2,7 @@
 // Shared between client and server — no server-only imports here
 
 import { FREE_PREVIEW_SCENES } from "./preview-access";
+import { offerCatalogItem, type UpsellFormat, type UpsellOffer } from "./upsell";
 
 // Display labels are in i18n files (src/messages/{locale}.json → "pricing" section).
 // Labels here are only used as Stripe line-item names (language-neutral English).
@@ -19,7 +20,18 @@ export type CatalogItemId =
   | "softcover"
   | "hardcover"
   | "extra_copy_softcover"
-  | "extra_copy_hardcover";
+  | "extra_copy_hardcover"
+  | "upgrade_softcover"
+  | "upgrade_hardcover";
+
+/**
+ * Items that may be missing on a Stripe account (added after the first live setup):
+ * getStripeCatalog does not fail on them, it just leaves them out and the offer that
+ * sells them is hidden (fail soft) until scripts/stripe-setup-catalog.mts is re-run.
+ */
+export const OPTIONAL_CATALOG_ITEMS = ["upgrade_softcover", "upgrade_hardcover"] as const satisfies readonly CatalogItemId[];
+export type OptionalCatalogItemId = (typeof OPTIONAL_CATALOG_ITEMS)[number];
+export type RequiredCatalogItemId = Exclude<CatalogItemId, OptionalCatalogItemId>;
 
 /** Customer-facing names (Checkout + invoice) are Spanish: Stripe has no Catalan locale. */
 export const STRIPE_CATALOG: Record<CatalogItemId, { lookupKey: string; amount: number; name: string; taxCode: string }> = {
@@ -28,7 +40,18 @@ export const STRIPE_CATALOG: Record<CatalogItemId, { lookupKey: string; amount: 
   hardcover: { lookupKey: "meapica_hardcover", amount: 4990, name: "Cuento personalizado Meapica · Tapa dura (incluye PDF)", taxCode: TAX_CODE_PRINTED_CHILDRENS_BOOK },
   extra_copy_softcover: { lookupKey: "meapica_extra_copy_softcover", amount: 1990, name: "Ejemplar extra · Tapa blanda", taxCode: TAX_CODE_PRINTED_CHILDRENS_BOOK },
   extra_copy_hardcover: { lookupKey: "meapica_extra_copy_hardcover", amount: 2990, name: "Ejemplar extra · Tapa dura", taxCode: TAX_CODE_PRINTED_CHILDRENS_BOOK },
+  // PDF → printed upgrade (owner 2026-09-30): the format price minus the 9,90 € PDF.
+  upgrade_softcover: { lookupKey: "meapica_upgrade_softcover", amount: 2500, name: "Cuento personalizado Meapica · Tapa blanda (descontado el PDF ya comprado)", taxCode: TAX_CODE_PRINTED_CHILDRENS_BOOK },
+  upgrade_hardcover: { lookupKey: "meapica_upgrade_hardcover", amount: 4000, name: "Cuento personalizado Meapica · Tapa dura (descontado el PDF ya comprado)", taxCode: TAX_CODE_PRINTED_CHILDRENS_BOOK },
 };
+
+/**
+ * Price (cents, VAT-inclusive) of a printed copy under a post-purchase offer. The
+ * extra-copy offer reuses the checkout extra-copy Prices as a standalone line.
+ */
+export function offerPrice(offer: UpsellOffer, format: UpsellFormat): number {
+  return STRIPE_CATALOG[offerCatalogItem(offer, format)].amount;
+}
 
 /** Catalog item behind a Stripe Price lookup_key (receipts), or null if unknown. */
 export function catalogItemByLookupKey(lookupKey: string | null | undefined): CatalogItemId | null {
@@ -106,7 +129,7 @@ export function addonPrice(id: AddonId, format: BookFormat): number {
 }
 
 /** Stripe catalog item for an add-on on a given format (only sellable add-ons). */
-export function addonCatalogItem(id: AddonId, format: PhysicalFormat): CatalogItemId | null {
+export function addonCatalogItem(id: AddonId, format: PhysicalFormat): RequiredCatalogItemId | null {
   return id === "extra_copy" ? `extra_copy_${format}` : null;
 }
 
@@ -162,3 +185,10 @@ export const TOTAL_SCENE_COUNT = 12;
  * Bump it whenever that copy (pricing.withdrawal.* in the message files) changes.
  */
 export const WITHDRAWAL_CONSENT_VERSION = "2026-09-30";
+
+/**
+ * Same, for another printed copy of a finished book (library "Comprar otra copia"
+ * and the post-purchase offers): the PDF is already delivered, so the notice only
+ * covers the made-to-order printed book (dashboard.reorder.consent).
+ */
+export const REORDER_CONSENT_VERSION = "2026-09-30-reorder";

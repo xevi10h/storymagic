@@ -1,8 +1,8 @@
 // Idempotent Stripe setup for Meapica on ONE account/mode (the one behind the key):
 //   Stripe Tax (head office Barcelona, ES registration "small_seller": 4 % books,
 //   Spanish VAT on EU digital sales under the 10k € OSS threshold), the seller NIF
-//   for invoices, the 5 catalog Products/Prices (VAT-inclusive, lookup keys from
-//   src/lib/pricing.ts) and the webhook endpoint.
+//   for invoices, every STRIPE_CATALOG Product/Price (VAT-inclusive, lookup keys from
+//   src/lib/pricing.ts, incl. the PDF → printed upgrade) and the webhook endpoint.
 //
 //   STRIPE_KEY=sk_test_... npx tsx --tsconfig tsconfig.json scripts/stripe-setup-catalog.mts \
 //     [--webhook-url=https://meapica.com/api/webhooks/stripe] [--dry-run]

@@ -18,7 +18,8 @@ import { EMAIL_COLORS, renderEmailLayout, escapeHtml } from "./layout";
 import { getSiteUrl } from "./send";
 import { SUPPORT_EMAIL } from "@/lib/support";
 import { orderAccessUrl } from "@/lib/auth/next-path";
-import { formatPrice, SELLER_IDENTITY, type CatalogItemId } from "@/lib/pricing";
+import { formatPrice, offerPrice, SELLER_IDENTITY, STRIPE_CATALOG, type CatalogItemId } from "@/lib/pricing";
+import type { UpsellOffer } from "@/lib/upsell";
 import { ORDER_NOTICES, type NoticeEventStrings, type OrderNoticeEvent } from "./order-notices";
 
 export type OrderEmailEvent =
@@ -84,6 +85,11 @@ export interface OrderEmailContext {
   postcode?: string | null;
   /** Recipient address: prefilled on the login screen behind "Ver mi pedido". */
   recipientEmail?: string | null;
+  /**
+   * Post-purchase offer (src/lib/upsell.ts), shown as a short block: the PDF
+   * upgrade in book_ready of a PDF order, the extra copy in delivered.
+   */
+  upsell?: { offer: UpsellOffer; expiresAt: string | null } | null;
 }
 
 // Short, stable order reference shown to the customer (shared with the library UI).
@@ -118,6 +124,13 @@ interface ReceiptStrings {
   soldBy: string;
 }
 
+interface UpsellStrings {
+  title: string;
+  /** prices are formatted, VAT note included by the copy; until = formatted deadline */
+  body: (p: { hardcover: string; softcover: string; pdf: string; until: string | null; bookTitle: string }) => string;
+  cta: string;
+}
+
 interface Strings {
   greeting: (firstName: string | null) => string;
   signoff: string;
@@ -128,6 +141,7 @@ interface Strings {
   /** Durable-medium confirmation of the express consent (art. 98.7 + 103 m LGDCU). */
   withdrawalConfirmation: string;
   receipt: ReceiptStrings;
+  upsell: Record<UpsellOffer, UpsellStrings>;
   events: Record<OrderEmailEvent, NoticeEventStrings>;
 }
 
@@ -154,6 +168,8 @@ const CONTENT: Record<Locale, Strings> = {
         hardcover: "Cuento personalizado, tapa dura (incluye el PDF)",
         extra_copy_softcover: "Ejemplar extra, tapa blanda",
         extra_copy_hardcover: "Ejemplar extra, tapa dura",
+        upgrade_softcover: "Cuento personalizado, tapa blanda (descontado el PDF ya comprado)",
+        upgrade_hardcover: "Cuento personalizado, tapa dura (descontado el PDF ya comprado)",
       },
       shipping: "Envío estándar",
       shippingIncluded: "Incluido",
@@ -163,6 +179,20 @@ const CONTENT: Record<Locale, Strings> = {
       shipTo: "Dirección de envío",
       invoice: (n) => (n ? `Descargar la factura ${n}` : "Descargar la factura"),
       soldBy: "Vendido por",
+    },
+    upsell: {
+      pdf_upgrade: {
+        title: "¿Lo quieres también en papel?",
+        body: (p) =>
+          `Te descontamos los ${p.pdf} del PDF: tapa dura por ${p.hardcover} o tapa blanda por ${p.softcover}, IVA y envío incluidos. Lo pides desde tus pedidos cuando quieras.`,
+        cta: "Pedirlo impreso",
+      },
+      extra_copy_repeat: {
+        title: "¿Una para los abuelos?",
+        body: (p) =>
+          `Hasta el ${p.until} puedes pedir otro ejemplar de ${p.bookTitle} por ${p.hardcover} en tapa dura o ${p.softcover} en tapa blanda, IVA y envío incluidos. Llega en un paquete aparte.`,
+        cta: "Pedir otro ejemplar",
+      },
     },
     events: {
       order_confirmed: {
@@ -248,6 +278,8 @@ const CONTENT: Record<Locale, Strings> = {
         hardcover: "Conte personalitzat, tapa dura (inclou el PDF)",
         extra_copy_softcover: "Exemplar extra, tapa tova",
         extra_copy_hardcover: "Exemplar extra, tapa dura",
+        upgrade_softcover: "Conte personalitzat, tapa tova (descomptat el PDF ja comprat)",
+        upgrade_hardcover: "Conte personalitzat, tapa dura (descomptat el PDF ja comprat)",
       },
       shipping: "Enviament estàndard",
       shippingIncluded: "Inclòs",
@@ -257,6 +289,20 @@ const CONTENT: Record<Locale, Strings> = {
       shipTo: "Adreça d'enviament",
       invoice: (n) => (n ? `Descarregar la factura ${n}` : "Descarregar la factura"),
       soldBy: "Venut per",
+    },
+    upsell: {
+      pdf_upgrade: {
+        title: "El vols també en paper?",
+        body: (p) =>
+          `Et descomptem els ${p.pdf} del PDF: tapa dura per ${p.hardcover} o tapa tova per ${p.softcover}, IVA i enviament inclosos. El pots demanar des de les teves comandes quan vulguis.`,
+        cta: "Demanar-lo imprès",
+      },
+      extra_copy_repeat: {
+        title: "Un per als avis?",
+        body: (p) =>
+          `Fins al ${p.until} pots demanar un altre exemplar de ${p.bookTitle} per ${p.hardcover} en tapa dura o ${p.softcover} en tapa tova, IVA i enviament inclosos. Arriba en un paquet a part.`,
+        cta: "Demanar un altre exemplar",
+      },
     },
     events: {
       order_confirmed: {
@@ -342,6 +388,8 @@ const CONTENT: Record<Locale, Strings> = {
         hardcover: "Personalised storybook, hardcover (PDF included)",
         extra_copy_softcover: "Extra copy, softcover",
         extra_copy_hardcover: "Extra copy, hardcover",
+        upgrade_softcover: "Personalised book, softcover (PDF already paid deducted)",
+        upgrade_hardcover: "Personalised book, hardcover (PDF already paid deducted)",
       },
       shipping: "Standard shipping",
       shippingIncluded: "Included",
@@ -351,6 +399,20 @@ const CONTENT: Record<Locale, Strings> = {
       shipTo: "Shipping address",
       invoice: (n) => (n ? `Download invoice ${n}` : "Download the invoice"),
       soldBy: "Sold by",
+    },
+    upsell: {
+      pdf_upgrade: {
+        title: "Would you like it in print too?",
+        body: (p) =>
+          `We take off the ${p.pdf} you paid for the PDF: hardcover for ${p.hardcover} or softcover for ${p.softcover}, VAT and shipping included. Order it from your orders whenever you like.`,
+        cta: "Order it printed",
+      },
+      extra_copy_repeat: {
+        title: "One for the grandparents?",
+        body: (p) =>
+          `Until ${p.until} you can order another copy of ${p.bookTitle} for ${p.hardcover} in hardcover or ${p.softcover} in softcover, VAT and shipping included. It ships in its own parcel.`,
+        cta: "Order another copy",
+      },
     },
     events: {
       order_confirmed: {
@@ -436,6 +498,8 @@ const CONTENT: Record<Locale, Strings> = {
         hardcover: "Livre personnalisé, couverture rigide (PDF inclus)",
         extra_copy_softcover: "Exemplaire supplémentaire, couverture souple",
         extra_copy_hardcover: "Exemplaire supplémentaire, couverture rigide",
+        upgrade_softcover: "Livre personnalisé, couverture souple (PDF déjà payé déduit)",
+        upgrade_hardcover: "Livre personnalisé, couverture rigide (PDF déjà payé déduit)",
       },
       shipping: "Livraison standard",
       shippingIncluded: "Incluse",
@@ -445,6 +509,20 @@ const CONTENT: Record<Locale, Strings> = {
       shipTo: "Adresse de livraison",
       invoice: (n) => (n ? `Télécharger la facture ${n}` : "Télécharger la facture"),
       soldBy: "Vendu par",
+    },
+    upsell: {
+      pdf_upgrade: {
+        title: "Vous le voulez aussi en papier ?",
+        body: (p) =>
+          `Nous déduisons les ${p.pdf} du PDF : couverture rigide à ${p.hardcover} ou souple à ${p.softcover}, TVA et livraison incluses. Commandez-le depuis vos commandes quand vous le souhaitez.`,
+        cta: "Le commander imprimé",
+      },
+      extra_copy_repeat: {
+        title: "Un exemplaire pour les grands-parents ?",
+        body: (p) =>
+          `Jusqu'au ${p.until}, vous pouvez commander un autre exemplaire de ${p.bookTitle} à ${p.hardcover} en couverture rigide ou ${p.softcover} en souple, TVA et livraison incluses. Il est expédié dans un colis séparé.`,
+        cta: "Commander un autre exemplaire",
+      },
     },
     events: {
       order_confirmed: {
@@ -613,6 +691,39 @@ function renderReceiptText(r: OrderReceipt, s: ReceiptStrings, loc: Locale): str
   return lines.join("\n");
 }
 
+/** The offer block (inline styles), below the main CTA. Returns html + text, or null. */
+function renderUpsell(
+  event: OrderEmailEvent,
+  ctx: OrderEmailContext,
+  s: Strings,
+  loc: Locale,
+  url: string,
+): { html: string; text: string } | null {
+  const u = ctx.upsell;
+  if (!u) return null;
+  const fits =
+    (event === "book_ready" && u.offer === "pdf_upgrade" && !ctx.isPhysical) ||
+    (event === "delivered" && u.offer === "extra_copy_repeat" && !!u.expiresAt);
+  if (!fits) return null;
+  const copy = s.upsell[u.offer];
+  const params = {
+    hardcover: formatPrice(offerPrice(u.offer, "hardcover"), loc),
+    softcover: formatPrice(offerPrice(u.offer, "softcover"), loc),
+    pdf: formatPrice(STRIPE_CATALOG.digital_pdf.amount, loc),
+    until: u.expiresAt ? formatDate(u.expiresAt, loc) : null,
+    bookTitle: ctx.bookTitle,
+  };
+  const body = copy.body(params);
+  const bodyHtml = copy.body({ ...params, bookTitle: `<strong>${escapeHtml(ctx.bookTitle)}</strong>` });
+  const C = EMAIL_COLORS;
+  const html = `<div style="margin:0 0 24px;padding:18px 20px;border:1px solid ${C.border};border-radius:12px;background-color:${C.bg};">
+    <p style="margin:0 0 6px;font-size:16px;font-weight:700;color:${C.heading};">${escapeHtml(copy.title)}</p>
+    <p style="margin:0 0 12px;font-size:14px;line-height:1.6;color:${C.body};">${bodyHtml}</p>
+    <a href="${escapeHtml(url)}" style="font-size:15px;font-weight:700;color:${C.primaryText};text-decoration:underline;">${escapeHtml(copy.cta)}</a>
+  </div>`;
+  return { html, text: `${copy.title}\n${body}\n${copy.cta}: ${url}` };
+}
+
 export interface BuiltEmail {
   subject: string;
   html: string;
@@ -663,12 +774,13 @@ export function buildOrderEmail(event: OrderEmailEvent, ctx: OrderEmailContext):
         : cta;
 
   const greeting = s.greeting(firstName);
+  const upsell = renderUpsell(event, ctx, s, loc, dashboardUrl);
   const html = renderEmailLayout({
     heading: ev.heading,
     greeting: escapeHtml(greeting),
     paragraphs,
     cta: shownCta,
-    detailsHtml: receipt ? renderReceiptHtml(receipt, s.receipt, loc) : undefined,
+    detailsHtml: receipt ? renderReceiptHtml(receipt, s.receipt, loc) : upsell?.html,
     infoHtml,
     signoff: s.signoff,
     lang: loc,
@@ -679,6 +791,7 @@ export function buildOrderEmail(event: OrderEmailEvent, ctx: OrderEmailContext):
     str.replace(/<[^>]+>/g, "").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'");
   const textLines = [greeting, ...paragraphs.map(stripTags), `${shownCta.label}: ${shownCta.url}`];
   if (receipt) textLines.push(renderReceiptText(receipt, s.receipt, loc));
+  if (upsell) textLines.push(upsell.text);
   if (infoText) textLines.push(infoText);
   textLines.push("---", s.signoff);
 
