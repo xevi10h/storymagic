@@ -50,7 +50,8 @@ character lock; per-stage resolution. (commits 5ebc2f1 → a883d60)
 
 ## Next steps from accounts & orders block (2026-09-30)
 - **Retention for guests who paid** (never auto-purged today): e.g. anonymise child data N months after delivery.
-- **Follow-up upsell email** (e.g. 7 days after a PDF) — needs an opt-out mechanism (LSSI art. 21) before sending.
+- Verify Resend DKIM covers the `List-Unsubscribe` headers (RFC 8058) after the meapica.com domain is verified.
+- "Pack de 3 cuentos" for the same child (collection discount in business-model.md).
 - Admin: refund button + address change before print; customer "change address" request window.
 - Newsletter unsubscribe / communication preferences; saved addresses (Stripe collects them each time).
 - Reuse `PAID_ORDER_STATUSES` (src/lib/story-purchase.ts) in complete/verify/downloads/pipeline/admin (list still duplicated).

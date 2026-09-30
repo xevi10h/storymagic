@@ -12,7 +12,7 @@
 >    Site URL `https://meapica.com`; redirect allow-list `https://meapica.com/**`, `https://www.meapica.com/**`,
 >    `http://localhost:3013/**`; templates "Magic Link" and "Change Email Address" from `supabase/templates/`.
 > 2. Apply migrations 20260930130000 (guest merge), 20260930140000 (order notices), 20260930150000 (admin + retention),
->    20260930155000 (upsell offers).
+>    20260930155000 (upsell offers), 20260930156000 (marketing opt-out, suppressions, reminder).
 > 3. Cloudflare → Turnstile: create a Managed widget (hostnames meapica.com, www.meapica.com, localhost).
 > 4. Vercel env: `ADMIN_EMAILS=admin@casmar.tech`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY` (build-time), optional
 >    `DAILY_PREVIEW_CAP` (default 300/day, 0 = off); `OPS_ALERT_EMAIL` set. Deploy the code.

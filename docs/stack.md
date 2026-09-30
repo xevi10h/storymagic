@@ -179,7 +179,7 @@ inlined at build → redeploy after changing; unset = no captcha). The Turnstile
 0 = off): global per-UTC-day ceiling on new AI previews; ops alert at 80 % and 100 % via `OPS_ALERT_EMAIL`.
 
 **Env (Vercel prod):** `ADMIN_EMAILS` (comma-separated; empty = nobody gets into `/admin`).
-`CRON_SECRET` also guards `/api/cron/purge-guests` (vercel.json, daily 03:40 UTC). Guest-merge cookie
+`CRON_SECRET` also guards `/api/cron/purge-guests` (vercel.json, daily 03:40 UTC) and `/api/cron/upsell-reminders` (daily 08:00 UTC, `?dry_run=1`). Unsubscribe tokens are HMAC-signed with a key derived from `SUPABASE_SERVICE_ROLE_KEY`; commercial emails send `List-Unsubscribe` + `List-Unsubscribe-Post` via Resend headers. Guest-merge cookie
 key is derived from `SUPABASE_SERVICE_ROLE_KEY` (no new var).
 
 ### Deploy order — accounts/orders/security (2026-09-30)
@@ -190,6 +190,7 @@ key is derived from `SUPABASE_SERVICE_ROLE_KEY` (no new var).
 | 20260930140000 | `order_notifications.sql` (notice email claims, `disputed_at`, `fulfilment_hold_reason`) | before the deploy (code selects them) |
 | 20260930150000 | `admin_and_retention.sql` (requeue/reprint columns, `order_status_history`, `admin_audit_log`, `account_erasures`) | before the deploy |
 | 20260930155000 | `upsell_offers.sql` (`orders.offer`, `offer_source_order_id`, index user_id+story_id) | before the deploy (checkout writes them) |
+| 20260930156000 | `marketing_email.sql` (`orders.marketing_opt_out`, `upsell_reminder_sent_at`, `email_suppressions`) | before the deploy |
 | 20260930160000 | `security_hardening.sql` (no browser writes, locked showcase, book-pdfs server-only, orders FKs SET NULL, newsletter/rate_limits closed) | **after** the deploy |
 | 20260930170000 | `daily_preview_cap.sql` (atomic per-day counter RPC; code falls back to an approximate count without it) | after the deploy |
 | 20260930180000 | `paywall_columns.sql` (revoke client read of `stories.generated_text` / `story_illustrations.prompt_used`; drop owner direct-read storage policy) | **after** the deploy |

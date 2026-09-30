@@ -137,11 +137,13 @@ orders
 ├── refunded_at (a goodwill refund on a shipped/delivered order only sets this; status keeps its history)
 ├── refund/cancel/delay/problem/excluded_area/tracking_email_sent_at (exactly-once customer notices, 20260930140000)
 ├── disputed_at / fulfilment_hold_reason ('dispute' = chargeback: nothing generated/printed until an operator re-sends from /admin)
+├── marketing_opt_out (LSSI opt-out ticked at checkout; NULL = order predates the choice → no commercial content) / upsell_reminder_sent_at (20260930156000)
 ├── offer / offer_source_order_id ('pdf_upgrade' | 'extra_copy_repeat' + the order that earned it, 20260930155000)
 └── fulfilment_requeued_at / gelato_reprint_count (admin re-queue restarts the cron windows; reprints use Gelato ref meapica-{id}-r{n}, 20260930150000)
 RLS: owners SELECT only. Browsers can't write any product table (20260930160000): every write goes through an API route with the service role after an ownership check.
 
 order_status_history (trigger-fed status log, admin only — RLS on, no policies)
+email_suppressions (unsubscribed / opted-out emails, lowercase unique; kept after account erasure so the opt-out keeps being honoured — service role only)
 admin_audit_log (every /admin action: actor, action, order, ok, details — admin only)
 account_erasures (one row per erasure: counts only, no personal data — admin only)
 RPC merge_guest_account(anon, target, story_ids) — service role only (20260930130000): re-owns a guest's rows to the account they logged into
