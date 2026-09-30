@@ -97,7 +97,7 @@
       },
       "baptism": {
         "metaTitle": "Livre de baptême personnalisé | Meapica",
-        "metaDescription": "Un conte personnalisé qui devient le souvenir de baptême de votre enfant. Édition unique, imprimée dans l'UE. Un cadeau de parrain ou marraine.",
+        "metaDescription": "Un conte personnalisé qui devient le souvenir de baptême de votre enfant. Édition unique, imprimée en Europe. Un cadeau de parrain ou marraine.",
         "h1": "Un livre de baptême personnalisé, à conserver toute une vie",
         "heroIntro": "Pour marquer le baptême, offrez bien plus qu'un objet : un conte unique où votre enfant devient le héros, à garder précieusement et à relire en grandissant.",
         "bodyHeading": "Un souvenir de baptême que l'enfant grandira à découvrir",
@@ -173,7 +173,7 @@
       },
       "first-birthday": {
         "metaTitle": "Cadeau de premier anniversaire personnalisé | Meapica",
-        "metaDescription": "Pour ses 1 an, son premier livre avec son prénom. Un conte personnalisé en édition unique, imprimé dans l'UE. Le souvenir d'un premier âge.",
+        "metaDescription": "Pour ses 1 an, son premier livre avec son prénom. Un conte personnalisé en édition unique, imprimé en Europe. Le souvenir d'un premier âge.",
         "h1": "Son premier livre, pour son premier anniversaire",
         "heroIntro": "Un an déjà. Pour ce premier grand jour, offrez son tout premier livre : un conte unique, avec son prénom, à garder comme un souvenir de ce premier âge.",
         "bodyHeading": "Le premier livre d'une vie de lecteur",
@@ -598,7 +598,7 @@
     "likenessQ": "Et s'il ne ressemble pas à mon enfant ?",
     "likenessA": "Vous choisissez son apparence : peau, couleur et coupe de cheveux, yeux, lunettes et taches de rousseur, et vous voyez son portrait avant de continuer. Si vous voulez le changer dans l'aperçu, vous modifiez son apparence et nous repeignons le livre avec le nouveau personnage ; tout le reste est conservé. Nous l'imprimons tel que vous le voyez.",
     "deliveryQ": "Quand arrive-t-il ? Arrive-t-il pour Noël ?",
-    "deliveryA": "Nous l'imprimons à la demande dans l'UE dès votre commande et il arrive en 7 à 10 jours ouvrés, livraison incluse. Nous livrons en Espagne péninsulaire et aux Baléares (pas encore aux Canaries, à Ceuta ni à Melilla).",
+    "deliveryA": "Nous l'imprimons à la demande en Europe dès votre commande et il arrive en 7 à 10 jours ouvrés, livraison incluse. Nous livrons en Espagne péninsulaire et aux Baléares (pas encore aux Canaries, à Ceuta ni à Melilla).",
     "deliverySeason": "Pour l'avoir à la maison le soir de Noël, commandez avant le {christmasDate} ; pour l'Épiphanie (Rois mages), avant le {reyesDate}.",
     "deliverySeasonReyes": "Pour l'avoir à la maison avant l'Épiphanie (Rois mages), commandez avant le {reyesDate}.",
     "deliverySeasonPdf": "Le livre imprimé n'arrivera plus à temps pour les Rois mages, mais le conte en PDF, si : il arrive par e-mail après le paiement, généralement en moins d'une heure.",
@@ -606,7 +606,7 @@
     "priceQ": "Combien ça coûte et qu'est-ce qui est inclus ?",
     "priceA": "Couverture souple, {softcover}. Couverture rigide, {hardcover}. PDF seul, {pdf}. Tous les prix sont TVA incluse. Le livre imprimé inclut la livraison et le PDF de l'histoire complète.",
     "returnsQ": "Puis-je le retourner ?",
-    "returnsA": "Livre fait sur mesure, avec son prénom et son portrait, il n'est ni repris ni échangé : c'est pour cela que vous voyez le livre entier avant de payer. Mais s'il arrive avec le moindre défaut d'impression ou abîmé pendant la livraison, nous vous en envoyons un nouveau sans frais.",
+    "returnsA": "Livre fait sur mesure, avec son prénom et son portrait, il n'est ni repris ni échangé : c'est pour cela que vous voyez le livre entier avant de payer. Mais s'il arrive avec le moindre défaut d'impression ou abîmé pendant la livraison, nous vous en envoyons un nouveau sans frais. Il suffit de nous écrire dans les 30 jours suivant sa réception, avec une photo du livre et de l'emballage.",
     "moreQuestions": "Une autre question ? Écrivez-nous à"
   },
   "finalCta": {
@@ -620,7 +620,7 @@
     "meta": "Livre imprimé à partir de {price} · TVA incluse · Livraison incluse"
   },
   "footer": {
-    "tagline": "Des contes personnalisés, écrits et illustrés pour chaque enfant.\nImprimés dans l'UE et livrés chez vous.\nSans piles, juste de l'imagination.",
+    "tagline": "Des contes personnalisés, écrits et illustrés pour chaque enfant.\nImprimés en Europe et livrés chez vous.\nSans piles, juste de l'imagination.",
     "workshop": "Le livre",
     "ourPapers": "Papier et finitions",
     "artisanalProcess": "Comment il est fait",
@@ -675,7 +675,7 @@
       "section4Title": "4. Prix et paiements",
       "section4Text": "Tous les prix sont définitifs, TVA incluse, et affichés en euros. Pour les livres imprimés, la livraison en Espagne est incluse dans le prix. Le paiement est traité de manière sécurisée via Stripe.",
       "section5Title": "5. Livraison et retours",
-      "section5Text": "Les livres sont imprimés à la demande dans l'UE et, pour l'instant, nous livrons uniquement en Espagne. Espagne péninsulaire : 7 à 10 jours ouvrés. Baléares : 7 à 10 jours ouvrés. Pas encore de livraison aux Canaries, à Ceuta ni à Melilla. S'agissant de produits personnalisés, les livres sont exclus du droit de rétractation (art. 103 c) du texte refondu de la loi espagnole de protection des consommateurs, TRLGDCU) et ne sont pas repris. Si un livre arrive avec un défaut d'impression ou de fabrication, ou s'il est abîmé pendant la livraison, écrivez-nous avec une photo et nous vous en envoyons un nouveau sans frais. Cela ne limite pas vos droits de garantie légale.",
+      "section5Text": "Les livres sont imprimés à la demande en Europe et, pour l'instant, nous livrons uniquement en Espagne. Espagne péninsulaire : 7 à 10 jours ouvrés. Baléares : 7 à 10 jours ouvrés. Pas encore de livraison aux Canaries, à Ceuta ni à Melilla. S'agissant de produits personnalisés, les livres sont exclus du droit de rétractation (art. 103 c) du texte refondu de la loi espagnole de protection des consommateurs, TRLGDCU) et ne sont pas repris. Si un livre arrive avec un défaut d'impression ou de fabrication, ou s'il est abîmé pendant la livraison, écrivez-nous dans les 30 jours suivant sa réception, avec une photo du livre et de l'emballage, et nous vous en envoyons un nouveau sans frais. Cela ne limite pas vos droits de garantie légale.",
       "section6Title": "6. Limitation de responsabilité",
       "section6Text": "Meapica ne garantit pas la disponibilité ininterrompue du service. Les illustrations peuvent varier et un résultat spécifique n'est pas garanti."
     },
@@ -697,7 +697,7 @@
       "section1Title": "Comment mon livre est-il créé ?",
       "section1Text": "Vous choisissez l'aventure, personnalisez le personnage avec le nom, l'âge et les caractéristiques de votre enfant, et notre technologie écrit une histoire unique avec des illustrations originales. Aucun autre enfant au monde n'aura jamais le même livre.",
       "section2Title": "Combien de temps prend la livraison ?",
-      "section2Text": "Chaque livre est imprimé à la demande dans l'UE dès votre commande. Pour l'instant, nous livrons uniquement en Espagne. Espagne péninsulaire : 7 à 10 jours ouvrés. Baléares : 7 à 10 jours ouvrés. Pas encore de livraison aux Canaries, à Ceuta ni à Melilla. Vous recevrez un e-mail avec le numéro de suivi dès que votre colis sera en route.",
+      "section2Text": "Chaque livre est imprimé à la demande en Europe dès votre commande. Pour l'instant, nous livrons uniquement en Espagne. Espagne péninsulaire : 7 à 10 jours ouvrés. Baléares : 7 à 10 jours ouvrés. Pas encore de livraison aux Canaries, à Ceuta ni à Melilla. Vous recevrez un e-mail avec le numéro de suivi dès que votre colis sera en route.",
       "section3Title": "Puis-je personnaliser le personnage ?",
       "section3Text": "Oui ! Vous pouvez choisir le nom, l'âge, la couleur des cheveux, des yeux et de la peau, la coiffure, le genre, et même ajouter son animal de compagnie, son plat préféré ou son rêve d'avenir. Tout apparaît dans l'histoire et les illustrations.",
       "section4Title": "Quel papier utilisez-vous ?",
@@ -711,7 +711,7 @@
       "title": "Livraison et Emballage",
       "intro": "Chaque livre Meapica est un cadeau. C'est pourquoi l'expérience de le recevoir chez soi doit être aussi spéciale que de l'ouvrir.",
       "section1Title": "Délais de livraison",
-      "section1Text": "Pour l'instant, nous livrons uniquement en Espagne. Espagne péninsulaire : 7 à 10 jours ouvrés. Baléares : 7 à 10 jours ouvrés. Pas encore de livraison aux Canaries, à Ceuta ni à Melilla. Chaque livre est imprimé à la demande dans l'UE, le délai inclut donc l'impression.",
+      "section1Text": "Pour l'instant, nous livrons uniquement en Espagne. Espagne péninsulaire : 7 à 10 jours ouvrés. Baléares : 7 à 10 jours ouvrés. Pas encore de livraison aux Canaries, à Ceuta ni à Melilla. Chaque livre est imprimé à la demande en Europe, le délai inclut donc l'impression.",
       "section2Title": "Frais de livraison",
       "section2Text": "La livraison standard est incluse dans le prix du livre, TVA incluse. Pas de frais cachés ni de surprises dans le colis.",
       "section3Title": "Emballage protecteur",
@@ -1081,7 +1081,7 @@
       "editLinks": "Changer le <title>titre</title>, la <dedication>dédicace</dedication> ou l’<look>apparence</look>",
       "desktopHint": "Cliquez sur les pages ou utilisez les flèches ← → du clavier",
       "headline": "Le livre {deName}, imprimé et livré chez vous",
-      "specs": "30 pages · 12 scènes illustrées · 20 × 20 cm · imprimé dans l'UE",
+      "specs": "30 pages · 12 scènes illustrées · 20 × 20 cm · imprimé en Europe",
       "mockupAlt": "Le livre {deName} en {format} : {title}",
       "formatsLegend": "Choisissez le format",
       "hardcoverGap": "Seulement {diff} de plus que la souple",
@@ -1100,7 +1100,7 @@
       "ctaNoteDigital": "TVA incluse",
       "trustPreview": "Vous avez vu le livre avant de payer",
       "trustPayment": "Paiement sécurisé avec Stripe",
-      "trustMadeIn": "Fait à Barcelone, imprimé dans l'UE",
+      "trustMadeIn": "Fait à Barcelone, imprimé en Europe",
       "trustReprint": "Arrivé abîmé ou avec un défaut d'impression ? Nous le remplaçons sans frais",
       "help": "Des questions ? Écrivez-nous à",
       "teaserComingTitle": "La suite de l'histoire",
@@ -1133,7 +1133,7 @@
         },
         "returns": {
           "q": "Et s'il arrive avec un problème ?",
-          "a": "Livre fait sur mesure, il n'a pas de droit de rétractation, mais s'il arrive avec un défaut d'impression ou abîmé pendant la livraison, nous vous en envoyons un nouveau sans frais."
+          "a": "Livre fait sur mesure, il n'a pas de droit de rétractation, mais s'il arrive avec un défaut d'impression ou abîmé pendant la livraison, nous vous en envoyons un nouveau sans frais. Il suffit de nous écrire dans les 30 jours suivant sa réception, avec une photo du livre et de l'emballage."
         }
       },
       "softcoverNote": "Couverture souple, plus légère",
@@ -2287,7 +2287,7 @@
     "feature1Description": "Une impression de qualité aux couleurs vives, dans un livre fait pour être relu encore et encore.",
     "feature2Title": "Illustrations uniques",
     "feature2Description": "Chaque histoire avec des illustrations personnalisées qui rendent votre enfant unique.",
-    "feature3Title": "Imprimé dans l'UE, livré chez vous",
+    "feature3Title": "Imprimé en Europe, livré chez vous",
     "feature3Description": "Il arrive bien protégé, prêt à offrir ou à garder comme un trésor.",
     "copyright": "© 2026 Meapica. Tous droits réservés."
   },
@@ -2336,7 +2336,7 @@
     "regionNote": "Nous ne livrons pas encore les Canaries, Ceuta ni Melilla. Si le cadeau est pour là-bas, le conte en PDF fonctionne tout aussi bien.",
     "methodHeading": "Comment nous calculons ces dates",
     "method": [
-      "Chaque livre est imprimé à la demande dans l'UE. Aujourd'hui, impression et livraison prennent {min} à {max} jours calendaires jusqu'à votre porte.",
+      "Chaque livre est imprimé à la demande en Europe. Aujourd'hui, impression et livraison prennent {min} à {max} jours calendaires jusqu'à votre porte.",
       "En décembre, nous ajoutons {buffer} jours de marge pour la saturation des transporteurs et les jours fériés du 8 décembre, de Noël et du Nouvel An.",
       "Le délai commence quand vous finalisez le paiement, pas quand vous commencez à créer le conte.",
       "Ce sont des estimations basées sur les délais actuels du transporteur, pas une garantie. S'ils changent, nous mettons cette page à jour."
@@ -2350,7 +2350,7 @@
       "christmasQ": "Et pour le recevoir avant le réveillon ?",
       "christmasA": "Pour recevoir le livre imprimé le 24 décembre, commandez jusqu'au {date}. Après cette date, vous pouvez encore offrir le conte en PDF.",
       "timeQ": "Combien de temps met le livre imprimé à arriver ?",
-      "timeA": "Nous l'imprimons à la demande dans l'UE dès votre commande. Espagne péninsulaire et Baléares : 7 à 10 jours ouvrés, livraison incluse dans le prix. Vous recevrez le numéro de suivi par e-mail.",
+      "timeA": "Nous l'imprimons à la demande en Europe dès votre commande. Espagne péninsulaire et Baléares : 7 à 10 jours ouvrés, livraison incluse dans le prix. Vous recevrez le numéro de suivi par e-mail.",
       "regionQ": "Livrez-vous les Canaries, Ceuta ou Melilla ?",
       "regionA": "Pas encore. Si le cadeau est pour là-bas, le conte en PDF arrive par e-mail et vous pouvez l'imprimer ou le lire sur une tablette."
     },

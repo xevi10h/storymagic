@@ -97,7 +97,7 @@
       },
       "baptism": {
         "metaTitle": "Conte personalitzat de bateig | Meapica",
-        "metaDescription": "Un conte imprès personalitzat amb el nom del nen, regal de bateig per a tota la vida. Padrins i família. Edició única, impresa a la UE.",
+        "metaDescription": "Un conte imprès personalitzat amb el nom del nen, regal de bateig per a tota la vida. Padrins i família. Edició única, impresa a Europa.",
         "h1": "El conte de bateig que creixerà amb ell",
         "heroIntro": "Un record de bateig que no s'oblida dins un calaix. Un conte imprès, amb el seu nom, que el petit anirà descobrint a mesura que creix.",
         "bodyHeading": "Un regal de bateig per recordar tota la vida",
@@ -173,7 +173,7 @@
       },
       "first-birthday": {
         "metaTitle": "Conte personalitzat de primer aniversari | Meapica",
-        "metaDescription": "El seu primer llibre, amb el seu nom. Conte imprès personalitzat per al primer aniversari. Record per a tota la vida. Edició única, impresa a la UE.",
+        "metaDescription": "El seu primer llibre, amb el seu nom. Conte imprès personalitzat per al primer aniversari. Record per a tota la vida. Edició única, impresa a Europa.",
         "h1": "El seu primer llibre, amb el seu nom",
         "heroIntro": "Compleix un any. Regala-li el primer llibre de la seva vida, un conte imprès amb el seu nom que serà el record d'aquest primer aniversari per sempre.",
         "bodyHeading": "El record del primer aniversari",
@@ -598,7 +598,7 @@
     "likenessQ": "I si no s'assembla al meu fill o filla?",
     "likenessA": "Tu decideixes com és: pell, color de cabell, pentinat, ulls, ulleres i pigues, i veus el seu retrat abans de continuar. Si a la vista prèvia el vols canviar, canvies el seu aspecte i tornem a pintar el llibre amb el nou personatge; tota la resta es manté. L'imprimim tal com el veus.",
     "deliveryQ": "Quan arriba? Arriba per a Reis?",
-    "deliveryA": "L'imprimim sota demanda a la UE tan bon punt fas la comanda i arriba en 7-10 dies laborables, amb l'enviament inclòs. Enviem a l'Espanya peninsular i a les Balears (de moment no a Canàries, Ceuta ni Melilla).",
+    "deliveryA": "L'imprimim sota demanda a Europa tan bon punt fas la comanda i arriba en 7-10 dies laborables, amb l'enviament inclòs. Enviem a l'Espanya peninsular i a les Balears (de moment no a Canàries, Ceuta ni Melilla).",
     "deliverySeason": "Per tenir-lo a casa per Nadal, demana'l fins al {christmasDate}; per a Reis, fins al {reyesDate}.",
     "deliverySeasonReyes": "Per tenir-lo a casa abans de Reis, demana'l fins al {reyesDate}.",
     "deliverySeasonPdf": "El llibre imprès ja no arriba a temps per a Reis, però el conte en PDF sí: t'arriba per correu després del pagament, normalment en menys d'una hora.",
@@ -606,7 +606,7 @@
     "priceQ": "Quant costa i què inclou?",
     "priceA": "Tapa tova, {softcover}. Tapa dura, {hardcover}. Només el PDF, {pdf}. Tots els preus porten l'IVA inclòs. El llibre imprès inclou l'enviament i el PDF del conte complet.",
     "returnsQ": "El puc retornar?",
-    "returnsA": "Com que és un llibre fet a mida, amb el seu nom i el seu retrat, no admet devolucions; per això t'ensenyem el llibre sencer abans de pagar. Però si arriba amb qualsevol defecte d'impressió o es malmet durant l'enviament, t'enviem un altre de nou sense cost.",
+    "returnsA": "Com que és un llibre fet a mida, amb el seu nom i el seu retrat, no admet devolucions; per això t'ensenyem el llibre sencer abans de pagar. Però si arriba amb qualsevol defecte d'impressió o es malmet durant l'enviament, t'enviem un altre de nou sense cost. Només cal que ens escriguis en els 30 dies següents a rebre'l, amb una foto del llibre i de l'embalatge.",
     "moreQuestions": "Tens un altre dubte? Escriu-nos a"
   },
   "finalCta": {
@@ -620,7 +620,7 @@
     "meta": "Llibre imprès des de {price} · IVA inclòs · Enviament inclòs"
   },
   "footer": {
-    "tagline": "Contes personalitzats, escrits i il·lustrats per a cada infant.\nImpresos a la UE i enviats a casa teva.\nSense bateries, només imaginació.",
+    "tagline": "Contes personalitzats, escrits i il·lustrats per a cada infant.\nImpresos a Europa i enviats a casa teva.\nSense bateries, només imaginació.",
     "workshop": "El llibre",
     "ourPapers": "Paper i acabats",
     "artisanalProcess": "Com es fa",
@@ -675,7 +675,7 @@
       "section4Title": "4. Preus i pagaments",
       "section4Text": "Tots els preus són finals, amb l'IVA inclòs, i es mostren en euros. En els llibres impresos, l'enviament a Espanya està inclòs en el preu. El pagament es processa de forma segura a través de Stripe.",
       "section5Title": "5. Enviaments i devolucions",
-      "section5Text": "Els llibres s'imprimeixen sota demanda a la UE i, de moment, només fem enviaments a adreces d'Espanya. Espanya peninsular: 7-10 dies laborables. Balears: 7-10 dies laborables. De moment no enviem a Canàries, Ceuta ni Melilla. En ser productes personalitzats, els llibres estan exclosos del dret de desistiment (art. 103 c) del text refós de la Llei general per a la defensa dels consumidors i usuaris) i no admeten devolucions. Si un llibre arriba amb qualsevol defecte d'impressió o de fabricació, o es malmet durant l'enviament, escriu-nos amb una foto i t'enviem un altre de nou sense cost. Això no limita els drets de garantia que et reconeix la llei.",
+      "section5Text": "Els llibres s'imprimeixen sota demanda a Europa i, de moment, només fem enviaments a adreces d'Espanya. Espanya peninsular: 7-10 dies laborables. Balears: 7-10 dies laborables. De moment no enviem a Canàries, Ceuta ni Melilla. En ser productes personalitzats, els llibres estan exclosos del dret de desistiment (art. 103 c) del text refós de la Llei general per a la defensa dels consumidors i usuaris) i no admeten devolucions. Si un llibre arriba amb qualsevol defecte d'impressió o de fabricació, o es malmet durant l'enviament, escriu-nos en els 30 dies següents a rebre'l, amb una foto del llibre i de l'embalatge, i t'enviem un altre de nou sense cost. Això no limita els drets de garantia que et reconeix la llei.",
       "section6Title": "6. Limitació de responsabilitat",
       "section6Text": "Meapica no garanteix la disponibilitat ininterrompuda del servei. Les il·lustracions poden variar i no es garanteix un resultat específic."
     },
@@ -697,7 +697,7 @@
       "section1Title": "Com es crea el meu conte?",
       "section1Text": "Tu tries l'aventura, personalitzes el personatge amb el nom, l'edat i les característiques del teu fill, i la nostra tecnologia escriu una història única amb il·lustracions originals. Cap altre nen al món tindrà mai el mateix llibre.",
       "section2Title": "Quant triga l'enviament?",
-      "section2Text": "Cada llibre s'imprimeix sota demanda a la UE tan bon punt fas la comanda. De moment només enviem a Espanya. Espanya peninsular: 7-10 dies laborables. Balears: 7-10 dies laborables. De moment no enviem a Canàries, Ceuta ni Melilla. Rebràs un correu amb el número de seguiment quan el paquet estigui en camí.",
+      "section2Text": "Cada llibre s'imprimeix sota demanda a Europa tan bon punt fas la comanda. De moment només enviem a Espanya. Espanya peninsular: 7-10 dies laborables. Balears: 7-10 dies laborables. De moment no enviem a Canàries, Ceuta ni Melilla. Rebràs un correu amb el número de seguiment quan el paquet estigui en camí.",
       "section3Title": "Puc personalitzar el personatge?",
       "section3Text": "Sí! Pots triar el nom, l'edat, el color de cabell, ulls i pell, el pentinat, el gènere, i fins i tot afegir la seva mascota, menjar preferit o somni de futur. Tot apareix a la història i a les il·lustracions.",
       "section4Title": "Quin paper utilitzeu?",
@@ -711,7 +711,7 @@
       "title": "Enviaments i Embalatge",
       "intro": "Cada llibre de Meapica és un regal. Per això, l'experiència de rebre'l a casa ha de ser tan especial com obrir-lo.",
       "section1Title": "Terminis d'enviament",
-      "section1Text": "De moment només enviem a Espanya. Espanya peninsular: 7-10 dies laborables. Balears: 7-10 dies laborables. De moment no enviem a Canàries, Ceuta ni Melilla. Cada llibre s'imprimeix sota demanda a la UE, per això el termini inclou la impressió.",
+      "section1Text": "De moment només enviem a Espanya. Espanya peninsular: 7-10 dies laborables. Balears: 7-10 dies laborables. De moment no enviem a Canàries, Ceuta ni Melilla. Cada llibre s'imprimeix sota demanda a Europa, per això el termini inclou la impressió.",
       "section2Title": "Cost d'enviament",
       "section2Text": "L'enviament estàndard està inclòs en el preu del llibre, que ja porta l'IVA inclòs. No hi ha costos ocults ni sorpreses a la caixa.",
       "section3Title": "Embalatge protector",
@@ -1081,7 +1081,7 @@
       "editLinks": "Canviar <title>títol</title>, <dedication>dedicatòria</dedication> o <look>aspecte</look>",
       "desktopHint": "Fes clic a les pàgines o fes servir les fletxes ← → del teclat",
       "headline": "El llibre {deName}, imprès i a casa teva",
-      "specs": "30 pàgines · 12 escenes il·lustrades · 20 × 20 cm · imprès a la UE",
+      "specs": "30 pàgines · 12 escenes il·lustrades · 20 × 20 cm · imprès a Europa",
       "mockupAlt": "Així serà el llibre {deName} en {format}: {title}",
       "formatsLegend": "Tria el format",
       "hardcoverGap": "Només {diff} més que la tova",
@@ -1100,7 +1100,7 @@
       "ctaNoteDigital": "IVA inclòs",
       "trustPreview": "Has vist el seu llibre abans de pagar",
       "trustPayment": "Pagament segur amb Stripe",
-      "trustMadeIn": "Fet a Barcelona, imprès a la UE",
+      "trustMadeIn": "Fet a Barcelona, imprès a Europa",
       "trustReprint": "Arriba malmès o amb un defecte d'impressió? Te'l reposem sense cost",
       "help": "Dubtes? Escriu-nos a",
       "teaserComingTitle": "El que ve a la història",
@@ -1133,7 +1133,7 @@
         },
         "returns": {
           "q": "I si arriba amb algun problema?",
-          "a": "Com que és un llibre fet a mida no admet desistiment, però si arriba amb un defecte d'impressió o malmès per l'enviament, t'enviem un altre de nou sense cost."
+          "a": "Com que és un llibre fet a mida no admet desistiment, però si arriba amb un defecte d'impressió o malmès per l'enviament, t'enviem un altre de nou sense cost. Només cal que ens escriguis en els 30 dies següents a rebre'l, amb una foto del llibre i de l'embalatge."
         }
       },
       "softcoverNote": "Coberta flexible, més lleugera",
@@ -2287,7 +2287,7 @@
     "feature1Description": "Impressió de qualitat amb colors vius, en un llibre fet per rellegir-se una vegada i una altra.",
     "feature2Title": "Il·lustracions úniques",
     "feature2Description": "Cada conte amb il·lustracions personalitzades que fan únic al teu fill.",
-    "feature3Title": "Imprès a la UE i enviat a casa",
+    "feature3Title": "Imprès a Europa i enviat a casa",
     "feature3Description": "Arriba ben protegit, a punt per regalar o guardar com un tresor.",
     "copyright": "© 2026 Meapica. Tots els drets reservats."
   },
@@ -2336,7 +2336,7 @@
     "regionNote": "De moment no enviem a les Canàries, Ceuta ni Melilla. Si el regal és per allà, el conte en PDF hi arriba igual.",
     "methodHeading": "Com calculem aquestes dates",
     "method": [
-      "Imprimim cada llibre sota demanda a la UE. Avui, entre la impressió i l'enviament, una comanda triga {min}-{max} dies naturals a arribar a casa.",
+      "Imprimim cada llibre sota demanda a Europa. Avui, entre la impressió i l'enviament, una comanda triga {min}-{max} dies naturals a arribar a casa.",
       "Al desembre hi sumem {buffer} dies de marge per la saturació de la paqueteria i els festius del 8 de desembre, Nadal i Cap d'Any.",
       "El termini comença quan completes el pagament, no quan comences a crear el conte.",
       "Són estimacions basades en els terminis actuals del transportista, no una garantia. Si canvien, actualitzem aquesta pàgina."
@@ -2350,7 +2350,7 @@
       "christmasQ": "I per tenir-lo per Nadal?",
       "christmasA": "Per tenir el llibre imprès a casa el 24 de desembre, demana'l fins al {date}. Després d'aquesta data encara pots regalar el conte en PDF.",
       "timeQ": "Quant triga a arribar el llibre imprès?",
-      "timeA": "L'imprimim sota demanda a la UE tan bon punt fas la comanda. Espanya peninsular i Balears: 7-10 dies laborables, amb l'enviament inclòs en el preu. Rebràs el número de seguiment per correu.",
+      "timeA": "L'imprimim sota demanda a Europa tan bon punt fas la comanda. Espanya peninsular i Balears: 7-10 dies laborables, amb l'enviament inclòs en el preu. Rebràs el número de seguiment per correu.",
       "regionQ": "Envieu a les Canàries, Ceuta o Melilla?",
       "regionA": "De moment no. Si el regal és per allà, el conte en PDF t'arriba per correu i pots imprimir-lo o llegir-lo a la tauleta."
     },

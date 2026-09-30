@@ -9,7 +9,7 @@
 | Binding | Softcover or hardcover (Gelato); PDF-only format too |
 | Interior | Full colour, 170 g coated paper |
 | Print partner | Gelato (print-on-demand; we ship Spain península + Baleares)
-| Print location claim | "Impreso en la UE" / "imprès a la UE" / "printed in the EU" / "imprimé dans l'UE" everywhere (decision 2026-09-30; never "impreso en España"). "Hecho en Barcelona" stays. Shipping destination is still Spain only |
+| Print location claim | "Impreso en Europa" / "imprès a Europa" / "printed in Europe" / "imprimé en Europe" everywhere (decision 2026-09-30: Gelato prints >85 % of orders in the destination country but may route to other hubs, some outside the EU — never "en la UE" nor "en España"). "Hecho en Barcelona" stays. Shipping destination is still Spain only |
 | Returns / defects | Personalised goods: no right of withdrawal (art. 103 c TRLGDCU), no returns. Free reprint of any book that arrives with a printing/manufacturing defect or damaged in transit (customer writes in with a photo). Shown in the paywall (`trustReprint`, `SHOW_REPRINT_GUARANTEE = true`), landing FAQ `landingFaq.returnsA`, purchase FAQ, terms section 5, shipping page (2026-09-30) |
 
 ## Book Layout (30 inner pages — implemented, `src/lib/pdf/layout.ts`)

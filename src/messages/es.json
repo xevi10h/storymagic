@@ -588,7 +588,7 @@
     "likenessQ": "¿Y si no se parece a mi hijo o hija?",
     "likenessA": "Tú decides cómo es: piel, color de pelo, peinado, ojos, gafas y pecas, y ves su retrato antes de seguir. Si en la vista previa quieres cambiarlo, cambias su aspecto y volvemos a pintar el libro con el nuevo personaje; todo lo demás se mantiene. Lo imprimimos tal cual lo ves.",
     "deliveryQ": "¿Cuándo llega? ¿Llega para Reyes?",
-    "deliveryA": "Lo imprimimos bajo demanda en la UE en cuanto haces el pedido y llega en 7-10 días laborables, con el envío incluido. Enviamos a España peninsular y Baleares (de momento no a Canarias, Ceuta ni Melilla).",
+    "deliveryA": "Lo imprimimos bajo demanda en Europa en cuanto haces el pedido y llega en 7-10 días laborables, con el envío incluido. Enviamos a España peninsular y Baleares (de momento no a Canarias, Ceuta ni Melilla).",
     "deliverySeason": "Para tenerlo en casa en Nochebuena, pídelo hasta el {christmasDate}; para Reyes, hasta el {reyesDate}.",
     "deliverySeasonReyes": "Para tenerlo en casa antes de Reyes, pídelo hasta el {reyesDate}.",
     "deliverySeasonPdf": "El libro impreso ya no llega a tiempo para Reyes, pero el cuento en PDF sí: te llega por correo tras el pago, normalmente en menos de una hora.",
@@ -596,7 +596,7 @@
     "priceQ": "¿Cuánto cuesta y qué incluye?",
     "priceA": "Tapa blanda, {softcover}. Tapa dura, {hardcover}. Solo el PDF, {pdf}. Todos los precios llevan el IVA incluido. El libro impreso incluye el envío y el PDF del cuento completo.",
     "returnsQ": "¿Puedo devolverlo?",
-    "returnsA": "Al ser un libro hecho a medida, con su nombre y su retrato, no admite devoluciones; por eso te enseñamos el libro entero antes de pagar. Pero si llega con cualquier defecto de impresión o se daña en el envío, te enviamos otro nuevo sin coste.",
+    "returnsA": "Al ser un libro hecho a medida, con su nombre y su retrato, no admite devoluciones; por eso te enseñamos el libro entero antes de pagar. Pero si llega con cualquier defecto de impresión o se daña en el envío, te enviamos otro nuevo sin coste. Solo tienes que escribirnos en los 30 días siguientes a recibirlo, con una foto del libro y del embalaje.",
     "moreQuestions": "¿Tienes otra duda? Escríbenos a"
   },
   "finalCta": {
@@ -610,7 +610,7 @@
     "meta": "Libro impreso desde {price} · IVA incluido · Envío incluido"
   },
   "footer": {
-    "tagline": "Cuentos personalizados, escritos e ilustrados para cada niño.\nImpresos en la UE y enviados a tu casa.\nSin baterías, solo imaginación.",
+    "tagline": "Cuentos personalizados, escritos e ilustrados para cada niño.\nImpresos en Europa y enviados a tu casa.\nSin baterías, solo imaginación.",
     "workshop": "El libro",
     "ourPapers": "Papel y acabados",
     "artisanalProcess": "Cómo se hace",
@@ -665,7 +665,7 @@
       "section4Title": "4. Precios y pagos",
       "section4Text": "Todos los precios son finales, con el IVA incluido, y se muestran en euros. En los libros impresos, el envío a España está incluido en el precio. El pago se procesa de forma segura a través de Stripe.",
       "section5Title": "5. Envíos y devoluciones",
-      "section5Text": "Los libros se imprimen bajo demanda en la UE y, por ahora, solo realizamos envíos a direcciones de España. España peninsular: 7-10 días laborables. Baleares: 7-10 días laborables. De momento no enviamos a Canarias, Ceuta ni Melilla. Al ser productos personalizados, los libros están excluidos del derecho de desistimiento (art. 103 c) del texto refundido de la Ley General para la Defensa de los Consumidores y Usuarios) y no admiten devoluciones. Si un libro llega con cualquier defecto de impresión o fabricación, o se daña durante el envío, escríbenos con una foto y te enviamos otro nuevo sin coste. Esto no limita los derechos de garantía que te reconoce la ley.",
+      "section5Text": "Los libros se imprimen bajo demanda en Europa y, por ahora, solo realizamos envíos a direcciones de España. España peninsular: 7-10 días laborables. Baleares: 7-10 días laborables. De momento no enviamos a Canarias, Ceuta ni Melilla. Al ser productos personalizados, los libros están excluidos del derecho de desistimiento (art. 103 c) del texto refundido de la Ley General para la Defensa de los Consumidores y Usuarios) y no admiten devoluciones. Si un libro llega con cualquier defecto de impresión o fabricación, o se daña durante el envío, escríbenos en los 30 días siguientes a recibirlo, con una foto del libro y del embalaje, y te enviamos otro nuevo sin coste. Esto no limita los derechos de garantía que te reconoce la ley.",
       "section6Title": "6. Limitación de responsabilidad",
       "section6Text": "Meapica no garantiza la disponibilidad ininterrumpida del servicio. Las ilustraciones pueden variar y no se garantiza un resultado específico."
     },
@@ -687,7 +687,7 @@
       "section1Title": "¿Cómo se crea mi cuento?",
       "section1Text": "Tú eliges la aventura, personalizas al protagonista con el nombre, la edad y las características de tu hijo, y nuestra tecnología escribe una historia única con ilustraciones originales. Ningún otro niño en el mundo tendrá jamás el mismo libro.",
       "section2Title": "¿Cuánto tarda el envío?",
-      "section2Text": "Cada libro se imprime bajo demanda en la UE en cuanto haces el pedido. Por ahora solo enviamos a España. España peninsular: 7-10 días laborables. Baleares: 7-10 días laborables. De momento no enviamos a Canarias, Ceuta ni Melilla. Recibirás un correo con el número de seguimiento cuando tu paquete esté en camino.",
+      "section2Text": "Cada libro se imprime bajo demanda en Europa en cuanto haces el pedido. Por ahora solo enviamos a España. España peninsular: 7-10 días laborables. Baleares: 7-10 días laborables. De momento no enviamos a Canarias, Ceuta ni Melilla. Recibirás un correo con el número de seguimiento cuando tu paquete esté en camino.",
       "section3Title": "¿Puedo personalizar el personaje?",
       "section3Text": "¡Sí! Puedes elegir el nombre, la edad, el color de pelo, ojos y piel, el peinado, el género, e incluso añadir su mascota, comida favorita o sueño de futuro. Todo aparece en la historia y en las ilustraciones.",
       "section4Title": "¿Qué papel utilizáis?",
@@ -701,7 +701,7 @@
       "title": "Envíos y Empaquetado",
       "intro": "Cada libro de Meapica es un regalo. Por eso, la experiencia de recibirlo en casa tiene que ser tan especial como abrirlo.",
       "section1Title": "Plazos de envío",
-      "section1Text": "Por ahora solo enviamos a España. España peninsular: 7-10 días laborables. Baleares: 7-10 días laborables. De momento no enviamos a Canarias, Ceuta ni Melilla. Cada libro se imprime bajo demanda en la UE, por eso el plazo incluye la impresión.",
+      "section1Text": "Por ahora solo enviamos a España. España peninsular: 7-10 días laborables. Baleares: 7-10 días laborables. De momento no enviamos a Canarias, Ceuta ni Melilla. Cada libro se imprime bajo demanda en Europa, por eso el plazo incluye la impresión.",
       "section2Title": "Coste de envío",
       "section2Text": "El envío estándar está incluido en el precio del libro, que ya lleva el IVA incluido. No hay costes ocultos ni sorpresas en la caja.",
       "section3Title": "Embalaje protector",
@@ -1071,7 +1071,7 @@
       "editLinks": "Cambiar <title>título</title>, <dedication>dedicatoria</dedication> o <look>aspecto</look>",
       "desktopHint": "Haz clic en las páginas o usa las flechas ← → del teclado",
       "headline": "El libro {deName}, impreso y en tu casa",
-      "specs": "30 páginas · 12 escenas ilustradas · 20 × 20 cm · impreso en la UE",
+      "specs": "30 páginas · 12 escenas ilustradas · 20 × 20 cm · impreso en Europa",
       "mockupAlt": "Así será el libro {deName} en {format}: {title}",
       "formatsLegend": "Elige el formato",
       "hardcoverGap": "Solo {diff} más que la blanda",
@@ -1090,7 +1090,7 @@
       "ctaNoteDigital": "IVA incluido",
       "trustPreview": "Has visto su libro antes de pagar",
       "trustPayment": "Pago seguro con Stripe",
-      "trustMadeIn": "Hecho en Barcelona, impreso en la UE",
+      "trustMadeIn": "Hecho en Barcelona, impreso en Europa",
       "trustReprint": "¿Llega dañado o con un defecto de impresión? Te lo reponemos sin coste",
       "help": "¿Dudas? Escríbenos a",
       "teaserComingTitle": "Lo que viene en la historia",
@@ -1123,7 +1123,7 @@
         },
         "returns": {
           "q": "¿Y si llega con algún problema?",
-          "a": "Al ser un libro hecho a medida no admite desistimiento, pero si llega con un defecto de impresión o dañado por el envío, te enviamos otro nuevo sin coste."
+          "a": "Al ser un libro hecho a medida no admite desistimiento, pero si llega con un defecto de impresión o dañado por el envío, te enviamos otro nuevo sin coste. Solo tienes que escribirnos en los 30 días siguientes a recibirlo, con una foto del libro y del embalaje."
         }
       },
       "softcoverNote": "Portada flexible, más ligera",
@@ -2277,7 +2277,7 @@
     "feature1Description": "Impresión de calidad con colores vivos, en un libro hecho para releerse una y otra vez.",
     "feature2Title": "Ilustraciones únicas",
     "feature2Description": "Cada cuento con ilustraciones personalizadas que hacen único a tu hijo.",
-    "feature3Title": "Impreso en la UE y enviado a casa",
+    "feature3Title": "Impreso en Europa y enviado a casa",
     "feature3Description": "Llega bien protegido, listo para regalar o guardar como un tesoro.",
     "copyright": "© 2026 Meapica. Todos los derechos reservados."
   },
@@ -2326,7 +2326,7 @@
     "regionNote": "De momento no enviamos a Canarias, Ceuta ni Melilla. Si el regalo es para allí, el cuento en PDF llega igual.",
     "methodHeading": "Cómo calculamos estas fechas",
     "method": [
-      "Imprimimos cada libro bajo demanda en la UE. Hoy, entre la impresión y el envío, un pedido tarda {min}-{max} días naturales en llegar a casa.",
+      "Imprimimos cada libro bajo demanda en Europa. Hoy, entre la impresión y el envío, un pedido tarda {min}-{max} días naturales en llegar a casa.",
       "En diciembre sumamos {buffer} días de margen por la saturación de la paquetería y los festivos del 8 de diciembre, Navidad y Año Nuevo.",
       "El plazo empieza cuando completas el pago, no cuando empiezas a crear el cuento.",
       "Son estimaciones basadas en los plazos actuales del transportista, no una garantía. Si cambian, actualizamos esta página."
@@ -2340,7 +2340,7 @@
       "christmasQ": "¿Y para tenerlo en Nochebuena?",
       "christmasA": "Para tener el libro impreso en casa el 24 de diciembre, pídelo hasta el {date}. Después de esa fecha aún puedes regalar el cuento en PDF.",
       "timeQ": "¿Cuánto tarda en llegar el libro impreso?",
-      "timeA": "Lo imprimimos bajo demanda en la UE en cuanto haces el pedido. España peninsular y Baleares: 7-10 días laborables, con el envío incluido en el precio. Recibirás el número de seguimiento por correo.",
+      "timeA": "Lo imprimimos bajo demanda en Europa en cuanto haces el pedido. España peninsular y Baleares: 7-10 días laborables, con el envío incluido en el precio. Recibirás el número de seguimiento por correo.",
       "regionQ": "¿Enviáis a Canarias, Ceuta o Melilla?",
       "regionA": "De momento no. Si el regalo es para allí, el cuento en PDF te llega por correo y puedes imprimirlo o leerlo en la tableta."
     },
