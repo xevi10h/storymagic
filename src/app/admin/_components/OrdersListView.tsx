@@ -12,6 +12,7 @@ import { FORMAT_LABELS, formatDateShort, formatMoney, ProblemBadge, StatusBadge 
 const FILTERS: Array<{ value: OrderFilter; label: string }> = [
   { value: "all", label: "Todos" },
   { value: "problems", label: "Incidencias" },
+  { value: "on_hold", label: "En pausa" },
   { value: "stuck_paid", label: "Pagado atascado" },
   { value: "gelato_problem", label: "Gelato" },
   { value: "not_shipped", label: "Sin enviar > 5 d" },

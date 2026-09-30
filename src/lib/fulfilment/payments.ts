@@ -5,7 +5,7 @@
 import type Stripe from "stripe";
 import { getStripe } from "@/lib/stripe";
 import { cancelPrintOrder } from "@/lib/gelato/orders";
-import { alertOperator } from "./alerts";
+import { adminOrderUrl, alertOperator } from "./alerts";
 import { sendOrderEmailOnce } from "./emails";
 import { orderReference, type OrderReceipt } from "@/lib/email/order-emails";
 import { catalogItemByLookupKey } from "@/lib/pricing";
@@ -389,7 +389,7 @@ export async function recordDispute(supabase: FulfilmentClient, dispute: Stripe.
     lines: [
       `Story ${order.story_id} · format ${order.format} · status '${order.status}' · ${order.customer_email ?? "no email"}`,
       paused
-        ? `Fulfilment is ON HOLD (no more generation or printing).${inFlight ? " A Gelato submission was in flight: check the Gelato dashboard for meapica-" + order.id + "." : ""} To resume: set orders.fulfilment_hold_reason = NULL.`
+        ? `Fulfilment is ON HOLD (no more generation or printing).${inFlight ? " A Gelato submission was in flight: check the Gelato dashboard for meapica-" + order.id + "." : ""} To resume once the dispute is settled: "Reenviar a Gelato" on ${adminOrderUrl(order.id)} (it lifts the hold).`
         : order.gelato_order_id
           ? `Already at Gelato (${order.gelato_order_id}, ${order.gelato_status ?? "status unknown"}): cancel it there if still possible.`
           : "Nothing to pause (digital or already fulfilled).",

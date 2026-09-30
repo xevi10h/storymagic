@@ -48,7 +48,7 @@ export async function listAdminOrders(): Promise<{ rows: AdminOrderRow[]; trunca
       .select(`${cols}, stories(title, characters(name))`)
       .order("created_at", { ascending: false })
       .limit(ADMIN_LIST_LIMIT);
-  let { data, error } = await run(`${LIST_COLUMNS}, fulfilment_requeued_at`);
+  let { data, error } = await run(`${LIST_COLUMNS}, fulfilment_requeued_at, fulfilment_hold_reason`);
   if (error?.code === "42703") ({ data, error } = await run(LIST_COLUMNS)); // migration not applied yet
   if (error) return { rows: [], truncated: false, error: error.message, fetchedAt };
   const rows = ((data ?? []) as unknown as RawOrder[]).map(toAdminRow);

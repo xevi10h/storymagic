@@ -127,6 +127,8 @@ export async function resendToGelato(orderId: string, opts: { rebuildPrintFiles:
     gelato_last_error: null,
     fulfilment_alerted_at: null,
     fulfilment_requeued_at: now,
+    // An explicit operator re-send also lifts a chargeback hold (payments.ts sets it).
+    fulfilment_hold_reason: null,
     ...(opts.rebuildPrintFiles ? { print_files_validated_at: null } : {}),
   };
   const supabase = adminServiceClient();

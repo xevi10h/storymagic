@@ -29,6 +29,8 @@ export interface AdminOrderRow {
   gelato_submit_attempts: number;
   fulfilment_alerted_at: string | null;
   fulfilment_requeued_at?: string | null;
+  /** Set by a chargeback (payments.ts): nothing is generated or printed until an operator re-sends. */
+  fulfilment_hold_reason?: string | null;
   stripe_payment_id: string | null;
   stripe_checkout_session_id: string | null;
   tracking_number: string | null;
@@ -38,9 +40,10 @@ export interface AdminOrderRow {
   child_name: string | null;
 }
 
-export type OrderProblem = "stuck_paid" | "gelato_problem" | "not_shipped" | "refunded";
+export type OrderProblem = "on_hold" | "stuck_paid" | "gelato_problem" | "not_shipped" | "refunded";
 
 export const PROBLEM_LABELS: Record<OrderProblem, string> = {
+  on_hold: "En pausa (contracargo)",
   stuck_paid: "Pagado y atascado",
   gelato_problem: "Gelato con incidencia",
   not_shipped: "Sin enviar > 5 días",
@@ -63,6 +66,7 @@ const hoursSince = (iso: string | null | undefined, now: number) =>
 /** Operator attention flags of one order. */
 export function orderProblems(order: AdminOrderRow, now: number): OrderProblem[] {
   const problems: OrderProblem[] = [];
+  if (order.fulfilment_hold_reason) problems.push("on_hold");
   const physical = PHYSICAL_FORMATS.has(order.format);
   // Age counts from the last operator re-queue when there is one.
   const since =
@@ -95,6 +99,7 @@ export function isOrderFilter(value: string | null | undefined): value is OrderF
   return (
     value === "all" ||
     value === "problems" ||
+    value === "on_hold" ||
     value === "stuck_paid" ||
     value === "gelato_problem" ||
     value === "not_shipped" ||
@@ -137,7 +142,7 @@ export function filterOrders(orders: readonly AdminOrderRow[], filter: OrderFilt
     .filter((o) => {
       if (filter === "all") return true;
       if (filter === "problems") return orderProblems(o, now).some((p) => p !== "refunded");
-      if (filter === "stuck_paid" || filter === "gelato_problem" || filter === "not_shipped") {
+      if (filter === "on_hold" || filter === "stuck_paid" || filter === "gelato_problem" || filter === "not_shipped") {
         return orderProblems(o, now).includes(filter);
       }
       return o.status === filter;
