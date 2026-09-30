@@ -1,11 +1,16 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { useLocale, useTranslations } from "next-intl";
-import { Link, useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import BrandLogo from "@/components/BrandLogo";
+import LocaleSwitcher from "@/components/LocaleSwitcher";
+import EmailSignIn, { type SignInStep } from "@/components/auth/EmailSignIn";
+import { Card, Heading, cx, focusRing } from "@/components/ui";
+import { queryErrorKey } from "@/lib/auth/auth-errors";
+import { sanitizeNextPath } from "@/lib/auth/next-path";
 
 export default function LoginPage() {
   return (
@@ -15,215 +20,75 @@ export default function LoginPage() {
   );
 }
 
+/**
+ * The one "Entrar" screen: email → one email with a link + a code, or Google.
+ * No passwords, no separate sign-up (the first login creates the account).
+ * Query: next (locale-less path, sanitised), email (prefill, e.g. from an order
+ * email), error (set by the email-link / Google routes).
+ */
 function LoginPageContent() {
-  const t = useTranslations("auth.login");
-  const locale = useLocale();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
+  const t = useTranslations("auth");
   const searchParams = useSearchParams();
-  const supabase = createClient();
+  const next = sanitizeNextPath(searchParams.get("next"));
+  const initialEmail = (searchParams.get("email") ?? "").trim().slice(0, 254);
+  const initialError = queryErrorKey(searchParams.get("error"));
 
-  // Read the redirect destination from URL (e.g. /crear?step=finish)
-  const nextUrl = searchParams.get("next") || "/dashboard";
-  const authError = searchParams.get("error");
+  const [step, setStep] = useState<SignInStep>("email");
+  const [isGuest, setIsGuest] = useState(false);
+  const onStepChange = useCallback((s: SignInStep) => setStep(s), []);
 
-  async function handleEmailLogin(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
+  useEffect(() => {
+    let active = true;
+    createClient()
+      .auth.getSession()
+      .then(({ data: { session } }) => {
+        if (active) setIsGuest(session?.user?.is_anonymous === true);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
-      setError(
-        error.message === "Invalid login credentials"
-          ? t("invalidCredentials")
-          : error.message
-      );
-      setLoading(false);
-      return;
-    }
-
-    router.push(nextUrl);
-  }
-
-  async function handleGoogleLogin() {
-    setError(null);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/${locale}/auth/callback?next=${encodeURIComponent(nextUrl)}`,
-      },
-    });
-
-    if (error) {
-      setError(error.message);
-    }
-  }
+  const title = step === "code" ? t("code.title") : isGuest ? t("login.guestTitle") : t("login.title");
+  const subtitle = step === "code" ? null : isGuest ? t("login.guestSubtitle") : t("login.subtitle");
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-create-bg px-4">
-      <div className="w-full max-w-md">
-        {/* Logo */}
-        <div className="mb-8 text-center">
-          <Link href="/" className="inline-flex items-center">
-            <BrandLogo className="h-10 text-secondary" />
-          </Link>
-          <p className="mt-3 text-sm text-create-text-sub">
-            {t("subtitle")}
+    <div className="flex min-h-dvh flex-col bg-paper">
+      <header className="mx-auto flex h-14 w-full max-w-[1120px] items-center justify-between px-4 sm:px-6">
+        <Link href="/" aria-label="Meapica" className={cx("flex min-h-11 items-center rounded-md", focusRing)}>
+          <BrandLogo className="h-6 text-brand-deep" />
+        </Link>
+        <LocaleSwitcher />
+      </header>
+
+      <main className="flex flex-1 items-start justify-center px-4 pb-16 pt-6 sm:items-center sm:pt-0">
+        <div className="w-full max-w-[440px]">
+          <Heading size="page" subtitle={subtitle} className="mb-6 text-center" key={step}>
+            {title}
+          </Heading>
+
+          <Card variant="elevated" className="p-5 sm:p-7">
+            <EmailSignIn
+              next={next}
+              initialEmail={initialEmail}
+              initialError={initialError}
+              autoFocus={!initialEmail}
+              onStepChange={onStepChange}
+            />
+          </Card>
+
+          {step === "email" && <p className="mt-5 text-center text-sm text-ink-muted">{t("login.newAccountHint")}</p>}
+
+          <p className="mt-3 text-center">
+            <Link
+              href="/"
+              className={cx("inline-flex min-h-11 items-center rounded-full px-3 text-sm text-ink-muted transition-colors hover:text-ink-soft", focusRing)}
+            >
+              {t("login.backHome")}
+            </Link>
           </p>
         </div>
-
-        {/* Card */}
-        <div className="rounded-2xl border border-border-light bg-white p-8 shadow-sm">
-          {/* Google button */}
-          {/* Show OAuth error if redirected from callback */}
-          {authError && (
-            <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-              {t("authFailed")}
-            </div>
-          )}
-
-          <button
-            type="button"
-            onClick={handleGoogleLogin}
-            disabled={loading}
-            className="flex w-full items-center justify-center gap-3 rounded-xl border border-border-light bg-white px-4 py-3 text-sm font-semibold text-text-main transition-all hover:border-border-medium hover:bg-cream active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            <svg className="h-5 w-5" viewBox="0 0 24 24">
-              <path
-                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
-                fill="#4285F4"
-              />
-              <path
-                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                fill="#34A853"
-              />
-              <path
-                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                fill="#FBBC05"
-              />
-              <path
-                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                fill="#EA4335"
-              />
-            </svg>
-            {t("googleButton")}
-          </button>
-
-          {/* Divider */}
-          <div className="my-6 flex items-center gap-4">
-            <div className="h-px flex-1 bg-border-light" />
-            <span className="text-xs font-medium text-text-muted">{t("or")}</span>
-            <div className="h-px flex-1 bg-border-light" />
-          </div>
-
-          {/* Email form */}
-          <form onSubmit={handleEmailLogin} className="space-y-4">
-            <div>
-              <label
-                htmlFor="email"
-                className="mb-1.5 block text-sm font-medium text-create-text"
-              >
-                {t("emailLabel")}
-              </label>
-              <input
-                id="email"
-                type="email"
-                autoComplete="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                placeholder={t("emailPlaceholder")}
-                className="w-full rounded-xl border border-border-light bg-white px-4 py-3 text-sm text-text-main placeholder:text-text-muted outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="password"
-                className="mb-1.5 block text-sm font-medium text-create-text"
-              >
-                {t("passwordLabel")}
-              </label>
-              <div className="relative">
-                <input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  autoComplete="current-password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  placeholder={t("passwordPlaceholder")}
-                  minLength={6}
-                  className="w-full rounded-xl border border-border-light bg-white px-4 py-3 pr-11 text-sm text-text-main placeholder:text-text-muted outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-main transition-colors"
-                  tabIndex={-1}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                >
-                  <span className="material-symbols-outlined text-xl">
-                    {showPassword ? "visibility_off" : "visibility"}
-                  </span>
-                </button>
-              </div>
-            </div>
-
-            {error && (
-              <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                {error}
-              </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="min-h-12 w-full rounded-xl bg-primary px-4 py-3 text-[19px] font-bold leading-tight text-white transition-all hover:bg-primary-hover active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {loading ? t("loading") : t("submit")}
-            </button>
-
-            <div className="text-right">
-              <Link
-                href="/auth/reset-password"
-                className="text-sm font-medium text-brand-text hover:underline transition-colors"
-              >
-                {t("forgotPassword")}
-              </Link>
-            </div>
-          </form>
-        </div>
-
-        {/* Sign up link */}
-        <p className="mt-6 text-center text-sm text-text-muted">
-          {t("noAccount")}{" "}
-          <Link
-            href={`/auth/signup${nextUrl !== "/crear" ? `?next=${encodeURIComponent(nextUrl)}` : ""}`}
-            className="font-semibold text-brand-text hover:underline"
-          >
-            {t("createFree")}
-          </Link>
-        </p>
-
-        {/* Back to home */}
-        <p className="mt-3 text-center">
-          <Link
-            href="/"
-            className="text-sm text-text-muted hover:text-text-soft"
-          >
-            {t("backHome")}
-          </Link>
-        </p>
-      </div>
+      </main>
     </div>
   );
 }

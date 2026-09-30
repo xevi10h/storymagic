@@ -1,0 +1,1 @@
+{{ $locale := printf "%v" .Data.locale }}{{ if eq $locale "ca" }}{{ .Token }} és el teu codi per entrar a Meapica{{ else if eq $locale "en" }}{{ .Token }} is your Meapica sign-in code{{ else if eq $locale "fr" }}{{ .Token }} est votre code de connexion Meapica{{ else }}{{ .Token }} es tu código para entrar en Meapica{{ end }}

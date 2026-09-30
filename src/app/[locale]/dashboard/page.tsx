@@ -94,6 +94,11 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TabId>("stories");
+  // Deep link (order emails → login → /dashboard?tab=orders). Read after mount: no hydration mismatch.
+  useEffect(() => {
+    const tab = new URLSearchParams(window.location.search).get("tab");
+    if (tab === "orders" || tab === "characters" || tab === "stories") setActiveTab(tab);
+  }, []);
   const t = useTranslations("dashboard");
   const locale = useLocale();
 

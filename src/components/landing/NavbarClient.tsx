@@ -134,7 +134,9 @@ function UserMenu({ user, onSignOut }: { user: NavUser; onSignOut: () => void })
 export default function NavbarClient({ seasonToday }: { seasonToday: string | null }) {
   const t = useTranslations("nav");
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { user, loading, signOut } = useAuth();
+  const { user: sessionUser, loading, signOut } = useAuth();
+  // A guest (anonymous session) has no account yet: show "Entrar", never an avatar menu.
+  const user = sessionUser && !sessionUser.is_anonymous ? sessionUser : null;
   const pathname = usePathname();
   const navRef = useRef<HTMLElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);

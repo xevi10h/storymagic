@@ -16,6 +16,7 @@
 
 import { EMAIL_COLORS, renderEmailLayout, escapeHtml } from "./layout";
 import { getSiteUrl } from "./send";
+import { orderAccessUrl } from "@/lib/auth/next-path";
 import { formatPrice, SELLER_IDENTITY, type CatalogItemId } from "@/lib/pricing";
 import { ORDER_NOTICES, type NoticeEventStrings, type OrderNoticeEvent } from "./order-notices";
 
@@ -80,6 +81,8 @@ export interface OrderEmailContext {
   problemKind?: "failed" | "returned" | null;
   /** excluded_area: the postcode we can't ship to */
   postcode?: string | null;
+  /** Recipient address: prefilled on the login screen behind "Ver mi pedido". */
+  recipientEmail?: string | null;
 }
 
 // Short, stable order reference shown to the customer (shared with the library UI).
@@ -622,7 +625,8 @@ export function buildOrderEmail(event: OrderEmailEvent, ctx: OrderEmailContext):
   const ev = s.events[event];
   const firstName = buyerFirstName(ctx.buyerName);
 
-  const dashboardUrl = `${getSiteUrl()}/${loc}/dashboard`;
+  // "Ver mi pedido": login with the buyer's email prefilled → code → orders tab.
+  const dashboardUrl = orderAccessUrl(getSiteUrl(), loc, ctx.recipientEmail);
   const paragraphs = ev.paragraphs(ctx);
 
   // CTA: tracking link for shipped / download link for book_ready (if available), otherwise dashboard.

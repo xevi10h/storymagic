@@ -122,6 +122,7 @@ export async function notifyOrderEmail(params: NotifyOrderParams): Promise<boole
       cancelledBeforeShipping: params.cancelledBeforeShipping,
       problemKind: params.problemKind,
       postcode: params.postcode,
+      recipientEmail: email,
     });
 
     const ok = await sendEmail({ to: email, subject: built.subject, html: built.html, text: built.text });

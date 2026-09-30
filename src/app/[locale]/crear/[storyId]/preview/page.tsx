@@ -737,7 +737,7 @@ export default function PreviewPage() {
                   body={needsAccount ? tPurchase("later.saveBody") : tPurchase("later.savedBody")}
                 >
                   <Link
-                    href={needsAccount ? `/auth/signup?next=/crear/${storyId}/preview` : "/dashboard"}
+                    href={needsAccount ? `/auth/login?next=/crear/${storyId}/preview` : "/dashboard"}
                     className={LATER_BUTTON}
                     data-testid="later-save"
                   >

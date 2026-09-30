@@ -3,6 +3,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextRequest, NextResponse } from "next/server";
 import { routing } from "@/i18n/routing";
 import { parseDateOverride, SEASON_NOW_HEADER } from "@/lib/shipping";
+import { localizedPath, sanitizeNextPath } from "@/lib/auth/next-path";
 
 const intlMiddleware = createIntlMiddleware(routing);
 
@@ -122,22 +123,17 @@ export async function middleware(request: NextRequest) {
   if (isProtected && !user) {
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = `/${locale}/auth/login`;
-    loginUrl.searchParams.set("next", pathWithoutLocale);
+    loginUrl.search = "";
+    loginUrl.searchParams.set("next", `${pathWithoutLocale}${request.nextUrl.search}`);
     return NextResponse.redirect(loginUrl);
   }
 
-  // Auth pages: redirect to destination if already logged in
-  const isAuthPage = pathWithoutLocale.startsWith("/auth/");
-  const isRecoveryPage = pathWithoutLocale === "/auth/update-password";
-  const isResetPage = pathWithoutLocale === "/auth/reset-password";
-
-  if (isAuthPage && user && !user.is_anonymous && !isRecoveryPage && !isResetPage) {
-    const next = request.nextUrl.searchParams.get("next") || "/dashboard";
-    const nextParsed = new URL(next, request.nextUrl.origin);
-    const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = `/${locale}${nextParsed.pathname}`;
-    redirectUrl.search = nextParsed.search;
-    return NextResponse.redirect(redirectUrl);
+  // Auth pages: a signed-in account goes straight to its destination (guests may
+  // log in). `next` goes through the same sanitiser as every auth step.
+  const isAuthPage = pathWithoutLocale.startsWith("/auth/") && !pathWithoutLocale.startsWith("/auth/callback");
+  if (isAuthPage && user && !user.is_anonymous) {
+    const destination = localizedPath(locale, sanitizeNextPath(request.nextUrl.searchParams.get("next")));
+    return NextResponse.redirect(new URL(destination, request.nextUrl.origin));
   }
 
   // Share links carry a private token: never index them, never let a shared cache keep them.

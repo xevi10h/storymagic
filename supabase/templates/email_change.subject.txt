@@ -1,0 +1,1 @@
+{{ $locale := printf "%v" .Data.locale }}{{ if eq $locale "ca" }}{{ .Token }} és el teu codi per desar els llibres a Meapica{{ else if eq $locale "en" }}{{ .Token }} is your code to save your books on Meapica{{ else if eq $locale "fr" }}{{ .Token }} est votre code pour garder vos livres sur Meapica{{ else }}{{ .Token }} es tu código para guardar tus libros en Meapica{{ end }}
