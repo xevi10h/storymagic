@@ -218,7 +218,7 @@ export default function DashboardPage() {
                 <span
                   className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
                     activeTab === tab.id
-                      ? "bg-white/20 text-white"
+                      ? "bg-surface text-brand-text"
                       : "bg-badge-bg text-text-soft"
                   }`}
                 >

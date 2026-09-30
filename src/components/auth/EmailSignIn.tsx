@@ -3,7 +3,7 @@
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
-import { Button, Eyebrow, cx, focusRing } from "@/components/ui";
+import { Button, Eyebrow, Spinner, cx, focusRing } from "@/components/ui";
 import { authErrorKey, isExistingAccountError, type AuthErrorKey } from "@/lib/auth/auth-errors";
 import { localizedPath, sanitizeNextPath } from "@/lib/auth/next-path";
 import { SUPPORT_EMAIL } from "@/lib/support";
@@ -333,7 +333,6 @@ export default function EmailSignIn({ next, initialEmail = "", initialError = nu
             block
             loading={busy === "verify"}
             disabled={code.length < CODE_MIN}
-            className="text-[19px]"
           >
             {busy === "verify" ? t("code.verifying") : t("code.submit")}
           </Button>
@@ -398,7 +397,7 @@ export default function EmailSignIn({ next, initialEmail = "", initialError = nu
 
         {errorBox}
 
-        <Button type="submit" size="lg" block loading={busy === "send"} disabled={busy !== null && busy !== "send"} className="text-[19px]">
+        <Button type="submit" size="lg" block loading={busy === "send"} disabled={busy !== null && busy !== "send"}>
           {busy === "send" ? t("login.sending") : t("login.sendCode")}
         </Button>
       </form>
@@ -421,9 +420,7 @@ export default function EmailSignIn({ next, initialEmail = "", initialError = nu
             )}
           >
             {busy === "google" ? (
-              <span aria-hidden className="material-symbols-outlined animate-spin !text-xl">
-                progress_activity
-              </span>
+              <Spinner className="text-xl" />
             ) : (
               <GoogleMark />
             )}

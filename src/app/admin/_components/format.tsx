@@ -41,12 +41,12 @@ export const FORMAT_LABELS: Record<string, string> = {
 };
 
 const STATUS_TONES: Record<string, string> = {
-  pending: "bg-line text-ink-muted",
+  pending: "bg-line text-ink-soft",
   paid: "bg-amber-50 text-amber-800 ring-1 ring-amber-200",
   producing: "bg-sky-50 text-sky-800 ring-1 ring-sky-200",
   shipped: "bg-emerald-50 text-emerald-800 ring-1 ring-emerald-200",
   delivered: "bg-emerald-50 text-emerald-800 ring-1 ring-emerald-200",
-  cancelled: "bg-line text-ink-muted",
+  cancelled: "bg-line text-ink-soft",
   refunded: "bg-red-50 text-red-700 ring-1 ring-red-200",
 };
 

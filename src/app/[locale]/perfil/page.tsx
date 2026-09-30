@@ -7,7 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { createClient } from "@/lib/supabase/client";
 import EmailSignIn from "@/components/auth/EmailSignIn";
 import Sheet from "@/components/crear/Sheet";
-import { Button, Card, Eyebrow, Heading, buttonClass, cx, focusRing } from "@/components/ui";
+import { BrandLoader, Button, Card, Eyebrow, Heading, Spinner, brandBadge, buttonClass, cx, focusRing } from "@/components/ui";
 import { SUPPORT_EMAIL } from "@/lib/support";
 
 interface ProfileData {
@@ -80,9 +80,7 @@ export default function ProfilePage() {
       <div className="min-h-dvh bg-paper">
         {header}
         <div className="flex justify-center py-24">
-          <span aria-hidden className="material-symbols-outlined animate-spin text-brand">
-            progress_activity
-          </span>
+          <BrandLoader />
         </div>
       </div>
     );
@@ -217,7 +215,7 @@ function AccountProfile({
           // eslint-disable-next-line @next/next/no-img-element
           <img src={profile.avatarUrl} alt="" className="h-14 w-14 rounded-full object-cover" referrerPolicy="no-referrer" />
         ) : (
-          <span aria-hidden className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-brand font-display text-xl font-bold text-white">
+          <span aria-hidden className={cx("flex h-14 w-14 shrink-0 items-center justify-center rounded-full font-display text-xl font-bold", brandBadge)}>
             {initial}
           </span>
         )}
@@ -401,9 +399,7 @@ function DeleteAccountSheet({ open, onClose, locale }: { open: boolean; onClose:
             data-testid="delete-account-confirm"
           >
             {deleting && (
-              <span aria-hidden className="material-symbols-outlined animate-spin !text-lg">
-                progress_activity
-              </span>
+              <Spinner className="text-lg" />
             )}
             {deleting ? t("deleteAccount.deleting") : t("deleteAccount.confirm")}
           </button>
