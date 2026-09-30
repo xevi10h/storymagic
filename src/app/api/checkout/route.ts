@@ -40,7 +40,7 @@ const SHIPPING_AREA_NOTICE: Record<Locale, string> = {
   fr: "Livraison standard incluse en Espagne péninsulaire et aux Baléares (7 à 10 jours ouvrés). Pas encore de livraison aux Canaries, à Ceuta ni à Melilla.",
 };
 
-const INVOICE_FOOTER = `${SELLER_IDENTITY} · IVA incluido (4 %, libros) · hola@meapica.com`;
+const INVOICE_FOOTER = `${SELLER_IDENTITY} · IVA incluido (4 %, libros) · admin@casmar.tech`;
 
 /** ponytail: 2-min idempotency window — a double click reuses the session; a
  * deliberate second purchase after 2 min gets a new one. Per-click client keys

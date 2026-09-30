@@ -331,7 +331,7 @@ export default function SuccessClient({
               >
                 {t("goToDashboard")}
               </Link>
-              <a href="mailto:hola@meapica.com" className="text-sm text-text-muted hover:text-text-soft">
+              <a href="mailto:admin@casmar.tech" className="text-sm text-text-muted hover:text-text-soft">
                 {t("contactUs")}
               </a>
             </div>

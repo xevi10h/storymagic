@@ -7,7 +7,7 @@ const PAID_STATUSES = new Set(["paid", "producing", "shipped", "delivered"]);
 
 // Plain page for a browser that followed an email link (es + ca: our buyers).
 function message(status: number, es: string, ca: string) {
-  const html = `<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Meapica</title><body style="font-family:system-ui,sans-serif;max-width:32rem;margin:15vh auto;padding:0 16px;color:#2d2a26;line-height:1.5"><h1 style="font-size:1.25rem">Meapica</h1><p>${es}</p><p lang="ca" style="color:#6b6560">${ca}</p><p><a href="/">meapica.com</a> · <a href="mailto:hola@meapica.com">hola@meapica.com</a></p></body></html>`;
+  const html = `<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Meapica</title><body style="font-family:system-ui,sans-serif;max-width:32rem;margin:15vh auto;padding:0 16px;color:#2d2a26;line-height:1.5"><h1 style="font-size:1.25rem">Meapica</h1><p>${es}</p><p lang="ca" style="color:#6b6560">${ca}</p><p><a href="/">meapica.com</a> · <a href="mailto:admin@casmar.tech">admin@casmar.tech</a></p></body></html>`;
   return new NextResponse(html, { status, headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" } });
 }
 
