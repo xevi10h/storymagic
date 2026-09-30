@@ -21,8 +21,10 @@ const SELLER = {
 export const WEBHOOK_EVENTS: Stripe.WebhookEndpointCreateParams.EnabledEvent[] = [
   "checkout.session.completed",
   "checkout.session.async_payment_succeeded",
+  "checkout.session.async_payment_failed",
   "checkout.session.expired",
   "charge.refunded",
+  "charge.dispute.created",
 ];
 
 const key = process.env.STRIPE_KEY?.trim();

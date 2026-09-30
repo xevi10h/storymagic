@@ -3,7 +3,11 @@
 import assert from "node:assert/strict";
 import {
   backoffMs,
+  decideFullRefund,
   decideGelatoTransition,
+  isAdoptableGelatoOrder,
+  purchaseEligibility,
+  shouldSendTrackingUpdate,
   finalStageMarker,
   isExcludedSpanishPostcode,
   isOrderForActiveStripeMode,
@@ -133,3 +137,51 @@ console.log("fulfilment logic: all checks passed");
   else process.env.STRIPE_ENVIRONMENT = prev;
 }
 console.log("stripe mode isolation ✓");
+
+// ── Refunds: cancellation vs goodwill ────────────────────────────────────────
+{
+  const o = (status, format = "hardcover", gelato_order_id = null, gelato_status = null) => ({ status, format, gelato_order_id, gelato_status });
+  // before print: close (no Gelato order yet)
+  assert.deepEqual(decideFullRefund(o("paid")), { kind: "close", cancelAtGelato: false });
+  // at Gelato, not shipped: close + cancel there
+  assert.deepEqual(decideFullRefund(o("producing", "softcover", "g1", "printed")), { kind: "close", cancelAtGelato: true });
+  // out of the door: history kept, no Gelato cancel (no false alert)
+  assert.deepEqual(decideFullRefund(o("shipped", "hardcover", "g1", "shipped")), { kind: "record_only" });
+  assert.deepEqual(decideFullRefund(o("delivered", "hardcover", "g1", "delivered")), { kind: "record_only" });
+  // our status lags but Gelato already shipped it
+  assert.deepEqual(decideFullRefund(o("producing", "hardcover", "g1", "in_transit")), { kind: "record_only" });
+  assert.deepEqual(decideFullRefund(o("producing", "hardcover", "g1", "returned")), { kind: "record_only" });
+  // digital: a refund always revokes (download dies)
+  assert.deepEqual(decideFullRefund(o("producing", "digital_pdf")), { kind: "close", cancelAtGelato: false });
+  // already closed / never paid
+  for (const s of ["refunded", "cancelled", "pending"]) assert.deepEqual(decideFullRefund(o(s)), { kind: "noop" });
+}
+console.log("refund decisions ✓");
+
+// ── Gelato adoption on (re)submission ────────────────────────────────────────
+for (const s of ["created", "passed", "in_production", "printed", "shipped", "pending_approval"]) assert.equal(isAdoptableGelatoOrder(s), true, s);
+for (const s of ["canceled", "cancelled", "failed", "returned", " Returned "]) assert.equal(isAdoptableGelatoOrder(s), false, s);
+console.log("gelato adoption ✓");
+
+// ── Tracking arrives after the shipped email ─────────────────────────────────
+{
+  const base = { status: "shipped", previousTrackingNumber: null, newTrackingNumber: "TRK1", advancedByThisEvent: false };
+  assert.equal(shouldSendTrackingUpdate(base), true);
+  assert.equal(shouldSendTrackingUpdate({ ...base, advancedByThisEvent: true }), false); // shipped email carries it
+  assert.equal(shouldSendTrackingUpdate({ ...base, previousTrackingNumber: "TRK0" }), false); // already had one
+  assert.equal(shouldSendTrackingUpdate({ ...base, newTrackingNumber: null }), false);
+  assert.equal(shouldSendTrackingUpdate({ ...base, status: "delivered" }), false); // too late to matter
+  assert.equal(shouldSendTrackingUpdate({ ...base, status: "refunded" }), false);
+}
+console.log("tracking update ✓");
+
+// ── Purchases: preview, another copy, no second PDF ──────────────────────────
+assert.equal(purchaseEligibility("preview", "digital_pdf"), "ok");
+assert.equal(purchaseEligibility("preview", "hardcover"), "ok");
+for (const s of ["ready", "ordered", "shipped", "delivered"]) {
+  assert.equal(purchaseEligibility(s, "hardcover"), "ok", s);
+  assert.equal(purchaseEligibility(s, "softcover"), "ok", s);
+  assert.equal(purchaseEligibility(s, "digital_pdf"), "already_owned", s);
+}
+for (const s of ["draft", "generating", "completing"]) assert.equal(purchaseEligibility(s, "hardcover"), "not_ready", s);
+console.log("purchase eligibility ✓");

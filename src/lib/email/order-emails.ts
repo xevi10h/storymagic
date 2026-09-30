@@ -17,6 +17,7 @@
 import { EMAIL_COLORS, renderEmailLayout, escapeHtml } from "./layout";
 import { getSiteUrl } from "./send";
 import { formatPrice, SELLER_IDENTITY, type CatalogItemId } from "@/lib/pricing";
+import { ORDER_NOTICES, type NoticeEventStrings, type OrderNoticeEvent } from "./order-notices";
 
 export type OrderEmailEvent =
   | "order_confirmed"
@@ -24,7 +25,9 @@ export type OrderEmailEvent =
   | "book_ready"
   | "in_production"
   | "shipped"
-  | "delivered";
+  | "delivered"
+  // Orders that don't go to plan (copy in order-notices.ts)
+  | OrderNoticeEvent;
 
 type Locale = "es" | "ca" | "en" | "fr";
 
@@ -67,12 +70,20 @@ export interface OrderEmailContext {
   isPhysical?: boolean;
   /** order_confirmed*: receipt block */
   receipt?: OrderReceipt | null;
+  /** Short order reference (orderReference) for notices */
+  reference?: string | null;
+  /** refund_issued: amount refunded, in cents */
+  amountCents?: number | null;
+  /** refund_issued: the order was stopped before it shipped (it won't be printed) */
+  cancelledBeforeShipping?: boolean;
+  /** print_problem: what Gelato reported */
+  problemKind?: "failed" | "returned" | null;
+  /** excluded_area: the postcode we can't ship to */
+  postcode?: string | null;
 }
 
-/** Short, stable order reference shown to the customer: first 8 hex of the order id. */
-export function orderReference(orderId: string): string {
-  return orderId.replace(/-/g, "").slice(0, 8).toUpperCase();
-}
+// Short, stable order reference shown to the customer (shared with the library UI).
+export { orderReference } from "@/lib/order-view";
 
 /**
  * First name for the greeting. "MARTA PRUEBA GARCÍA" → "Marta", "maría josé" → "María".
@@ -113,10 +124,7 @@ interface Strings {
   /** Durable-medium confirmation of the express consent (art. 98.7 + 103 m LGDCU). */
   withdrawalConfirmation: string;
   receipt: ReceiptStrings;
-  events: Record<
-    OrderEmailEvent,
-    { subject: (ctx: OrderEmailContext) => string; heading: string; paragraphs: (ctx: OrderEmailContext) => string[] }
-  >;
+  events: Record<OrderEmailEvent, NoticeEventStrings>;
 }
 
 const b = (c: OrderEmailContext) => `<strong>${escapeHtml(c.bookTitle)}</strong>`;
@@ -214,6 +222,7 @@ const CONTENT: Record<Locale, Strings> = {
           "Y cuando os apetezca otra aventura, aquí estamos para crear el siguiente cuento.",
         ],
       },
+      ...ORDER_NOTICES.es,
     },
   },
   ca: {
@@ -307,6 +316,7 @@ const CONTENT: Record<Locale, Strings> = {
           "I quan us vingui de gust una altra aventura, aquí som per crear el següent conte.",
         ],
       },
+      ...ORDER_NOTICES.ca,
     },
   },
   en: {
@@ -400,6 +410,7 @@ const CONTENT: Record<Locale, Strings> = {
           "And whenever you fancy another adventure, we're here to make the next story.",
         ],
       },
+      ...ORDER_NOTICES.en,
     },
   },
   fr: {
@@ -493,6 +504,7 @@ const CONTENT: Record<Locale, Strings> = {
           "Et quand vous aurez envie d'une nouvelle aventure, nous serons là pour créer la prochaine histoire.",
         ],
       },
+      ...ORDER_NOTICES.fr,
     },
   },
 };
@@ -625,24 +637,32 @@ export function buildOrderEmail(event: OrderEmailEvent, ctx: OrderEmailContext):
   const colon = loc === "fr" ? "\u00a0:" : ":";
   const receipt = isConfirmation ? ctx.receipt ?? null : null;
   const infoText =
-    event === "shipped" && ctx.trackingNumber
+    (event === "shipped" || event === "tracking_update") && ctx.trackingNumber
       ? `${s.trackingLabel}${colon} ${ctx.trackingNumber}`
       : isConfirmation
         ? s.withdrawalConfirmation
         : null;
   const infoHtml =
-    event === "shipped" && ctx.trackingNumber
+    (event === "shipped" || event === "tracking_update") && ctx.trackingNumber
       ? `<strong>${s.trackingLabel}${colon}</strong> ${escapeHtml(ctx.trackingNumber)}`
       : infoText
         ? escapeHtml(infoText)
         : undefined;
+
+  // Tracking update: the carrier link. Notices: the library button with their own label.
+  const shownCta =
+    event === "tracking_update" && ctx.trackingUrl
+      ? { label: s.trackingCta, url: ctx.trackingUrl }
+      : ev.ctaLabel && cta.label === s.dashboardCta
+        ? { ...cta, label: ev.ctaLabel }
+        : cta;
 
   const greeting = s.greeting(firstName);
   const html = renderEmailLayout({
     heading: ev.heading,
     greeting: escapeHtml(greeting),
     paragraphs,
-    cta,
+    cta: shownCta,
     detailsHtml: receipt ? renderReceiptHtml(receipt, s.receipt, loc) : undefined,
     infoHtml,
     signoff: s.signoff,
@@ -652,7 +672,7 @@ export function buildOrderEmail(event: OrderEmailEvent, ctx: OrderEmailContext):
   // Text alternative (multipart/alternative): strip the simple tags used in paragraphs.
   const stripTags = (str: string) =>
     str.replace(/<[^>]+>/g, "").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'");
-  const textLines = [greeting, ...paragraphs.map(stripTags), `${cta.label}: ${cta.url}`];
+  const textLines = [greeting, ...paragraphs.map(stripTags), `${shownCta.label}: ${shownCta.url}`];
   if (receipt) textLines.push(renderReceiptText(receipt, s.receipt, loc));
   if (infoText) textLines.push(infoText);
   textLines.push("---", s.signoff);

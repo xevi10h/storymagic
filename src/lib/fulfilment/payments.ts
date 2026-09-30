@@ -9,6 +9,7 @@ import { alertOperator } from "./alerts";
 import { sendOrderEmailOnce } from "./emails";
 import { orderReference, type OrderReceipt } from "@/lib/email/order-emails";
 import { catalogItemByLookupKey } from "@/lib/pricing";
+import { decideFullRefund } from "./logic";
 import type { FulfilmentClient, FulfilmentDatabase } from "./db";
 
 type OrderRow = FulfilmentDatabase["public"]["Tables"]["orders"]["Row"];
@@ -176,17 +177,22 @@ export async function recordExpiredSession(supabase: FulfilmentClient, sessionId
 }
 
 /**
- * charge.refunded. A FULL refund closes the order: generation and printing stop
- * (the cron only takes 'paid', every Gelato claim is CAS on 'paid'), the download
- * link dies, and a Gelato order not yet in production is cancelled. Partial
- * refunds (e.g. goodwill) only alert the operator.
+ * charge.refunded. What a FULL refund does depends on how far the order got
+ * (decideFullRefund):
+ *  - not shipped yet → the order is closed ('refunded'): generation and printing
+ *    stop (the cron only takes 'paid', every Gelato claim is CAS on 'paid'), the
+ *    download link dies, and a Gelato order not yet in production is cancelled;
+ *  - already shipped/delivered (goodwill refund) → the status history is kept,
+ *    only refunded_at is recorded: no Gelato cancel, no alert, the PDF stays.
+ * Either way the customer gets one "refund issued" email and the invoice gets a
+ * credit note (factura rectificativa). Partial refunds only alert the operator.
  */
 export async function recordRefund(supabase: FulfilmentClient, charge: Stripe.Charge): Promise<void> {
   const paymentId = typeof charge.payment_intent === "string" ? charge.payment_intent : charge.payment_intent?.id;
   if (!paymentId) return;
   const { data: order, error } = await supabase
     .from("orders")
-    .select("id, story_id, format, status, gelato_order_id")
+    .select("id, story_id, user_id, format, status, gelato_order_id, gelato_status, refunded_at, stripe_invoice_id")
     .eq("stripe_payment_id", paymentId)
     .maybeSingle();
   if (error) throw new Error(`Failed to read order for payment ${paymentId}: ${error.message}`);
@@ -199,26 +205,198 @@ export async function recordRefund(supabase: FulfilmentClient, charge: Stripe.Ch
     await alertOperator(supabase, {
       key: `partial-refund:${order.id}:${charge.amount_refunded}`,
       subject: `Partial refund on order ${order.id} (${charge.amount_refunded / 100} € of ${charge.amount / 100} €)`,
-      lines: [`Order status stays '${order.status}'. Nothing was cancelled automatically.`],
+      lines: [
+        `Order status stays '${order.status}'. Nothing was cancelled automatically and the customer was NOT emailed.`,
+        "Tell the customer yourself, and issue a credit note on the invoice in the Stripe Dashboard.",
+      ],
       dedupeSeconds: 7 * 24 * 3600,
     });
     return;
   }
-  if (order.status === "refunded") return;
 
-  const { data: closed, error: updErr } = await supabase
+  const decision = decideFullRefund(order);
+  const refundedAt = new Date().toISOString();
+  let cancelledBeforeShipping = false;
+
+  if (decision.kind === "record_only") {
+    const { error: updErr } = await supabase
+      .from("orders")
+      .update({ refunded_at: refundedAt })
+      .eq("id", order.id)
+      .is("refunded_at", null);
+    if (updErr) throw new Error(`Failed to record refund on order ${order.id}: ${updErr.message}`);
+    console.log(`[payments] Order ${order.id} refunded after it shipped (status kept: ${order.status})`);
+  } else if (decision.kind === "close") {
+    const { data: closed, error: updErr } = await supabase
+      .from("orders")
+      .update({ status: "refunded", refunded_at: refundedAt })
+      .eq("id", order.id)
+      .eq("status", order.status)
+      .select("id, gelato_order_id, status");
+    if (updErr) throw new Error(`Failed to mark order ${order.id} refunded: ${updErr.message}`);
+    // It moved meanwhile (e.g. Gelato shipped it): Stripe retries and we decide again.
+    if (!closed || closed.length === 0) throw new Error(`Order ${order.id} changed during refund, retry`);
+    console.log(`[payments] Order ${order.id} refunded (was ${order.status})`);
+    cancelledBeforeShipping = PHYSICAL_FORMATS.has(order.format);
+    // Re-read: a Gelato submission may have recorded its id between our read and update.
+    const gelatoOrderId = closed[0].gelato_order_id ?? order.gelato_order_id;
+    if (gelatoOrderId) await cancelGelatoForRefund(supabase, order.id, gelatoOrderId, order.status);
+  } else if (order.status !== "refunded" && !order.refunded_at) {
+    return; // cancelled / pending: never paid, nothing to tell the customer
+  }
+
+  // Exactly once, also when this is a retry of an event whose email failed.
+  await sendOrderEmailOnce(supabase, {
+    order,
+    column: "refund_email_sent_at",
+    event: "refund_issued",
+    amountCents: charge.amount_refunded,
+    cancelledBeforeShipping,
+  });
+  await issueCreditNote(supabase, order, charge);
+}
+
+/**
+ * Credit note (factura rectificativa, RD 1619/2012 art. 15) for a fully refunded
+ * order whose Checkout produced an invoice: every invoice line credited in full,
+ * linked to the charge's existing refunds so no money moves twice. Best-effort:
+ * anything unexpected alerts the operator to issue it by hand in the Dashboard.
+ */
+async function issueCreditNote(
+  supabase: FulfilmentClient,
+  order: { id: string; stripe_invoice_id: string | null },
+  charge: Stripe.Charge,
+): Promise<void> {
+  if (!order.stripe_invoice_id) return;
+  const stripe = getStripe();
+  try {
+    const existing = await stripe.creditNotes.list({ invoice: order.stripe_invoice_id, limit: 1 });
+    if (existing.data.length > 0) return;
+    const invoice = await stripe.invoices.retrieve(order.stripe_invoice_id);
+    const refunds = (await stripe.refunds.list({ charge: charge.id, limit: 100 })).data.filter(
+      (r) => r.status === "succeeded" || r.status === "pending",
+    );
+    const refunded = refunds.reduce((sum, r) => sum + r.amount, 0);
+    if (invoice.status !== "paid" || refunded !== invoice.total || invoice.lines.has_more) {
+      throw new Error(
+        `not auto-issuable: invoice ${invoice.status}, total ${invoice.total}, refunded ${refunded}, more lines ${invoice.lines.has_more}`,
+      );
+    }
+    const note = await stripe.creditNotes.create(
+      {
+        invoice: invoice.id as string,
+        lines: invoice.lines.data.map((li) => ({
+          type: "invoice_line_item" as const,
+          invoice_line_item: li.id,
+          quantity: li.quantity ?? 1,
+        })),
+        refunds: refunds.map((r) => ({ type: "refund" as const, refund: r.id, amount_refunded: r.amount })),
+        reason: "order_change",
+        metadata: { order_id: order.id },
+      },
+      { idempotencyKey: `credit-note-${invoice.id}` },
+    );
+    console.log(`[payments] Credit note ${note.number ?? note.id} issued for order ${order.id}`);
+  } catch (err) {
+    await alertOperator(supabase, {
+      key: `credit-note:${order.id}`,
+      subject: `Refunded order ${order.id}: credit note NOT issued automatically`,
+      lines: [
+        `Invoice ${order.stripe_invoice_id} · error: ${err instanceof Error ? err.message.slice(0, 500) : String(err)}`,
+        "Issue it by hand: Stripe Dashboard → Invoices → the invoice → More → Issue a credit note, linked to the existing refund.",
+      ],
+      dedupeSeconds: 7 * 24 * 3600,
+    });
+  }
+}
+
+/**
+ * checkout.session.async_payment_failed: a delayed payment method (bank debit…)
+ * didn't settle. The order never became 'paid'; close it and tell the buyer.
+ */
+export async function recordAsyncPaymentFailed(supabase: FulfilmentClient, session: Stripe.Checkout.Session): Promise<void> {
+  const { data: cancelled, error } = await supabase
     .from("orders")
-    .update({ status: "refunded", refunded_at: new Date().toISOString() })
-    .eq("id", order.id)
-    .neq("status", "refunded")
-    .select("id, gelato_order_id, status");
-  if (updErr) throw new Error(`Failed to mark order ${order.id} refunded: ${updErr.message}`);
-  if (!closed || closed.length === 0) return; // a concurrent delivery did it
-  console.log(`[payments] Order ${order.id} refunded (was ${order.status})`);
+    .update({ status: "cancelled" })
+    .eq("stripe_checkout_session_id", session.id)
+    .eq("status", "pending")
+    .select("id, story_id, user_id");
+  if (error) throw new Error(`Failed to cancel order for session ${session.id}: ${error.message}`);
+  const order = cancelled?.[0];
+  if (!order) return; // already handled, or not one of ours
+  await sendOrderEmailOnce(supabase, {
+    order,
+    column: "cancel_email_sent_at",
+    event: "order_cancelled",
+    // Guests have no account email and recordPaidSession never stored one.
+    email: session.customer_details?.email?.trim() || session.customer_email?.trim() || null,
+    buyerName: session.customer_details?.name ?? null,
+  });
+}
 
-  // Re-read: a Gelato submission may have recorded its id between our read and update.
-  const gelatoOrderId = closed[0].gelato_order_id ?? order.gelato_order_id;
-  if (gelatoOrderId) await cancelGelatoForRefund(supabase, order.id, gelatoOrderId, order.status);
+/**
+ * charge.dispute.created (chargeback). Always alerts the operator (evidence is
+ * due within days). If the book hasn't gone to print yet, fulfilment is put on
+ * hold so we don't spend on a payment that may be clawed back.
+ */
+export async function recordDispute(supabase: FulfilmentClient, dispute: Stripe.Dispute): Promise<void> {
+  const paymentId = typeof dispute.payment_intent === "string" ? dispute.payment_intent : dispute.payment_intent?.id;
+  if (!paymentId) {
+    console.warn(`[payments] Dispute ${dispute.id} has no payment_intent`);
+    return;
+  }
+  const { data: order, error } = await supabase
+    .from("orders")
+    .select("id, story_id, format, status, gelato_order_id, gelato_status, customer_email")
+    .eq("stripe_payment_id", paymentId)
+    .maybeSingle();
+  if (error) throw new Error(`Failed to read order for payment ${paymentId}: ${error.message}`);
+  if (!order) {
+    await alertOperator(supabase, {
+      key: `dispute:${dispute.id}`,
+      subject: `Stripe dispute ${dispute.id} on an unknown payment ${paymentId}`,
+      lines: [`Amount ${dispute.amount / 100} € · reason ${dispute.reason}. Answer it in the Stripe Dashboard.`],
+      dedupeSeconds: 7 * 24 * 3600,
+    });
+    return;
+  }
+
+  const disputedAt = new Date().toISOString();
+  // Hold only what hasn't reached Gelato (same conditions as the submit claim, so
+  // a submission can't start after this; one already in flight is reported below).
+  const { data: held, error: holdErr } = await supabase
+    .from("orders")
+    .update({ disputed_at: disputedAt, fulfilment_hold_reason: "dispute" })
+    .eq("id", order.id)
+    .eq("status", "paid")
+    .is("gelato_order_id", null)
+    .select("id, gelato_submit_started_at");
+  if (holdErr) throw new Error(`Failed to hold order ${order.id}: ${holdErr.message}`);
+  const paused = !!held && held.length > 0;
+  if (!paused) {
+    const { error: markErr } = await supabase
+      .from("orders")
+      .update({ disputed_at: disputedAt })
+      .eq("id", order.id)
+      .is("disputed_at", null);
+    if (markErr) throw new Error(`Failed to mark order ${order.id} disputed: ${markErr.message}`);
+  }
+  const inFlight = paused && !!held?.[0]?.gelato_submit_started_at;
+
+  await alertOperator(supabase, {
+    key: `dispute:${dispute.id}`,
+    subject: `Chargeback on order ${order.id} (${dispute.amount / 100} €, ${dispute.reason})`,
+    lines: [
+      `Story ${order.story_id} · format ${order.format} · status '${order.status}' · ${order.customer_email ?? "no email"}`,
+      paused
+        ? `Fulfilment is ON HOLD (no more generation or printing).${inFlight ? " A Gelato submission was in flight: check the Gelato dashboard for meapica-" + order.id + "." : ""} To resume: set orders.fulfilment_hold_reason = NULL.`
+        : order.gelato_order_id
+          ? `Already at Gelato (${order.gelato_order_id}, ${order.gelato_status ?? "status unknown"}): cancel it there if still possible.`
+          : "Nothing to pause (digital or already fulfilled).",
+      `Submit evidence in the Stripe Dashboard before ${dispute.evidence_details?.due_by ? new Date(dispute.evidence_details.due_by * 1000).toISOString().slice(0, 10) : "the deadline"}.`,
+    ],
+    dedupeSeconds: 7 * 24 * 3600,
+  });
 }
 
 export async function cancelGelatoForRefund(
