@@ -10,7 +10,7 @@
 |---|---|---|
 | `illustrations` | **Private** | Every generated image of a child: avatar portraits, character sheets, scenes, covers |
 | `showcase` | Public | Marketing copies only: is_showcase example books, waitlist covers, style samples, blog images, mock art |
-| `book-pdfs` | Private | Rendered PDFs (digital download + Gelato print files), 1 h / 7 d signed URLs |
+| `book-pdfs` | Private, server-only (client policies dropped 20260930160000) | Rendered PDFs (digital download + Gelato print files), 1 h / 7 d signed URLs |
 | `child-photos` | Private, server-only (no storage policies) | The child's photo (flagged feature): bytes read server-side, never a URL; deleted after the early child sheet, hourly purge ≤ 24 h |
 
 ## Private illustrations (2026-09-27)
@@ -117,7 +117,9 @@ Seller on invoices: Xavier Huix Trenco (autónomo), NIF 41649433K, Carrer Aribau
   (new Price takes the lookup key, old one archived). The server refuses to sell if a Price's
   amount/tax behaviour drifts from the code (`getStripeCatalog`).
 - Webhook endpoint (events: `checkout.session.completed`, `checkout.session.async_payment_succeeded`,
-  `checkout.session.expired`, `charge.refunded`); a NEW endpoint prints its signing secret once.
+  `checkout.session.async_payment_failed`, `checkout.session.expired`, `charge.refunded`,
+  `charge.dispute.created`); a NEW endpoint prints its signing secret once. **The last two events are
+  new (2026-09-30): add them to the existing live + test endpoints (or re-run the script).**
 
 **Endpoints:** both modes point at `https://meapica.com/api/webhooks/stripe`; the route verifies with
 `STRIPE_WEBHOOK_SECRET_LIVE` and `STRIPE_WEBHOOK_SECRET_TEST` and ignores events whose mode ≠
@@ -129,6 +131,8 @@ endpoint `we_1T8hz2…` is obsolete once the new live account is in use.
 already hold the Meapica sandbox values). No publishable key is used (redirect Checkout).
 
 **Checkout:** `automatic_tax`, `invoice_creation` (factura with NIF; Stripe Invoicing fee applies),
+`tax_id_collection` (customer may add a NIF → factura completa; a full refund issues a credit note =
+factura rectificativa, `src/lib/fulfilment/payments.ts`),
 locale es/en/fr (Stripe has no Catalan → es), shipping ES only, card only, promotion codes allowed.
 Invoices are not VeriFactu-compliant: move to a VeriFactu tool before the obligation applies (2027).
 
@@ -157,6 +161,27 @@ real payment + refund by the owner; the old Constrack endpoint `we_1T8hz2…` wa
 Go-live (done): activate the live account → run the setup script with the live key + `--webhook-url` →
 set `STRIPE_SECRET_KEY_LIVE` / `STRIPE_WEBHOOK_SECRET_LIVE` in Vercel → deploy → apply 120100 →
 one real live payment + immediate refund (owner OK) → disable the old Constrack endpoint.
+
+## Accounts, admin & retention (2026-09-30)
+
+**Supabase Auth (dashboard, not in git — owner applies):** custom SMTP = Resend (`smtp.resend.com:465`,
+user `resend`); Email OTP length 6, expiry 3600; manual linking ON; Google provider ON; Site URL
+`https://meapica.com`; redirect allow-list `https://meapica.com/**`, `https://www.meapica.com/**`,
+`http://localhost:3013/**`. Templates "Magic Link" and "Change Email Address" = `supabase/templates/*.html`
+(+ `.subject.txt`).
+
+**Env (Vercel prod):** `ADMIN_EMAILS` (comma-separated; empty = nobody gets into `/admin`).
+`CRON_SECRET` also guards `/api/cron/purge-guests` (vercel.json, daily 03:40 UTC). Guest-merge cookie
+key is derived from `SUPABASE_SERVICE_ROLE_KEY` (no new var).
+
+### Deploy order — accounts/orders/security (2026-09-30)
+
+| Version | File | When |
+|---|---|---|
+| 20260930130000 | `guest_merge.sql` (`merge_guest_account` RPC, service role only) | before the deploy (additive) |
+| 20260930140000 | `order_notifications.sql` (notice email claims, `disputed_at`, `fulfilment_hold_reason`) | before the deploy (code selects them) |
+| 20260930150000 | `admin_and_retention.sql` (requeue/reprint columns, `order_status_history`, `admin_audit_log`, `account_erasures`) | before the deploy |
+| 20260930160000 | `security_hardening.sql` (no browser writes, locked showcase, book-pdfs server-only, orders FKs SET NULL, newsletter/rate_limits closed) | **after** the deploy |
 
 ## Gelato (print + shipping)
 

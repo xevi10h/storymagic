@@ -109,7 +109,7 @@ Each template is identified by an English slug and is backed by a branching stor
 | Second copy (discounted) | +15 EUR | Additional softcover copy |
 | Collection discount | 3 books = -20% | Encourage multi-purchase / saga adoption |
 
-Live today: extra copy only (hardcover 29,90 € / softcover 19,90 €, same format, printed at the same time; shown on the paywall as one checkbox line "Otro ejemplar para los abuelos"). The Pack Aventura is off (`ADDON_ENABLED`), no collection discount.
+Live today: extra copy only (hardcover 29,90 € / softcover 19,90 €, same format, printed at the same time; shown on the paywall as one checkbox line "Otro ejemplar para los abuelos"). After purchase, "Comprar otra copia" in My Orders sells a printed copy of a finished book at the normal format price (34,90 / 49,90 €; a second PDF of the same book is refused). The Pack Aventura is off (`ADDON_ENABLED`), no collection discount.
 
 All prices above (and the base book prices) are final VAT-inclusive consumer prices (B2C). Stripe Prices use `tax_behavior: inclusive`; the UI always shows "IVA incluido" next to the amount.
 

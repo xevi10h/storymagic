@@ -95,15 +95,20 @@ Landing Page
 
 **Implementation:**
 - My Books: list of created/purchased stories with status badges
+- My Orders (`?tab=orders` opens it; `OrdersTab.tsx`): reference, date, format, extras, total "IVA incluido", address, 4-step print stepper with tracking link (digital orders: "Listo para descargar" instead), invoice, PDF download, "Contactar sobre este pedido" (mailto admin@casmar.tech with the reference), "Comprar otra copia" (printed copy of a finished book at the normal price)
 - My Heroes: saved character profiles
-- Authenticated route (redirects to /auth/login if not logged in)
+- Authenticated route (redirects to /auth/login if not logged in; guests count as logged in)
 
 ---
 
 ### Profile ✅ IMPLEMENTED
 
 **Route:** `/perfil`
-**Implementation:** Edit name, change password, account info. Full password reset flow (`/auth/reset-password` + `/auth/update-password`).
+**Implementation:** Edit name, account info, sign out, "Eliminar mi cuenta" danger zone (type the confirmation word → `DELETE /api/account`; blocked with the order reference while a paid order is being produced/shipped). Guests see "Guarda tus libros" (enter email) and a warning before signing out that they lose access.
+
+### Login ✅ IMPLEMENTED (2026-09-30)
+
+**Route:** `/auth/login` (signup/reset/update-password redirect here). Passwordless: enter email → one email with a link and a 6-digit code (type the code on any device) or Google. A guest who logs in keeps their books and orders (in-place upgrade or merge into the existing account). `?email=` prefills (order emails), `next` is preserved and sanitised.
 
 ---
 

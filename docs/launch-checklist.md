@@ -1,5 +1,24 @@
 # Launch Readiness Checklist
 
+> ## 👤 2026-09-30 — accounts, orders & data (branch `integration/accounts-orders`, NOT deployed)
+> Built: passwordless login (email code/link + Google) with guest linking, customer order detail +
+> reorder + bad-outcome emails, invoices with NIF + credit notes, `/admin` operator panel,
+> account erasure + 30-day guest purge, RLS/storage hardening. See technical-architecture.md →
+> "Accounts, orders & data lifecycle". Customer support address = **admin@casmar.tech** (`SUPPORT_EMAIL`).
+> **Deploy order (strict):**
+> 1. Supabase dashboard (owner, needs owner access): custom SMTP = Resend (`smtp.resend.com:465`,
+>    user `resend`, pass = Resend API key; today it is null → default mailer, 2 emails/h, org members only =
+>    **login is broken for customers until this is done**); Email OTP length 6; manual linking ON;
+>    Site URL `https://meapica.com`; redirect allow-list `https://meapica.com/**`, `https://www.meapica.com/**`,
+>    `http://localhost:3013/**`; templates "Magic Link" and "Change Email Address" from `supabase/templates/`.
+> 2. Apply migrations 20260930130000 (guest merge), 20260930140000 (order notices), 20260930150000 (admin + retention).
+> 3. Vercel env `ADMIN_EMAILS=admin@casmar.tech`; deploy the code.
+> 4. Apply 20260930160000 (security hardening) AFTER the deploy (applied earlier it breaks book creation).
+> 5. Stripe webhook (live + test): add `charge.dispute.created` + `checkout.session.async_payment_failed`.
+> 6. Smoke: full creation flow as guest, email login + merge, a test purchase, `/admin`, purge cron `?dry_run=1`.
+> Open: retention rule for guests who paid (never auto-purged); reorder discount (normal price now);
+> privacy policy §5 must list every image provider actually enabled at launch (fal/BFL/Recraft).
+
 > ## 💳 2026-09-28 — commerce block A (Stripe) — status
 > LIVE on the new Meapica Stripe account since 2026-09-28 (see `docs/stack.md` → Payments).
 > Pending: one real owner payment + refund to confirm invoice/email/download on live.

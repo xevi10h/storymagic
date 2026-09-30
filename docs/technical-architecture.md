@@ -111,8 +111,8 @@ illustration_library (cache table)
 
 orders
 ├── id (uuid, PK)
-├── user_id (FK → profiles)
-├── story_id (FK → stories)
+├── user_id (FK → profiles, nullable, ON DELETE SET NULL: orders are 6-year accounting records)
+├── story_id (FK → stories, nullable, ON DELETE SET NULL)
 ├── stripe_payment_id (PaymentIntent — refunds are matched on it)
 ├── stripe_checkout_session_id (unique; cs_test_… / cs_live_… = the Stripe mode)
 ├── format (digital_pdf / softcover / hardcover)
@@ -134,8 +134,16 @@ orders
 ├── download_token (uuid, unique — the credential of the email download link /api/downloads/{token})
 ├── withdrawal_consent_at / withdrawal_consent_version (art. 103 c+m LGDCU express consent, paywall checkbox)
 ├── stripe_invoice_id / invoice_url (Stripe invoice created by Checkout, hosted URL)
-└── refunded_at
-RLS: owners SELECT only. Rows are inserted by /api/checkout with the service role (no client INSERT).
+├── refunded_at (a goodwill refund on a shipped/delivered order only sets this; status keeps its history)
+├── refund/cancel/delay/problem/excluded_area/tracking_email_sent_at (exactly-once customer notices, 20260930140000)
+├── disputed_at / fulfilment_hold_reason ('dispute' = chargeback: nothing generated/printed until an operator re-sends from /admin)
+└── fulfilment_requeued_at / gelato_reprint_count (admin re-queue restarts the cron windows; reprints use Gelato ref meapica-{id}-r{n}, 20260930150000)
+RLS: owners SELECT only. Browsers can't write any product table (20260930160000): every write goes through an API route with the service role after an ownership check.
+
+order_status_history (trigger-fed status log, admin only — RLS on, no policies)
+admin_audit_log (every /admin action: actor, action, order, ok, details — admin only)
+account_erasures (one row per erasure: counts only, no personal data — admin only)
+RPC merge_guest_account(anon, target, story_ids) — service role only (20260930130000): re-owns a guest's rows to the account they logged into
 
 photo_consents (parental consent per child photo — service role only, RLS on, no policies)
 ├── id (uuid, PK)
@@ -192,8 +200,19 @@ blog_posts (editorial blog — Supabase CMS)
 |--------|--------|-------------|---------|
 | `illustrations` | **Private** (since 2026-09-27) | `{storyId}/preview/{scene-N\|cover\|sheet-child\|sheet-companions}-{version}.jpg`, `{storyId}/final/…-{version}.jpg`, `character-preps/{prepId}/sheet-child-{version}.jpg` (service access only), `portraits/{userId}/{uuid}/portrait-{version}.jpg` (legacy: `portraits/{uuid}/…`) | Children's likenesses: character sheets, scenes, covers, avatars. Every upload is a new versioned path (`upsert: false`). The DB stores the **object path**; served only as signed URLs after a path-based ownership check (`src/lib/storage/illustration-urls.ts`, see docs/stack.md → Private illustrations) |
 | `showcase` | Public | same paths as `illustrations` + `waitlist-covers/*`, `style-samples/*`, `mock/*` | Marketing copies only (is_showcase example books, waitlist covers, blog images) — filled by `scripts/publish-showcase.mts` |
-| `book-pdfs` | Private | `{userId}/{storyId}.pdf` | Generated PDF books, served via signed URL |
+| `book-pdfs` | Private, server-only (no client policies since 20260930160000) | `{userId}/{storyId}.pdf`, `{userId}/{storyId}-{interior\|cover}-{orderId}.pdf` | Generated PDF books + per-order print files; served only via signed URL after a paid-order check |
 | `child-photos` | Private, server-only (no storage policies; 5 MB, image/jpeg) | `{userId}/{uuid}.jpg` | Child's photo, re-encoded JPEG ≤1536 px with all metadata stripped. Used only for the avatar/early child sheet (bytes downloaded server-side, never a URL), deleted right after, hourly purge > 24 h. Migration `20260927140000_child_photos.sql` |
+
+## Accounts, orders & data lifecycle (2026-09-30)
+
+- **Login:** passwordless email (one email with a magic link AND a 6-digit code, so it works cross-device) + Google. No passwords; `/auth/signup`, `/auth/reset-password`, `/auth/update-password` redirect to `/auth/login`. UI `src/components/auth/EmailSignIn.tsx`; helpers `src/lib/auth/*` (`next-path.ts` sanitises every `next`, `auth-errors.ts` localises Supabase errors); routes `api/auth/{confirm,complete,guest-merge}`. Email templates in `supabase/templates/` (token_hash pattern, locale switch on user metadata) are applied by hand in the Supabase dashboard.
+- **Guests (anonymous users):** create and buy without an account. Proving an email either upgrades the anonymous user in place (same id) or, if the email already has an account, merges into it: a signed HttpOnly cookie (HMAC from the service-role key) proves the previous anonymous uid, then `merge_guest_account` re-owns stories/characters/orders and the app moves portraits and customer PDFs. On any verified login, orders whose `customer_email` matches and whose owner is anonymous are attached too. The order-email CTA "Ver mi pedido" opens login with the email prefilled → `/dashboard?tab=orders`.
+- **Customer orders:** `src/components/dashboard/OrdersTab.tsx` (detail, stepper + tracking, invoice, PDF download, contact, "Comprar otra copia" = a printed copy of a finished book at the normal price; a second PDF of the same book is refused). Digital orders show "Listo para descargar", not the print stepper.
+- **Stripe:** Checkout has `tax_id_collection` (optional NIF → factura completa) and `invoice_creation`; a full refund issues a credit note (factura rectificativa). Webhook also handles `charge.dispute.created` (ops alert + hold) and `checkout.session.async_payment_failed`.
+- **Operator panel `/admin`** (`src/app/admin`, `src/lib/admin`): only emails in `ADMIN_EMAILS`, 404 for everyone else. Orders list/search/problem filters (on hold, stuck paid, Gelato issue, not shipped > 5 days), detail with status history and audit log, actions: re-send to Gelato / reprint (any order age; also lifts a chargeback hold), retry generation, resend email. Refunds are done in the Stripe dashboard. Alert emails link to the admin order page.
+- **Erasure:** `DELETE /api/account` (`{confirm:true}`) runs `src/lib/privacy/account-erasure.ts`: storage objects, stories, characters, consents, profile, newsletter row, auth user. Orders that took money are kept and anonymised (user/story nulled, PDF paths nulled, download token rotated; billing, shipping, email, amounts, invoice kept). Blocked (409) while an order is paid and not yet shipped/delivered.
+- **Guest purge:** `/api/cron/purge-guests` daily 03:40 UTC (`?dry_run=1` for a count): anonymous users with no paid order and 30 days inactive go through the same erasure. Guests with a paid order or a showcase book are never purged automatically.
+- **Security baseline:** showcase is admin-curated (service-role reads with explicit column lists; external URLs rejected); illustration signing only for the caller's own folders; `/api/checkout/verify` needs the buyer's session; send-preview limited per IP and per recipient; Gelato webhook secret compared in constant time.
 
 ## Generation Pipeline
 

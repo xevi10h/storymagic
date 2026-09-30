@@ -48,11 +48,17 @@ character lock; per-stage resolution. (commits 5ebc2f1 → a883d60)
 
 ---
 
+## Next steps from accounts & orders block (2026-09-30)
+- **Retention for guests who paid** (never auto-purged today): e.g. anonymise child data N months after delivery.
+- **Reorder discount** ("una para los abuelos") — today the normal price; decide price + consent copy for reorders.
+- **Captcha / global cost cap** on anonymous sign-in + generation endpoints (per-user limits don't stop new anonymous sessions).
+- **Paywall server-side**: `GET /api/stories/[id]` returns the full text + all illustrations before payment.
+- Admin: refund button + address change before print; customer "change address" request window.
+- Newsletter unsubscribe / communication preferences; saved addresses (Stripe collects them each time).
+- VeriFactu invoicing (see below) — Stripe credit notes cover refunds meanwhile.
+
 ## Next steps from commerce block A (2026-09-28)
-- **Reorder / buy the printed book after the PDF**: a `ready`/`ordered` story shows no paywall, so a digital buyer can't upgrade to a hardcover (checkout API already accepts `ready`). Upsell "¿Lo quieres en papel?" in the ready view + book_ready email.
 - **VeriFactu-compliant invoicing** before the 2027 obligation (Stripe invoices aren't); OSS registration when EU digital sales pass 10 000 €.
-- **Refund customer email** (today refunds only change state + alert ops) and a "find my order" magic link for guests (download token already works cross-device).
-- **Harden stories RLS**: owners can UPDATE any column (status, generated_text, pdf_url); money paths no longer trust them, but restrict to title/dedication.
 - **Title edits after purchase** re-render nothing: block edits once paid or rebuild the PDF.
 - Bizum/PayPal (payment_method_types is card-only).
 
@@ -403,7 +409,7 @@ Replaced the old "mode → template → 3 decision knobs" with a single vertical
 |---|----------|--------|------------|
 | 1 | Domain name | PENDING | meapica.com (not yet registered) |
 | 2 | Step 4 variants | DONE | Variant A (Juntos) + Variant C (Solo) |
-| 3 | Auth method | DONE | Supabase Auth (email + Google OAuth + anonymous) |
+| 3 | Auth method | DONE | Supabase Auth: passwordless email (link + 6-digit code) + Google + anonymous guests linked by email (2026-09-30) |
 | 4 | Story AI provider | DONE | Claude Sonnet 4 (prod), Groq/Cerebras/Gemini (dev) |
 | 5 | Image AI provider | DONE | **FLUX.2 [flex]** ($0.01/img) via `ILLUSTRATION_PROVIDER=flux2`; Recraft V3 = fallback. Decided by benchmark (coherence 9.8 vs 4.8). See Phase 3 v2. |
 | 6 | Character + world consistency | DONE | **Visual bible**: frozen FLUX.2 reference sheets for protagonist + secondary chars + locations + wardrobe + props, fed (≤8) per scene; avatar anchors the protagonist sheet. Recraft style_id retired from the FLUX path. |
