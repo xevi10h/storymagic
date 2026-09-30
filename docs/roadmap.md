@@ -51,10 +51,9 @@ character lock; per-stage resolution. (commits 5ebc2f1 → a883d60)
 ## Next steps from accounts & orders block (2026-09-30)
 - **Retention for guests who paid** (never auto-purged today): e.g. anonymise child data N months after delivery.
 - **Reorder discount** ("una para los abuelos") — today the normal price; decide price + consent copy for reorders.
-- **Captcha / global cost cap** on anonymous sign-in + generation endpoints (per-user limits don't stop new anonymous sessions).
-- **Paywall server-side**: `GET /api/stories/[id]` returns the full text + all illustrations before payment.
 - Admin: refund button + address change before print; customer "change address" request window.
 - Newsletter unsubscribe / communication preferences; saved addresses (Stripe collects them each time).
+- Reuse `PAID_ORDER_STATUSES` (src/lib/story-purchase.ts) in complete/verify/downloads/pipeline/admin (list still duplicated).
 - VeriFactu invoicing (see below) — Stripe credit notes cover refunds meanwhile.
 
 ## Next steps from commerce block A (2026-09-28)
