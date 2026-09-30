@@ -39,7 +39,8 @@ export default function LocaleSwitcher() {
 
   function handleChange(newLocale: Locale) {
     setOpen(false);
-    router.replace(pathname, { locale: newLocale });
+    // Keep the query (e.g. the login screen's ?next= and ?email=) across the switch.
+    router.replace(`${pathname}${window.location.search}`, { locale: newLocale });
   }
 
   return (

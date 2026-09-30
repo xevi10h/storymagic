@@ -110,6 +110,7 @@ export async function notifyOrderEmail(params: NotifyOrderParams): Promise<boole
       downloadUrl: params.downloadUrl,
       isPhysical: params.isPhysical,
       receipt: params.receipt,
+      recipientEmail: email,
     });
 
     const ok = await sendEmail({ to: email, subject: built.subject, html: built.html, text: built.text });
