@@ -12,6 +12,7 @@ export type AuthErrorKey =
   | "sessionExpired"
   | "network"
   | "blocked"
+  | "captchaFailed"
   | "generic";
 
 interface AuthLikeError {
@@ -46,6 +47,7 @@ const BY_CODE: Record<string, AuthErrorKey> = {
   user_not_found: "sessionExpired",
   user_banned: "blocked",
   request_timeout: "network",
+  captcha_failed: "captchaFailed",
 };
 
 /** Map any Supabase auth error (or thrown value) to a message key. */
@@ -54,6 +56,8 @@ export function authErrorKey(err: unknown): AuthErrorKey {
   const e = err as AuthLikeError;
   const code = typeof e.code === "string" ? e.code : "";
   if (code && BY_CODE[code]) return BY_CODE[code];
+  // Our own Turnstile failure (src/lib/captcha/turnstile.ts CaptchaError).
+  if (e.name === "CaptchaError") return "captchaFailed";
 
   // Older servers / fetch failures carry no code: fall back on status + name.
   if (e.name === "AuthRetryableFetchError" || e.status === 0) return "network";

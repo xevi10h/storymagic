@@ -745,6 +745,10 @@
       "changeEmail": "Usar otro correo",
       "spamHint": "¿No lo ves? Mira en spam o en promociones."
     },
+    "captcha": {
+      "prompt": "Confirma que eres una persona para continuar",
+      "cancel": "Cancelar"
+    },
     "errors": {
       "invalidEmail": "Revisa el correo: parece que falta algo.",
       "invalidCode": "El código no es correcto o ha caducado. Revisa el último correo o pide uno nuevo.",
@@ -757,6 +761,7 @@
       "network": "No hay conexión. Revisa tu internet y vuelve a probar.",
       "blocked": "Esta cuenta no puede entrar. Escríbenos y lo miramos.",
       "generic": "Algo ha fallado. Vuelve a probar en un momento.",
+      "captchaFailed": "No hemos podido comprobar que eres una persona. Recarga la página y vuelve a probar.",
       "help": "¿Sigue sin funcionar? Escríbenos a <mail>{email}</mail>."
     }
   },
@@ -787,6 +792,8 @@
       "errorStuck": "Está tardando mucho más de lo normal. Pulsa «Reintentar» y lo retomamos.",
       "errorRateLimited": "Has creado varios cuentos seguidos. Espera unos minutos y vuelve a intentarlo.",
       "errorNetwork": "Parece que se ha perdido la conexión. Comprueba tu internet y vuelve a intentarlo.",
+      "errorDailyCapTitle": "Hoy hemos tenido muchísima demanda",
+      "errorDailyCap": "Nuestro taller ha llegado al límite de cuentos por hoy. Vuelve mañana y lo pintamos.",
       "errorInputSafe": "Todo lo que has escrito está guardado.",
       "retry": "Reintentar",
       "paintingTitle": "Pintando el libro {deName}",
@@ -878,6 +885,7 @@
       "zoomPage": "Ampliar"
     },
     "errors": {
+      "captchaFailed": "No hemos podido comprobar que eres una persona. Vuelve a pulsar el botón: todo lo que has escrito sigue aquí.",
       "saveFailed": "No hemos podido guardar tu cuento. Revisa tu conexión y vuelve a pulsar el botón: todo lo que has escrito sigue aquí.",
       "dismiss": "Cerrar",
       "retry": "Reintentar"
@@ -1018,7 +1026,8 @@
         "too_small": "La foto es demasiado pequeña. Sube una en la que se vea bien su cara.",
         "photo_unavailable": "La foto ya se ha borrado. Súbela de nuevo si quieres usarla.",
         "rate_limited": "Has subido muchas fotos seguidas. Espera un rato y vuelve a probar.",
-        "upload_failed": "No hemos podido subir la foto. Vuelve a intentarlo."
+        "upload_failed": "No hemos podido subir la foto. Vuelve a intentarlo.",
+        "captcha_failed": "No hemos podido comprobar que eres una persona. Vuelve a subir la foto."
       }
     },
     "purchase": {
