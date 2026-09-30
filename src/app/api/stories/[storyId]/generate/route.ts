@@ -12,10 +12,17 @@ import { isProviderUnavailableError } from "@/lib/fulfilment/provider-errors";
 import { STORY_TEMPLATES } from "@/lib/create-store";
 import { ownedPortraitPath } from "@/lib/storage/illustration-urls";
 import { avatarAssetUrl } from "@/lib/character-look";
+import { DAILY_CAP_ERROR, claimDailyPreviewSlot } from "@/lib/preview-cap-server";
 
 // Book Plan (35–90 s, streamed) with the sheets, cover and first scenes rendered
 // while it streams; the request ends shortly after the plan does.
 export const maxDuration = 300;
+
+/** Seconds until the daily preview cap resets (00:00 UTC). */
+function secondsToUtcMidnight(now = new Date()): number {
+  const midnight = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1);
+  return Math.max(60, Math.ceil((midnight - now.getTime()) / 1000));
+}
 
 function elapsed(start: number): string {
   return `${((Date.now() - start) / 1000).toFixed(1)}s`;
@@ -116,6 +123,16 @@ export async function POST(
       { error: "Story not found or already generated" },
       { status: 400 }
     );
+  }
+
+  // Global daily ceiling (bots can mint unlimited anonymous users): one slot per
+  // preview actually started. Refused → back to draft, nothing is spent.
+  if (!isMockGeneration()) {
+    const cap = await claimDailyPreviewSlot(db);
+    if (!cap.allowed) {
+      await db.from("stories").update({ status: "draft" }).eq("id", storyId).eq("user_id", user.id).eq("status", "generating");
+      return NextResponse.json({ error: DAILY_CAP_ERROR }, { status: 503, headers: { "Retry-After": String(secondsToUtcMidnight()) } });
+    }
   }
 
   const story = claimedStories[0];

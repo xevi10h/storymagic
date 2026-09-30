@@ -12,6 +12,8 @@ import { checkRateLimit, checkMemoryRateLimit } from "@/lib/rate-limit";
 import { providerOutageRetryAfter, tripOnProviderOutage } from "@/lib/ai/provider-outage";
 import { isOwnedPhotoPath, isPhotoUploadEnabled, isValidPhotoPath } from "@/lib/privacy/child-photo-policy";
 import { PhotoUnavailableError, deleteChildPhoto, loadChildPhoto } from "@/lib/privacy/child-photo";
+import { createFulfilmentClient } from "@/lib/fulfilment/db";
+import { DAILY_CAP_ERROR, isDailyPreviewCapFull } from "@/lib/preview-cap-server";
 
 // OpenAI portrait (gpt-image-2.5-flare, medium) takes ~15–25 s.
 export const maxDuration = 60;
@@ -148,6 +150,11 @@ export async function POST(request: Request) {
 
     if (process.env.MOCK_MODE === "true") {
       return NextResponse.json({ portraitUrl: getMockPortraitUrl(), recraftStyleId: null, ...(await photoResult()) });
+    }
+
+    // Global daily preview cap full: no paid portrait either (the photo is kept for a retry).
+    if (await isDailyPreviewCapFull(createFulfilmentClient())) {
+      return NextResponse.json({ error: DAILY_CAP_ERROR }, { status: 503 });
     }
 
     const photo = photoPath ? await loadChildPhoto(photoPath, user.id) : null;
