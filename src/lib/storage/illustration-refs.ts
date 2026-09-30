@@ -93,13 +93,44 @@ export function showcasePublicUrl(supabaseUrl: string, path: string): string {
   return `${base}/storage/v1/object/public/${SHOWCASE_BUCKET}/${path.split("/").map(encodeURIComponent).join("/")}`;
 }
 
+/** Origins that serve our own static assets (pre-rendered avatars under /images/). */
+const SITE_ORIGINS = new Set(["https://meapica.com", "https://www.meapica.com"]);
+
+/**
+ * A non-illustration ref a showcase page may pass through as is: our own public
+ * `showcase` bucket, or a site asset under /images/ (relative or on meapica.com).
+ */
+function isTrustedShowcaseAsset(ref: string, supabaseUrl: string): boolean {
+  if (ref.startsWith("/images/")) return !ref.startsWith("//") && !ref.split(/[/?#]/).includes("..");
+  let url: URL;
+  try {
+    url = new URL(ref);
+  } catch {
+    return false;
+  }
+  if (url.protocol !== "https:" || url.username || url.password) return false;
+  if (url.pathname.split("/").includes("..")) return false;
+  if (SITE_ORIGINS.has(url.origin)) return url.pathname.startsWith("/images/");
+  let supabaseOrigin: string;
+  try {
+    supabaseOrigin = new URL(supabaseUrl).origin;
+  } catch {
+    return false;
+  }
+  return url.origin === supabaseOrigin && url.pathname.startsWith(`/storage/v1/object/public/${SHOWCASE_BUCKET}/`);
+}
+
 /**
  * Showcase (marketing example) image: illustration refs are mapped onto the public
- * `showcase` mirror; anything else (already-public URL, mock) is returned as is.
+ * `showcase` mirror; our own public assets (showcase bucket, /images/) pass through;
+ * anything else (external hosts, data: URIs, mock URLs) is rejected → null, so a
+ * showcase page never embeds — and the showcase PDF never fetches — a foreign URL.
  * Never signs — showcase pages are cached and used in OG tags.
  */
 export function toShowcaseUrl(ref: string | null | undefined, supabaseUrl: string): string | null {
   if (!ref) return null;
-  const path = illustrationPath(ref);
-  return path ? showcasePublicUrl(supabaseUrl, path) : ref;
+  const value = ref.trim();
+  const path = illustrationPath(value);
+  if (path) return showcasePublicUrl(supabaseUrl, path);
+  return isTrustedShowcaseAsset(value, supabaseUrl) ? value : null;
 }

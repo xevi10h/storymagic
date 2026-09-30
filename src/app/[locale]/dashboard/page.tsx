@@ -3,7 +3,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { useAuth } from "@/hooks/useAuth";
-import { createClient } from "@/lib/supabase/client";
 import { STORY_TEMPLATES, getRecommendedTemplates } from "@/lib/create-store";
 import { formatPrice } from "@/lib/pricing";
 import { useTranslations, useLocale } from "next-intl";
@@ -333,7 +332,8 @@ function StoryCard({
   const [titleDraft, setTitleDraft] = useState("");
   const [downloading, setDownloading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const supabase = createClient();
+  // Same rule as PATCH /api/stories/[id]/title: the paid book's files carry the title.
+  const canEditTitle = ["draft", "generating", "preview"].includes(story.status);
 
   const td = useTranslations("data");
   const template = STORY_TEMPLATES.find((tpl) => tpl.id === story.template_id);
@@ -373,13 +373,15 @@ function StoryCard({
       return;
     }
 
-    const { error } = await supabase
-      .from("stories")
-      .update({ title: trimmed })
-      .eq("id", story.id);
-
-    if (!error) {
-      onTitleUpdate(story.id, trimmed);
+    try {
+      const res = await fetch(`/api/stories/${story.id}/title`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: trimmed }),
+      });
+      if (res.ok) onTitleUpdate(story.id, trimmed);
+    } catch (err) {
+      console.warn("[dashboard] saving title failed:", err);
     }
     setEditingTitle(false);
   }
@@ -439,15 +441,17 @@ function StoryCard({
           ) : (
             <div className="group flex items-center gap-1.5">
               <h3 className="truncate text-sm font-bold text-text-main">{title}</h3>
-              <button
-                onClick={startEditing}
-                className="shrink-0 opacity-60 sm:opacity-0 transition-opacity group-hover:opacity-100"
-                aria-label={t("editTitle")}
-              >
-                <span className="material-symbols-outlined text-base text-text-muted hover:text-brand-text">
-                  edit
-                </span>
-              </button>
+              {canEditTitle && (
+                <button
+                  onClick={startEditing}
+                  className="shrink-0 opacity-60 sm:opacity-0 transition-opacity group-hover:opacity-100"
+                  aria-label={t("editTitle")}
+                >
+                  <span className="material-symbols-outlined text-base text-text-muted hover:text-brand-text">
+                    edit
+                  </span>
+                </button>
+              )}
             </div>
           )}
           <p className="mt-0.5 text-xs text-text-muted">

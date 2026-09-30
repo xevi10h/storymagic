@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient as createServiceClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
+import { createFulfilmentClient, type FulfilmentClient } from "@/lib/fulfilment/db";
 import { generateArchitect, isMockGeneration, type StoryInput } from "@/lib/ai/story-generator";
 import { startPreviewSession, type PreviewProgress, type PreviewSession } from "@/lib/ai/preview-book";
 import { resolvePreparedChildSheet } from "@/lib/ai/character-prep";
@@ -24,7 +25,7 @@ function elapsed(start: number): string {
  * Serialised, coalescing writer for stories.preview_progress: renders finish
  * concurrently, so only the newest snapshot is written and writes never overlap.
  */
-function createProgressWriter(db: Awaited<ReturnType<typeof createClient>>, storyId: string) {
+function createProgressWriter(db: FulfilmentClient, storyId: string) {
   let latest: PreviewProgress | null = null;
   let chain: Promise<void> = Promise.resolve();
   return {
@@ -72,8 +73,12 @@ export async function POST(
     );
   }
 
-  // Atomic claim: only transition draft → generating
-  const { data: claimedStories, error: claimError } = await supabase
+  // Story rows are written with the service role (clients have no write grant);
+  // every statement below is pinned to this story, whose owner the claim checks.
+  const db = createFulfilmentClient();
+
+  // Atomic claim: only transition draft → generating (owner pinned by user_id)
+  const { data: claimedStories, error: claimError } = await db
     .from("stories")
     .update({ status: "generating", preview_progress: null, updated_at: new Date().toISOString() })
     .eq("id", storyId)
@@ -99,7 +104,7 @@ export async function POST(
       const updatedAt = new Date(stuckStory.updated_at).getTime();
       if (Date.now() - updatedAt > STUCK_TIMEOUT_MS) {
         console.warn(`[Generate] Recovering stuck story ${storyId} — was generating since ${stuckStory.updated_at}`);
-        await supabase.from("stories").update({ status: "draft" }).eq("id", storyId);
+        await db.from("stories").update({ status: "draft" }).eq("id", storyId).eq("user_id", user.id).eq("status", "generating");
         return NextResponse.json(
           { error: "Story was stuck — recovered to draft. Please retry." },
           { status: 409 },
@@ -115,7 +120,7 @@ export async function POST(
 
   const story = claimedStories[0];
   let session: PreviewSession | null = null;
-  const progressWriter = createProgressWriter(supabase, storyId);
+  const progressWriter = createProgressWriter(db, storyId);
 
   try {
     const character = story.characters;
@@ -177,7 +182,7 @@ export async function POST(
     if (architectResult.isMock && architectResult.mockStory) {
       const generatedStory = architectResult.mockStory;
       console.log(`[Generate] Mock mode — saving and finishing [${elapsed(routeStart)}]`);
-      await supabase.from("stories").update({
+      await db.from("stories").update({
         generated_text: JSON.parse(JSON.stringify(generatedStory)),
         title: generatedStory.titleOptions[0] ?? generatedStory.bookTitle,
         pdf_url: null,
@@ -200,9 +205,9 @@ export async function POST(
           image_url: getMockSecondaryIllustrationUrl(scene.sceneNumber - 1),
           status: "ready" as const,
         }));
-      await supabase.from("story_illustrations").delete().eq("story_id", storyId);
-      await supabase.from("story_illustrations").insert([...mockIllRows, ...mockSecRows]);
-      await supabase.from("stories").update({
+      await db.from("story_illustrations").delete().eq("story_id", storyId);
+      await db.from("story_illustrations").insert([...mockIllRows, ...mockSecRows]);
+      await db.from("stories").update({
         cover_image_url: getMockCoverUrl(),
         character_portrait_url: character.avatar_url || getMockPortraitUrl(),
         status: "ready",
@@ -220,7 +225,7 @@ export async function POST(
 
     if (!session) throw new Error("Preview session missing outside mock mode");
     // finish() publishes the final snapshot (exactly the saved images) itself.
-    const result = await session.finish(architectResult, { db: supabase });
+    const result = await session.finish(architectResult, { db });
     await progressWriter.flush();
     console.log(`[Generate] DONE — preview in ${elapsed(routeStart)}, images $${result.costUsd.toFixed(3)}`);
 
@@ -235,7 +240,7 @@ export async function POST(
   } catch (error) {
     session?.dispose();
     await progressWriter.flush(); // no queued snapshot may land after the reset below
-    await supabase.from("stories").update({ status: "draft", preview_progress: null }).eq("id", storyId);
+    await db.from("stories").update({ status: "draft", preview_progress: null }).eq("id", storyId);
     console.error(`[Generate] FAILED after ${elapsed(routeStart)}:`, error);
     // Never leak provider/backend error text to the client.
     if (isProviderUnavailableError(error)) {

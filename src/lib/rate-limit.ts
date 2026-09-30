@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 let serviceClient: SupabaseClient | null = null;
@@ -27,7 +28,19 @@ const LIMITS: Record<string, RateLimitConfig> = {
   generate_portrait: { maxRequests: 10, windowSeconds: 3600 }, // 10 per hour
   upload_photo: { maxRequests: 10, windowSeconds: 3600 },      // 10 per hour (same budget as portraits)
   send_preview: { maxRequests: 3, windowSeconds: 3600 },        // 3 preview emails per hour
+  // Per recipient (subject = rateLimitSubject(email)): the relay cannot be aimed at
+  // one inbox from many throwaway guest accounts. Rows are kept 24 h (cleanup_old_rate_limits).
+  send_preview_recipient: { maxRequests: 3, windowSeconds: 86_400 },
 };
+
+/**
+ * Stable UUID-shaped id for a non-user rate-limit subject (e.g. a recipient email),
+ * so it fits rate_limits.user_id (uuid) without storing the raw value.
+ */
+export function rateLimitSubject(key: string): string {
+  const h = createHash("sha256").update(`meapica:rate-limit:${key}`).digest("hex");
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20, 32)}`;
+}
 
 /**
  * Check if a user has exceeded their rate limit for an action.

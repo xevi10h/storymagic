@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createFulfilmentClient } from "@/lib/fulfilment/db";
 
 const MAX_TITLE_LENGTH = 120;
+const TITLE_EDITABLE_STATUSES = ["draft", "generating", "preview"];
 
 export async function PATCH(
   request: Request,
@@ -38,17 +40,23 @@ export async function PATCH(
     return NextResponse.json({ error: `Title must be ${MAX_TITLE_LENGTH} characters or less` }, { status: 400 });
   }
 
-  // Only allow updating title while story is generating or in preview
-  // (prevents editing after order is placed)
-  const { error } = await supabase
+  // Only allow updating the title before the book is paid for (the paid book's
+  // PDF / print file carries the title). Clients have no write grant: service role
+  // write, owner pinned by user_id.
+  const { data, error } = await createFulfilmentClient()
     .from("stories")
     .update({ title })
     .eq("id", storyId)
     .eq("user_id", user.id)
-    .in("status", ["generating", "preview"]);
+    .in("status", TITLE_EDITABLE_STATUSES)
+    .select("id");
 
   if (error) {
-    return NextResponse.json({ error: `Failed to update title: ${error.message}` }, { status: 500 });
+    console.error("[title] update failed:", error.message);
+    return NextResponse.json({ error: "update_failed" }, { status: 500 });
+  }
+  if (!data || data.length === 0) {
+    return NextResponse.json({ error: "not_editable" }, { status: 409 });
   }
 
   return NextResponse.json({ success: true, title });

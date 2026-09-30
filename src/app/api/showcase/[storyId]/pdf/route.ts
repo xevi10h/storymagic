@@ -1,29 +1,23 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
 import { renderBookPdf, type BookPdfInput } from "@/lib/pdf/book-template";
-import type { Database } from "@/lib/database.types";
 import type { GeneratedStory } from "@/lib/ai/story-generator";
 import { toShowcaseUrl } from "@/lib/storage/illustration-refs";
-import { SHOWCASE_STATUSES } from "@/lib/showcase";
-
-function createPublicClient() {
-  return createClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  );
-}
+import { SHOWCASE_STATUSES, showcaseReadClient } from "@/lib/showcase";
 
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ storyId: string }> },
 ) {
   const { storyId } = await params;
-  const supabase = createPublicClient();
+  const supabase = showcaseReadClient();
 
   // Only serve PDFs for showcase stories
   const { data: story, error } = await supabase
     .from("stories")
-    .select("*, characters(*), story_illustrations(*)")
+    // Explicit whitelist: this runs with the service role.
+    .select(
+      "id, template_id, generated_text, dedication_text, sender_name, status, cover_image_url, character_portrait_url, locale, characters (name, age, gender, city, favorite_color, favorite_companion, future_dream), story_illustrations (scene_number, image_url)",
+    )
     .eq("id", storyId)
     .eq("is_showcase", true)
     .single();

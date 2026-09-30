@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { createClient } from "@supabase/supabase-js";
-import type { Database } from "@/lib/database.types";
 import { toShowcaseUrl } from "@/lib/storage/illustration-refs";
-import { SHOWCASE_STATUSES } from "@/lib/showcase";
+import { SHOWCASE_STATUSES, showcaseReadClient } from "@/lib/showcase";
 
 const BASE_URL = "https://meapica.com";
 
@@ -12,16 +10,9 @@ type Props = {
   params: Promise<{ locale: string; storyId: string }>;
 };
 
-function createPublicClient() {
-  return createClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  );
-}
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, storyId } = await params;
-  const supabase = createPublicClient();
+  const supabase = showcaseReadClient();
 
   const { data: story } = await supabase
     .from("stories")

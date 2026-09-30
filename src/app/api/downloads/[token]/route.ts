@@ -36,7 +36,11 @@ export async function GET(_request: Request, { params }: { params: Promise<{ tok
     pdf_url: string | null;
     generated_text: { bookTitle?: string } | null;
   } | null;
-  if (!story?.pdf_url) {
+  if (!order.story_id || !story) {
+    // Book deleted with its account; the order row is only an accounting record now.
+    return message(410, "Este libro ya no está disponible.", "Aquest llibre ja no està disponible.");
+  }
+  if (!story.pdf_url) {
     return message(409, "Tu libro todavía se está preparando. Te avisaremos por email en cuanto esté listo.", "El teu llibre encara s'està preparant. T'avisarem per correu quan estigui llest.");
   }
 

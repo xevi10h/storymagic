@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { createFulfilmentClient } from "@/lib/fulfilment/db";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -51,7 +52,8 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ st
   }
 
   // Editable until the book is ordered (never after: the print file is fixed).
-  const { data, error } = await supabase
+  // Clients have no write grant: service role write, owner pinned by user_id.
+  const { data, error } = await createFulfilmentClient()
     .from("stories")
     .update(update)
     .eq("id", storyId)

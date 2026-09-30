@@ -484,7 +484,7 @@ async function savePreview(
 // ── Non-streaming entry (scripts) ────────────────────────────────────────────
 
 export interface PreviewArgs {
-  /** Client for story rows (the route passes the user's RLS client) */
+  /** Client for story rows (service role: clients have no write grant on stories) */
   db: SupabaseClient;
   /** Service-role client for storage uploads */
   storage: SupabaseClient;

@@ -223,7 +223,7 @@ export type Database = {
           shipping_address: Json | null
           shipping_name: string | null
           status: string
-          story_id: string
+          story_id: string | null
           stripe_checkout_session_id: string | null
           stripe_payment_id: string | null
           subtotal: number
@@ -231,7 +231,7 @@ export type Database = {
           tracking_number: string | null
           tracking_url: string | null
           updated_at: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           addons?: Json
@@ -244,7 +244,7 @@ export type Database = {
           shipping_address?: Json | null
           shipping_name?: string | null
           status?: string
-          story_id: string
+          story_id?: string | null
           stripe_checkout_session_id?: string | null
           stripe_payment_id?: string | null
           subtotal: number
@@ -252,7 +252,7 @@ export type Database = {
           tracking_number?: string | null
           tracking_url?: string | null
           updated_at?: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           addons?: Json
@@ -265,7 +265,7 @@ export type Database = {
           shipping_address?: Json | null
           shipping_name?: string | null
           status?: string
-          story_id?: string
+          story_id?: string | null
           stripe_checkout_session_id?: string | null
           stripe_payment_id?: string | null
           subtotal?: number
@@ -273,7 +273,7 @@ export type Database = {
           tracking_number?: string | null
           tracking_url?: string | null
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {

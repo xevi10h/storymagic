@@ -89,6 +89,11 @@ export async function GET(request: Request) {
       skipped.push({ orderId: order.id, reason: "other Stripe mode / mock order" });
       continue;
     }
+    if (!order.story_id) {
+      // The book was deleted with its account; the order row is kept as an accounting record.
+      skipped.push({ orderId: order.id, reason: "story deleted" });
+      continue;
+    }
     const ageHours = (now - new Date(order.created_at).getTime()) / 3_600_000;
     if (ageHours > AUTO_PROCESS_MAX_AGE_HOURS) {
       escalate.push(order);

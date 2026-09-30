@@ -61,7 +61,8 @@ export function storyOnlyAccess(storyId: string): IllustrationAccess {
  *  - portraits only under `portraits/<userId>/`,
  *  - legacy portraits (`portraits/<uuid>/file`, pre-2026-09-27, owner not in the
  *    path) only when `allowLegacyPortraits` — callers pass true only for values read
- *    from the user's own rows. Those files were world-readable until this change.
+ *    from the user's own rows, which only the server writes (no client write grant,
+ *    migration 20260930120000; ownedPortraitPath never stores a legacy path).
  */
 export function userAccess(opts: { userId: string; storyIds?: Iterable<string>; allowLegacyPortraits?: boolean }): IllustrationAccess {
   const stories = new Set([...(opts.storyIds ?? [])].map((id) => id.toLowerCase()));
@@ -150,18 +151,19 @@ export async function toServerFetchUrl(ref: string): Promise<string> {
 }
 
 /**
- * Normalise a portrait ref coming from the client (or from a user-editable row)
- * into the object path to store/use, or null when the user may not use it.
- * Accepts a bare path, a legacy public URL or a signed URL of the user's own
- * portrait (`portraits/<userId>/...`) or a legacy portrait. Any other URL is
- * rejected (no foreign images, no server-side fetch of arbitrary hosts).
+ * Normalise a portrait ref coming from the client (or from a stored row) into the
+ * object path to store/use, or null when the user may not use it.
+ * Accepts a bare path, a legacy public URL or a signed URL of the user's OWN
+ * portrait (`portraits/<userId>/...`). Legacy portraits (`portraits/<uuid>/file`,
+ * owner not in the path) and any other URL are rejected: the result is fetched
+ * server-side with the service role (toServerFetchUrl), so accepting a path the
+ * caller cannot prove they own would leak another child's likeness.
  */
 export function ownedPortraitPath(ref: string | null | undefined, userId: string): string | null {
   const path = illustrationPath(ref);
   if (!path) return null;
   const scope = illustrationScope(path);
-  if (scope.kind === "user-portrait") return scope.userId === userId.toLowerCase() ? path : null;
-  return scope.kind === "legacy-portrait" ? path : null;
+  return scope.kind === "user-portrait" && scope.userId === userId.toLowerCase() ? path : null;
 }
 
 // ── Row helpers for API responses ────────────────────────────────────────────

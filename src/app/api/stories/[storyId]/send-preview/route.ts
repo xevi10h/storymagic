@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { checkRateLimit } from "@/lib/rate-limit";
+import { checkMemoryRateLimit, checkRateLimit, rateLimitSubject } from "@/lib/rate-limit";
 import { sendEmail, getSiteUrl } from "@/lib/email/send";
 import { escapeHtml, renderEmailLayout } from "@/lib/email/layout";
 import { SHAREABLE_STORY_STATUSES, createPreviewShareToken, previewShareUrl } from "@/lib/share/preview-share-token";
@@ -12,6 +12,21 @@ const bodySchema = z.object({
   email: z.string().trim().toLowerCase().email().max(254),
   locale: z.enum(["es", "ca", "en", "fr"]).default("es"),
 });
+
+/**
+ * The child's name as it may appear in a mail we send to an arbitrary address:
+ * letters, combining marks, spaces, hyphens and apostrophes only (no dots, slashes,
+ * digits or symbols, so it cannot carry a URL or a spam message), max 40 chars.
+ */
+function mailSafeName(raw: string): string {
+  return raw
+    .normalize("NFC")
+    .replace(/[^\p{L}\p{M}\s'’-]/gu, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 40)
+    .trim();
+}
 
 const COPY = {
   es: {
@@ -86,13 +101,27 @@ export async function POST(request: Request, { params }: { params: Promise<{ sto
     return NextResponse.json({ error: "not_found" }, { status: 404 });
   }
 
+  const characters = story.characters as { name: string } | { name: string }[] | null;
+  const rawName = mailSafeName((Array.isArray(characters) ? characters[0]?.name : characters?.name) ?? "");
+  if (!rawName) {
+    return NextResponse.json({ error: "not_found" }, { status: 404 });
+  }
+
+  // Anti-relay: per IP (per instance, cheap first), per sender account, per recipient
+  // (durable, 24 h — throwaway guest accounts cannot aim it at one inbox).
+  const clientIp = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  if (!checkMemoryRateLimit(`send_preview:${clientIp}`, { maxRequests: 10, windowSeconds: 3600 }).allowed) {
+    return NextResponse.json({ error: "rate_limited" }, { status: 429 });
+  }
   const rl = await checkRateLimit(user.id, "send_preview");
   if (!rl.allowed) {
     return NextResponse.json({ error: "rate_limited" }, { status: 429 });
   }
+  const rlRecipient = await checkRateLimit(rateLimitSubject(`send_preview_to:${email}`), "send_preview_recipient");
+  if (!rlRecipient.allowed) {
+    return NextResponse.json({ error: "rate_limited" }, { status: 429 });
+  }
 
-  const characters = story.characters as { name: string } | { name: string }[] | null;
-  const rawName = (Array.isArray(characters) ? characters[0]?.name : characters?.name) ?? "";
   const name = escapeHtml(rawName);
   const copy = COPY[locale];
   const url = previewShareUrl(getSiteUrl(), locale, createPreviewShareToken(story.id).token);

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createFulfilmentClient } from "@/lib/fulfilment/db";
 import { z } from "zod";
 import type { Json } from "@/lib/database.types";
 import { ownedPortraitPath } from "@/lib/storage/illustration-urls";
@@ -80,6 +81,10 @@ export async function POST(request: Request) {
 
   const { character, templateId, creationMode, decisions, dedication, senderName, ending, portraitUrl, avatarAssetPath, recraftStyleId, locale, characterPrepId } = parsed.data;
 
+  // Reads use the caller's RLS client; writes use the service role (clients have no
+  // write grants on product tables) with the owner pinned explicitly on every row.
+  const admin = createFulfilmentClient();
+
   // 1. Upsert character (reuse if same name + user)
   const { data: existingCharacter } = await supabase
     .from("characters")
@@ -110,7 +115,7 @@ export async function POST(request: Request) {
 
   if (existingCharacter) {
     // Update existing character — all fields optional in update type
-    const { error: updateError } = await supabase
+    const { error: updateError } = await admin
       .from("characters")
       .update({
         gender: character.gender as string,
@@ -120,7 +125,8 @@ export async function POST(request: Request) {
         skin_tone: character.skinTone || undefined,
         ...optionalFields,
       })
-      .eq("id", existingCharacter.id);
+      .eq("id", existingCharacter.id)
+      .eq("user_id", user.id);
 
     if (updateError) {
       return NextResponse.json(
@@ -131,7 +137,7 @@ export async function POST(request: Request) {
     characterId = existingCharacter.id;
   } else {
     // Create new character — hair_color & skin_tone are required strings
-    const { data: newCharacter, error: insertError } = await supabase
+    const { data: newCharacter, error: insertError } = await admin
       .from("characters")
       .insert({
         user_id: user.id,
@@ -188,10 +194,11 @@ export async function POST(request: Request) {
   const reusable = recentDrafts?.find((d) => stableJson(d.story_decisions ?? {}) === decisionsKey);
   if (reusable) {
     // Refresh what the parent may have edited in between (dedication, prep link).
-    await supabase
+    await admin
       .from("stories")
       .update({ dedication_text: dedication || null, sender_name: senderName || null, ending_choice: ending || null, character_prep_id: ownPrepId })
       .eq("id", reusable.id)
+      .eq("user_id", user.id)
       .eq("status", "draft");
     return NextResponse.json({ storyId: reusable.id, characterId });
   }
@@ -212,10 +219,10 @@ export async function POST(request: Request) {
     locale,
     status: "draft",
   };
-  let { data: story, error: storyError } = await supabase.from("stories").insert(draft).select("id").single();
+  let { data: story, error: storyError } = await admin.from("stories").insert(draft).select("id").single();
   if (storyError?.code === "23503" && draft.character_prep_id) {
     // Unknown prep id (FK): the prep is only an accelerator — create the story without it.
-    ({ data: story, error: storyError } = await supabase.from("stories").insert({ ...draft, character_prep_id: null }).select("id").single());
+    ({ data: story, error: storyError } = await admin.from("stories").insert({ ...draft, character_prep_id: null }).select("id").single());
   }
 
   if (storyError || !story) {

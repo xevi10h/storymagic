@@ -1,4 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
+import { createFulfilmentClient } from "@/lib/fulfilment/db";
 import { illustrationPath, toShowcaseUrl } from "@/lib/storage/illustration-refs";
 
 // Read-side helper for showcase example stories (is_showcase + finished book).
@@ -16,11 +16,13 @@ export interface ShowcaseStory {
   characterAge: number;
 }
 
-function publicClient() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  );
+/**
+ * Showcase rows have no public RLS policy (children's data: the anon key must not
+ * read whole rows). Every showcase reader runs server-side with the service role
+ * and MUST filter is_showcase = true and select an explicit column whitelist.
+ */
+export function showcaseReadClient() {
+  return createFulfilmentClient();
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -58,7 +60,7 @@ export async function getShowcaseStories(
   locale: string,
   limit = 24,
 ): Promise<ShowcaseStory[]> {
-  const supabase = publicClient();
+  const supabase = showcaseReadClient();
 
   const base = () =>
     supabase

@@ -26,6 +26,8 @@ export async function sendOrderEmailOnce(
   },
 ): Promise<boolean> {
   const { order, column } = params;
+  // Book/account deleted: the order is only an accounting record, nobody to notify.
+  if (!order.story_id || !order.user_id) return false;
   const { data: claimed, error } = await supabase
     .from("orders")
     .update({ [column]: new Date().toISOString() })

@@ -100,7 +100,7 @@ export async function applyGelatoStatus(
 
     console.log(`[gelato-status] Order ${gelatoOrderId} ${order.status} → ${decision.to}`);
 
-    if (decision.to === "shipped" || decision.to === "delivered") {
+    if ((decision.to === "shipped" || decision.to === "delivered") && order.story_id) {
       await syncStoryStatus(supabase, order.story_id, decision.to);
     }
 

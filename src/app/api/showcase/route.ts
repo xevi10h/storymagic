@@ -1,20 +1,9 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-import type { Database } from "@/lib/database.types";
 import { illustrationPath, toShowcaseUrl } from "@/lib/storage/illustration-refs";
-import { SHOWCASE_STATUSES } from "@/lib/showcase";
-
-// Use service-level client to bypass RLS for the showcase query
-// (RLS policies also allow this, but service key avoids auth dependency)
-function createPublicClient() {
-  return createClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  );
-}
+import { SHOWCASE_STATUSES, showcaseReadClient } from "@/lib/showcase";
 
 export async function GET(request: Request) {
-  const supabase = createPublicClient();
+  const supabase = showcaseReadClient();
 
   // Optional locale filter from query param
   const { searchParams } = new URL(request.url);

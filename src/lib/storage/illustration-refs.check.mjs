@@ -38,7 +38,22 @@ assert.deepEqual(illustrationScope(`${STORY}`), { kind: "other" });
 // ── Showcase mirror ──────────────────────────────────────────────────────────
 assert.equal(toShowcaseUrl(`${STORY}/final/cover.jpg`, SB), `${SB}/storage/v1/object/public/showcase/${STORY}/final/cover.jpg`);
 assert.equal(toShowcaseUrl(`${SB}/storage/v1/object/public/illustrations/${STORY}/c.png`, `${SB}/`), `${SB}/storage/v1/object/public/showcase/${STORY}/c.png`);
-assert.equal(toShowcaseUrl("https://picsum.photos/x", SB), "https://picsum.photos/x");
 assert.equal(toShowcaseUrl(null, SB), null);
+// Own public assets pass through…
+assert.equal(toShowcaseUrl(`${SB}/storage/v1/object/public/showcase/mock/scene-1.png`, SB), `${SB}/storage/v1/object/public/showcase/mock/scene-1.png`);
+assert.equal(toShowcaseUrl("/images/avatar/boy/big/light/brown-dark-short.webp", SB), "/images/avatar/boy/big/light/brown-dark-short.webp");
+assert.equal(toShowcaseUrl("https://meapica.com/images/avatar/girl/x.webp", SB), "https://meapica.com/images/avatar/girl/x.webp");
+// …anything else is rejected (no foreign embeds, no SSRF from the showcase PDF).
+assert.equal(toShowcaseUrl("https://picsum.photos/x", SB), null);
+assert.equal(toShowcaseUrl("https://img.recraft.ai/abc", SB), null);
+assert.equal(toShowcaseUrl("http://169.254.169.254/latest/meta-data", SB), null);
+assert.equal(toShowcaseUrl("data:image/png;base64,AAAA", SB), null);
+assert.equal(toShowcaseUrl("//evil.com/images/x.png", SB), null);
+assert.equal(toShowcaseUrl("/images/../api/x", SB), null);
+assert.equal(toShowcaseUrl("https://meapica.com/api/stories", SB), null);
+assert.equal(toShowcaseUrl("https://meapica.com.evil.com/images/x.png", SB), null);
+assert.equal(toShowcaseUrl("https://user@meapica.com/images/x.png", SB), null);
+assert.equal(toShowcaseUrl(`${SB}/storage/v1/object/public/book-pdfs/x.pdf`, SB), null);
+assert.equal(toShowcaseUrl(`https://other.supabase.co/storage/v1/object/public/showcase/x.png`, SB), null);
 
 console.log("illustration refs: all checks passed");

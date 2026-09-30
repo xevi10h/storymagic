@@ -744,7 +744,7 @@ async function submitToGelato(ctx: RunContext, order: OrderRow): Promise<OrderSt
       supabase,
       event: "in_production",
       storyId: ctx.storyId,
-      userId: order.user_id,
+      userId: order.user_id ?? ctx.story.user_id,
       orderId: order.id,
     });
     return "submitted";
