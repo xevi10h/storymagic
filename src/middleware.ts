@@ -16,7 +16,26 @@ export async function middleware(request: NextRequest) {
   // Operator panel: English, unlocalized, outside the waitlist gate. Access is
   // decided server-side (ADMIN_EMAILS → otherwise 404); never indexed or cached.
   if (request.nextUrl.pathname === "/admin" || request.nextUrl.pathname.startsWith("/admin/")) {
-    const res = NextResponse.next();
+    // Refresh the session here (Supabase SSR pattern): admin server components can't
+    // write rotated auth cookies, so forward them on the request and set them on the response.
+    let res = NextResponse.next({ request });
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return request.cookies.getAll();
+          },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+            res = NextResponse.next({ request });
+            cookiesToSet.forEach(({ name, value, options }) => res.cookies.set(name, value, options));
+          },
+        },
+      }
+    );
+    await supabase.auth.getUser();
     res.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
     res.headers.set("Cache-Control", "private, no-store");
     return res;

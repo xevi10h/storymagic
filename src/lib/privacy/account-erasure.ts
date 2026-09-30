@@ -126,9 +126,9 @@ export async function eraseAccount(
   if (!user && !profile) return { state: "not_found" };
 
   const orders = must(
-    await admin.from("orders").select("id, status, format, created_at, stripe_payment_id").eq("user_id", userId),
+    await admin.from("orders").select("id, status, format, created_at, stripe_payment_id, print_interior_path, print_cover_path").eq("user_id", userId),
     "orders read",
-  ) as ErasureOrder[];
+  ) as (ErasureOrder & { print_interior_path: string | null; print_cover_path: string | null })[];
 
   // ── 2. Blocker ──────────────────────────────────────────────────────────────
   const blocker = erasureBlocker(orders);
@@ -164,6 +164,10 @@ export async function eraseAccount(
 
   const targets = userStorageTargets({ userId, storyIds, prepIds: preps.map((p) => p.id), legacyPortraitPaths });
   const objects = await resolveTargets(admin, targets);
+  // Print files the orders point at may sit outside the user's folder (a merged guest's
+  // files stay under the old anonymous id): delete exactly the referenced ones too.
+  const printPaths = orders.flatMap((o) => [o.print_interior_path, o.print_cover_path]).filter((p): p is string => !!p);
+  if (printPaths.length > 0) objects.set("book-pdfs", [...(objects.get("book-pdfs") ?? []), ...printPaths]);
   const objectCount = [...objects.values()].reduce((n, paths) => n + new Set(paths).size, 0);
 
   const keep = orders.filter((o) => orderErasureDisposition(o, now) === "anonymise");
