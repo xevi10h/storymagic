@@ -34,7 +34,7 @@ export async function GET() {
   }
 
   // Service role + explicit owner filters: clients have no SELECT grant on
-  // stories.generated_text (paywall, migration 20260930170000_paywall_columns.sql).
+  // stories.generated_text (paywall, migration 20260930180000_paywall_columns.sql).
   // Only its title and synopsis leave this route (storySummary).
   const db = createFulfilmentClient();
 

@@ -12,7 +12,7 @@ import { signPreviewProgress, signStoryRowImages } from "@/lib/storage/illustrat
  *
  * Rows are read with the service role and an explicit owner filter (user_id =
  * the session's user): clients have no SELECT grant on stories.generated_text /
- * story_illustrations.prompt_used (migration 20260930170000_paywall_columns.sql).
+ * story_illustrations.prompt_used (migration 20260930180000_paywall_columns.sql).
  */
 export async function GET(
   request: Request,
