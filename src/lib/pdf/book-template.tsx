@@ -15,6 +15,13 @@
  * Digital book (user download, 34 pages = the physical book in reading order):
  *   cover · endpaper · interior 1–30 · endpaper · back cover
  *
+ * Editions — ONE template, two page boxes (BookEdition):
+ * - "print":   208×208 mm pages (200 mm trim + 4 mm bleed on every side) — the Gelato files.
+ * - "digital": 200×200 mm pages = the trim, what the reader holds and what the web viewer
+ *              shows. Same pages, same planner, same drawing: each page is the print page
+ *              seen through a trim-sized window (shifted by the bleed), so panorama halves
+ *              meet exactly at the fold (no repeated gutter strip) and nothing is re-laid out.
+ *
  * Rules that keep print output deterministic:
  * - every page is one fixed-size non-wrapping root box → overflow can never add pages
  * - images are placed with uniform cover-fit (never stretched)
@@ -111,6 +118,8 @@ export interface BookRenderContext {
   titleGradient: string;
   coverGradient: string;
   creamFade: string;
+  /** Page box being drawn — set by the renderer (renderBookPdf / renderInteriorPdf); "print" as prepared */
+  edition: BookEdition;
 }
 
 /** Loads fonts, probes images and plans every page. Shared by all renderers + the validator. */
@@ -150,7 +159,7 @@ export async function prepareBookRender(input: BookPdfInput): Promise<BookRender
     getGradientPng(COVER_OVERLAY_STOPS),
     getGradientPng(CREAM_FADE_STOPS, CREAM_FADE_RGB),
   ]);
-  return { input, theme, plan, images, coverTexts, qrDataUrl, logoWhite, logoOrnament, textGradient, titleGradient, coverGradient, creamFade };
+  return { input, theme, plan, images, coverTexts, qrDataUrl, logoWhite, logoOrnament, textGradient, titleGradient, coverGradient, creamFade, edition: "print" };
 }
 
 const W = BOOK.pageWidth;
@@ -158,6 +167,13 @@ const H = BOOK.pageHeight;
 const M = BOOK.contentMargin;
 const DIGITAL_COVER_SAFE = BOOK.safeMargin; // 15 mm inside trim
 const PAGE_SIZE: [number, number] = [W, H];
+const TRIM_SIZE: [number, number] = [BOOK.trimWidth, BOOK.trimHeight];
+
+/**
+ * "print": bleed pages for Gelato (208 mm). "digital": trim pages for reading (200 mm) —
+ * the customer download, e-mailed download link, dashboard and showcase sample.
+ */
+export type BookEdition = "print" | "digital";
 
 /**
  * Every page is ONE fixed-size, non-wrapping, clipping root box. Pagination only
@@ -165,8 +181,20 @@ const PAGE_SIZE: [number, number] = [W, H];
  * so overflowing content is clipped instead of ever creating an extra page.
  * (Page-level wrap={false} is avoided: in @react-pdf 4.3 it skips the relayout
  * that sizes <Svg> nodes and crashes with "unsupported number: Infinity".)
+ *
+ * Digital edition: the page is the trim, and the unchanged 208 mm bleed page is placed
+ * 4 mm up-left inside it — the root box clips the bleed away.
  */
-function BookPage({ children, background }: { children: ReactNode; background?: string }) {
+function BookPage({ edition, children, background }: { edition: BookEdition; children: ReactNode; background?: string }) {
+  if (edition === "digital") {
+    return (
+      <Page size={TRIM_SIZE}>
+        <View wrap={false} style={{ width: "100%", height: rootBoxHeight(BOOK.trimHeight), position: "relative", overflow: "hidden", backgroundColor: background }}>
+          <View style={{ position: "absolute", top: -BOOK.bleed, left: -BOOK.bleed, width: W, height: H }}>{children}</View>
+        </View>
+      </Page>
+    );
+  }
   return (
     <Page size={PAGE_SIZE}>
       <View wrap={false} style={{ width: "100%", height: rootBoxHeight(H), position: "relative", overflow: "hidden", backgroundColor: background }}>
@@ -197,7 +225,7 @@ function OverlayTitle({ text, fontSize, leading }: { text: string; fontSize: num
 function IllustrationPage({ page, ctx }: { page: PageOf<"illustration">; ctx: BookRenderContext }) {
   const image = ctx.images.scenes.get(page.image.sceneNumber);
   return (
-    <BookPage>
+    <BookPage edition={ctx.edition}>
       <PlacedImage image={image} boxWidth={page.image.boxWidth} boxHeight={page.image.boxHeight} />
       {page.title && <BottomGradient uri={ctx.titleGradient} width={W} height={H * 0.5} />}
       {page.title && <OverlayTitle text={sanitizePrintText(page.scene.title)} fontSize={page.title.fontSize} leading={page.title.leading} />}
@@ -216,7 +244,7 @@ function SpreadPage({ page, ctx }: { page: PageOf<"spread">; ctx: BookRenderCont
   const panelWidth = GEOMETRY.overlayTextWidth;
 
   return (
-    <BookPage>
+    <BookPage edition={ctx.edition}>
       <PlacedImage image={image} boxWidth={page.image.boxWidth} boxHeight={page.image.boxHeight} windowLeft={page.image.windowLeft} viewWidth={W} viewHeight={H} />
       {/* Same gradient on both halves → continuous across the fold (no seam at the gutter) */}
       <BottomGradient uri={ctx.textGradient} width={W} height={panoramaGradientHeight(ctx.plan, page.scene.sceneNumber)} />
@@ -250,7 +278,7 @@ function IllustrationTextPage({ page, ctx }: { page: PageOf<"illustration-text">
   const { theme } = ctx;
   const image = ctx.images.scenes.get(page.image.sceneNumber);
   return (
-    <BookPage background={COLORS.cream}>
+    <BookPage edition={ctx.edition} background={COLORS.cream}>
       <PlacedImage image={image} boxWidth={page.image.boxWidth} boxHeight={page.image.boxHeight} />
       <View style={{ position: "absolute", top: page.image.boxHeight + 8, left: (W - ILL_TEXT_WIDTH) / 2, width: ILL_TEXT_WIDTH, bottom: M, alignItems: "center", justifyContent: "center" }}>
         <OrnamentalDivider color={theme.ornamentColor} width={60} />
@@ -301,7 +329,7 @@ function TextPage({ page, ctx }: { page: PageOf<"text">; ctx: BookRenderContext 
   switch (page.variant) {
     case "puente":
       return (
-        <BookPage background={theme.accentLight}>
+        <BookPage edition={ctx.edition} background={theme.accentLight}>
           <FrameBorder color={theme.ornamentColor} />
           <CornerDot color={theme.accent} top={M + 4} left={M + 4} />
           <CornerDot color={theme.accent} top={M + 4} right={M + 4} />
@@ -320,7 +348,7 @@ function TextPage({ page, ctx }: { page: PageOf<"text">; ctx: BookRenderContext 
 
     case "pergamino":
       return (
-        <BookPage background={theme.accentLight}>
+        <BookPage edition={ctx.edition} background={theme.accentLight}>
           <FrameBorder color={theme.ornamentColor} />
           <View style={column}>
             <Text style={{ ...titleStyle, marginBottom: 10 * k }}>{title}</Text>
@@ -336,7 +364,7 @@ function TextPage({ page, ctx }: { page: PageOf<"text">; ctx: BookRenderContext 
 
     case "ventana":
       return (
-        <BookPage background={COLORS.cream}>
+        <BookPage edition={ctx.edition} background={COLORS.cream}>
           <FrameBorder color={theme.ornamentColor} />
           <View style={column}>
             <Text style={{ ...titleStyle, marginBottom: 14 * k }}>{title}</Text>
@@ -352,7 +380,7 @@ function TextPage({ page, ctx }: { page: PageOf<"text">; ctx: BookRenderContext 
     case "galeria":
     default:
       return (
-        <BookPage background={COLORS.cream}>
+        <BookPage edition={ctx.edition} background={COLORS.cream}>
           <FrameBorder color={theme.ornamentColor} />
           <View style={{ ...column, alignItems: "center" }}>
             <Text style={{ ...titleStyle, textAlign: "center", marginBottom: 12 * k }}>{title}</Text>
@@ -380,7 +408,7 @@ function TitleDedicationPage({ page, ctx }: { page: PageOf<"title-dedication">; 
   // Sizes + gaps scale with the book's body type (layout.ts planTitlePage)
   const { scale: k, kicker, display, sender, logo } = page.front;
   return (
-    <BookPage background={COLORS.cream}>
+    <BookPage edition={ctx.edition} background={COLORS.cream}>
       <FrameBorder color={theme.ornamentColor} />
       <View style={{ position: "absolute", top: M, bottom: M, left: M, right: M, justifyContent: "center", alignItems: "center" }}>
         <Image src={ctx.logoOrnament} style={{ height: logo, width: logo * BRAND_LOGO_ASPECT, marginBottom: 16 * k, opacity: 0.7 }} />
@@ -507,7 +535,7 @@ function MapGamePanel({ panel, theme }: { panel: MapPanel; theme: TemplateTheme 
 /** One half of the map spread (no folio: back-matter art). */
 function MapPage({ page, ctx }: { page: PageOf<"map">; ctx: BookRenderContext }) {
   return (
-    <BookPage background={COLORS.cream}>
+    <BookPage edition={ctx.edition} background={COLORS.cream}>
       <PlacedImage
         image={ctx.images.map}
         boxWidth={GEOMETRY.spreadWidth}
@@ -539,7 +567,7 @@ function mixHex(a: string, b: string, t: number): string {
  * the ground so it reads clearly in print but never competes with the facing page (< 5 % coverage).
  * Continuous across a fold: `offsetX` = this page's x in spread coordinates.
  */
-function EndpaperPage({ theme, offsetX }: { theme: TemplateTheme; offsetX: number }) {
+function EndpaperPage({ theme, offsetX, edition }: { theme: TemplateTheme; offsetX: number; edition: BookEdition }) {
   const STEP = 50; // half-drop lattice: neighbours ≈ 35 pt (12 mm) apart
   const ground = mixHex(theme.pageTint, theme.accentLight, 0.7);
   const ink = {
@@ -596,7 +624,7 @@ function EndpaperPage({ theme, offsetX }: { theme: TemplateTheme; offsetX: numbe
     }
   }
   return (
-    <BookPage background={ground}>
+    <BookPage edition={edition} background={ground}>
       <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}>
         <Svg width={W} height={H} viewBox={`0 0 ${W} ${H}`}>
           {marks}
@@ -610,7 +638,7 @@ function FinalPage({ page, ctx }: { page: PageOf<"final">; ctx: BookRenderContex
   const { theme, input } = ctx;
   const { scale: k, kicker, display } = page.front; // layout.ts planFinalPage
   return (
-    <BookPage background={COLORS.cream}>
+    <BookPage edition={ctx.edition} background={COLORS.cream}>
       <FrameBorder color={theme.ornamentColor} />
       <View style={{ position: "absolute", top: M, bottom: M, left: M, right: M, justifyContent: "center", alignItems: "center" }}>
         <View style={{ alignItems: "center", width: BOOK.trimWidth * 0.7 }}>
@@ -671,7 +699,7 @@ function AboutReaderPage({ ctx }: { ctx: BookRenderContext }) {
   if (futureDream) traits.push({ label: sanitizePrintText(futureDream), icon: "palette" });
 
   return (
-    <BookPage background="#ffffff">
+    <BookPage edition={ctx.edition} background="#ffffff">
       {images.portrait ? (
         <PlacedImage image={images.portrait} boxWidth={W} boxHeight={H} focusY={0} style={{ position: "absolute", top: 0, left: 0 }} />
       ) : (
@@ -733,7 +761,7 @@ function AboutReaderPage({ ctx }: { ctx: BookRenderContext }) {
 function ColophonPage({ ctx }: { ctx: BookRenderContext }) {
   const { input, qrDataUrl } = ctx;
   return (
-    <BookPage background={COLORS.cream}>
+    <BookPage edition={ctx.edition} background={COLORS.cream}>
       <View style={{ position: "absolute", top: M, bottom: M, left: M, right: M, justifyContent: "center", alignItems: "center" }}>
         <View style={{ alignItems: "center", maxWidth: BOOK.trimWidth * 0.65 }}>
           <Paragraphs text={pdfT(input.locale, "colophonText")} style={{ fontFamily: FONTS.body, fontSize: 10, color: COLORS.textMuted, textAlign: "center", lineHeight: 1.8 }} />
@@ -751,7 +779,7 @@ function ColophonPage({ ctx }: { ctx: BookRenderContext }) {
   );
 }
 
-// ── Digital cover / back cover (single 208 mm pages) ─────────────────────
+// ── Digital cover / back cover (single pages; drawn on the bleed page, shown at trim) ──
 
 const DIGITAL_FRAME: PanelFrame = {
   art: { left: 0, top: 0, width: W, height: H },
@@ -761,7 +789,7 @@ const DIGITAL_FRAME: PanelFrame = {
 
 function CoverPage({ ctx }: { ctx: BookRenderContext }) {
   return (
-    <BookPage background={ctx.theme.coverGradientStart}>
+    <BookPage edition={ctx.edition} background={ctx.theme.coverGradientStart}>
       <FrontCoverDesign frame={DIGITAL_FRAME} theme={ctx.theme} texts={ctx.coverTexts} image={ctx.images.cover} overlayUri={ctx.coverGradient} />
     </BookPage>
   );
@@ -775,7 +803,7 @@ export function backCoverImage(ctx: Pick<BookRenderContext, "images" | "input">)
 
 function BackCoverPage({ ctx }: { ctx: BookRenderContext }) {
   return (
-    <BookPage background={ctx.theme.coverGradientStart}>
+    <BookPage edition={ctx.edition} background={ctx.theme.coverGradientStart}>
       <BackCoverDesign frame={DIGITAL_FRAME} theme={ctx.theme} texts={ctx.coverTexts} image={backCoverImage(ctx)} logoUri={ctx.logoOrnament} />
     </BookPage>
   );
@@ -805,7 +833,7 @@ function renderPlannedPage(page: PlannedPage, ctx: BookRenderContext): JSX.Eleme
     case "map":
       return <MapPage key={key} page={page} ctx={ctx} />;
     case "endpaper":
-      return <EndpaperPage key={key} theme={ctx.theme} offsetX={page.side === "right" ? GEOMETRY.spreadRightOffset : 0} />;
+      return <EndpaperPage key={key} theme={ctx.theme} edition={ctx.edition} offsetX={page.side === "right" ? GEOMETRY.spreadRightOffset : 0} />;
     case "colophon":
       return <ColophonPage key={key} ctx={ctx} />;
   }
@@ -816,16 +844,16 @@ export function InteriorOnlyPdf({ ctx }: { ctx: BookRenderContext }) {
   // Pastedowns first and last (glued to the boards), as in Teo's printed book (layout.ts).
   return (
     <Document title={ctx.input.story.bookTitle} author="Meapica" creator="Meapica — meapica.com" producer="Meapica">
-      <EndpaperPage theme={ctx.theme} offsetX={0} />
+      <EndpaperPage theme={ctx.theme} edition={ctx.edition} offsetX={0} />
       {ctx.plan.pages.map((p) => renderPlannedPage(p, ctx))}
-      <EndpaperPage theme={ctx.theme} offsetX={GEOMETRY.spreadRightOffset} />
+      <EndpaperPage theme={ctx.theme} edition={ctx.edition} offsetX={GEOMETRY.spreadRightOffset} />
     </Document>
   );
 }
 
-/** Full digital book (34 pages, same reading order as the printed book). */
+/** Full book (34 pages, same reading order as the printed book), in ctx.edition. */
 export function BookPdf({ ctx }: { ctx: BookRenderContext }) {
-  const { input, theme } = ctx;
+  const { input, theme, edition } = ctx;
   return (
     <Document
       title={input.story.bookTitle}
@@ -835,9 +863,9 @@ export function BookPdf({ ctx }: { ctx: BookRenderContext }) {
       producer="Meapica"
     >
       <CoverPage ctx={ctx} />
-      <EndpaperPage theme={theme} offsetX={0} />
+      <EndpaperPage theme={theme} edition={edition} offsetX={0} />
       {ctx.plan.pages.map((p) => renderPlannedPage(p, ctx))}
-      <EndpaperPage theme={theme} offsetX={GEOMETRY.spreadRightOffset} />
+      <EndpaperPage theme={theme} edition={edition} offsetX={GEOMETRY.spreadRightOffset} />
       <BackCoverPage ctx={ctx} />
     </Document>
   );
@@ -848,17 +876,23 @@ async function renderDocument(element: JSX.Element): Promise<Buffer> {
   return renderToBuffer(element as Parameters<typeof renderToBuffer>[0]);
 }
 
-/** Full digital book — user-facing download. */
-export async function renderBookPdf(input: BookPdfInput, prepared?: BookRenderContext): Promise<Buffer> {
+/**
+ * Full 34-page book. Default "digital" (trim-size reader edition): the customer download,
+ * e-mail download link, dashboard and showcase sample. "print" keeps the bleed (proofing only —
+ * Gelato gets renderInteriorPdf + renderCoverSpreadPdf).
+ */
+export async function renderBookPdf(input: BookPdfInput, prepared?: BookRenderContext, options: { edition?: BookEdition } = {}): Promise<Buffer> {
   const ctx = prepared ?? (await prepareBookRender(input));
-  return renderDocument(createElement(BookPdf, { ctx }));
+  // Shallow copy: the prepared context is shared with the print renders (renderPrintFiles runs them in parallel)
+  return renderDocument(createElement(BookPdf, { ctx: { ...ctx, edition: options.edition ?? "digital" } }));
 }
 
 /**
- * Gelato "inside" PDF (32 pages: pastedown + 30 inner + pastedown). Call validatePrintableBook first —
+ * Gelato "inside" PDF (32 pages: pastedown + 30 inner + pastedown), always the print edition
+ * (bleed pages). Call validatePrintableBook first —
  * this renderer draws whatever it is given.
  */
 export async function renderInteriorPdf(input: BookPdfInput, prepared?: BookRenderContext): Promise<Buffer> {
   const ctx = prepared ?? (await prepareBookRender(input));
-  return renderDocument(createElement(InteriorOnlyPdf, { ctx }));
+  return renderDocument(createElement(InteriorOnlyPdf, { ctx: { ...ctx, edition: "print" } }));
 }

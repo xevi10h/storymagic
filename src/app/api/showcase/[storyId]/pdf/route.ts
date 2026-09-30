@@ -107,7 +107,8 @@ export async function GET(
   };
 
   try {
-    const buffer = await renderBookPdf(pdfInput);
+    // Digital (trim-size) edition — the same file a customer downloads, never the bleed print file
+    const buffer = await renderBookPdf(pdfInput, undefined, { edition: "digital" });
 
     const safeTitle = generatedText.bookTitle
       .replace(/[^a-zA-Z0-9áéíóúñüÁÉÍÓÚÑÜ\s-]/g, "")

@@ -53,8 +53,9 @@ export const u = (pt: number) => `${((pt * 100) / TRIM).toFixed(4)}cqi`;
 /** A distance from the bleed page's edge → from the trim edge. */
 const at = (pt: number) => u(pt - BLEED);
 
-const DISPLAY = "var(--font-fredoka), Fredoka, sans-serif";
-const BODY = "var(--font-plus-jakarta), 'Plus Jakarta Sans', sans-serif";
+// "Meapica Print Spaces" only draws U+202F (globals.css) — the same narrow no-break space as the PDF
+const DISPLAY = "'Meapica Print Spaces', var(--font-fredoka), Fredoka, sans-serif";
+const BODY = "'Meapica Print Spaces', var(--font-plus-jakarta), 'Plus Jakarta Sans', sans-serif";
 
 interface FittedType {
   fontSize: number;

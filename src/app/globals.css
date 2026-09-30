@@ -1,5 +1,16 @@
 @import "tailwindcss";
 
+/* U+202F narrow no-break space (French: before ? ! ; and inside « »). The Google builds of
+   Plus Jakarta Sans / Fredoka lack it, so the browser borrowed a system font's much narrower
+   space. This one-glyph font is the PDF's own (scripts/build-pdf-fonts.mjs): the book viewer
+   and mockups list it first, and unicode-range limits it to that single character. */
+@font-face {
+  font-family: "Meapica Print Spaces";
+  src: url("/fonts/print-spaces.woff2") format("woff2");
+  unicode-range: U+202F;
+  font-display: block;
+}
+
 button, [role="button"] {
   cursor: pointer;
 }

@@ -50,7 +50,8 @@ character lock; per-stage resolution. (commits 5ebc2f1 → a883d60)
 
 ## Next steps from web = print parity (2026-09-30)
 
-- Digital PDF download at trim size (200 mm pages, no bleed): today it keeps the 4 mm print bleed, so panorama halves repeat an 8 mm strip at the gutter; the web viewer already shows the trim.
+- [x] Digital PDF download at trim size (2026-09-30): `renderBookPdf` renders the digital edition (34 pages of 200 mm, no bleed, panorama halves meet at the fold) for the customer PDF, the e-mailed download, the dashboard and the showcase sample; Gelato files keep the bleed (pixel-identical). Check: `scripts/check-pdf-editions.mts`.
+- Customer PDFs stored before 2026-09-30 still carry the bleed: re-render them (clear `stories.pdf_url` → the fulfilment run rebuilds) if any customer asks, or backfill once.
 - Web map spread: serve the 3840×1920 map (and 2432² pages) through a resized rendition (Supabase image transform) — the viewer downloads print-size art.
 - Balanced lines: the web approximates the PDF's measured line breaks with `text-wrap: balance`; shipping the planner's line breaks in `book_plan` would make wraps identical.
 
@@ -58,7 +59,7 @@ character lock; per-stage resolution. (commits 5ebc2f1 → a883d60)
 
 - [ ] **HIGH — Next session: platform-wide SEO review** (every public route × 4 locales: titles/meta/OG, hreflang + canonicals, JSON-LD incl. `Offer` VAT flags, sitemap, internal links, Core Web Vitals, the new showcase books on `/ejemplo` + theme pages)
 - [ ] Showcase v2 for the remaining 5 worlds (superhero, chef, safari, inventor, candy) with the same rule: production pipeline + page-by-page QA in 4 locales; a `castle` theme SEO page (`THEME_TEMPLATE` has no castle slug yet)
-- [ ] Pipeline findings from the showcase QA (customer-facing): the QA judge passed a cover with a third hand twice (dinosaurs) and a text/art contradiction (whale "asleep" with open eyes); prompt text shows article glitches ("The s ardillas", "casa de the child"); the renderer strips U+202F (narrow no-break space) that French LLM text can contain — normalise it to U+00A0 before print
+- [ ] Pipeline findings from the showcase QA (customer-facing): the QA judge passed a cover with a third hand twice (dinosaurs) and a text/art contradiction (whale "asleep" with open eyes); prompt text shows article glitches ("The s ardillas", "casa de the child"). Done 2026-09-30: U+202F (narrow no-break space) now prints — the embedded fonts gained the glyph (`scripts/patch-font-nnbsp.py`), the web viewer uses the same one
 - [ ] Admin "publish showcase" action (flag + mirror + translations) instead of scripts
 
 ## Next steps from commerce block A (2026-09-28)

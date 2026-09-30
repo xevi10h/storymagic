@@ -20,7 +20,7 @@ export interface PrintFiles {
   interiorPdf: Buffer;
   /** Gelato cover file — one page, exact geometry from the catalog API */
   coverPdf: Buffer;
-  /** Digital book for the customer download (34 pages) */
+  /** Digital edition for the customer download (34 trim-size 200×200 mm pages, no bleed) */
   bookPdf: Buffer;
   coverDimensions: CoverDimensions;
   validation: PrintValidationResult;
@@ -42,7 +42,7 @@ export async function renderPrintFiles(args: {
   const [interiorPdf, coverPdf, bookPdf] = await Promise.all([
     renderInteriorPdf(args.input, prepared),
     renderCoverSpreadPdf(args.input, geometry, prepared),
-    renderBookPdf(args.input, prepared),
+    renderBookPdf(args.input, prepared, { edition: "digital" }),
   ]);
 
   const validation = await validatePrintableBook(args.input, { coverGeometry: geometry, interiorPdf, coverPdf, prepared });
