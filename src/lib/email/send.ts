@@ -9,9 +9,11 @@
 // Optional env:
 //   EMAIL_FROM            — sender (default: "Meapica <hola@constrack.pro>"; switch to
 //                           hola@meapica.com only once meapica.com is verified in Resend)
-//   EMAIL_REPLY_TO        — reply-to for every email (unset by default = replies go to
-//                           EMAIL_FROM); set to hola@meapica.com once that mailbox receives
+//   EMAIL_REPLY_TO        — reply-to for every email (default: SUPPORT_EMAIL from
+//                           src/lib/support.ts, the customer-facing inbox)
 //   NEXT_PUBLIC_SITE_URL  — public site origin (default: "https://meapica.com")
+
+import { SUPPORT_EMAIL } from "../support";
 
 const DEFAULT_FROM = "Meapica <hola@constrack.pro>";
 const DEFAULT_SITE_URL = "https://meapica.com";
@@ -43,7 +45,7 @@ export async function sendEmail(params: SendEmailParams): Promise<boolean> {
   }
 
   const from = process.env.EMAIL_FROM?.trim() || DEFAULT_FROM;
-  const replyTo = params.replyTo || process.env.EMAIL_REPLY_TO?.trim() || undefined;
+  const replyTo = params.replyTo || process.env.EMAIL_REPLY_TO?.trim() || SUPPORT_EMAIL;
 
   try {
     const res = await fetch("https://api.resend.com/emails", {

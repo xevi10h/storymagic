@@ -16,6 +16,7 @@
 
 import { EMAIL_COLORS, renderEmailLayout, escapeHtml } from "./layout";
 import { getSiteUrl } from "./send";
+import { SUPPORT_EMAIL } from "@/lib/support";
 import { orderAccessUrl } from "@/lib/auth/next-path";
 import { formatPrice, SELLER_IDENTITY, type CatalogItemId } from "@/lib/pricing";
 import { ORDER_NOTICES, type NoticeEventStrings, type OrderNoticeEvent } from "./order-notices";
@@ -142,7 +143,7 @@ const CONTENT: Record<Locale, Strings> = {
     trackingLabel: "Número de seguimiento",
     downloadCta: "Ver y descargar el libro",
     withdrawalConfirmation:
-      "Como aceptaste antes de pagar, este libro se crea a medida y el PDF se entrega en cuanto está listo, por lo que no tiene derecho de desistimiento (art. 103 c y m de la LGDCU). Si algo llega mal, escríbenos a hola@meapica.com y lo solucionamos.",
+      `Como aceptaste antes de pagar, este libro se crea a medida y el PDF se entrega en cuanto está listo, por lo que no tiene derecho de desistimiento (art. 103 c y m de la LGDCU). Si algo llega mal, escríbenos a ${SUPPORT_EMAIL} y lo solucionamos.`,
     receipt: {
       title: "Resumen del pedido",
       reference: "Pedido",
@@ -236,7 +237,7 @@ const CONTENT: Record<Locale, Strings> = {
     trackingLabel: "Número de seguiment",
     downloadCta: "Veure i descarregar el llibre",
     withdrawalConfirmation:
-      "Com vas acceptar abans de pagar, aquest llibre es crea a mida i el PDF s'entrega quan està llest, per això no té dret de desistiment (art. 103 c i m de la LGDCU). Si alguna cosa arriba malament, escriu-nos a hola@meapica.com i ho solucionem.",
+      `Com vas acceptar abans de pagar, aquest llibre es crea a mida i el PDF s'entrega quan està llest, per això no té dret de desistiment (art. 103 c i m de la LGDCU). Si alguna cosa arriba malament, escriu-nos a ${SUPPORT_EMAIL} i ho solucionem.`,
     receipt: {
       title: "Resum de la comanda",
       reference: "Comanda",
@@ -330,7 +331,7 @@ const CONTENT: Record<Locale, Strings> = {
     trackingLabel: "Tracking number",
     downloadCta: "View and download the book",
     withdrawalConfirmation:
-      "As you accepted before paying, this book is made to order and the PDF is delivered as soon as it is ready, so it carries no right of withdrawal (art. 103 c and m, Spanish consumer law). If anything arrives wrong, write to hola@meapica.com and we will fix it.",
+      `As you accepted before paying, this book is made to order and the PDF is delivered as soon as it is ready, so it carries no right of withdrawal (art. 103 c and m, Spanish consumer law). If anything arrives wrong, write to ${SUPPORT_EMAIL} and we will fix it.`,
     receipt: {
       title: "Order summary",
       reference: "Order",
@@ -424,7 +425,7 @@ const CONTENT: Record<Locale, Strings> = {
     trackingLabel: "Numéro de suivi",
     downloadCta: "Voir et télécharger le livre",
     withdrawalConfirmation:
-      "Comme vous l'avez accepté avant de payer, ce livre est fabriqué sur mesure et le PDF est livré dès qu'il est prêt : il n'ouvre donc pas de droit de rétractation (art. 103 c et m, droit espagnol de la consommation). Si quelque chose arrive abîmé, écrivez-nous à hola@meapica.com et nous le réglerons.",
+      `Comme vous l'avez accepté avant de payer, ce livre est fabriqué sur mesure et le PDF est livré dès qu'il est prêt : il n'ouvre donc pas de droit de rétractation (art. 103 c et m, droit espagnol de la consommation). Si quelque chose arrive abîmé, écrivez-nous à ${SUPPORT_EMAIL} et nous le réglerons.`,
     receipt: {
       title: "Récapitulatif de commande",
       reference: "Commande",

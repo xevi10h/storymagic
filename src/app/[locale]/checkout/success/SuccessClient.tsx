@@ -6,6 +6,7 @@ import { Link } from "@/i18n/navigation";
 import CreationHeader from "@/components/crear/CreationHeader";
 import { Spinner } from "@/components/ui/Spinner";
 import { BrandLoader } from "@/components/ui/BrandLoader";
+import { SUPPORT_EMAIL } from "@/lib/support";
 
 interface OrderDetails {
   format: string;
@@ -331,7 +332,7 @@ export default function SuccessClient({
               >
                 {t("goToDashboard")}
               </Link>
-              <a href="mailto:hola@meapica.com" className="text-sm text-text-muted hover:text-text-soft">
+              <a href={`mailto:${SUPPORT_EMAIL}`} className="text-sm text-text-muted hover:text-text-soft">
                 {t("contactUs")}
               </a>
             </div>
