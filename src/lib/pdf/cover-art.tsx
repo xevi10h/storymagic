@@ -12,7 +12,18 @@ import { countLines, fitText, joinName, printQuotes, sanitizePrintText } from ".
 import { BRAND_LOGO_ASPECT, COVER_OVERLAY_STOPS, type PrintImage } from "./assets";
 import { Paragraphs, PlacedImage } from "./primitives";
 import { OrnamentalDivider } from "./decorations";
-import type { FittedType } from "./layout";
+import {
+  BACK,
+  COVER_SUBTITLE,
+  splitTitleOnName,
+  vignetteBoxFor,
+  type BackCoverLayout,
+  type CoverTitleLockup,
+  type CoverTitleSegment,
+} from "@/lib/book/print-spec";
+
+// Shared with the web viewer (src/lib/book/print-spec.ts)
+export { COVER_SUBTITLE, splitTitleOnName, type BackCoverLayout, type CoverTitleLockup, type CoverTitleSegment } from "@/lib/book/print-spec";
 
 /** Scrim opacity above the visible panel (wrap / bleed), continuing the gradient's first stop. */
 const COVER_OVERLAY_TOP_ALPHA = COVER_OVERLAY_STOPS[0][1];
@@ -33,26 +44,6 @@ export interface PanelFrame {
   safe: number;
   /** Extra keep-out at the bottom of the visible panel (printer barcode), pt */
   bottomReserve?: number;
-}
-
-/** One stacked line group of the front-cover title; `hero` is the child's name. */
-export interface CoverTitleSegment {
-  text: string;
-  type: FittedType;
-  hero: boolean;
-}
-
-/**
- * Front-cover title lockup, set at the top of the panel (Wonderbly / Hooray Heroes
- * hierarchy): when the title contains the child's name, the name gets its own
- * large line and the rest of the title sits above / below it at a smaller size.
- */
-export interface CoverTitleLockup {
-  segments: CoverTitleSegment[];
-  /** Height of the stacked segments, pt */
-  height: number;
-  /** The title does not name the child: print "A personalised story for {name}" under it */
-  showSubtitle: boolean;
 }
 
 export interface CoverTexts {
@@ -79,27 +70,6 @@ const TITLE_UNIFORM = { max: 36, min: 18, leading: 1.15 };
 const MAX_TITLE_LINES = 3;
 /** The title block (plus subtitle) lives in the top ~third of the panel, from the safe line down */
 const TITLE_ZONE_RATIO = 0.36;
-export const COVER_SUBTITLE = { fontSize: 11, leading: 1.3, gap: 8 };
-
-/**
- * Splits the title around the child's name (whole word, case-insensitive). A possessive,
- * trailing punctuation, opening marks and an elided article stay on the name's line:
- * "Martina's", "Núria,", "¡Leo", "d’Émile".
- */
-export function splitTitleOnName(title: string, name: string): { pre: string; hero: string; post: string } | null {
-  const n = name.trim();
-  if (!n) return null;
-  const escaped = n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const match = new RegExp(`(?<![\\p{L}\\p{M}\\p{N}])${escaped}(?![\\p{L}\\p{M}\\p{N}])`, "iu").exec(title);
-  if (!match) return null;
-  let pre = title.slice(0, match.index);
-  let post = title.slice(match.index + match[0].length);
-  const tail = /^(?:['’]s)?[,;:!?.…»”"')]*/u.exec(post)?.[0] ?? "";
-  post = post.slice(tail.length);
-  const lead = /(?<!\p{L})(?:\p{L}{1,2}['’]|[¡¿«“"(]+)$/u.exec(pre)?.[0] ?? "";
-  pre = pre.slice(0, pre.length - lead.length);
-  return { pre: pre.trim(), hero: `${lead}${match[0]}${tail}`, post: post.trim() };
-}
 
 /**
  * Largest title lockup that fits `width` × `maxHeight` in at most three lines.
@@ -139,54 +109,14 @@ export function fitTitleLockup(title: string, name: string, width: number, maxHe
 
 // ── Back cover (paper back: arch vignette, title, "for {name}", synopsis, brand) ──
 
-/** Back-cover measurements, pt unless noted. The stack is sized so it always fits its column. */
-const BACK = {
-  title: { max: 16, min: 11, leading: 1.2, minLeading: 1.15, maxLines: 2 },
-  /** "Una historia personalizada para {name}" */
-  forLine: { fontSize: 10, leading: 1.35, gap: 5 },
-  /** Ornamental divider (OrnamentalDivider is 0.15 × its width tall) and the space around it */
-  divider: { width: 60, gap: 10 },
-  /** Synopsis in the body face, like the interior text */
-  synopsis: { max: 12.5, min: 9.5, comfortableMin: 10.5, leading: 1.55, minLeading: 1.45 },
-  /** Synopsis measure: ≤ 82 % of the column and ≤ 132 mm (~60 characters a line) */
-  measureRatio: 0.82,
-  measureMaxMm: 132,
-  /** Arch vignette (image window with a round top) height budget, mm; its width follows the image */
-  vignetteMaxMm: 70,
-  vignetteMaxWidthMm: 80,
-  /** Image aspect range shown whole; beyond it the window crops (cover-fit, centred) */
-  aspectRange: [0.75, 1.6],
-  vignetteComfortableMm: 44,
-  vignetteMinMm: 28,
-  /** Hairline frame drawn this far outside the vignette */
-  ring: 5,
-  vignetteGap: 14,
-  /** Brand signature: logo + url, pinned to the bottom of the column */
-  brand: { logo: 12, urlSize: 6.5, gapAboveMin: 16 },
-  /** Absorbs rounding between the measured model and react-pdf's layout */
-  slack: 6,
-} as const;
-
-export interface BackCoverLayout {
-  titleType: FittedType;
-  synopsisType: FittedType;
-  /** Synopsis column width, pt */
-  measure: number;
-  /** Height budget of the arch vignette, pt (0: no room, printed without art) — see vignetteBox */
-  vignette: number;
-}
-
 /**
  * Arch vignette box for an image within the fitted height budget: the window takes the
  * image's own proportions (clamped to BACK.aspectRange) so the whole scene shows — a
  * centred square crop could cut off a face near the sides of a landscape scene.
  */
 export function vignetteBox(image: PrintImage | null, budget: number): { width: number; height: number } | null {
-  if (!image || budget <= 0) return null;
-  const [lo, hi] = BACK.aspectRange;
-  const aspect = image.dims ? Math.min(hi, Math.max(lo, image.dims.widthPx / image.dims.heightPx)) : 1;
-  const width = Math.min(budget * aspect, BACK.vignetteMaxWidthMm * MM_TO_PT);
-  return { width, height: width / aspect };
+  if (!image) return null;
+  return vignetteBoxFor(image.dims ? image.dims.widthPx / image.dims.heightPx : null, budget);
 }
 
 function backBrandHeight(): number {

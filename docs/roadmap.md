@@ -48,6 +48,12 @@ character lock; per-stage resolution. (commits 5ebc2f1 → a883d60)
 
 ---
 
+## Next steps from web = print parity (2026-09-30)
+
+- Digital PDF download at trim size (200 mm pages, no bleed): today it keeps the 4 mm print bleed, so panorama halves repeat an 8 mm strip at the gutter; the web viewer already shows the trim.
+- Web map spread: serve the 3840×1920 map (and 2432² pages) through a resized rendition (Supabase image transform) — the viewer downloads print-size art.
+- Balanced lines: the web approximates the PDF's measured line breaks with `text-wrap: balance`; shipping the planner's line breaks in `book_plan` would make wraps identical.
+
 ## Next steps from showcase v2 (2026-09-30)
 
 - [ ] **HIGH — Next session: platform-wide SEO review** (every public route × 4 locales: titles/meta/OG, hreflang + canonicals, JSON-LD incl. `Offer` VAT flags, sitemap, internal links, Core Web Vitals, the new showcase books on `/ejemplo` + theme pages)

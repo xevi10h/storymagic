@@ -15,6 +15,8 @@
  *   --stress         Catalan/Spanish edge-case strings in name, dedication, title
  *   --age=N          override the child's age (text sizing)
  *   --out=DIR        output dir (default artifacts/print-test/<storyId>)
+ *   --locale=xx      print the book's own copy (title page, "The End", map game…) in es/ca/en/fr
+ *                    instead of stories.locale (the story text stays as written)
  *   --map-game=FILE  print pp. 28–29 with this MapGame JSON instead of the stored one
  *                    (same map image — layout check of the other age bands)
  *   --color=X        override the child's favourite colour (palette check): a FAVORITE_COLORS
@@ -44,7 +46,7 @@ const storyId = args.find((a) => !a.startsWith("--")) ?? "458956ca-2f76-4b2e-906
 const flag = (f: string) => args.includes(f);
 const opt = (name: string) => args.find((a) => a.startsWith(`--${name}=`))?.split("=")[1];
 const colorOpt = opt("color");
-const outDir = resolve(process.cwd(), opt("out") ?? `artifacts/print-test/${storyId}${flag("--upscale") ? "-upscaled" : ""}${flag("--stress") ? "-stress" : ""}${colorOpt ? `-${colorOpt.replace("#", "")}` : ""}`);
+const outDir = resolve(process.cwd(), opt("out") ?? `artifacts/print-test/${storyId}${opt("locale") ? `-${opt("locale")}` : ""}${flag("--upscale") ? "-upscaled" : ""}${flag("--stress") ? "-stress" : ""}${colorOpt ? `-${colorOpt.replace("#", "")}` : ""}`);
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -163,7 +165,7 @@ const input: BookPdfInput = {
   mapImageUrl,
   mapGame: mapImageUrl ? mapGame : null,
   illustrations,
-  locale: story.locale ?? "es",
+  locale: opt("locale") ?? story.locale ?? "es",
 };
 
 // ── geometry (live, read-only) ─────────────────────────────────────────────

@@ -30,7 +30,7 @@ import { OrnamentalDivider, StarCluster, WavyDots, HeartIcon } from "./decoratio
 import type { GeneratedStory } from "@/lib/ai/story-generator";
 import type { MapGame } from "@/lib/ai/adventure-map";
 import { FAVORITE_COLORS } from "@/lib/create-store";
-import { ensurePdfFontsLoaded, fontMetrics, measureTextWidth } from "./fonts";
+import { ensurePdfFontsLoaded } from "./fonts";
 import {
   BRAND_LOGO_ASPECT,
   COVER_OVERLAY_STOPS,
@@ -55,7 +55,9 @@ import {
 } from "./layout";
 import { BottomGradient, CornerDot, FrameBorder, PageNumber, Paragraphs, PlacedImage, rootBoxHeight } from "./primitives";
 import { BackCoverDesign, FrontCoverDesign, fitCoverTexts, type CoverTexts, type PanelFrame } from "./cover-art";
-import { joinName, printQuotes, sanitizePrintText, splitLeadingLines } from "./text";
+import { joinName, printQuotes, sanitizePrintText } from "./text";
+import { colorName, interestLabel, mapPanelStrings, pdfForName, pdfT } from "@/lib/book/print-text";
+import { CREAM_FADE_RGB, spreadGradientHeight, type DropCapPlan } from "@/lib/book/print-spec";
 
 // ── Input types ────────────────────────────────────────────────────────────
 
@@ -90,96 +92,9 @@ export interface BookPdfInput {
   futureDream?: string | null;
 }
 
-// ── PDF i18n (server-side, no hooks) ──────────────────────────────────────
+// ── PDF i18n: pure copy shared with the web viewer (src/lib/book/print-text.ts) ──
 
-const PDF_STRINGS: Record<string, Record<string, string>> = {
-  es: {
-    personalizedStory: "Una historia personalizada para",
-    personalizedAdventure: "Una aventura personalizada para",
-    createdFor: "Una historia creada especialmente para",
-    end: "Fin",
-    hero: "El héroe",
-    heroine: "La heroína",
-    years: "años",
-    colophonText: "Ilustraciones creadas exclusivamente para este libro.\nDiseño editorial por Meapica.",
-    defaultSynopsis: "{name} está a punto de vivir la aventura más extraordinaria de su vida.",
-    mapKicker: "El mapa de la aventura",
-    mapWhereIs: "¿Dónde está…?",
-    mapSeekFind: "Busca y encuentra",
-    mapTrail: "Sigue con el dedo el camino de puntos.",
-    mapQuestions: "Preguntas",
-    mapAnswers: "Respuestas",
-  },
-  ca: {
-    personalizedStory: "Una història personalitzada per a",
-    personalizedAdventure: "Una aventura personalitzada per a",
-    createdFor: "Una història creada especialment per a",
-    end: "Fi",
-    hero: "L'heroi",
-    heroine: "L'heroïna",
-    years: "anys",
-    colophonText: "Il·lustracions creades exclusivament per a aquest llibre.\nDisseny editorial per Meapica.",
-    defaultSynopsis: "{name} està a punt de viure l'aventura més extraordinària de la seva vida.",
-    mapKicker: "El mapa de l'aventura",
-    mapWhereIs: "On és…?",
-    mapSeekFind: "Busca i troba",
-    mapTrail: "Segueix amb el dit el camí de punts.",
-    mapQuestions: "Preguntes",
-    mapAnswers: "Respostes",
-  },
-  en: {
-    personalizedStory: "A personalized story for",
-    personalizedAdventure: "A personalized adventure for",
-    createdFor: "A story created especially for",
-    end: "The End",
-    hero: "The hero",
-    heroine: "The heroine",
-    years: "years old",
-    colophonText: "Illustrations created exclusively for this book.\nEditorial design by Meapica.",
-    defaultSynopsis: "{name} is about to live the most extraordinary adventure of their life.",
-    mapKicker: "The adventure map",
-    mapWhereIs: "Where is…?",
-    mapSeekFind: "Seek and find",
-    mapTrail: "Follow the dotted trail with your finger.",
-    mapQuestions: "Questions",
-    mapAnswers: "Answers",
-  },
-  fr: {
-    personalizedStory: "Une histoire personnalisée pour",
-    personalizedAdventure: "Une aventure personnalisée pour",
-    createdFor: "Une histoire créée spécialement pour",
-    end: "Fin",
-    hero: "Le héros",
-    heroine: "L'héroïne",
-    years: "ans",
-    colophonText: "Illustrations créées exclusivement pour ce livre.\nDesign éditorial par Meapica.",
-    defaultSynopsis: "{name} est sur le point de vivre l'aventure la plus extraordinaire de sa vie.",
-    mapKicker: "La carte de l'aventure",
-    mapWhereIs: "Où est… ?",
-    mapSeekFind: "Cherche et trouve",
-    mapTrail: "Suis du doigt le chemin en pointillés.",
-    mapQuestions: "Questions",
-    mapAnswers: "Réponses",
-  },
-};
-
-export function pdfT(locale: string | undefined, key: string): string {
-  const loc = locale && PDF_STRINGS[locale] ? locale : "es";
-  return PDF_STRINGS[loc][key] || PDF_STRINGS.es[key] || key;
-}
-
-/**
- * A "…for" phrase ready to be followed by the child's name. Catalan needs the
- * personal article: "per a la Núria", "per a en Pau", "per a l'Anna".
- * Join with `joinName` (no space after an elided "l'").
- */
-export function pdfForName(locale: string | undefined, key: string, name: string, gender?: string): string {
-  const phrase = pdfT(locale, key);
-  if (locale !== "ca") return phrase;
-  // ponytail: vowel/h+vowel → l'; ignores the unstressed i/u exceptions ("la Irene").
-  if (/^h?[aeiouàèéíòóúï]/i.test(name.trim())) return `${phrase} l'`;
-  return `${phrase} ${gender === "boy" ? "en" : "la"}`;
-}
+export { pdfT, pdfForName } from "@/lib/book/print-text";
 
 // ── Render context (everything pre-computed before drawing) ───────────────
 
@@ -213,13 +128,7 @@ export async function prepareBookRender(input: BookPdfInput): Promise<BookRender
       images.map?.dims && input.mapGame
         ? {
             game: input.mapGame,
-            strings: {
-              kicker: pdfT(input.locale, "mapKicker"),
-              title: pdfT(input.locale, input.mapGame.band === "little" ? "mapWhereIs" : "mapSeekFind"),
-              trail: pdfT(input.locale, "mapTrail"),
-              questions: pdfT(input.locale, "mapQuestions"),
-              answers: pdfT(input.locale, "mapAnswers"),
-            },
+            strings: mapPanelStrings(input.locale, input.mapGame.band, input.mapGame.items.length),
           }
         : null,
   });
@@ -239,7 +148,7 @@ export async function prepareBookRender(input: BookPdfInput): Promise<BookRender
     getGradientPng(TEXT_OVERLAY_STOPS),
     getGradientPng(TITLE_OVERLAY_STOPS),
     getGradientPng(COVER_OVERLAY_STOPS),
-    getGradientPng(CREAM_FADE_STOPS, [250, 248, 245]),
+    getGradientPng(CREAM_FADE_STOPS, CREAM_FADE_RGB),
   ]);
   return { input, theme, plan, images, coverTexts, qrDataUrl, logoWhite, logoOrnament, textGradient, titleGradient, coverGradient, creamFade };
 }
@@ -297,19 +206,8 @@ function IllustrationPage({ page, ctx }: { page: PageOf<"illustration">; ctx: Bo
   );
 }
 
-/**
- * Bottom gradient height shared by BOTH halves of a panorama, so the darkening is
- * identical on each side of the fold. Uses TEXT_OVERLAY_STOPS on both pages: body text
- * occupies the bottom 55% of it, where it is ≥ 45% black; the title needs half the page.
- */
-function spreadGradientHeight(plan: InteriorPlan, sceneNumber: number): number {
-  let height = H * 0.5;
-  for (const p of plan.pages) {
-    if (p.kind === "spread" && p.scene.sceneNumber === sceneNumber && p.overlay.role === "body" && p.overlay.mode === "gradient") {
-      height = Math.max(height, (p.overlay.blockHeight + M + 6) / 0.55);
-    }
-  }
-  return Math.min(H, height);
+function panoramaGradientHeight(plan: InteriorPlan, sceneNumber: number): number {
+  return spreadGradientHeight(plan.pages.flatMap((p) => (p.kind === "spread" && p.scene.sceneNumber === sceneNumber ? [p.overlay] : [])));
 }
 
 function SpreadPage({ page, ctx }: { page: PageOf<"spread">; ctx: BookRenderContext }) {
@@ -321,7 +219,7 @@ function SpreadPage({ page, ctx }: { page: PageOf<"spread">; ctx: BookRenderCont
     <BookPage>
       <PlacedImage image={image} boxWidth={page.image.boxWidth} boxHeight={page.image.boxHeight} windowLeft={page.image.windowLeft} viewWidth={W} viewHeight={H} />
       {/* Same gradient on both halves → continuous across the fold (no seam at the gutter) */}
-      <BottomGradient uri={ctx.textGradient} width={W} height={spreadGradientHeight(ctx.plan, page.scene.sceneNumber)} />
+      <BottomGradient uri={ctx.textGradient} width={W} height={panoramaGradientHeight(ctx.plan, page.scene.sceneNumber)} />
       {overlay.role === "title" ? (
         <OverlayTitle text={overlay.text} fontSize={overlay.type.fontSize} leading={overlay.type.leading} />
       ) : overlay.mode === "gradient" ? (
@@ -370,53 +268,24 @@ function IllustrationTextPage({ page, ctx }: { page: PageOf<"illustration-text">
 
 // ── Text pages (galeria / pergamino / ventana / puente) ───────────────────
 
-/** Opening punctuation that travels with the initial ("¿Qué", "«Hola"); dashes (dialogue) get no drop cap. */
-const DROP_CAP_INITIAL = /^[¿¡«"“'‘]?[\p{L}\p{N}]/u;
-
-/**
- * Two-line drop cap. react-pdf cannot float text around a box, so the first two
- * lines are measured off (same breaker as the planner) and set beside the initial;
- * the rest continues at full width. The initial's cap height spans from line 1's
- * cap line to line 2's baseline, its baseline sitting exactly on line 2's.
- * The planner fits ventana bodies at a narrower width, so this never grows the block.
- * Falls back to plain paragraphs when the first paragraph is a single line.
- */
-function DropCapParagraphs({ text, style, width, color }: { text: string; style: Style & { fontSize: number; lineHeight: number }; width: number; color: string }) {
-  const initial = DROP_CAP_INITIAL.exec(text)?.[0];
-  if (!initial) return <Paragraphs text={text} style={style} />;
-  const fs = style.fontSize;
-  const pitch = fs * style.lineHeight;
-  const bodyFont = fontMetrics({ role: "body" });
-  const capVariant = { role: "display" as const, weight: 600 as const };
-  const capFont = fontMetrics(capVariant);
-  const capSize = (pitch + bodyFont.capHeight * fs) / capFont.capHeight;
-  // react-pdf baseline = line top + ascent·size → offset that puts the initial's baseline on line 2's
-  const capTop = pitch + bodyFont.ascent * fs - capFont.ascent * capSize;
-  const capWidth = measureTextWidth(initial, capSize, capVariant) + fs * 0.35;
-  const lineWidth = width - capWidth;
-  const { head, tail } = splitLeadingLines(text.slice(initial.length), 2, fs, lineWidth, { role: "body" });
-  // Only when the first paragraph itself fills both lines beside the initial: a one-line
-  // opening paragraph would leave the initial hanging into the blank gap below it.
-  // splitLeadingLines breaks early (safety margin), so a head it spreads over 2 lines can
-  // still render on ONE — require the head to overflow the REAL line width by a margin;
-  // borderline cases fall back to plain paragraphs (no drop cap beats an empty line).
-  const headOverflows = measureTextWidth(head, fs, { role: "body" }) > lineWidth * 1.04;
-  if (!head || head.includes("\n") || !headOverflows) return <Paragraphs text={text} style={style} />;
+/** Two-line drop cap as planned (layout.ts planDropCap); no plan → plain paragraphs. */
+function DropCapParagraphs({ text, style, cap, color }: { text: string; style: Style & { fontSize: number; lineHeight: number }; cap: DropCapPlan | null | undefined; color: string }) {
+  if (!cap) return <Paragraphs text={text} style={style} />;
+  const pitch = style.fontSize * style.lineHeight;
   return (
     <>
       <View style={{ flexDirection: "row" }}>
-        <View style={{ width: capWidth, height: 2 * pitch }}>
-          <Text style={{ position: "absolute", top: capTop, left: 0, fontFamily: FONTS.display, fontSize: capSize, fontWeight: 600, color, lineHeight: 1 }}>{initial}</Text>
+        <View style={{ width: cap.capWidth, height: 2 * pitch }}>
+          <Text style={{ position: "absolute", top: cap.capTop, left: 0, fontFamily: FONTS.display, fontSize: cap.capSize, fontWeight: 600, color, lineHeight: 1 }}>{cap.initial}</Text>
         </View>
         <View style={{ flex: 1 }}>
-          <Paragraphs text={head} style={style} />
+          <Paragraphs text={cap.head} style={style} />
         </View>
       </View>
-      {tail ? <Paragraphs text={tail} style={style} /> : null}
+      {cap.tail ? <Paragraphs text={cap.tail} style={style} /> : null}
     </>
   );
 }
-
 
 function TextPage({ page, ctx }: { page: PageOf<"text">; ctx: BookRenderContext }) {
   const { theme } = ctx;
@@ -471,7 +340,7 @@ function TextPage({ page, ctx }: { page: PageOf<"text">; ctx: BookRenderContext 
           <FrameBorder color={theme.ornamentColor} />
           <View style={column}>
             <Text style={{ ...titleStyle, marginBottom: 14 * k }}>{title}</Text>
-            <DropCapParagraphs text={page.body} style={bodyStyle} width={colW} color={theme.accent} />
+            <DropCapParagraphs text={page.body} style={bodyStyle} cap={page.dropCap} color={theme.accent} />
             <View style={{ marginTop: 14 * k, alignItems: "center" }}>
               <OrnamentalDivider color={theme.ornamentColor} width={70 * k} />
             </View>
@@ -590,6 +459,11 @@ function MapGamePanel({ panel, theme }: { panel: MapPanel; theme: TemplateTheme 
       <Text style={{ marginTop: MAP_PANEL.kickerGap, marginBottom: MAP_PANEL.titleGap, fontFamily: FONTS.display, fontWeight: 600, fontSize: z.title * s, lineHeight: 1.2, color: theme.titleColor }}>
         {panel.title}
       </Text>
+      {panel.howTo ? (
+        <Text style={{ marginTop: -MAP_PANEL.titleGap / 2, marginBottom: MAP_PANEL.howTo.gap, fontFamily: FONTS.body, fontSize: MAP_PANEL.howTo.size * s, lineHeight: MAP_PANEL.howTo.leading, color: COLORS.textMedium }}>
+          {panel.howTo}
+        </Text>
+      ) : null}
       {divider}
       {panel.items.map((item, i) => (
         <View key={i} style={{ flexDirection: "row", alignItems: "center", marginBottom: z.itemGap * s }}>
@@ -781,13 +655,6 @@ function PaletteIcon({ color, size }: { color: string; size: number }) {
   );
 }
 
-const COLOR_NAMES: Record<string, Record<string, string>> = {
-  es: { red: "Rojo", blue: "Azul", green: "Verde", purple: "Morado", orange: "Naranja", yellow: "Amarillo", pink: "Rosa", turquoise: "Turquesa" },
-  ca: { red: "Vermell", blue: "Blau", green: "Verd", purple: "Lila", orange: "Taronja", yellow: "Groc", pink: "Rosa", turquoise: "Turquesa" },
-  en: { red: "Red", blue: "Blue", green: "Green", purple: "Purple", orange: "Orange", yellow: "Yellow", pink: "Pink", turquoise: "Turquoise" },
-  fr: { red: "Rouge", blue: "Bleu", green: "Vert", purple: "Violet", orange: "Orange", yellow: "Jaune", pink: "Rose", turquoise: "Turquoise" },
-};
-
 function AboutReaderPage({ ctx }: { ctx: BookRenderContext }) {
   const { theme, input, images } = ctx;
   const { characterAge, characterCity, characterInterests, favoriteColor, favoriteCompanion, futureDream, characterGender } = input;
@@ -797,7 +664,7 @@ function AboutReaderPage({ ctx }: { ctx: BookRenderContext }) {
   const traits: { label: string; icon: "pets" | "palette" | "color"; color?: string }[] = [];
   if (favoriteColor) {
     const colorId = FAVORITE_COLORS.find((c) => c.color === favoriteColor)?.id;
-    const label = colorId ? (COLOR_NAMES[locale]?.[colorId] ?? COLOR_NAMES.es[colorId] ?? colorId) : null;
+    const label = colorId ? colorName(locale, colorId) : null;
     if (label) traits.push({ label, icon: "color", color: favoriteColor });
   }
   if (favoriteCompanion) traits.push({ label: sanitizePrintText(favoriteCompanion), icon: "pets" });
@@ -853,7 +720,7 @@ function AboutReaderPage({ ctx }: { ctx: BookRenderContext }) {
           <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 5, marginTop: 12 }}>
             {characterInterests.slice(0, 8).map((interest) => (
               <View key={interest} style={{ backgroundColor: theme.accentLight, borderRadius: 10, paddingHorizontal: 10, paddingVertical: 4 }}>
-                <Text style={{ fontFamily: FONTS.body, fontSize: 7, fontWeight: 600, color: theme.accent, letterSpacing: 0.3 }}>{sanitizePrintText(interest)}</Text>
+                <Text style={{ fontFamily: FONTS.body, fontSize: 7, fontWeight: 600, color: theme.accent, letterSpacing: 0.3 }}>{sanitizePrintText(interestLabel(locale, interest))}</Text>
               </View>
             ))}
           </View>

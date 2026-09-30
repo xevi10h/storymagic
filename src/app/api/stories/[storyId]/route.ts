@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { signPreviewProgress, signStoryRowImages } from "@/lib/storage/illustration-urls";
+import { ILLUSTRATION_URL_TTL, signIllustrationRefs, signPreviewProgress, signStoryRowImages, userAccess } from "@/lib/storage/illustration-urls";
+import { planBook } from "@/lib/book/book-plan.server";
+import { planAssetsOf, type BookPlanSource } from "@/lib/book/book-plan";
+import type { GeneratedStory } from "@/lib/ai/story-generator";
 
 export async function GET(
   request: Request,
@@ -54,5 +57,18 @@ export async function GET(
 
   // Children's images live in a private bucket: hand the owner 1-hour signed URLs.
   await signStoryRowImages(story, user.id);
-  return NextResponse.json(story, { headers: { "Cache-Control": "private, no-store" } });
+
+  // The printed book's plan (the PDF's planner + fonts), so the viewer shows exactly the printed
+  // pages — including the hero portrait (p27) and the adventure map (pp. 28–29) once they exist.
+  let book_plan = null;
+  const generated = story.generated_text as unknown as GeneratedStory | null;
+  const character = story.characters as unknown as { name?: string } | null;
+  if (generated?.scenes?.length && character?.name) {
+    const assets = planAssetsOf(generated);
+    const refs = [assets.finalHero?.url ?? null, assets.mapGame ? (assets.finalMap?.url ?? null) : null];
+    const signed = await signIllustrationRefs(refs, { ttl: ILLUSTRATION_URL_TTL.ui, allow: userAccess({ userId: user.id, storyIds: [story.id] }) });
+    const sign = (ref: string | null) => (ref ? (signed.get(ref) ?? null) : null);
+    book_plan = await planBook(story as unknown as BookPlanSource, { hero: sign(refs[0]), map: sign(refs[1]) });
+  }
+  return NextResponse.json({ ...story, book_plan }, { headers: { "Cache-Control": "private, no-store" } });
 }

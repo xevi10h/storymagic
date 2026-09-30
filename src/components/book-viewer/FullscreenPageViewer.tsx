@@ -2,7 +2,6 @@
 
 import { useState, useRef, useCallback, useEffect, useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
-import { getBookPageNumber } from "./types";
 import type { BookPage } from "./types";
 import MobileBookPage, { BOOK_LAYOUT_PX } from "./MobileBookPage";
 import { spreadCount, spreadIndexOf, spreadLabel, spreadPages, spreadStart } from "./spreads";
@@ -143,7 +142,6 @@ export default function FullscreenPageViewer({
       templateId={templateId}
       gender={gender}
       favoriteColor={favoriteColor}
-      pageNumber={pages[i].type === "scene" ? getBookPageNumber(pages, i) : undefined}
       onOrder={onOrder}
       scale={scale}
     />

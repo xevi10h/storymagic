@@ -5,7 +5,6 @@ import HTMLFlipBook from "react-pageflip";
 import { useTranslations } from "next-intl";
 import MobileBookPage, { BOOK_LAYOUT_PX } from "./MobileBookPage";
 import FullscreenPageViewer from "./FullscreenPageViewer";
-import { getBookPageNumber } from "./types";
 import type { BookViewerProps } from "./types";
 import { playPageTurnSound } from "./page-turn-sound";
 import { spreadCount, spreadIndexOf, spreadLabel, spreadPages } from "./spreads";
@@ -204,7 +203,6 @@ export default function MobileBookViewer({
                 templateId={templateId}
                 gender={gender}
                 favoriteColor={favoriteColor}
-                pageNumber={page.type === "scene" ? getBookPageNumber(pages, i) : undefined}
                 onEdit={onEdit}
                 onOrder={onOrder}
                 scale={scale}
