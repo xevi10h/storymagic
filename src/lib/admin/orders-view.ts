@@ -35,7 +35,7 @@ export interface AdminOrderRow {
   stripe_checkout_session_id: string | null;
   tracking_number: string | null;
   refunded_at: string | null;
-  /** Post-purchase offer the order was bought with (20260930190000_upsell_offers.sql). */
+  /** Post-purchase offer the order was bought with (20260930155000_upsell_offers.sql). */
   offer?: string | null;
   /** Joined: stories.title and characters.name (null once the customer erased their account). */
   story_title: string | null;

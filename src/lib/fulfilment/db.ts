@@ -69,7 +69,7 @@ export type OrderFulfilmentColumns = {
   // 20260930150000_admin_and_retention.sql
   fulfilment_requeued_at: string | null;
   gelato_reprint_count: number;
-  // 20260930190000_upsell_offers.sql
+  // 20260930155000_upsell_offers.sql
   offer: "pdf_upgrade" | "extra_copy_repeat" | null;
   offer_source_order_id: string | null;
 };

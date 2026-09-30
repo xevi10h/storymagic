@@ -50,7 +50,7 @@ character lock; per-stage resolution. (commits 5ebc2f1 → a883d60)
 
 ## Next steps from accounts & orders block (2026-09-30)
 - **Retention for guests who paid** (never auto-purged today): e.g. anonymise child data N months after delivery.
-- **Reorder discount** ("una para los abuelos") — today the normal price; decide price + consent copy for reorders.
+- **Follow-up upsell email** (e.g. 7 days after a PDF) — needs an opt-out mechanism (LSSI art. 21) before sending.
 - Admin: refund button + address change before print; customer "change address" request window.
 - Newsletter unsubscribe / communication preferences; saved addresses (Stripe collects them each time).
 - Reuse `PAID_ORDER_STATUSES` (src/lib/story-purchase.ts) in complete/verify/downloads/pipeline/admin (list still duplicated).

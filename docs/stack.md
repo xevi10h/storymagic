@@ -112,7 +112,9 @@ Seller on invoices: Xavier Huix Trenco (autónomo), NIF 41649433K, Carrer Aribau
 - Seller tax id `es_cif 41649433K` (printed on invoices).
 - Catalog = `STRIPE_CATALOG` in `src/lib/pricing.ts` (single source): 5 VAT-inclusive Prices with lookup
   keys `meapica_{digital_pdf,softcover,hardcover,extra_copy_softcover,extra_copy_hardcover}`
-  (9,90 / 34,90 / 49,90 / 19,90 / 29,90 €), tax codes `txcd_10302000` (digital book) and
+  (9,90 / 34,90 / 49,90 / 19,90 / 29,90 €) + `meapica_upgrade_{softcover,hardcover}` (25,00 / 40,00 €, PDF→print
+  upgrade; created in TEST 2026-09-30, **run the script with the live key at deploy** — until then the upgrade
+  offer is hidden, never mispriced), tax codes `txcd_10302000` (digital book) and
   `txcd_35010001` (children's book). Changing an amount: edit `STRIPE_CATALOG`, re-run the script
   (new Price takes the lookup key, old one archived). The server refuses to sell if a Price's
   amount/tax behaviour drifts from the code (`getStripeCatalog`).
@@ -187,6 +189,7 @@ key is derived from `SUPABASE_SERVICE_ROLE_KEY` (no new var).
 | 20260930130000 | `guest_merge.sql` (`merge_guest_account` RPC, service role only) | before the deploy (additive) |
 | 20260930140000 | `order_notifications.sql` (notice email claims, `disputed_at`, `fulfilment_hold_reason`) | before the deploy (code selects them) |
 | 20260930150000 | `admin_and_retention.sql` (requeue/reprint columns, `order_status_history`, `admin_audit_log`, `account_erasures`) | before the deploy |
+| 20260930155000 | `upsell_offers.sql` (`orders.offer`, `offer_source_order_id`, index user_id+story_id) | before the deploy (checkout writes them) |
 | 20260930160000 | `security_hardening.sql` (no browser writes, locked showcase, book-pdfs server-only, orders FKs SET NULL, newsletter/rate_limits closed) | **after** the deploy |
 | 20260930170000 | `daily_preview_cap.sql` (atomic per-day counter RPC; code falls back to an approximate count without it) | after the deploy |
 | 20260930180000 | `paywall_columns.sql` (revoke client read of `stories.generated_text` / `story_illustrations.prompt_used`; drop owner direct-read storage policy) | **after** the deploy |

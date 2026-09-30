@@ -11,7 +11,8 @@
 >    **login is broken for customers until this is done**); Email OTP length 6; manual linking ON;
 >    Site URL `https://meapica.com`; redirect allow-list `https://meapica.com/**`, `https://www.meapica.com/**`,
 >    `http://localhost:3013/**`; templates "Magic Link" and "Change Email Address" from `supabase/templates/`.
-> 2. Apply migrations 20260930130000 (guest merge), 20260930140000 (order notices), 20260930150000 (admin + retention).
+> 2. Apply migrations 20260930130000 (guest merge), 20260930140000 (order notices), 20260930150000 (admin + retention),
+>    20260930155000 (upsell offers).
 > 3. Cloudflare → Turnstile: create a Managed widget (hostnames meapica.com, www.meapica.com, localhost).
 > 4. Vercel env: `ADMIN_EMAILS=admin@casmar.tech`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY` (build-time), optional
 >    `DAILY_PREVIEW_CAP` (default 300/day, 0 = off); `OPS_ALERT_EMAIL` set. Deploy the code.
@@ -20,7 +21,8 @@
 >    20260930180000 (paywall: clients can't read `generated_text` / `prompt_used`).
 > 6. Only once the site key is live: Supabase → Auth → Attack Protection → CAPTCHA = Turnstile + secret key
 >    (enabled earlier, every login and guest start fails).
-> 7. Stripe webhook (live + test): add `charge.dispute.created` + `checkout.session.async_payment_failed`.
+> 7. Stripe live: re-run `scripts/stripe-setup-catalog.mts` with the live key (`--dry-run` first): creates the
+>    upgrade Prices AND adds `charge.dispute.created` + `checkout.session.async_payment_failed` to the webhook.
 > 8. Smoke: full creation flow as guest, email login + merge, a test purchase, `/admin`, purge cron `?dry_run=1`,
 >    an unpaid preview returns only the free pages.
 > Open: retention rule for guests who paid (never auto-purged); reorder discount (normal price now);

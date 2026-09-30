@@ -20,7 +20,7 @@ import { upsellForStory, type UpsellOffer, type UpsellOrderRow } from "@/lib/ups
 
 export interface NotifyOrderParams {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  supabase: any; // service-role client (for the auth.admin lookup) OR user-scoped when `email` is given
+  supabase: any; // service-role client: stories.generated_text is not readable with a user session (20260930180000)
   event: OrderEmailEvent;
   storyId: string;
   userId: string;

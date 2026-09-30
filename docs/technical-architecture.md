@@ -137,6 +137,7 @@ orders
 ├── refunded_at (a goodwill refund on a shipped/delivered order only sets this; status keeps its history)
 ├── refund/cancel/delay/problem/excluded_area/tracking_email_sent_at (exactly-once customer notices, 20260930140000)
 ├── disputed_at / fulfilment_hold_reason ('dispute' = chargeback: nothing generated/printed until an operator re-sends from /admin)
+├── offer / offer_source_order_id ('pdf_upgrade' | 'extra_copy_repeat' + the order that earned it, 20260930155000)
 └── fulfilment_requeued_at / gelato_reprint_count (admin re-queue restarts the cron windows; reprints use Gelato ref meapica-{id}-r{n}, 20260930150000)
 RLS: owners SELECT only. Browsers can't write any product table (20260930160000): every write goes through an API route with the service role after an ownership check.
 
