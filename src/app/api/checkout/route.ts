@@ -83,7 +83,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "withdrawal_consent_required" }, { status: 400 });
     }
 
-    const { data: story, error: storyError } = await supabase
+    // Service role + explicit owner filter (clients cannot read stories.generated_text).
+    const { data: story, error: storyError } = await createFulfilmentClient()
       .from("stories")
       .select("id, status, locale, generated_text")
       .eq("id", storyId)

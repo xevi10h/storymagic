@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createFulfilmentClient } from "@/lib/fulfilment/db";
+import { PAID_ORDER_STATUSES } from "@/lib/preview-access";
 import { bookPdfFilename, getSignedBookDownloadUrl } from "@/lib/supabase/storage";
 
-const PAID_STATUSES = ["paid", "producing", "shipped", "delivered"];
+const PAID_STATUSES = [...PAID_ORDER_STATUSES];
 
 /**
  * Owner download of the customer PDF: `{ url }`, a 10-minute signed Storage URL
@@ -19,7 +20,8 @@ export async function GET(_request: Request, { params }: { params: Promise<{ sto
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { data: story } = await supabase
+  // Service role + explicit owner filter (clients cannot read stories.generated_text).
+  const { data: story } = await createFulfilmentClient()
     .from("stories")
     .select("id, user_id, title, pdf_url, generated_text")
     .eq("id", storyId)

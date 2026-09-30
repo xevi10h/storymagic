@@ -1,8 +1,26 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createFulfilmentClient } from "@/lib/fulfilment/db";
+import { PAID_ORDER_STATUSES } from "@/lib/preview-access";
 import { ILLUSTRATION_URL_TTL, signIllustrationRefs, userAccess } from "@/lib/storage/illustration-urls";
 
-const LIVE_ORDER_STATUSES = new Set(["paid", "producing", "shipped", "delivered"]);
+const LIVE_ORDER_STATUSES = new Set<string>(PAID_ORDER_STATUSES);
+
+/**
+ * The library only shows a story's title and synopsis (both part of the free
+ * preview): the rest of generated_text (every scene's text) never leaves the server.
+ */
+function withStorySummary<T extends { generated_text?: unknown }>(story: T): Omit<T, "generated_text"> & { generated_text: { bookTitle?: string; synopsis?: string } | null } {
+  const g = story.generated_text as { bookTitle?: unknown; synopsis?: unknown } | null | undefined;
+  const summary =
+    g && typeof g === "object"
+      ? {
+          ...(typeof g.bookTitle === "string" ? { bookTitle: g.bookTitle } : {}),
+          ...(typeof g.synopsis === "string" ? { synopsis: g.synopsis } : {}),
+        }
+      : null;
+  return { ...story, generated_text: summary };
+}
 
 export async function GET() {
   const supabase = await createClient();
@@ -15,14 +33,19 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // Service role + explicit owner filters: clients have no SELECT grant on
+  // stories.generated_text (paywall, migration 20260930170000_paywall_columns.sql).
+  // Only its title and synopsis leave this route (storySummary).
+  const db = createFulfilmentClient();
+
   // Run all three queries in parallel for faster response
   const [storiesResult, ordersResult, charactersResult] = await Promise.all([
-    supabase
+    db
       .from("stories")
       .select("id, title, template_id, creation_mode, status, pdf_url, created_at, generated_text, characters(name, gender, age)")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false }),
-    supabase
+    db
       .from("orders")
       .select(
         "id, format, status, subtotal, total, addons, tracking_number, tracking_url, shipping_name, shipping_address, created_at, story_id, invoice_url, download_token, refunded_at, gelato_status, stories(title, status, pdf_url, generated_text, characters(name))",
@@ -31,7 +54,7 @@ export async function GET() {
       // Abandoned checkouts (pending / expired) are not orders to the customer.
       .not("status", "in", "(pending,cancelled)")
       .order("created_at", { ascending: false }),
-    supabase
+    db
       .from("characters")
       .select(`
         id, name, gender, age, hair_color, skin_tone, hairstyle, interests, avatar_url, created_at,
@@ -88,9 +111,13 @@ export async function GET() {
 
   return NextResponse.json(
     {
-      stories: storiesResult.data ?? [],
-      orders,
-      characters: characters.map((c) => ({ ...c, avatar_url: c.avatar_url ? (signed.get(c.avatar_url) ?? null) : null })),
+      stories: (storiesResult.data ?? []).map(withStorySummary),
+      orders: orders.map((o) => ({ ...o, stories: o.stories ? withStorySummary(o.stories) : null })),
+      characters: characters.map((c) => ({
+        ...c,
+        stories: (c.stories ?? []).map(withStorySummary),
+        avatar_url: c.avatar_url ? (signed.get(c.avatar_url) ?? null) : null,
+      })),
     },
     { headers: { "Cache-Control": "private, no-store" } },
   );

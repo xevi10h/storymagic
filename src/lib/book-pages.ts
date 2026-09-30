@@ -4,6 +4,7 @@
 import type { BookPage } from "@/components/book-viewer/types";
 import { SCENE_LAYOUT_PAIRS, artCarriesTitle, getActLabel, getSpreadType } from "@/components/book-viewer/types";
 import type { GeneratedStory } from "@/lib/ai/story-generator";
+import { FREE_PREVIEW_SCENES } from "@/lib/preview-access";
 
 export interface BookPageSource {
   id: string;
@@ -29,8 +30,11 @@ export interface BookPageSource {
   story_illustrations: { scene_number: number; image_url: string | null; status: string }[];
 }
 
-/** Preview stage: the first N scenes are shown in full, then one locked teaser page. */
-export const PREVIEW_CLEAR_SCENES = 3;
+/**
+ * Preview stage: the first N scenes are shown in full, then one locked teaser page.
+ * Same constant the APIs redact to (lib/preview-access.ts): the server never sends more.
+ */
+export const PREVIEW_CLEAR_SCENES = FREE_PREVIEW_SCENES;
 /** 3 header pages + clear scenes × 2 pages + 1 locked teaser = 10. */
 export const PREVIEW_PAGE_COUNT = 3 + PREVIEW_CLEAR_SCENES * 2 + 1;
 

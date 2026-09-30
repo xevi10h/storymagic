@@ -1,6 +1,8 @@
 // Pricing in cents (EUR)
 // Shared between client and server — no server-only imports here
 
+import { FREE_PREVIEW_SCENES } from "./preview-access";
+
 // Display labels are in i18n files (src/messages/{locale}.json → "pricing" section).
 // Labels here are only used as Stripe line-item names (language-neutral English).
 
@@ -148,7 +150,8 @@ export function formatPrice(cents: number, locale: string): string {
 // Number of scenes to illustrate for the free preview.
 // Kept at 3 (was 4) to shorten preview latency + cost while still showing enough
 // character consistency to convert. The remaining scenes generate after payment.
-export const PREVIEW_ILLUSTRATION_COUNT = 3;
+// Same constant the preview UI and the APIs' paywall use (lib/preview-access.ts).
+export const PREVIEW_ILLUSTRATION_COUNT = FREE_PREVIEW_SCENES;
 
 // Total scenes in a story
 export const TOTAL_SCENE_COUNT = 12;
