@@ -7,7 +7,7 @@
 // If the dedupe RPC is unavailable (migration not applied yet) we still send: a
 // duplicate alert is better than a silent failure.
 
-import { sendEmail } from "@/lib/email/send";
+import { getSiteUrl, sendEmail } from "@/lib/email/send";
 import { escapeHtml, renderEmailLayout } from "@/lib/email/layout";
 import type { FulfilmentClient } from "./db";
 import type { ProviderUnavailableError } from "./provider-errors";
@@ -20,6 +20,11 @@ export interface OperatorAlert {
   lines: string[];
   /** Minimum seconds between two emails with the same key (default 1 hour). */
   dedupeSeconds?: number;
+}
+
+/** Operator panel page of an order: every manual fix (re-send to Gelato, reprint, re-send email, retry generation) lives there. */
+export function adminOrderUrl(orderId: string): string {
+  return `${getSiteUrl()}/admin/orders/${orderId}`;
 }
 
 function operatorEmail(): string | undefined {

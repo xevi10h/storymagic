@@ -207,3 +207,39 @@ export function isOrderForActiveStripeMode(order: { stripe_checkout_session_id: 
   const live = process.env.STRIPE_ENVIRONMENT?.trim() === "live";
   return (order.stripe_checkout_session_id ?? "").startsWith(live ? "cs_live_" : "cs_test_");
 }
+
+// ── Operator re-queue / reprint ──────────────────────────────────────────────
+
+/**
+ * Age that governs automatic processing: measured from the purchase, or from the
+ * last operator re-queue (/admin "Reenviar a Gelato"), whichever is later. This is
+ * what lets an order of any age be (re)sent without the cron escalating it.
+ */
+export function fulfilmentAgeHours(
+  order: { created_at: string; fulfilment_requeued_at?: string | null },
+  now: number,
+): number {
+  const created = new Date(order.created_at).getTime();
+  const requeued = order.fulfilment_requeued_at ? new Date(order.fulfilment_requeued_at).getTime() : Number.NaN;
+  const start = Number.isFinite(requeued) ? Math.max(created, requeued) : created;
+  return (now - start) / 3_600_000;
+}
+
+const GELATO_REFERENCE_PREFIX = "meapica-";
+
+/**
+ * Gelato orderReferenceId of an order. Reprints get a suffix: Gelato does not
+ * dedupe references and the submitter adopts any live Gelato order carrying the
+ * reference, so a reprint must not reuse the original one.
+ */
+export function gelatoOrderReference(orderId: string, reprintCount: number | null | undefined): string {
+  const n = Math.max(0, Math.floor(reprintCount ?? 0));
+  return n > 0 ? `${GELATO_REFERENCE_PREFIX}${orderId}-r${n}` : `${GELATO_REFERENCE_PREFIX}${orderId}`;
+}
+
+/** Local order id (and reprint number) from a Gelato orderReferenceId, or null if it is not ours. */
+export function parseGelatoOrderReference(reference: string | null | undefined): { orderId: string; reprint: number } | null {
+  const match = /^meapica-([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:-r(\d+))?$/i.exec(reference ?? "");
+  if (!match) return null;
+  return { orderId: match[1].toLowerCase(), reprint: match[2] ? Number(match[2]) : 0 };
+}

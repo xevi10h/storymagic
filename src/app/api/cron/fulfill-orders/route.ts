@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
 import { createFulfilmentClient } from "@/lib/fulfilment/db";
-import { alertOperator } from "@/lib/fulfilment/alerts";
+import { adminOrderUrl, alertOperator } from "@/lib/fulfilment/alerts";
 import { applyGelatoStatus } from "@/lib/fulfilment/gelato-status";
-import { GELATO_MAX_ATTEMPTS, GELATO_STUCK_PRODUCING_HOURS, isOrderForActiveStripeMode } from "@/lib/fulfilment/logic";
+import {
+  fulfilmentAgeHours,
+  GELATO_MAX_ATTEMPTS,
+  GELATO_STUCK_PRODUCING_HOURS,
+  isOrderForActiveStripeMode,
+} from "@/lib/fulfilment/logic";
 import { getPrintOrder } from "@/lib/gelato/orders";
 
 /**
@@ -25,7 +30,11 @@ export const dynamic = "force-dynamic";
 
 const MAX_PARALLEL = 5; // stories advanced per tick (each in its own invocation)
 const CALL_TIMEOUT_MS = 290_000; // /complete returns within ~270 s
-/** Only auto-process recent orders; older unfinished ones are escalated, never auto-spent on. */
+/**
+ * Only auto-process recent orders; older unfinished ones are escalated, never auto-spent on.
+ * "Recent" counts from the purchase OR from an operator re-queue in /admin
+ * (orders.fulfilment_requeued_at), so a manual re-send works for an order of any age.
+ */
 const AUTO_PROCESS_MAX_AGE_HOURS = 48;
 /** Escalate still-unfinished orders up to this age (older rows are legacy/test data). */
 const ESCALATE_MAX_AGE_HOURS = 7 * 24;
@@ -69,10 +78,13 @@ export async function GET(request: Request) {
   // Paid = not yet handed to Gelato (physical) or not yet delivered digitally.
   const { data: orders, error } = await admin
     .from("orders")
-    .select("id, story_id, format, created_at, stripe_checkout_session_id, gelato_submit_attempts, gelato_next_attempt_at, fulfilment_alerted_at")
+    .select(
+      "id, story_id, format, created_at, fulfilment_requeued_at, stripe_checkout_session_id, gelato_submit_attempts, gelato_next_attempt_at, fulfilment_alerted_at",
+    )
     .eq("status", "paid")
     .is("gelato_order_id", null)
-    .gte("created_at", escalateSince)
+    .not("story_id", "is", null)
+    .or(`created_at.gte."${escalateSince}",fulfilment_requeued_at.gte."${escalateSince}"`)
     .order("created_at", { ascending: true })
     .limit(50);
 
@@ -89,8 +101,7 @@ export async function GET(request: Request) {
       skipped.push({ orderId: order.id, reason: "other Stripe mode / mock order" });
       continue;
     }
-    const ageHours = (now - new Date(order.created_at).getTime()) / 3_600_000;
-    if (ageHours > AUTO_PROCESS_MAX_AGE_HOURS) {
+    if (fulfilmentAgeHours(order, now) > AUTO_PROCESS_MAX_AGE_HOURS) {
       escalate.push(order);
       continue;
     }
@@ -102,7 +113,7 @@ export async function GET(request: Request) {
       skipped.push({ orderId: order.id, reason: "gelato backoff" });
       continue;
     }
-    if (!candidateStories.includes(order.story_id)) candidateStories.push(order.story_id);
+    if (order.story_id && !candidateStories.includes(order.story_id)) candidateStories.push(order.story_id);
   }
 
   // Story-level filters: lease held by a live run, backoff after a failure, cap.
@@ -132,7 +143,7 @@ export async function GET(request: Request) {
           lines: [
             `Story status: ${story.status}`,
             `Last error: ${story.completion_last_error ?? "none recorded"}`,
-            "Fix the cause, then reset stories.completion_attempts = 0 to resume.",
+            "Fix the cause, then use \"Reintentar generación\" on the order in the admin panel (/admin, search the story id).",
           ],
           dedupeSeconds: 24 * 3600,
         });
@@ -152,7 +163,8 @@ export async function GET(request: Request) {
       lines: [
         `Story: ${order.story_id} · format: ${order.format} · created: ${order.created_at}`,
         `Gelato attempts: ${order.gelato_submit_attempts}`,
-        "Automatic processing stopped for this order. Investigate, then POST /api/stories/{storyId}/complete with the cron bearer to resume.",
+        "Automatic processing stopped for this order. Investigate, then use \"Reenviar a Gelato\" (or \"Reintentar generación\") in the admin panel: it re-queues the order for another 48 h.",
+        `Admin: ${adminOrderUrl(order.id)}`,
       ],
       dedupeSeconds: 24 * 3600,
     });
@@ -201,10 +213,10 @@ async function reconcileGelatoOrders(admin: ReturnType<typeof createFulfilmentCl
   const since = new Date(now - RECONCILE_MAX_AGE_DAYS * 24 * 3_600_000).toISOString();
   const { data: active, error } = await admin
     .from("orders")
-    .select("id, story_id, status, created_at, gelato_order_id, gelato_status, stripe_checkout_session_id")
+    .select("id, story_id, status, created_at, fulfilment_requeued_at, gelato_order_id, gelato_status, stripe_checkout_session_id")
     .in("status", ["producing", "shipped"])
     .not("gelato_order_id", "is", null)
-    .gte("created_at", since)
+    .or(`created_at.gte."${since}",fulfilment_requeued_at.gte."${since}"`)
     .limit(100);
   if (error) {
     console.error("[cron/fulfill] reconcile query failed:", error.message);
@@ -231,7 +243,8 @@ async function reconcileGelatoOrders(admin: ReturnType<typeof createFulfilmentCl
       console.error(`[cron/fulfill] reconcile ${order.gelato_order_id} failed:`, err);
     }
 
-    const ageHours = (now - new Date(order.created_at).getTime()) / 3_600_000;
+    // A reprint counts from its re-queue, not from the original purchase.
+    const ageHours = fulfilmentAgeHours(order, now);
     const shipped = ["shipped", "in_transit", "delivered"].includes(remoteStatus);
     if (order.status === "producing" && !shipped && ageHours > GELATO_STUCK_PRODUCING_HOURS) {
       result.stuck++;
@@ -241,6 +254,7 @@ async function reconcileGelatoOrders(admin: ReturnType<typeof createFulfilmentCl
         lines: [
           `Gelato order ${order.gelato_order_id} · Gelato status: ${remoteStatus || "unknown"} · story ${order.story_id}`,
           "Check it in the Gelato dashboard (approval pending? file problem? production delay?) and tell the customer if it will be late.",
+          `Admin: ${adminOrderUrl(order.id)}`,
         ],
         dedupeSeconds: 48 * 3600,
       });

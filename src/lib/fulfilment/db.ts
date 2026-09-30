@@ -57,6 +57,9 @@ export type OrderFulfilmentColumns = {
   stripe_invoice_id: string | null;
   invoice_url: string | null;
   refunded_at: string | null;
+  // 20260930150000_admin_and_retention.sql
+  fulfilment_requeued_at: string | null;
+  gelato_reprint_count: number;
 };
 
 export type FulfilmentDatabase = Omit<Database, "public"> & {
