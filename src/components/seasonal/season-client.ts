@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { parseDateOverride, spainToday } from "@/lib/shipping";
+import { DISMISS_KEY } from "./season-scripts";
 
 // Client helpers shared by the seasonal banner and the /christmas-delivery page.
 
@@ -43,8 +44,9 @@ export function useSeasonToday(serverToday: string | null): string | null {
 }
 
 // ── Banner dismissal (localStorage, with an in-memory fallback) ──────────────
+// Before hydration, DISMISSED_HEAD_SCRIPT + SeasonalBanner's <style> hide a
+// closed banner; after it, this store unmounts it.
 
-const DISMISS_KEY = "meapica.seasonBanner.dismissed";
 const DISMISS_EVENT = "meapica:season-banner";
 let memoryDismissed: string | null = null;
 
@@ -65,9 +67,9 @@ function subscribeToDismissed(onChange: () => void): () => void {
   };
 }
 
-/** The dismissed banner id; undefined during SSR/hydration (render nothing yet). */
-export function useDismissedBanner(): string | null | undefined {
-  return useSyncExternalStore(subscribeToDismissed, readDismissed, () => undefined);
+/** The dismissed banner id; null during SSR/hydration (render it, CSS hides a closed one). */
+export function useDismissedBanner(): string | null {
+  return useSyncExternalStore(subscribeToDismissed, readDismissed, () => null);
 }
 
 export function dismissBanner(id: string): void {

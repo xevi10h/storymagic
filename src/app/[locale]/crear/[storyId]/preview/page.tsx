@@ -24,6 +24,7 @@ import { getBookColors } from "@/lib/template-colors";
 import SendPreviewEmail from "@/components/crear/SendPreviewEmail";
 import { clearStoredDraft, patchStoredDraft, readStoredDraft } from "@/lib/creation-flow";
 import BookViewerSwitch from "@/components/book-viewer/BookViewerSwitch";
+import { spreadIndexOf, spreadStart } from "@/components/book-viewer/spreads";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import type { GeneratedStory } from "@/lib/ai/story-generator";
 import { PREVIEW_CLEAR_SCENES, buildBookPages, toPreviewPages } from "@/lib/book-pages";
@@ -198,8 +199,8 @@ export default function PreviewPage() {
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (e.target instanceof HTMLElement && e.target.closest("input, textarea, select, [contenteditable='true']")) return;
-      if (e.key === "ArrowLeft") setCurrentPage((p) => Math.max(0, p - 1));
-      if (e.key === "ArrowRight") setCurrentPage((p) => Math.min(totalPages - 1, p + 1));
+      if (e.key === "ArrowLeft") setCurrentPage((p) => spreadStart(Math.max(0, spreadIndexOf(p, totalPages) - 1)));
+      if (e.key === "ArrowRight") setCurrentPage((p) => Math.min(totalPages - 1, spreadStart(spreadIndexOf(p, totalPages) + 1)));
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
@@ -494,7 +495,21 @@ export default function PreviewPage() {
   // Purchasable preview: two columns on desktop (book | sticky buy panel).
   const showBuy = isPreviewMode && !isOutdatedPreview;
   const isDigital = format === "digital_pdf";
-  const spineColor = getBookColors(story.template_id, story.characters.gender, story.characters.favorite_color).gradientStart;
+  const bookColors = getBookColors(story.template_id, story.characters.gender, story.characters.favorite_color);
+  const spineColor = bookColors.gradientStart;
+  // Back cover of the 3D mockup, from the same data as the printed one (closing art or the cover)
+  const backPage = pages.find((p) => p.type === "back");
+  const mockupBack =
+    backPage?.type === "back"
+      ? {
+          imageUrl: backPage.coverImageUrl,
+          synopsis: backPage.synopsis,
+          subtitle: t("personalizedStory"),
+          titleColor: bookColors.titleColor,
+          accentColor: bookColors.accent,
+          ornamentColor: bookColors.ornamentColor,
+        }
+      : undefined;
   const editLink = (panel: EditPanel) => {
     const EditLink = (chunks: React.ReactNode) => (
       <button
@@ -577,18 +592,18 @@ export default function PreviewPage() {
                   onEdit={isPreviewMode ? setEditPanel : undefined}
                   onOrder={showBuy ? scrollToCheckout : undefined}
                   hidePageCount={isPreviewMode}
+                  actions={
+                    isPreviewMode ? (
+                      <SharePreviewButton
+                        storyId={storyId}
+                        childName={childName}
+                        className="inline-flex items-center justify-center gap-1.5 rounded-full border border-border-light bg-white px-4 py-1.5 text-xs font-semibold text-create-text-dark transition-colors hover:border-create-primary hover:text-create-primary disabled:opacity-60"
+                      />
+                    ) : undefined
+                  }
                 />
               </ErrorBoundary>
             </div>
-            {isPreviewMode && (
-              <div className="mt-3 flex justify-center">
-                <SharePreviewButton
-                  storyId={storyId}
-                  childName={childName}
-                  className="inline-flex items-center justify-center gap-1.5 rounded-full border border-border-light bg-white px-4 py-1.5 text-xs font-semibold text-text-muted transition-colors hover:border-create-primary hover:text-create-primary disabled:opacity-60"
-                />
-              </div>
-            )}
             {isPreviewMode && (
               <p className="mt-3 text-center text-xs text-create-text-sub">
                 {tPurchase.rich("editLinks", {
@@ -610,6 +625,7 @@ export default function PreviewPage() {
                 title={currentTitle}
                 coverUrl={story.cover_image_url}
                 spineColor={spineColor}
+                back={mockupBack}
                 compact={isWide}
                 format={format}
                 onChooseFormat={chooseFormat}
@@ -705,40 +721,41 @@ export default function PreviewPage() {
         </section>
       )}
 
-      {/* Secondary: decide later (save / email it) + short FAQ */}
+      {/* Secondary: decide later (save / share / email — three equal options) + short FAQ */}
       {showBuy && (
         <div className="mx-auto max-w-[1360px] px-4 pb-16 lg:px-8">
-          <div className="mx-auto max-w-2xl space-y-10 border-t border-create-neutral pt-8">
-            <section aria-labelledby="save-later-title">
-              <h2 id="save-later-title" className="font-display text-lg font-bold text-secondary">
+          <div className="mx-auto max-w-4xl space-y-12 border-t border-create-neutral pt-10">
+            <section aria-labelledby="save-later-title" data-testid="decide-later">
+              <h2 id="save-later-title" className="font-display text-xl font-bold text-secondary">
                 {tPurchase("secondaryTitle")}
               </h2>
-              <div className="mt-3 flex flex-col gap-1.5 sm:flex-row sm:items-center sm:gap-4">
-                {needsAccount ? (
+              <ul className="mt-4 grid divide-y divide-create-neutral overflow-hidden rounded-2xl bg-white ring-1 ring-create-neutral md:grid-cols-3 md:divide-x md:divide-y-0">
+                <LaterOption
+                  icon={needsAccount ? "bookmark_add" : "bookmark_added"}
+                  title={needsAccount ? tPurchase("later.saveTitle") : tPurchase("later.savedTitle")}
+                  body={needsAccount ? tPurchase("later.saveBody") : tPurchase("later.savedBody")}
+                >
                   <Link
-                    href={`/auth/signup?next=/crear/${storyId}/preview`}
-                    className="inline-flex items-center gap-2 self-start rounded-xl border-2 border-create-neutral bg-white px-4 py-2.5 text-sm font-bold text-secondary transition-colors hover:border-create-primary hover:text-create-primary"
+                    href={needsAccount ? `/auth/signup?next=/crear/${storyId}/preview` : "/dashboard"}
+                    className={LATER_BUTTON}
+                    data-testid="later-save"
                   >
-                    <span aria-hidden className="material-symbols-outlined text-lg">bookmark_add</span>
-                    {t("saveForLater")}
+                    {needsAccount ? tPurchase("later.saveAction") : tPurchase("later.savedAction")}
                   </Link>
-                ) : (
-                  <Link
-                    href="/dashboard"
-                    className="inline-flex items-center gap-2 self-start rounded-xl border-2 border-create-neutral bg-white px-4 py-2.5 text-sm font-bold text-secondary transition-colors hover:border-create-primary hover:text-create-primary"
-                  >
-                    <span aria-hidden className="material-symbols-outlined text-lg">bookmark_added</span>
-                    {t("savedGoToLibrary")}
-                  </Link>
-                )}
-                <p className="text-xs text-text-muted">
-                  {needsAccount ? t("saveForLaterHintAnonymous") : t("saveForLaterHintLoggedIn")}
-                </p>
-              </div>
-              <div className="mt-4">
-                <SharePreviewButton storyId={storyId} childName={childName} showHint />
-              </div>
-              <SendPreviewEmail storyId={storyId} childName={story.characters.name} />
+                </LaterOption>
+                <LaterOption icon="ios_share" title={tPurchase("later.shareTitle")} body={tPurchase("later.shareBody")}>
+                  <SharePreviewButton storyId={storyId} childName={childName} fullWidth className={LATER_BUTTON} />
+                </LaterOption>
+                <LaterOption icon="mail" title={tPurchase("later.emailTitle")} body={tPurchase("later.emailBody")}>
+                  <SendPreviewEmail
+                    storyId={storyId}
+                    childName={childName}
+                    variant="inline"
+                    sendLabel={tPurchase("later.emailSend")}
+                    buttonClassName={LATER_BUTTON_INLINE}
+                  />
+                </LaterOption>
+              </ul>
             </section>
             <PreviewFaq />
           </div>
@@ -797,5 +814,28 @@ export default function PreviewPage() {
         </section>
       )}
     </div>
+  );
+}
+
+/** Secondary action in the "¿Lo decides más tarde?" options (same weight for all three). */
+const LATER_BUTTON_BASE =
+  "inline-flex h-11 items-center justify-center gap-1.5 rounded-xl border-2 border-create-neutral bg-white px-4 text-sm font-bold text-secondary transition-colors hover:border-create-primary hover:text-create-primary disabled:opacity-60";
+const LATER_BUTTON = `${LATER_BUTTON_BASE} w-full`;
+/** The email option's button, beside its field */
+const LATER_BUTTON_INLINE = `${LATER_BUTTON_BASE} shrink-0`;
+
+/** One of the three "decide later" options: icon + title, one line, action at the foot. */
+function LaterOption({ icon, title, body, children }: { icon: string; title: string; body: string; children: React.ReactNode }) {
+  return (
+    <li className="flex flex-col p-5 sm:p-6">
+      <div className="flex items-center gap-3">
+        <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-create-primary/10 text-create-primary">
+          <span className="material-symbols-outlined text-[22px]">{icon}</span>
+        </span>
+        <h3 className="font-display text-base font-bold leading-tight text-create-text-dark">{title}</h3>
+      </div>
+      <p className="mt-2.5 text-sm leading-relaxed text-create-text-sub">{body}</p>
+      <div className="mt-4 md:mt-auto md:pt-5">{children}</div>
+    </li>
   );
 }

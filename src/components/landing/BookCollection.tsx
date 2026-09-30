@@ -1,317 +1,186 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-import Image from "next/image";
-import { useTranslations, useLocale } from "next-intl";
-import { Link } from "@/i18n/navigation";
+import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent, type RefObject } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { PRICING, formatPrice } from "@/lib/pricing";
-import { STORY_TEMPLATES } from "@/lib/create-store";
+import { ChoiceChip, Heading, cx, focusRing } from "@/components/ui";
+import BookCollectionCard from "./BookCollectionCard";
+import { AGE_FILTERS, buildCatalog, fitsAgeFilter, type AgeFilter, type ShowcaseBook } from "./BookCollectionData";
 
-interface ShowcaseBook {
-  id: string;
-  templateId: string;
-  title: string;
-  coverImage: string | null;
-  characterName: string;
-  characterAge: number;
-  totalPages: number;
+const FILTER_LABEL_KEYS: Record<AgeFilter, "filterAll" | "filter2to4" | "filter5to7" | "filter8to12"> = {
+  all: "filterAll",
+  "2-4": "filter2to4",
+  "5-7": "filter5to7",
+  "8-12": "filter8to12",
+};
+
+/** Real books painted on the platform, locale first; any failure falls back to template art. */
+async function fetchShowcase(locale: string): Promise<ShowcaseBook[]> {
+  try {
+    const localeRes = await fetch(`/api/showcase?locale=${locale}`);
+    if (localeRes.ok) {
+      const data: ShowcaseBook[] = await localeRes.json();
+      if (data.length > 0) return data;
+    }
+    const res = await fetch("/api/showcase");
+    return res.ok ? ((await res.json()) as ShowcaseBook[]) : [];
+  } catch {
+    return [];
+  }
 }
 
-type AgeFilter = "all" | "2-4" | "5-7" | "8-12";
+/** Whether the carousel can scroll further left/right (arrows hide when it can't). */
+function useScrollEdges(ref: RefObject<HTMLDivElement | null>, contentKey: string) {
+  const [edges, setEdges] = useState({ left: false, right: false });
+  const update = useCallback(() => {
+    const el = ref.current;
+    if (!el) return;
+    const left = el.scrollLeft > 4;
+    const right = el.scrollLeft + el.clientWidth < el.scrollWidth - 4;
+    setEdges((prev) => (prev.left === left && prev.right === right ? prev : { left, right }));
+  }, [ref]);
 
-function getAgeFilter(age: number): AgeFilter {
-  if (age <= 4) return "2-4";
-  if (age <= 7) return "5-7";
-  return "8-12";
-}
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    update();
+    el.addEventListener("scroll", update, { passive: true });
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => {
+      el.removeEventListener("scroll", update);
+      ro.disconnect();
+    };
+  }, [ref, update, contentKey]);
 
-function templateMatchesFilter(templateId: string, filter: AgeFilter): boolean {
-  if (filter === "all") return true;
-  const template = STORY_TEMPLATES.find((t) => t.id === templateId);
-  if (!template) return true;
-  const [min, max] = filter.split("-").map(Number);
-  // Use midpoint of template's age range to assign it to a single filter bucket
-  const midpoint = (template.ageMin + template.ageMax) / 2;
-  return midpoint >= min && midpoint <= max;
+  return edges;
 }
 
 export default function BookCollection() {
   const t = useTranslations("bookCollection");
-  const tPricing = useTranslations("pricing");
-  const td = useTranslations("data");
-  const [showcaseBooks, setShowcaseBooks] = useState<ShowcaseBook[]>([]);
+  const tNav = useTranslations("nav");
+  const locale = useLocale();
+  const [showcase, setShowcase] = useState<ShowcaseBook[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [activeFilter, setActiveFilter] = useState<AgeFilter>("all");
   const scrollRef = useRef<HTMLDivElement>(null);
-  const locale = useLocale();
-  const softcoverPrice = formatPrice(PRICING.softcover.price, locale);
-  const hardcoverPrice = formatPrice(PRICING.hardcover.price, locale);
+
+  // The lowest printed format is the "from" price (source of truth: src/lib/pricing).
+  const fromPrice = formatPrice(Math.min(PRICING.softcover.price, PRICING.hardcover.price), locale);
 
   useEffect(() => {
-    async function fetchShowcase() {
-      try {
-        // Try locale-specific showcase first, fall back to all
-        const localeRes = await fetch(`/api/showcase?locale=${locale}`);
-        if (localeRes.ok) {
-          const data: ShowcaseBook[] = await localeRes.json();
-          if (data.length > 0) {
-            setShowcaseBooks(data);
-            setLoaded(true);
-            return;
-          }
-        }
-        // Fallback: fetch all showcase stories regardless of locale
-        const res = await fetch("/api/showcase");
-        if (res.ok) {
-          const data: ShowcaseBook[] = await res.json();
-          if (data.length > 0) setShowcaseBooks(data);
-        }
-      } catch {
-        // Silently fall back to template cards
-      } finally {
-        setLoaded(true);
-      }
-    }
-    fetchShowcase();
+    let cancelled = false;
+    fetchShowcase(locale).then((books) => {
+      if (cancelled) return;
+      setShowcase(books);
+      setLoaded(true);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [locale]);
 
-  const hasShowcase = showcaseBooks.length > 0;
-
-  // When we have showcase books, filter them; otherwise show template cards
-  const filteredShowcase = showcaseBooks.filter((b) =>
-    templateMatchesFilter(b.templateId, activeFilter),
+  // Skeletons match the final card count, so nothing jumps when the art arrives.
+  const worlds = useMemo(
+    () => buildCatalog(showcase).filter((w) => fitsAgeFilter(w.template, activeFilter)),
+    [showcase, activeFilter],
   );
-  const filteredTemplates = STORY_TEMPLATES.filter((t) =>
-    templateMatchesFilter(t.id, activeFilter),
-  );
+  const contentKey = `${loaded}-${activeFilter}-${worlds.length}`;
+  const edges = useScrollEdges(scrollRef, contentKey);
 
-  const filters: { id: AgeFilter; label: string }[] = [
-    { id: "all", label: t("filterAll") },
-    { id: "2-4", label: t("filter2to4") },
-    { id: "5-7", label: t("filter5to7") },
-    { id: "8-12", label: t("filter8to12") },
-  ];
 
-  const scroll = (direction: "left" | "right") => {
-    scrollRef.current?.scrollBy({
-      left: direction === "left" ? -320 : 320,
-      behavior: "smooth",
-    });
+  const onFilterKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    const step = e.key === "ArrowRight" || e.key === "ArrowDown" ? 1 : e.key === "ArrowLeft" || e.key === "ArrowUp" ? -1 : 0;
+    if (!step) return;
+    e.preventDefault();
+    const next = AGE_FILTERS[(AGE_FILTERS.indexOf(activeFilter) + step + AGE_FILTERS.length) % AGE_FILTERS.length];
+    setActiveFilter(next);
+    const chip = e.currentTarget.querySelector<HTMLButtonElement>(`[data-filter="${next}"]`);
+    chip?.focus();
+    chip?.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
   };
 
-  return (
-    <section className="bg-cream px-4 py-24" id="catalog">
-      <div className="mx-auto max-w-7xl">
-        {/* Header */}
-        <div className="mb-8 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <div>
-            <h2 className="mb-3 font-display text-3xl font-bold text-secondary md:text-4xl">
-              {t("title")}
-            </h2>
-            <p className="max-w-xl text-base text-text-soft md:text-lg">
-              {hasShowcase ? t("subtitleShowcase") : t("subtitle")}
-            </p>
-          </div>
+  const scrollByPage = (direction: -1 | 1) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.scrollBy({ left: direction * el.clientWidth * 0.85, behavior: "smooth" });
+  };
 
-          {/* Age filters */}
-          <div className="flex gap-2">
-            {filters.map((f) => (
-              <button
-                key={f.id}
-                onClick={() => setActiveFilter(f.id)}
-                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
-                  activeFilter === f.id
-                    ? "bg-primary text-white shadow-md"
-                    : "bg-white text-text-muted hover:bg-primary/10 hover:text-primary"
-                }`}
+  const arrowClass = cx(
+    "flex size-11 items-center justify-center rounded-full border-2 border-line bg-surface text-ink-soft transition-colors hover:border-brand/40 hover:text-brand-text disabled:pointer-events-none disabled:opacity-40",
+    focusRing,
+  );
+  const showArrows = edges.left || edges.right;
+
+  // Carousel below xl (snap, next card peeks), 5-column grid on wide desktop (10 worlds = 2 full rows).
+  const trackClass =
+    "no-scrollbar -mx-4 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 pb-2 sm:-mx-6 sm:scroll-px-6 sm:gap-4 sm:px-6 xl:mx-0 xl:grid xl:grid-cols-5 xl:gap-5 xl:overflow-visible xl:px-0 xl:pb-0";
+  const itemClass = "w-[min(78vw,280px)] shrink-0 snap-start xl:w-auto";
+
+  return (
+    <section id="catalog" aria-labelledby="catalog-title" className="scroll-mt-[var(--landing-nav-h,64px)] bg-paper px-4 py-16 sm:px-6 sm:py-24">
+      <div className="mx-auto max-w-[1200px]">
+        <Heading as="h2" id="catalog-title" size="page" eyebrow={tNav("books")} subtitle={t("subtitle")} className="max-w-2xl text-balance">
+          {t("title")}
+        </Heading>
+
+        <div className="mb-5 mt-6 flex items-center gap-4">
+          <div
+            role="radiogroup"
+            aria-label={t("filterLabel")}
+            onKeyDown={onFilterKeyDown}
+            className="no-scrollbar -mx-4 flex min-w-0 flex-1 scroll-px-4 gap-2 overflow-x-auto px-4 sm:-mx-6 sm:scroll-px-6 sm:px-6 md:mx-0 md:scroll-px-0 md:px-0"
+          >
+            {AGE_FILTERS.map((filter) => (
+              <ChoiceChip
+                key={filter}
+                tone="solid"
+                selected={activeFilter === filter}
+                // Roving tabindex (ARIA radio group): Tab enters on the checked chip, arrows move.
+                tabIndex={activeFilter === filter ? 0 : -1}
+                data-filter={filter}
+                onClick={(e) => {
+                  setActiveFilter(filter);
+                  // Keep the chosen chip fully visible in the scrollable chip row.
+                  e.currentTarget.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
+                }}
+                className="shrink-0 whitespace-nowrap px-4 tabular-nums"
               >
-                {f.label}
-              </button>
+                {t(FILTER_LABEL_KEYS[filter])}
+              </ChoiceChip>
             ))}
           </div>
+
+          {showArrows && (
+            <div className="hidden shrink-0 gap-2 md:flex xl:hidden">
+              <button type="button" onClick={() => scrollByPage(-1)} disabled={!edges.left} aria-label={t("prev")} className={arrowClass}>
+                <span aria-hidden className="material-symbols-outlined">chevron_left</span>
+              </button>
+              <button type="button" onClick={() => scrollByPage(1)} disabled={!edges.right} aria-label={t("next")} className={arrowClass}>
+                <span aria-hidden className="material-symbols-outlined">chevron_right</span>
+              </button>
+            </div>
+          )}
         </div>
 
-        {/* Carousel with navigation arrows */}
-        <div className="relative">
-          {/* Left arrow */}
-          <button
-            onClick={() => scroll("left")}
-            className="absolute -left-2 top-1/2 z-10 hidden -translate-y-1/2 items-center justify-center rounded-full bg-white/90 shadow-lg backdrop-blur transition-all hover:bg-white hover:shadow-xl md:flex size-10"
-          >
-            <span className="material-symbols-outlined text-secondary">
-              chevron_left
-            </span>
-          </button>
-
-          {/* Scrollable row */}
-          <div
-            ref={scrollRef}
-            className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory scroll-smooth pl-4 pr-8 md:px-1"
-            style={{ scrollbarWidth: "none" }}
-          >
-            {/* Showcase books from DB */}
-            {hasShowcase &&
-              filteredShowcase.map((book) => (
-                <div
-                  key={book.id}
-                  className="group relative flex shrink-0 snap-start flex-col rounded-xl border border-border-light/50 bg-white shadow-sm transition-all duration-300 hover:shadow-xl w-70"
-                >
-                  {/* Cover */}
-                  <Link
-                    href={`/ejemplo/${book.id}`}
-                    className="relative aspect-3/4 overflow-hidden rounded-t-xl bg-cream"
-                  >
-                    {book.coverImage ? (
-                      <Image
-                        src={book.coverImage}
-                        alt={book.title}
-                        fill
-                        sizes="(max-width: 768px) 70vw, 280px"
-                        className="object-cover transition-transform duration-700 group-hover:scale-105"
-                      />
-                    ) : (
-                      <div className="flex h-full items-center justify-center">
-                        <span className="material-symbols-outlined text-6xl text-text-light">
-                          auto_stories
-                        </span>
-                      </div>
-                    )}
-                    {/* Hover overlay */}
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-all duration-300 group-hover:bg-black/30">
-                      <span className="flex items-center gap-2 rounded-full bg-white/90 px-4 py-2 text-sm font-bold text-secondary opacity-0 shadow-lg transition-all duration-300 group-hover:opacity-100">
-                        <span className="material-symbols-outlined text-base">
-                          auto_stories
-                        </span>
-                        {t("viewSample")}
-                      </span>
-                    </div>
-                    {/* Age badge */}
-                    <div className="absolute right-2 top-2 rounded-full bg-white/90 px-2.5 py-0.5 text-xs font-bold text-primary backdrop-blur">
-                      {getAgeFilter(book.characterAge) === "2-4"
-                        ? "2-4"
-                        : getAgeFilter(book.characterAge) === "5-7"
-                          ? "5-7"
-                          : "8-12"}{" "}
-                      {t("years")}
-                    </div>
-                  </Link>
-
-                  {/* Info */}
-                  <div className="flex flex-1 flex-col gap-2 p-4">
-                    <h3 className="font-display text-lg font-bold text-secondary leading-tight">
-                      {book.title}
-                    </h3>
-                    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-text-muted">
-                      <span>{t("softcover")}</span>
-                      <span className="font-bold text-secondary">
-                        {softcoverPrice}
-                      </span>
-                      <span className="text-border-light">|</span>
-                      <span>{t("hardcoverShort")}</span>
-                      <span className="font-bold text-primary">
-                        {hardcoverPrice}
-                      </span>
-                      <span className="text-[11px]">{tPricing("vatIncluded")}</span>
-                    </div>
-
-                    {/* CTA */}
-                    <Link
-                      href={`/crear?template=${book.templateId}&from=catalog`}
-                      className="mt-auto flex items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-sm font-bold text-white whitespace-nowrap shadow-sm transition-all hover:bg-primary-hover hover:shadow-md min-h-[36px]"
-                    >
-                      <span className="material-symbols-outlined text-sm">
-                        child_care
-                      </span>
-                      {t("personalize")}
-                    </Link>
-                  </div>
-                </div>
-              ))}
-
-            {/* Template cards (when no showcase books OR as fallback) */}
-            {!hasShowcase &&
-              loaded &&
-              filteredTemplates.map((template) => (
-                <div
-                  key={template.id}
-                  className="group relative flex shrink-0 snap-start flex-col rounded-xl border border-border-light/50 bg-white shadow-sm transition-all duration-300 hover:shadow-xl w-70"
-                >
-                  {/* Cover */}
-                  <div className="relative aspect-3/4 overflow-hidden rounded-t-xl bg-cream">
-                    <Image
-                      src={template.image}
-                      alt={td(`templates.${template.id}.title`)}
-                      fill
-                      sizes="(max-width: 768px) 70vw, 280px"
-                      className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                    {/* Age badge */}
-                    <div className="absolute right-2 top-2 rounded-full bg-white/90 px-2.5 py-0.5 text-xs font-bold text-primary backdrop-blur">
-                      {td(`templates.${template.id}.ageRange`)}
-                    </div>
-                  </div>
-
-                  {/* Info */}
-                  <div className="flex flex-1 flex-col gap-2 p-4">
-                    <h3 className="font-display text-lg font-bold text-secondary leading-tight">
-                      {td(`templates.${template.id}.title`)}
-                    </h3>
-                    <p className="text-xs text-text-muted line-clamp-2">
-                      {td(`templates.${template.id}.description`)}
-                    </p>
-                    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-text-muted">
-                      <span>{t("softcover")}</span>
-                      <span className="font-bold text-secondary">
-                        {softcoverPrice}
-                      </span>
-                      <span className="text-border-light">|</span>
-                      <span>{t("hardcoverShort")}</span>
-                      <span className="font-bold text-primary">
-                        {hardcoverPrice}
-                      </span>
-                      <span className="text-[11px]">{tPricing("vatIncluded")}</span>
-                    </div>
-
-                    {/* CTA */}
-                    <Link
-                      href={`/crear?template=${template.id}&from=catalog`}
-                      className="mt-auto flex items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-sm font-bold text-white whitespace-nowrap shadow-sm transition-all hover:bg-primary-hover hover:shadow-md min-h-[36px]"
-                    >
-                      <span className="material-symbols-outlined text-sm">
-                        child_care
-                      </span>
-                      {t("personalize")}
-                    </Link>
-                  </div>
-                </div>
-              ))}
-
-            {/* Skeleton */}
-            {!loaded &&
-              Array.from({ length: 5 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="animate-pulse shrink-0 snap-start rounded-xl border border-border-light/50 bg-white shadow-sm w-70"
-                >
-                  <div className="aspect-3/4 rounded-t-xl bg-border-light/30" />
+        {/* Keyed by filter: a fresh track starts at the first card (scroll-snap would otherwise
+            re-snap to the previously snapped card when the list changes). */}
+        <div key={activeFilter} ref={scrollRef} className={trackClass} aria-busy={!loaded || undefined}>
+          {loaded
+            ? worlds.map((world) => (
+                <BookCollectionCard key={world.template.id} world={world} fromPrice={fromPrice} className={itemClass} />
+              ))
+            : worlds.map((world) => (
+                <div key={world.template.id} aria-hidden className={cx(itemClass, "animate-pulse overflow-hidden rounded-2xl border-2 border-line bg-surface")}>
+                  <div className="aspect-square bg-line" />
                   <div className="space-y-3 p-4">
-                    <div className="h-5 w-3/4 rounded bg-border-light/30" />
-                    <div className="h-3 w-full rounded bg-border-light/20" />
-                    <div className="h-10 w-full rounded-lg bg-border-light/20" />
+                    <div className="h-5 w-3/4 rounded bg-line" />
+                    <div className="h-4 w-full rounded bg-line/70" />
+                    <div className="h-4 w-1/2 rounded bg-line/70" />
+                    <div className="h-9 w-full rounded bg-line/70" />
                   </div>
                 </div>
               ))}
-          </div>
-
-          {/* Right arrow */}
-          <button
-            onClick={() => scroll("right")}
-            className="absolute -right-2 top-1/2 z-10 hidden -translate-y-1/2 items-center justify-center rounded-full bg-white/90 shadow-lg backdrop-blur transition-all hover:bg-white hover:shadow-xl md:flex size-10"
-          >
-            <span className="material-symbols-outlined text-secondary">
-              chevron_right
-            </span>
-          </button>
         </div>
       </div>
     </section>

@@ -92,6 +92,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+// Marketing pages render the seasonal banner (Navbar) from the date they were
+// rendered on: re-render at most hourly so static pages never serve a stale
+// season (the home and /christmas-delivery already do; dynamic pages unaffected).
+export const revalidate = 3600;
+
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }

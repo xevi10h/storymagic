@@ -5,76 +5,127 @@ button, [role="button"] {
 }
 
 /* ============================
-   Design Token System
-   ============================ */
+   Design Token System — Meapica brand (see docs/brand.md)
+   ============================
+   ONE semantic set, derived from the creation flow (/crear), which is the
+   reference look & feel of the product. New code uses ONLY the semantic
+   tokens below (bg-brand, text-ink, border-line…). The legacy names further
+   down are kept as aliases so older screens keep rendering; do not use them
+   in new work. */
 
 :root {
-  /* --- Core palette --- */
-  --primary: #D2691E;
-  --primary-hover: #b85a18;
-  --primary-light: #E8964A;
-  --secondary: #5D4037;
-  --secondary-hover: #4E342E;
-  --accent: #8B4513;
+  /* --- Brand --- */
+  --brand: #E86C3A;            /* primary actions, active/selected state, kickers */
+  --brand-hover: #d15a2b;      /* hover/pressed of --brand */
+  --brand-text: #b94f1f;       /* orange TEXT at any size (4.75:1 on paper, AA); --brand stays the fill */
+  --brand-deep: #5D4037;       /* wordmark, price + purchase headings, dark bands */
+  --brand-deep-hover: #4E342E; /* hover of --brand-deep */
+  --gold: #d4af37;             /* rare highlight: stars pattern, reveal sparkle */
 
-  /* --- Backgrounds --- */
-  --bg-cream: #F9F5F0;
-  --bg-paper: #fcf9f8;
-  --bg-warm: #f8f5f2;
-  --bg-sand: #FAF3E0;
-  --bg-earth: #EBE0D6;
-  --bg-sage: #E0E9D8;
-  --bg-tan: #E8DCC4;
+  /* --- Ink (text), darkest to lightest --- */
+  --ink: #1b120e;              /* headings, names, strong values */
+  --ink-soft: #4a3b32;         /* default UI text, labels, list items */
+  --ink-body: #6b5850;         /* long-form paragraphs (FAQ answers, articles) */
+  --ink-muted: #7a6963;        /* subtitles, hints, captions, meta (4.95:1 on paper, AA) */
 
-  /* --- Text --- */
-  --text-primary: #2C1810;
-  --text-secondary: #5D4037;
-  --text-muted: #A1887F;
-  --text-light: #D7CCC8;
-  --text-cream: #E6D4C8;
+  /* --- Surfaces & lines --- */
+  --paper: #FFF8F0;            /* page background */
+  --surface: #ffffff;          /* cards, inputs, chips, sheets */
+  --line: #f3ebe7;             /* default border, unselected chip, neutral fill, track */
+  --line-warm: #E6C9A8;        /* warm hairline on paper (preview cards, secondary outline) */
+  --scrim: rgba(44, 24, 16, 0.45); /* modal/sheet backdrop */
 
-  /* --- Borders & badges --- */
-  --border-light: #E6C9A8;
-  --border-medium: #D6C4A0;
-  --border-warm: #6D4C41;
-  --badge-bg: #F5E6D3;
-  --badge-border: #E6C9A8;
+  /* --- Status --- */
+  --success: #2E7D32;          /* "Envío gratis", saved ✓ */
+  --error: #C62828;            /* validation/error text (alerts use red-50/red-700) */
 
-  /* --- Footer (dark theme) --- */
-  --footer-bg: #2C1810;
-  --footer-accent: #8B4513;
-  --footer-text: #E6D4C8;
-  --footer-muted: #A1887F;
-  --footer-border: #5D4037;
+  /* ------------------------------------------------------------------
+     Legacy aliases (pre-brand landing palette). Same names, now pointing
+     at the semantic set. Where a legacy colour is still painted inside the
+     creation flow with a value the semantic set does not have, the old
+     value is kept verbatim (marked "legacy value") so /crear stays
+     pixel-identical; retire them as screens are rebuilt.
+     ------------------------------------------------------------------ */
+  --primary: var(--brand);
+  --primary-hover: var(--brand-hover);
+  --primary-light: #E8964A;    /* legacy value (seasonal banner) */
+  --secondary: var(--brand-deep);
+  --secondary-hover: var(--brand-deep-hover);
+  --accent: #8B4513;           /* legacy value */
 
-  /* --- Adventure pack (dark theme) --- */
-  --pack-bg: #5D4037;
-  --pack-inner: #4E342E;
-  --pack-badge: #8D6E63;
-  --pack-text: #FAF3E0;
-  --pack-muted: #D7CCC8;
+  --bg-cream: #F9F5F0;         /* legacy value (book viewer, older screens); body is --paper */
+  --bg-paper: #fcf9f8;         /* legacy value */
+  --bg-warm: #f8f5f2;          /* legacy value */
+  --bg-sand: #FAF3E0;          /* legacy value */
+  --bg-earth: #EBE0D6;         /* legacy value */
+  --bg-sage: #E0E9D8;          /* legacy value */
+  --bg-tan: #E8DCC4;           /* legacy value */
 
-  /* --- Semantic --- */
-  --success: #2E7D32;
-  --error: #C62828;
-  --gold: #d4af37;
+  --text-primary: #2C1810;     /* legacy value; new work: --ink */
+  --text-secondary: var(--brand-deep);
+  --text-muted: #A1887F;       /* legacy value; new work: --ink-muted (AA-safe) */
+  --text-light: #D7CCC8;       /* legacy value */
+  --text-cream: #E6D4C8;       /* legacy value */
 
-  /* --- Creation flow tokens --- */
-  --create-primary: #E86C3A;
-  --create-primary-hover: #d15a2b;
-  --create-bg: #FFF8F0;
-  --create-text: #4a3b32;
-  --create-text-sub: #8c7b75;
-  --create-text-dark: #1b120e;
-  --create-text-secondary: #97634e;
-  --create-text-body: #6b5850;
-  --create-surface: #ffffff;
-  --create-neutral-light: #f3ebe7;
-  --create-gold: #d4af37;
+  --border-light: var(--line-warm);
+  --border-medium: #D6C4A0;    /* legacy value */
+  --border-warm: #6D4C41;      /* legacy value */
+  --badge-bg: #F5E6D3;         /* legacy value */
+  --badge-border: var(--line-warm);
+
+  --footer-bg: #2C1810;        /* legacy value */
+  --footer-accent: #8B4513;    /* legacy value */
+  --footer-text: #E6D4C8;      /* legacy value */
+  --footer-muted: #A1887F;     /* legacy value */
+  --footer-border: var(--brand-deep);
+
+  --pack-bg: var(--brand-deep);
+  --pack-inner: var(--brand-deep-hover);
+  --pack-badge: #8D6E63;       /* legacy value */
+  --pack-text: #FAF3E0;        /* legacy value */
+  --pack-muted: #D7CCC8;       /* legacy value */
+
+  /* Creation flow names (identical values, now aliases) */
+  --create-primary: var(--brand);
+  --create-primary-hover: var(--brand-hover);
+  --create-bg: var(--paper);
+  --create-text: var(--ink-soft);
+  --create-text-sub: var(--ink-muted);
+  --create-text-dark: var(--ink);
+  --create-text-secondary: #97634e; /* legacy value, unused */
+  --create-text-body: var(--ink-body);
+  --create-surface: var(--surface);
+  --create-neutral-light: var(--line);
+  --create-gold: var(--gold);
 }
 
 @theme inline {
-  /* Core */
+  /* --- Brand system (use these) --- */
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-text: var(--brand-text);
+  --color-brand-deep: var(--brand-deep);
+  --color-brand-deep-hover: var(--brand-deep-hover);
+  --color-gold: var(--gold);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-body: var(--ink-body);
+  --color-ink-muted: var(--ink-muted);
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-line: var(--line);
+  --color-line-warm: var(--line-warm);
+  --color-scrim: var(--scrim);
+  --color-success: var(--success);
+  --color-error: var(--error);
+
+  /* Elevation (see docs/brand.md) */
+  --shadow-soft: 0 1px 3px rgba(58, 36, 24, 0.08);
+  --shadow-card: 0 1px 2px rgba(44, 24, 16, 0.04), 0 8px 24px -12px rgba(44, 24, 16, 0.12);
+  --shadow-book: 0 22px 40px -22px rgba(58, 36, 24, 0.55), 0 2px 6px rgba(58, 36, 24, 0.12);
+  --shadow-portrait: 0 12px 28px -16px rgba(58, 36, 24, 0.6);
+
+  /* --- Legacy utilities (kept working; do not use in new work) --- */
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
   --color-primary-light: var(--primary-light);
@@ -82,65 +133,39 @@ button, [role="button"] {
   --color-secondary-hover: var(--secondary-hover);
   --color-accent: var(--accent);
 
-  /* Backgrounds */
   --color-background: var(--bg-cream);
   --color-foreground: var(--text-primary);
   --color-cream: var(--bg-cream);
-  --color-paper: var(--bg-paper);
   --color-warm: var(--bg-warm);
   --color-sand: var(--bg-sand);
   --color-earth: var(--bg-earth);
   --color-sage: var(--bg-sage);
   --color-tan: var(--bg-tan);
 
-  /* Text */
   --color-text-main: var(--text-primary);
   --color-text-soft: var(--text-secondary);
   --color-text-muted: var(--text-muted);
   --color-text-light: var(--text-light);
   --color-text-cream: var(--text-cream);
 
-  /* Borders & badges */
   --color-border-light: var(--border-light);
   --color-border-medium: var(--border-medium);
   --color-border-warm: var(--border-warm);
   --color-badge-bg: var(--badge-bg);
   --color-badge-border: var(--badge-border);
 
-  /* Footer dark theme */
   --color-footer-bg: var(--footer-bg);
   --color-footer-accent: var(--footer-accent);
   --color-footer-text: var(--footer-text);
   --color-footer-muted: var(--footer-muted);
   --color-footer-border: var(--footer-border);
 
-  /* Adventure pack dark theme */
   --color-pack-bg: var(--pack-bg);
   --color-pack-inner: var(--pack-inner);
   --color-pack-badge: var(--pack-badge);
   --color-pack-text: var(--pack-text);
   --color-pack-muted: var(--pack-muted);
 
-  /* Semantic */
-  --color-success: var(--success);
-  --color-error: var(--error);
-  --color-gold: var(--gold);
-
-  /* Fonts */
-  --font-sans: var(--font-plus-jakarta);
-  --font-display: var(--font-fredoka);
-  --font-body: var(--font-plus-jakarta);
-
-  /* Border radius (ascending scale) */
-  --radius-sm: 0.25rem;
-  --radius-md: 0.375rem;
-  --radius: 0.5rem;
-  --radius-lg: 0.75rem;
-  --radius-xl: 1rem;
-  --radius-2xl: 1.5rem;
-  --radius-full: 9999px;
-
-  /* Creation flow colors */
   --color-create-primary: var(--create-primary);
   --color-create-primary-hover: var(--create-primary-hover);
   --color-create-bg: var(--create-bg);
@@ -152,6 +177,20 @@ button, [role="button"] {
   --color-create-surface: var(--create-surface);
   --color-create-neutral: var(--create-neutral-light);
   --color-create-gold: var(--create-gold);
+
+  /* Fonts */
+  --font-sans: var(--font-plus-jakarta);
+  --font-display: var(--font-fredoka);
+  --font-body: var(--font-plus-jakarta);
+
+  /* Border radius (project scale — NOT Tailwind's defaults: lg/xl/2xl are one step larger) */
+  --radius-sm: 0.25rem;  /*  4px */
+  --radius-md: 0.375rem; /*  6px */
+  --radius: 0.5rem;      /*  8px */
+  --radius-lg: 0.75rem;  /* 12px */
+  --radius-xl: 1rem;     /* 16px */
+  --radius-2xl: 1.5rem;  /* 24px */
+  --radius-full: 9999px;
 }
 
 /* ============================
@@ -164,7 +203,7 @@ html {
 
 body {
   font-family: var(--font-plus-jakarta), "Plus Jakarta Sans", sans-serif;
-  background-color: var(--bg-cream);
+  background-color: var(--paper);
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -177,32 +216,35 @@ h1, h2, h3, h4 {
 
 /* Brand-consistent text selection */
 ::selection {
-  background-color: var(--primary);
+  background-color: var(--brand);
   color: white;
 }
 
-/* Accessible focus ring */
-:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
+/* Base layer: element defaults that utilities must be able to override.
+   Unlayered rules beat every @layer rule in Tailwind v4, so these live in
+   `base`; otherwise `outline-none`, `w-*` etc. could not win. */
+@layer base {
+  /* Accessible focus ring (components may replace it, e.g. a border +
+     halo on inputs, via `outline-none` + their own focus style). */
+  :focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+  }
+
+  /* Material Symbols: lock each icon to a 1em square box. The font loads
+     with display=block, so before it arrives the ligature ("arrow_forward")
+     is laid out invisibly in the fallback font; without this box that
+     word-width collapsing to 1em is a layout shift (CLS). */
+  .material-symbols-outlined {
+    width: 1em;
+    height: 1em;
+    overflow: hidden;
+  }
 }
 
 /* ============================
    Decorative Elements
    ============================ */
-
-/* Paper texture overlay */
-.texture-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0.8;
-  pointer-events: none;
-  z-index: 0;
-  background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDSqigxrQEajucAri8DRx76xn_HiLmJoLI5NkhzaH9fAWLZ7NBsdAVA3VbJUzC7o3cKefYT0rhWnbOLuzh7-I8KUQlVGDtiClSF6JUb8OyWTH2MLq0PwxH_Wfyu0VNCPV-gdhfXmPYg_F0KmpWoeYuByciDq_DCQs0DciRxdmZZu2_fO00bmq0W0BQJ5Rv3nI37tXOR1OmeUA1X-BPldnFSZZtaYl8hNqI5BH3wck5fd8k-yOCgqqgktA5T4U9XMOLFE88kG8C5ouVY");
-}
 
 /* Watercolor blob mask */
 .watercolor-blob {
@@ -296,36 +338,43 @@ h1, h2, h3, h4 {
           drop-shadow(0 4px 8px rgba(44, 24, 16, 0.08));
 }
 
-/* Phones render a single-page (portrait) book: the 3D tilt inflates the
-   width page-flip measures (overflowing the viewport) and the center spine
-   would cut across the lone page — disable both. */
+/* Phones: no 3D tilt (it inflates the width page-flip measures). */
 @media (max-width: 767px) {
   .book-body {
     transform: none;
   }
-  .book-body::after {
-    display: none;
-  }
 }
 
-/* Center spine — pseudo-element anchored to the actual rendered book */
-.book-body::after {
+/* Gutter: the fold between two facing pages — the paper curving into the binding.
+   Anchored to the rendered book; hidden while a lone page (cover / back) is centred. */
+.book-body::after,
+.book-gutter {
   content: "";
   position: absolute;
   top: 0;
   bottom: 0;
   left: 50%;
-  width: 4px;
+  width: 9%;
   transform: translateX(-50%);
   z-index: 10;
   pointer-events: none;
+  mix-blend-mode: multiply;
   background: linear-gradient(
     to right,
-    rgba(0, 0, 0, 0.15),
-    rgba(0, 0, 0, 0.03) 40%,
-    rgba(0, 0, 0, 0.03) 60%,
-    rgba(0, 0, 0, 0.15)
+    rgba(60, 38, 22, 0) 0%,
+    rgba(60, 38, 22, 0.05) 28%,
+    rgba(60, 38, 22, 0.16) 44%,
+    rgba(60, 38, 22, 0.34) 49.4%,
+    rgba(60, 38, 22, 0.34) 50.6%,
+    rgba(60, 38, 22, 0.16) 56%,
+    rgba(60, 38, 22, 0.05) 72%,
+    rgba(60, 38, 22, 0) 100%
   );
+  transition: opacity 0.3s ease;
+}
+
+.book-body[data-single="true"]::after {
+  opacity: 0;
 }
 
 /* Page paper texture */
@@ -509,50 +558,6 @@ h1, h2, h3, h4 {
   100% {
     background: linear-gradient(to right, transparent 0%, rgba(0,0,0,0) 100%);
   }
-}
-
-/* ============================
-   Blog article prose
-   ============================ */
-.prose-article {
-  color: var(--text-secondary);
-  font-size: 1.125rem;
-  line-height: 1.8;
-}
-.prose-article > * + * { margin-top: 1.25rem; }
-.prose-article h2 {
-  font-family: var(--font-fredoka), sans-serif;
-  color: var(--secondary);
-  font-size: 1.6rem;
-  font-weight: 700;
-  line-height: 1.25;
-  margin-top: 2.5rem;
-}
-.prose-article h3 {
-  font-family: var(--font-fredoka), sans-serif;
-  color: var(--secondary);
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin-top: 1.75rem;
-}
-.prose-article p { color: var(--text-secondary); }
-.prose-article a {
-  color: var(--primary);
-  font-weight: 600;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-.prose-article a:hover { color: var(--primary-hover); }
-.prose-article strong { color: var(--text-primary); font-weight: 700; }
-.prose-article ul, .prose-article ol { padding-left: 1.4rem; }
-.prose-article ul { list-style: disc; }
-.prose-article ol { list-style: decimal; }
-.prose-article li { margin-top: 0.5rem; }
-.prose-article blockquote {
-  border-left: 4px solid var(--primary);
-  padding-left: 1.25rem;
-  font-style: italic;
-  color: var(--text-muted);
 }
 
 /* "Your book is born" reveal (preview, first load after generation) */

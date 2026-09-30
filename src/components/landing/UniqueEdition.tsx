@@ -1,104 +1,90 @@
-import { useTranslations } from "next-intl";
+import Image from "next/image";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { Heading, buttonClass } from "@/components/ui";
+import { LANDING_EXAMPLE, landingExampleBook } from "./HowItWorksExample";
 
+const POINTS = ["written", "painted", "colour", "dedication"] as const;
+
+/**
+ * The differentiator, with proof: not a template with a face pasted in. Four
+ * real pages of one child's book (Sam) show the same child painted scene by
+ * scene, next to the four things that make the book theirs.
+ */
 export default function UniqueEdition() {
   const t = useTranslations("uniqueEdition");
+  const name = LANDING_EXAMPLE.childName;
+  const book = landingExampleBook(useLocale());
 
   return (
-    <section className="relative overflow-hidden bg-cream py-24">
-      {/* Subtle background texture — faint ruled lines like aged notebook paper */}
-      <div className="pointer-events-none absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage: "repeating-linear-gradient(0deg, #8B4513 0px, #8B4513 1px, transparent 1px, transparent 32px)",
-        }}
-      />
+    <section id="unique-edition" aria-labelledby="unique-edition-title" className="scroll-mt-[var(--landing-nav-h,64px)] border-y border-line bg-surface py-16 sm:py-24">
+      <div className="mx-auto grid max-w-[1200px] gap-6 px-4 sm:px-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-center lg:gap-x-16 lg:gap-y-8">
+        <Heading
+          size="page"
+          as="h2"
+          id="unique-edition-title"
+          eyebrow={t("eyebrow")}
+          subtitle={t("subtitle", { name, age: LANDING_EXAMPLE.age })}
+          className="lg:col-start-2 lg:row-start-1 lg:self-end [&_h2]:text-balance"
+        >
+          {t("title")}
+        </Heading>
 
-      <div className="mx-auto max-w-4xl px-4">
-        {/* Central certificate-style card */}
-        <div className="relative border border-border-light bg-white px-8 py-16 shadow-sm sm:px-16">
-          {/* Corner ornaments */}
-          <div className="absolute top-4 left-4 h-8 w-8 border-t-2 border-l-2 border-accent/30" />
-          <div className="absolute top-4 right-4 h-8 w-8 border-t-2 border-r-2 border-accent/30" />
-          <div className="absolute bottom-4 left-4 h-8 w-8 border-b-2 border-l-2 border-accent/30" />
-          <div className="absolute bottom-4 right-4 h-8 w-8 border-b-2 border-r-2 border-accent/30" />
+        <figure className="lg:col-start-1 lg:row-span-2 lg:row-start-1">
+          <ul className="no-scrollbar -mx-4 flex snap-x snap-mandatory scroll-px-4 gap-2.5 overflow-x-auto px-4 sm:mx-0 sm:grid sm:grid-cols-4 sm:overflow-visible sm:px-0 lg:grid-cols-2 lg:gap-3">
+            {LANDING_EXAMPLE.scenes.map((scene, i) => (
+              <li
+                key={scene.src}
+                className="relative aspect-square w-[42%] shrink-0 snap-start overflow-hidden rounded-2xl border-2 border-line bg-surface sm:w-auto"
+              >
+                <Image
+                  src={scene.src}
+                  alt={t("sceneAlt", { name, n: i + 1 })}
+                  fill
+                  sizes="(min-width: 1024px) 300px, (min-width: 640px) 25vw, 42vw"
+                  className="object-contain p-1.5"
+                />
+              </li>
+            ))}
+          </ul>
+          <figcaption className="mt-2.5 text-xs text-ink-muted">
+            {t("caption", { title: book.title })}
+          </figcaption>
+        </figure>
 
-          <div className="flex flex-col items-center text-center">
-            {/* Wax seal — pure CSS */}
-            <div className="relative mb-8">
-              <div className="flex h-24 w-24 items-center justify-center rounded-full bg-accent shadow-lg shadow-accent/20">
-                <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-dashed border-white/30">
-                  <span className="material-symbols-outlined text-3xl text-white" aria-hidden="true">auto_stories</span>
+        <div className="lg:col-start-2 lg:row-start-2 lg:self-start">
+          <ul className="grid gap-x-6 gap-y-3.5 sm:grid-cols-2">
+            {POINTS.map((id) => (
+              <li key={id} className="flex gap-3">
+                <span
+                  aria-hidden
+                  className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-brand/10 text-brand"
+                >
+                  <span className="material-symbols-outlined text-base">check</span>
+                </span>
+                <div>
+                  <h3 className="font-display text-base font-bold leading-tight text-ink">{t(`points.${id}.title`)}</h3>
+                  <p className="mt-0.5 text-sm leading-snug text-ink-body">{t(`points.${id}.text`)}</p>
                 </div>
-              </div>
-              {/* Drip effect */}
-              <div className="absolute -bottom-2 left-1/2 h-4 w-3 -translate-x-1/2 rounded-b-full bg-accent" />
-            </div>
+              </li>
+            ))}
+          </ul>
 
-            {/* Edition label */}
-            <span className="mb-6 text-xs font-bold uppercase tracking-[0.3em] text-accent">
-              {t("badge")}
-            </span>
-
-            {/* Title */}
-            <h2 className="font-display text-4xl font-bold leading-tight text-secondary sm:text-5xl">
-              {t("titleStart")}{" "}
-              <span className="italic text-primary">{t("titleHighlight")}</span>{" "}
-              {t("titleEnd")}
-            </h2>
-
-            {/* Decorative divider */}
-            <div className="my-8 flex items-center gap-3">
-              <div className="h-px w-12 bg-border-light" />
-              <span className="material-symbols-outlined text-sm text-text-muted">diamond</span>
-              <div className="h-px w-12 bg-border-light" />
-            </div>
-
-            {/* Description */}
-            <p className="max-w-xl text-lg leading-relaxed text-text-soft">
-              {t("description")}
-            </p>
-
-            {/* Three uniqueness pillars */}
-            <div className="mt-12 grid w-full grid-cols-1 gap-8 sm:grid-cols-3">
-              <div className="flex flex-col items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full border border-border-light bg-badge-bg">
-                  <span className="material-symbols-outlined text-xl text-secondary">auto_stories</span>
-                </div>
-                <h3 className="font-display text-lg font-bold text-secondary">{t("pillar1Title")}</h3>
-                <p className="text-sm leading-relaxed text-text-soft">{t("pillar1Description")}</p>
-              </div>
-
-              <div className="flex flex-col items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full border border-border-light bg-badge-bg">
-                  <span className="material-symbols-outlined text-xl text-secondary">brush</span>
-                </div>
-                <h3 className="font-display text-lg font-bold text-secondary">{t("pillar2Title")}</h3>
-                <p className="text-sm leading-relaxed text-text-soft">{t("pillar2Description")}</p>
-              </div>
-
-              <div className="flex flex-col items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full border border-border-light bg-badge-bg">
-                  <span className="material-symbols-outlined text-xl text-secondary">edit_note</span>
-                </div>
-                <h3 className="font-display text-lg font-bold text-secondary">{t("pillar3Title")}</h3>
-                <p className="text-sm leading-relaxed text-text-soft">{t("pillar3Description")}</p>
-              </div>
-            </div>
-
-            {/* CTA */}
-            <Link
-              href="/crear"
-              className="mt-12 flex h-14 items-center justify-center gap-2 rounded-lg bg-primary px-8 text-lg font-bold text-white shadow-lg shadow-primary/10 transition-all hover:-translate-y-1 hover:bg-primary-hover"
-            >
+          <div className="mt-7 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-5">
+            {/* Phones already have the sticky "Crear su libro" bar: one CTA per viewport. */}
+            <Link href="/crear" className={buttonClass({ size: "md", className: "max-sm:hidden" })}>
               {t("cta")}
-              <span className="material-symbols-outlined">arrow_forward</span>
+              <span aria-hidden className="material-symbols-outlined text-lg transition-transform group-hover:translate-x-1">
+                arrow_forward
+              </span>
+            </Link>
+            <Link
+              href={`/ejemplo/${book.storyId}`}
+              className="inline-flex min-h-11 items-center text-sm font-semibold text-ink-soft underline decoration-ink-soft/30 underline-offset-2 hover:text-brand-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+            >
+              {t("seeInside", { name })}
             </Link>
           </div>
-        </div>
-
-        {/* Backing card (rotated, like other sections) */}
-        <div className="pointer-events-none absolute inset-0 mx-auto max-w-4xl px-4">
-          <div className="absolute top-[calc(6rem-8px)] right-4 bottom-[calc(6rem-8px)] left-4 -z-10 -rotate-1 border border-border-medium bg-tan sm:right-16 sm:left-16" />
         </div>
       </div>
     </section>

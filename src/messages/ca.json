@@ -2,6 +2,7 @@
   "seo": {
     "common": {
       "breadcrumbHome": "Inici",
+      "breadcrumbLabel": "Ruta de navegació",
       "featuredHeading": "Contes que es converteixen en records",
       "featuredSubheading": "Cada edició és única, amb el teu fill com a protagonista.",
       "relatedHeading": "També et pot interessar",
@@ -416,37 +417,74 @@
     "signIn": "Iniciar sessió",
     "openMenu": "Obrir menú",
     "closeMenu": "Tancar menú",
+    "howItWorks": "Com funciona",
+    "books": "Contes",
+    "sample": "Veure un exemple",
+    "faq": "Preguntes",
+    "createBook": "Crear el seu llibre",
+    "mainNav": "Navegació principal",
     "user": "Usuari",
     "language": "Idioma"
   },
   "hero": {
-    "badge": "100% Desconnexió Digital",
-    "titleStart": "Menys pantalles,",
-    "titleHighlight": "més històries",
-    "titleEnd": "per tocar",
-    "description": "Recupera la màgia de passar les pàgines. Contes personalitzats impresos en paper d'alta qualitat, dissenyats per crear moments de connexió real, lluny de la lluentor de les tablets.",
-    "cta": "Crear el meu conte",
+    "eyebrow": "Conte personalitzat imprès",
+    "title": "La teva criatura, <hl>protagonista</hl> del seu propi conte",
+    "subtitle": "Amb el seu nom a la portada, la seva cara en aquarel·la i una aventura que tries tu. Imprès i a casa teva.",
+    "nameLabel": "Com es diu?",
+    "namePlaceholder": "Escriu el seu nom",
+    "cta": "Crear el seu llibre",
+    "ctaWithName": "Crear el llibre {deName}",
     "priceFrom": "Des de {price}",
-    "priceNote": "Llibre imprès + versió digital inclosa",
-    "secondaryCta": "Veure qualitat del paper",
-    "fscPaper": "Paper estucat de 170 g",
-    "artisanalShipping": "Imprès i enviat des d'Espanya",
-    "imageCaption": "El tacte del paper importa",
-    "imageSubcaption": "Una experiència sensorial que cap pantalla pot igualar."
+    "freeShipping": "Enviament gratuït",
+    "trustPreview": "Veus el seu llibre abans de pagar",
+    "trustFormats": "Tapa dura o tova, amb PDF inclòs",
+    "sampleCta": "Veure un conte per dins",
+    "coverCaption": "20 × 20 cm · La il·lustració canvia segons l'aventura que triïs"
   },
   "howItWorks": {
-    "badge": "Tornada als orígens",
-    "title": "Màgia real en 3 passos",
-    "step1Title": "Tria una història",
-    "step1Description": "Selecciona una trama dissenyada per ser llegida en veu alta i tocar el cor.",
-    "step2Title": "Personalització a la seva mida",
-    "step2Description": "Adaptem les il·lustracions amb estil aquarel·la perquè el teu fill s'hi reconegui.",
-    "step3Title": "Rep un tresor",
-    "step3Description": "Un llibre imprès, amb tapa dura o tova, arriba a casa teva a punt per ser estimat."
+    "eyebrow": "Com funciona",
+    "title": "Del seu nom al seu llibre, en uns minuts",
+    "subtitle": "El crees des del mòbil i veus el seu llibre abans de pagar.",
+    "stepsLabel": "Passos per crear el seu llibre",
+    "stepNumber": "Pas {n}:",
+    "steps": {
+      "name": {
+        "title": "Escriu el seu nom",
+        "text": "Surt a la portada a l'instant i a cada pàgina del conte."
+      },
+      "look": {
+        "title": "Tria com és",
+        "text": "Pell, cabell, ulls, ulleres i el seu color preferit. Així sortirà a cada il·lustració.",
+        "textPhoto": "Crea'l al teu gust o puja una foto. Així sortirà a cada il·lustració."
+      },
+      "adventure": {
+        "title": "Decideix la seva aventura",
+        "text": "Tria un món i els seus tres capítols. Cada elecció canvia la història."
+      },
+      "preview": {
+        "title": "Mira'l abans de pagar",
+        "text": "En un minut veus la portada i les primeres escenes pintades. Gratis i sense registrar-te."
+      },
+      "print": {
+        "title": "Rep-lo a casa",
+        "text": "Imprès en tapa dura o tova, amb enviament gratuït. Arriba en 7–10 dies feiners."
+      }
+    },
+    "lookAlt": "Retrat a l'aquarel·la de {name}",
+    "previewAlt": "Una pàgina de la previsualització del llibre de {name}",
+    "previewBadge": "Gratis",
+    "printAlt": "El llibre de {name} imprès en tapa dura",
+    "cta": "Crear el seu llibre"
   },
   "bookCollection": {
-    "title": "Tria un conte, afegeix el teu fill",
-    "subtitle": "Històries il·lustrades llestes per personalitzar. Tria la que més t'agradi i fes que el teu fill en sigui el protagonista.",
+    "title": "Tria la seva aventura",
+    "subtitle": "Cada món és un conte il·lustrat a l'aquarel·la, amb el seu nom i la seva cara. Tu tries els tres capítols.",
+    "filterLabel": "Edat del nen o la nena",
+    "priceFrom": "Des de <b>{price}</b>",
+    "cta": "Crear el seu llibre",
+    "seeInside": "Veure'l per dins",
+    "prev": "Anteriors",
+    "next": "Següents",
     "subtitleShowcase": "Contes reals creats a la nostra plataforma. Fes clic per fullejar el llibre complet.",
     "viewAll": "Veure col·lecció completa",
     "viewSample": "Fullejar llibre",
@@ -477,28 +515,35 @@
     }
   },
   "quality": {
-    "badge": "Qualitat que es toca",
-    "title": "Objectes fets per perdurar en el temps",
-    "description": "No és només un conte, és un record tangible. Fugim de l'efímer digital per crear llibres robustos.",
-    "ecoLabel": "Impressió local a Espanya",
-    "bindingTitle": "Tapa dura o tova",
-    "bindingDescription": "Enquadernació encolada, com un bon àlbum de fotos, amb coberta de laminat mat que resisteix l'ús diari. La tapa dura és l'opció més resistent.",
-    "paperTitle": "Paper estucat setinat",
-    "paperDescription": "Paper de 170 g amb acabat setinat: colors vius, tacte suau i pàgines amb cos que aguanten moltes lectures."
+    "eyebrow": "El llibre imprès",
+    "title": "Un llibre de veritat, per llegir-lo mil vegades",
+    "subtitle": "Fet per a les lectures de cada nit i per guardar-lo molts anys. I amb el seu PDF, per llegir-lo també de viatge.",
+    "mockupAlt": "El llibre de {name} en tapa dura, de 20 × 20 cm",
+    "specs": {
+      "size": { "label": "Format", "value": "20 × 20 cm · 30 pàgines · 12 escenes il·lustrades" },
+      "paper": { "label": "Paper", "value": "Estucat setinat de 170 g, a tot color" },
+      "cover": { "label": "Tapes", "value": "Dura o tova, amb acabat mat" },
+      "shipping": { "label": "Enviament", "value": "Gratuït a la Península i les Balears, en 7–10 dies feiners" },
+      "digital": { "label": "Versió digital", "value": "El PDF va inclòs amb el llibre imprès" }
+    },
+    "softcover": "Tapa tova",
+    "hardcover": "Tapa dura",
+    "vatShipping": "IVA i enviament inclosos"
   },
   "uniqueEdition": {
-    "badge": "Edició Única",
-    "titleStart": "No existeix cap altre",
-    "titleHighlight": "llibre",
-    "titleEnd": "com aquest",
-    "description": "Cada conte que creem és irrepetible. La història, les il·lustracions, els detalls: tot es genera una sola vegada, exclusivament per al teu fill. Cap altre nen al món tindrà mai el mateix llibre.",
-    "pillar1Title": "Història irrepetible",
-    "pillar1Description": "Cada trama s'escriu des de zero a partir dels gustos, somnis i personalitat del teu fill.",
-    "pillar2Title": "Il·lustracions úniques",
-    "pillar2Description": "Cada il·lustració es crea per a la seva història. No són plantilles amb una cara enganxada: són escenes originals pensades per a ell.",
-    "pillar3Title": "La teva dedicatòria, a la primera pàgina",
-    "pillar3Description": "Escriu unes paraules per a ell i obriran el seu llibre, perquè d'aquí a molts anys sàpiga qui li va regalar i per què.",
-    "cta": "Crear un llibre únic"
+    "eyebrow": "Només seu",
+    "title": "No és una plantilla amb la seva cara enganxada",
+    "subtitle": "Escrivim el seu conte i el pintem escena a escena. Així és el llibre de {name}, de {age} anys:",
+    "sceneAlt": "{name} a la seva aventura, escena {n}",
+    "caption": "Pàgines reals de «{title}»",
+    "points": {
+      "written": { "title": "Escrit per a la seva edat", "text": "El seu nom a cada pàgina i frases a la seva mida, de 2 a 12 anys." },
+      "painted": { "title": "Pintat escena a escena", "text": "12 il·lustracions de la seva aventura, amb el seu cabell, la seva pell i fins i tot les pigues." },
+      "colour": { "title": "Amb el seu color preferit", "text": "Vesteix la seva roba i els detalls de cada pàgina." },
+      "dedication": { "title": "Amb les teves paraules", "text": "La teva dedicatòria obre el llibre, perquè sempre sàpiga de qui va ser el regal." }
+    },
+    "cta": "Crear el seu llibre",
+    "seeInside": "Veure el llibre de {name} per dins"
   },
   "adventurePack": {
     "badge": "Experiència Completa",
@@ -507,13 +552,36 @@
     "letter": "carta física personalitzada",
     "descriptionEnd": "del personatge principal, full d'adhesius mat i punt de llibre de fusta.",
     "cta": "Afegir extres físics (+12,90 € IVA incl.)",
-    "imageCaption": "El regal perfecte"
+    "imageCaption": "El regal perfecte",
+    "imageAlt": "Capsa de regal amb el llibre, un full d'adhesius i llapis de colors sobre una taula"
   },
-  "collectionOffer": {
-    "badge": "Biblioteca Personal",
-    "title": "Construeix el seu llegat de lectura",
-    "description": "Cada llibre, una aventura nova amb el seu nom.\nHistòries que guardaran per als seus propis fills.",
-    "cta": "Començar la col·lecció"
+  "landingFaq": {
+    "eyebrow": "Preguntes freqüents",
+    "title": "El que et preguntes abans de demanar-lo",
+    "previewQ": "Veig el llibre abans de pagar?",
+    "previewA": "Sí. Crees el seu llibre gratis i sense registrar-te, i veus la portada amb el seu nom, el seu retrat i les primeres escenes il·lustrades del seu conte. Només pagues si t'agrada.",
+    "likenessQ": "I si no s'assembla al meu fill o filla?",
+    "likenessA": "Tu decideixes com és: pell, color de cabell, pentinat, ulls, ulleres i pigues, i veus el seu retrat abans de continuar. Si a la vista prèvia el vols canviar, canvies el seu aspecte i tornem a pintar el llibre amb el nou personatge; tota la resta es manté. L'imprimim tal com el veus.",
+    "deliveryQ": "Quan arriba? Arriba per a Reis?",
+    "deliveryA": "L'imprimim sota demanda a Espanya tan bon punt fas la comanda i arriba en 7-10 dies laborables, amb l'enviament inclòs. Enviem a l'Espanya peninsular i a les Balears (de moment no a Canàries, Ceuta ni Melilla).",
+    "deliverySeason": "Per tenir-lo a casa per Nadal, demana'l fins al {christmasDate}; per a Reis, fins al {reyesDate}.",
+    "deliverySeasonReyes": "Per tenir-lo a casa abans de Reis, demana'l fins al {reyesDate}.",
+    "deliverySeasonPdf": "El llibre imprès ja no arriba a temps per a Reis, però el conte en PDF sí: t'arriba per correu després del pagament, normalment en menys d'una hora.",
+    "deliveryDatesLink": "Veure totes les dates límit",
+    "priceQ": "Quant costa i què inclou?",
+    "priceA": "Tapa tova, {softcover}. Tapa dura, {hardcover}. Només el PDF, {pdf}. Tots els preus porten l'IVA inclòs. El llibre imprès inclou l'enviament i el PDF del conte complet.",
+    "returnsQ": "El puc retornar?",
+    "returnsA": "Com que és un llibre fet a mida, amb el seu nom i el seu retrat, no admet devolucions excepte defectes de fabricació. Si arriba amb un defecte, escriu-nos i ho solucionem. Per això t'ensenyem la vista prèvia abans de pagar.",
+    "moreQuestions": "Tens un altre dubte? Escriu-nos a"
+  },
+  "finalCta": {
+    "title": "El conte que voldrà llegir cada nit comença pel seu nom.",
+    "subtitle": "Escriu-lo i en uns minuts veuràs el seu llibre. La vista prèvia és gratis: només pagues si t'agrada.",
+    "nameLabel": "Com es diu?",
+    "namePlaceholder": "El seu nom",
+    "cta": "Crear el seu llibre",
+    "ctaWithName": "Crear el llibre {deName}",
+    "meta": "Llibre imprès des de {price} · IVA inclòs · Enviament inclòs"
   },
   "footer": {
     "tagline": "Contes personalitzats, escrits i il·lustrats per a cada infant.\nImpresos en paper i enviats des d'Espanya.\nSense bateries, només imaginació.",
@@ -747,8 +815,8 @@
       "statusScenesNoCover": "{done} de {total} il·lustracions · la portada, de camí",
       "statusReady": "Ja el pots obrir.",
       "paintingCover": "Pintant la portada",
-      "progressLabel": "Progrés de la preview",
-      "scenesLabel": "Il·lustracions de la preview",
+      "progressLabel": "Progrés de la vista prèvia",
+      "scenesLabel": "Il·lustracions de la vista prèvia",
       "coverThumbAlt": "Portada",
       "sceneAlt": "Il·lustració {n}",
       "waitMessage": "Sol trigar menys d'un minut.",
@@ -819,7 +887,12 @@
       "notAccessibleTitle": "Aquest conte es va obrir en un altre navegador",
       "notAccessibleBody": "Per seguretat, cada conte només es veu al navegador on es va crear o al teu compte. Obre'l des de l'enllaç que et vam enviar per correu, o inicia sessió si el vas desar al teu compte.",
       "notAccessibleLogin": "Iniciar sessió",
-      "notAccessibleCreate": "Crear un conte nou"
+      "notAccessibleCreate": "Crear un conte nou",
+      "tapToZoom": "Toca una pàgina per ampliar-la",
+      "closeZoom": "Tancar",
+      "zoomTitle": "Pàgina ampliada",
+      "rotateHint": "Gira el mòbil per veure la doble pàgina",
+      "zoomPage": "Ampliar"
     },
     "errors": {
       "saveFailed": "No hem pogut desar el conte. Revisa la connexió i torna a prémer el botó: tot el que has escrit continua aquí.",
@@ -936,7 +1009,7 @@
     },
     "sendPreview": {
       "title": "Ho decideixes més tard?",
-      "hint": "T'enviem un enllaç a la preview per mirar-la amb calma a qualsevol dispositiu o reenviar-la. Sense subscripcions.",
+      "hint": "T'enviem un enllaç a la vista prèvia per mirar-la amb calma a qualsevol dispositiu o reenviar-la. Sense subscripcions.",
       "placeholder": "el.teu@email.com",
       "send": "Envia-me-la",
       "sending": "Enviant…",
@@ -1027,7 +1100,21 @@
           "a": "Com que és un llibre fet a mida no admet desistiment, però si arriba amb un defecte de fabricació escriu-nos i ho solucionem."
         }
       },
-      "softcoverNote": "Coberta flexible, més lleugera"
+      "softcoverNote": "Coberta flexible, més lleugera",
+      "rotateMockup": "Gira'l",
+      "later": {
+        "saveTitle": "Desa'l",
+        "saveBody": "Crea un compte gratuït i demana'l quan vulguis.",
+        "saveAction": "Crear compte",
+        "savedTitle": "Ja està desat",
+        "savedBody": "El tens a la teva biblioteca per demanar-lo quan vulguis.",
+        "savedAction": "Anar a la meva biblioteca",
+        "shareTitle": "Comparteix-lo",
+        "shareBody": "Un enllaç que s'obre a qualsevol mòbil, 30 dies, sense poder-lo editar.",
+        "emailTitle": "Rep-lo per correu",
+        "emailBody": "T'enviem l'enllaç per mirar-lo amb calma o reenviar-lo.",
+        "emailSend": "Enviar"
+      }
     }
   },
   "checkout": {
@@ -1097,7 +1184,7 @@
     "storyStatus": {
       "draft": "Esborrany",
       "generating": "Generant...",
-      "preview": "Preview llest",
+      "preview": "Vista prèvia llesta",
       "completing": "Completant...",
       "ready": "Llest",
       "ordered": "Comanda",
@@ -1106,7 +1193,7 @@
     },
     "storyActions": {
       "viewStory": "Veure conte",
-      "viewPreview": "Veure preview",
+      "viewPreview": "Veure la vista prèvia",
       "viewProgress": "Veure progrés",
       "continue": "Continuar"
     },
@@ -2258,11 +2345,11 @@
       "error": "No s'ha pogut crear l'enllaç. Torna-ho a provar.",
       "shareTitle": "El llibre {deName}",
       "shareText": "Mira el conte que estic preparant per a {name}:",
-      "hint": "Qualsevol amb l'enllaç veurà la preview (sense poder-la editar) durant 30 dies."
+      "hint": "Qualsevol amb l'enllaç veurà la vista prèvia (sense poder-la editar) durant 30 dies."
     },
     "view": {
-      "metaTitle": "El llibre {deName} · Preview",
-      "badge": "Preview compartida",
+      "metaTitle": "El llibre {deName} · Vista prèvia",
+      "badge": "Vista prèvia compartida",
       "intro": "Un tast del conte personalitzat {deName}: les primeres pàgines. La resta és sorpresa.",
       "restTitle": "La resta del conte és sorpresa",
       "restBody": "Algú que estima molt {name} està preparant aquest llibre. En vols un així per a un altre nen o nena? Amb el seu nom, el seu aspecte i la seva aventura, a punt en uns minuts.",

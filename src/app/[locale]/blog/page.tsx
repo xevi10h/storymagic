@@ -6,6 +6,9 @@ import { Link } from "@/i18n/navigation";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import MobileStickyCta from "@/components/landing/MobileStickyCta";
+import FinalCta from "@/components/landing/FinalCta";
+import { cx, focusRing } from "@/components/ui";
+import { Breadcrumbs, PageHero, kicker, marketingH1, marketingLead } from "@/components/seo-landing/MarketingHeader";
 import { getPublishedPosts } from "@/lib/blog";
 
 const BASE_URL = "https://meapica.com";
@@ -31,70 +34,72 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function BlogIndex({ params }: PageProps) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "blog" });
+  const ts = await getTranslations({ locale, namespace: "seo" });
   const posts = await getPublishedPosts(locale);
 
   return (
     <>
       <Navbar />
       <main>
-        <header className="relative overflow-hidden px-4 pt-32 pb-12">
-          <div className="absolute top-0 right-0 -z-10 h-[500px] w-[500px] -translate-y-1/3 translate-x-1/3 rounded-full bg-primary-light/20 blur-[100px] mix-blend-multiply" />
-          <div className="mx-auto max-w-4xl text-center">
-            <h1 className="font-display text-4xl font-bold tracking-tight text-secondary lg:text-6xl">
-              {t("title")}
-            </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-text-soft">
-              {t("subtitle")}
-            </p>
+        <PageHero className="pb-8! sm:pb-10!">
+          <Breadcrumbs
+            label={ts("common.breadcrumbLabel")}
+            items={[{ label: ts("common.breadcrumbHome"), href: "/" }, { label: "Blog" }]}
+          />
+          <div className="mt-4 max-w-3xl lg:mt-8">
+            <p className={kicker}>Blog</p>
+            <h1 className={cx("mt-2", marketingH1)}>{t("title")}</h1>
+            <p className={cx("mt-4 max-w-2xl", marketingLead)}>{t("subtitle")}</p>
           </div>
-        </header>
+          {/* Sticky "Crear su libro" bar (phones) appears once the reader is past the header. */}
+          <span id="hero-cta" aria-hidden className="block h-px" />
+        </PageHero>
 
-        <section className="px-4 pb-24">
-          <div className="mx-auto max-w-5xl">
+        <section aria-label={t("title")} className="bg-paper px-4 sm:px-6">
+          <div className="mx-auto max-w-[1200px]">
             {posts.length === 0 ? (
-              <p className="py-16 text-center text-text-muted">{t("empty")}</p>
+              <p className="py-16 text-center text-base text-ink-muted">{t("empty")}</p>
             ) : (
-              <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-                {posts.map((post) => (
-                  <Link
-                    key={post.slug}
-                    href={`/blog/${post.slug}`}
-                    className="group flex flex-col overflow-hidden rounded-2xl border border-border-light bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
-                  >
-                    <div className="relative aspect-[16/10] overflow-hidden bg-cream">
-                      {post.coverImageUrl ? (
-                        <Image
-                          src={post.coverImageUrl}
-                          alt={post.title}
-                          fill
-                          sizes="(max-width: 768px) 100vw, 360px"
-                          className="object-cover transition-transform duration-700 group-hover:scale-105"
-                        />
-                      ) : (
-                        <div className="flex h-full items-center justify-center bg-gradient-to-br from-badge-bg to-cream">
-                          <span className="material-symbols-outlined text-5xl text-primary">
-                            menu_book
-                          </span>
-                        </div>
+              <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+                {posts.map((post, i) => (
+                  <li key={post.slug}>
+                    <Link
+                      href={`/blog/${post.slug}`}
+                      className={cx(
+                        "group flex h-full flex-col overflow-hidden rounded-2xl border-2 border-line bg-surface transition-colors hover:border-brand/40",
+                        focusRing,
                       )}
-                    </div>
-                    <div className="flex flex-1 flex-col gap-3 p-6">
-                      <h2 className="font-display text-xl font-bold leading-tight text-secondary">
-                        {post.title}
-                      </h2>
-                      <p className="line-clamp-3 text-sm leading-relaxed text-text-soft">
-                        {post.excerpt}
-                      </p>
-                      <span className="mt-auto pt-2 text-xs font-medium text-text-muted">
-                        {t("readingTime", { min: post.readingMinutes })}
-                      </span>
-                    </div>
-                  </Link>
+                    >
+                      <div className="relative aspect-[3/2] bg-line">
+                        {post.coverImageUrl && (
+                          <Image
+                            src={post.coverImageUrl}
+                            alt=""
+                            fill
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 380px"
+                            priority={i < 3}
+                            className="object-cover"
+                          />
+                        )}
+                      </div>
+                      <div className="flex flex-1 flex-col gap-2 p-5">
+                        <h2 className="font-display text-xl font-semibold leading-tight text-ink text-balance group-hover:text-brand-text">
+                          {post.title}
+                        </h2>
+                        <p className="line-clamp-3 text-[15px] leading-relaxed text-ink-body">{post.excerpt}</p>
+                        <span className="mt-auto pt-2 text-xs font-medium text-ink-muted">
+                          {t("readingTime", { min: post.readingMinutes })}
+                        </span>
+                      </div>
+                    </Link>
+                  </li>
                 ))}
-              </div>
+              </ul>
             )}
           </div>
         </section>
+
+        <FinalCta />
       </main>
       <Footer />
       <MobileStickyCta />

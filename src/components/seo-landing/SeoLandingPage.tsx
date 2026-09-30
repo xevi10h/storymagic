@@ -1,11 +1,18 @@
-import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import MobileStickyCta from "@/components/landing/MobileStickyCta";
+import FaqItem from "@/components/landing/FaqItem";
+import FinalCta from "@/components/landing/FinalCta";
+import BookCollectionCard from "@/components/landing/BookCollectionCard";
+import type { CatalogWorld } from "@/components/landing/BookCollectionData";
+import LiveCover from "@/components/crear/LiveCover";
 import { BreadcrumbJsonLd, ProductJsonLd } from "@/components/seo/JsonLd";
+import { Heading, buttonClass, cx, focusRing } from "@/components/ui";
 import { STORY_TEMPLATES } from "@/lib/create-store";
+import { getShowcaseStories } from "@/lib/showcase";
+import { PRICING, formatPrice } from "@/lib/pricing";
 import {
   type SeoPageType,
   featuredTemplateIds,
@@ -16,6 +23,7 @@ import {
   SEO_HUB_HEADING_KEY,
 } from "@/lib/seo-landing";
 import { CHRISTMAS_DELIVERY_PATH } from "@/lib/shipping";
+import { Breadcrumbs, PageHero, kicker, marketingH1, marketingLead } from "./MarketingHeader";
 
 const BASE_URL = "https://meapica.com";
 
@@ -25,6 +33,11 @@ const FAQ_ORDER = [2, 3, 1, 4] as const;
 // Gift pages that link to the Christmas / Reyes delivery deadlines.
 const SEASONAL_GIFT_SLUGS = new Set(["christmas", "three-kings"]);
 
+// Same track as the landing catalog: snap carousel below xl, 4-column grid on wide desktop.
+const TRACK =
+  "no-scrollbar -mx-4 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 pb-2 sm:-mx-6 sm:scroll-px-6 sm:gap-4 sm:px-6 xl:mx-0 xl:grid xl:grid-cols-4 xl:gap-5 xl:overflow-visible xl:px-0 xl:pb-0";
+const TRACK_ITEM = "w-[min(78vw,280px)] shrink-0 snap-start xl:w-auto";
+
 type Props = {
   type: SeoPageType;
   slug: string;
@@ -33,22 +46,35 @@ type Props = {
 
 export default async function SeoLandingPage({ type, slug, locale }: Props) {
   const t = await getTranslations({ locale, namespace: "seo" });
-  const td = await getTranslations({ locale, namespace: "data" });
   const tf = await getTranslations({ locale, namespace: "legal" });
   const tcd = await getTranslations({ locale, namespace: "christmasDelivery" });
+  const th = await getTranslations({ locale, namespace: "hero" });
+  const tp = await getTranslations({ locale, namespace: "pricing" });
 
   const k = (field: string) => t(`${type}.${slug}.${field}`);
   const ctaHref = seoCtaHref(type, slug);
-  const ctaLabel = t("common.ctaPrimary");
+  const ctaLabel = th("cta");
+  const fromPrice = formatPrice(Math.min(PRICING.softcover.price, PRICING.hardcover.price), locale);
 
   const featured = featuredTemplateIds(type, slug)
     .map((id) => STORY_TEMPLATES.find((tpl) => tpl.id === id))
     .filter((tpl): tpl is (typeof STORY_TEMPLATES)[number] => Boolean(tpl));
 
+  // Real books painted in each world ("Ver por dentro"), newest first — same data as the landing catalog.
+  const showcase = await getShowcaseStories(locale);
+  const worlds: CatalogWorld[] = featured.map((template) => {
+    const book = showcase.find((s) => s.templateId === template.id && s.coverImage);
+    return {
+      template,
+      example: book ? { id: book.id, templateId: book.templateId, title: book.title, coverImage: book.coverImage } : null,
+    };
+  });
+
   const related = relatedSeoPages(type, slug);
   const pageUrl = `${BASE_URL}/${locale}${seoPath(type, slug)}`;
   const hubPath = seoHubPath(type);
   const hubLabel = t(SEO_HUB_HEADING_KEY[type]);
+  const heroTemplateId = featured[0]?.id ?? null;
 
   // benefits is a JSON array — next-intl t.raw returns it as-is
   const benefits = t.raw(`${type}.${slug}.benefits`) as string[];
@@ -67,206 +93,176 @@ export default async function SeoLandingPage({ type, slug, locale }: Props) {
       <Navbar />
 
       <main>
-        {/* Hero */}
-        <header className="relative overflow-hidden px-4 pt-32 pb-16">
-          <div className="absolute top-0 right-0 -z-10 h-[500px] w-[500px] -translate-y-1/3 translate-x-1/3 rounded-full bg-primary-light/20 blur-[100px] mix-blend-multiply" />
-          <div className="mx-auto max-w-4xl">
-            {/* Breadcrumb */}
-            <nav className="mb-6 flex flex-wrap items-center gap-1.5 text-sm text-text-muted">
-              <Link href="/" className="hover:text-primary">
-                {t("common.breadcrumbHome")}
-              </Link>
-              <span className="material-symbols-outlined text-base">
-                chevron_right
-              </span>
-              <Link href={hubPath} className="hover:text-primary">
-                {hubLabel}
-              </Link>
-              <span className="material-symbols-outlined text-base">
-                chevron_right
-              </span>
-              <span className="text-text-soft">{k("h1")}</span>
-            </nav>
+        {/* Hero: the promise + the live cover of this world */}
+        <PageHero>
+          <Breadcrumbs
+            label={t("common.breadcrumbLabel")}
+            items={[
+              { label: t("common.breadcrumbHome"), href: "/" },
+              { label: hubLabel, href: hubPath },
+              { label: k("h1") },
+            ]}
+          />
 
-            <h1 className="max-w-3xl font-display text-4xl font-bold leading-[1.1] tracking-tight text-secondary lg:text-6xl">
-              {k("h1")}
-            </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-text-soft">
-              {k("heroIntro")}
-            </p>
-
-            <div className="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-              <Link
-                href={ctaHref}
-                className="flex h-14 items-center justify-center gap-2 rounded-lg bg-primary px-8 text-lg font-bold text-white shadow-lg shadow-primary/10 transition-all hover:-translate-y-1 hover:bg-primary-hover"
-              >
-                {ctaLabel}
-                <span className="material-symbols-outlined">arrow_forward</span>
-              </Link>
-              <div className="flex items-center gap-2 text-sm font-medium text-text-soft">
-                <span className="material-symbols-outlined text-xl text-success">
-                  forest
-                </span>
-                <span>{tf("faq.section4Title")}</span>
-              </div>
+          <div className="mt-4 grid grid-cols-1 items-center gap-8 lg:mt-8 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-16 xl:grid-cols-[minmax(0,1fr)_420px]">
+            <div className="mx-auto w-[52vw] max-w-[220px] lg:order-2 lg:w-full lg:max-w-none">
+              <LiveCover name="" templateId={heroTemplateId} priority sizes="(max-width: 1024px) 220px, 420px" />
             </div>
 
-            {type === "gifts" && SEASONAL_GIFT_SLUGS.has(slug) && (
-              <Link
-                href={CHRISTMAS_DELIVERY_PATH}
-                className="group mt-6 inline-flex items-start gap-2 text-sm font-bold text-secondary transition-colors hover:text-primary"
-              >
-                <span aria-hidden className="material-symbols-outlined text-lg leading-5 text-primary">
-                  local_shipping
-                </span>
-                <span className="underline decoration-border-medium underline-offset-4 group-hover:decoration-primary">
-                  {tcd("seoCallout")}
-                </span>
-              </Link>
-            )}
-          </div>
-        </header>
+            <div className="lg:order-1">
+              <p className={kicker}>{hubLabel}</p>
+              <h1 className={cx("mt-2", marketingH1)}>{k("h1")}</h1>
+              <p className={cx("mt-4 max-w-xl", marketingLead)}>{k("heroIntro")}</p>
 
-        {/* Body + benefits */}
-        <section className="bg-white px-4 py-20">
-          <div className="mx-auto grid max-w-5xl gap-12 md:grid-cols-[1.4fr_1fr]">
+              <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
+                <Link id="hero-cta" href={ctaHref} className={buttonClass({ className: "min-h-14 text-lg! sm:px-8" })}>
+                  {ctaLabel}
+                  <span aria-hidden className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1">
+                    arrow_forward
+                  </span>
+                </Link>
+                <Link
+                  href="/ejemplo"
+                  className={cx(
+                    "inline-flex min-h-11 items-center justify-center gap-1 self-center rounded-full px-3 text-sm font-semibold text-ink-soft underline decoration-brand/30 underline-offset-4 transition-colors hover:text-brand-text sm:self-auto",
+                    focusRing,
+                  )}
+                >
+                  {th("sampleCta")}
+                </Link>
+              </div>
+
+              <p className="mt-3 text-center text-sm text-ink-soft sm:text-left">
+                <span className="font-bold tabular-nums text-brand-deep">{th("priceFrom", { price: fromPrice })}</span>
+                <span> · {tp("vatIncluded")}</span>
+                <span> · {th("freeShipping")}</span>
+              </p>
+
+              <ul className="mt-6 flex flex-col gap-2.5 border-t border-line pt-5 text-sm text-ink-soft sm:flex-row sm:flex-wrap sm:gap-x-6">
+                {[th("trustPreview"), th("trustFormats")].map((line) => (
+                  <li key={line} className="flex items-center gap-2">
+                    <span aria-hidden className="material-symbols-outlined !text-xl text-brand">
+                      check_circle
+                    </span>
+                    {line}
+                  </li>
+                ))}
+              </ul>
+
+              {type === "gifts" && SEASONAL_GIFT_SLUGS.has(slug) && (
+                <Link
+                  href={CHRISTMAS_DELIVERY_PATH}
+                  className={cx(
+                    "mt-5 inline-flex min-h-11 items-center gap-2 rounded-md text-sm font-semibold text-ink-soft underline decoration-brand/30 underline-offset-4 transition-colors hover:text-brand-text",
+                    focusRing,
+                  )}
+                >
+                  <span aria-hidden className="material-symbols-outlined !text-xl text-success">
+                    local_shipping
+                  </span>
+                  {tcd("seoCallout")}
+                </Link>
+              )}
+            </div>
+          </div>
+        </PageHero>
+
+        {/* Body copy + what makes it special */}
+        <section aria-labelledby="seo-body-title" className="border-y border-line bg-surface px-4 py-16 sm:px-6 sm:py-24">
+          <div className="mx-auto grid max-w-[1200px] gap-10 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-16">
             <div>
-              <h2 className="mb-6 font-display text-3xl font-bold text-secondary">
+              <Heading id="seo-body-title" as="h2" size="page" className="max-w-2xl text-balance">
                 {k("bodyHeading")}
-              </h2>
-              <div className="flex flex-col gap-5">
+              </Heading>
+              <div className="mt-6 flex max-w-prose flex-col gap-5">
                 {bodyParagraphs.map((p, i) => (
-                  <p key={i} className="text-lg leading-relaxed text-text-soft">
+                  <p key={i} className="text-base leading-relaxed text-ink-body sm:text-lg sm:leading-[1.75]">
                     {p}
                   </p>
                 ))}
               </div>
             </div>
-            <div className="rounded-2xl border border-border-light bg-cream/50 p-8">
-              <h3 className="mb-5 font-display text-xl font-bold text-secondary">
-                {k("benefitsHeading")}
-              </h3>
-              <ul className="flex flex-col gap-4">
+            <aside className="self-start rounded-2xl border-2 border-line bg-paper p-6 sm:p-7">
+              <h3 className="font-display text-lg font-semibold leading-snug text-ink sm:text-xl">{k("benefitsHeading")}</h3>
+              <ul className="mt-4 flex flex-col gap-3.5">
                 {benefits.map((b, i) => (
-                  <li key={i} className="flex items-start gap-3 text-text-soft">
-                    <span className="material-symbols-outlined mt-0.5 shrink-0 text-primary">
+                  <li key={i} className="flex items-start gap-3 text-[15px] leading-snug text-ink-soft">
+                    <span aria-hidden className="material-symbols-outlined mt-px !text-xl shrink-0 text-brand">
                       check_circle
                     </span>
                     <span>{b}</span>
                   </li>
                 ))}
               </ul>
-            </div>
+            </aside>
           </div>
         </section>
 
-        {/* Featured stories */}
-        <section className="bg-cream px-4 py-20">
-          <div className="mx-auto max-w-7xl">
-            <div className="mb-10 text-center">
-              <h2 className="mb-3 font-display text-3xl font-bold text-secondary md:text-4xl">
-                {t("common.featuredHeading")}
-              </h2>
-              <p className="mx-auto max-w-xl text-text-soft">
-                {t("common.featuredSubheading")}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-5 md:grid-cols-4">
-              {featured.map((tpl) => (
-                <Link
-                  key={tpl.id}
-                  href={`/crear?template=${tpl.id}&from=seo`}
-                  className="group flex flex-col overflow-hidden rounded-xl border border-border-light/50 bg-white shadow-sm transition-all duration-300 hover:shadow-xl"
-                >
-                  <div className="relative aspect-3/4 overflow-hidden bg-cream">
-                    <Image
-                      src={tpl.image}
-                      alt={td(`templates.${tpl.id}.title`)}
-                      fill
-                      sizes="(max-width: 768px) 45vw, 280px"
-                      className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                    <div className="absolute right-2 top-2 rounded-full bg-white/90 px-2.5 py-0.5 text-xs font-bold text-primary backdrop-blur">
-                      {td(`templates.${tpl.id}.ageRange`)}
-                    </div>
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-display text-base font-bold leading-tight text-secondary">
-                      {td(`templates.${tpl.id}.title`)}
-                    </h3>
-                  </div>
-                </Link>
+        {/* Worlds for this page, same cards as the landing catalog */}
+        <section aria-labelledby="seo-featured-title" className="bg-paper px-4 py-16 sm:px-6 sm:py-24">
+          <div className="mx-auto max-w-[1200px]">
+            <Heading
+              id="seo-featured-title"
+              as="h2"
+              size="page"
+              subtitle={t("common.featuredSubheading")}
+              className="mb-8 max-w-2xl text-balance"
+            >
+              {t("common.featuredHeading")}
+            </Heading>
+            <div className={TRACK}>
+              {worlds.map((world) => (
+                <BookCollectionCard key={world.template.id} world={world} fromPrice={fromPrice} className={TRACK_ITEM} />
               ))}
             </div>
           </div>
         </section>
 
         {/* FAQ */}
-        <section className="bg-white px-4 py-20">
+        <section aria-labelledby="seo-faq-title" className="bg-paper px-4 pb-16 sm:px-6 sm:pb-24">
           <div className="mx-auto max-w-3xl">
-            <h2 className="mb-10 text-center font-display text-3xl font-bold text-secondary">
+            <Heading id="seo-faq-title" as="h2" size="page" className="mb-8 text-balance text-center">
               {t("common.faqHeading")}
-            </h2>
-            <div className="flex flex-col gap-4">
+            </Heading>
+            <div className="divide-y divide-line overflow-hidden rounded-2xl border-2 border-line bg-surface">
               {FAQ_ORDER.map((n) => (
-                <details
-                  key={n}
-                  className="group rounded-xl border border-border-light bg-cream/40 transition-colors open:bg-cream/70"
-                >
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 font-display text-lg font-bold text-secondary [&::-webkit-details-marker]:hidden">
-                    {tf(`faq.section${n}Title`)}
-                    <span className="material-symbols-outlined shrink-0 text-text-muted transition-transform duration-300 group-open:rotate-180">
-                      expand_more
-                    </span>
-                  </summary>
-                  <p className="px-6 pb-6 leading-relaxed text-text-soft">
-                    {tf(`faq.section${n}Text`)}
-                  </p>
-                </details>
+                <FaqItem key={n} question={tf(`faq.section${n}Title`)} answer={tf(`faq.section${n}Text`)} />
               ))}
             </div>
           </div>
         </section>
 
         {/* Related pages — internal linking */}
-        <section className="bg-cream px-4 py-20">
-          <div className="mx-auto max-w-5xl">
-            <h2 className="mb-8 text-center font-display text-2xl font-bold text-secondary">
+        <section aria-labelledby="seo-related-title" className="border-y border-line bg-surface px-4 py-14 sm:px-6 sm:py-20">
+          <div className="mx-auto max-w-[1200px]">
+            <Heading id="seo-related-title" as="h2" size="section" className="mb-5">
               {t("common.relatedHeading")}
-            </h2>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+            </Heading>
+            <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {related.map((p) => (
-                <Link
-                  key={`${p.type}-${p.slug}`}
-                  href={seoPath(p.type, p.slug)}
-                  className="flex items-center justify-between gap-3 rounded-xl border border-border-light bg-white px-5 py-4 text-sm font-bold text-secondary shadow-sm transition-all hover:border-primary hover:text-primary hover:shadow-md"
-                >
-                  <span className="line-clamp-1">{t(`${p.type}.${p.slug}.h1`)}</span>
-                  <span className="material-symbols-outlined shrink-0 text-base text-text-muted">
-                    arrow_forward
-                  </span>
-                </Link>
+                <li key={`${p.type}-${p.slug}`}>
+                  <Link
+                    href={seoPath(p.type, p.slug)}
+                    className={cx(
+                      "group flex min-h-14 items-center justify-between gap-3 rounded-2xl border-2 border-line bg-paper px-5 py-3 font-display text-base font-semibold leading-snug text-ink transition-colors hover:border-brand/40",
+                      focusRing,
+                    )}
+                  >
+                    <span className="min-w-0">{t(`${p.type}.${p.slug}.h1`)}</span>
+                    <span
+                      aria-hidden
+                      className="material-symbols-outlined !text-xl shrink-0 text-ink-muted transition-transform group-hover:translate-x-1 group-hover:text-brand-text"
+                    >
+                      arrow_forward
+                    </span>
+                  </Link>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         </section>
 
-        {/* Final CTA */}
-        <section className="px-4 py-20 text-center">
-          <div className="mx-auto max-w-2xl">
-            <h2 className="mb-6 font-display text-3xl font-bold text-secondary md:text-4xl">
-              {k("bodyHeading")}
-            </h2>
-            <Link
-              href={ctaHref}
-              className="mx-auto inline-flex items-center gap-2 rounded-lg bg-secondary px-10 py-4 text-lg font-bold text-white shadow-lg transition-all hover:scale-105 hover:bg-secondary-hover"
-            >
-              {ctaLabel}
-              <span className="material-symbols-outlined">auto_stories</span>
-            </Link>
-          </div>
-        </section>
+        <FinalCta />
       </main>
 
       <Footer />

@@ -2,6 +2,7 @@
   "seo": {
     "common": {
       "breadcrumbHome": "Home",
+      "breadcrumbLabel": "Breadcrumb",
       "featuredHeading": "Choose an adventure to begin",
       "featuredSubheading": "Every story is written and illustrated around one child: yours.",
       "relatedHeading": "Explore more ideas",
@@ -406,37 +407,74 @@
     "signIn": "Sign in",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
+    "howItWorks": "How it works",
+    "books": "Books",
+    "sample": "See an example",
+    "faq": "FAQ",
+    "createBook": "Create their book",
+    "mainNav": "Main navigation",
     "user": "User",
     "language": "Language"
   },
   "hero": {
-    "badge": "100% Screen-Free",
-    "titleStart": "Fewer screens,",
-    "titleHighlight": "more stories",
-    "titleEnd": "you can touch",
-    "description": "Bring back the magic of turning pages. Personalized stories printed on premium paper, designed to create moments of real connection, far from the glow of tablets.",
-    "cta": "Create my story",
+    "eyebrow": "Personalised printed book",
+    "title": "Your child, the <hl>hero</hl> of their very own book",
+    "subtitle": "Their name on the cover, their face in watercolour and an adventure you choose. Printed and delivered to your door.",
+    "nameLabel": "What's their name?",
+    "namePlaceholder": "Type their name",
+    "cta": "Create their book",
+    "ctaWithName": "Create {deName}’s book",
     "priceFrom": "From {price}",
-    "priceNote": "Printed book + digital version included",
-    "secondaryCta": "See paper quality",
-    "fscPaper": "170 g coated silk paper",
-    "artisanalShipping": "Printed and shipped from Spain",
-    "imageCaption": "The feel of paper matters",
-    "imageSubcaption": "A sensory experience no screen can match."
+    "freeShipping": "Free shipping",
+    "trustPreview": "See their book before you pay",
+    "trustFormats": "Hardcover or softcover, PDF included",
+    "sampleCta": "Look inside a book",
+    "coverCaption": "20 × 20 cm · The artwork changes with the adventure you pick"
   },
   "howItWorks": {
-    "badge": "Back to basics",
-    "title": "Real magic in 3 steps",
-    "step1Title": "Choose a story",
-    "step1Description": "Pick a plot designed to be read aloud and touch the heart.",
-    "step2Title": "Made to measure",
-    "step2Description": "We tailor the watercolor-style illustrations so your child can recognize themselves.",
-    "step3Title": "Receive a treasure",
-    "step3Description": "A printed book, hardcover or softcover, arrives at your door ready to be cherished."
+    "eyebrow": "How it works",
+    "title": "From their name to their book, in minutes",
+    "subtitle": "Make it on your phone and see their book before you pay.",
+    "stepsLabel": "Steps to create their book",
+    "stepNumber": "Step {n}:",
+    "steps": {
+      "name": {
+        "title": "Type their name",
+        "text": "It appears on the cover instantly, and on every page of the story."
+      },
+      "look": {
+        "title": "Choose how they look",
+        "text": "Skin, hair, eyes, glasses and their favourite colour. That's how they'll appear in every illustration.",
+        "textPhoto": "Build their look or upload a photo. That's how they'll appear in every illustration."
+      },
+      "adventure": {
+        "title": "Pick their adventure",
+        "text": "Choose a world and its three chapters. Every choice changes the story."
+      },
+      "preview": {
+        "title": "See it before you pay",
+        "text": "In about a minute you see the cover and the first painted scenes. Free, no sign-up."
+      },
+      "print": {
+        "title": "Delivered to your door",
+        "text": "Printed in hardcover or softcover, with free shipping. Arrives in 7–10 working days."
+      }
+    },
+    "lookAlt": "Watercolour portrait of {name}",
+    "previewAlt": "A page from the preview of {name}'s book",
+    "previewBadge": "Free",
+    "printAlt": "{name}'s book printed in hardcover",
+    "cta": "Create their book"
   },
   "bookCollection": {
-    "title": "Pick a story, add your child",
-    "subtitle": "Illustrated stories ready to personalize. Choose your favorite and make your child the hero.",
+    "title": "Choose their adventure",
+    "subtitle": "Each world is a watercolour storybook with their name and their face. You pick the three chapters.",
+    "filterLabel": "Child's age",
+    "priceFrom": "From <b>{price}</b>",
+    "cta": "Create their book",
+    "seeInside": "Look inside",
+    "prev": "Previous",
+    "next": "Next",
     "subtitleShowcase": "Real stories created on our platform. Click to browse the complete book.",
     "viewAll": "View full collection",
     "viewSample": "Browse book",
@@ -467,28 +505,35 @@
     }
   },
   "quality": {
-    "badge": "Quality you can feel",
-    "title": "Objects made to stand the test of time",
-    "description": "It's not just a story, it's a tangible keepsake. We steer away from the digitally ephemeral to create sturdy books.",
-    "ecoLabel": "Printed locally in Spain",
-    "bindingTitle": "Hardcover or softcover",
-    "bindingDescription": "Glued binding, like a premium photo album, with a matt-laminated cover that stands up to everyday use. Hardcover is the sturdiest option.",
-    "paperTitle": "Coated silk paper",
-    "paperDescription": "170 g paper with a silk finish: vivid colour, a soft touch and substantial pages that survive many readings."
+    "eyebrow": "The printed book",
+    "title": "A real book, made to be read a thousand times",
+    "subtitle": "Made for bedtime every night and for keeping for years. And with its PDF, to read on the go too.",
+    "mockupAlt": "{name}'s book in hardcover, 20 × 20 cm",
+    "specs": {
+      "size": { "label": "Format", "value": "20 × 20 cm · 30 pages · 12 illustrated scenes" },
+      "paper": { "label": "Paper", "value": "170 gsm silk coated paper, full colour" },
+      "cover": { "label": "Covers", "value": "Hardcover or softcover, matte finish" },
+      "shipping": { "label": "Shipping", "value": "Free to mainland Spain and the Balearic Islands, in 7–10 working days" },
+      "digital": { "label": "Digital version", "value": "The PDF comes with the printed book" }
+    },
+    "softcover": "Softcover",
+    "hardcover": "Hardcover",
+    "vatShipping": "VAT and shipping included"
   },
   "uniqueEdition": {
-    "badge": "One-of-a-Kind",
-    "titleStart": "No other",
-    "titleHighlight": "book",
-    "titleEnd": "like this exists",
-    "description": "Every story we create is unrepeatable. The plot, the illustrations, the details: everything is generated once, exclusively for your child. No other child in the world will ever have the same book.",
-    "pillar1Title": "Unrepeatable story",
-    "pillar1Description": "Each plot is written from scratch based on your child's interests, dreams, and personality.",
-    "pillar2Title": "Unique illustrations",
-    "pillar2Description": "Every illustration is created for their story. Not templates with a face pasted in: original scenes made for them.",
-    "pillar3Title": "Your dedication on the first page",
-    "pillar3Description": "Write a few words for them and they will open the book, so years from now they know who gave it and why.",
-    "cta": "Create a unique book"
+    "eyebrow": "Only theirs",
+    "title": "Not a template with their face pasted in",
+    "subtitle": "We write their story and paint it scene by scene. This is {name}'s book, age {age}:",
+    "sceneAlt": "{name} in the adventure, scene {n}",
+    "caption": "Real pages from “{title}”",
+    "points": {
+      "written": { "title": "Written for their age", "text": "Their name on every page, with sentences pitched to them, from 2 to 12." },
+      "painted": { "title": "Painted scene by scene", "text": "12 illustrations of their adventure, with their hair, their skin and even their freckles." },
+      "colour": { "title": "In their favourite colour", "text": "It dresses their clothes and the details on every page." },
+      "dedication": { "title": "With your words", "text": "Your dedication opens the book, so they'll always know who it came from." }
+    },
+    "cta": "Create their book",
+    "seeInside": "Look inside {name}'s book"
   },
   "adventurePack": {
     "badge": "Complete Experience",
@@ -497,13 +542,36 @@
     "letter": "personalized handwritten letter",
     "descriptionEnd": "from the main character, a sheet of matte stickers, and a wooden bookmark.",
     "cta": "Add physical extras (+€12.90 incl. VAT)",
-    "imageCaption": "The perfect gift"
+    "imageCaption": "The perfect gift",
+    "imageAlt": "Gift box with the book, a sticker sheet and coloured pencils on a table"
   },
-  "collectionOffer": {
-    "badge": "Personal Library",
-    "title": "Build their reading legacy",
-    "description": "Every book, a new adventure with their name on it.\nStories they'll keep for their own children.",
-    "cta": "Start the collection"
+  "landingFaq": {
+    "eyebrow": "FAQ",
+    "title": "What parents ask before ordering",
+    "previewQ": "Do I see the book before paying?",
+    "previewA": "Yes. You create their book for free, without signing up, and see the cover with their name, their portrait and the first illustrated scenes of their story. You only pay if you love it.",
+    "likenessQ": "What if it doesn't look like my child?",
+    "likenessA": "You decide how they look: skin, hair colour, hairstyle, eyes, glasses and freckles, and you see their portrait before moving on. If you want to change it in the preview, change their look and we paint the book again with the new character; everything else stays. We print it exactly as you see it.",
+    "deliveryQ": "When does it arrive? Will it arrive for Christmas?",
+    "deliveryA": "We print it on demand in Spain as soon as you order, and it arrives in 7-10 business days, shipping included. We ship to mainland Spain and the Balearic Islands (not yet to the Canary Islands, Ceuta or Melilla).",
+    "deliverySeason": "To have it at home for Christmas Eve, order by {christmasDate}; for Three Kings' Day, by {reyesDate}.",
+    "deliverySeasonReyes": "To have it at home before Three Kings' Day, order by {reyesDate}.",
+    "deliverySeasonPdf": "The printed book no longer arrives in time for Three Kings' Day, but the PDF story does: it reaches your inbox after payment, usually in under an hour.",
+    "deliveryDatesLink": "See all order deadlines",
+    "priceQ": "How much is it and what's included?",
+    "priceA": "Softcover, {softcover}. Hardcover, {hardcover}. PDF only, {pdf}. All prices include VAT. The printed book includes shipping and the PDF of the full story.",
+    "returnsQ": "Can I return it?",
+    "returnsA": "As a made-to-order book with their name and portrait, it can't be returned except for manufacturing defects. If it arrives with a defect, write to us and we'll sort it out. That's why you see the preview before paying.",
+    "moreQuestions": "Another question? Write to us at"
+  },
+  "finalCta": {
+    "title": "The story they'll want every night starts with their name.",
+    "subtitle": "Type it and in a few minutes you'll see their book. The preview is free: you only pay if you love it.",
+    "nameLabel": "What's their name?",
+    "namePlaceholder": "Their name",
+    "cta": "Create their book",
+    "ctaWithName": "Create {deName}'s book",
+    "meta": "Printed book from {price} · VAT included · Shipping included"
   },
   "footer": {
     "tagline": "Personalized storybooks, written and illustrated for each child.\nPrinted on paper and shipped from Spain.\nNo batteries, just imagination.",
@@ -809,7 +877,12 @@
       "notAccessibleTitle": "This story was opened in another browser",
       "notAccessibleBody": "For privacy, each story can only be seen in the browser where it was created or in your account. Open it from the link we emailed you, or log in if you saved it to your account.",
       "notAccessibleLogin": "Log in",
-      "notAccessibleCreate": "Create a new story"
+      "notAccessibleCreate": "Create a new story",
+      "tapToZoom": "Tap a page to enlarge it",
+      "closeZoom": "Close",
+      "zoomTitle": "Enlarged page",
+      "rotateHint": "Turn your phone sideways to see both pages",
+      "zoomPage": "Enlarge"
     },
     "errors": {
       "saveFailed": "We couldn't save your book. Check your connection and tap the button again: everything you've entered is still here.",
@@ -1017,7 +1090,21 @@
           "a": "As a made-to-order book it has no right of withdrawal, but if it arrives with a manufacturing defect, write to us and we will sort it out."
         }
       },
-      "softcoverNote": "Flexible cover, lighter"
+      "softcoverNote": "Flexible cover, lighter",
+      "rotateMockup": "Turn it",
+      "later": {
+        "saveTitle": "Save it",
+        "saveBody": "Create a free account and order it whenever you like.",
+        "saveAction": "Create account",
+        "savedTitle": "It's saved",
+        "savedBody": "It's in your library, ready to order whenever you like.",
+        "savedAction": "Go to my library",
+        "shareTitle": "Share it",
+        "shareBody": "A link that opens on any phone, for 30 days, view only.",
+        "emailTitle": "Email it to yourself",
+        "emailBody": "We'll send you the link to look at it calmly or forward it.",
+        "emailSend": "Send"
+      }
     }
   },
   "checkout": {

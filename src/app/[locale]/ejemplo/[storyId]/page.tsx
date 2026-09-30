@@ -5,6 +5,8 @@ import { useParams } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { PRICING, formatPrice } from "@/lib/pricing";
+import BrandLogo from "@/components/BrandLogo";
+import { Button, buttonClass, cx, focusRing } from "@/components/ui";
 import BookViewerSwitch from "@/components/book-viewer/BookViewerSwitch";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import type { BookPage } from "@/components/book-viewer/types";
@@ -134,6 +136,8 @@ function buildPages(story: ShowcaseStoryData): BookPage[] {
 export default function ShowcasePage() {
   const t = useTranslations("showcase");
   const tPricing = useTranslations("pricing");
+  const tHero = useTranslations("hero");
+  const tCollection = useTranslations("bookCollection");
   const locale = useLocale();
   const { storyId } = useParams<{ storyId: string }>();
 
@@ -189,20 +193,34 @@ export default function ShowcasePage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-cream">
-        <span className="material-symbols-outlined animate-spin text-4xl text-primary">progress_activity</span>
-        <p className="mt-4 text-sm text-text-muted">{t("loading")}</p>
+      <div role="status" className="flex min-h-[100dvh] flex-col items-center justify-center bg-paper px-4">
+        <span aria-hidden className="material-symbols-outlined animate-spin text-4xl text-brand motion-reduce:animate-none">
+          progress_activity
+        </span>
+        <p className="mt-4 text-sm text-ink-muted">{t("loading")}</p>
       </div>
     );
   }
 
   if (error || !story) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-cream px-4">
-        <span className="material-symbols-outlined text-5xl text-red-400">error</span>
-        <p className="mt-4 text-base text-text-main">{t("notFound")}</p>
-        <p className="mt-1 text-sm text-text-muted">{t("notFoundHint")}</p>
-        <Link href="/" className="mt-6 text-sm text-primary hover:underline">{t("backToHome")}</Link>
+      <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-paper px-4 text-center">
+        <Link href="/" aria-label="Meapica" className={cx("mb-10 rounded-md", focusRing)}>
+          <BrandLogo className="h-7 text-brand-deep" />
+        </Link>
+        <h1 className="text-balance font-display text-[26px] font-bold leading-tight text-ink sm:text-4xl">{t("notFound")}</h1>
+        <p className="mt-2 max-w-md text-base leading-relaxed text-ink-body">{t("notFoundHint")}</p>
+        <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row">
+          <Link href="/ejemplo" className={buttonClass()}>
+            {tCollection("viewAll")}
+            <span aria-hidden className="material-symbols-outlined text-lg transition-transform group-hover:translate-x-1">
+              arrow_forward
+            </span>
+          </Link>
+          <Link href="/" className={buttonClass({ variant: "quiet" })}>
+            {t("backToHome")}
+          </Link>
+        </div>
       </div>
     );
   }
@@ -210,46 +228,49 @@ export default function ShowcasePage() {
   const bookTitle = story.title ?? story.generated_text.bookTitle;
   const softcoverPrice = formatPrice(PRICING.softcover.price, locale);
   const hardcoverPrice = formatPrice(PRICING.hardcover.price, locale);
+  // Same world as this example, pre-chosen in the creation flow.
+  const createHref = `/crear?template=${encodeURIComponent(story.template_id)}&from=example`;
 
   return (
-    <div className="min-h-screen bg-create-bg">
-      {/* ── Header (identical to preview page) ──────────────────────────── */}
-      <header className="sticky top-0 z-50 bg-white border-b border-border-light">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-3">
-            <Link href="/" className="text-text-muted transition-colors hover:text-primary">
-              <span className="material-symbols-outlined text-xl">arrow_back</span>
+    <div className="min-h-[100dvh] bg-paper">
+      {/* ── Header ─────────────────────────────────────────────────────── */}
+      <header className="sticky top-0 z-50 border-b border-brand/10 bg-paper/90 backdrop-blur-md">
+        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-3 px-4 sm:px-6">
+          <div className="flex min-w-0 items-center gap-1">
+            <Link
+              href="/ejemplo"
+              aria-label={t("title")}
+              className={cx(
+                "-ml-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-ink-muted transition-colors hover:bg-line hover:text-ink-soft",
+                focusRing,
+              )}
+            >
+              <span aria-hidden className="material-symbols-outlined">arrow_back</span>
             </Link>
-            <Link href="/">
-              <img src="/images/meapica-logo.svg" alt="Meapica" className="h-5" />
+            <Link href="/" aria-label="Meapica" className={cx("flex items-center rounded-md", focusRing)}>
+              <BrandLogo className="h-5 text-brand-deep sm:h-6" />
             </Link>
           </div>
-
-          <Link
-            href="/"
-            className="text-text-muted transition-colors hover:text-primary"
-          >
-            <span className="material-symbols-outlined text-xl">close</span>
+          <Link href={createHref} className={buttonClass({ size: "sm" })}>
+            {tHero("cta")}
           </Link>
         </div>
       </header>
 
-      {/* ── Title bar (identical to preview page) ───────────────────────── */}
-      <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-2">
-        <h2 className="font-display text-sm font-bold text-secondary truncate max-w-50 sm:max-w-none">
-          {bookTitle}
-        </h2>
-        <div className="flex items-center gap-2">
-          <span className="rounded-full bg-create-primary/10 px-2.5 py-0.5 text-[10px] font-bold text-create-primary uppercase tracking-wide">
+      {/* ── Title bar ──────────────────────────────────────────────────── */}
+      <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 pt-5 sm:px-6">
+        <h1 className="min-w-0 truncate font-display text-lg font-bold text-ink sm:text-xl">{bookTitle}</h1>
+        <div className="flex shrink-0 items-center gap-2">
+          <span className="rounded-full bg-brand/10 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wide text-brand-text">
             {t("sampleBadge")}
           </span>
-          <span className="text-xs text-text-muted tabular-nums">
+          <span className="text-xs text-ink-muted tabular-nums">
             {currentPage + 1} / {totalPages}
           </span>
         </div>
       </div>
 
-      {/* ── Book Viewer (identical container as preview page) ────────────── */}
+      {/* ── Book Viewer (same container as the preview page) ───────────── */}
       <section className="mx-auto max-w-4xl px-4 py-6 sm:py-8">
         <ErrorBoundary>
           <BookViewerSwitch
@@ -263,51 +284,40 @@ export default function ShowcasePage() {
         </ErrorBoundary>
       </section>
 
-      {/* ── CTA Section (same style as preview's PDF download section) ──── */}
-      <div className="mx-auto max-w-3xl px-4 pb-6">
-        <button
+      {/* ── Free sample PDF ────────────────────────────────────────────── */}
+      <div className="mx-auto max-w-md px-4 pb-10">
+        <Button
+          variant="secondary"
+          block
           onClick={handleDownloadPdf}
-          disabled={downloadingPdf}
-          className="group mx-auto flex w-full max-w-md items-center justify-center gap-2.5 rounded-xl border-2 border-border-light bg-white px-6 py-3.5 text-sm font-bold text-secondary transition-all hover:border-create-primary hover:bg-create-primary/5 hover:text-create-primary active:scale-[0.98] shadow-sm"
+          loading={downloadingPdf}
+          leadingIcon={downloadingPdf ? undefined : "download"}
         >
-          <span className="material-symbols-outlined text-lg">
-            {downloadingPdf ? "progress_activity" : "picture_as_pdf"}
-          </span>
           {downloadingPdf ? t("generatingPdf") : t("downloadPdf")}
-        </button>
-        <p className="mt-2 text-center text-xs text-text-muted">
-          {t("createHint")}
-        </p>
+        </Button>
+        <p className="mt-2 text-center text-xs text-ink-muted">{t("createHint")}</p>
       </div>
 
-      {/* ── Create your own CTA ────────────────────────────────────────── */}
-      <section className="border-t border-border-light bg-white">
-        <div className="mx-auto max-w-3xl px-4 py-10 text-center">
-          <span className="material-symbols-outlined text-4xl text-create-primary mb-3">auto_stories</span>
-          <h2 className="font-display text-2xl font-bold text-secondary">
+      {/* ── Create your own ────────────────────────────────────────────── */}
+      <section aria-labelledby="create-own-title" className="border-t border-line bg-surface">
+        <div className="mx-auto max-w-2xl px-4 py-14 text-center sm:py-20">
+          <h2 id="create-own-title" className="text-balance font-display text-[26px] font-bold leading-tight text-ink sm:text-4xl">
             {t("createYourVersion")}
           </h2>
-          <p className="mt-2 text-sm text-text-soft max-w-md mx-auto">
-            {t("createYourVersionHint")}
-          </p>
-
-          <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <div className="text-sm text-text-muted">
-              {t("softcover")} <span className="font-bold text-secondary">{softcoverPrice}</span>
-              <span className="mx-2">·</span>
-              {t("hardcover")} <span className="font-bold text-primary">{hardcoverPrice}</span>
-              <span className="mx-2">·</span>
-              {tPricing("vatIncluded")}
-            </div>
-          </div>
-
-          <Link
-            href="/crear"
-            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-primary px-8 py-4 text-base font-bold text-white shadow-lg shadow-primary/20 transition-all hover:bg-primary-hover active:scale-[0.98]"
-          >
-            <span className="material-symbols-outlined text-lg">edit</span>
-            {t("createYourOwn")}
+          <p className="mx-auto mt-3 max-w-prose text-base leading-relaxed text-ink-body">{t("createYourVersionHint")}</p>
+          <Link href={createHref} className={buttonClass({ className: "mt-7 min-h-14 text-lg! sm:px-8" })}>
+            {tHero("cta")}
+            <span aria-hidden className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1">
+              arrow_forward
+            </span>
           </Link>
+          <p className="mt-4 text-sm text-ink-soft tabular-nums">
+            {t("softcover")} <span className="font-bold text-brand-deep">{softcoverPrice}</span>
+            <span aria-hidden> · </span>
+            {t("hardcover")} <span className="font-bold text-brand-deep">{hardcoverPrice}</span>
+            <span aria-hidden> · </span>
+            {tPricing("vatIncluded")}
+          </p>
         </div>
       </section>
     </div>

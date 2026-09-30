@@ -2,6 +2,7 @@
   "seo": {
     "common": {
       "breadcrumbHome": "Inicio",
+      "breadcrumbLabel": "Ruta de navegación",
       "featuredHeading": "Elige la aventura que protagonizará",
       "featuredSubheading": "Cada historia se personaliza con su nombre, su rostro y los detalles que lo hacen único.",
       "relatedHeading": "Más ideas para regalar",
@@ -406,37 +407,74 @@
     "signIn": "Iniciar sesión",
     "openMenu": "Abrir menú",
     "closeMenu": "Cerrar menú",
+    "howItWorks": "Cómo funciona",
+    "books": "Cuentos",
+    "sample": "Ver un ejemplo",
+    "faq": "Preguntas",
+    "createBook": "Crear su libro",
+    "mainNav": "Navegación principal",
     "user": "Usuario",
     "language": "Idioma"
   },
   "hero": {
-    "badge": "100% Desconexión Digital",
-    "titleStart": "Menos pantallas,",
-    "titleHighlight": "más historias",
-    "titleEnd": "para tocar",
-    "description": "Recupera la magia de pasar las páginas. Cuentos personalizados impresos en papel de alta calidad, diseñados para crear momentos de conexión real, lejos del brillo de las tablets.",
-    "cta": "Crear mi cuento",
+    "eyebrow": "Cuento personalizado impreso",
+    "title": "Tu peque, <hl>protagonista</hl> de su propio cuento",
+    "subtitle": "Con su nombre en la portada, su cara en acuarela y una aventura que eliges tú. Impreso y en tu casa.",
+    "nameLabel": "¿Cómo se llama?",
+    "namePlaceholder": "Escribe su nombre",
+    "cta": "Crear su libro",
+    "ctaWithName": "Crear el libro {deName}",
     "priceFrom": "Desde {price}",
-    "priceNote": "Libro impreso + versión digital incluida",
-    "secondaryCta": "Ver calidad del papel",
-    "fscPaper": "Papel estucado de 170 g",
-    "artisanalShipping": "Impreso y enviado desde España",
-    "imageCaption": "El tacto del papel importa",
-    "imageSubcaption": "Una experiencia sensorial que ninguna pantalla puede igualar."
+    "freeShipping": "Envío gratis",
+    "trustPreview": "Ves su libro antes de pagar",
+    "trustFormats": "Tapa dura o blanda, con PDF incluido",
+    "sampleCta": "Ver un cuento por dentro",
+    "coverCaption": "20 × 20 cm · La ilustración cambia según la aventura que elijas"
   },
   "howItWorks": {
-    "badge": "Vuelta a los orígenes",
-    "title": "Magia real en 3 pasos",
-    "step1Title": "Elige una historia",
-    "step1Description": "Selecciona una trama diseñada para ser leída en voz alta y tocar el corazón.",
-    "step2Title": "Personalización a su medida",
-    "step2Description": "Adaptamos las ilustraciones con estilo acuarela para que tu hijo se reconozca.",
-    "step3Title": "Recibe un tesoro",
-    "step3Description": "Un libro impreso, en tapa dura o blanda, llega a tu puerta listo para ser amado."
+    "eyebrow": "Cómo funciona",
+    "title": "De su nombre a su libro, en unos minutos",
+    "subtitle": "Lo creas desde el móvil y ves su libro antes de pagar.",
+    "stepsLabel": "Pasos para crear su libro",
+    "stepNumber": "Paso {n}:",
+    "steps": {
+      "name": {
+        "title": "Escribe su nombre",
+        "text": "Sale en la portada al momento y en cada página del cuento."
+      },
+      "look": {
+        "title": "Elige cómo es",
+        "text": "Piel, pelo, ojos, gafas y su color favorito. Así aparecerá en cada ilustración.",
+        "textPhoto": "Créalo a tu gusto o sube una foto. Así aparecerá en cada ilustración."
+      },
+      "adventure": {
+        "title": "Decide su aventura",
+        "text": "Elige un mundo y sus tres capítulos. Cada elección cambia la historia."
+      },
+      "preview": {
+        "title": "Míralo antes de pagar",
+        "text": "En un minuto ves su portada y las primeras escenas pintadas. Gratis y sin registrarte."
+      },
+      "print": {
+        "title": "Recíbelo en casa",
+        "text": "Impreso en tapa dura o blanda, con envío gratis. Llega en 7–10 días laborables."
+      }
+    },
+    "lookAlt": "Retrato a acuarela de {name}",
+    "previewAlt": "Una página de la vista previa del libro de {name}",
+    "previewBadge": "Gratis",
+    "printAlt": "El libro de {name} impreso en tapa dura",
+    "cta": "Crear su libro"
   },
   "bookCollection": {
-    "title": "Elige un cuento, añade a tu hijo",
-    "subtitle": "Historias ilustradas listas para personalizar. Elige la que más te guste y haz que tu hijo sea el protagonista.",
+    "title": "Elige su aventura",
+    "subtitle": "Cada mundo es un cuento ilustrado a acuarela, con su nombre y su cara. Tú eliges los tres capítulos.",
+    "filterLabel": "Edad del niño o la niña",
+    "priceFrom": "Desde <b>{price}</b>",
+    "cta": "Crear su libro",
+    "seeInside": "Ver por dentro",
+    "prev": "Anteriores",
+    "next": "Siguientes",
     "subtitleShowcase": "Cuentos reales creados en nuestra plataforma. Haz clic para hojear el libro completo.",
     "viewAll": "Ver colección completa",
     "viewSample": "Hojear libro",
@@ -467,28 +505,35 @@
     }
   },
   "quality": {
-    "badge": "Calidad que se toca",
-    "title": "Objetos hechos para perdurar en el tiempo",
-    "description": "No es solo un cuento, es un recuerdo tangible. Huimos de lo efímero digital para crear libros robustos.",
-    "ecoLabel": "Impresión local en España",
-    "bindingTitle": "Tapa dura o blanda",
-    "bindingDescription": "Encuadernación encolada, como un buen álbum de fotos, con portada de laminado mate que resiste el uso diario. La tapa dura es la opción más resistente.",
-    "paperTitle": "Papel estucado seda",
-    "paperDescription": "Papel de 170 g con acabado seda: colores vivos, tacto suave y páginas con cuerpo que aguantan muchas lecturas."
+    "eyebrow": "El libro impreso",
+    "title": "Un libro de verdad, para leerlo mil veces",
+    "subtitle": "Hecho para las lecturas de cada noche y para guardarlo muchos años. Y con su PDF, para leerlo también de viaje.",
+    "mockupAlt": "El libro de {name} en tapa dura, de 20 × 20 cm",
+    "specs": {
+      "size": { "label": "Formato", "value": "20 × 20 cm · 30 páginas · 12 escenas ilustradas" },
+      "paper": { "label": "Papel", "value": "Estucado seda de 170 g, a todo color" },
+      "cover": { "label": "Tapas", "value": "Dura o blanda, con acabado mate" },
+      "shipping": { "label": "Envío", "value": "Gratis a España peninsular y Baleares, en 7–10 días laborables" },
+      "digital": { "label": "Versión digital", "value": "El PDF va incluido con el libro impreso" }
+    },
+    "softcover": "Tapa blanda",
+    "hardcover": "Tapa dura",
+    "vatShipping": "IVA y envío incluidos"
   },
   "uniqueEdition": {
-    "badge": "Edición Única",
-    "titleStart": "No existe otro",
-    "titleHighlight": "libro",
-    "titleEnd": "como este",
-    "description": "Cada cuento que creamos es irrepetible. La historia, las ilustraciones, los detalles: todo se genera una sola vez, exclusivamente para tu hijo. Ningún otro niño en el mundo tendrá jamás el mismo libro.",
-    "pillar1Title": "Historia irrepetible",
-    "pillar1Description": "Cada trama se escribe desde cero a partir de los gustos, sueños y personalidad de tu hijo.",
-    "pillar2Title": "Ilustraciones únicas",
-    "pillar2Description": "Cada ilustración se crea para su historia. No son plantillas con una cara pegada: son escenas originales pensadas para él.",
-    "pillar3Title": "Tu dedicatoria, en su primera página",
-    "pillar3Description": "Escribe unas palabras para él y abrirán su libro, para que dentro de muchos años sepa quién se lo regaló y por qué.",
-    "cta": "Crear un libro único"
+    "eyebrow": "Solo suyo",
+    "title": "No es una plantilla con su cara pegada",
+    "subtitle": "Escribimos su cuento y lo pintamos escena a escena. Así es el libro de {name}, de {age} años:",
+    "sceneAlt": "{name} en su aventura, escena {n}",
+    "caption": "Páginas reales de «{title}»",
+    "points": {
+      "written": { "title": "Escrito para su edad", "text": "Su nombre en cada página y frases a su medida, de 2 a 12 años." },
+      "painted": { "title": "Pintado escena a escena", "text": "12 ilustraciones de su aventura, con su pelo, su piel y hasta sus pecas." },
+      "colour": { "title": "Con su color favorito", "text": "Viste su ropa y los detalles de cada página." },
+      "dedication": { "title": "Con tus palabras", "text": "Tu dedicatoria abre el libro, para que siempre sepa de quién fue el regalo." }
+    },
+    "cta": "Crear su libro",
+    "seeInside": "Ver el libro de {name} por dentro"
   },
   "adventurePack": {
     "badge": "Experiencia Completa",
@@ -497,13 +542,36 @@
     "letter": "carta física personalizada",
     "descriptionEnd": "del personaje principal, hoja de pegatinas mate y marcapáginas de madera.",
     "cta": "Añadir extras físicos (+12,90 € IVA incl.)",
-    "imageCaption": "El regalo perfecto"
+    "imageCaption": "El regalo perfecto",
+    "imageAlt": "Caja de regalo con el libro, una hoja de pegatinas y lápices de colores sobre una mesa"
   },
-  "collectionOffer": {
-    "badge": "Biblioteca Personal",
-    "title": "Construye su legado de lectura",
-    "description": "Cada libro, una aventura nueva con su nombre.\nHistorias que guardarán para sus propios hijos.",
-    "cta": "Comenzar la colección"
+  "landingFaq": {
+    "eyebrow": "Preguntas frecuentes",
+    "title": "Lo que te preguntas antes de pedirlo",
+    "previewQ": "¿Veo el libro antes de pagar?",
+    "previewA": "Sí. Creas su libro gratis y sin registrarte, y ves la portada con su nombre, su retrato y las primeras escenas ilustradas de su cuento. Solo pagas si te gusta.",
+    "likenessQ": "¿Y si no se parece a mi hijo o hija?",
+    "likenessA": "Tú decides cómo es: piel, color de pelo, peinado, ojos, gafas y pecas, y ves su retrato antes de seguir. Si en la vista previa quieres cambiarlo, cambias su aspecto y volvemos a pintar el libro con el nuevo personaje; todo lo demás se mantiene. Lo imprimimos tal cual lo ves.",
+    "deliveryQ": "¿Cuándo llega? ¿Llega para Reyes?",
+    "deliveryA": "Lo imprimimos bajo demanda en España en cuanto haces el pedido y llega en 7-10 días laborables, con el envío incluido. Enviamos a España peninsular y Baleares (de momento no a Canarias, Ceuta ni Melilla).",
+    "deliverySeason": "Para tenerlo en casa en Nochebuena, pídelo hasta el {christmasDate}; para Reyes, hasta el {reyesDate}.",
+    "deliverySeasonReyes": "Para tenerlo en casa antes de Reyes, pídelo hasta el {reyesDate}.",
+    "deliverySeasonPdf": "El libro impreso ya no llega a tiempo para Reyes, pero el cuento en PDF sí: te llega por correo tras el pago, normalmente en menos de una hora.",
+    "deliveryDatesLink": "Ver todas las fechas límite",
+    "priceQ": "¿Cuánto cuesta y qué incluye?",
+    "priceA": "Tapa blanda, {softcover}. Tapa dura, {hardcover}. Solo el PDF, {pdf}. Todos los precios llevan el IVA incluido. El libro impreso incluye el envío y el PDF del cuento completo.",
+    "returnsQ": "¿Puedo devolverlo?",
+    "returnsA": "Como es un libro hecho a medida, con su nombre y su retrato, no admite devoluciones salvo defectos de fabricación. Si llega con un defecto, escríbenos y lo solucionamos. Por eso te enseñamos la vista previa antes de pagar.",
+    "moreQuestions": "¿Tienes otra duda? Escríbenos a"
+  },
+  "finalCta": {
+    "title": "El cuento que querrá leer cada noche empieza por su nombre.",
+    "subtitle": "Escríbelo y en unos minutos verás su libro. La vista previa es gratis: solo pagas si te gusta.",
+    "nameLabel": "¿Cómo se llama?",
+    "namePlaceholder": "Su nombre",
+    "cta": "Crear su libro",
+    "ctaWithName": "Crear el libro {deName}",
+    "meta": "Libro impreso desde {price} · IVA incluido · Envío incluido"
   },
   "footer": {
     "tagline": "Cuentos personalizados, escritos e ilustrados para cada niño.\nImpresos en papel y enviados desde España.\nSin baterías, solo imaginación.",
@@ -737,8 +805,8 @@
       "statusScenesNoCover": "{done} de {total} ilustraciones · la portada, en camino",
       "statusReady": "Ya puedes abrirlo.",
       "paintingCover": "Pintando la portada",
-      "progressLabel": "Progreso de la preview",
-      "scenesLabel": "Ilustraciones de la preview",
+      "progressLabel": "Progreso de la vista previa",
+      "scenesLabel": "Ilustraciones de la vista previa",
       "coverThumbAlt": "Portada",
       "sceneAlt": "Ilustración {n}",
       "waitMessage": "Suele tardar menos de un minuto.",
@@ -809,7 +877,12 @@
       "notAccessibleTitle": "Este cuento se abrió en otro navegador",
       "notAccessibleBody": "Por seguridad, cada cuento solo se ve en el navegador donde se creó o en tu cuenta. Ábrelo desde el enlace que te enviamos por email, o inicia sesión si lo guardaste en tu cuenta.",
       "notAccessibleLogin": "Iniciar sesión",
-      "notAccessibleCreate": "Crear un cuento nuevo"
+      "notAccessibleCreate": "Crear un cuento nuevo",
+      "tapToZoom": "Toca una página para ampliarla",
+      "closeZoom": "Cerrar",
+      "zoomTitle": "Página ampliada",
+      "rotateHint": "Gira el móvil para ver la doble página",
+      "zoomPage": "Ampliar"
     },
     "errors": {
       "saveFailed": "No hemos podido guardar tu cuento. Revisa tu conexión y vuelve a pulsar el botón: todo lo que has escrito sigue aquí.",
@@ -926,7 +999,7 @@
     },
     "sendPreview": {
       "title": "¿Lo decides más tarde?",
-      "hint": "Te enviamos un enlace a la preview para verla con calma en cualquier dispositivo o reenviarla. Sin suscripciones.",
+      "hint": "Te enviamos un enlace a la vista previa para verla con calma en cualquier dispositivo o reenviarla. Sin suscripciones.",
       "placeholder": "tu@email.com",
       "send": "Envíamela",
       "sending": "Enviando…",
@@ -1017,7 +1090,21 @@
           "a": "Al ser un libro hecho a medida no admite desistimiento, pero si llega con un defecto de fabricación escríbenos y lo solucionamos."
         }
       },
-      "softcoverNote": "Portada flexible, más ligera"
+      "softcoverNote": "Portada flexible, más ligera",
+      "rotateMockup": "Gíralo",
+      "later": {
+        "saveTitle": "Guárdalo",
+        "saveBody": "Crea una cuenta gratis y pídelo cuando quieras.",
+        "saveAction": "Crear cuenta",
+        "savedTitle": "Ya está guardado",
+        "savedBody": "Lo tienes en tu biblioteca para pedirlo cuando quieras.",
+        "savedAction": "Ir a mi biblioteca",
+        "shareTitle": "Compártelo",
+        "shareBody": "Un enlace que se abre en cualquier móvil, 30 días, sin poder editarlo.",
+        "emailTitle": "Recíbelo por email",
+        "emailBody": "Te enviamos el enlace para verlo con calma o reenviarlo.",
+        "emailSend": "Enviar"
+      }
     }
   },
   "checkout": {
@@ -1087,7 +1174,7 @@
     "storyStatus": {
       "draft": "Borrador",
       "generating": "Generando...",
-      "preview": "Preview listo",
+      "preview": "Vista previa lista",
       "completing": "Completando...",
       "ready": "Listo",
       "ordered": "Pedido",
@@ -1096,7 +1183,7 @@
     },
     "storyActions": {
       "viewStory": "Ver cuento",
-      "viewPreview": "Ver preview",
+      "viewPreview": "Ver vista previa",
       "viewProgress": "Ver progreso",
       "continue": "Continuar"
     },
@@ -2248,11 +2335,11 @@
       "error": "No se ha podido crear el enlace. Inténtalo de nuevo.",
       "shareTitle": "El libro {deName}",
       "shareText": "Mira el cuento que estoy preparando para {name}:",
-      "hint": "Cualquiera con el enlace verá la preview (sin poder editarla) durante 30 días."
+      "hint": "Cualquiera con el enlace verá la vista previa (sin poder editarla) durante 30 días."
     },
     "view": {
-      "metaTitle": "El libro {deName} · Preview",
-      "badge": "Preview compartida",
+      "metaTitle": "El libro {deName} · Vista previa",
+      "badge": "Vista previa compartida",
       "intro": "Un adelanto del cuento personalizado {deName}: las primeras páginas. El resto es sorpresa.",
       "restTitle": "El resto del cuento es sorpresa",
       "restBody": "Alguien que quiere mucho a {name} está preparando este libro. ¿Quieres uno así para otro niño o niña? Con su nombre, su aspecto y su aventura, listo en unos minutos.",

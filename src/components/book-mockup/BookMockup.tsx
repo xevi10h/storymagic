@@ -4,6 +4,8 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Book3D } from "./Book3D";
 import { OpenBook, type SpreadSource } from "./OpenBook";
 import { DeviceMockup } from "./DeviceMockup";
+import type { BackCoverSource } from "./BackCoverFace";
+import { useDragRotate } from "./useDragRotate";
 import s from "./book-mockup.module.css";
 
 export type BookMockupFormat = "hardcover" | "softcover" | "pdf";
@@ -38,6 +40,15 @@ export interface BookMockupProps {
   interactive?: boolean;
   /** Load the cover eagerly with high priority (above the fold) */
   priority?: boolean;
+  /**
+   * Drag (touch or mouse) turns the closed book round — spine, page block, back cover —
+   * with inertia, then it settles back. Vertical swipes still scroll the page.
+   */
+  rotatable?: boolean;
+  /** One-time hint shown on a rotatable book until the first drag, e.g. "Gíralo" */
+  rotateLabel?: string;
+  /** The printed back cover (seen when turned round); without it the board is plain */
+  back?: BackCoverSource;
   className?: string;
 }
 
@@ -85,10 +96,14 @@ export function BookMockup({
   scaleLabel = "20 cm",
   interactive = true,
   priority = false,
+  rotatable = false,
+  rotateLabel,
+  back,
   className,
 }: BookMockupProps) {
   const stageRef = useRef<HTMLDivElement>(null);
   const nudgeRef = useRef<HTMLDivElement>(null);
+  const spinRef = useRef<HTMLDivElement>(null);
 
   // The physical model keeps its last physical format while the PDF devices are shown,
   // so it does not morph as it fades out.
@@ -101,6 +116,14 @@ export function BookMockup({
   const [digitalSeen, setDigitalSeen] = useState(isDigital);
   if (isDigital && !digitalSeen) setDigitalSeen(true);
   const open = variant === "open" && !!spread;
+  const canRotate = rotatable && !open && !isDigital;
+  const { hintVisible } = useDragRotate({
+    stageRef,
+    spinRef,
+    enabled: canRotate,
+    restYaw: pose === "pages" ? -29 : 31,
+    hint: !!rotateLabel,
+  });
 
   // Hardcover ↔ softcover: a short lift-and-turn so the change of thickness reads.
   // Compared with the previous value (not a first-render flag) so StrictMode's double effect
@@ -135,7 +158,7 @@ export function BookMockup({
       });
     };
     const onMove = (e: PointerEvent) => {
-      if (e.pointerType !== "mouse") return;
+      if (e.pointerType !== "mouse" || stage.dataset.interacting === "true") return;
       const r = stage.getBoundingClientRect();
       set((e.clientX - r.left) / r.width - 0.5, (e.clientY - r.top) / r.height - 0.5);
     };
@@ -159,6 +182,7 @@ export function BookMockup({
       data-digital={isDigital}
       data-variant={open ? "open" : "closed"}
       data-pose={pose}
+      data-rotatable={canRotate}
       role="img"
       aria-label={alt}
     >
@@ -167,18 +191,21 @@ export function BookMockup({
       <div className={s.layer} data-active={!isDigital}>
         <div className={s.camera}>
           <div ref={nudgeRef} className={s.nudge}>
-            <div className={s.sway}>
-              {open ? (
-                <OpenBook spread={spread!} spineColor={spineColor} />
-              ) : (
-                <Book3D
-                  {...cover}
-                  spineColor={spineColor}
-                  spineTitle={physical === "hardcover"}
-                  showScale={showScale}
-                  scaleLabel={scaleLabel}
-                />
-              )}
+            <div ref={spinRef} className={s.spin}>
+              <div className={s.sway}>
+                {open ? (
+                  <OpenBook spread={spread!} spineColor={spineColor} />
+                ) : (
+                  <Book3D
+                    {...cover}
+                    spineColor={spineColor}
+                    spineTitle={physical === "hardcover"}
+                    showScale={showScale}
+                    scaleLabel={scaleLabel}
+                    back={back}
+                  />
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -187,6 +214,13 @@ export function BookMockup({
       <div className={s.layer} data-active={isDigital}>
         {digitalSeen && <DeviceMockup cover={cover} phonePage={phonePageFor(spread)} />}
       </div>
+
+      {rotateLabel && (
+        <span aria-hidden className={s.rotateHint} data-hidden={!(canRotate && hintVisible)} data-testid="mockup-rotate-hint">
+          <span className={`material-symbols-outlined ${s.rotateHintIcon}`}>360</span>
+          {rotateLabel}
+        </span>
+      )}
     </div>
   );
 }

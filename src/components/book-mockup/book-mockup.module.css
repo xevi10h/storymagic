@@ -118,6 +118,78 @@
   transform-style: preserve-3d;
 }
 
+/* Drag-to-rotate (BookMockup `rotatable`): the pointer writes this element's transform
+   directly (rotateX tilt · rotateY turn around the book's vertical axis). */
+.spin {
+  transform-style: preserve-3d;
+}
+
+.stage[data-rotatable="true"] {
+  cursor: grab;
+  /* Vertical swipes keep scrolling the page; horizontal ones turn the book */
+  touch-action: pan-y;
+}
+
+.stage[data-rotatable="true"][data-dragging="true"] {
+  cursor: grabbing;
+}
+
+.stage[data-interacting="true"] .sway {
+  animation-play-state: paused;
+}
+
+/* Dimension lines live in the cover plane: they would read mirrored once the book turns */
+.stage[data-turned="true"] .dimension {
+  opacity: 0;
+}
+
+/* One-time affordance: "↻ Gíralo" */
+.rotateHint {
+  position: absolute;
+  left: 50%;
+  bottom: 1.5cqw;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px 4px 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 1px 2px rgba(44, 24, 16, 0.08), 0 0 0 1px rgba(44, 24, 16, 0.06);
+  color: #4a3b32;
+  font-family: var(--font-plus-jakarta), "Plus Jakarta Sans", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+  transform: translateX(-50%);
+  transition: opacity 350ms var(--ease), transform 350ms var(--ease);
+}
+
+.rotateHint[data-hidden="true"] {
+  opacity: 0;
+  transform: translateX(-50%) translateY(4px);
+}
+
+.rotateHintIcon {
+  font-size: 16px;
+  color: var(--create-primary, #e86c3a);
+}
+
+/* Small stage (the compact desktop panel): a quieter hint that clears the book */
+@container (max-width: 240px) {
+  .rotateHint {
+    bottom: -1cqw;
+    gap: 2px;
+    padding: 2px 7px 2px 5px;
+    font-size: 10px;
+  }
+  .rotateHintIcon {
+    font-size: 12px;
+  }
+}
+
 /* Idle: a slow, barely-there turn, like a product on a turntable */
 .sway {
   animation: sway 11s ease-in-out infinite alternate;
@@ -392,6 +464,132 @@
   height: var(--h);
   background: var(--endpaper);
   transform: translateZ(calc(var(--b) - var(--d) / 2));
+}
+
+/* Outside of the back board: same plane as the board's outer face, turned to face -z.
+   Mirrored, so its spine edge (the hinge) is on the right as seen from behind. */
+.backCover {
+  left: 0;
+  top: 0;
+  width: var(--w);
+  height: var(--h);
+  overflow: hidden;
+  border-radius: var(--r) calc(var(--r) * 0.3) calc(var(--r) * 0.3) var(--r);
+  transform: translateZ(calc(var(--d) / -2)) rotateY(180deg);
+}
+
+.backCover .hinge {
+  left: auto;
+  right: 0;
+  transform: scaleX(-1);
+}
+
+.backFace {
+  position: absolute;
+  inset: 0;
+  container-type: size;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 9cqw 10cqw 6cqw;
+  background: #fdf8f0;
+  color: #4a3b32;
+  text-align: center;
+  font-family: var(--font-plus-jakarta), "Plus Jakarta Sans", sans-serif;
+}
+
+.backColumn {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Arch window with a hairline frame, as printed */
+.backVignette {
+  position: relative;
+  width: 40cqw;
+  aspect-ratio: 5 / 4;
+  flex-shrink: 1;
+  min-height: 0;
+  margin-bottom: 5cqw;
+  border-radius: 20cqw 20cqw 1.2cqw 1.2cqw;
+  outline: 0.35cqw solid var(--bc-ornament);
+  outline-offset: 1.4cqw;
+  overflow: hidden;
+}
+
+.backVignette img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.backTitle {
+  margin: 0;
+  width: 92%;
+  font-family: var(--font-fredoka), "Fredoka", sans-serif;
+  font-weight: 600;
+  font-size: 5.4cqw;
+  line-height: 1.18;
+  color: var(--bc-title);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.backFor {
+  margin: 1.6cqw 0 0;
+  font-size: 3.2cqw;
+  line-height: 1.35;
+  color: #6b5850;
+}
+
+.backFor strong {
+  font-weight: 600;
+  color: var(--bc-accent);
+}
+
+.backOrnament {
+  width: 18cqw;
+  height: 2.7cqw;
+  margin: 3.4cqw 0;
+  color: var(--bc-ornament);
+  flex-shrink: 0;
+}
+
+.backSynopsis {
+  margin: 0;
+  width: 82%;
+  font-size: 3.3cqw;
+  line-height: 1.55;
+  color: #4a3b32;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.backBrand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8cqw;
+  margin-top: 3cqw;
+  font-size: 1.9cqw;
+  letter-spacing: 0.35cqw;
+  color: #a1887f;
+}
+
+.backLogo {
+  height: 3.6cqw;
+  color: var(--bc-ornament);
 }
 
 /* Shadow on the table the book stands on: one floor plane through the base (15 % of the

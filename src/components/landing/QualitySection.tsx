@@ -1,82 +1,68 @@
-import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { BookMockup } from "@/components/book-mockup";
+import { Heading } from "@/components/ui";
+import { PRICING, formatPrice } from "@/lib/pricing";
+import { LANDING_EXAMPLE, landingExampleBook } from "./HowItWorksExample";
 
+// Only facts that are true today (Gelato photobook 200×200, 170 g silk, matt
+// lamination; PurchasePanel specs; shipping zone + window from the legal pages).
+const SPECS = ["size", "paper", "cover", "shipping", "digital"] as const;
+
+/** The printed book: the object (mockup at real proportions), its specs and prices. */
 export default function QualitySection() {
   const t = useTranslations("quality");
+  const locale = useLocale();
+  const name = LANDING_EXAMPLE.childName;
+  const book = landingExampleBook(locale);
 
   return (
-    <section className="relative overflow-hidden bg-white py-24" id="artisanal">
-      <div className="torn-paper-top" />
+    <section id="artisanal" aria-labelledby="quality-title" className="scroll-mt-[var(--landing-nav-h,64px)] bg-paper py-16 sm:py-24">
+      <div className="mx-auto grid max-w-[1120px] gap-6 px-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-center lg:gap-x-16 lg:gap-y-8">
+        <Heading
+          size="page"
+          as="h2"
+          id="quality-title"
+          eyebrow={t("eyebrow")}
+          subtitle={t("subtitle")}
+          className="lg:col-start-2 lg:row-start-1 lg:self-end [&_h2]:text-balance"
+        >
+          {t("title")}
+        </Heading>
 
-      <div className="mx-auto max-w-6xl px-4">
-        <div className="flex flex-col items-center gap-16 lg:flex-row">
-          {/* Left — Image with decorative backing */}
-          <div className="relative lg:w-1/2">
-            <div className="absolute -top-6 -left-6 -z-10 h-full w-full -rotate-2 rounded-lg border border-border-medium bg-tan" />
-            <Image
-              alt="Close up of high quality book binding and thick paper pages"
-              className="h-125 w-full rounded-lg object-cover shadow-2xl sepia-[0.15]"
-              src="/images/book-binding.png"
-              width={512}
-              height={512}
-            />
-            {/* Floating eco badge */}
-            <div className="absolute -right-6 -bottom-10 w-48 rotate-3 border border-border-light bg-white p-6 shadow-xl">
-              <div className="flex flex-col items-center text-center">
-                <span className="material-symbols-outlined mb-2 text-4xl text-success">location_on</span>
-                <span className="text-sm font-bold text-secondary">
-                  {t("ecoLabel")}
-                </span>
+        {/* The 5:4 stage leaves air above/below the open book: pull it in on small screens. */}
+        <div className="mx-auto -my-[14%] w-full max-w-[380px] sm:-my-16 sm:max-w-[460px] lg:col-start-1 lg:my-0 lg:row-span-2 lg:row-start-1 lg:max-w-none">
+          <BookMockup
+            coverUrl={LANDING_EXAMPLE.coverSrc}
+            title={book.title}
+            childName={name}
+            format="hardcover"
+            variant="open"
+            spread={{ panorama: LANDING_EXAMPLE.printSpread }}
+            alt={t("mockupAlt", { name })}
+          />
+        </div>
+
+        <div className="lg:col-start-2 lg:row-start-2 lg:self-start">
+          <dl className="divide-y divide-line border-y border-line">
+            {SPECS.map((id) => (
+              <div key={id} className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-3 py-2.5 sm:grid-cols-[9rem_minmax(0,1fr)]">
+                <dt className="text-sm font-bold text-ink-soft">{t(`specs.${id}.label`)}</dt>
+                <dd className="text-sm text-ink-body">{t(`specs.${id}.value`)}</dd>
               </div>
-            </div>
-          </div>
+            ))}
+          </dl>
 
-          {/* Right — Text content */}
-          <div className="flex flex-col gap-8 lg:w-1/2">
-            <span className="text-sm font-bold uppercase tracking-widest text-primary">
-              {t("badge")}
+          <p className="mt-4 flex flex-wrap items-baseline gap-x-4 gap-y-1 text-sm text-ink-soft">
+            <span className="whitespace-nowrap">
+              {t("softcover")} <strong className="font-display text-base font-bold text-brand-deep tabular-nums">{formatPrice(PRICING.softcover.price, locale)}</strong>
             </span>
-            <h2 className="font-display text-4xl font-bold leading-tight text-secondary">
-              {t("title")}
-            </h2>
-            <p className="text-lg text-text-soft">
-              {t("description")}
-            </p>
-
-            <div className="mt-4 space-y-8">
-              <div className="flex items-start gap-5">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-secondary text-secondary">
-                  <span className="material-symbols-outlined">book</span>
-                </div>
-                <div>
-                  <h3 className="mb-1 font-display text-xl font-bold text-secondary">
-                    {t("bindingTitle")}
-                  </h3>
-                  <p className="text-sm text-text-soft">
-                    {t("bindingDescription")}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-5">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-secondary text-secondary">
-                  <span className="material-symbols-outlined">texture</span>
-                </div>
-                <div>
-                  <h3 className="mb-1 font-display text-xl font-bold text-secondary">
-                    {t("paperTitle")}
-                  </h3>
-                  <p className="text-sm text-text-soft">
-                    {t("paperDescription")}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+            <span className="whitespace-nowrap">
+              {t("hardcover")} <strong className="font-display text-base font-bold text-brand-deep tabular-nums">{formatPrice(PRICING.hardcover.price, locale)}</strong>
+            </span>
+            <span className="whitespace-nowrap text-ink-body">{t("vatShipping")}</span>
+          </p>
         </div>
       </div>
-
-      <div className="torn-paper-bottom" />
     </section>
   );
 }

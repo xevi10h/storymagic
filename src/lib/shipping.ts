@@ -162,6 +162,9 @@ export function seasonBanner(today: string): SeasonBanner {
   return { kind: "digital", occasion: today <= season.deliverBy.christmas ? "christmas" : "reyes" };
 }
 
+/** Request header the dev-only "?now=" override reaches server components in (set by middleware). */
+export const SEASON_NOW_HEADER = "x-season-now";
+
 /** Dev-only "?now=YYYY-MM-DD" override (callers must gate on NODE_ENV). */
 export function parseDateOverride(value: string | null | undefined): string | null {
   if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;

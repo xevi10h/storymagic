@@ -1,54 +1,109 @@
-import { useTranslations } from "next-intl";
+import type { ReactNode } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { Heading } from "@/components/ui";
+import { FAQJsonLd } from "@/components/seo/JsonLd";
+import { PRICING, SUPPORT_EMAIL, formatPrice } from "@/lib/pricing";
+import { CHRISTMAS_DELIVERY_PATH, formatDeadlines, spainToday, type SeasonOccasion } from "@/lib/shipping";
+import FaqItem from "./FaqItem";
 
-// Conversion-ordered subset of the legal FAQ: lead with the objections that
-// block a gift purchase (shipping time, "will it really look like my child?"),
-// then reassurance (how it works, paper quality, size, post-purchase changes).
-// Reuses the existing `legal.faq.*` copy (all 4 locales) — single source of truth.
-const FAQ_ORDER = [2, 3, 1, 4, 6, 5] as const;
+const INTL_LOCALE: Record<string, string> = { es: "es-ES", ca: "ca-ES", en: "en-GB", fr: "fr-FR" };
 
+/** Earliest still-open printed cut-off for an occasion this season (same logic as /christmas-delivery), or null if closed. */
+function openCutoff(today: string, occasion: SeasonOccasion): string | null {
+  const open = (["hardcover", "softcover"] as const)
+    .flatMap((f) => formatDeadlines(today, f, occasion))
+    .filter((d) => d.open)
+    .map((d) => d.lastOrderDate)
+    .sort();
+  return open[0] ?? null;
+}
+
+/**
+ * Landing FAQ, ordered by what blocks a gift purchase: seeing it before paying,
+ * likeness, delivery (Reyes), price, returns, then the book itself. Every answer is
+ * backed by the product: preview flow, shipping.ts cut-offs, pricing.ts, the Terms.
+ * The same list feeds the FAQPage JSON-LD so markup and page never drift.
+ */
 export default function FaqSection() {
-  const t = useTranslations("legal");
-  const th = useTranslations("hero");
+  const t = useTranslations("landingFaq");
+  const tl = useTranslations("legal");
+  const locale = useLocale();
+
+  const date = (d: string) =>
+    new Intl.DateTimeFormat(INTL_LOCALE[locale] ?? "es-ES", { timeZone: "UTC", day: "numeric", month: "long" }).format(
+      new Date(`${d}T00:00:00Z`),
+    );
+  const today = spainToday();
+  const christmas = openCutoff(today, "christmas");
+  const reyes = openCutoff(today, "reyes");
+  const season =
+    christmas && reyes
+      ? t("deliverySeason", { christmasDate: date(christmas), reyesDate: date(reyes) })
+      : reyes
+        ? t("deliverySeasonReyes", { reyesDate: date(reyes) })
+        : t("deliverySeasonPdf");
+
+  const price = (cents: number) => formatPrice(cents, locale);
+
+  const items: { id: string; question: string; answer: string; extra?: ReactNode }[] = [
+    { id: "preview", question: t("previewQ"), answer: t("previewA") },
+    { id: "likeness", question: t("likenessQ"), answer: t("likenessA") },
+    {
+      id: "delivery",
+      question: t("deliveryQ"),
+      answer: `${t("deliveryA")} ${season}`,
+      extra: (
+        <Link
+          href={CHRISTMAS_DELIVERY_PATH}
+          className="mt-3 inline-flex min-h-11 items-center gap-1 font-semibold text-ink-soft underline decoration-brand/30 underline-offset-2 transition-colors hover:text-brand-text"
+        >
+          {t("deliveryDatesLink")}
+          <span aria-hidden className="material-symbols-outlined text-lg">
+            arrow_forward
+          </span>
+        </Link>
+      ),
+    },
+    {
+      id: "price",
+      question: t("priceQ"),
+      answer: t("priceA", {
+        softcover: price(PRICING.softcover.price),
+        hardcover: price(PRICING.hardcover.price),
+        pdf: price(PRICING.digital_pdf.price),
+      }),
+    },
+    { id: "returns", question: t("returnsQ"), answer: t("returnsA") },
+    { id: "paper", question: tl("faq.section4Title"), answer: tl("faq.section4Text") },
+    { id: "size", question: tl("faq.section6Title"), answer: tl("faq.section6Text") },
+  ];
 
   return (
-    <section className="bg-white px-4 py-24" id="faq">
+    <section className="scroll-mt-[var(--landing-nav-h,64px)] border-y border-line bg-surface px-4 py-16 sm:px-6 sm:py-24" id="faq" aria-labelledby="faq-title">
+      <FAQJsonLd questions={items.map(({ question, answer }) => ({ question, answer }))} />
       <div className="mx-auto max-w-3xl">
-        <div className="mb-12 text-center">
-          <h2 className="mb-4 font-display text-4xl font-bold text-secondary">
-            {t("faq.title")}
-          </h2>
-          <p className="text-text-soft">{t("faq.intro")}</p>
-        </div>
+        <Heading id="faq-title" size="page" as="h2" eyebrow={t("eyebrow")} className="mb-8 text-balance text-center sm:mb-10">
+          {t("title")}
+        </Heading>
 
-        <div className="flex flex-col gap-4">
-          {FAQ_ORDER.map((n) => (
-            <details
-              key={n}
-              className="group rounded-xl border border-border-light bg-cream/40 transition-colors open:bg-cream/70"
-            >
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 font-display text-lg font-bold text-secondary [&::-webkit-details-marker]:hidden">
-                {t(`faq.section${n}Title`)}
-                <span className="material-symbols-outlined shrink-0 text-text-muted transition-transform duration-300 group-open:rotate-180">
-                  expand_more
-                </span>
-              </summary>
-              <p className="px-6 pb-6 leading-relaxed text-text-soft">
-                {t(`faq.section${n}Text`)}
-              </p>
-            </details>
+        <div className="divide-y divide-line overflow-hidden rounded-2xl border-2 border-line bg-surface">
+          {items.map((item) => (
+            <FaqItem key={item.id} question={item.question} answer={item.answer}>
+              {item.extra}
+            </FaqItem>
           ))}
         </div>
 
-        <div className="mt-12 text-center">
-          <Link
-            href="/crear"
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-8 py-4 text-lg font-bold text-white shadow-lg shadow-primary/10 transition-all hover:-translate-y-1 hover:bg-primary-hover"
+        <p className="mt-6 text-center text-sm text-ink-soft">
+          {t("moreQuestions")}{" "}
+          <a
+            href={`mailto:${SUPPORT_EMAIL}`}
+            className="inline-flex min-h-11 items-center font-semibold text-ink-soft underline decoration-brand/30 underline-offset-2 transition-colors hover:text-brand-text"
           >
-            {th("cta")}
-            <span className="material-symbols-outlined">arrow_forward</span>
-          </Link>
-        </div>
+            {SUPPORT_EMAIL}
+          </a>
+        </p>
       </div>
     </section>
   );

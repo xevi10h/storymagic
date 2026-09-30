@@ -1,42 +1,32 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import Navbar from "@/components/landing/Navbar";
+import Footer from "@/components/landing/Footer";
+import { buttonClass } from "@/components/ui";
 
 export default function NotFound() {
   const t = useTranslations("notFound");
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-cream px-4 text-center">
-      <div className="max-w-md">
-        <div className="mb-6 inline-flex h-24 w-24 items-center justify-center rounded-full bg-badge-bg">
-          <span className="material-symbols-outlined text-5xl text-text-muted">
-            explore_off
-          </span>
-        </div>
-
-        <h1 className="font-display text-3xl font-bold text-secondary">
-          {t("title")}
-        </h1>
-
-        <p className="mt-4 text-base leading-relaxed text-text-muted">
-          {t("description")}
-        </p>
-
-        <div className="mt-8 flex flex-col items-center gap-3">
-          <Link
-            href="/"
-            className="flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-white transition-all hover:bg-primary-hover active:scale-[0.98] shadow-md"
-          >
-            <span className="material-symbols-outlined text-lg">home</span>
+    <>
+      <Navbar />
+      <main
+        className="flex min-h-[80dvh] flex-col items-center justify-center bg-paper px-4 pb-16 text-center sm:px-6"
+        style={{ paddingTop: "calc(var(--landing-nav-h, 56px) + 3rem)" }}
+      >
+        <p className="font-display text-6xl font-bold tabular-nums text-brand sm:text-7xl">404</p>
+        <h1 className="mt-4 text-balance font-display text-[26px] font-bold leading-tight text-ink sm:text-4xl">{t("title")}</h1>
+        <p className="mt-3 max-w-md text-base leading-relaxed text-ink-body">{t("description")}</p>
+        <div className="mt-8 flex flex-col items-center gap-2">
+          <Link href="/" className={buttonClass()}>
             {t("backHome")}
           </Link>
-          <Link
-            href="/crear"
-            className="text-sm text-text-muted hover:text-primary transition-colors"
-          >
+          <Link href="/crear" className={buttonClass({ variant: "quiet" })}>
             {t("createStory")}
           </Link>
         </div>
-      </div>
-    </div>
+      </main>
+      <Footer />
+    </>
   );
 }

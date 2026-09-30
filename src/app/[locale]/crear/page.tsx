@@ -2,6 +2,7 @@
 
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
 import { useRouter } from "@/i18n/navigation";
 import { normaliseHairstyle } from "@/lib/avatar/manifest";
 import {
@@ -14,11 +15,13 @@ import {
 } from "@/lib/create-store";
 import {
   CREATE_PAGE_STEPS,
+  MAX_NAME_LENGTH,
   characterPrepareBody,
   firstName,
   migrateCreateState,
   storyCharacterBody,
   protagonistSnapshot,
+  readStoredDraft,
   storyInputSnapshot,
 } from "@/lib/creation-flow";
 import { usePersistedState, STORAGE_KEY } from "@/hooks/usePersistedState";
@@ -55,24 +58,37 @@ function CrearPageContent() {
   /** The error came from creating the book: the alert offers a retry. */
   const [createFailed, setCreateFailed] = useState(false);
 
-  // Entry links can pre-fill the draft: ?template= (catalog/SEO: world pre-chosen)
-  // and ?characterId= (dashboard: reuse a saved character). Hold rendering until
-  // applied so a stale draft never flashes.
-  const [prefillReady, setPrefillReady] = useState(() => {
-    if (typeof window === "undefined") return true;
-    const p = new URLSearchParams(window.location.search);
-    return !p.has("template") && !p.has("characterId");
-  });
+  // Entry links can pre-fill the draft: ?template= (catalog/SEO: world pre-chosen),
+  // ?characterId= (dashboard: reuse a saved character) and ?name= (landing hero:
+  // the name typed on the live cover). Hold rendering until applied so a stale
+  // draft never flashes.
+  // useSearchParams, not window.location: on a client-side <Link>/router.push the
+  // URL is not committed yet on the first render of this page.
+  const searchParams = useSearchParams();
+  const [prefillReady, setPrefillReady] = useState(
+    () => !searchParams.has("template") && !searchParams.has("characterId") && !searchParams.has("name"),
+  );
   const prefillApplied = useRef(false);
   useEffect(() => {
     if (prefillApplied.current || prefillReady) return;
     prefillApplied.current = true;
-    const p = new URLSearchParams(window.location.search);
+    const p = searchParams;
     const templateParam = p.get("template");
     const characterIdParam = p.get("characterId");
+    const nameParam = formatChildName((p.get("name") ?? "").slice(0, MAX_NAME_LENGTH));
+
+    // ?name= alone: same child as the saved draft → resume it; empty → nothing to apply.
+    if (!templateParam && !characterIdParam) {
+      const draft = readStoredDraft();
+      if (!nameParam || (draft && formatChildName(draft.character.name) === nameParam)) {
+        router.replace("/crear");
+        setPrefillReady(true);
+        return;
+      }
+    }
 
     void (async () => {
-      let character: CharacterData = INITIAL_STATE.character;
+      let character: CharacterData = nameParam ? { ...INITIAL_STATE.character, name: nameParam } : INITIAL_STATE.character;
       if (characterIdParam) {
         try {
           const res = await fetch(`/api/characters/${characterIdParam}`);
@@ -102,13 +118,14 @@ function CrearPageContent() {
         ...INITIAL_STATE,
         character,
         selectedTemplate: templateParam ?? null,
-        currentStep: character.name.trim() ? 2 : 1,
+        // A saved character is complete (skip to step 2); a typed name still needs age + gender.
+        currentStep: characterIdParam && character.name.trim() ? 2 : 1,
       });
       // Clean URL so a reload resumes the draft instead of re-applying the prefill
       router.replace("/crear");
       setPrefillReady(true);
     })();
-  }, [prefillReady, setState, router]);
+  }, [prefillReady, setState, router, searchParams]);
 
   // ── Navigation ─────────────────────────────────────────────────────────────
 

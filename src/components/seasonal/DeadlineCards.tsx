@@ -5,11 +5,7 @@ import { PRICING, formatPrice, type BookFormat, type PhysicalFormat } from "@/li
 import { SEASON_OCCASIONS, SHIPPING_REGIONS, formatDeadlines, giftSeason, type FormatDeadline } from "@/lib/shipping";
 import { formatSeasonDate, useSeasonToday } from "./season-client";
 
-const FORMATS: { id: BookFormat; icon: string }[] = [
-  { id: "hardcover", icon: "book" },
-  { id: "softcover", icon: "menu_book" },
-  { id: "digital_pdf", icon: "download" },
-];
+const FORMATS: BookFormat[] = ["hardcover", "softcover", "digital_pdf"];
 
 /** Last order date per format and occasion (Nochebuena / Reyes), live against today. */
 export default function DeadlineCards({ serverToday }: { serverToday: string }) {
@@ -21,28 +17,24 @@ export default function DeadlineCards({ serverToday }: { serverToday: string }) 
 
   return (
     <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
-      {FORMATS.map(({ id, icon }) => (
-        <article key={id} className="flex flex-col rounded-2xl border border-border-light bg-white shadow-sm">
-          <header className="flex items-center gap-3 border-b border-border-light/60 px-6 py-5">
-            <span aria-hidden className="material-symbols-outlined text-2xl text-primary">
-              {icon}
-            </span>
-            <div>
-              <h3 className="font-display text-xl font-bold leading-tight text-secondary">{tp(`${id}.label`)}</h3>
-              <p className="text-sm text-text-muted">
-                {formatPrice(PRICING[id].price, locale)} · {tp("vatIncluded")}
-              </p>
-            </div>
+      {FORMATS.map((id) => (
+        <article key={id} className="flex flex-col overflow-hidden rounded-2xl border-2 border-line bg-paper">
+          <header className="border-b-2 border-line px-5 py-4 sm:px-6">
+            <h3 className="font-display text-xl font-bold leading-tight text-ink">{tp(`${id}.label`)}</h3>
+            <p className="mt-0.5 text-sm text-ink-soft">
+              <span className="font-bold tabular-nums text-brand-deep">{formatPrice(PRICING[id].price, locale)}</span>
+              <span> · {tp("vatIncluded")}</span>
+            </p>
           </header>
 
-          <dl className="flex flex-1 flex-col divide-y divide-border-light/60">
+          <dl className="flex flex-1 flex-col divide-y divide-line">
             {SEASON_OCCASIONS.map((occasion) => (
-              <div key={occasion} className="px-6 py-5">
+              <div key={occasion} className="px-5 py-4 sm:px-6 sm:py-5">
                 <dt className="flex flex-wrap items-baseline justify-between gap-x-3">
-                  <span className="text-xs font-bold uppercase tracking-wider text-secondary">
+                  <span className="text-xs font-bold uppercase tracking-wide text-ink-soft">
                     {t(`occasion.${occasion}`)}
                   </span>
-                  <span className="text-xs text-text-muted">
+                  <span className="text-xs text-ink-muted">
                     {t("homeBy", { date: formatSeasonDate(season.deliverBy[occasion], locale) })}
                   </span>
                 </dt>
@@ -60,7 +52,7 @@ export default function DeadlineCards({ serverToday }: { serverToday: string }) 
           </dl>
 
           {id === "digital_pdf" && (
-            <p className="border-t border-border-light/60 px-6 py-4 text-sm leading-relaxed text-text-soft">
+            <p className="border-t-2 border-line px-5 py-4 text-sm leading-relaxed text-ink-body sm:px-6">
               {t("pdfDetail")}
             </p>
           )}
@@ -78,7 +70,7 @@ function DeadlineLine({ deadline }: { deadline: FormatDeadline }) {
 
   return (
     <div className="mt-1 first:mt-0">
-      <p className={`font-display text-lg font-bold leading-snug ${deadline.open ? "text-text-main" : "text-text-muted line-through decoration-1"}`}>
+      <p className={`font-display text-lg font-bold leading-snug ${deadline.open ? "text-ink" : "text-ink-muted line-through decoration-1"}`}>
         {t("orderBy", { date })}
       </p>
       <div className="mt-2 flex flex-wrap items-center gap-2">
@@ -87,7 +79,7 @@ function DeadlineLine({ deadline }: { deadline: FormatDeadline }) {
         ) : (
           <Status tone="closed" label={t("closed")} />
         )}
-        <span className="text-xs text-text-muted">
+        <span className="text-xs text-ink-muted">
           {allRegions ? t("regionsAll") : deadline.regions.map((r) => t(`regions.${r}`)).join(", ")}
         </span>
       </div>
@@ -98,9 +90,9 @@ function DeadlineLine({ deadline }: { deadline: FormatDeadline }) {
 function Status({ tone, label }: { tone: "open" | "urgent" | "closed"; label: string }) {
   const cls =
     tone === "urgent"
-      ? "bg-primary text-white"
+      ? "bg-brand text-white"
       : tone === "open"
-        ? "bg-sage text-success"
-        : "bg-cream text-text-muted";
-  return <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-bold ${cls}`}>{label}</span>;
+        ? "bg-success/10 text-success"
+        : "bg-line text-ink-soft";
+  return <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold ${cls}`}>{label}</span>;
 }

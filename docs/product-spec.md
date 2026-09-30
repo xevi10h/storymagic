@@ -139,6 +139,26 @@ All prices above (and the base book prices) are final VAT-inclusive consumer pri
 - Linked from the footer and the `gifts/christmas` + `gifts/three-kings` SEO pages.
 - **Paywall delivery line** (2026-09-30): `deliveryWindow(today, format)` in `src/lib/shipping.ts` = the customer promise (`PROMISED_BUSINESS_DAYS`, 7–10 business days, not the measured Gelato days) counted from the day after the order, skipping weekends and Spanish national holidays (1/1, 6/1, Good Friday, 1/5, 15/8, 12/10, 1/11, 6/12, 8/12, 25/12). Shown per format next to the CTA as "Llega entre el X y el Y (fecha estimada)"; from 1 Nov the paywall also shows the season cut-off linking to this page.
 
+## Home landing (`/[locale]`, brand refresh 2026-09-30)
+
+Built on `docs/brand.md` + `src/components/ui/*`; components in `src/components/landing/`. Section order
+(conversion order: promise → how → pick a story → proof it is theirs → the physical book → objections → close with their name):
+
+| # | Section (component, anchor) | Background | What it does |
+|---|---|---|---|
+| 1 | `Hero` | paper | H1 + "¿Cómo se llama?" field; the real `LiveCover` (LCP image, `priority`) updates on every keystroke; CTA "Crear el libro de {name}" → `/crear?name=…` (works without JS: GET form). Price "Desde 34,90 € · IVA incluido · Envío gratis" + client-side delivery window. |
+| 2 | `HowItWorks` (`#manifesto`) | surface | The five real creation steps illustrated with one example child (Sam, a real showcase book, `HowItWorksExample.ts`); step 1 is an illustration, not an input. Desktop-only CTA. |
+| 3 | `BookCollection` (`#catalog`) | paper | 10 worlds, real showcase covers first; age filter chips (radiogroup, arrow keys); carousel < xl, 5-col grid ≥ xl. Each card is one link → `/crear?template={id}&from=catalog` (world preselected); "Ver por dentro" → `/ejemplo/{id}` when a real book exists. |
+| 4 | `UniqueEdition` (`#unique-edition`) | surface | "No es una plantilla con su cara pegada": 4 real pages of Sam's book + 4 points; link to Sam's book. |
+| 5 | `QualitySection` (`#artisanal`) | paper | Open `BookMockup` + specs table (20 × 20 cm, 170 g, covers, shipping, PDF) + both prices with VAT. |
+| 6 | `AdventurePack` | — | Only when `ADDON_ENABLED.adventure_pack` (off). |
+| 7 | `FaqSection` (`#faq`) | surface | 7 questions in native `<details>`; answers built from `pricing.ts` / `shipping.ts` (season cut-offs); single `FAQPage` JSON-LD from the same list. |
+| 8 | `FinalCta` (`#final-cta`) | paper | Closing line + the same name field as the hero (shared `HeroNameStore`) + live cover → `/crear?name=…`. |
+| — | `Footer`, `MobileStickyCta` | brand-deep / — | Sticky "Crear su libro" bar on phones/tablets (< lg): appears after the hero CTA scrolls out, hides over `#final-cta` and the footer; on pages without the hero it appears after 60 % of the first screen. |
+
+Navbar links: Cómo funciona (`/#manifesto`), Cuentos (`/#catalog`), Ver un ejemplo (`/ejemplo`), Preguntas (`/#faq`).
+`/crear` reads `?name=` (step 1 prefilled; same name as the saved draft → resume it) and `?template=`.
+
 ## Waitlist (Pre-Launch Gate)
 
 The entire site is gated behind a pre-launch waiting list when `WAITLIST_MODE=true`. This allows building an audience and collecting leads before the product is publicly available.

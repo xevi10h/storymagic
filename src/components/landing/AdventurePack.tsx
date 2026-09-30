@@ -1,58 +1,41 @@
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { buttonClass, Card, Eyebrow } from "@/components/ui";
 
+/**
+ * Adventure Pack add-on teaser. Only rendered while ADDON_ENABLED.adventure_pack
+ * is true (off today: no fulfilment pipeline yet, see src/lib/pricing.ts).
+ */
 export default function AdventurePack() {
   const t = useTranslations("adventurePack");
 
   return (
-    <section className="relative overflow-hidden bg-pack-bg py-24 text-pack-text">
-      <div
-        className="absolute inset-0 opacity-10"
-        style={{
-          backgroundImage: "url('/images/adventure-pack-bg.png')",
-        }}
-      />
-      <div className="relative z-10 mx-auto max-w-6xl px-4">
-        <div className="flex flex-col items-center gap-12 rounded-2xl border border-border-warm bg-pack-inner p-8 shadow-2xl md:flex-row md:p-16">
-          {/* Left — Text */}
-          <div className="flex-1 text-center md:text-left">
-            <span className="mb-4 inline-block rounded bg-pack-badge px-3 py-1 text-xs font-bold uppercase tracking-widest text-white">
-              {t("badge")}
-            </span>
-            <h2 className="mb-6 font-display text-3xl font-bold text-white md:text-5xl">
-              {t("title")}
-            </h2>
-            <p className="mb-8 text-lg leading-relaxed text-pack-muted">
-              {t("description")}{" "}
-              <strong className="text-white">{t("letter")}</strong> {t("descriptionEnd")}
-            </p>
-            <Link
-              href="/crear"
-              className="mx-auto flex items-center gap-2 rounded-lg bg-primary px-8 py-4 font-bold text-white shadow-lg transition-transform hover:-translate-y-1 hover:bg-primary-hover md:mx-0"
-            >
-              <span className="material-symbols-outlined">card_giftcard</span>
-              {t("cta")}
-            </Link>
-          </div>
-
-          {/* Right — Polaroid image */}
-          <div className="relative flex-1">
-            <div className="rotate-2 bg-white p-3 shadow-xl transition-transform duration-300 hover:rotate-0">
-              <Image
-                alt="Gift set with book, stickers and coloring pencils on a table"
-                className="h-auto w-full sepia-[0.2]"
-                src="/images/gift-set.png"
-                width={512}
-                height={512}
-              />
-              <div className="pt-3 pb-1 text-center font-display text-gray-500">
-                {t("imageCaption")}
-              </div>
-            </div>
-          </div>
+    <section className="bg-paper px-4 py-16 sm:px-6 sm:py-24">
+      <Card variant="elevated" className="mx-auto grid max-w-[1120px] items-center gap-8 p-5 sm:p-8 md:grid-cols-2 lg:gap-14 lg:p-12">
+        <div className="text-center md:text-left">
+          <Eyebrow tone="brand">{t("badge")}</Eyebrow>
+          <h2 className="mt-2 text-balance font-display text-[28px] font-bold leading-tight text-ink sm:text-4xl">{t("title")}</h2>
+          <p className="mt-4 max-w-prose text-base leading-relaxed text-ink-body sm:text-lg">
+            {t("description")} <strong className="font-semibold text-ink">{t("letter")}</strong> {t("descriptionEnd")}
+          </p>
+          <Link href="/crear" className={buttonClass({ variant: "secondary", className: "mt-8 max-w-full whitespace-normal text-center" })}>
+            {t("cta")}
+          </Link>
         </div>
-      </div>
+
+        <figure className="order-first overflow-hidden rounded-2xl bg-line md:order-last">
+          <Image
+            alt={t("imageAlt")}
+            className="aspect-square h-auto w-full object-cover"
+            src="/images/gift-set.png"
+            width={512}
+            height={512}
+            sizes="(max-width: 768px) 100vw, 520px"
+          />
+          <figcaption className="sr-only">{t("imageCaption")}</figcaption>
+        </figure>
+      </Card>
     </section>
   );
 }

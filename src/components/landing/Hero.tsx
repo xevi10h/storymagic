@@ -1,128 +1,186 @@
-import Image from "next/image";
-import { useTranslations, useLocale } from "next-intl";
-import { Link } from "@/i18n/navigation";
-import { PRICING, formatPrice } from "@/lib/pricing";
+"use client";
 
+import type { FormEvent } from "react";
+import { useLocale, useTranslations } from "next-intl";
+import { Link, useRouter } from "@/i18n/navigation";
+import LiveCover from "@/components/crear/LiveCover";
+import { useDeliveryLine } from "@/components/purchase/delivery";
+import { buttonClass } from "@/components/ui";
+import { PRICING, formatPrice } from "@/lib/pricing";
+import { MAX_NAME_LENGTH, deName, firstName } from "@/lib/creation-flow";
+import { formatChildName } from "@/lib/child-name";
+import { crearHref, setHeroName, useHeroName } from "./HeroNameStore";
+
+/** Material Symbols glyph with a fixed box, so the late icon font never shifts the text. */
+function Icon({ name, className = "" }: { name: string; className?: string }) {
+  return (
+    <span
+      aria-hidden
+      className={`material-symbols-outlined inline-block w-5 shrink-0 overflow-hidden text-center text-[18px] leading-5 ${className}`}
+    >
+      {name}
+    </span>
+  );
+}
+
+/**
+ * Landing hero: the child is the protagonist. The parent types the name, the real
+ * cover from the creation flow (LiveCover) updates on every keystroke, and the CTA
+ * opens /crear with the name already filled in (?name=, read by the crear prefill).
+ */
 export default function Hero() {
   const t = useTranslations("hero");
   const tPricing = useTranslations("pricing");
+  const tPurchase = useTranslations("crear.purchase");
   const locale = useLocale();
+  const router = useRouter();
+  const name = useHeroName();
+  const delivery = useDeliveryLine("softcover");
+
   const priceFrom = formatPrice(PRICING.softcover.price, locale);
+  const first = firstName(formatChildName(name));
+  const ctaLabel = first ? t("ctaWithName", { deName: deName(first, locale) }) : t("cta");
+
+  function onSubmit(e: FormEvent<HTMLFormElement>) {
+    // Without JS the form still works: GET /{locale}/crear?name=… (same prefill).
+    e.preventDefault();
+    const formatted = formatChildName(name);
+    setHeroName(formatted);
+    router.push(crearHref(formatted));
+  }
 
   return (
-    <header className="relative overflow-hidden px-4 pt-32 pb-20">
-      {/* Ambient blurs */}
-      <div className="absolute top-0 right-0 -z-10 h-[600px] w-[600px] -translate-y-1/2 translate-x-1/3 rounded-full bg-primary-light/20 blur-[100px] mix-blend-multiply" />
-      <div className="absolute bottom-0 left-0 -z-10 h-[500px] w-[500px] -translate-x-1/4 translate-y-1/4 rounded-full bg-badge-bg/40 blur-[80px] mix-blend-multiply" />
-
-      <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 lg:grid-cols-2">
-        {/* Left — Text */}
-        <div className="relative z-10 flex flex-col gap-6">
-          <div className="inline-flex w-fit -rotate-1 items-center gap-2 rounded-md border border-badge-border bg-badge-bg px-4 py-1.5 shadow-sm">
-            <span className="material-symbols-outlined text-sm text-secondary">spa</span>
-            <span className="text-xs font-bold uppercase tracking-wider text-secondary">
-              {t("badge")}
-            </span>
-          </div>
-
-          <h1 className="font-display text-5xl font-bold leading-[1.1] tracking-tight text-secondary lg:text-7xl">
-            {t("titleStart")} <br />
-            <span className="italic text-primary">{t("titleHighlight")}</span> {t("titleEnd")}
+    <section
+      aria-labelledby="hero-title"
+      // Clears the fixed navbar. Fallbacks = its real height before hydration measures it
+      // (h-14 / lg:h-16 + 1px border), so the hero does not jump (CLS).
+      className="relative overflow-hidden bg-paper px-4 pt-[calc(var(--landing-nav-h,57px)+1.25rem)] pb-14 sm:px-6 sm:pb-20 lg:pt-[calc(var(--landing-nav-h,65px)+1.25rem)] lg:pb-28"
+    >
+      <div className="mx-auto grid max-w-[1200px] grid-cols-1 lg:grid-cols-[minmax(0,1fr)_440px] lg:grid-rows-[auto_auto] lg:gap-x-20 lg:pt-14 xl:grid-cols-[minmax(0,1fr)_480px]">
+        {/* Copy */}
+        <div className="mx-auto max-w-xl text-center text-balance lg:col-start-1 lg:row-start-1 lg:mx-0 lg:max-w-none lg:self-end lg:text-left">
+          <p className="mb-3 hidden text-xs font-bold uppercase tracking-wide text-brand-text sm:block">{t("eyebrow")}</p>
+          <h1
+            id="hero-title"
+            className="font-display text-[32px] font-bold leading-[1.08] text-ink min-[380px]:text-[34px] sm:text-5xl lg:text-[60px] xl:text-[64px]"
+          >
+            {t.rich("title", { hl: (chunks) => <span className="text-brand">{chunks}</span> })}
           </h1>
-
-          {/* Mobile hero image — visible on entry (desktop shows it in the right column) */}
-          <div className="group relative lg:hidden">
-            <div className="relative aspect-[4/3] w-full rotate-1 bg-white p-3 shadow-xl">
-              <div className="pointer-events-none absolute inset-0 z-20 m-2 border-2 border-cream" />
-              <div className="relative h-full w-full overflow-hidden bg-cream">
-                <Image
-                  alt="Child reading a physical book in a cozy nook with warm lighting"
-                  className="object-cover object-top sepia-[0.1] contrast-[1.1]"
-                  src="/images/hero-child-reading.png"
-                  fill
-                  sizes="100vw"
-                  priority
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent opacity-80" />
-              </div>
-              <div className="absolute right-5 bottom-5 left-5 z-30 text-white">
-                <div className="border-l-4 border-primary bg-black/30 p-3 backdrop-blur-md">
-                  <p className="font-display mb-0.5 text-lg font-bold text-cream">{t("imageCaption")}</p>
-                  <p className="text-xs text-text-light">{t("imageSubcaption")}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <p className="max-w-lg text-lg leading-relaxed text-text-soft lg:text-xl">
-            {t("description")}
+          <p className="mx-auto mt-3 max-w-[34rem] text-[15px] font-medium leading-relaxed text-ink-muted sm:mt-4 sm:text-lg lg:mx-0">
+            {t("subtitle")}
           </p>
-
-          <div className="flex flex-col gap-4 pt-4 sm:flex-row">
-            <Link
-              href="/crear"
-              className="flex h-14 items-center justify-center gap-2 rounded-lg bg-primary px-8 text-lg font-bold text-white shadow-lg shadow-primary/10 transition-all hover:-translate-y-1 hover:bg-primary-hover"
-            >
-              {t("cta")}
-              <span className="material-symbols-outlined">arrow_forward</span>
-            </Link>
-            <a
-              href="#artisanal"
-              className="flex items-center justify-center gap-2 text-lg font-bold text-secondary underline decoration-border-light decoration-2 underline-offset-4 transition-all hover:text-primary hover:decoration-primary"
-            >
-              {t("secondaryCta")}
-            </a>
-          </div>
-
-          <p className="text-sm text-text-soft">
-            <span className="font-bold text-secondary">
-              {t("priceFrom", { price: priceFrom })}
-            </span>
-            <span className="text-text-muted"> · {tPricing("vatIncluded")}</span>
-            <span className="text-text-muted"> · {t("priceNote")}</span>
-          </p>
-
-          <div className="mt-2 flex items-center gap-4 border-t border-border-light pt-6 text-sm font-medium text-text-soft">
-            <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-xl text-success">menu_book</span>
-              <span>{t("fscPaper")}</span>
-            </div>
-            <span className="text-text-muted">|</span>
-            <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-xl text-primary-hover">local_shipping</span>
-              <span>{t("artisanalShipping")}</span>
-            </div>
-          </div>
         </div>
 
-        {/* Right — Polaroid image (desktop only; mobile shows it inline above) */}
-        <div className="group relative hidden lg:block">
-          <div className="relative w-full transform rotate-1 bg-white p-3 shadow-xl transition-transform duration-500 aspect-[4/5] group-hover:rotate-0">
-            <div className="pointer-events-none absolute inset-0 z-20 m-2 border-2 border-cream" />
-            <div className="relative h-full w-full overflow-hidden bg-cream">
-              <Image
-                alt="Child reading a physical book in a cozy nook with warm lighting"
-                className="h-full w-full object-cover sepia-[0.1] contrast-[1.1]"
-                src="/images/hero-child-reading.png"
-                width={512}
-                height={512}
-                sizes="(max-width: 1024px) 90vw, 45vw"
-                priority
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-80" />
-            </div>
-            <div className="absolute right-6 bottom-6 left-6 z-30 text-white">
-              <div className="border-l-4 border-primary bg-black/30 p-4 backdrop-blur-md">
-                <p className="font-display mb-1 text-xl font-bold text-cream">{t("imageCaption")}</p>
-                <p className="text-sm text-text-light">
-                  {t("imageSubcaption")}
-                </p>
-              </div>
-            </div>
+        {/* Live cover: the one priority image of the page */}
+        <div className="relative mx-auto mt-5 w-[min(50vw,220px)] sm:mt-8 sm:w-[280px] lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:mt-0 lg:w-full lg:self-center">
+          <div
+            aria-hidden
+            className="absolute left-1/2 top-1/2 -z-0 hidden aspect-square w-[118%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand/[0.06] sm:block"
+          />
+          <div className="relative">
+            {/* Page block peeking out under the board: reads as a real book, not a flat card */}
+            <div
+              aria-hidden
+              className="absolute inset-0 translate-x-[3%] translate-y-[2.2%] rounded-[4px_14px_14px_4px] bg-surface shadow-book ring-1 ring-line-warm"
+            />
+            <LiveCover
+              name={name}
+              templateId={null}
+              priority
+              sizes="(min-width: 1280px) 480px, (min-width: 1024px) 440px, (min-width: 640px) 280px, 50vw"
+            />
           </div>
-          <div className="absolute -inset-4 -z-10 rotate-[-2deg] border border-cream bg-warm shadow-sm" />
+          <p className="mt-5 hidden text-center text-xs font-medium text-ink-muted lg:block">{t("coverCaption")}</p>
+        </div>
+
+        {/* Name → CTA */}
+        <div className="mx-auto mt-5 w-full max-w-xl sm:mt-8 lg:col-start-1 lg:row-start-2 lg:mx-0 lg:mt-9 lg:self-start">
+          <form action={`/${locale}/crear`} method="get" onSubmit={onSubmit} noValidate>
+            <label
+              htmlFor="hero-name"
+              className="block text-center font-display text-lg font-semibold text-ink lg:text-left lg:text-xl"
+            >
+              {t("nameLabel")}
+            </label>
+            <div className="mt-2 flex flex-col gap-2.5 sm:flex-row sm:gap-3 lg:flex-col xl:flex-row">
+              <input
+                id="hero-name"
+                name="name"
+                type="text"
+                value={name}
+                onChange={(e) => setHeroName(e.target.value)}
+                onBlur={(e) => {
+                  const formatted = formatChildName(e.target.value);
+                  if (formatted !== e.target.value) setHeroName(formatted);
+                }}
+                placeholder={t("namePlaceholder")}
+                maxLength={MAX_NAME_LENGTH}
+                autoComplete="off"
+                autoCapitalize="words"
+                autoCorrect="off"
+                spellCheck={false}
+                enterKeyHint="go"
+                className="h-14 w-full min-w-0 rounded-2xl border-2 border-line bg-surface px-5 font-display text-xl font-semibold text-ink outline-none transition-colors placeholder:font-normal placeholder:text-ink-muted/60 focus:border-brand sm:h-16 sm:flex-1 sm:text-2xl lg:flex-none xl:flex-1"
+              />
+              <button
+                id="hero-cta"
+                type="submit"
+                className={buttonClass({
+                  block: true,
+                  // lg: the copy column is narrow (cover beside it), so input and button stack again.
+                  className: "h-14 text-lg! leading-tight sm:h-16 sm:w-auto sm:max-w-[60%] sm:shrink-0 sm:px-8 lg:w-full lg:max-w-none xl:w-auto xl:max-w-[60%]",
+                })}
+              >
+                <span className="min-w-0 break-words">{ctaLabel}</span>
+                <span
+                  aria-hidden
+                  className="material-symbols-outlined inline-block w-5 shrink-0 overflow-hidden text-xl leading-5 transition-transform group-hover:translate-x-1"
+                >
+                  arrow_forward
+                </span>
+              </button>
+            </div>
+          </form>
+
+          <div className="mt-3 flex flex-col items-center gap-1 text-sm lg:items-start">
+            <p className="text-ink-soft">
+              <span className="font-bold tabular-nums text-brand-deep">{t("priceFrom", { price: priceFrom })}</span>
+              <span> · {tPricing("vatIncluded")}</span>
+              <span> · {t("freeShipping")}</span>
+            </p>
+            {/* Reserved box: the date needs the browser's clock (appears after hydration). Phones
+                reserve two lines, since long months ("noviembre") wrap there; icon stays inline. */}
+            <p className="flex min-h-10 items-center text-balance text-center text-[13px] leading-5 text-ink-muted min-[380px]:text-sm sm:min-h-6 lg:text-left">
+              {delivery && (
+                <span>
+                  <Icon name="local_shipping" className="mr-1.5 align-[-4px] text-success" />
+                  {delivery} <span className="whitespace-nowrap">· {tPurchase("deliveryEstimate")}</span>
+                </span>
+              )}
+            </p>
+          </div>
+
+          <ul className="mt-7 flex flex-col items-center gap-2.5 border-t border-line pt-6 text-sm text-ink-soft sm:flex-row sm:flex-wrap sm:justify-center sm:gap-x-6 lg:justify-start">
+            <li className="flex items-center gap-2">
+              <Icon name="check_circle" className="text-brand" />
+              {t("trustPreview")}
+            </li>
+            <li className="flex items-center gap-2">
+              <Icon name="check_circle" className="text-brand" />
+              {t("trustFormats")}
+            </li>
+            <li>
+              <Link
+                href="/ejemplo"
+                className="inline-flex min-h-11 items-center gap-1 font-semibold text-ink-soft underline decoration-brand/30 underline-offset-4 transition-colors hover:text-brand-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand sm:min-h-0"
+              >
+                {t("sampleCta")}
+                <Icon name="arrow_forward" />
+              </Link>
+            </li>
+          </ul>
         </div>
       </div>
-    </header>
+    </section>
   );
 }

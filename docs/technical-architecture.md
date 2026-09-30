@@ -412,6 +412,7 @@ src/
 │   ├── avatar/                           — ProtagonistAvatar (real WatercolorAvatar + AvatarSketch fallback), WatercolorAvatar (pre-rendered matrix layers), AvatarSketch (vector stand-in)
 │   ├── crear/                            — Creation flow v2: CreationHeader, StepName + LiveCover, StepProtagonist + PhotoUploadPanel, StepAdventure, DedicationEditor, BookEditSheets, Sheet, SendPreviewEmail, CreationFooterNav
 │   ├── landing/                          — Navbar, Footer, etc.
+│   ├── ui/                               — Brand primitives (Button/buttonClass, Heading, Eyebrow, ChoiceChip, Card, cx, focusRing); spec in docs/brand.md
 │   ├── waitlist/
 │   │   └── WaitlistPage.tsx              — Full-screen waitlist gate (form + subscriber counter)
 │   ├── BrandLogo.tsx                     — Meapica logo (SVG Book-M + Fredoka text)

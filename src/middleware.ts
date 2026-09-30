@@ -1,7 +1,8 @@
 import createIntlMiddleware from "next-intl/middleware";
 import { createServerClient } from "@supabase/ssr";
-import { NextResponse, type NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { routing } from "@/i18n/routing";
+import { parseDateOverride, SEASON_NOW_HEADER } from "@/lib/shipping";
 
 const intlMiddleware = createIntlMiddleware(routing);
 
@@ -9,6 +10,18 @@ export async function middleware(request: NextRequest) {
   // Skip locale middleware for API routes
   if (request.nextUrl.pathname.startsWith("/api")) {
     return NextResponse.next();
+  }
+
+  // Dev-only "?now=YYYY-MM-DD": forward it as a request header so server
+  // components (the seasonal banner in Navbar) render that day too. next-intl
+  // passes the request headers through to the page.
+  if (process.env.NODE_ENV !== "production") {
+    const now = parseDateOverride(request.nextUrl.searchParams.get("now"));
+    if (now) {
+      const headers = new Headers(request.headers);
+      headers.set(SEASON_NOW_HEADER, now);
+      request = new NextRequest(request, { headers });
+    }
   }
 
   // Step 1: Apply locale routing (redirects, rewrites)

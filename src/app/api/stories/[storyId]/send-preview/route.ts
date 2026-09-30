@@ -15,16 +15,16 @@ const bodySchema = z.object({
 
 const COPY = {
   es: {
-    subject: (n: string) => `La preview del libro de ${n}`,
+    subject: (n: string) => `La vista previa del libro de ${n}`,
     heading: (n: string) => `El libro de ${n} te espera`,
-    body: "Aquí tienes el enlace a la preview de su libro para verlo con calma. Funciona en cualquier móvil u ordenador, y puedes reenviarlo a quien quieras. Caduca en 30 días.",
+    body: "Aquí tienes el enlace a la vista previa de su libro para verlo con calma. Funciona en cualquier móvil u ordenador, y puedes reenviarlo a quien quieras. Caduca en 30 días.",
     cta: "Ver su libro",
     signoff: "Un abrazo,\nMeapica",
   },
   ca: {
-    subject: (n: string) => `La preview del llibre de ${n}`,
+    subject: (n: string) => `La vista prèvia del llibre de ${n}`,
     heading: (n: string) => `El llibre de ${n} t'espera`,
-    body: "Aquí tens l'enllaç a la preview del seu llibre per mirar-lo amb calma. Funciona a qualsevol mòbil o ordinador, i el pots reenviar a qui vulguis. Caduca d'aquí a 30 dies.",
+    body: "Aquí tens l'enllaç a la vista prèvia del seu llibre per mirar-lo amb calma. Funciona a qualsevol mòbil o ordinador, i el pots reenviar a qui vulguis. Caduca d'aquí a 30 dies.",
     cta: "Veure el seu llibre",
     signoff: "Una abraçada,\nMeapica",
   },
@@ -45,7 +45,7 @@ const COPY = {
 } as const;
 
 /**
- * "Envíame la preview" — optional, offered only after the parent has seen the
+ * "Envíame la vista previa" — optional, offered only after the parent has seen the
  * book (never a gate). Sends the preview link to the given address; the address
  * is not stored or subscribed to anything. The link is the read-only share link
  * (/[locale]/preview/[token]): it opens in any browser, incl. mail apps' in-app ones.

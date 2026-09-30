@@ -10,8 +10,26 @@ import MobileStickyCta from "@/components/landing/MobileStickyCta";
 import { BreadcrumbJsonLd } from "@/components/seo/JsonLd";
 import { getPost, getLocalesForSlug } from "@/lib/blog";
 import { seoPath } from "@/lib/seo-landing";
+import { PRICING, formatPrice } from "@/lib/pricing";
+import { buttonClass, cx, focusRing } from "@/components/ui";
+import { Breadcrumbs } from "@/components/seo-landing/MarketingHeader";
 
 const BASE_URL = "https://meapica.com";
+
+// Long-form reading: ~68ch measure, 17–18px text, generous leading, Fredoka headings.
+// Scoped here (only the blog renders markdown), on brand tokens.
+const PROSE = [
+  "text-[17px] leading-[1.75] text-ink-body sm:text-lg sm:leading-[1.8]",
+  "[&>*+*]:mt-5",
+  "[&_h2]:mt-12 [&_h2]:text-balance [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:leading-tight [&_h2]:text-ink sm:[&_h2]:text-[28px]",
+  "[&_h3]:mt-9 [&_h3]:font-display [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:leading-snug [&_h3]:text-ink",
+  "[&_h2+*]:mt-3 [&_h3+*]:mt-2",
+  "[&_a]:font-semibold [&_a]:text-brand-text [&_a]:underline [&_a]:decoration-brand/30 [&_a]:underline-offset-2 [&_a:hover]:decoration-brand",
+  "[&_strong]:font-bold [&_strong]:text-ink-soft",
+  "[&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-6 [&_ol]:pl-6 [&_li]:mt-2 [&_li]:pl-1 [&_li]:marker:text-brand",
+  "[&_blockquote]:border-l-4 [&_blockquote]:border-brand/30 [&_blockquote]:pl-5 [&_blockquote]:italic [&_blockquote]:text-ink-soft",
+  "[&_hr]:my-10 [&_hr]:border-line [&_img]:rounded-2xl",
+].join(" ");
 
 type PageProps = { params: Promise<{ locale: string; slug: string }> };
 
@@ -52,6 +70,9 @@ export default async function BlogPost({ params }: PageProps) {
 
   const tb = await getTranslations({ locale, namespace: "blog" });
   const ts = await getTranslations({ locale, namespace: "seo" });
+  const th = await getTranslations({ locale, namespace: "hero" });
+  const tp = await getTranslations({ locale, namespace: "pricing" });
+  const fromPrice = formatPrice(Math.min(PRICING.softcover.price, PRICING.hardcover.price), locale);
   const html = await marked.parse(post.bodyMarkdown);
   const pageUrl = `${BASE_URL}/${locale}/blog/${slug}`;
 
@@ -92,75 +113,82 @@ export default async function BlogPost({ params }: PageProps) {
       />
       <Navbar />
 
-      <main className="px-4 pt-32 pb-24">
-        <article className="mx-auto max-w-2xl">
-          <nav className="mb-8 flex items-center gap-1.5 text-sm text-text-muted">
-            <Link href="/" className="hover:text-primary">
-              {ts("common.breadcrumbHome")}
-            </Link>
-            <span className="material-symbols-outlined text-base">chevron_right</span>
-            <Link href="/blog" className="hover:text-primary">
-              {tb("title")}
-            </Link>
-          </nav>
+      <main>
+        <article className="bg-paper px-4 pb-16 sm:px-6 sm:pb-24" style={{ paddingTop: "calc(var(--landing-nav-h, 56px) + 0.5rem)" }}>
+          <div className="mx-auto max-w-[680px]">
+            <Breadcrumbs
+              label={ts("common.breadcrumbLabel")}
+              items={[
+                { label: ts("common.breadcrumbHome"), href: "/" },
+                { label: "Blog", href: "/blog" },
+                { label: post.title },
+              ]}
+            />
 
-          <h1 className="font-display text-4xl font-bold leading-[1.15] tracking-tight text-secondary lg:text-5xl">
-            {post.title}
-          </h1>
-          <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-text-muted">
-            <span>{tb("author", { author: post.author })}</span>
-            <span>·</span>
-            <span>{tb("readingTime", { min: post.readingMinutes })}</span>
+            <header className="mt-4 lg:mt-8">
+              <h1 className="text-balance font-display text-[30px] font-bold leading-[1.12] text-ink sm:text-[42px]">{post.title}</h1>
+              <p className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-ink-muted">
+                <span>{tb("author", { author: post.author })}</span>
+                <span aria-hidden>·</span>
+                <span>{tb("readingTime", { min: post.readingMinutes })}</span>
+              </p>
+            </header>
+            {/* Sticky "Crear su libro" bar (phones) appears once the reader is past the header. */}
+            <span id="hero-cta" aria-hidden className="block h-px" />
           </div>
 
           {post.coverImageUrl && (
-            <div className="relative mt-8 aspect-[3/2] overflow-hidden rounded-2xl bg-cream">
+            <div className="relative mx-auto mt-6 aspect-[3/2] max-w-[680px] overflow-hidden rounded-2xl bg-line sm:mt-8">
               <Image
                 src={post.coverImageUrl}
                 alt={post.title}
                 fill
-                sizes="(max-width: 768px) 100vw, 672px"
+                sizes="(max-width: 768px) 100vw, 680px"
                 className="object-cover"
                 priority
               />
             </div>
           )}
 
-          <div
-            className="prose-article mt-10"
-            dangerouslySetInnerHTML={{ __html: html }}
-          />
+          <div className={cx("mx-auto mt-8 max-w-[680px] sm:mt-10", PROSE)} dangerouslySetInnerHTML={{ __html: html }} />
 
           {/* Related + CTA */}
-          <div className="mt-14 rounded-2xl border border-border-light bg-cream/50 p-8 text-center">
-            <h2 className="mb-5 font-display text-2xl font-bold text-secondary">
+          <aside
+            aria-labelledby="post-next-title"
+            className="mx-auto mt-14 max-w-[680px] rounded-3xl bg-surface p-6 text-center ring-1 ring-line sm:p-10"
+          >
+            <h2 id="post-next-title" className="text-balance font-display text-2xl font-bold leading-tight text-ink sm:text-3xl">
               {tb("relatedHeading")}
             </h2>
-            <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Link
-                href="/crear"
-                className="flex h-13 items-center justify-center gap-2 rounded-lg bg-primary px-8 py-3.5 text-base font-bold text-white shadow-lg shadow-primary/10 transition-all hover:-translate-y-1 hover:bg-primary-hover"
-              >
-                {ts("common.ctaPrimary")}
-                <span className="material-symbols-outlined">arrow_forward</span>
+            <div className="mt-6 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
+              <Link href="/crear" className={buttonClass({ className: "min-h-14 text-lg! sm:px-8" })}>
+                {th("cta")}
+                <span aria-hidden className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1">
+                  arrow_forward
+                </span>
               </Link>
               {relatedHref && relatedLabel && (
-                <Link
-                  href={relatedHref}
-                  className="flex items-center justify-center gap-2 rounded-lg border border-border-light bg-white px-8 py-3.5 text-base font-bold text-secondary transition-all hover:border-primary hover:text-primary"
-                >
+                <Link href={relatedHref} className={buttonClass({ variant: "secondary", className: "min-h-14" })}>
                   {relatedLabel}
                 </Link>
               )}
             </div>
-          </div>
+            <p className="mt-4 text-sm text-ink-soft">
+              <span className="font-bold tabular-nums text-brand-deep">{th("priceFrom", { price: fromPrice })}</span>
+              <span> · {tp("vatIncluded")}</span>
+              <span> · {th("freeShipping")}</span>
+            </p>
+          </aside>
 
-          <div className="mt-10 text-center">
+          <div className="mt-8 text-center">
             <Link
               href="/blog"
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-text-muted hover:text-primary"
+              className={cx(
+                "inline-flex min-h-11 items-center gap-1.5 rounded-full px-4 text-sm font-semibold text-ink-muted transition-colors hover:bg-line hover:text-ink-soft",
+                focusRing,
+              )}
             >
-              <span className="material-symbols-outlined text-base">arrow_back</span>
+              <span aria-hidden className="material-symbols-outlined !text-lg">arrow_back</span>
               {tb("backToBlog")}
             </Link>
           </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useSyncExternalStore } from "react";
+import React from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { QRCodeSVG } from "qrcode.react";
 import BrandLogo from "@/components/BrandLogo";
@@ -16,30 +16,20 @@ import EndpaperPattern from "./EndpaperPattern";
 // Pure-math approach: calculates the right font size at RENDER TIME.
 // Zero dependency on DOM measurement, zero timing issues with react-pageflip.
 //
-// Uses a media query hook to match the actual book viewer size:
-//   - Desktop (≥768px): 420px pages → more room → larger font
-//   - Mobile  (<768px): 350px pages → less room → may shrink font
+// Pages are always laid out at BOOK_LAYOUT_PX (the desktop page size). Viewers that show
+// a page at another size (the phone spread, the enlarged page) render it at this size and
+// scale it (MobileBookPage `scale`), so every screen shows the same page, as printed.
 //
 // Binary search finds the LARGEST font where all text fits on the page.
 // CSS line-clamp is the absolute last-resort safety net.
 
 const MIN_FONT_SIZE_PX = 7;
 // Readability floor: below this we stop shrinking and let the text area
-// scroll instead (was shrinking to ~7-9 px on phones, unreadable).
+// scroll instead.
 const READABLE_MIN_PX = 12;
 
-/** Hook: returns the book page size matching MobileBookViewer's breakpoint. */
-function usePageSize(): number {
-  return useSyncExternalStore(
-    (onChange) => {
-      const mql = window.matchMedia("(max-width: 767px)");
-      mql.addEventListener("change", onChange);
-      return () => mql.removeEventListener("change", onChange);
-    },
-    () => (window.matchMedia("(max-width: 767px)").matches ? 350 : 420),
-    () => 420, // SSR default = desktop
-  );
-}
+/** Layout size of a page, px (square). */
+export const BOOK_LAYOUT_PX = 420;
 
 /** Estimate how many lines `text` needs at given font metrics. */
 function estimateLines(text: string, fontPx: number, containerWidthPx: number): number {
@@ -101,7 +91,7 @@ interface FittedTextProps {
 }
 
 function FittedText({ children, className, style, basePx, leading, availableRatio, widthRatio = 0.72 }: FittedTextProps) {
-  const pageSizePx = usePageSize();
+  const pageSizePx = BOOK_LAYOUT_PX;
   const text = typeof children === "string" ? children : String(children ?? "");
   const rawFittedPx = calcFittedFontSize(text, basePx, leading, pageSizePx, availableRatio, widthRatio);
   const needsScroll = rawFittedPx < READABLE_MIN_PX;
@@ -161,21 +151,41 @@ interface MobileBookPageProps {
   onEdit?: (target: "cover" | "dedication") => void;
   /** Preview only: CTA of the teaser_order page */
   onOrder?: () => void;
+  /**
+   * Rendered size ÷ BOOK_LAYOUT_PX. The page content is laid out at the layout
+   * size and scaled with a transform, so text wraps exactly as on a full-size page.
+   */
+  scale?: number;
+  /** Tap on the page (not on one of its buttons/links): e.g. open it enlarged. */
+  onOpen?: () => void;
 }
 
 const MobileBookPage = React.forwardRef<HTMLDivElement, MobileBookPageProps>(
-  function MobileBookPage({ page, templateId, gender, favoriteColor, pageNumber, onEdit, onOrder }, ref) {
+  function MobileBookPage({ page, templateId, gender, favoriteColor, pageNumber, onEdit, onOrder, scale, onOpen }, ref) {
     const colors = getBookColors(templateId, gender, favoriteColor);
+    const scaled = scale !== undefined && Math.abs(scale - 1) > 0.001;
     return (
       <div
         ref={ref}
-        className="book-page h-full w-full bg-white overflow-hidden relative @container"
+        className={`book-page h-full w-full bg-white overflow-hidden relative ${onOpen ? "cursor-zoom-in" : ""}`}
+        onClick={
+          onOpen
+            ? (e) => {
+                if (e.target instanceof Element && e.target.closest("button, a, input, label")) return;
+                onOpen();
+              }
+            : undefined
+        }
       >
         {/* Inner wrapper carries CSS custom properties — the outer ref div's
-            inline style gets overwritten by react-pageflip, so vars must live here */}
+            inline style gets overwritten by react-pageflip, so vars must live here.
+            It is also the container (cqi) and, when scaled, the layout-size box. */}
         <div
-          className="absolute inset-0"
+          className={`absolute @container ${scaled ? "left-0 top-0 origin-top-left" : "inset-0"}`}
           style={{
+            ...(scaled
+              ? { width: `${100 / scale!}%`, height: `${100 / scale!}%`, transform: `scale(${scale})` }
+              : null),
             "--bk-accent": colors.accent,
             "--bk-accent-light": colors.accentLight,
             "--bk-title": colors.titleColor,

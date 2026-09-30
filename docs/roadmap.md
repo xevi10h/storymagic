@@ -56,6 +56,21 @@ character lock; per-stage resolution. (commits 5ebc2f1 → a883d60)
 - **Title edits after purchase** re-render nothing: block edits once paid or rebuild the PDF.
 - Bizum/PayPal (payment_method_types is card-only).
 
+## Next steps from brand system phase 1 (2026-09-30)
+Brand spec in `docs/brand.md`; semantic tokens in `globals.css`; primitives in `src/components/ui/`.
+- [x] Rebuild the home landing on the brand system (2026-09-30; structure in `docs/product-spec.md` › Home landing). SEO pages / blog in progress.
+- [ ] Drop legacy tokens (`cream`, `text-muted`, `footer-*`, `pack-*`, `.texture-overlay`) once no screen uses them.
+- [x] Contrast: `--ink-muted: #7a6963` (4.95:1) and `--brand-text: #b94f1f` for orange text; `Eyebrow` kicker, `ChoiceChip` soft and `Button` secondary use it. Pending: white 14–16 px bold labels on `bg-brand` (3.2:1, chips/CTAs) stay a known shortfall.
+- [x] Global `:focus-visible` rule moved into `@layer base`.
+- [ ] Migrate creation components to `src/components/ui` primitives (same classes, less duplication).
+
+## Next steps from landing QA pass (2026-09-30)
+- [x] Seasonal banner CLS — DONE 2026-09-30: `Navbar` is now a server wrapper that renders the banner from `spainToday()` into the static/ISR HTML (`[locale]/layout.tsx` revalidates hourly so no marketing page serves a stale season); an inline script after the header publishes `--landing-nav-h` before paint; a dismissed message is hidden before paint via a `<head>` script (localStorage → `html[data-season-dismissed]`) + the banner's own `<style>`, no cookies read (pages stay static). Dev `?now=` reaches the server through middleware (`x-season-now`). CLS with `?now=2026-11-15`: 0.0725 → 0.0049 at 390, 0.0378 → 0.0046 at 1440 (remaining = hero web-font swap, same as off-season).
+- [ ] `LiveCover` sizes its title with JS after measuring (tiny in-cover text shift, ~0.002 CLS): switch to container-query units (`cqw`).
+- [ ] `BookMockup` serves raw `<img>` (Sam's cover + 1600 px spread at ~95–430 css px on desktop): use `next/image` or pass right-sized sources.
+- [ ] Catalog filter overlap by design (a 5–8 world shows under "8–12"); consider exclusive buckets by `ageMin` if parents find it confusing.
+- [ ] "Envío gratis" (hero) vs "Envío incluido" (closing CTA, FAQ): pick one wording across locales.
+
 ## Next steps from favourite-colour palette + name display form (2026-09-30)
 - [ ] Data backfill (owner decision): every character created by flow v2 has `favorite_color = '#E53935'` (old silent default, never asked) → those books now print as deliberate red; `UPDATE characters SET favorite_color = NULL WHERE favorite_color = '#E53935'` would give them the neutral palette. Same for lower-case stored names (`formatChildName` backfill).
 - [ ] Show the chosen colour live on screen 2 (portrait ring / mini endpaper swatch) so parents see what it does.

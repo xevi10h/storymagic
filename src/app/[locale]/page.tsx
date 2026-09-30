@@ -7,13 +7,17 @@ import QualitySection from "@/components/landing/QualitySection";
 import UniqueEdition from "@/components/landing/UniqueEdition";
 import AdventurePack from "@/components/landing/AdventurePack";
 import FaqSection from "@/components/landing/FaqSection";
-import CollectionOffer from "@/components/landing/CollectionOffer";
+import FinalCta from "@/components/landing/FinalCta";
 import Footer from "@/components/landing/Footer";
 import MobileStickyCta from "@/components/landing/MobileStickyCta";
 import WaitlistPage from "@/components/waitlist/WaitlistPage";
 import { OrganizationJsonLd, ProductJsonLd } from "@/components/seo/JsonLd";
 import DevResetCreateState from "@/components/dev/DevResetCreateState";
 import { ADDON_ENABLED } from "@/lib/pricing";
+
+// The FAQ quotes this season's Christmas/Reyes order cut-offs (depend on "today"):
+// re-render at most hourly, like /christmas-delivery.
+export const revalidate = 3600;
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -42,14 +46,16 @@ export default async function Home({ params }: Props) {
       <ProductJsonLd locale={locale} />
       <Navbar />
       <main>
+        {/* Conversion order: promise → how → pick a story → proof it is theirs →
+            the physical book → objections (FAQ) → close with their name. */}
         <Hero />
         <HowItWorks />
         <BookCollection />
-        <QualitySection />
         <UniqueEdition />
+        <QualitySection />
         {ADDON_ENABLED.adventure_pack && <AdventurePack />}
         <FaqSection />
-        <CollectionOffer />
+        <FinalCta />
       </main>
       <Footer />
       <MobileStickyCta />

@@ -89,7 +89,6 @@ export default function WaitlistPage() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-cream">
       {/* Paper texture */}
-      <div className="texture-overlay" />
 
       {/* Ambient warm blurs */}
       <div className="pointer-events-none absolute -top-40 right-0 h-[700px] w-[700px] translate-x-1/3 rounded-full bg-primary-light/12 blur-[140px]" />

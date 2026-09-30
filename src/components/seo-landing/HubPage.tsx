@@ -4,62 +4,61 @@ import { Link } from "@/i18n/navigation";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import MobileStickyCta from "@/components/landing/MobileStickyCta";
+import FinalCta from "@/components/landing/FinalCta";
 import { BreadcrumbJsonLd } from "@/components/seo/JsonLd";
+import { buttonClass, cx, focusRing } from "@/components/ui";
 import { STORY_TEMPLATES } from "@/lib/create-store";
+import { PRICING, formatPrice } from "@/lib/pricing";
 import {
   type SeoPageType,
   SEO_SLUGS,
   THEME_TEMPLATE,
+  featuredTemplateIds,
+  seoHubPath,
   seoPath,
 } from "@/lib/seo-landing";
+import { Breadcrumbs, PageHero, kicker, marketingH1, marketingLead } from "./MarketingHeader";
 
 const BASE_URL = "https://meapica.com";
-const HUB_BASE = "/personalized-books"; // ages hub base (shared with [age])
-
-// Icon per gift occasion (material symbols).
-const GIFT_ICON: Record<string, string> = {
-  "three-kings": "redeem",
-  "sant-jordi": "local_florist",
-  birthday: "cake",
-  communion: "church",
-  christmas: "park",
-  baptism: "water_drop",
-  "end-of-school": "school",
-  "name-day": "celebration",
-  graduation: "workspace_premium",
-  "first-birthday": "child_friendly",
-};
 
 type Props = {
   type: SeoPageType;
   locale: string;
 };
 
+/** Cover art per card: the theme's own world; per age, the first world of that range not already shown. */
+function cardArt(type: SeoPageType, slugs: readonly string[]): Record<string, string | null> {
+  const art: Record<string, string | null> = {};
+  const used = new Set<string>();
+  for (const slug of slugs) {
+    let templateId: string | undefined;
+    if (type === "themes") templateId = THEME_TEMPLATE[slug];
+    else if (type === "ages") templateId = featuredTemplateIds(type, slug).find((id) => !used.has(id));
+    // Gift occasions share the same worlds: text cards, no repeated art.
+    if (templateId) used.add(templateId);
+    art[slug] = templateId ? (STORY_TEMPLATES.find((x) => x.id === templateId)?.image ?? null) : null;
+  }
+  return art;
+}
+
 export default async function HubPage({ type, locale }: Props) {
   const t = await getTranslations({ locale, namespace: "seo" });
-  const td = await getTranslations({ locale, namespace: "data" });
+  const th = await getTranslations({ locale, namespace: "hero" });
+  const tp = await getTranslations({ locale, namespace: "pricing" });
 
-  const hubPath =
-    type === "gifts" ? "/gifts" : type === "themes" ? "/themes" : HUB_BASE;
+  const hubPath = seoHubPath(type);
   const pageUrl = `${BASE_URL}/${locale}${hubPath}`;
   const slugs = SEO_SLUGS[type];
+  const art = cardArt(type, slugs);
+  const fromPrice = formatPrice(Math.min(PRICING.softcover.price, PRICING.hardcover.price), locale);
 
-  const cards = slugs.map((slug) => {
-    const label = t(`nav.${type}.${slug}`);
-    let image: string | null = null;
-    if (type === "themes") {
-      const tpl = STORY_TEMPLATES.find((x) => x.id === THEME_TEMPLATE[slug]);
-      image = tpl?.image ?? null;
-    }
-    return {
-      slug,
-      label,
-      href: seoPath(type, slug),
-      image,
-      icon: type === "gifts" ? GIFT_ICON[slug] : "auto_stories",
-      alt: image ? td(`templates.${THEME_TEMPLATE[slug]}.title`) : label,
-    };
-  });
+  const cards = slugs.map((slug) => ({
+    slug,
+    label: t(`nav.${type}.${slug}`),
+    intro: t(`${type}.${slug}.heroIntro`),
+    href: seoPath(type, slug),
+    image: art[slug],
+  }));
 
   // ItemList structured data for the hub.
   const itemList = {
@@ -81,83 +80,79 @@ export default async function HubPage({ type, locale }: Props) {
           { name: t(`hubs.${type}.h1`), url: pageUrl },
         ]}
       />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemList) }}
-      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemList) }} />
       <Navbar />
 
       <main>
-        <header className="relative overflow-hidden px-4 pt-32 pb-12">
-          <div className="absolute top-0 right-0 -z-10 h-[500px] w-[500px] -translate-y-1/3 translate-x-1/3 rounded-full bg-primary-light/20 blur-[100px] mix-blend-multiply" />
-          <div className="mx-auto max-w-4xl">
-            <nav className="mb-6 flex items-center gap-1.5 text-sm text-text-muted">
-              <Link href="/" className="hover:text-primary">
-                {t("common.breadcrumbHome")}
+        <PageHero className="pb-8! sm:pb-10!">
+          <Breadcrumbs
+            label={t("common.breadcrumbLabel")}
+            items={[{ label: t("common.breadcrumbHome"), href: "/" }, { label: t(`hubs.${type}.h1`) }]}
+          />
+          <div className="mt-4 max-w-3xl lg:mt-8">
+            <p className={kicker}>{th("eyebrow")}</p>
+            <h1 className={cx("mt-2", marketingH1)}>{t(`hubs.${type}.h1`)}</h1>
+            <p className={cx("mt-4 max-w-2xl", marketingLead)}>{t(`hubs.${type}.intro`)}</p>
+            <div className="mt-7 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-5">
+              <Link id="hero-cta" href="/crear" className={buttonClass({ className: "min-h-14 w-full text-lg! sm:w-auto sm:px-8" })}>
+                {th("cta")}
+                <span aria-hidden className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1">
+                  arrow_forward
+                </span>
               </Link>
-              <span className="material-symbols-outlined text-base">
-                chevron_right
-              </span>
-              <span className="text-text-soft">{t(`hubs.${type}.h1`)}</span>
-            </nav>
-            <h1 className="max-w-3xl font-display text-4xl font-bold leading-[1.1] tracking-tight text-secondary lg:text-6xl">
-              {t(`hubs.${type}.h1`)}
-            </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-text-soft">
-              {t(`hubs.${type}.intro`)}
-            </p>
+              <p className="w-full text-center text-sm text-ink-soft sm:w-auto sm:text-left">
+                <span className="font-bold tabular-nums text-brand-deep">{th("priceFrom", { price: fromPrice })}</span>
+                <span> · {tp("vatIncluded")}</span>
+                <span> · {th("freeShipping")}</span>
+              </p>
+            </div>
           </div>
-        </header>
+        </PageHero>
 
-        <section className="px-4 pb-24">
-          <div className="mx-auto max-w-5xl">
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {cards.map((c) => (
+        <section aria-label={t(`hubs.${type}.h1`)} className="bg-paper px-4 sm:px-6">
+          <ul className="mx-auto grid max-w-[1200px] grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
+            {cards.map((c, i) => (
+              <li key={c.slug}>
                 <Link
-                  key={c.slug}
                   href={c.href}
-                  className="group flex flex-col overflow-hidden rounded-2xl border border-border-light bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                  className={cx(
+                    "group flex h-full overflow-hidden rounded-2xl border-2 border-line bg-surface transition-colors hover:border-brand/40",
+                    c.image ? "flex-row sm:flex-col" : "flex-col",
+                    focusRing,
+                  )}
                 >
-                  {c.image ? (
-                    <div className="relative aspect-[16/10] overflow-hidden bg-cream">
+                  {c.image && (
+                    // Covers are square (the book is 20 × 20 cm): thumbnail on phones, full cover above.
+                    <div className="relative aspect-square w-28 shrink-0 bg-line sm:w-full">
                       <Image
                         src={c.image}
-                        alt={c.alt}
+                        alt=""
                         fill
-                        sizes="(max-width: 768px) 100vw, 360px"
-                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                        sizes="(max-width: 640px) 112px, (max-width: 1024px) 50vw, 380px"
+                        priority={i < 3}
+                        className="object-cover"
                       />
                     </div>
-                  ) : (
-                    <div className="flex aspect-[16/10] items-center justify-center bg-cream">
-                      <span className="material-symbols-outlined text-5xl text-primary">
-                        {c.icon}
-                      </span>
-                    </div>
                   )}
-                  <div className="flex items-center justify-between gap-3 p-5">
-                    <span className="font-display text-lg font-bold text-secondary">
-                      {c.label}
+                  <div className="flex min-w-0 flex-1 flex-col justify-center gap-1.5 p-4 sm:p-5">
+                    <span className="flex items-start justify-between gap-3">
+                      <span className="font-display text-lg font-semibold leading-tight text-ink text-balance">{c.label}</span>
+                      <span
+                        aria-hidden
+                        className="material-symbols-outlined !text-xl shrink-0 text-ink-muted transition-transform group-hover:translate-x-1 group-hover:text-brand-text"
+                      >
+                        arrow_forward
+                      </span>
                     </span>
-                    <span className="material-symbols-outlined shrink-0 text-text-muted transition-transform group-hover:translate-x-1">
-                      arrow_forward
-                    </span>
+                    <span className="line-clamp-2 text-sm leading-snug text-ink-muted sm:line-clamp-3">{c.intro}</span>
                   </div>
                 </Link>
-              ))}
-            </div>
-
-            <div className="mt-14 text-center">
-              <Link
-                href="/crear"
-                className="mx-auto inline-flex items-center gap-2 rounded-lg bg-primary px-10 py-4 text-lg font-bold text-white shadow-lg shadow-primary/10 transition-all hover:-translate-y-1 hover:bg-primary-hover"
-              >
-                {t("common.ctaPrimary")}
-                <span className="material-symbols-outlined">arrow_forward</span>
-              </Link>
-            </div>
-          </div>
+              </li>
+            ))}
+          </ul>
         </section>
+
+        <FinalCta />
       </main>
 
       <Footer />
