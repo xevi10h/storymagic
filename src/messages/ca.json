@@ -747,8 +747,8 @@
       "statusScenesNoCover": "{done} de {total} il·lustracions · la portada, de camí",
       "statusReady": "Ja el pots obrir.",
       "paintingCover": "Pintant la portada",
-      "progressLabel": "Progrés de la preview",
-      "scenesLabel": "Il·lustracions de la preview",
+      "progressLabel": "Progrés de la vista prèvia",
+      "scenesLabel": "Il·lustracions de la vista prèvia",
       "coverThumbAlt": "Portada",
       "sceneAlt": "Il·lustració {n}",
       "waitMessage": "Sol trigar menys d'un minut.",
@@ -819,7 +819,12 @@
       "notAccessibleTitle": "Aquest conte es va obrir en un altre navegador",
       "notAccessibleBody": "Per seguretat, cada conte només es veu al navegador on es va crear o al teu compte. Obre'l des de l'enllaç que et vam enviar per correu, o inicia sessió si el vas desar al teu compte.",
       "notAccessibleLogin": "Iniciar sessió",
-      "notAccessibleCreate": "Crear un conte nou"
+      "notAccessibleCreate": "Crear un conte nou",
+      "closeZoom": "Tancar",
+      "zoomPage": "Ampliar",
+      "zoomTitle": "Pàgina ampliada",
+      "rotateHint": "Gira el mòbil per veure la doble pàgina",
+      "tapToZoom": "Toca una pàgina per ampliar-la"
     },
     "errors": {
       "saveFailed": "No hem pogut desar el conte. Revisa la connexió i torna a prémer el botó: tot el que has escrit continua aquí.",
@@ -936,7 +941,7 @@
     },
     "sendPreview": {
       "title": "Ho decideixes més tard?",
-      "hint": "T'enviem un enllaç a la preview per mirar-la amb calma a qualsevol dispositiu o reenviar-la. Sense subscripcions.",
+      "hint": "T'enviem un enllaç a la vista prèvia per mirar-la amb calma a qualsevol dispositiu o reenviar-la. Sense subscripcions.",
       "placeholder": "el.teu@email.com",
       "send": "Envia-me-la",
       "sending": "Enviant…",
@@ -1027,7 +1032,21 @@
           "a": "Com que és un llibre fet a mida no admet desistiment, però si arriba amb un defecte de fabricació escriu-nos i ho solucionem."
         }
       },
-      "softcoverNote": "Coberta flexible, més lleugera"
+      "softcoverNote": "Coberta flexible, més lleugera",
+      "rotateMockup": "Gira'l",
+      "later": {
+        "saveTitle": "Desa'l",
+        "saveBody": "Crea un compte gratuït i demana'l quan vulguis.",
+        "saveAction": "Crear compte",
+        "savedTitle": "Ja està desat",
+        "savedBody": "El tens a la teva biblioteca per demanar-lo quan vulguis.",
+        "savedAction": "Anar a la meva biblioteca",
+        "shareTitle": "Comparteix-lo",
+        "shareBody": "Un enllaç que s'obre a qualsevol mòbil, 30 dies, sense poder-lo editar.",
+        "emailTitle": "Rep-lo per correu",
+        "emailBody": "T'enviem l'enllaç per mirar-lo amb calma o reenviar-lo.",
+        "emailSend": "Enviar"
+      }
     }
   },
   "checkout": {
@@ -1097,7 +1116,7 @@
     "storyStatus": {
       "draft": "Esborrany",
       "generating": "Generant...",
-      "preview": "Preview llest",
+      "preview": "Vista prèvia llesta",
       "completing": "Completant...",
       "ready": "Llest",
       "ordered": "Comanda",
@@ -1106,7 +1125,7 @@
     },
     "storyActions": {
       "viewStory": "Veure conte",
-      "viewPreview": "Veure preview",
+      "viewPreview": "Veure la vista prèvia",
       "viewProgress": "Veure progrés",
       "continue": "Continuar"
     },
@@ -2258,11 +2277,11 @@
       "error": "No s'ha pogut crear l'enllaç. Torna-ho a provar.",
       "shareTitle": "El llibre {deName}",
       "shareText": "Mira el conte que estic preparant per a {name}:",
-      "hint": "Qualsevol amb l'enllaç veurà la preview (sense poder-la editar) durant 30 dies."
+      "hint": "Qualsevol amb l'enllaç veurà la vista prèvia (sense poder-la editar) durant 30 dies."
     },
     "view": {
-      "metaTitle": "El llibre {deName} · Preview",
-      "badge": "Preview compartida",
+      "metaTitle": "El llibre {deName} · Vista prèvia",
+      "badge": "Vista prèvia compartida",
       "intro": "Un tast del conte personalitzat {deName}: les primeres pàgines. La resta és sorpresa.",
       "restTitle": "La resta del conte és sorpresa",
       "restBody": "Algú que estima molt {name} està preparant aquest llibre. En vols un així per a un altre nen o nena? Amb el seu nom, el seu aspecte i la seva aventura, a punt en uns minuts.",

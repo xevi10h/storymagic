@@ -296,36 +296,43 @@ h1, h2, h3, h4 {
           drop-shadow(0 4px 8px rgba(44, 24, 16, 0.08));
 }
 
-/* Phones render a single-page (portrait) book: the 3D tilt inflates the
-   width page-flip measures (overflowing the viewport) and the center spine
-   would cut across the lone page — disable both. */
+/* Phones: no 3D tilt (it inflates the width page-flip measures). */
 @media (max-width: 767px) {
   .book-body {
     transform: none;
   }
-  .book-body::after {
-    display: none;
-  }
 }
 
-/* Center spine — pseudo-element anchored to the actual rendered book */
-.book-body::after {
+/* Gutter: the fold between two facing pages — the paper curving into the binding.
+   Anchored to the rendered book; hidden while a lone page (cover / back) is centred. */
+.book-body::after,
+.book-gutter {
   content: "";
   position: absolute;
   top: 0;
   bottom: 0;
   left: 50%;
-  width: 4px;
+  width: 9%;
   transform: translateX(-50%);
   z-index: 10;
   pointer-events: none;
+  mix-blend-mode: multiply;
   background: linear-gradient(
     to right,
-    rgba(0, 0, 0, 0.15),
-    rgba(0, 0, 0, 0.03) 40%,
-    rgba(0, 0, 0, 0.03) 60%,
-    rgba(0, 0, 0, 0.15)
+    rgba(60, 38, 22, 0) 0%,
+    rgba(60, 38, 22, 0.05) 28%,
+    rgba(60, 38, 22, 0.16) 44%,
+    rgba(60, 38, 22, 0.34) 49.4%,
+    rgba(60, 38, 22, 0.34) 50.6%,
+    rgba(60, 38, 22, 0.16) 56%,
+    rgba(60, 38, 22, 0.05) 72%,
+    rgba(60, 38, 22, 0) 100%
   );
+  transition: opacity 0.3s ease;
+}
+
+.book-body[data-single="true"]::after {
+  opacity: 0;
 }
 
 /* Page paper texture */

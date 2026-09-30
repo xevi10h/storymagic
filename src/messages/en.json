@@ -809,7 +809,12 @@
       "notAccessibleTitle": "This story was opened in another browser",
       "notAccessibleBody": "For privacy, each story can only be seen in the browser where it was created or in your account. Open it from the link we emailed you, or log in if you saved it to your account.",
       "notAccessibleLogin": "Log in",
-      "notAccessibleCreate": "Create a new story"
+      "notAccessibleCreate": "Create a new story",
+      "closeZoom": "Close",
+      "zoomPage": "Enlarge",
+      "zoomTitle": "Enlarged page",
+      "rotateHint": "Turn your phone sideways to see both pages",
+      "tapToZoom": "Tap a page to enlarge it"
     },
     "errors": {
       "saveFailed": "We couldn't save your book. Check your connection and tap the button again: everything you've entered is still here.",
@@ -1017,7 +1022,21 @@
           "a": "As a made-to-order book it has no right of withdrawal, but if it arrives with a manufacturing defect, write to us and we will sort it out."
         }
       },
-      "softcoverNote": "Flexible cover, lighter"
+      "softcoverNote": "Flexible cover, lighter",
+      "rotateMockup": "Turn it",
+      "later": {
+        "saveTitle": "Save it",
+        "saveBody": "Create a free account and order it whenever you like.",
+        "saveAction": "Create account",
+        "savedTitle": "It's saved",
+        "savedBody": "It's in your library, ready to order whenever you like.",
+        "savedAction": "Go to my library",
+        "shareTitle": "Share it",
+        "shareBody": "A link that opens on any phone, for 30 days, view only.",
+        "emailTitle": "Email it to yourself",
+        "emailBody": "We'll send you the link to look at it calmly or forward it.",
+        "emailSend": "Send"
+      }
     }
   },
   "checkout": {

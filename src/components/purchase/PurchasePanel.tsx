@@ -3,7 +3,7 @@
 import { forwardRef } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { BookMockup, type BookMockupFormat } from "@/components/book-mockup";
+import { BookMockup, type BackCoverSource, type BookMockupFormat } from "@/components/book-mockup";
 import { deName } from "@/lib/creation-flow";
 import { CHRISTMAS_DELIVERY_PATH } from "@/lib/shipping";
 import {
@@ -49,6 +49,8 @@ interface PurchasePanelProps {
   onCheckout: () => void;
   /** Two-column desktop: small mockup beside the headline, without the scale lines. */
   compact?: boolean;
+  /** Back cover of the mockup (seen when the reader turns the book round) */
+  back?: BackCoverSource;
   /** Slot for dev-only tools (mock-mode unlock), rendered above the CTA. */
   devTools?: React.ReactNode;
 }
@@ -81,6 +83,7 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
     checkoutError,
     onCheckout,
     compact = false,
+    back,
     devTools,
   },
   ctaRef,
@@ -126,6 +129,9 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
           spineColor={spineColor}
           showScale={!compact}
           alt={t("mockupAlt", { ...names, title, format: formatName(format) })}
+          rotatable
+          rotateLabel={t("rotateMockup")}
+          back={back}
         />
         {extraSelected && !isDigital && (
           <span className="absolute right-[6%] top-[10%] rounded-full bg-secondary px-2.5 py-1 text-xs font-bold text-white shadow-md">

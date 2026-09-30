@@ -819,7 +819,12 @@
       "notAccessibleTitle": "Cette histoire a été ouverte dans un autre navigateur",
       "notAccessibleBody": "Par sécurité, chaque histoire n'est visible que dans le navigateur où elle a été créée ou dans votre compte. Ouvrez-la depuis le lien que nous vous avons envoyé par e-mail, ou connectez-vous si vous l'avez enregistrée dans votre compte.",
       "notAccessibleLogin": "Se connecter",
-      "notAccessibleCreate": "Créer une nouvelle histoire"
+      "notAccessibleCreate": "Créer une nouvelle histoire",
+      "closeZoom": "Fermer",
+      "zoomPage": "Agrandir",
+      "zoomTitle": "Page agrandie",
+      "rotateHint": "Tournez votre téléphone pour voir la double page",
+      "tapToZoom": "Touchez une page pour l'agrandir"
     },
     "errors": {
       "saveFailed": "Nous n'avons pas pu enregistrer votre livre. Vérifiez votre connexion et appuyez à nouveau sur le bouton : tout ce que vous avez saisi est toujours là.",
@@ -1027,7 +1032,21 @@
           "a": "Livre fait sur mesure, il n'a pas de droit de rétractation, mais s'il arrive avec un défaut de fabrication, écrivez-nous et nous trouvons une solution."
         }
       },
-      "softcoverNote": "Couverture souple, plus légère"
+      "softcoverNote": "Couverture souple, plus légère",
+      "rotateMockup": "Faites-le tourner",
+      "later": {
+        "saveTitle": "Sauvegardez-le",
+        "saveBody": "Créez un compte gratuit et commandez-le quand vous voulez.",
+        "saveAction": "Créer un compte",
+        "savedTitle": "C'est sauvegardé",
+        "savedBody": "Il est dans votre bibliothèque, prêt à être commandé.",
+        "savedAction": "Aller à ma bibliothèque",
+        "shareTitle": "Partagez-le",
+        "shareBody": "Un lien qui s'ouvre sur n'importe quel téléphone, 30 jours, sans modification.",
+        "emailTitle": "Recevez-le par e-mail",
+        "emailBody": "Nous vous envoyons le lien pour le regarder tranquillement ou le transférer.",
+        "emailSend": "Envoyer"
+      }
     }
   },
   "checkout": {

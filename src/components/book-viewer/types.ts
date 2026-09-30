@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { GeneratedScene } from "@/lib/ai/story-generator";
 
 /**
@@ -177,6 +178,8 @@ export interface BookViewerProps {
   onEdit?: (target: "cover" | "dedication") => void;
   /** Preview only: the teaser_order page's CTA (scrolls to the formats). */
   onOrder?: () => void;
-  /** Hide the "3 / 10" page count under the book (the preview shows "3 de 12 escenas" instead). */
+  /** Hide the "2–3 / 11" page count under the book (the preview shows "3 de 12 escenas" instead). */
   hidePageCount?: boolean;
+  /** Extra buttons in the row under the book, next to "Ampliar" (e.g. Compartir). */
+  actions?: ReactNode;
 }

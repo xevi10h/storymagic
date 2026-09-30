@@ -1,5 +1,6 @@
 import BrandLogo from "@/components/BrandLogo";
 import { CoverFace, type CoverFaceProps } from "./CoverFace";
+import { BackCoverFace, type BackCoverSource } from "./BackCoverFace";
 import s from "./book-mockup.module.css";
 
 export interface Book3DProps extends CoverFaceProps {
@@ -9,6 +10,8 @@ export interface Book3DProps extends CoverFaceProps {
   spineTitle: boolean;
   showScale: boolean;
   scaleLabel: string;
+  /** Printed back cover, seen when the book is turned round (drag-to-rotate) */
+  back?: BackCoverSource;
 }
 
 /**
@@ -17,7 +20,7 @@ export interface Book3DProps extends CoverFaceProps {
  * --oh board overhang past the page block. Faces that point away from the camera are culled
  * with backface-visibility, so the same model serves the "spine" and "pages" poses.
  */
-export function Book3D({ spineColor, spineTitle, showScale, scaleLabel, ...cover }: Book3DProps) {
+export function Book3D({ spineColor, spineTitle, showScale, scaleLabel, back, ...cover }: Book3DProps) {
   const edge = { backgroundColor: spineColor };
   return (
     <div className={s.book}>
@@ -26,6 +29,14 @@ export function Book3D({ spineColor, spineTitle, showScale, scaleLabel, ...cover
 
       {/* Inside of the back board (endpaper) — only seen through the overhang gaps */}
       <div className={`${s.face} ${s.backInner}`} />
+
+      {/* Outside of the back board — faces away until the book is turned round */}
+      <div className={`${s.face} ${s.backCover}`} style={back ? undefined : edge}>
+        {back && <BackCoverFace back={back} title={cover.title} childName={cover.childName} />}
+        <div className={s.frontLight} />
+        <div className={s.frontGrain} />
+        <div className={s.hinge} />
+      </div>
 
       {/* Top edge: page block recessed between the two boards */}
       <div className={`${s.face} ${s.topPages}`} />

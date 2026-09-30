@@ -5,6 +5,7 @@ import { NextIntlClientProvider, useLocale, useMessages, useTimeZone, useTransla
 import { Link } from "@/i18n/navigation";
 import CreationHeader from "@/components/crear/CreationHeader";
 import BookViewerSwitch from "@/components/book-viewer/BookViewerSwitch";
+import { spreadIndexOf, spreadStart } from "@/components/book-viewer/spreads";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import type { BookPage } from "@/components/book-viewer/types";
 import { deName } from "@/lib/creation-flow";
@@ -46,8 +47,8 @@ export default function SharedPreviewView({ storyId, title, childName, templateI
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      if (e.key === "ArrowLeft") setCurrentPage((p) => Math.max(0, p - 1));
-      if (e.key === "ArrowRight") setCurrentPage((p) => Math.min(total - 1, p + 1));
+      if (e.key === "ArrowLeft") setCurrentPage((p) => spreadStart(Math.max(0, spreadIndexOf(p, total) - 1)));
+      if (e.key === "ArrowRight") setCurrentPage((p) => Math.min(total - 1, spreadStart(spreadIndexOf(p, total) + 1)));
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -63,9 +64,6 @@ export default function SharedPreviewView({ storyId, title, childName, templateI
           <div className="flex shrink-0 items-center gap-2">
             <span className="rounded-full bg-create-primary/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-create-primary">
               {t("badge")}
-            </span>
-            <span className="whitespace-nowrap text-xs tabular-nums text-text-muted">
-              {currentPage + 1} / {total}
             </span>
           </div>
         </div>

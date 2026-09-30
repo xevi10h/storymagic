@@ -3,15 +3,15 @@
 import { useRef, useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import HTMLFlipBook from "react-pageflip";
 import { useTranslations } from "next-intl";
-import MobileBookPage from "./MobileBookPage";
+import MobileBookPage, { BOOK_LAYOUT_PX } from "./MobileBookPage";
 import FullscreenPageViewer from "./FullscreenPageViewer";
 import { getBookPageNumber } from "./types";
 import type { BookViewerProps } from "./types";
 import { playPageTurnSound } from "./page-turn-sound";
+import { spreadCount, spreadIndexOf, spreadLabel, spreadPages } from "./spreads";
 
 // null = not yet measured (SSR). The flip book must NOT mount until this
-// resolves: react-pageflip reads usePortrait only on init, so mounting with
-// the wrong mode leaves the cover clipped on phones.
+// resolves: its size props are only read on init.
 function useIsNarrow(breakpoint = 768): boolean | null {
   return useSyncExternalStore(
     (onChange) => {
@@ -24,6 +24,15 @@ function useIsNarrow(breakpoint = 768): boolean | null {
   );
 }
 
+/**
+ * The book as it is printed, on every screen: the cover alone, then two facing pages
+ * (react-pageflip landscape mode, same pairing as print — see ./spreads).
+ *
+ * Phones: the spread fills the width (a 2:1 box), each page laid out at its full size and
+ * scaled down (MobileBookPage `scale`), swipe turns the spread, a tap on a page opens it
+ * enlarged (FullscreenPageViewer; a phone held sideways sees the spread big).
+ * Desktop: the flip book stretches to its column; clicking a page turns it.
+ */
 export default function MobileBookViewer({
   pages,
   templateId,
@@ -34,45 +43,58 @@ export default function MobileBookViewer({
   onEdit,
   onOrder,
   hidePageCount = false,
+  actions,
 }: BookViewerProps) {
   const t = useTranslations("crear.preview");
   const tPurchase = useTranslations("crear.purchase");
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const flipBookRef = useRef<any>(null);
   const lastReportedPage = useRef(currentPage);
+  // Page changes mirrored from the fullscreen viewer turn the hidden book silently.
+  const silentSync = useRef(false);
   const isNarrow = useIsNarrow();
   const [fullscreenPage, setFullscreenPage] = useState<number | null>(null);
-  const sceneRef = useRef<HTMLDivElement | null>(null);
   const [sceneWidth, setSceneWidth] = useState<number | null>(null);
   // Hide the raw page stack until page-flip lays it out (avoids a flash of
   // all pages flowing as a plain grid on mount).
   const [flipReady, setFlipReady] = useState(false);
 
-  // Measure the available width before mounting the flip book: page-flip only
-  // honors min/maxWidth as fixed pixel bounds, so they must derive from the
-  // real container or single-page (portrait) mode overflows on phones.
-  // The callback ref re-attaches the observer when the placeholder swaps for
-  // the real scene container.
-  const observerRef = useRef<ResizeObserver | null>(null);
+  // Measure the available width before mounting the flip book: in fixed mode page-flip
+  // takes the page size in pixels, so on phones it must derive from the real container.
+  // The callback ref re-attaches the observer when the placeholder swaps for the real scene.
+  //
+  // Touch taps: browsers follow a tap with compatibility mouse events, which page-flip reads
+  // as a click on the page (a turn). On phones a tap opens the page instead, so a mousedown
+  // right after a touch is stopped before it reaches the book (capture on the ancestor).
+  const cleanupRef = useRef<(() => void) | null>(null);
   const attachScene = useCallback((el: HTMLDivElement | null) => {
-    sceneRef.current = el;
-    observerRef.current?.disconnect();
+    cleanupRef.current?.();
+    cleanupRef.current = null;
     if (!el) return;
-    const measure = () =>
-      setSceneWidth(Math.floor(el.getBoundingClientRect().width));
+    const measure = () => setSceneWidth(Math.floor(el.getBoundingClientRect().width));
     measure();
     const ro = new ResizeObserver(measure);
     ro.observe(el);
-    observerRef.current = ro;
+    let lastTouch = 0;
+    const onTouchStart = () => {
+      lastTouch = Date.now();
+    };
+    const onMouseDown = (e: MouseEvent) => {
+      if (Date.now() - lastTouch < 1000) e.stopPropagation();
+    };
+    el.addEventListener("touchstart", onTouchStart, { capture: true, passive: true });
+    el.addEventListener("mousedown", onMouseDown, true);
+    cleanupRef.current = () => {
+      ro.disconnect();
+      el.removeEventListener("touchstart", onTouchStart, true);
+      el.removeEventListener("mousedown", onMouseDown, true);
+    };
   }, []);
-  useEffect(() => () => observerRef.current?.disconnect(), []);
+  useEffect(() => () => cleanupRef.current?.(), []);
 
-  // Sync external page changes to the flip book
+  // Sync external page changes (keyboard, fullscreen) to the flip book
   useEffect(() => {
-    if (
-      flipBookRef.current &&
-      currentPage !== lastReportedPage.current
-    ) {
+    if (flipBookRef.current && currentPage !== lastReportedPage.current) {
       const pageFlip = flipBookRef.current.pageFlip();
       if (pageFlip) {
         pageFlip.flip(currentPage);
@@ -87,70 +109,90 @@ export default function MobileBookViewer({
       const newPage = e.data as number;
       lastReportedPage.current = newPage;
       onPageChange(newPage);
-      playPageTurnSound();
+      if (silentSync.current) silentSync.current = false;
+      else playPageTurnSound();
     },
-    [onPageChange]
+    [onPageChange],
   );
 
-  const isOnCover = currentPage === 0;
-  const isOnBack = currentPage === pages.length - 1;
-  // Two-page (landscape) view: the cover sits alone in the right half and a lone back
-  // cover in the left half. Slide the book by a quarter so a single page is centred.
-  const loneBack = isOnBack && pages.length % 2 === 0;
-  const centreShift = isNarrow ? 0 : isOnCover ? -25 : loneBack ? 25 : 0;
+  const total = pages.length;
+  const shown = spreadPages(currentPage, total);
+  const spreadIdx = spreadIndexOf(currentPage, total);
+  const spreads = spreadCount(total);
+  const isFirst = spreadIdx === 0;
+  const isLast = spreadIdx >= spreads - 1;
+  // A lone page (the cover on the right, an even book's back cover on the left) is centred:
+  // the book slides by a quarter of its width.
+  const single = shown.length === 1;
+  const centreShift = single ? (shown[0] === 0 ? -25 : 25) : 0;
 
-  // Page size for phones: exactly the container width, capped at 400.
-  const portraitSize = sceneWidth !== null ? Math.min(sceneWidth, 400) : null;
-  const ready = isNarrow !== null && (!isNarrow || portraitSize !== null);
+  // Two pages across the measured width (desktop: 150–520 px a page). Every page is laid
+  // out at BOOK_LAYOUT_PX and scaled to this size, so text wraps as printed at any size.
+  const pagePx =
+    sceneWidth !== null ? (isNarrow ? Math.floor(sceneWidth / 2) : Math.max(150, Math.min(520, Math.floor(sceneWidth / 2)))) : null;
+  const ready = isNarrow !== null && pagePx !== null;
 
-  // Wait for the viewport/container measurement before mounting the flip book
   if (!ready) {
     return (
       <div className="flex flex-col items-center w-full">
-        <div ref={attachScene} className="book-scene w-full mx-auto">
-          <div className="book-body w-full mx-auto aspect-square max-w-[420px] animate-pulse rounded-lg bg-create-neutral/40" />
+        <div ref={attachScene} className="book-scene w-full mx-auto max-md:-mx-2 max-md:w-[calc(100%+1rem)]">
+          <div className="book-body w-full mx-auto aspect-[2/1] animate-pulse rounded-lg bg-create-neutral/40" />
         </div>
       </div>
     );
   }
 
+  const scale = pagePx! / BOOK_LAYOUT_PX;
+  // Small pages (phones, a phone held sideways): a tap opens the page enlarged instead of turning it.
+  const zoomable = !!isNarrow || pagePx! < 300;
+
   return (
     <div className="flex flex-col items-center">
       {/* Open book */}
-      <div ref={attachScene} className="book-scene w-full mx-auto">
+      <div
+        ref={attachScene}
+        className="book-scene w-full mx-auto max-md:-mx-2 max-md:w-[calc(100%+1rem)]"
+        data-testid="book-viewer"
+        data-spread={shown.join("-")}
+      >
         <div
           className={`book-body w-full transition-[opacity,transform] duration-500 ease-out motion-reduce:transition-none ${
             flipReady ? "opacity-100" : "opacity-0"
           }`}
-          style={centreShift ? { transform: `translateX(${centreShift}%) rotateX(2deg)` } : undefined}
+          data-single={single}
+          style={
+            centreShift
+              ? { transform: isNarrow ? `translateX(${centreShift}%)` : `translateX(${centreShift}%) rotateX(2deg)` }
+              : undefined
+          }
         >
           <HTMLFlipBook
-            key={isNarrow ? `portrait-${portraitSize}` : "landscape"}
+            key={`book-${pagePx}`}
             onInit={() => setFlipReady(true)}
             ref={flipBookRef}
-            width={isNarrow ? portraitSize! : 420}
-            height={isNarrow ? portraitSize! : 420}
-            size={isNarrow ? "fixed" : "stretch"}
-            // page-flip picks portrait only when blockWidth < 2*minWidth, so on
-            // phones the bounds are pinned to the measured container width.
-            minWidth={isNarrow ? portraitSize! : 150}
-            maxWidth={isNarrow ? portraitSize! : 520}
-            minHeight={150}
-            maxHeight={isNarrow ? portraitSize! : 520}
+            width={pagePx!}
+            height={pagePx!}
+            size="fixed"
+            minWidth={pagePx!}
+            maxWidth={pagePx!}
+            minHeight={pagePx!}
+            maxHeight={pagePx!}
             showCover={true}
             drawShadow={true}
-            flippingTime={700}
-            usePortrait={isNarrow}
+            flippingTime={isNarrow ? 600 : 700}
+            // Always two facing pages, as printed (the cover and a lone back cover alone).
+            usePortrait={false}
             mobileScrollSupport={true}
             swipeDistance={30}
-            showPageCorners={true}
+            showPageCorners={!zoomable}
             maxShadowOpacity={0.5}
             useMouseEvents={true}
             clickEventForward={true}
             startPage={currentPage}
             startZIndex={0}
             autoSize={true}
-            disableFlipByClick={false}
+            // Phones: a tap opens the page enlarged; swipes (and the page corners) turn it.
+            disableFlipByClick={zoomable}
             onFlip={handleFlip}
             className="book-flip"
             style={{}}
@@ -165,71 +207,74 @@ export default function MobileBookViewer({
                 pageNumber={page.type === "scene" ? getBookPageNumber(pages, i) : undefined}
                 onEdit={onEdit}
                 onOrder={onOrder}
+                scale={scale}
+                onOpen={zoomable ? () => setFullscreenPage(i) : undefined}
               />
             ))}
           </HTMLFlipBook>
         </div>
       </div>
 
-      {/* Fullscreen expand button (mobile only) */}
-      {isNarrow && (
+      {/* Navigation arrows + progress (by spread) */}
+      <div className={`${isNarrow ? "mt-4" : "mt-5"} flex items-center justify-center gap-3 w-full max-w-sm mx-auto px-4`}>
         <button
-          onClick={() => setFullscreenPage(currentPage)}
-          className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-border-light bg-white px-4 py-1.5 text-xs text-text-muted transition-colors hover:border-create-primary hover:text-create-primary"
-        >
-          <span aria-hidden className="material-symbols-outlined text-sm">fullscreen</span>
-          {t("expandPage")}
-        </button>
-      )}
-
-      {/* Navigation arrows + progress */}
-      <div className={`${isNarrow ? "mt-3" : "mt-5"} flex items-center justify-center gap-3 w-full max-w-sm mx-auto px-4`}>
-        <button
-          onClick={() => {
-            const pf = flipBookRef.current?.pageFlip();
-            if (pf) pf.flipPrev();
-          }}
-          disabled={isOnCover}
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border-light bg-white text-text-muted transition-all hover:border-create-primary hover:text-create-primary disabled:opacity-30 disabled:hover:border-border-light disabled:hover:text-text-muted"
+          type="button"
+          onClick={() => flipBookRef.current?.pageFlip()?.flipPrev()}
+          disabled={isFirst}
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border-light bg-white text-text-muted transition-all hover:border-create-primary hover:text-create-primary disabled:opacity-30 disabled:hover:border-border-light disabled:hover:text-text-muted"
           aria-label={t("previous")}
+          data-testid="book-prev"
         >
           <span aria-hidden className="material-symbols-outlined text-lg">chevron_left</span>
         </button>
 
-        {/* Progress bar + page number */}
         <div className="flex-1 flex flex-col items-center gap-1">
           <div className="w-full h-1.5 bg-border-light rounded-full overflow-hidden">
             <div
               className="h-full bg-create-primary rounded-full transition-all duration-300"
-              style={{ width: `${((currentPage) / Math.max(pages.length - 1, 1)) * 100}%` }}
+              style={{ width: `${(spreadIdx / Math.max(spreads - 1, 1)) * 100}%` }}
             />
           </div>
           {!hidePageCount && (
-            <span className="text-[10px] font-bold text-text-muted tabular-nums">
-              {currentPage + 1} / {pages.length}
+            <span className="text-[11px] font-bold text-text-muted tabular-nums" data-testid="book-page-count">
+              {spreadLabel(currentPage, total)}
             </span>
           )}
         </div>
 
         <button
-          onClick={() => {
-            const pf = flipBookRef.current?.pageFlip();
-            if (pf) pf.flipNext();
-          }}
-          disabled={isOnBack}
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border-light bg-white text-text-muted transition-all hover:border-create-primary hover:text-create-primary disabled:opacity-30 disabled:hover:border-border-light disabled:hover:text-text-muted"
+          type="button"
+          onClick={() => flipBookRef.current?.pageFlip()?.flipNext()}
+          disabled={isLast}
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border-light bg-white text-text-muted transition-all hover:border-create-primary hover:text-create-primary disabled:opacity-30 disabled:hover:border-border-light disabled:hover:text-text-muted"
           aria-label={t("next")}
+          data-testid="book-next"
         >
           <span aria-hidden className="material-symbols-outlined text-lg">chevron_right</span>
         </button>
       </div>
 
-      {/* Interaction hint: swipe on phones, click / arrow keys with a mouse */}
-      <p className="mt-2 text-center text-xs text-text-muted">
-        {isNarrow ? t("swipeHint") : tPurchase("desktopHint")}
+      {/* Phones: the pages are small, so enlarging is the obvious action; desktop: click / keys */}
+      {(zoomable || actions) && (
+        <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+          {zoomable && (
+            <button
+              type="button"
+              onClick={() => setFullscreenPage(shown[0])}
+              className="inline-flex items-center justify-center gap-1.5 rounded-full border border-border-light bg-white px-4 py-1.5 text-xs font-semibold text-create-text-dark transition-colors hover:border-create-primary hover:text-create-primary"
+              data-testid="book-zoom"
+            >
+              <span aria-hidden className="material-symbols-outlined text-lg text-create-primary">zoom_in</span>
+              {t("zoomPage")}
+            </button>
+          )}
+          {actions}
+        </div>
+      )}
+      <p className="mt-2 px-4 text-center text-xs text-text-muted">
+        {zoomable ? `${t("swipeHint")} · ${t("tapToZoom")}` : tPurchase("desktopHint")}
       </p>
 
-      {/* Fullscreen page viewer modal */}
       {fullscreenPage !== null && (
         <FullscreenPageViewer
           pages={pages}
@@ -247,10 +292,12 @@ export default function MobileBookViewer({
               : undefined
           }
           onPageChange={(idx) => {
-            // Sync flip book when user swipes in fullscreen
+            // Keep the book (hidden behind the viewer) on the same spread, without animating.
             const pf = flipBookRef.current?.pageFlip();
-            if (pf) pf.flip(idx);
-            onPageChange(idx);
+            if (pf && spreadIndexOf(idx, total) !== spreadIndexOf(lastReportedPage.current, total)) {
+              silentSync.current = true;
+              pf.turnToPage(idx);
+            }
           }}
         />
       )}

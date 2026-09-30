@@ -737,8 +737,8 @@
       "statusScenesNoCover": "{done} de {total} ilustraciones · la portada, en camino",
       "statusReady": "Ya puedes abrirlo.",
       "paintingCover": "Pintando la portada",
-      "progressLabel": "Progreso de la preview",
-      "scenesLabel": "Ilustraciones de la preview",
+      "progressLabel": "Progreso de la vista previa",
+      "scenesLabel": "Ilustraciones de la vista previa",
       "coverThumbAlt": "Portada",
       "sceneAlt": "Ilustración {n}",
       "waitMessage": "Suele tardar menos de un minuto.",
@@ -809,7 +809,12 @@
       "notAccessibleTitle": "Este cuento se abrió en otro navegador",
       "notAccessibleBody": "Por seguridad, cada cuento solo se ve en el navegador donde se creó o en tu cuenta. Ábrelo desde el enlace que te enviamos por email, o inicia sesión si lo guardaste en tu cuenta.",
       "notAccessibleLogin": "Iniciar sesión",
-      "notAccessibleCreate": "Crear un cuento nuevo"
+      "notAccessibleCreate": "Crear un cuento nuevo",
+      "closeZoom": "Cerrar",
+      "zoomPage": "Ampliar",
+      "zoomTitle": "Página ampliada",
+      "rotateHint": "Gira el móvil para ver la doble página",
+      "tapToZoom": "Toca una página para ampliarla"
     },
     "errors": {
       "saveFailed": "No hemos podido guardar tu cuento. Revisa tu conexión y vuelve a pulsar el botón: todo lo que has escrito sigue aquí.",
@@ -926,7 +931,7 @@
     },
     "sendPreview": {
       "title": "¿Lo decides más tarde?",
-      "hint": "Te enviamos un enlace a la preview para verla con calma en cualquier dispositivo o reenviarla. Sin suscripciones.",
+      "hint": "Te enviamos un enlace a la vista previa para verla con calma en cualquier dispositivo o reenviarla. Sin suscripciones.",
       "placeholder": "tu@email.com",
       "send": "Envíamela",
       "sending": "Enviando…",
@@ -1017,7 +1022,21 @@
           "a": "Al ser un libro hecho a medida no admite desistimiento, pero si llega con un defecto de fabricación escríbenos y lo solucionamos."
         }
       },
-      "softcoverNote": "Portada flexible, más ligera"
+      "softcoverNote": "Portada flexible, más ligera",
+      "rotateMockup": "Gíralo",
+      "later": {
+        "saveTitle": "Guárdalo",
+        "saveBody": "Crea una cuenta gratis y pídelo cuando quieras.",
+        "saveAction": "Crear cuenta",
+        "savedTitle": "Ya está guardado",
+        "savedBody": "Lo tienes en tu biblioteca para pedirlo cuando quieras.",
+        "savedAction": "Ir a mi biblioteca",
+        "shareTitle": "Compártelo",
+        "shareBody": "Un enlace que se abre en cualquier móvil, 30 días, sin poder editarlo.",
+        "emailTitle": "Recíbelo por email",
+        "emailBody": "Te enviamos el enlace para verlo con calma o reenviarlo.",
+        "emailSend": "Enviar"
+      }
     }
   },
   "checkout": {
@@ -1087,7 +1106,7 @@
     "storyStatus": {
       "draft": "Borrador",
       "generating": "Generando...",
-      "preview": "Preview listo",
+      "preview": "Vista previa lista",
       "completing": "Completando...",
       "ready": "Listo",
       "ordered": "Pedido",
@@ -1096,7 +1115,7 @@
     },
     "storyActions": {
       "viewStory": "Ver cuento",
-      "viewPreview": "Ver preview",
+      "viewPreview": "Ver vista previa",
       "viewProgress": "Ver progreso",
       "continue": "Continuar"
     },
@@ -2248,11 +2267,11 @@
       "error": "No se ha podido crear el enlace. Inténtalo de nuevo.",
       "shareTitle": "El libro {deName}",
       "shareText": "Mira el cuento que estoy preparando para {name}:",
-      "hint": "Cualquiera con el enlace verá la preview (sin poder editarla) durante 30 días."
+      "hint": "Cualquiera con el enlace verá la vista previa (sin poder editarla) durante 30 días."
     },
     "view": {
-      "metaTitle": "El libro {deName} · Preview",
-      "badge": "Preview compartida",
+      "metaTitle": "El libro {deName} · Vista previa",
+      "badge": "Vista previa compartida",
       "intro": "Un adelanto del cuento personalizado {deName}: las primeras páginas. El resto es sorpresa.",
       "restTitle": "El resto del cuento es sorpresa",
       "restBody": "Alguien que quiere mucho a {name} está preparando este libro. ¿Quieres uno así para otro niño o niña? Con su nombre, su aspecto y su aventura, listo en unos minutos.",

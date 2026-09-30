@@ -11,6 +11,8 @@ export interface SharePreviewButtonProps {
   className?: string;
   /** Show the "anyone with the link…" hint under the button. */
   showHint?: boolean;
+  /** Stretch to the width of its column (the "¿Lo decides más tarde?" options). */
+  fullWidth?: boolean;
   /** Called after a successful share/copy (analytics hook). */
   onShared?: (method: "native" | "clipboard") => void;
 }
@@ -35,7 +37,7 @@ function prefersNativeShare(): boolean {
  * (POST /api/stories/[storyId]/share) and hands it to the OS share sheet on
  * mobile or copies it on desktop. The link shows only the preview pages.
  */
-export default function SharePreviewButton({ storyId, childName, className, showHint = false, onShared }: SharePreviewButtonProps) {
+export default function SharePreviewButton({ storyId, childName, className, showHint = false, fullWidth = false, onShared }: SharePreviewButtonProps) {
   const t = useTranslations("sharePreview.share");
   const locale = useLocale();
   const [status, setStatus] = useState<Status>("idle");
@@ -117,7 +119,7 @@ export default function SharePreviewButton({ storyId, childName, className, show
   }, [getUrl, flash, t, childName, locale, onShared]);
 
   return (
-    <div className="inline-flex flex-col items-center" data-testid="share-preview">
+    <div className={fullWidth ? "flex w-full flex-col items-stretch" : "inline-flex flex-col items-center"} data-testid="share-preview">
       <button
         type="button"
         onClick={handleClick}
@@ -137,7 +139,7 @@ export default function SharePreviewButton({ storyId, childName, className, show
         <p className="mt-2 text-center text-xs text-red-600" role="alert">{t("error")}</p>
       )}
       {status === "manual" && manualUrl && (
-        <label className="mt-2 block w-full max-w-xs text-left text-xs text-text-muted">
+        <label className={`mt-2 block w-full text-left text-xs text-text-muted ${fullWidth ? "" : "max-w-xs"}`}>
           {t("copyManually")}
           <input
             readOnly
