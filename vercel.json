@@ -9,6 +9,10 @@
     {
       "path": "/api/cron/purge-photos",
       "schedule": "17 * * * *"
+    },
+    {
+      "path": "/api/cron/purge-guests",
+      "schedule": "40 3 * * *"
     }
   ]
 }
