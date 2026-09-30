@@ -5,10 +5,10 @@ import { Link } from "@/i18n/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { createClient } from "@/lib/supabase/client";
 import { STORY_TEMPLATES, getRecommendedTemplates } from "@/lib/create-store";
-import { formatPrice } from "@/lib/pricing";
 import { useTranslations, useLocale } from "next-intl";
 import BrandLogo from "@/components/BrandLogo";
 import BrandIcon from "@/components/BrandIcon";
+import { OrdersTab, ReorderSheet, type DashboardOrder } from "@/components/dashboard/OrdersTab";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -22,23 +22,6 @@ interface DashboardStory {
   pdf_url: string | null;
   created_at: string;
   characters: { name: string; gender: string; age: number } | null;
-}
-
-interface DashboardOrder {
-  id: string;
-  format: string;
-  status: string;
-  subtotal: number;
-  total: number;
-  tracking_number: string | null;
-  tracking_url: string | null;
-  shipping_name: string | null;
-  created_at: string;
-  story_id: string;
-  stories: {
-    generated_text: { bookTitle?: string } | null;
-    characters: { name: string } | null;
-  } | null;
 }
 
 interface CharacterStory {
@@ -82,16 +65,6 @@ const STORY_STATUS_STYLES: Record<string, { color: string; icon: string }> = {
   ordered: { color: "bg-purple-100 text-purple-700", icon: "shopping_bag" },
   shipped: { color: "bg-indigo-100 text-indigo-700", icon: "local_shipping" },
   delivered: { color: "bg-emerald-100 text-emerald-700", icon: "inventory" },
-};
-
-const ORDER_STATUS_STYLES: Record<string, { color: string; icon: string }> = {
-  pending: { color: "bg-amber-100 text-amber-700", icon: "schedule" },
-  paid: { color: "bg-emerald-100 text-emerald-700", icon: "paid" },
-  completed: { color: "bg-emerald-100 text-emerald-700", icon: "check_circle" },
-  producing: { color: "bg-blue-100 text-blue-700", icon: "precision_manufacturing" },
-  shipped: { color: "bg-indigo-100 text-indigo-700", icon: "local_shipping" },
-  delivered: { color: "bg-emerald-100 text-emerald-700", icon: "inventory" },
-  cancelled: { color: "bg-red-100 text-red-700", icon: "cancel" },
 };
 
 function StatusBadge({
@@ -269,7 +242,20 @@ export default function DashboardPage() {
             }}
           />
         )}
-        {activeTab === "orders" && <OrdersTab orders={data?.orders ?? []} t={t} formatDate={formatDate} />}
+        {activeTab === "orders" && (
+          <OrdersTab
+            orders={data?.orders ?? []}
+            empty={
+              <EmptyState
+                icon="shopping_bag"
+                title={t("emptyOrders.title")}
+                description={t("emptyOrders.description")}
+                ctaLabel={t("emptyOrders.cta")}
+                ctaHref="/crear"
+              />
+            }
+          />
+        )}
         {activeTab === "characters" && <CharactersTab characters={data?.characters ?? []} t={t} formatDate={formatDate} />}
       </div>
     </div>
@@ -289,6 +275,7 @@ function StoriesTab({
   formatDate: (iso: string) => string;
   onTitleUpdate: (storyId: string, newTitle: string) => void;
 }) {
+  const [reorder, setReorder] = useState<{ storyId: string; title: string } | null>(null);
   if (stories.length === 0) {
     return (
       <EmptyState
@@ -310,8 +297,10 @@ function StoriesTab({
           t={t}
           formatDate={formatDate}
           onTitleUpdate={onTitleUpdate}
+          onReorder={setReorder}
         />
       ))}
+      <ReorderSheet storyId={reorder?.storyId ?? null} title={reorder?.title ?? ""} onClose={() => setReorder(null)} />
     </div>
   );
 }
@@ -321,11 +310,13 @@ function StoryCard({
   t,
   formatDate,
   onTitleUpdate,
+  onReorder,
 }: {
   story: DashboardStory;
   t: ReturnType<typeof useTranslations<"dashboard">>;
   formatDate: (iso: string) => string;
   onTitleUpdate: (storyId: string, newTitle: string) => void;
+  onReorder: (target: { storyId: string; title: string }) => void;
 }) {
   const [editingTitle, setEditingTitle] = useState(false);
   const [titleDraft, setTitleDraft] = useState("");
@@ -339,6 +330,8 @@ function StoryCard({
   const title = story.title ?? story.generated_text?.bookTitle ?? templateTitle ?? t("untitledStory");
   const characterName = story.characters?.name ?? t("character");
   const hasReadyPdf = ["ready", "ordered", "shipped", "delivered"].includes(story.status) && !!story.pdf_url;
+  // A finished book can be printed again (another copy, normal price).
+  const canReorder = hasReadyPdf;
 
   const actionHref =
     story.status === "preview"
@@ -472,6 +465,19 @@ function StoryCard({
             </button>
           )}
 
+          {canReorder && (
+            <button
+              type="button"
+              onClick={() => onReorder({ storyId: story.id, title })}
+              className="flex items-center gap-1.5 rounded-lg border border-border-light px-3 py-1.5 text-xs font-medium text-text-soft transition-colors hover:bg-cream hover:text-text-main"
+              data-testid="story-reorder"
+              aria-label={t("orders.reorder")}
+            >
+              <span className="material-symbols-outlined text-sm leading-none">library_add</span>
+              <span className="hidden sm:inline">{t("orders.reorder")}</span>
+            </button>
+          )}
+
           <Link
             href={actionHref}
             className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
@@ -487,250 +493,6 @@ function StoryCard({
           </Link>
         </div>
       </div>
-    </div>
-  );
-}
-
-// ── Orders Tab ─────────────────────────────────────────────────────────────
-
-function OrdersTab({
-  orders,
-  t,
-  formatDate,
-}: {
-  orders: DashboardOrder[];
-  t: ReturnType<typeof useTranslations<"dashboard">>;
-  formatDate: (iso: string) => string;
-}) {
-  const locale = useLocale();
-  const tPricing = useTranslations("pricing");
-  if (orders.length === 0) {
-    return (
-      <EmptyState
-        icon="shopping_bag"
-        title={t("emptyOrders.title")}
-        description={t("emptyOrders.description")}
-        ctaLabel={t("emptyOrders.cta")}
-        ctaHref="/crear"
-      />
-    );
-  }
-
-  const STEPS = ["paid", "producing", "shipped", "delivered"] as const;
-  const STEP_ICONS = { paid: "receipt_long", producing: "precision_manufacturing", shipped: "local_shipping", delivered: "inventory" } as const;
-
-  function getStepIndex(status: string): number {
-    const idx = STEPS.indexOf(status as typeof STEPS[number]);
-    return idx >= 0 ? idx : 0;
-  }
-
-  // Contextual message for the current order status
-  function getStatusMessage(status: string, shippingName: string | null): string {
-    const name = shippingName ?? "";
-    const msgs: Record<string, Record<string, string>> = {
-      es: {
-        paid: "Preparando tu pedido para impresión",
-        producing: "Tu libro se está imprimiendo",
-        shipped: name ? `Tu libro va camino de ${name}` : "Tu libro está en camino",
-        delivered: name ? `Entregado a ${name}` : "Tu libro ha sido entregado",
-      },
-      en: {
-        paid: "Preparing your order for printing",
-        producing: "Your book is being printed",
-        shipped: name ? `Your book is on its way to ${name}` : "Your book is on its way",
-        delivered: name ? `Delivered to ${name}` : "Your book has been delivered",
-      },
-      ca: {
-        paid: "Preparant la teva comanda per impressió",
-        producing: "El teu llibre s'està imprimint",
-        shipped: name ? `El teu llibre va camí de ${name}` : "El teu llibre està en camí",
-        delivered: name ? `Entregat a ${name}` : "El teu llibre ha estat entregat",
-      },
-      fr: {
-        paid: "Préparation de votre commande pour l'impression",
-        producing: "Votre livre est en cours d'impression",
-        shipped: name ? `Votre livre est en route vers ${name}` : "Votre livre est en route",
-        delivered: name ? `Livré à ${name}` : "Votre livre a été livré",
-      },
-    };
-    // Detect locale from translation key
-    const lang = t("orderStatus.paid") === "Pagado" ? "es"
-      : t("orderStatus.paid") === "Pagat" ? "ca"
-      : t("orderStatus.paid") === "Payé" ? "fr"
-      : "en";
-    return msgs[lang]?.[status] ?? msgs.en[status] ?? "";
-  }
-
-  return (
-    <div className="space-y-4">
-      {orders.map((order) => {
-        const bookTitle =
-          order.stories?.generated_text?.bookTitle ?? t("untitledStory");
-        const characterName = order.stories?.characters?.name ?? "";
-        const formatLabel = t(`orderFormat.${order.format === "hardcover" || order.format === "digital_pdf" ? order.format : "softcover"}`);
-        const isCancelled = order.status === "cancelled" || order.status === "refunded";
-        const currentStep = getStepIndex(order.status);
-        const statusMsg = getStatusMessage(order.status, order.shipping_name);
-
-        return (
-          <div
-            key={order.id}
-            className="overflow-hidden rounded-xl border border-border-light bg-white transition-shadow hover:shadow-sm"
-          >
-            {/* Header */}
-            <div className="flex items-start justify-between gap-3 px-5 pt-5 pb-4">
-              <div className="min-w-0 flex-1">
-                <h3 className="truncate text-sm font-bold text-text-main">
-                  {bookTitle}
-                </h3>
-                <p className="mt-0.5 text-xs text-text-muted">
-                  {characterName && `${characterName} · `}
-                  {formatLabel} · {formatDate(order.created_at)}
-                </p>
-              </div>
-              <span className="flex shrink-0 flex-col items-end">
-                <span className="text-sm font-bold text-text-main tabular-nums">
-                  {formatPrice(Math.round(order.total * 100), locale)}
-                </span>
-                <span className="text-[10px] text-text-muted">{tPricing("vatIncluded")}</span>
-              </span>
-            </div>
-
-            {/* Progress section */}
-            {!isCancelled ? (
-              <div className="border-t border-border-light/60 bg-cream/30 px-5 py-4">
-                {/* Status message */}
-                <div className="mb-4 flex items-center gap-2.5">
-                  <div className={`flex h-8 w-8 items-center justify-center rounded-full ${
-                    order.status === "delivered" ? "bg-emerald-100" : "bg-primary/10"
-                  }`}>
-                    <span className={`material-symbols-outlined text-[18px] ${
-                      order.status === "delivered" ? "text-emerald-600" : "text-primary"
-                    }`}>
-                      {STEP_ICONS[order.status as keyof typeof STEP_ICONS] ?? "help"}
-                    </span>
-                  </div>
-                  <div>
-                    <p className={`text-[13px] font-semibold ${
-                      order.status === "delivered" ? "text-emerald-700" : "text-text-main"
-                    }`}>
-                      {statusMsg}
-                    </p>
-                    {order.shipping_name && order.status !== "shipped" && order.status !== "delivered" && (
-                      <p className="text-[11px] text-text-muted mt-0.5">
-                        {t("shippingTo", { name: order.shipping_name })}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Step tracker bar */}
-                <div className="flex items-center gap-0">
-                  {STEPS.map((step, i) => {
-                    const isCompleted = i < currentStep;
-                    const isActive = i === currentStep;
-                    const isLast = i === STEPS.length - 1;
-                    const stepLabel = t(`orderStatus.${step}` as "orderStatus.paid" | "orderStatus.producing" | "orderStatus.shipped" | "orderStatus.delivered");
-
-                    return (
-                      <div key={step} className={`flex items-center ${isLast ? "" : "flex-1"}`}>
-                        <div className="flex flex-col items-center">
-                          {/* Circle */}
-                          <div
-                            className={`relative flex h-6 w-6 items-center justify-center rounded-full transition-all ${
-                              isCompleted
-                                ? "bg-emerald-500 text-white"
-                                : isActive
-                                  ? "bg-primary text-white shadow-sm shadow-primary/30"
-                                  : "border-2 border-gray-200 bg-white text-gray-300"
-                            }`}
-                          >
-                            {isCompleted ? (
-                              <span className="material-symbols-outlined text-[14px] font-bold">check</span>
-                            ) : (
-                              <span className="material-symbols-outlined text-[13px]">
-                                {STEP_ICONS[step]}
-                              </span>
-                            )}
-                            {/* Pulse ring on active step */}
-                            {isActive && (
-                              <span className="absolute inset-0 animate-ping rounded-full bg-primary/20" style={{ animationDuration: "2s" }} />
-                            )}
-                          </div>
-                          {/* Label */}
-                          <span
-                            className={`mt-1.5 text-[10px] whitespace-nowrap leading-none ${
-                              isCompleted
-                                ? "font-medium text-emerald-600"
-                                : isActive
-                                  ? "font-semibold text-primary"
-                                  : "font-medium text-gray-400"
-                            }`}
-                          >
-                            {stepLabel}
-                          </span>
-                        </div>
-
-                        {/* Connector */}
-                        {!isLast && (
-                          <div className="relative mx-1 h-[3px] flex-1 overflow-hidden rounded-full bg-gray-200">
-                            <div
-                              className={`absolute inset-y-0 left-0 rounded-full transition-all duration-500 ${
-                                i < currentStep ? "w-full bg-emerald-500" : "w-0 bg-primary"
-                              }`}
-                            />
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            ) : (
-              <div className="border-t border-red-100 bg-red-50/50 px-5 py-3">
-                <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-base text-red-500">cancel</span>
-                  <span className="text-xs font-semibold text-red-700">{t(order.status === "refunded" ? "orderStatus.refunded" : "orderStatus.cancelled")}</span>
-                </div>
-              </div>
-            )}
-
-            {/* Tracking card (when shipped/delivered) */}
-            {order.tracking_number && (
-              <div className="border-t border-indigo-100 bg-indigo-50/50 px-5 py-3.5">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-100">
-                    <span className="material-symbols-outlined text-[18px] text-indigo-600">package_2</span>
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[10px] font-semibold uppercase tracking-wider text-indigo-400">
-                      {t("trackingNumber")}
-                    </p>
-                    <p className="text-[13px] font-mono font-medium text-indigo-800">
-                      {order.tracking_number}
-                    </p>
-                  </div>
-                  {order.tracking_url ? (
-                    <a
-                      href={order.tracking_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 rounded-lg bg-indigo-600 px-3.5 py-2 text-[11px] font-semibold text-white shadow-sm hover:bg-indigo-700 transition-colors"
-                    >
-                      <span className="material-symbols-outlined text-[14px]">local_shipping</span>
-                      {t("orderStatus.shipped") === "Enviado" ? "Seguir envío" : t("orderStatus.shipped") === "Enviat" ? "Seguir enviament" : "Track shipment"}
-                    </a>
-                  ) : (
-                    <span className="rounded-lg bg-indigo-100 px-3 py-1.5 text-[11px] font-medium text-indigo-600">
-                      {t("orderStatus.shipped")}
-                    </span>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-        );
-      })}
     </div>
   );
 }
