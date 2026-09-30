@@ -38,7 +38,7 @@ export default function QualitySection() {
             format="hardcover"
             variant="open"
             spread={{ panorama: LANDING_EXAMPLE.printSpread }}
-            alt={t("mockupAlt", { name })}
+            alt={t("mockupAlt", { name, gender: LANDING_EXAMPLE.gender })}
           />
         </div>
 

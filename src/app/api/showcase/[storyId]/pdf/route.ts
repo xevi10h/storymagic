@@ -5,6 +5,9 @@ import type { Database } from "@/lib/database.types";
 import type { GeneratedStory } from "@/lib/ai/story-generator";
 import { toShowcaseUrl } from "@/lib/storage/illustration-refs";
 import { SHOWCASE_STATUSES } from "@/lib/showcase";
+import type { BookImageAssets } from "@/lib/ai/book-images";
+
+type ShowcaseImageAssets = Pick<BookImageAssets, "finalHero" | "finalMap" | "mapGame">;
 
 function createPublicClient() {
   return createClient<Database>(
@@ -69,6 +72,13 @@ export async function GET(
     imageUrl: toShowcaseUrl(ill.image_url, supabaseUrl),
   }));
 
+  // Same pages as the customer's book (src/lib/fulfilment/pipeline.ts buildPdfInput): page 27 is the
+  // print-size hero portrait (cover art for books finished before it existed), pages 28–29 the adventure map.
+  const assets = (story.generated_text as unknown as { imageAssets?: ShowcaseImageAssets } | null)?.imageAssets;
+  const heroUrl = assets?.finalHero?.url ? toShowcaseUrl(assets.finalHero.url, supabaseUrl) : null;
+  const mapUrl = assets?.finalMap?.url && assets.mapGame ? toShowcaseUrl(assets.finalMap.url, supabaseUrl) : null;
+  const coverImageUrl = toShowcaseUrl(story.cover_image_url, supabaseUrl);
+
   const pdfInput: BookPdfInput = {
     story: generatedText,
     templateId: story.template_id,
@@ -82,8 +92,10 @@ export async function GET(
     dedicationText: story.dedication_text,
     senderName: story.sender_name,
     storyId,
-    coverImageUrl: toShowcaseUrl(story.cover_image_url, supabaseUrl),
-    portraitUrl: toShowcaseUrl(story.character_portrait_url, supabaseUrl),
+    coverImageUrl,
+    portraitUrl: heroUrl ?? coverImageUrl,
+    mapImageUrl: mapUrl,
+    mapGame: mapUrl ? (assets?.mapGame ?? null) : null,
     illustrations,
     locale: (story as Record<string, unknown>).locale as string | undefined,
   };

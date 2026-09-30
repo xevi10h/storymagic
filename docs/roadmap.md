@@ -48,6 +48,13 @@ character lock; per-stage resolution. (commits 5ebc2f1 → a883d60)
 
 ---
 
+## Next steps from showcase v2 (2026-09-30)
+
+- [ ] **HIGH — Next session: platform-wide SEO review** (every public route × 4 locales: titles/meta/OG, hreflang + canonicals, JSON-LD incl. `Offer` VAT flags, sitemap, internal links, Core Web Vitals, the new showcase books on `/ejemplo` + theme pages)
+- [ ] Showcase v2 for the remaining 5 worlds (superhero, chef, safari, inventor, candy) with the same rule: production pipeline + page-by-page QA in 4 locales; a `castle` theme SEO page (`THEME_TEMPLATE` has no castle slug yet)
+- [ ] Pipeline findings from the showcase QA (customer-facing): the QA judge passed a cover with a third hand twice (dinosaurs) and a text/art contradiction (whale "asleep" with open eyes); prompt text shows article glitches ("The s ardillas", "casa de the child"); the renderer strips U+202F (narrow no-break space) that French LLM text can contain — normalise it to U+00A0 before print
+- [ ] Admin "publish showcase" action (flag + mirror + translations) instead of scripts
+
 ## Next steps from commerce block A (2026-09-28)
 - **Reorder / buy the printed book after the PDF**: a `ready`/`ordered` story shows no paywall, so a digital buyer can't upgrade to a hardcover (checkout API already accepts `ready`). Upsell "¿Lo quieres en papel?" in the ready view + book_ready email.
 - **VeriFactu-compliant invoicing** before the 2027 obligation (Stripe invoices aren't); OSS registration when EU digital sales pass 10 000 €.

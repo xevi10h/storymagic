@@ -11,7 +11,7 @@ import { LANDING_EXAMPLE, landingExampleBook } from "./HowItWorksExample";
 // Screen 2 offers "Sube una foto" only behind this flag (docs/user-experience.md).
 const PHOTO_UPLOAD_ENABLED = process.env.NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED === "true";
 
-// Chapter-1 art of the example's world, exactly as shown on screen 3 (Aventura); the example child picked the chest.
+// Chapter-1 art of the example's world, exactly as shown on screen 3 (Aventura); the example child (Noa) picked the chest.
 const ADVENTURE_CHOICES = ["forest-c1-dragon", "forest-c1-chest", "forest-c1-door"] as const;
 const CHOSEN_ADVENTURE = 1;
 
@@ -19,12 +19,13 @@ type StepId = "name" | "look" | "adventure" | "preview" | "print";
 
 /**
  * "Cómo funciona": the real creation flow (/crear) in five cards, each with the
- * product's own art following one example child (Hugo, a real showcase book).
+ * product's own art following one example child (Noa, a real showcase book).
  * Mobile/tablet: horizontal snap carousel; desktop: 5-column grid.
  */
 export default function HowItWorks() {
   const t = useTranslations("howItWorks");
   const name = LANDING_EXAMPLE.childName;
+  const gender = LANDING_EXAMPLE.gender;
   const book = landingExampleBook(useLocale());
 
   const visuals: Record<StepId, ReactNode> = {
@@ -47,7 +48,7 @@ export default function HowItWorks() {
         <div className="relative size-[108px] overflow-hidden rounded-full bg-line shadow-portrait ring-4 ring-white">
           <Image
             src={LANDING_EXAMPLE.avatarSrc}
-            alt={t("lookAlt", { name })}
+            alt={t("lookAlt", { name, gender })}
             fill
             sizes="146px"
             className="scale-[1.35] object-cover object-[50%_42%]"
@@ -94,7 +95,7 @@ export default function HowItWorks() {
         <div className="relative aspect-[2/1] overflow-hidden rounded-lg bg-surface shadow-book">
           <Image
             src={LANDING_EXAMPLE.previewScene}
-            alt={t("previewAlt", { name })}
+            alt={t("previewAlt", { name, gender })}
             fill
             sizes="(min-width: 1024px) 200px, 260px"
             className="object-cover"
@@ -113,7 +114,7 @@ export default function HowItWorks() {
         title={book.title}
         childName={name}
         format="hardcover"
-        alt={t("printAlt", { name })}
+        alt={t("printAlt", { name, gender })}
         showScale={false}
         interactive={false}
         className="w-[210px]"

@@ -89,8 +89,11 @@ which records the version, or the SQL editor followed by
 **Operational rule:** after flagging a story `is_showcase = true`, re-run `scripts/publish-showcase.mts`
 (otherwise its images 404 on public pages). Unflagging does not delete the public copy.
 Showcase stories may be `ready` or `ordered` (`SHOWCASE_STATUSES` in `src/lib/showcase.ts`). Current
-examples (2026-09-30): Hugo, Carla and Pau (ES originals, ordered 2026-09-29) plus ca/en/fr copies that
-reuse the same art rows with translated text (`story_decisions.showcaseTranslationOf` = the ES id).
+examples (showcase v2, 2026-09-30): Martí/space, Aitana/pirates, Noa/forest, Leo/dinosaurs, Lucía/castle
+(ES originals made by the production pipeline, owner `showcase+examples@meapica.com`) plus ca/en/fr copies that
+reuse the same art rows with translated text (`story_decisions.showcaseTranslationOf` = the ES id); ids in
+`docs/product-spec.md` › Showcase curation. The mirror also copies each book's hero portrait and adventure map
+(`generated_text.imageAssets.finalHero/finalMap`) for the example PDF.
 
 Known residuals: legacy portraits (`portraits/{uuid}/…`) can be re-signed by any user who
 writes that path into their own character row — only possible for someone who already had the
