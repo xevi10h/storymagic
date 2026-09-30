@@ -571,7 +571,7 @@ function renderReceiptHtml(r: OrderReceipt, s: ReceiptStrings, loc: Locale): str
     : "";
 
   const invoiceHtml = r.invoiceUrl
-    ? `<p style="margin:16px 0 0;font-size:14px;"><a href="${escapeHtml(r.invoiceUrl)}" style="color:${C.primary};font-weight:600;text-decoration:underline;">${escapeHtml(s.invoice(r.invoiceNumber ?? null))}</a></p>`
+    ? `<p style="margin:16px 0 0;font-size:14px;"><a href="${escapeHtml(r.invoiceUrl)}" style="color:${C.primaryText};font-weight:600;text-decoration:underline;">${escapeHtml(s.invoice(r.invoiceNumber ?? null))}</a></p>`
     : "";
 
   return `<div style="margin:0 0 24px;padding:18px 20px;border:1px solid ${C.border};border-radius:12px;">

@@ -39,8 +39,8 @@ export function getWaitlistEmail(locale: string, recipientName?: string) {
   const html = `<!DOCTYPE html>
 <html lang="${loc}">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background-color:#F9F5F0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#F9F5F0;padding:40px 20px;">
+<body style="margin:0;padding:0;background-color:#FFF8F0;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#FFF8F0;padding:40px 20px;">
     <tr><td align="center">
       <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;">
         <!-- Logo -->
@@ -49,16 +49,16 @@ export function getWaitlistEmail(locale: string, recipientName?: string) {
         </td></tr>
         <!-- Card -->
         <tr><td style="background-color:#ffffff;border-radius:16px;padding:40px 36px;box-shadow:0 2px 12px rgba(44,24,16,0.06);">
-          <h1 style="margin:0 0 8px;font-size:28px;color:#2C1810;font-weight:700;">${c.heading}</h1>
-          ${greeting ? `<p style="margin:0 0 20px;font-size:16px;color:#5D4037;">${greeting}</p>` : ""}
-          <p style="margin:0 0 28px;font-size:16px;line-height:1.7;color:#5D4037;">${c.body}</p>
-          <div style="border-top:1px solid #E6C9A8;padding-top:24px;">
-            <p style="margin:0;font-size:14px;color:#A1887F;white-space:pre-line;">${c.signoff}</p>
+          <h1 style="margin:0 0 8px;font-size:28px;color:#1b120e;font-weight:700;">${c.heading}</h1>
+          ${greeting ? `<p style="margin:0 0 20px;font-size:16px;color:#6b5850;">${greeting}</p>` : ""}
+          <p style="margin:0 0 28px;font-size:16px;line-height:1.7;color:#6b5850;">${c.body}</p>
+          <div style="border-top:1px solid #f3ebe7;padding-top:24px;">
+            <p style="margin:0;font-size:14px;color:#7a6963;white-space:pre-line;">${c.signoff}</p>
           </div>
         </td></tr>
         <!-- Footer -->
         <tr><td style="padding-top:24px;text-align:center;">
-          <p style="margin:0;font-size:12px;color:#A1887F;">&copy; 2026 Meapica. meapica.com</p>
+          <p style="margin:0;font-size:12px;color:#7a6963;">&copy; 2026 Meapica. meapica.com</p>
         </td></tr>
       </table>
     </td></tr>

@@ -2,18 +2,20 @@
 //
 // One consistent branded layout for every transactional email (waitlist,
 // order updates, …). Inline styles only — email clients strip <style> blocks.
-// Palette mirrors the app (globals.css): cream bg, terracotta primary, warm browns.
+// Palette mirrors the app brand tokens (globals.css / docs/brand.md). Contrast rule:
+// white on `primary` only at 19px bold (CTA); small orange text uses `primaryText`.
 
 import { getSiteUrl } from "./send";
 
 export const EMAIL_COLORS = {
-  bg: "#F9F5F0",
-  card: "#ffffff",
-  primary: "#D2691E",
-  heading: "#2C1810",
-  body: "#5D4037",
-  border: "#E6C9A8",
-  muted: "#A1887F",
+  bg: "#FFF8F0", // --paper
+  card: "#ffffff", // --surface
+  primary: "#E86C3A", // --brand (fills only)
+  primaryText: "#b94f1f", // --brand-text
+  heading: "#1b120e", // --ink
+  body: "#6b5850", // --ink-body
+  border: "#f3ebe7", // --line
+  muted: "#7a6963", // --ink-muted
 };
 const COLORS = EMAIL_COLORS;
 
@@ -64,8 +66,8 @@ export function renderEmailLayout(params: EmailLayoutParams): string {
 
   const ctaHtml = cta
     ? `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:8px 0 28px;">
-         <tr><td style="border-radius:10px;background-color:${COLORS.primary};">
-           <a href="${escapeHtml(cta.url)}" style="display:inline-block;padding:14px 28px;font-size:16px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:10px;">${cta.label}</a>
+         <tr><td style="border-radius:999px;background-color:${COLORS.primary};">
+           <a href="${escapeHtml(cta.url)}" style="display:inline-block;padding:15px 30px;font-size:19px;font-weight:700;line-height:1.2;color:#ffffff;text-decoration:none;border-radius:999px;">${cta.label}</a>
          </td></tr>
        </table>`
     : "";
