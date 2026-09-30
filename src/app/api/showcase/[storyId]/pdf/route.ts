@@ -4,6 +4,7 @@ import { renderBookPdf, type BookPdfInput } from "@/lib/pdf/book-template";
 import type { Database } from "@/lib/database.types";
 import type { GeneratedStory } from "@/lib/ai/story-generator";
 import { toShowcaseUrl } from "@/lib/storage/illustration-refs";
+import { SHOWCASE_STATUSES } from "@/lib/showcase";
 
 function createPublicClient() {
   return createClient<Database>(
@@ -31,7 +32,7 @@ export async function GET(
     return NextResponse.json({ error: "Story not found" }, { status: 404 });
   }
 
-  if (story.status !== "ready") {
+  if (!SHOWCASE_STATUSES.includes(story.status)) {
     return NextResponse.json(
       { error: "Story is not ready" },
       { status: 400 },

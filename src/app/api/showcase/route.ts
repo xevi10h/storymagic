@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/database.types";
-import { toShowcaseUrl } from "@/lib/storage/illustration-refs";
+import { illustrationPath, toShowcaseUrl } from "@/lib/storage/illustration-refs";
+import { SHOWCASE_STATUSES } from "@/lib/showcase";
 
 // Use service-level client to bypass RLS for the showcase query
 // (RLS policies also allow this, but service key avoids auth dependency)
@@ -26,11 +27,12 @@ export async function GET(request: Request) {
       template_id,
       generated_text,
       locale,
+      cover_image_url,
       characters (name, age, gender),
       story_illustrations (scene_number, image_url)
     `)
     .eq("is_showcase", true)
-    .eq("status", "ready")
+    .in("status", SHOWCASE_STATUSES)
     .order("created_at", { ascending: false })
     .limit(10);
 
@@ -70,9 +72,9 @@ export async function GET(request: Request) {
       .filter((i) => i.image_url && !i.image_url.includes("/illustrations/mock/"))
       .sort((a, b) => a.scene_number - b.scene_number);
 
-    // Use the first illustration as the cover image
+    // The book's cover art when we host it (legacy covers point at Recraft), else its first scene.
     // Public `showcase` bucket mirror — children's originals are private.
-    const coverImage = toShowcaseUrl(illustrations[0]?.image_url, process.env.NEXT_PUBLIC_SUPABASE_URL!);
+    const coverImage = toShowcaseUrl((illustrationPath(story.cover_image_url) && story.cover_image_url) || illustrations[0]?.image_url, process.env.NEXT_PUBLIC_SUPABASE_URL!);
 
     const character = story.characters as unknown as {
       name: string;
