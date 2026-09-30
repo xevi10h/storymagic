@@ -83,7 +83,7 @@ export default function MobileStickyCta() {
         visible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-full opacity-0"
       }`}
     >
-      <div className="mx-auto flex max-w-xl items-center justify-between gap-3 px-4 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] pt-3 sm:px-6">
+      <div className="mx-auto flex max-w-xl items-center justify-between gap-2 px-4 sm:gap-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] pt-3 sm:px-6">
         <p className="shrink-0 leading-tight">
           <span className="block text-sm font-bold tabular-nums text-brand-deep">
             {t("priceFrom", { price: formatPrice(PRICING.softcover.price, locale) })}
@@ -92,7 +92,8 @@ export default function MobileStickyCta() {
         </p>
         <Link
           href={crearHref(name)}
-          className={buttonClass({ className: "h-12 min-w-0 flex-1 px-4! text-[15px]! sm:flex-none sm:px-8!" })}
+          // 19px bold label (AA on --brand); tight gaps so "Crear el seu llibre" fits at 360px
+          className={buttonClass({ className: "h-12 min-w-0 flex-1 gap-1.5! px-4! sm:flex-none sm:px-8!" })}
         >
           <span className="min-w-0 truncate">{ctaLabel}</span>
           <span

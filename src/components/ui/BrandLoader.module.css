@@ -1,0 +1,128 @@
+/*
+ * BrandLoader: the Meapica open-book mark drawing itself (see docs/brand.md › Loader).
+ * One 2.4 s loop: left page (pen down bottom-left, up, across) → spine swash → right page
+ * → the two loose leaves flick out and lift → page tint settles → everything retracts in
+ * drawing order → empty beat. Dash lengths are the measured path lengths + stroke width
+ * (so round caps never peek out); the gap is 3x so no second dash ever shows.
+ * Numbers are literal on purpose: var()/calc() inside keyframes does not interpolate
+ * reliably across engines.
+ */
+.mark {
+  display: block;
+  overflow: visible;
+}
+
+.stroke {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+  animation-duration: 2.4s;
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+}
+
+.spineMask {
+  stroke: #fff;
+}
+
+.left { stroke-dasharray: 977 2931; animation-name: drawLeft; }
+.spine { stroke-dasharray: 777 2331; animation-name: drawSpine; }
+.right { stroke-dasharray: 1384 4152; animation-name: drawRight; }
+.leafLeft,
+.leafRight { stroke-dasharray: 339 1017; transform-box: fill-box; }
+.leafLeft { animation-name: drawLeafLeft; transform-origin: 100% 100%; }
+.leafRight { animation-name: drawLeafRight; transform-origin: 0% 100%; }
+
+.tint {
+  fill: currentColor;
+  opacity: 0;
+  animation: tint 2.4s infinite both;
+}
+
+/* Inline (button) spinner: a quiet arc on a faint track. */
+.spinner {
+  display: inline-block;
+  flex: none;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  from { opacity: 1; }
+  to { opacity: 0.45; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stroke {
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    opacity: 1;
+    animation: none;
+  }
+  .tint {
+    animation: none;
+    opacity: 0.12;
+  }
+  .mark,
+  .spinner {
+    animation: pulse 1.2s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes drawLeft {
+  0% { stroke-dashoffset: 977; opacity: 0; animation-timing-function: steps(1, end); }
+  0.1% { stroke-dashoffset: 977; opacity: 1; animation-timing-function: cubic-bezier(.55,.05,.3,1); }
+  22% { stroke-dashoffset: 0; }
+  76% { stroke-dashoffset: 0; opacity: 1; animation-timing-function: cubic-bezier(.6,0,.4,1); }
+  90% { stroke-dashoffset: -977; opacity: 1; animation-timing-function: steps(1, start); }
+  100% { stroke-dashoffset: -977; opacity: 0; }
+}
+@keyframes drawSpine {
+  0%, 19.9% { stroke-dashoffset: 777; opacity: 0; animation-timing-function: steps(1, end); }
+  20% { stroke-dashoffset: 777; opacity: 1; animation-timing-function: cubic-bezier(.45,0,.35,1); }
+  33% { stroke-dashoffset: 0; }
+  79% { stroke-dashoffset: 0; opacity: 1; animation-timing-function: cubic-bezier(.6,0,.4,1); }
+  90% { stroke-dashoffset: -777; opacity: 1; animation-timing-function: steps(1, start); }
+  100% { stroke-dashoffset: -777; opacity: 0; }
+}
+@keyframes drawRight {
+  0%, 29.9% { stroke-dashoffset: 1384; opacity: 0; animation-timing-function: steps(1, end); }
+  30% { stroke-dashoffset: 1384; opacity: 1; animation-timing-function: cubic-bezier(.45,0,.2,1); }
+  56% { stroke-dashoffset: 0; }
+  81% { stroke-dashoffset: 0; opacity: 1; animation-timing-function: cubic-bezier(.6,0,.4,1); }
+  95% { stroke-dashoffset: -1384; opacity: 1; animation-timing-function: steps(1, start); }
+  100% { stroke-dashoffset: -1384; opacity: 0; }
+}
+@keyframes drawLeafLeft {
+  0%, 51.9% { stroke-dashoffset: 339; opacity: 0; animation-timing-function: steps(1, end); }
+  52% { stroke-dashoffset: 339; opacity: 1; animation-timing-function: cubic-bezier(.2,.9,.3,1); }
+  64% { stroke-dashoffset: 0; transform: rotate(0deg); animation-timing-function: cubic-bezier(.4,0,.2,1); }
+  70% { transform: rotate(5deg); animation-timing-function: cubic-bezier(.4,0,.2,1); }
+  78% { stroke-dashoffset: 0; transform: rotate(0deg); opacity: 1; animation-timing-function: cubic-bezier(.6,0,.4,1); }
+  88% { stroke-dashoffset: -339; opacity: 1; animation-timing-function: steps(1, start); }
+  100% { stroke-dashoffset: -339; opacity: 0; }
+}
+@keyframes drawLeafRight {
+  0%, 53.9% { stroke-dashoffset: 339; opacity: 0; animation-timing-function: steps(1, end); }
+  54% { stroke-dashoffset: 339; opacity: 1; animation-timing-function: cubic-bezier(.2,.9,.3,1); }
+  66% { stroke-dashoffset: 0; transform: rotate(0deg); animation-timing-function: cubic-bezier(.4,0,.2,1); }
+  72% { transform: rotate(-5deg); animation-timing-function: cubic-bezier(.4,0,.2,1); }
+  80% { stroke-dashoffset: 0; transform: rotate(0deg); opacity: 1; animation-timing-function: cubic-bezier(.6,0,.4,1); }
+  90% { stroke-dashoffset: -339; opacity: 1; animation-timing-function: steps(1, start); }
+  100% { stroke-dashoffset: -339; opacity: 0; }
+}
+@keyframes tint {
+  0%, 56% { opacity: 0; animation-timing-function: cubic-bezier(.2,.9,.3,1); }
+  68% { opacity: .12; }
+  75% { opacity: .12; animation-timing-function: cubic-bezier(.4,0,1,1); }
+  83%, 100% { opacity: 0; }
+}
+
+/* Fast loads never show a loader: it fades in only if the wait passes 400 ms. */
+.appear { animation: appear 200ms ease-out 400ms both; }
+@keyframes appear { from { opacity: 0; } to { opacity: 1; } }

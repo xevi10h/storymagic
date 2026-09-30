@@ -37,9 +37,17 @@ Short sentences. Verbs first. Promise only what the product does.
 | ¡Listo! La aventura ya está trazada. Ahora, a pintar su libro. | ¡Increíble! ¡Tu obra maestra está en camino! |
 | Crear su libro · Lo quiero · Ver su libro | Enviar · Continuar al siguiente paso |
 | Llega entre el 9 y el 15 de octubre (fecha estimada) | Envío ultrarrápido garantizado |
+| El cuento que te pedirá otra vez. | El regalo más mágico del mundo |
+| Rompe el papel, ve su nombre en la portada y levanta la vista para buscarte. | Una experiencia emocional única e inolvidable |
+| «Otra vez». Y se lo vuelves a leer, porque la aventura la vive Lucía. | ¡¡Tus hijos lo van a adorar!! |
+| Tus palabras abren el libro. Las leerá ahora y volverá a leerlas de mayor. | Un recuerdo para toda la vida ✨ |
 | Solo lo usamos para escribir el cuento en femenino, masculino o neutro. | (silence about why we ask) |
 
 Rules:
+- **Emotion through specifics, never adjectives.** Name a real moment the product creates (the first look at the cover,
+  bedtime "otra vez", the dedication reread years later, the book that outlives the toys) in one short sensory sentence.
+  Clarity first: every emotional line sits next to what it is, how it works and the price. Examples are labelled
+  as examples ("Dedicatoria de ejemplo"); never quote customers we don't have.
 - **Use the child's name** whenever we have it ("¿Qué aventura vivirá Lucía?"). It is the product.
 - **CTAs are possessive and concrete:** "Crear su libro", "Pedir el libro de Lucía". Never "Submit".
 - **Explain every question in one line** (why we ask, what it changes).
@@ -68,8 +76,9 @@ Semantic tokens (Tailwind utilities in parentheses). **Use only these in new wor
 
 | Token | Hex | Role |
 |---|---|---|
-| `--brand` (`bg-brand`, `border-brand`) | `#E86C3A` | Fills: primary CTA, selected/active state, progress, check badges. Not for small text |
+| `--brand` (`bg-brand`, `border-brand`) | `#E86C3A` | Fills: primary CTA, progress, icon-only check badges. Text on it only at ≥ 19 px bold (see Accessibility) |
 | `--brand-text` (`text-brand-text`) | `#b94f1f` | Orange **text** at any size: kickers, links, prices-in-orange, selected-chip labels (4.75:1 on paper) |
+| `--brand-tint` (`bg-brand-tint`) | brand 8 % on white (opaque) | Background for small orange-text states: selected chips/tabs, step numbers, badges, small CTAs (`brand-text` on it 4.58:1) |
 | `--brand-hover` | `#d15a2b` | Hover/pressed of brand |
 | `--brand-deep` (`text-brand-deep`) | `#5D4037` | Wordmark, prices, purchase headings, dark bands/footer |
 | `--brand-deep-hover` | `#4E342E` | Hover of brand-deep |
@@ -87,8 +96,9 @@ Semantic tokens (Tailwind utilities in parentheses). **Use only these in new wor
 | `--error` | `#C62828` | Error text. Error boxes: `bg-red-50 text-red-700 border-red-200` |
 
 Tints: use opacity modifiers of brand, never new hexes. `brand/5` hover wash, `brand/[0.04]`
-selected card, `brand/10` soft chip / sticky borders (`border-brand/10`), `brand/15` focus halo,
-`brand/20` secondary outline, `brand/30` CTA shadow, `brand/40` hover border.
+selected card, `brand/10` sticky borders (`border-brand/10`) and icon discs, `brand/15` focus halo,
+`brand/20` secondary outline, `brand/30` CTA shadow, `brand/40` hover border. Behind orange **text**
+use the opaque `bg-brand-tint` instead: `brand-text` on a translucent `brand/10` is only 4.3:1 on paper.
 
 Proportions: ~80 % paper + white, ~15 % ink, ≤ 5 % orange. Orange means "act here" or "chosen";
 if everything is orange nothing is. One primary CTA per viewport.
@@ -99,9 +109,18 @@ Accessibility (measured on `--paper`; all pass WCAG AA 4.5:1 for body text unles
 - Orange text: always `text-brand-text` (#b94f1f, 4.75:1 on paper, 5.0:1 on white). `text-brand`
   (#E86C3A) is only 3.0:1: allowed for icons/decoration or bold ≥ 24 px display type
   (e.g. the orange hero line), never for small labels, kickers, links or prices.
-- White on `brand` fill is 3.2:1 = AA large-text only, so CTA labels on `bg-brand` must be
-  **bold and ≥ 18.66 px (14 pt bold)** to strictly pass; 16 px bold (current creation-flow CTAs)
-  is a known shortfall. Hover `--brand-hover` gives 4.0:1. Keep the fill; do not darken the CTA.
+- **Rule (owner decision, 2026-09-30): white text on the `brand` fill is 3.2:1 = AA large text only.**
+  Every white/light label on `bg-brand` (or its hover) is **19 px bold** (`text-[19px] font-bold`,
+  ≥ 18.66 px = 14 pt bold); `Button` md/lg do this for you. Hover `--brand-hover` gives 4.0:1. Keep
+  the fill; do not darken the CTA.
+- Where 19 px is too big (navbar pill, `sm` buttons, chips, selected tabs, step numbers, badges,
+  avatar initials, CTAs inside the book page), use the AA-safe treatment instead: `bg-brand-tint`
+  + `text-brand-text` + a brand border/ring (`brandBadge` in `ui/cx.ts`, `Button size="sm"`,
+  `ChoiceChip` selected). Icon-only elements on orange (check badges, done steps) are fine: non-text 3:1.
+- `::selection` is a 30 % brand wash with `ink` text (not white on orange).
+- Audit: a Playwright script that asserts every visible text node on a brand-orange background is
+  ≥ 18.66 px and ≥ 700 weight (last run 2026-09-30: 0 violations on /es, /es/themes,
+  /es/christmas-delivery, /es/crear 1–3 at 360/390/1440).
 - `ink-muted` with opacity (e.g. placeholder `/45`) is decorative only; never convey required info.
 
 Legacy names (`primary`, `secondary`, `cream`, `text-main`, `text-muted`, `border-light`,
@@ -144,6 +163,8 @@ Headings wrap with `text-balance`; names never break inside a word.
   controls on the right. Mobile: art first, compact, then controls.
 - Marketing sections: `py-16 sm:py-24`, one idea per section, one CTA per section at most.
   Backgrounds alternate `bg-paper` / `bg-surface border-y border-line` (never two of the same in a row);
+  one full-bleed `bg-brand-deep` band per page is allowed for the emotional moment (text `text-paper`, kicker `text-line-warm`,
+  art on `bg-paper` cards);
   every section heading is `Heading size="page"` with a brand `eyebrow` (the closing name CTA is the one
   exception). Anchored sections use `scroll-mt-[var(--landing-nav-h,64px)]`.
 - Marketing header (`landing/Navbar`): fixed, publishes `--landing-nav-h`; full links from `xl` (1280),
@@ -186,19 +207,24 @@ Never stack shadow + thick border + tint on the same card. No coloured glows.
 All in `src/components/ui/`, class strings extracted from the creation flow.
 
 **Buttons** — `Button` / `buttonClass()` (use `buttonClass` on `<Link>`):
-- `primary` (default): orange pill, white bold label, brand shadow, `active:scale-95`, arrow icon
-  nudges right on hover (`trailingIcon="arrow_forward"`). One per viewport.
+- `primary` (default): orange pill, **white 19 px bold label** (AA large text), brand shadow,
+  `active:scale-95`, arrow icon nudges right on hover (`trailingIcon="arrow_forward"`). One per viewport.
+  At `size="sm"` it renders the AA-safe tinted pill instead (`border-2 border-brand bg-brand-tint
+  text-brand-text`, hover `bg-surface`): navbar "Crear su libro", sheet/inline actions.
+  Do not override the label size of a filled button below 19 px (`text-sm!`, `text-[15px]!`…).
 - `secondary`: white pill, `border-2 border-brand/20`, `text-brand-text` label; hover full orange border + `brand/5` wash. "Atrás", secondary paths.
 - `quiet`: text-only, `ink-muted` → `ink-soft` with `bg-line` hover. Header actions ("Salir").
-- Sizes: `sm` (44 px min, sheet actions), `md` (page CTA, default), `lg` (56 px, `rounded-2xl`, checkout, use with `block`).
+- Sizes: `sm` (44 px min, 14 px, sheet actions), `md` (48 px min, 19 px, page CTA, default), `lg` (56 px, 19 px, `rounded-2xl`, checkout, use with `block`).
+  Tight rows at 360 px: the creation footer's "Atrás" goes icon-only under 390 px (label kept as the accessible name) so the 19 px next label fits in every locale.
 - Disabled: `opacity-40`, explain why (tooltip on desktop, hint line above the sticky bar on mobile).
-  Loading: spinner + verb in gerund ("Guardando…"), keep width.
+  Loading: `Spinner` + verb in gerund ("Guardando…"), keep width (see §10 › Loader).
 
 **Links:** inline links `font-semibold underline decoration-{color}/30 underline-offset-2 hover:text-brand-text`.
 Quiet meta links `text-ink-muted underline decoration-ink-muted/40`.
 
 **Chips** — `ChoiceChip` (role radio, inside `role="radiogroup"` with a label): `rounded-xl border-2`,
-min 44 px. Selected `solid` (short values, e.g. ages) = orange fill; `soft` (words) = `bg-brand/10 text-brand-text`.
+min 44 px. Selected = `border-brand bg-brand-tint text-brand-text` (one style for ages and words; no orange
+fill, since chip labels are 14 px and white on orange fails AA below 19 px bold).
 Unselected `border-line bg-surface text-ink-soft hover:border-brand/40`.
 Colour swatches: 40 px circles, selected = orange ring + white check, name of the colour printed under the row.
 
@@ -272,6 +298,33 @@ Calm, paper-like, fast. Everything respects `prefers-reduced-motion` (animations
 
 No parallax, no scroll-jacking, no looping decorative animation near a CTA. Live updates
 (name → cover) must feel instant (< 100 ms).
+
+### Loader
+
+One loader family, built from the logo (`src/components/ui/BrandLoader.tsx`, `Spinner.tsx`,
+styles in `BrandLoader.module.css`; `import { BrandLoader, PageLoader, Spinner } from "@/components/ui"`).
+
+- **`BrandLoader`**: the open-book mark (the "M" of the wordmark, no letters) redrawn as strokes
+  in an 832-unit viewBox traced over `/images/m-icon.png`: left page, spine swash (a filled shape
+  revealed by a masked stroke so it keeps the logo's swell), right page, two loose leaves.
+  2.4 s loop: the pen draws the left page (bottom-left, up, across), the spine, the right page,
+  the leaves flick out and lift 5°, the right page takes a 12 % tint, then every stroke retracts
+  in drawing order and there is a short empty beat (seamless seam). `currentColor`, default
+  `text-brand-deep`; never orange (logo rule). Sizes `sm` 28 px, `md` 56 px (sections), `lg` 96 px (pages).
+  `role="status"`; visible `caption` ("Cargando tu cuento…") or an sr-only `label`, default
+  `common.loading` ("Cargando…"). All instances are phase-locked to the document timeline, so a
+  route `loading.tsx` handing over to the page's own loader continues the same stroke.
+- **`PageLoader`**: full-viewport centred `BrandLoader size="lg"`. Used by the route `loading.tsx`
+  of `dashboard`, `perfil`, `checkout/success`, `crear/[storyId]`, `ejemplo/[storyId]`.
+- **`Spinner`**: buttons and tiny inline waits (1em arc on a 22 % track, `currentColor`, 0.9 s).
+  The drawn mark is legible down to ~24 px when static, but at 18–20 px a 2.4 s draw reads as a
+  scribble and is slower than most button waits, so buttons keep a quiet spinner. `Button loading`
+  uses it; pair it with a gerund label ("Guardando…").
+- **Skeletons** stay where the content shape is known (catalog cards, book viewer, dedication
+  editor): `bg-line` / `border-line bg-surface`, `animate-pulse`.
+- Reduced motion: static mark / arc with a soft opacity pulse (feedback without movement).
+- Never use Material `progress_activity` + `animate-spin`, `border-t-*` CSS rings, or a
+  pulsing icon as a loader.
 
 ## 11. Mobile rules (most traffic)
 

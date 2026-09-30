@@ -66,7 +66,7 @@ export default function LocaleSwitcher() {
               onClick={() => handleChange(loc)}
               className={`flex w-full items-center gap-2.5 px-4 py-2 text-sm transition-colors hover:bg-cream ${
                 locale === loc
-                  ? "font-semibold text-primary"
+                  ? "font-semibold text-brand-text"
                   : "text-text-soft hover:text-text-main"
               }`}
             >

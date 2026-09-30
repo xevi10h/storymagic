@@ -92,7 +92,7 @@ export default function StepName({ character, selectedTemplate, onUpdateCharacte
                     onClick={() => onUpdateCharacter({ age })}
                     className={`${chipBase} h-11 text-base tabular-nums ${
                       selected
-                        ? "border-create-primary bg-create-primary text-white"
+                        ? "border-brand bg-brand-tint text-brand-text"
                         : "border-create-neutral bg-white text-create-text hover:border-create-primary/40"
                     }`}
                   >
@@ -117,7 +117,7 @@ export default function StepName({ character, selectedTemplate, onUpdateCharacte
                     onClick={() => onUpdateCharacter({ gender: g.id })}
                     className={`${chipBase} min-h-11 px-2 py-2 text-sm leading-tight ${
                       selected
-                        ? "border-create-primary bg-create-primary/10 text-create-primary"
+                        ? "border-create-primary bg-brand-tint text-brand-text"
                         : "border-create-neutral bg-white text-create-text hover:border-create-primary/40"
                     }`}
                   >

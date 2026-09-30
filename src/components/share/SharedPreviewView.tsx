@@ -62,7 +62,7 @@ export default function SharedPreviewView({ storyId, title, childName, templateI
         <div className="flex items-center justify-between gap-3">
           <h1 className="min-w-0 truncate font-display text-base font-bold text-create-text-dark sm:text-lg">{title}</h1>
           <div className="flex shrink-0 items-center gap-2">
-            <span className="rounded-full bg-create-primary/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-create-primary">
+            <span className="rounded-full bg-brand-tint px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-brand-text">
               {t("badge")}
             </span>
           </div>
@@ -87,12 +87,12 @@ export default function SharedPreviewView({ storyId, title, childName, templateI
 
       <section id="checkout-section" className="border-t border-border-light bg-white">
         <div className="mx-auto max-w-md px-4 py-10 text-center">
-          <span aria-hidden className="material-symbols-outlined mb-3 text-4xl text-create-primary">auto_stories</span>
+          <span aria-hidden className="material-symbols-outlined mb-3 text-4xl text-brand-text">auto_stories</span>
           <h2 className="font-display text-2xl font-bold text-secondary">{t("restTitle")}</h2>
           <p className="mt-2 text-sm text-text-muted">{t("restBody", { name: childName })}</p>
           <Link
             href="/crear"
-            className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-create-primary px-6 py-4 text-base font-bold text-white shadow-lg shadow-create-primary/20 transition-colors hover:bg-create-primary-hover active:scale-[0.98]"
+            className="min-h-12 mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-create-primary px-6 py-4 text-[19px] font-bold leading-tight text-white shadow-lg shadow-create-primary/20 transition-colors hover:bg-create-primary-hover active:scale-[0.98]"
             data-testid="share-create-cta"
           >
             {t("createCta")}
@@ -102,7 +102,7 @@ export default function SharedPreviewView({ storyId, title, childName, templateI
             {t("ownerHint")}{" "}
             <Link
               href={`/auth/login?next=${encodeURIComponent(`/crear/${storyId}/preview`)}`}
-              className="font-semibold text-create-primary hover:underline"
+              className="font-semibold text-brand-text hover:underline"
             >
               {t("ownerLogin")}
             </Link>

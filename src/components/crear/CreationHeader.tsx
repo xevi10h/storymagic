@@ -87,7 +87,8 @@ export default function CreationHeader({
                       <span
                         className={`flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-bold transition-colors ${
                           active
-                            ? "bg-create-primary text-white ring-4 ring-create-primary/15"
+                            ? // Orange text on tint: white on --brand fails AA at 11px (docs/brand.md › Colour)
+                              "bg-brand-tint text-brand-text ring-2 ring-brand"
                             : done
                               ? "bg-create-primary/85 text-white"
                               : "border border-create-neutral bg-white text-create-text-sub/80"
@@ -101,7 +102,7 @@ export default function CreationHeader({
                       </span>
                       <span
                         className={`hidden text-xs font-bold lg:inline ${
-                          active ? "text-create-primary" : done ? "text-create-text" : "text-create-text-sub/80"
+                          active ? "text-brand-text" : done ? "text-create-text" : "text-create-text-sub/80"
                         }`}
                       >
                         {label}
@@ -159,7 +160,7 @@ export default function CreationHeader({
         {currentStep != null && (
           <div className="px-4 pb-2.5 md:hidden" data-testid="mobile-progress">
             <p className="mb-1.5 text-xs font-bold text-create-text">
-              <span className="text-create-primary">{t("stepOf", { step: currentStep, total: TOTAL_CREATION_STEPS })}</span>
+              <span className="text-brand-text">{t("stepOf", { step: currentStep, total: TOTAL_CREATION_STEPS })}</span>
               <span className="text-create-text-sub"> · {labels[currentStep - 1]}</span>
             </p>
             <div

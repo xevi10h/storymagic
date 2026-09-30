@@ -40,10 +40,10 @@ export const SUPPORT_EMAIL = "admin@casmar.tech";
 
 /**
  * Paywall trust line "¿Llega dañado o con un defecto de impresión? Te lo reponemos sin
- * coste". Off until the owner confirms the promise (the terms only say defects are
- * accepted back); the legal conformity guarantee applies either way.
+ * coste". On since 2026-09-30: owner confirmed the free-reprint promise for printing /
+ * manufacturing defects and transit damage (terms section 5 + landing FAQ say the same).
  */
-export const SHOW_REPRINT_GUARANTEE = false;
+export const SHOW_REPRINT_GUARANTEE = true;
 
 /** Seller identity printed on Stripe invoices and on the order-confirmation receipt. */
 export const SELLER_IDENTITY = "Xavier Huix Trenco (Meapica) · NIF 41649433K · Carrer Aribau 140, 5º, 08036 Barcelona";

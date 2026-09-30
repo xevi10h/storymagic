@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import Navbar from "@/components/landing/Navbar";
 import Hero from "@/components/landing/Hero";
 import HowItWorks from "@/components/landing/HowItWorks";
+import Moments from "@/components/landing/Moments";
 import BookCollection from "@/components/landing/BookCollection";
 import QualitySection from "@/components/landing/QualitySection";
 import UniqueEdition from "@/components/landing/UniqueEdition";
@@ -46,10 +47,11 @@ export default async function Home({ params }: Props) {
       <ProductJsonLd locale={locale} />
       <Navbar />
       <main>
-        {/* Conversion order: promise → how → pick a story → proof it is theirs →
+        {/* Conversion order: promise → how → what the gift really is → pick a story → proof it is theirs →
             the physical book → objections (FAQ) → close with their name. */}
         <Hero />
         <HowItWorks />
+        <Moments />
         <BookCollection />
         <UniqueEdition />
         <QualitySection />

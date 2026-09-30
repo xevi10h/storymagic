@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import BrandLogo from "@/components/BrandLogo";
+import { BrandLoader } from "@/components/ui/BrandLoader";
 
 function UpdatePasswordContent() {
   const t = useTranslations("auth.updatePassword");
@@ -90,12 +91,7 @@ function UpdatePasswordContent() {
   if (exchanging) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-create-bg px-4">
-        <div className="text-center">
-          <span className="material-symbols-outlined animate-spin text-4xl text-primary">
-            progress_activity
-          </span>
-          <p className="mt-4 text-sm text-text-muted">{t("verifyingLink")}</p>
-        </div>
+        <BrandLoader size="lg" caption={t("verifyingLink")} />
       </div>
     );
   }
@@ -116,7 +112,7 @@ function UpdatePasswordContent() {
             </p>
             <Link
               href="/auth/login"
-              className="mt-6 inline-block text-sm font-semibold text-primary hover:underline"
+              className="mt-6 inline-block text-sm font-semibold text-brand-text hover:underline"
             >
               {t("goToLogin")}
             </Link>
@@ -204,7 +200,7 @@ function UpdatePasswordContent() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-xl bg-primary px-4 py-3 text-sm font-bold text-white transition-all hover:bg-primary-hover active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+              className="min-h-12 w-full rounded-xl bg-primary px-4 py-3 text-[19px] font-bold leading-tight text-white transition-all hover:bg-primary-hover active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? t("loading") : t("submit")}
             </button>
@@ -220,9 +216,7 @@ export default function UpdatePasswordPage() {
     <Suspense
       fallback={
         <div className="flex min-h-screen items-center justify-center bg-create-bg">
-          <span className="material-symbols-outlined animate-spin text-4xl text-primary">
-            progress_activity
-          </span>
+          <BrandLoader size="lg" />
         </div>
       }
     >

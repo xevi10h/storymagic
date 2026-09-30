@@ -57,7 +57,7 @@ export default function ResetPasswordPage() {
             </p>
             <Link
               href="/auth/login"
-              className="mt-6 inline-block text-sm font-semibold text-primary hover:underline"
+              className="mt-6 inline-block text-sm font-semibold text-brand-text hover:underline"
             >
               {t("goToLogin")}
             </Link>
@@ -117,7 +117,7 @@ export default function ResetPasswordPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-xl bg-primary px-4 py-3 text-sm font-bold text-white transition-all hover:bg-primary-hover active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+              className="min-h-12 w-full rounded-xl bg-primary px-4 py-3 text-[19px] font-bold leading-tight text-white transition-all hover:bg-primary-hover active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? t("loading") : t("submit")}
             </button>

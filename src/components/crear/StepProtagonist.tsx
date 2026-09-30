@@ -146,7 +146,7 @@ export default function StepProtagonist({
   const chip = (selected: boolean) =>
     `rounded-xl border-2 px-3 py-2 text-sm font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-create-primary ${
       selected
-        ? "border-create-primary bg-create-primary/10 text-create-primary"
+        ? "border-create-primary bg-brand-tint text-brand-text"
         : "border-create-neutral bg-white text-create-text hover:border-create-primary/40"
     }`;
 
@@ -260,7 +260,7 @@ export default function StepProtagonist({
                         <span className="aspect-square w-full overflow-hidden rounded-lg bg-[#fbeee2]">
                           <ProtagonistAvatar look={{ ...traits, hairstyle: hs.id, glasses: "none" }} preloadNeighbours={false} className="h-full w-full" />
                         </span>
-                        <span className={`text-[11px] font-bold leading-tight ${selected ? "text-create-primary" : "text-create-text"}`}>
+                        <span className={`text-[11px] font-bold leading-tight ${selected ? "text-brand-text" : "text-create-text"}`}>
                           {td(`hairstyles.${hs.id}`)}
                         </span>
                       </button>

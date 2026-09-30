@@ -83,7 +83,7 @@ export default function FaqSection() {
     <section className="scroll-mt-[var(--landing-nav-h,64px)] border-y border-line bg-surface px-4 py-16 sm:px-6 sm:py-24" id="faq" aria-labelledby="faq-title">
       <FAQJsonLd questions={items.map(({ question, answer }) => ({ question, answer }))} />
       <div className="mx-auto max-w-3xl">
-        <Heading id="faq-title" size="page" as="h2" eyebrow={t("eyebrow")} className="mb-8 text-balance text-center sm:mb-10">
+        <Heading id="faq-title" size="page" as="h2" eyebrow={t("eyebrow")} subtitle={t("subtitle")} className="mb-8 text-balance text-center sm:mb-10">
           {t("title")}
         </Heading>
 

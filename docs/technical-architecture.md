@@ -13,7 +13,7 @@
 | Image AI | OpenAI gpt-image-2.5 (Images API) | Only image provider: avatar + preview `gpt-image-2.5-flare` medium, final book `gpt-image-2.5-sunburst` high at print size; character-sheet references (see docs/generation-pipeline.md) |
 | Illustration QA | OpenAI vision (`QA_JUDGE_MODEL`, gpt-5.4-mini) | Per-image judge (12 scenes + cover + hero + map) vs character sheet + page text, plus per-figure anatomy check on zoomed crops (`QA_ANATOMY_MODEL`, gpt-5.4); borderline fails get a second opinion; verdicts checkpointed per image URL in `imageAssets.qaVerdicts` (resume never re-rolls); failing images repaired by image edit |
 | Book Layout | @react-pdf/renderer + pdf-lib | Print PDFs: 32-page Gelato inside file (pastedown + 30 inner + pastedown, pageCount 30 — Teo order layout) + cover file; 34-page digital book |
-| Printing | Gelato API | Print-on-demand from a Spanish plant; ships to mainland Spain + Baleares only. Delivery times / Reyes cut-offs: `src/lib/shipping.ts` |
+| Printing | Gelato API | Print-on-demand from an EU plant (customer copy: "impreso en la UE"); ships to mainland Spain + Baleares only. Delivery times / Reyes cut-offs: `src/lib/shipping.ts` |
 | i18n | next-intl | 4 locales: ES (default), CA, EN, FR |
 | Email | Resend | Transactional emails (waitlist + order lifecycle: confirmed/producing/shipped/delivered) |
 | Domain | TBD | meapica.com (not yet registered) |
@@ -412,7 +412,7 @@ src/
 │   ├── avatar/                           — ProtagonistAvatar (real WatercolorAvatar + AvatarSketch fallback), WatercolorAvatar (pre-rendered matrix layers), AvatarSketch (vector stand-in)
 │   ├── crear/                            — Creation flow v2: CreationHeader, StepName + LiveCover, StepProtagonist + PhotoUploadPanel, StepAdventure, DedicationEditor, BookEditSheets, Sheet, SendPreviewEmail, CreationFooterNav
 │   ├── landing/                          — Navbar, Footer, etc.
-│   ├── ui/                               — Brand primitives (Button/buttonClass, Heading, Eyebrow, ChoiceChip, Card, cx, focusRing); spec in docs/brand.md
+│   ├── ui/                               — Brand primitives (Button/buttonClass, Heading, Eyebrow, ChoiceChip, Card, cx, focusRing, brandBadge); spec in docs/brand.md
 │   ├── waitlist/
 │   │   └── WaitlistPage.tsx              — Full-screen waitlist gate (form + subscriber counter)
 │   ├── BrandLogo.tsx                     — Meapica logo (SVG Book-M + Fredoka text)

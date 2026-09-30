@@ -41,7 +41,7 @@ export default function DedicationEditor({
             {dedication || <span className="text-create-text-sub/50">{t("pageEmpty", { name })}</span>}
           </p>
           {senderName.trim() && (
-            <p className="mt-3 font-display text-sm font-semibold text-create-primary [overflow-wrap:anywhere]">{senderName}</p>
+            <p className="mt-3 font-display text-sm font-semibold text-brand-text [overflow-wrap:anywhere]">{senderName}</p>
           )}
         </div>
       )}
@@ -52,7 +52,7 @@ export default function DedicationEditor({
             {t("label")}
           </label>
           <span
-            className={`text-xs tabular-nums ${remaining < 40 ? "font-bold text-create-primary" : "text-create-text-sub"}`}
+            className={`text-xs tabular-nums ${remaining < 40 ? "font-bold text-brand-text" : "text-create-text-sub"}`}
             aria-live="polite"
             data-testid="dedication-counter"
           >
@@ -89,7 +89,7 @@ export default function DedicationEditor({
         {saveState === "saving" && t("saving")}
         {saveState === "saved" && (
           <span className="inline-flex items-center gap-1 text-create-text">
-            <span aria-hidden className="material-symbols-outlined text-sm text-create-primary">check</span>
+            <span aria-hidden className="material-symbols-outlined text-sm text-brand-text">check</span>
             {t("saved")}
           </span>
         )}

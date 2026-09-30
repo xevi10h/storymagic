@@ -16,6 +16,7 @@ import {
   type BookFormat,
 } from "@/lib/pricing";
 import { useDeliveryLine, useSeasonNotice } from "./delivery";
+import { Spinner } from "@/components/ui/Spinner";
 
 /**
  * The PDF is sold as a text link under the two printed options ("¿Solo el PDF?"),
@@ -174,7 +175,7 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
                     <span className="min-w-0 text-create-text-sub">
                       {key === "hardcover" && (
                         <>
-                          <span className="font-semibold text-create-primary">{tPreview("bestForGifting")}</span>
+                          <span className="font-semibold text-brand-text">{tPreview("bestForGifting")}</span>
                           {" · "}
                           {t("hardcoverGap", { diff: price(gap) })}
                         </>
@@ -200,7 +201,7 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
           <button
             type="button"
             onClick={() => onChooseFormat("digital_pdf")}
-            className="mt-2 text-[13px] text-create-text-sub underline decoration-create-text-sub/40 underline-offset-2 transition-colors hover:text-create-primary"
+            className="mt-2 text-[13px] text-create-text-sub underline decoration-create-text-sub/40 underline-offset-2 transition-colors hover:text-brand-text"
           >
             {t("pdfOnly", { price: price(PRICING.digital_pdf.price) })}
           </button>
@@ -236,14 +237,14 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
       <div className="mt-4 space-y-1 text-[13px] leading-snug">
         {isDigital ? (
           <p className="flex items-start gap-2 text-create-text">
-            <span aria-hidden className="material-symbols-outlined mt-px text-[17px] text-create-primary">download</span>
+            <span aria-hidden className="material-symbols-outlined mt-px text-[17px] text-brand-text">download</span>
             {t("digitalDelivery")}
           </p>
         ) : (
           <>
             {delivery && (
               <p className="flex items-start gap-2 font-semibold text-create-text-dark" data-testid="delivery-line">
-                <span aria-hidden className="material-symbols-outlined mt-px text-[17px] text-create-primary">event_available</span>
+                <span aria-hidden className="material-symbols-outlined mt-px text-[17px] text-brand-text">event_available</span>
                 <span>
                   {delivery} <span className="font-normal text-create-text-sub">({t("deliveryEstimate")})</span>
                 </span>
@@ -254,7 +255,7 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
         )}
         {season && (
           <p className="pl-[25px]">
-            <Link href={CHRISTMAS_DELIVERY_PATH} className="font-semibold text-secondary underline decoration-secondary/30 underline-offset-2 hover:text-create-primary">
+            <Link href={CHRISTMAS_DELIVERY_PATH} className="font-semibold text-secondary underline decoration-secondary/30 underline-offset-2 hover:text-brand-text">
               {season.text}
             </Link>
           </p>
@@ -295,11 +296,11 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
         onClick={onCheckout}
         disabled={checkingOut}
         data-testid="checkout-cta"
-        className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl bg-create-primary px-5 py-4 text-base font-bold text-white shadow-lg shadow-create-primary/20 transition-all hover:bg-create-primary-hover active:scale-[0.98] disabled:opacity-60"
+        className="min-h-12 mt-3 flex w-full items-center justify-center gap-2 rounded-2xl bg-create-primary px-5 py-4 text-[19px] font-bold leading-tight text-white shadow-lg shadow-create-primary/20 transition-all hover:bg-create-primary-hover active:scale-[0.98] disabled:opacity-60"
       >
         {checkingOut ? (
           <>
-            <span aria-hidden className="material-symbols-outlined animate-spin text-lg">progress_activity</span>
+            <Spinner className="text-lg" />
             {tPreview("processing")}
           </>
         ) : isDigital ? (

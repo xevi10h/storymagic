@@ -8,7 +8,9 @@
 | Pages | Cover + 30 inner pages; the Gelato inside file also carries the 2 pastedowns glued to the boards (32 pages, pageCount 30 — same as Teo's printed book, order 34d619c2) |
 | Binding | Softcover or hardcover (Gelato); PDF-only format too |
 | Interior | Full colour, 170 g coated paper |
-| Print partner | Gelato (print-on-demand; we ship Spain península + Baleares) |
+| Print partner | Gelato (print-on-demand; we ship Spain península + Baleares)
+| Print location claim | "Impreso en la UE" / "imprès a la UE" / "printed in the EU" / "imprimé dans l'UE" everywhere (decision 2026-09-30; never "impreso en España"). "Hecho en Barcelona" stays. Shipping destination is still Spain only |
+| Returns / defects | Personalised goods: no right of withdrawal (art. 103 c TRLGDCU), no returns. Free reprint of any book that arrives with a printing/manufacturing defect or damaged in transit (customer writes in with a photo). Shown in the paywall (`trustReprint`, `SHOW_REPRINT_GUARANTEE = true`), landing FAQ `landingFaq.returnsA`, purchase FAQ, terms section 5, shipping page (2026-09-30) |
 
 ## Book Layout (30 inner pages — implemented, `src/lib/pdf/layout.ts`)
 
@@ -142,12 +144,14 @@ All prices above (and the base book prices) are final VAT-inclusive consumer pri
 ## Home landing (`/[locale]`, brand refresh 2026-09-30)
 
 Built on `docs/brand.md` + `src/components/ui/*`; components in `src/components/landing/`. Section order
-(conversion order: promise → how → pick a story → proof it is theirs → the physical book → objections → close with their name):
+(conversion order: promise → how → what the gift really is (emotion) → pick a story → proof it is theirs → the physical book → objections → close with their name).
+Copy strategy (2026-09-30 emotion pass): every section is clear first, then carries one true emotional moment of the gift (the first look at their name, the bedtime "otra vez", the dedication they will reread as adults, a keepsake that outlives toys). Headline ES: "El cuento que te pedirá otra vez"; the sub says in one line what it is (name on the cover, watercolor face, adventure you choose, printed and home). Copy that follows the typed name: hero cover caption, `Moments` title/texts/dedication, `FinalCta` title ("El libro de Lucía empieza aquí.").
 
 | # | Section (component, anchor) | Background | What it does |
 |---|---|---|---|
 | 1 | `Hero` | paper | H1 + "¿Cómo se llama?" field; the real `LiveCover` (LCP image, `priority`) updates on every keystroke; CTA "Crear el libro de {name}" → `/crear?name=…` (works without JS: GET form). Price "Desde 34,90 € · IVA incluido · Envío gratis" + client-side delivery window. |
 | 2 | `HowItWorks` (`#manifesto`) | surface | The five real creation steps illustrated with one example child (Hugo, 5, forest world — a real showcase book in all 4 locales, `HowItWorksExample.ts`); step 1 is an illustration, not an input. Desktop-only CTA. |
+| 2b | `Moments` (`#moments`) | brand-deep (full-bleed, the page's one warm dark band) | "Lo que de verdad le regalas (a {name})": three moments on paper cards, each with real art: the cover with the typed name (`LiveCover`; before a name, the example child's real painted cover) + a quiet "Escribe su nombre y míralo aquí" button that focuses the hero field; bedtime ("«Otra vez»"), watercolor `public/images/landing/bedtime.webp` (generated 2026-09-30, fal `flux-2/edit` with book art as style reference, no real person); the title + dedication page (p1 layout) with an example dedication labelled "Dedicatoria de ejemplo". Scroll-in reveal (`Moments.module.css`, cover tilt-and-rise), off with `prefers-reduced-motion`; content visible without JS. No CTA (sticky bar covers phones). |
 | 3 | `BookCollection` (`#catalog`) | paper | 10 worlds, real showcase covers first; age filter chips (radiogroup, arrow keys); carousel < xl, 5-col grid ≥ xl. Each card is one link → `/crear?template={id}&from=catalog` (world preselected); "Ver por dentro" → `/ejemplo/{id}` when a real book exists. |
 | 4 | `UniqueEdition` (`#unique-edition`) | surface | "No es una plantilla con su cara pegada": 4 real pages of Hugo's book + 4 points; link to Hugo's book. |
 | 5 | `QualitySection` (`#artisanal`) | paper | Open `BookMockup` + specs table (20 × 20 cm, 170 g, covers, shipping, PDF) + both prices with VAT. |

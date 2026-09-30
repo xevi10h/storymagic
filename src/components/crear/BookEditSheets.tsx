@@ -128,7 +128,8 @@ export default function BookEditSheets({
   };
 
   const primaryBtn =
-    "rounded-full bg-create-primary px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-create-primary-hover disabled:opacity-60";
+    // 19px bold: white on --brand is AA only as large text (docs/brand.md › Colour)
+    "min-h-12 rounded-full bg-create-primary px-6 py-2.5 text-[19px] leading-tight font-bold text-white transition-colors hover:bg-create-primary-hover disabled:opacity-60";
 
   return (
     <>
@@ -237,7 +238,7 @@ export default function BookEditSheets({
                   onClick={() => setTitleDraft(option)}
                   className={`rounded-full border-2 px-3 py-1.5 text-left text-xs font-semibold transition-colors ${
                     titleDraft === option
-                      ? "border-create-primary bg-create-primary/10 text-create-primary"
+                      ? "border-create-primary bg-brand-tint text-brand-text"
                       : "border-create-neutral text-create-text hover:border-create-primary/40"
                   }`}
                 >

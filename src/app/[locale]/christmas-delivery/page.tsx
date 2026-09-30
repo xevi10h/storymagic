@@ -146,7 +146,7 @@ export default async function Page({ params }: PageProps) {
               <ol className="mt-6 flex max-w-prose flex-col gap-5">
                 {method.map((line, i) => (
                   <li key={i} className="flex items-start gap-4">
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand/10 font-display text-sm font-bold tabular-nums text-brand-text">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-tint font-display text-sm font-bold tabular-nums text-brand-text">
                       {i + 1}
                     </span>
                     <p className="text-base leading-relaxed text-ink-body">{line}</p>
@@ -193,7 +193,7 @@ export default async function Page({ params }: PageProps) {
             <h2 id="xmas-final-title" className="text-balance font-display text-[28px] font-bold leading-[1.12] text-ink sm:text-4xl">
               {t("finalHeading")}
             </h2>
-            <Link href="/crear" className={buttonClass({ className: "min-h-14 text-lg! sm:px-8" })}>
+            <Link href="/crear" className={buttonClass({ className: "min-h-14 sm:px-8" })}>
               {ctaLabel}
               <span aria-hidden className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1">
                 arrow_forward

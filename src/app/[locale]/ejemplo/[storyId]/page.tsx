@@ -12,6 +12,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import type { BookPage } from "@/components/book-viewer/types";
 import { SCENE_LAYOUT_PAIRS, artCarriesTitle, getActLabel, getSpreadType } from "@/components/book-viewer/types";
 import type { GeneratedStory } from "@/lib/ai/story-generator";
+import { BrandLoader } from "@/components/ui/BrandLoader";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -193,11 +194,8 @@ export default function ShowcasePage() {
 
   if (loading) {
     return (
-      <div role="status" className="flex min-h-[100dvh] flex-col items-center justify-center bg-paper px-4">
-        <span aria-hidden className="material-symbols-outlined animate-spin text-4xl text-brand motion-reduce:animate-none">
-          progress_activity
-        </span>
-        <p className="mt-4 text-sm text-ink-muted">{t("loading")}</p>
+      <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-paper px-4">
+        <BrandLoader size="lg" caption={t("loading")} />
       </div>
     );
   }
@@ -261,7 +259,7 @@ export default function ShowcasePage() {
       <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 pt-5 sm:px-6">
         <h1 className="min-w-0 truncate font-display text-lg font-bold text-ink sm:text-xl">{bookTitle}</h1>
         <div className="flex shrink-0 items-center gap-2">
-          <span className="rounded-full bg-brand/10 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wide text-brand-text">
+          <span className="rounded-full bg-brand-tint px-2.5 py-0.5 text-xs font-bold uppercase tracking-wide text-brand-text">
             {t("sampleBadge")}
           </span>
           <span className="text-xs text-ink-muted tabular-nums">
@@ -305,7 +303,7 @@ export default function ShowcasePage() {
             {t("createYourVersion")}
           </h2>
           <p className="mx-auto mt-3 max-w-prose text-base leading-relaxed text-ink-body">{t("createYourVersionHint")}</p>
-          <Link href={createHref} className={buttonClass({ className: "mt-7 min-h-14 text-lg! sm:px-8" })}>
+          <Link href={createHref} className={buttonClass({ className: "mt-7 min-h-14 sm:px-8" })}>
             {tHero("cta")}
             <span aria-hidden className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1">
               arrow_forward

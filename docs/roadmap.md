@@ -60,7 +60,7 @@ character lock; per-stage resolution. (commits 5ebc2f1 → a883d60)
 Brand spec in `docs/brand.md`; semantic tokens in `globals.css`; primitives in `src/components/ui/`.
 - [x] Rebuild the home landing on the brand system (2026-09-30; structure in `docs/product-spec.md` › Home landing). SEO pages / blog in progress.
 - [ ] Drop legacy tokens (`cream`, `text-muted`, `footer-*`, `pack-*`, `.texture-overlay`) once no screen uses them.
-- [x] Contrast: `--ink-muted: #7a6963` (4.95:1) and `--brand-text: #b94f1f` for orange text; `Eyebrow` kicker, `ChoiceChip` soft and `Button` secondary use it. Pending: white 14–16 px bold labels on `bg-brand` (3.2:1, chips/CTAs) stay a known shortfall.
+- [x] Contrast: `--ink-muted: #7a6963` (4.95:1) and `--brand-text: #b94f1f` for orange text; `Eyebrow` kicker, `ChoiceChip` and `Button` secondary use it. Done 2026-09-30: every white label on `bg-brand` is 19 px bold (AA large text); small ones (navbar pill, `sm` buttons, chips, step numbers, badges) use `bg-brand-tint` + `text-brand-text` (docs/brand.md › Colour).
 - [x] Global `:focus-visible` rule moved into `@layer base`.
 - [ ] Migrate creation components to `src/components/ui` primitives (same classes, less duplication).
 
@@ -74,6 +74,12 @@ Brand spec in `docs/brand.md`; semantic tokens in `globals.css`; primitives in `
 ## Next steps from favourite-colour palette + name display form (2026-09-30)
 - [ ] Data backfill (owner decision): every character created by flow v2 has `favorite_color = '#E53935'` (old silent default, never asked) → those books now print as deliberate red; `UPDATE characters SET favorite_color = NULL WHERE favorite_color = '#E53935'` would give them the neutral palette. Same for lower-case stored names (`formatChildName` backfill).
 - [ ] Show the chosen colour live on screen 2 (portrait ring / mini endpaper swatch) so parents see what it does.
+
+## Next steps from brand loader (2026-09-30)
+- [x] `BrandLoader` (self-drawing book mark) + `PageLoader` + `Spinner` replace every Material `progress_activity` / CSS-ring spinner; route `loading.tsx` on dashboard, perfil, checkout/success, crear/[storyId], ejemplo/[storyId]. See docs/brand.md › Loader.
+- [ ] Replace the raster `BrandIcon` mask (`/images/m-icon-mask.png`) and favicons with a static vector of the same stroke mark (crisper at 16–32 px, one source of truth).
+- [ ] Use the drawn mark as the brand moment of the /crear "mientras se pinta" screen (draw once, then hand over to the real progress bar) and in the order-confirmation email header (animated SVG/GIF).
+- [ ] /crear hydration hold (`!hydrated || !prefillReady`) renders an empty screen; consider `PageLoader` after ~300 ms if it is ever slow on real devices.
 
 ## Next steps from commerce block B — Gelato (2026-09-28)
 - **Real paid print** of one hardcover to validate paper, colour and binding (drafts don't print; ~21 € incl. VAT).

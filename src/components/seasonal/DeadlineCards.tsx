@@ -3,6 +3,7 @@
 import { useLocale, useTranslations } from "next-intl";
 import { PRICING, formatPrice, type BookFormat, type PhysicalFormat } from "@/lib/pricing";
 import { SEASON_OCCASIONS, SHIPPING_REGIONS, formatDeadlines, giftSeason, type FormatDeadline } from "@/lib/shipping";
+import { brandBadge } from "@/components/ui";
 import { formatSeasonDate, useSeasonToday } from "./season-client";
 
 const FORMATS: BookFormat[] = ["hardcover", "softcover", "digital_pdf"];
@@ -90,7 +91,7 @@ function DeadlineLine({ deadline }: { deadline: FormatDeadline }) {
 function Status({ tone, label }: { tone: "open" | "urgent" | "closed"; label: string }) {
   const cls =
     tone === "urgent"
-      ? "bg-brand text-white"
+      ? brandBadge
       : tone === "open"
         ? "bg-success/10 text-success"
         : "bg-line text-ink-soft";

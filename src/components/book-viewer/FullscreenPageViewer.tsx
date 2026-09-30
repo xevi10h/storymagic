@@ -213,9 +213,9 @@ export default function FullscreenPageViewer({
             <button
               type="button"
               onClick={goToCheckout}
-              className="absolute bottom-5 left-1/2 inline-flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-create-primary px-5 py-2 text-sm font-bold text-white shadow-lg transition-colors hover:bg-create-primary-hover"
+              className="absolute bottom-5 left-1/2 inline-flex min-h-12 -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-full bg-create-primary px-6 py-2.5 text-[19px] font-bold leading-tight text-white shadow-lg transition-colors hover:bg-create-primary-hover"
             >
-              <span aria-hidden className="material-symbols-outlined text-base">shopping_bag</span>
+              <span aria-hidden className="material-symbols-outlined text-xl">shopping_bag</span>
               {t("lockedCta")}
             </button>
           )}
@@ -263,9 +263,9 @@ export default function FullscreenPageViewer({
           <button
             type="button"
             onClick={goToCheckout}
-            className="inline-flex items-center gap-1.5 rounded-full bg-create-primary px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-create-primary/30 transition-colors hover:bg-create-primary-hover"
+            className="inline-flex min-h-12 items-center gap-2 whitespace-nowrap rounded-full bg-create-primary px-6 py-2.5 text-[19px] font-bold leading-tight text-white shadow-lg shadow-create-primary/30 transition-colors hover:bg-create-primary-hover"
           >
-            <span aria-hidden className="material-symbols-outlined text-base">shopping_bag</span>
+            <span aria-hidden className="material-symbols-outlined text-xl">shopping_bag</span>
             {t("lockedCta")}
           </button>
         ) : (

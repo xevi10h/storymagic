@@ -161,7 +161,7 @@ export default async function BlogPost({ params }: PageProps) {
               {tb("relatedHeading")}
             </h2>
             <div className="mt-6 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
-              <Link href="/crear" className={buttonClass({ className: "min-h-14 text-lg! sm:px-8" })}>
+              <Link href="/crear" className={buttonClass({ className: "min-h-14 sm:px-8" })}>
                 {th("cta")}
                 <span aria-hidden className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1">
                   arrow_forward

@@ -96,7 +96,7 @@ export default function LegalPage() {
         <div className="mx-auto max-w-3xl px-6">
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-create-primary transition-colors mb-10"
+            className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-brand-text transition-colors mb-10"
           >
             <span className="material-symbols-outlined text-base">arrow_back</span>
             {t("backHome")}

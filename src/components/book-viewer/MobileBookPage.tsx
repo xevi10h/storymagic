@@ -209,7 +209,7 @@ const MobileBookPage = React.forwardRef<HTMLDivElement, MobileBookPageProps>(
               }}
               className="absolute inset-0 flex flex-col items-center justify-center bg-white/60 backdrop-blur-md z-10 cursor-pointer transition-colors hover:bg-white/50 group"
             >
-              <span className="material-symbols-outlined text-[clamp(1.5rem,8cqi,2.5rem)] text-create-primary/60 mb-1 group-hover:text-create-primary transition-colors">
+              <span className="material-symbols-outlined text-[clamp(1.5rem,8cqi,2.5rem)] text-create-primary/60 mb-1 group-hover:text-brand-text transition-colors">
                 lock
               </span>
               <LockedText />
@@ -254,7 +254,7 @@ function LockedText() {
       <p className="text-[clamp(0.6rem,2.5cqi,0.875rem)] text-text-muted text-center leading-snug">
         {t("lockedDescription")}
       </p>
-      <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-create-primary px-3 py-1.5 text-[clamp(0.6rem,2.2cqi,0.75rem)] font-bold text-white shadow-md shadow-create-primary/20 group-hover:bg-create-primary-hover transition-colors">
+      <span className="mt-1 inline-flex items-center gap-1 rounded-full border-2 border-brand bg-brand-tint px-3 py-1.5 text-[clamp(0.6rem,2.2cqi,0.75rem)] font-bold text-brand-text group-hover:bg-surface transition-colors">
         <span className="material-symbols-outlined text-[clamp(0.7rem,2.5cqi,0.875rem)]">shopping_bag</span>
         {t("lockedCta")}
       </span>
@@ -1027,7 +1027,7 @@ function PageContent({ page, templateId, gender, favoriteColor, pageNumber, onOr
             <button
               type="button"
               onClick={onOrder}
-              className="mt-auto inline-flex items-center gap-1.5 rounded-full bg-create-primary px-[6cqi] py-[2.4cqi] text-[clamp(0.75rem,3.6cqi,0.95rem)] font-bold text-white shadow-md shadow-create-primary/25 transition-colors hover:bg-create-primary-hover"
+              className="mt-auto inline-flex items-center gap-1.5 rounded-full border-2 border-brand bg-brand-tint px-[6cqi] py-[2.4cqi] text-[clamp(0.75rem,3.6cqi,0.95rem)] font-bold text-brand-text transition-colors hover:bg-surface"
             >
               <span className="pointer-events-none">{tp("teaserOrderCta")}</span>
               <span aria-hidden className="material-symbols-outlined pointer-events-none text-[1.1em]">arrow_downward</span>

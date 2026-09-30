@@ -14,8 +14,10 @@ import { loadStoryTree, tx } from "@/lib/story-trees/loaders";
 import type { StoryTree, TreeNode, TreeOption } from "@/lib/story-trees/types";
 import { PATH_ART } from "@/lib/story-trees/art-manifest";
 import { ADVENTURE_CHAPTERS } from "@/lib/creation-flow";
+import { buttonClass } from "@/components/ui";
 import LiveCover from "./LiveCover";
 import CreationFooterNav from "./CreationFooterNav";
+import { BrandLoader } from "@/components/ui/BrandLoader";
 
 interface StepAdventureProps {
   character: CharacterData;
@@ -162,7 +164,7 @@ export default function StepAdventure({
             <LiveCover name={name} templateId={selectedTemplate} sizes="360px" />
             <ol className="mt-5 flex flex-col gap-2 text-sm" aria-label={t("summaryLabel")}>
               <li className="flex items-center gap-2">
-                <span aria-hidden className={`material-symbols-outlined text-lg ${selectedTemplate ? "text-create-primary" : "text-create-text-sub/50"}`}>
+                <span aria-hidden className={`material-symbols-outlined text-lg ${selectedTemplate ? "text-brand-text" : "text-create-text-sub/50"}`}>
                   {selectedTemplate ? "check_circle" : "radio_button_unchecked"}
                 </span>
                 <span className="font-bold text-create-text">{t("worldLabel")}</span>
@@ -173,7 +175,7 @@ export default function StepAdventure({
                 const opt = choice ? chapters[i]?.options.find((o) => o.id === choice.optionId) : undefined;
                 return (
                   <li key={i} className="flex items-center gap-2">
-                    <span aria-hidden className={`material-symbols-outlined text-lg ${opt ? "text-create-primary" : "text-create-text-sub/50"}`}>
+                    <span aria-hidden className={`material-symbols-outlined text-lg ${opt ? "text-brand-text" : "text-create-text-sub/50"}`}>
                       {opt ? "check_circle" : "radio_button_unchecked"}
                     </span>
                     <span className="font-bold text-create-text">{t("chapter", { n: i + 1 })}</span>
@@ -230,12 +232,12 @@ export default function StepAdventure({
                         </span>
                       )}
                       {w.isRecommended && (
-                        <span className="absolute left-1.5 top-1.5 rounded-full bg-white/95 px-2 py-0.5 text-[10px] font-bold text-create-primary shadow-sm">
+                        <span className="absolute left-1.5 top-1.5 rounded-full bg-white px-2 py-0.5 text-[10px] font-bold text-brand-text shadow-sm">
                           {t("recommended")}
                         </span>
                       )}
                     </span>
-                    <span className={`px-2.5 py-2 font-display text-[13px] font-semibold leading-tight ${selected ? "text-create-primary" : "text-create-text-dark"}`}>
+                    <span className={`px-2.5 py-2 font-display text-[13px] font-semibold leading-tight ${selected ? "text-brand-text" : "text-create-text-dark"}`}>
                       {td(`templates.${w.id}.title`)}
                     </span>
                   </button>
@@ -246,8 +248,8 @@ export default function StepAdventure({
 
           {/* Chapters */}
           {selectedTemplate && !tree && !treeError && (
-            <div className="flex items-center justify-center py-10" role="status" aria-label={t("loading")}>
-              <span aria-hidden className="material-symbols-outlined animate-spin text-3xl text-create-primary/60">progress_activity</span>
+            <div className="flex items-center justify-center py-10">
+              <BrandLoader size="md" label={t("loading")} />
             </div>
           )}
           {treeError && (
@@ -259,7 +261,7 @@ export default function StepAdventure({
                   setFailedFor(null);
                   setReloadKey((k) => k + 1);
                 }}
-                className="rounded-full bg-create-primary px-5 py-2 text-sm font-bold text-white hover:bg-create-primary-hover"
+                className={buttonClass({ size: "sm" })}
               >
                 {t("retry")}
               </button>
@@ -278,7 +280,7 @@ export default function StepAdventure({
                 aria-labelledby={headingId}
                 className={`chapter-in ${sectionClass}`}
               >
-                <p className="mb-1 text-xs font-bold uppercase tracking-wide text-create-primary">{t("chapter", { n: i + 1 })}</p>
+                <p className="mb-1 text-xs font-bold uppercase tracking-wide text-brand-text">{t("chapter", { n: i + 1 })}</p>
                 <h2 id={headingId} className="mb-3 font-display text-lg font-bold leading-snug text-create-text-dark sm:text-xl">
                   {fill(tx(node.question, locale))}
                 </h2>
@@ -316,7 +318,7 @@ export default function StepAdventure({
                           )}
                         </span>
                         <span className="flex min-h-[84px] flex-col justify-center gap-0.5 px-3 py-2.5 sm:min-h-0 sm:px-4 sm:py-3">
-                          <span className={`font-display text-[15px] font-semibold leading-tight ${selected ? "text-create-primary" : "text-create-text-dark"}`}>
+                          <span className={`font-display text-[15px] font-semibold leading-tight ${selected ? "text-brand-text" : "text-create-text-dark"}`}>
                             {fill(tx(o.title, locale))}
                           </span>
                           <span className="line-clamp-2 text-xs leading-snug text-create-text-sub">{fill(tx(o.desc, locale))}</span>

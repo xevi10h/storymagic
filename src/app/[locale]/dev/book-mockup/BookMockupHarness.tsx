@@ -80,7 +80,7 @@ function Group<T extends string>({ label, value, options, onChange }: {
             type="button"
             data-testid={`${label.toLowerCase()}-${o}`}
             onClick={() => onChange(o)}
-            className={`rounded-full border px-4 py-2 text-sm font-semibold ${o === value ? "border-primary bg-primary text-white" : "border-border-light bg-white text-text-soft"}`}
+            className={`rounded-full border px-4 py-2 text-sm font-semibold ${o === value ? "border-brand bg-brand-tint text-brand-text" : "border-border-light bg-white text-text-soft"}`}
           >
             {o}
           </button>

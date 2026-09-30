@@ -91,7 +91,7 @@ export default async function ShowcaseIndex({ params }: PageProps) {
             <Link
               id="hero-cta"
               href="/crear"
-              className={buttonClass({ className: "mt-7 min-h-14 w-full text-lg! sm:w-auto sm:px-8" })}
+              className={buttonClass({ className: "mt-7 min-h-14 w-full sm:w-auto sm:px-8" })}
             >
               {th("cta")}
               <span aria-hidden className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1">

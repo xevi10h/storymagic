@@ -9,6 +9,8 @@ import { formatPrice } from "@/lib/pricing";
 import { useTranslations, useLocale } from "next-intl";
 import BrandLogo from "@/components/BrandLogo";
 import BrandIcon from "@/components/BrandIcon";
+import { BrandLoader } from "@/components/ui/BrandLoader";
+import { Spinner } from "@/components/ui/Spinner";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -153,7 +155,7 @@ export default function DashboardPage() {
   if (authLoading || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-cream">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-border-light border-t-primary" />
+        <BrandLoader size="lg" />
       </div>
     );
   }
@@ -165,7 +167,7 @@ export default function DashboardPage() {
         <p className="mt-4 text-base text-text-main">
           {error ?? t("loadError")}
         </p>
-        <Link href="/" className="mt-6 text-sm text-primary hover:underline">
+        <Link href="/" className="mt-6 text-sm text-brand-text hover:underline">
           {t("backHome")}
         </Link>
       </div>
@@ -190,7 +192,7 @@ export default function DashboardPage() {
           <div className="flex items-center gap-3">
             <Link
               href="/crear"
-              className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-bold text-white transition-all hover:bg-primary-hover active:scale-[0.98]"
+              className="flex items-center gap-2 rounded-lg border border-brand bg-brand-tint px-4 py-2 text-sm font-bold text-brand-text transition-all hover:bg-surface active:scale-[0.98]"
             >
               <span className="material-symbols-outlined text-lg">add</span>
               <span className="hidden sm:inline">{t("newStory")}</span>
@@ -225,7 +227,7 @@ export default function DashboardPage() {
               onClick={() => setActiveTab(tab.id)}
               className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${
                 activeTab === tab.id
-                  ? "bg-primary text-white shadow-sm"
+                  ? "bg-brand-tint font-bold text-brand-text shadow-sm ring-1 ring-inset ring-brand"
                   : "text-text-soft hover:bg-cream hover:text-text-main"
               }`}
             >
@@ -442,7 +444,7 @@ function StoryCard({
                 className="shrink-0 opacity-60 sm:opacity-0 transition-opacity group-hover:opacity-100"
                 aria-label={t("editTitle")}
               >
-                <span className="material-symbols-outlined text-base text-text-muted hover:text-primary">
+                <span className="material-symbols-outlined text-base text-text-muted hover:text-brand-text">
                   edit
                 </span>
               </button>
@@ -464,7 +466,7 @@ function StoryCard({
               aria-label={t("downloadPdf")}
             >
               {downloading ? (
-                <span className="material-symbols-outlined animate-spin text-sm leading-none">progress_activity</span>
+                <Spinner className="text-sm" />
               ) : (
                 <span className="material-symbols-outlined text-sm leading-none">download</span>
               )}
@@ -605,7 +607,7 @@ function OrdersTab({
                     order.status === "delivered" ? "bg-emerald-100" : "bg-primary/10"
                   }`}>
                     <span className={`material-symbols-outlined text-[18px] ${
-                      order.status === "delivered" ? "text-emerald-600" : "text-primary"
+                      order.status === "delivered" ? "text-emerald-600" : "text-brand-text"
                     }`}>
                       {STEP_ICONS[order.status as keyof typeof STEP_ICONS] ?? "help"}
                     </span>
@@ -663,7 +665,7 @@ function OrdersTab({
                               isCompleted
                                 ? "font-medium text-emerald-600"
                                 : isActive
-                                  ? "font-semibold text-primary"
+                                  ? "font-semibold text-brand-text"
                                   : "font-medium text-gray-400"
                             }`}
                           >
@@ -897,7 +899,7 @@ function CharactersTab({
                 </button>
                 <Link
                   href="/crear"
-                  className="flex-1 rounded-lg bg-primary px-3 py-2 text-center text-xs font-bold text-white transition-colors hover:bg-primary-hover"
+                  className="flex-1 rounded-lg border border-brand bg-brand-tint px-3 py-2 text-center text-xs font-bold text-brand-text transition-colors hover:bg-surface"
                 >
                   {t("createBook")}
                 </Link>
@@ -1084,7 +1086,7 @@ function CharacterDetailModal({
                         {td(`templates.${tpl.id}.description`)}
                       </p>
                     </div>
-                    <span className="material-symbols-outlined shrink-0 text-sm text-text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-primary">
+                    <span className="material-symbols-outlined shrink-0 text-sm text-text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-brand-text">
                       arrow_forward
                     </span>
                   </Link>
@@ -1103,7 +1105,7 @@ function CharacterDetailModal({
             <Link
               href={`/crear?characterId=${character.id}`}
               onClick={onClose}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-bold text-white transition-colors hover:bg-primary-hover active:scale-[0.98]"
+              className="min-h-12 flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 text-[19px] font-bold leading-tight text-white transition-colors hover:bg-primary-hover active:scale-[0.98]"
             >
               <span className="material-symbols-outlined text-lg">add</span>
               {t("createBook")}
@@ -1145,7 +1147,7 @@ function EmptyState({
       <p className="mt-2 max-w-sm text-sm text-text-muted">{description}</p>
       <Link
         href={ctaHref}
-        className="mt-6 flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-bold text-white transition-all hover:bg-primary-hover active:scale-[0.98]"
+        className="min-h-12 mt-6 flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-[19px] font-bold leading-tight text-white transition-all hover:bg-primary-hover active:scale-[0.98]"
       >
         <span className="material-symbols-outlined text-lg">add</span>
         {ctaLabel}

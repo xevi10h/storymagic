@@ -18,6 +18,7 @@ button, [role="button"] {
   --brand: #E86C3A;            /* primary actions, active/selected state, kickers */
   --brand-hover: #d15a2b;      /* hover/pressed of --brand */
   --brand-text: #b94f1f;       /* orange TEXT at any size (4.75:1 on paper, AA); --brand stays the fill */
+  --brand-tint: color-mix(in srgb, var(--brand) 8%, white); /* opaque tint for small orange-text chips/badges (brand-text 4.58:1) */
   --brand-deep: #5D4037;       /* wordmark, price + purchase headings, dark bands */
   --brand-deep-hover: #4E342E; /* hover of --brand-deep */
   --gold: #d4af37;             /* rare highlight: stars pattern, reveal sparkle */
@@ -104,6 +105,7 @@ button, [role="button"] {
   --color-brand: var(--brand);
   --color-brand-hover: var(--brand-hover);
   --color-brand-text: var(--brand-text);
+  --color-brand-tint: var(--brand-tint);
   --color-brand-deep: var(--brand-deep);
   --color-brand-deep-hover: var(--brand-deep-hover);
   --color-gold: var(--gold);
@@ -216,8 +218,9 @@ h1, h2, h3, h4 {
 
 /* Brand-consistent text selection */
 ::selection {
-  background-color: var(--brand);
-  color: white;
+  /* White on --brand is AA only for large bold text; keep selected text dark. */
+  background-color: color-mix(in srgb, var(--brand) 30%, white);
+  color: var(--ink);
 }
 
 /* Base layer: element defaults that utilities must be able to override.

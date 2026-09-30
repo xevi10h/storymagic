@@ -115,7 +115,7 @@ export default async function SeoLandingPage({ type, slug, locale }: Props) {
               <p className={cx("mt-4 max-w-xl", marketingLead)}>{k("heroIntro")}</p>
 
               <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
-                <Link id="hero-cta" href={ctaHref} className={buttonClass({ className: "min-h-14 text-lg! sm:px-8" })}>
+                <Link id="hero-cta" href={ctaHref} className={buttonClass({ className: "min-h-14 sm:px-8" })}>
                   {ctaLabel}
                   <span aria-hidden className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1">
                     arrow_forward

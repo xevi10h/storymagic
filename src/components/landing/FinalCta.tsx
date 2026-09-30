@@ -39,7 +39,7 @@ export default function FinalCta() {
       <div className="mx-auto grid max-w-[1120px] items-center gap-10 rounded-3xl bg-surface p-6 ring-1 ring-line sm:p-10 lg:grid-cols-[1fr_360px] lg:gap-16 lg:p-14">
         <div className="order-2 lg:order-1">
           <h2 id="final-cta-title" className="text-balance font-display text-[28px] font-bold leading-[1.12] text-ink sm:text-4xl lg:text-[44px]">
-            {t("title")}
+            {first ? t("titleWithName", { name: first, deName: deName(first, locale) }) : t("title")}
           </h2>
           <p className="mt-3 max-w-prose text-base leading-relaxed text-ink-body sm:text-lg">{t("subtitle")}</p>
 
@@ -77,7 +77,7 @@ export default function FinalCta() {
             <button
               type="submit"
               className={buttonClass({
-                className: "min-h-14 max-w-full sm:min-h-16 sm:px-8 sm:text-lg",
+                className: "min-h-14 max-w-full sm:min-h-16 sm:px-8",
               })}
             >
               <span className="truncate">{first ? t("ctaWithName", { deName: deName(first, locale) }) : t("cta")}</span>

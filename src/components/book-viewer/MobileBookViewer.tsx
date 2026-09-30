@@ -136,7 +136,7 @@ export default function MobileBookViewer({
     return (
       <div className="flex flex-col items-center w-full">
         <div ref={attachScene} className="book-scene w-full mx-auto max-md:-mx-2 max-md:w-[calc(100%+1rem)]">
-          <div className="book-body w-full mx-auto aspect-[2/1] animate-pulse rounded-lg bg-create-neutral/40" />
+          <div className="book-body w-full mx-auto aspect-[2/1] animate-pulse rounded-lg bg-line" />
         </div>
       </div>
     );
@@ -221,7 +221,7 @@ export default function MobileBookViewer({
           type="button"
           onClick={() => flipBookRef.current?.pageFlip()?.flipPrev()}
           disabled={isFirst}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border-light bg-white text-text-muted transition-all hover:border-create-primary hover:text-create-primary disabled:opacity-30 disabled:hover:border-border-light disabled:hover:text-text-muted"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border-light bg-white text-text-muted transition-all hover:border-create-primary hover:text-brand-text disabled:opacity-30 disabled:hover:border-border-light disabled:hover:text-text-muted"
           aria-label={t("previous")}
           data-testid="book-prev"
         >
@@ -246,7 +246,7 @@ export default function MobileBookViewer({
           type="button"
           onClick={() => flipBookRef.current?.pageFlip()?.flipNext()}
           disabled={isLast}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border-light bg-white text-text-muted transition-all hover:border-create-primary hover:text-create-primary disabled:opacity-30 disabled:hover:border-border-light disabled:hover:text-text-muted"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border-light bg-white text-text-muted transition-all hover:border-create-primary hover:text-brand-text disabled:opacity-30 disabled:hover:border-border-light disabled:hover:text-text-muted"
           aria-label={t("next")}
           data-testid="book-next"
         >
@@ -261,10 +261,10 @@ export default function MobileBookViewer({
             <button
               type="button"
               onClick={() => setFullscreenPage(shown[0])}
-              className="inline-flex items-center justify-center gap-1.5 rounded-full border border-border-light bg-white px-4 py-1.5 text-xs font-semibold text-create-text-dark transition-colors hover:border-create-primary hover:text-create-primary"
+              className="inline-flex items-center justify-center gap-1.5 rounded-full border border-border-light bg-white px-4 py-1.5 text-xs font-semibold text-create-text-dark transition-colors hover:border-create-primary hover:text-brand-text"
               data-testid="book-zoom"
             >
-              <span aria-hidden className="material-symbols-outlined text-lg text-create-primary">zoom_in</span>
+              <span aria-hidden className="material-symbols-outlined text-lg text-brand-text">zoom_in</span>
               {t("zoomPage")}
             </button>
           )}

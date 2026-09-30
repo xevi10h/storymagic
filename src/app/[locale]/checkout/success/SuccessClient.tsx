@@ -4,6 +4,8 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import CreationHeader from "@/components/crear/CreationHeader";
+import { Spinner } from "@/components/ui/Spinner";
+import { BrandLoader } from "@/components/ui/BrandLoader";
 
 interface OrderDetails {
   format: string;
@@ -198,9 +200,7 @@ export default function SuccessClient({
             {/* Animated icon */}
             <div className="mb-8 relative">
               <div className="inline-flex h-32 w-32 items-center justify-center rounded-full bg-white shadow-lg shadow-create-primary/10">
-                <span className="material-symbols-outlined text-7xl text-create-primary animate-pulse">
-                  {completionStatus === "verifying" ? "verified" : currentMessage.icon}
-                </span>
+                <BrandLoader size="md" />
               </div>
               <div className="absolute -top-2 -right-4 animate-create-float">
                 <span className="material-symbols-outlined text-2xl text-create-gold opacity-60">
@@ -208,7 +208,7 @@ export default function SuccessClient({
                 </span>
               </div>
               <div className="absolute -bottom-1 -left-6 animate-create-float-delay-1">
-                <span className="material-symbols-outlined text-xl text-create-primary opacity-40">
+                <span className="material-symbols-outlined text-xl text-brand-text opacity-40">
                   auto_awesome
                 </span>
               </div>
@@ -283,13 +283,13 @@ export default function SuccessClient({
             </p>
             {customerEmail && (
               <p className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs text-text-soft shadow-sm">
-                <span className="material-symbols-outlined text-sm text-create-primary">mail</span>
+                <span className="material-symbols-outlined text-sm text-brand-text">mail</span>
                 {t("confirmationEmail", { email: customerEmail })}
               </p>
             )}
             {isGuest && <p className="mt-2 text-xs text-text-muted">{t("guestNote")}</p>}
             <p className="mt-6 flex items-center justify-center gap-2 text-xs text-text-muted">
-              <span className="material-symbols-outlined animate-spin text-base text-create-primary">progress_activity</span>
+              <Spinner className="text-base text-brand-text" />
               {t("processingSafeToLeave")}
             </p>
             <div className="mt-8 flex flex-col gap-3">
@@ -327,7 +327,7 @@ export default function SuccessClient({
             <div className="mt-8 flex flex-col gap-3">
               <Link
                 href="/dashboard"
-                className="rounded-full bg-create-primary px-8 py-3 text-sm font-bold text-white transition-all hover:bg-create-primary-hover"
+                className="min-h-12 rounded-full bg-create-primary px-8 py-3 text-[19px] font-bold leading-tight text-white transition-all hover:bg-create-primary-hover"
               >
                 {t("goToDashboard")}
               </Link>
@@ -367,7 +367,7 @@ export default function SuccessClient({
                     completionStarted.current = false;
                     triggerCompletion(order.storyId);
                   }}
-                  className="rounded-full bg-create-primary px-8 py-3 text-sm font-bold text-white transition-all hover:bg-create-primary-hover"
+                  className="min-h-12 rounded-full bg-create-primary px-8 py-3 text-[19px] font-bold leading-tight text-white transition-all hover:bg-create-primary-hover"
                 >
                   {t("retryCompletion")}
                 </button>
@@ -414,7 +414,7 @@ export default function SuccessClient({
 
           {customerEmail && (
             <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs text-text-soft shadow-sm">
-              <span className="material-symbols-outlined text-sm text-create-primary">mail</span>
+              <span className="material-symbols-outlined text-sm text-brand-text">mail</span>
               {t("confirmationEmail", { email: customerEmail })}
             </p>
           )}
@@ -427,7 +427,7 @@ export default function SuccessClient({
             {/* PDF download — available for all formats */}
             {order && (
               <div className="flex items-center gap-3 text-text-soft">
-                <span className="material-symbols-outlined text-xl text-create-primary">
+                <span className="material-symbols-outlined text-xl text-brand-text">
                   download
                 </span>
                 <div className="flex-1">
@@ -440,7 +440,7 @@ export default function SuccessClient({
                 </div>
                 <Link
                   href={`/crear/${order.storyId}/preview`}
-                  className="shrink-0 rounded-lg bg-create-primary px-3 py-1.5 text-xs font-bold text-white transition-all hover:bg-create-primary-hover"
+                  className="shrink-0 rounded-lg border border-brand bg-brand-tint px-3 py-1.5 text-xs font-bold text-brand-text transition-all hover:bg-surface"
                 >
                   {t("viewBook")}
                 </Link>
@@ -452,9 +452,9 @@ export default function SuccessClient({
                 href={order.invoiceUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-4 flex items-center gap-3 text-sm font-medium text-text-main hover:text-create-primary"
+                className="mt-4 flex items-center gap-3 text-sm font-medium text-text-main hover:text-brand-text"
               >
-                <span aria-hidden className="material-symbols-outlined text-xl text-create-primary">receipt_long</span>
+                <span aria-hidden className="material-symbols-outlined text-xl text-brand-text">receipt_long</span>
                 {t("viewInvoice")}
               </a>
             )}
@@ -463,7 +463,7 @@ export default function SuccessClient({
             {!isDigital && (
               <>
                 <div className="mt-4 flex items-center gap-3 text-text-soft">
-                  <span className="material-symbols-outlined text-xl text-create-primary">
+                  <span className="material-symbols-outlined text-xl text-brand-text">
                     local_shipping
                   </span>
                   <div>
@@ -477,7 +477,7 @@ export default function SuccessClient({
                 </div>
 
                 <div className="mt-4 flex items-center gap-3 text-text-soft">
-                  <span className="material-symbols-outlined text-xl text-create-primary">
+                  <span className="material-symbols-outlined text-xl text-brand-text">
                     schedule
                   </span>
                   <div>
@@ -494,7 +494,7 @@ export default function SuccessClient({
 
             {effectiveFormat && (
               <div className="mt-4 flex items-center gap-3 text-text-soft">
-                <span className="material-symbols-outlined text-xl text-create-primary">
+                <span className="material-symbols-outlined text-xl text-brand-text">
                   {isDigital ? "download" : effectiveFormat === "hardcover" ? "book" : "menu_book"}
                 </span>
                 <div>
@@ -519,7 +519,7 @@ export default function SuccessClient({
           <div className="mt-8 flex flex-col gap-3">
             <Link
               href="/crear"
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-create-primary px-6 py-3.5 text-sm font-bold text-white transition-all hover:bg-create-primary-hover active:scale-[0.98] shadow-lg shadow-create-primary/20"
+              className="min-h-12 flex w-full items-center justify-center gap-2 rounded-xl bg-create-primary px-6 py-3.5 text-[19px] font-bold leading-tight text-white transition-all hover:bg-create-primary-hover active:scale-[0.98] shadow-lg shadow-create-primary/20"
             >
               <span className="material-symbols-outlined text-lg">
                 add_circle

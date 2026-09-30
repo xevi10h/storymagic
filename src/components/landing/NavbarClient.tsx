@@ -8,7 +8,7 @@ import LocaleSwitcher from "@/components/LocaleSwitcher";
 import BrandLogo from "@/components/BrandLogo";
 import SeasonalBanner from "@/components/seasonal/SeasonalBanner";
 import { NAV_HEIGHT_SCRIPT } from "@/components/seasonal/season-scripts";
-import { buttonClass, cx, focusRing } from "@/components/ui";
+import { brandBadge, buttonClass, cx, focusRing } from "@/components/ui";
 
 type NavUser = { email?: string; user_metadata?: { full_name?: string; avatar_url?: string } };
 
@@ -36,7 +36,7 @@ function Avatar({ user, name, size }: { user: NavUser; name: string; size: "sm" 
     // eslint-disable-next-line @next/next/no-img-element
     <img src={url} alt="" className={`${box} rounded-full object-cover`} referrerPolicy="no-referrer" />
   ) : (
-    <span aria-hidden className={`${box} flex items-center justify-center rounded-full bg-brand font-bold text-white`}>
+    <span aria-hidden className={`${box} flex items-center justify-center rounded-full ${brandBadge} font-bold`}>
       {name.charAt(0).toUpperCase()}
     </span>
   );
@@ -307,7 +307,7 @@ export default function NavbarClient({ seasonToday }: { seasonToday: string | nu
               )}
 
               <div className="mt-4 flex flex-col gap-2.5">
-                <Link href="/crear" onClick={close} className={buttonClass({ block: true, className: "h-12 text-base! lg:hidden" })}>
+                <Link href="/crear" onClick={close} className={buttonClass({ block: true, className: "h-12 lg:hidden" })}>
                   {t("createBook")}
                 </Link>
                 {loading ? null : user ? (

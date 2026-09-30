@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { deName } from "@/lib/creation-flow";
+import { Spinner } from "@/components/ui/Spinner";
 
 export interface SharePreviewButtonProps {
   storyId: string;
@@ -20,7 +21,7 @@ export interface SharePreviewButtonProps {
 type Status = "idle" | "loading" | "copied" | "manual" | "error";
 
 const DEFAULT_CLASS =
-  "inline-flex items-center justify-center gap-1.5 rounded-full border-2 border-border-light bg-white px-4 py-2 text-sm font-bold text-secondary transition-colors hover:border-create-primary hover:text-create-primary disabled:opacity-60";
+  "inline-flex items-center justify-center gap-1.5 rounded-full border-2 border-border-light bg-white px-4 py-2 text-sm font-bold text-secondary transition-colors hover:border-create-primary hover:text-brand-text disabled:opacity-60";
 
 /** Mobile/tablet (touch-first) → native share sheet (WhatsApp etc.); desktop → copy link. */
 function prefersNativeShare(): boolean {
@@ -127,9 +128,11 @@ export default function SharePreviewButton({ storyId, childName, className, show
         className={className ?? DEFAULT_CLASS}
         data-testid="share-preview-button"
       >
-        <span aria-hidden className={`material-symbols-outlined text-lg ${status === "loading" ? "animate-spin" : ""}`}>
-          {status === "loading" ? "progress_activity" : status === "copied" ? "check" : "ios_share"}
-        </span>
+        {status === "loading" ? (
+          <Spinner className="text-lg" />
+        ) : (
+          <span aria-hidden className="material-symbols-outlined text-lg">{status === "copied" ? "check" : "ios_share"}</span>
+        )}
         {status === "loading" ? t("sharing") : status === "copied" ? t("copied") : t("button")}
       </button>
       <span className="sr-only" role="status" aria-live="polite">

@@ -94,7 +94,7 @@ export default async function HubPage({ type, locale }: Props) {
             <h1 className={cx("mt-2", marketingH1)}>{t(`hubs.${type}.h1`)}</h1>
             <p className={cx("mt-4 max-w-2xl", marketingLead)}>{t(`hubs.${type}.intro`)}</p>
             <div className="mt-7 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-5">
-              <Link id="hero-cta" href="/crear" className={buttonClass({ className: "min-h-14 w-full text-lg! sm:w-auto sm:px-8" })}>
+              <Link id="hero-cta" href="/crear" className={buttonClass({ className: "min-h-14 w-full sm:w-auto sm:px-8" })}>
                 {th("cta")}
                 <span aria-hidden className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1">
                   arrow_forward

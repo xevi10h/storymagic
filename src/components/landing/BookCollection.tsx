@@ -134,7 +134,6 @@ export default function BookCollection() {
             {AGE_FILTERS.map((filter) => (
               <ChoiceChip
                 key={filter}
-                tone="solid"
                 selected={activeFilter === filter}
                 // Roving tabindex (ARIA radio group): Tab enters on the checked chip, arrows move.
                 tabIndex={activeFilter === filter ? 0 : -1}

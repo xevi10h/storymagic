@@ -10,6 +10,7 @@ import LiveCover from "@/components/crear/LiveCover";
 import DedicationEditor from "@/components/crear/DedicationEditor";
 import { useDedicationAutosave } from "@/hooks/useDedicationAutosave";
 import { deName, patchStoredDraft } from "@/lib/creation-flow";
+import { Spinner } from "@/components/ui/Spinner";
 
 // Screen 4 — "Mientras se pinta": real preview progress (cover first, then
 // scenes as they are painted) while the parent writes the dedication.
@@ -348,7 +349,7 @@ export default function GenerarPage() {
         <CreationHeader currentStep={4} onBack={() => void handleBack()} onStepClick={(s) => void goToCreateStep(s)} canStepNavigate={(s) => s <= 3} />
         <main className="flex flex-1 flex-col items-center justify-center px-4 py-10 text-center" role="alert">
           <div className="max-w-md">
-            <span aria-hidden className="material-symbols-outlined mb-4 text-5xl text-create-primary">
+            <span aria-hidden className="material-symbols-outlined mb-4 text-5xl text-brand-text">
               {failure === "rate_limited" ? "schedule" : "auto_stories"}
             </span>
             <h1 className="font-display text-2xl font-bold text-create-text-dark">
@@ -361,11 +362,13 @@ export default function GenerarPage() {
                 type="button"
                 onClick={handleRetry}
                 disabled={retrying}
-                className="flex items-center justify-center gap-2 rounded-full bg-create-primary px-8 py-3 text-sm font-bold text-white transition-colors hover:bg-create-primary-hover disabled:opacity-60"
+                className="min-h-12 flex items-center justify-center gap-2 rounded-full bg-create-primary px-8 py-3 text-[19px] font-bold leading-tight text-white transition-colors hover:bg-create-primary-hover disabled:opacity-60"
               >
-                <span aria-hidden className={`material-symbols-outlined text-lg ${retrying ? "animate-spin" : ""}`}>
-                  {retrying ? "progress_activity" : "refresh"}
-                </span>
+                {retrying ? (
+                  <Spinner className="text-lg" />
+                ) : (
+                  <span aria-hidden className="material-symbols-outlined text-lg">refresh</span>
+                )}
                 {t("retry")}
               </button>
               <button
@@ -413,7 +416,7 @@ export default function GenerarPage() {
                 // Over template art the title sits on top (badge at the bottom); over a painted
                 // first scene the title sits at the bottom (badge at the top).
                 <span className={`absolute inset-x-2 ${heroUrl ? "top-2" : "bottom-2"} flex items-center justify-center gap-1 rounded-full bg-white/90 px-2 py-1 text-[10px] font-bold text-create-text shadow-sm lg:inset-x-auto lg:left-1/2 lg:-translate-x-1/2 lg:px-3 lg:text-xs`}>
-                  <span aria-hidden className="material-symbols-outlined animate-spin text-sm text-create-primary">progress_activity</span>
+                  <Spinner className="shrink-0 text-xs text-brand-text" />
                   <span className="truncate">{t("paintingCover")}</span>
                 </span>
               )}
@@ -490,7 +493,7 @@ export default function GenerarPage() {
             <button
               type="button"
               onClick={() => void openBook()}
-              className="hidden items-center justify-center gap-2 rounded-full bg-create-primary px-8 py-3.5 text-base font-bold text-white shadow-lg shadow-create-primary/25 transition-colors hover:bg-create-primary-hover lg:flex"
+              className="min-h-12 hidden items-center justify-center gap-2 rounded-full bg-create-primary px-8 py-3.5 text-[19px] font-bold leading-tight text-white shadow-lg shadow-create-primary/25 transition-colors hover:bg-create-primary-hover lg:flex"
             >
               {t("viewBook", nameArgs)}
               <span aria-hidden className="material-symbols-outlined text-lg">arrow_forward</span>
@@ -515,7 +518,7 @@ export default function GenerarPage() {
               onChange={dedication.update}
             />
           ) : (
-            <div className="h-64 animate-pulse rounded-2xl bg-white/70" aria-hidden />
+            <div className="h-64 animate-pulse rounded-2xl border-2 border-line bg-surface" aria-hidden />
           )}
         </section>
       </main>

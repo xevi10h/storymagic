@@ -5,6 +5,7 @@ import { useTranslations, useLocale } from "next-intl";
 import Image from "next/image";
 import BrandLogo from "@/components/BrandLogo";
 import LocaleSwitcher from "@/components/LocaleSwitcher";
+import { Spinner } from "@/components/ui/Spinner";
 
 type ShowcaseBook = {
   id: string;
@@ -121,7 +122,7 @@ export default function WaitlistPage() {
         {/* Headline */}
         <h1 className="max-w-3xl text-center font-display text-4xl font-bold leading-[1.1] tracking-tight text-secondary sm:text-5xl md:text-6xl lg:text-7xl">
           {t("titleStart")}{" "}
-          <span className="italic text-primary">{t("titleHighlight")}</span>
+          <span className="italic text-brand-text">{t("titleHighlight")}</span>
           {t("titleEnd") && (
             <>
               <br />
@@ -172,10 +173,10 @@ export default function WaitlistPage() {
             <button
               type="submit"
               disabled={status === "loading"}
-              className="mt-4 flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-primary text-lg font-bold text-white shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5 hover:bg-primary-hover hover:shadow-xl hover:shadow-primary/25 active:translate-y-0 disabled:opacity-60 disabled:hover:translate-y-0 disabled:hover:shadow-lg"
+              className="mt-4 flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-primary text-[19px] font-bold leading-tight text-white shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5 hover:bg-primary-hover hover:shadow-xl hover:shadow-primary/25 active:translate-y-0 disabled:opacity-60 disabled:hover:translate-y-0 disabled:hover:shadow-lg"
             >
               {status === "loading" ? (
-                <span className="inline-block h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                <Spinner className="text-xl" />
               ) : (
                 <>
                   {t("cta")}
@@ -186,7 +187,7 @@ export default function WaitlistPage() {
               )}
             </button>
             {status === "duplicate" && (
-              <p className="mt-3 text-center text-sm font-medium text-primary">
+              <p className="mt-3 text-center text-sm font-medium text-brand-text">
                 {t("alreadyRegistered")}
               </p>
             )}
@@ -208,7 +209,7 @@ export default function WaitlistPage() {
           </div>
           <span className="hidden text-border-light sm:inline">|</span>
           <div className="flex items-center gap-1.5">
-            <span className="material-symbols-outlined text-base text-primary">
+            <span className="material-symbols-outlined text-base text-brand-text">
               palette
             </span>
             <span>{t("feature2Title")}</span>
@@ -334,7 +335,7 @@ function FeatureCard({
 }) {
   return (
     <div className="flex-1 rounded-2xl border border-border-light bg-white/60 p-6 backdrop-blur-sm transition-all hover:border-border-medium hover:shadow-md">
-      <span className="material-symbols-outlined mb-3 text-3xl text-primary">
+      <span className="material-symbols-outlined mb-3 text-3xl text-brand-text">
         {icon}
       </span>
       <h3 className="mb-2 font-display text-lg font-bold text-secondary">

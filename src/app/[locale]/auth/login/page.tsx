@@ -187,7 +187,7 @@ function LoginPageContent() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-xl bg-primary px-4 py-3 text-sm font-bold text-white transition-all hover:bg-primary-hover active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+              className="min-h-12 w-full rounded-xl bg-primary px-4 py-3 text-[19px] font-bold leading-tight text-white transition-all hover:bg-primary-hover active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? t("loading") : t("submit")}
             </button>
@@ -195,7 +195,7 @@ function LoginPageContent() {
             <div className="text-right">
               <Link
                 href="/auth/reset-password"
-                className="text-sm font-medium text-primary hover:underline transition-colors"
+                className="text-sm font-medium text-brand-text hover:underline transition-colors"
               >
                 {t("forgotPassword")}
               </Link>
@@ -208,7 +208,7 @@ function LoginPageContent() {
           {t("noAccount")}{" "}
           <Link
             href={`/auth/signup${nextUrl !== "/crear" ? `?next=${encodeURIComponent(nextUrl)}` : ""}`}
-            className="font-semibold text-primary hover:underline"
+            className="font-semibold text-brand-text hover:underline"
           >
             {t("createFree")}
           </Link>

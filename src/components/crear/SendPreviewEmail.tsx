@@ -62,7 +62,7 @@ export default function SendPreviewEmail({ storyId, childName, variant = "card",
         role="status"
         data-testid="send-preview-sent"
       >
-        <span aria-hidden className="material-symbols-outlined shrink-0 text-lg text-create-primary">mark_email_read</span>
+        <span aria-hidden className="material-symbols-outlined shrink-0 text-lg text-brand-text">mark_email_read</span>
         <span className="min-w-0 break-words">{t("sent", { email: email.trim() })}</span>
       </p>
     );
@@ -96,7 +96,7 @@ export default function SendPreviewEmail({ storyId, childName, variant = "card",
       className={
         inline && buttonClassName
           ? buttonClassName
-          : "h-12 shrink-0 rounded-xl border-2 border-create-primary px-5 text-sm font-bold text-create-primary transition-colors hover:bg-create-primary/5 disabled:opacity-60"
+          : "h-12 shrink-0 rounded-xl border-2 border-create-primary px-5 text-sm font-bold text-brand-text transition-colors hover:bg-create-primary/5 disabled:opacity-60"
       }
     >
       {status === "sending" ? t("sending") : (sendLabel ?? t("send"))}

@@ -11,7 +11,7 @@ const BookViewer = dynamic(() => import("./MobileBookViewer"), {
 function BookViewerSkeleton() {
   return (
     <div className="w-full max-w-lg mx-auto">
-      <div className="aspect-square w-full overflow-hidden rounded-2xl shadow-xl border border-border-light bg-white animate-pulse" />
+      <div className="aspect-square w-full animate-pulse rounded-2xl bg-line" />
     </div>
   );
 }

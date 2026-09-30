@@ -2,6 +2,7 @@
 
 import { useId, useState } from "react";
 import { useTranslations } from "next-intl";
+import { Spinner } from "@/components/ui/Spinner";
 
 /** Reading-club signup in the footer (on brand-deep). POSTs to /api/newsletter. */
 export default function NewsletterForm() {
@@ -72,9 +73,7 @@ export default function NewsletterForm() {
         className="inline-flex h-12 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-white px-6 text-sm font-bold text-brand-deep transition-colors hover:bg-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:opacity-60"
       >
         {status === "loading" && (
-          <span aria-hidden className="material-symbols-outlined animate-spin text-lg">
-            progress_activity
-          </span>
+          <Spinner className="text-lg" />
         )}
         {t("joinClub")}
       </button>

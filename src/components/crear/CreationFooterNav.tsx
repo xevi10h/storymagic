@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { Spinner } from "@/components/ui/Spinner";
 
 interface CreationFooterNavProps {
   onBack?: () => void;
@@ -35,12 +36,14 @@ export default function CreationFooterNav({
           <button
             type="button"
             onClick={onBack}
-            className="group flex items-center gap-2 rounded-full border-2 border-create-primary/20 bg-white px-4 sm:px-6 py-3 text-sm sm:text-base font-bold text-create-primary whitespace-nowrap transition-all hover:border-create-primary hover:bg-create-primary/5"
+            className="group flex min-h-12 min-w-12 shrink-0 items-center justify-center gap-2 rounded-full border-2 border-create-primary/20 bg-white px-4 max-[389px]:px-3 sm:px-6 py-2.5 text-sm sm:text-base font-bold text-brand-text whitespace-nowrap transition-all hover:border-create-primary hover:bg-create-primary/5"
           >
             <span aria-hidden className="material-symbols-outlined text-lg transition-transform group-hover:-translate-x-1">
               arrow_back
             </span>
-            {t("back")}
+            {/* Under 390px the 19px next label ("Crear el seu llibre") needs the room: icon-only back
+                (the header keeps its own back arrow); the label stays as the accessible name. */}
+            <span className="max-[389px]:sr-only">{t("back")}</span>
           </button>
         ) : (
           <div />
@@ -52,13 +55,11 @@ export default function CreationFooterNav({
             type="button"
             onClick={onNext}
             disabled={nextDisabled || nextLoading}
-            className="group flex items-center gap-2 rounded-full bg-create-primary px-6 sm:px-8 py-3 text-sm sm:text-base font-bold text-white whitespace-nowrap shadow-lg shadow-create-primary/30 transition-all hover:bg-create-primary-hover hover:shadow-xl hover:shadow-create-primary/40 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:shadow-lg"
+            className="group flex min-h-12 items-center gap-2 rounded-full bg-create-primary px-5 sm:px-8 py-2.5 text-[19px] leading-tight font-bold text-white whitespace-nowrap shadow-lg shadow-create-primary/30 transition-all hover:bg-create-primary-hover hover:shadow-xl hover:shadow-create-primary/40 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:shadow-lg"
           >
             {nextLoading ? (
               <>
-                <span aria-hidden className="material-symbols-outlined animate-spin text-lg">
-                  progress_activity
-                </span>
+                <Spinner className="text-lg" />
                 <span>{t("saving")}</span>
               </>
             ) : (

@@ -90,7 +90,9 @@ export default function Hero() {
               sizes="(min-width: 1280px) 480px, (min-width: 1024px) 440px, (min-width: 640px) 280px, 50vw"
             />
           </div>
-          <p className="mt-5 hidden text-center text-xs font-medium text-ink-muted lg:block">{t("coverCaption")}</p>
+          <p className="mt-5 hidden text-center text-xs font-medium text-ink-muted lg:block">
+            {first ? t("coverCaptionWithName", { name: first }) : t("coverCaption")}
+          </p>
         </div>
 
         {/* Name → CTA */}
@@ -128,7 +130,7 @@ export default function Hero() {
                 className={buttonClass({
                   block: true,
                   // lg: the copy column is narrow (cover beside it), so input and button stack again.
-                  className: "h-14 text-lg! leading-tight sm:h-16 sm:w-auto sm:max-w-[60%] sm:shrink-0 sm:px-8 lg:w-full lg:max-w-none xl:w-auto xl:max-w-[60%]",
+                  className: "min-h-14 sm:min-h-16 sm:w-auto sm:max-w-[60%] sm:shrink-0 sm:px-8 lg:w-full lg:max-w-none xl:w-auto xl:max-w-[60%]",
                 })}
               >
                 <span className="min-w-0 break-words">{ctaLabel}</span>

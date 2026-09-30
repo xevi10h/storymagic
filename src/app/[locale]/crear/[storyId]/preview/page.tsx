@@ -29,6 +29,8 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import type { GeneratedStory } from "@/lib/ai/story-generator";
 import { PREVIEW_CLEAR_SCENES, buildBookPages, toPreviewPages } from "@/lib/book-pages";
 import SharePreviewButton from "@/components/share/SharePreviewButton";
+import { BrandLoader } from "@/components/ui/BrandLoader";
+import { Spinner } from "@/components/ui/Spinner";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -428,11 +430,8 @@ export default function PreviewPage() {
     return (
       <div className="flex min-h-screen flex-col bg-create-bg">
         <CreationHeader rightAction="close" />
-        <div className="flex flex-1 flex-col items-center justify-center">
-          <span className="material-symbols-outlined animate-spin text-4xl text-create-primary">
-            progress_activity
-          </span>
-          <p className="mt-4 text-sm text-text-muted">{t("loadingStory")}</p>
+        <div className="flex flex-1 flex-col items-center justify-center px-4">
+          <BrandLoader size="lg" caption={t("loadingStory")} />
         </div>
       </div>
     );
@@ -444,20 +443,20 @@ export default function PreviewPage() {
         <CreationHeader rightAction="close" />
         <div className="flex flex-1 flex-col items-center justify-center px-4 text-center">
           <div className="max-w-md">
-            <span aria-hidden className="material-symbols-outlined text-5xl text-create-primary">devices</span>
+            <span aria-hidden className="material-symbols-outlined text-5xl text-brand-text">devices</span>
             <h1 className="mt-4 font-display text-2xl font-bold text-secondary">{t("notAccessibleTitle")}</h1>
             <p className="mt-3 text-sm leading-relaxed text-text-muted">{t("notAccessibleBody")}</p>
             <div className="mt-8 flex flex-col items-center gap-3">
               {needsAccount && (
                 <Link
                   href={`/auth/login?next=/crear/${storyId}/preview`}
-                  className="inline-flex items-center gap-2 rounded-xl bg-create-primary px-6 py-3.5 text-sm font-bold text-white transition-colors hover:bg-create-primary-hover"
+                  className="min-h-12 inline-flex items-center gap-2 rounded-xl bg-create-primary px-6 py-3.5 text-[19px] font-bold leading-tight text-white transition-colors hover:bg-create-primary-hover"
                 >
                   <span aria-hidden className="material-symbols-outlined text-lg">login</span>
                   {t("notAccessibleLogin")}
                 </Link>
               )}
-              <Link href="/crear" className="text-sm text-text-muted transition-colors hover:text-create-primary">
+              <Link href="/crear" className="text-sm text-text-muted transition-colors hover:text-brand-text">
                 {t("notAccessibleCreate")}
               </Link>
             </div>
@@ -478,7 +477,7 @@ export default function PreviewPage() {
           <p className="mt-4 text-base text-text-main">{error}</p>
           <Link
             href="/crear"
-            className="mt-6 text-sm text-create-primary hover:underline"
+            className="mt-6 text-sm text-brand-text hover:underline"
           >
             {t("backToCreate")}
           </Link>
@@ -516,7 +515,7 @@ export default function PreviewPage() {
         type="button"
         onClick={() => setEditPanel(panel)}
         data-testid={`edit-link-${panel}`}
-        className="font-semibold text-create-text underline decoration-create-text-sub/40 underline-offset-2 transition-colors hover:text-create-primary"
+        className="font-semibold text-create-text underline decoration-create-text-sub/40 underline-offset-2 transition-colors hover:text-brand-text"
       >
         {chunks}
       </button>
@@ -534,7 +533,7 @@ export default function PreviewPage() {
             onClick={() => setEditPanel("cover")}
             aria-label={tPurchase("editTitle")}
             title={tPurchase("editTitle")}
-            className="ml-1.5 inline-flex h-7 w-7 translate-y-[-1px] items-center justify-center rounded-full align-middle text-create-text-sub transition-colors hover:bg-create-neutral hover:text-create-primary"
+            className="ml-1.5 inline-flex h-7 w-7 translate-y-[-1px] items-center justify-center rounded-full align-middle text-create-text-sub transition-colors hover:bg-create-neutral hover:text-brand-text"
           >
             <span aria-hidden className="material-symbols-outlined text-[18px]">edit</span>
           </button>
@@ -597,7 +596,7 @@ export default function PreviewPage() {
                       <SharePreviewButton
                         storyId={storyId}
                         childName={childName}
-                        className="inline-flex items-center justify-center gap-1.5 rounded-full border border-border-light bg-white px-4 py-1.5 text-xs font-semibold text-create-text-dark transition-colors hover:border-create-primary hover:text-create-primary disabled:opacity-60"
+                        className="inline-flex items-center justify-center gap-1.5 rounded-full border border-border-light bg-white px-4 py-1.5 text-xs font-semibold text-create-text-dark transition-colors hover:border-create-primary hover:text-brand-text disabled:opacity-60"
                       />
                     ) : undefined
                   }
@@ -687,11 +686,13 @@ export default function PreviewPage() {
             type="button"
             onClick={handleDownloadPdf}
             disabled={downloadingPdf}
-            className="group mx-auto flex w-full max-w-md items-center justify-center gap-2.5 rounded-xl border-2 border-border-light bg-white px-6 py-3.5 text-sm font-bold text-secondary transition-all hover:border-create-primary hover:bg-create-primary/5 hover:text-create-primary active:scale-[0.98] disabled:opacity-60 shadow-sm"
+            className="group mx-auto flex w-full max-w-md items-center justify-center gap-2.5 rounded-xl border-2 border-border-light bg-white px-6 py-3.5 text-sm font-bold text-secondary transition-all hover:border-create-primary hover:bg-create-primary/5 hover:text-brand-text active:scale-[0.98] disabled:opacity-60 shadow-sm"
           >
-            <span aria-hidden className={`material-symbols-outlined text-lg ${downloadingPdf ? "animate-spin" : ""}`}>
-              {downloadingPdf ? "progress_activity" : "picture_as_pdf"}
-            </span>
+            {downloadingPdf ? (
+              <Spinner className="text-lg" />
+            ) : (
+              <span aria-hidden className="material-symbols-outlined text-lg">picture_as_pdf</span>
+            )}
             {t("downloadPdf")}
           </button>
           <p className="mt-2 text-center text-xs text-text-muted">
@@ -707,12 +708,12 @@ export default function PreviewPage() {
       {isOutdatedPreview && (
         <section id="checkout-section" className="border-t border-border-light bg-white">
           <div className="mx-auto max-w-md px-4 py-10 text-center">
-            <span aria-hidden className="material-symbols-outlined mb-3 text-4xl text-create-primary">history</span>
+            <span aria-hidden className="material-symbols-outlined mb-3 text-4xl text-brand-text">history</span>
             <h2 className="font-display text-xl font-bold text-secondary">{t("previewOutdatedTitle")}</h2>
             <p className="mt-2 text-sm text-text-muted">{t("previewOutdatedBody")}</p>
             <Link
               href={`/crear?characterId=${story.character_id}`}
-              className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-create-primary px-6 py-3.5 text-sm font-bold text-white transition-colors hover:bg-create-primary-hover"
+              className="min-h-12 mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-create-primary px-6 py-3.5 text-[19px] font-bold leading-tight text-white transition-colors hover:bg-create-primary-hover"
             >
               <span aria-hidden className="material-symbols-outlined text-lg">auto_stories</span>
               {t("previewOutdatedCta")}
@@ -773,7 +774,8 @@ export default function PreviewPage() {
               <p className="truncate text-sm font-bold text-create-text-dark">
                 {formatChosen ? (
                   <>
-                    {tPricing(`${format}.label`)} · <span className="tabular-nums">{price(subtotal)}</span>
+                    {/* Price first: the 19px CTA leaves ~110px at 360, so truncation eats the label, not the price */}
+                    <span className="tabular-nums">{price(subtotal)}</span> · {tPricing(`${format}.label`)}
                   </>
                 ) : (
                   tPurchase("stickyFrom", { price: price(PRICING.softcover.price) })
@@ -787,9 +789,9 @@ export default function PreviewPage() {
               type="button"
               onClick={handleStickyBuy}
               disabled={checkingOut}
-              className="flex shrink-0 items-center gap-1.5 rounded-xl bg-create-primary px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-create-primary/20 transition-all active:scale-[0.98] disabled:opacity-60"
+              className="min-h-12 flex shrink-0 items-center gap-1.5 rounded-xl bg-create-primary px-5 py-3.5 text-[19px] font-bold leading-tight text-white shadow-lg shadow-create-primary/20 transition-all active:scale-[0.98] disabled:opacity-60"
             >
-              {checkingOut && <span aria-hidden className="material-symbols-outlined animate-spin text-lg">progress_activity</span>}
+              {checkingOut && <Spinner className="text-lg" />}
               {!formatChosen ? tPurchase("stickyChoose") : isDigital ? t("stickyCtaDigital") : t("stickyCtaPhysical")}
             </button>
           </div>
@@ -805,7 +807,7 @@ export default function PreviewPage() {
           <div className="mx-auto max-w-3xl px-4 py-8 text-center">
             <Link
               href="/dashboard"
-              className="inline-flex w-full max-w-md items-center justify-center gap-2 rounded-xl border-2 border-border-light px-6 py-3.5 text-sm font-bold text-secondary transition-all hover:border-create-primary hover:bg-create-primary/5 hover:text-create-primary active:scale-[0.98]"
+              className="inline-flex w-full max-w-md items-center justify-center gap-2 rounded-xl border-2 border-border-light px-6 py-3.5 text-sm font-bold text-secondary transition-all hover:border-create-primary hover:bg-create-primary/5 hover:text-brand-text active:scale-[0.98]"
             >
               <span aria-hidden className="material-symbols-outlined text-lg">library_books</span>
               {t("savedGoToLibrary")}
@@ -819,7 +821,7 @@ export default function PreviewPage() {
 
 /** Secondary action in the "¿Lo decides más tarde?" options (same weight for all three). */
 const LATER_BUTTON_BASE =
-  "inline-flex h-11 items-center justify-center gap-1.5 rounded-xl border-2 border-create-neutral bg-white px-4 text-sm font-bold text-secondary transition-colors hover:border-create-primary hover:text-create-primary disabled:opacity-60";
+  "inline-flex h-11 items-center justify-center gap-1.5 rounded-xl border-2 border-create-neutral bg-white px-4 text-sm font-bold text-secondary transition-colors hover:border-create-primary hover:text-brand-text disabled:opacity-60";
 const LATER_BUTTON = `${LATER_BUTTON_BASE} w-full`;
 /** The email option's button, beside its field */
 const LATER_BUTTON_INLINE = `${LATER_BUTTON_BASE} shrink-0`;
@@ -829,7 +831,7 @@ function LaterOption({ icon, title, body, children }: { icon: string; title: str
   return (
     <li className="flex flex-col p-5 sm:p-6">
       <div className="flex items-center gap-3">
-        <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-create-primary/10 text-create-primary">
+        <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-tint text-brand-text">
           <span className="material-symbols-outlined text-[22px]">{icon}</span>
         </span>
         <h3 className="font-display text-base font-bold leading-tight text-create-text-dark">{title}</h3>

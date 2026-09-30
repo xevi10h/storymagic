@@ -31,6 +31,8 @@ import StepName from "@/components/crear/StepName";
 import { formatChildName } from "@/lib/child-name";
 import StepProtagonist from "@/components/crear/StepProtagonist";
 import StepAdventure from "@/components/crear/StepAdventure";
+import { BrandLoader } from "@/components/ui/BrandLoader";
+import { Spinner } from "@/components/ui/Spinner";
 
 /** POST /api/stories answers in < 1 s; past this the connection is considered stalled. */
 const CREATE_TIMEOUT_MS = 30_000;
@@ -323,13 +325,8 @@ function CrearPageContent() {
 
   if (navigating) {
     return (
-      <div className="flex min-h-[100dvh] items-center justify-center bg-create-bg" role="status">
-        <div className="flex flex-col items-center gap-4">
-          <span aria-hidden className="material-symbols-outlined animate-spin text-5xl text-create-primary">
-            progress_activity
-          </span>
-          <p className="text-lg font-medium text-create-text-sub">{t("preparing")}</p>
-        </div>
+      <div className="flex min-h-[100dvh] items-center justify-center bg-create-bg px-4">
+        <BrandLoader size="lg" caption={t("preparing")} />
       </div>
     );
   }
@@ -397,9 +394,11 @@ function CrearPageContent() {
                 disabled={saving}
                 className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-red-600 px-4 py-1.5 text-xs font-bold text-white transition-colors hover:bg-red-700 disabled:opacity-60"
               >
-                <span aria-hidden className={`material-symbols-outlined text-base ${saving ? "animate-spin" : ""}`}>
-                  {saving ? "progress_activity" : "refresh"}
-                </span>
+                {saving ? (
+                  <Spinner className="text-base" />
+                ) : (
+                  <span aria-hidden className="material-symbols-outlined text-base">refresh</span>
+                )}
                 {t("errors.retry")}
               </button>
             )}

@@ -5,6 +5,7 @@ import { Link } from "@/i18n/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { createClient } from "@/lib/supabase/client";
 import { useTranslations, useLocale } from "next-intl";
+import { BrandLoader } from "@/components/ui/BrandLoader";
 
 interface ProfileData {
   id: string;
@@ -112,9 +113,7 @@ export default function ProfilePage() {
   if (authLoading || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-cream">
-        <span className="material-symbols-outlined animate-spin text-4xl text-primary">
-          progress_activity
-        </span>
+        <BrandLoader size="lg" />
       </div>
     );
   }
@@ -124,7 +123,7 @@ export default function ProfilePage() {
       <div className="flex min-h-screen flex-col items-center justify-center bg-cream px-4">
         <span className="material-symbols-outlined text-5xl text-red-400">error</span>
         <p className="mt-4 text-base text-text-main">{error}</p>
-        <Link href="/" className="mt-6 text-sm text-primary hover:underline">
+        <Link href="/" className="mt-6 text-sm text-brand-text hover:underline">
           {t("back")}
         </Link>
       </div>
@@ -216,7 +215,7 @@ export default function ProfilePage() {
               <button
                 onClick={handleSaveName}
                 disabled={savingName || !nameValue.trim()}
-                className="rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-white transition-all hover:bg-primary-hover disabled:opacity-60"
+                className="min-h-12 rounded-lg bg-primary px-4 py-2.5 text-[19px] font-bold leading-tight text-white transition-all hover:bg-primary-hover disabled:opacity-60"
               >
                 {savingName ? "..." : t("nameSection.save")}
               </button>
@@ -320,7 +319,7 @@ export default function ProfilePage() {
                   <button
                     type="submit"
                     disabled={savingPassword}
-                    className="rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-white transition-all hover:bg-primary-hover disabled:opacity-60"
+                    className="min-h-12 rounded-lg bg-primary px-4 py-2.5 text-[19px] font-bold leading-tight text-white transition-all hover:bg-primary-hover disabled:opacity-60"
                   >
                     {savingPassword ? t("passwordSection.saving") : t("passwordSection.submit")}
                   </button>

@@ -4,7 +4,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import LiveCover from "@/components/crear/LiveCover";
 import { BookMockup } from "@/components/book-mockup";
-import { Heading, buttonClass } from "@/components/ui";
+import { Heading, brandBadge, buttonClass } from "@/components/ui";
 import { AVATAR_SKIN_TONES } from "@/lib/avatar/manifest";
 import { LANDING_EXAMPLE, landingExampleBook } from "./HowItWorksExample";
 
@@ -159,7 +159,7 @@ export default function HowItWorks() {
                 <h3 className="flex items-center gap-2 font-display text-base font-bold leading-tight text-ink">
                   <span
                     aria-hidden
-                    className="flex size-6 shrink-0 items-center justify-center rounded-full bg-brand text-xs font-bold text-white tabular-nums"
+                    className={`flex size-6 shrink-0 items-center justify-center rounded-full ${brandBadge} text-xs font-bold tabular-nums`}
                   >
                     {i + 1}
                   </span>

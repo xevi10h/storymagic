@@ -1,0 +1,40 @@
+/* Scroll reveal for the landing's "moments" band. The content is visible by default
+   (SSR, no JS, reduced motion); only once JS knows the band is still below the fold
+   does it arm the hidden state, then plays the entrance when it scrolls into view. */
+
+@keyframes momentIn {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* The cover "being unwrapped": a small tilt-and-rise, like lifting a book out of paper. */
+@keyframes coverIn {
+  from { opacity: 0; transform: translateY(22px) rotate(-5deg) scale(0.9); }
+  60% { opacity: 1; }
+  to { opacity: 1; transform: translateY(0) rotate(-2deg) scale(1); }
+}
+
+.armed .item {
+  opacity: 0;
+}
+
+.shown .item {
+  animation: momentIn 0.7s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+
+.shown .item:nth-child(2) { animation-delay: 0.15s; }
+.shown .item:nth-child(3) { animation-delay: 0.3s; }
+
+.cover {
+  transform: rotate(-2deg);
+}
+
+.shown .cover {
+  animation: coverIn 1s 0.2s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .armed .item { opacity: 1; }
+  .shown .item,
+  .shown .cover { animation: none; }
+}

@@ -5,7 +5,9 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { PHOTO_CONSENT_VERSION, PHOTO_MAX_EDGE, PHOTO_MAX_UPLOAD_BYTES } from "@/lib/creation-flow";
 import { ensureGuestSession } from "@/lib/guest-session";
+import { buttonClass } from "@/components/ui";
 import Sheet from "./Sheet";
+import { Spinner } from "@/components/ui/Spinner";
 
 interface PhotoUploadPanelProps {
   name: string;
@@ -174,7 +176,7 @@ export default function PhotoUploadPanel({ name, photoPath, onPhotoChange }: Pho
   };
 
   const buttonBase =
-    "flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-create-primary disabled:cursor-not-allowed disabled:opacity-40";
+    "flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-[19px] leading-tight font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-create-primary disabled:cursor-not-allowed disabled:opacity-40";
 
   return (
     <div className="flex flex-col gap-4 rounded-2xl border-2 border-create-neutral bg-white p-4 sm:p-5" data-testid="photo-panel">
@@ -183,7 +185,7 @@ export default function PhotoUploadPanel({ name, photoPath, onPhotoChange }: Pho
         <button
           type="button"
           onClick={() => setInfoOpen(true)}
-          className="font-bold text-create-primary underline-offset-2 hover:underline"
+          className="font-bold text-brand-text underline-offset-2 hover:underline"
         >
           {t("moreInfo")}
         </button>
@@ -247,16 +249,18 @@ export default function PhotoUploadPanel({ name, photoPath, onPhotoChange }: Pho
               onClick={() => galleryRef.current?.click()}
               className={`${buttonBase} bg-create-primary text-white hover:bg-create-primary-hover`}
             >
-              <span aria-hidden className={`material-symbols-outlined text-lg ${busy === "upload" ? "animate-spin" : ""}`}>
-                {busy === "upload" ? "progress_activity" : "photo_library"}
-              </span>
+              {busy === "upload" ? (
+                <Spinner className="text-lg" />
+              ) : (
+                <span aria-hidden className="material-symbols-outlined text-lg">photo_library</span>
+              )}
               {busy === "upload" ? tu("uploading") : tu("choosePhoto")}
             </button>
             <button
               type="button"
               disabled={!consent || busy !== null}
               onClick={() => cameraRef.current?.click()}
-              className={`${buttonBase} border-2 border-create-primary/30 bg-white text-create-primary hover:border-create-primary sm:hidden`}
+              className={`${buttonBase} border-2 border-create-primary/30 bg-white text-brand-text hover:border-create-primary sm:hidden`}
             >
               <span aria-hidden className="material-symbols-outlined text-lg">photo_camera</span>
               {tu("takePhoto")}
@@ -279,13 +283,13 @@ export default function PhotoUploadPanel({ name, photoPath, onPhotoChange }: Pho
         closeLabel={t("modalClose")}
         footer={
           <div className="flex items-center justify-between gap-3">
-            <Link href="/legal" className="text-sm font-bold text-create-primary hover:underline">
+            <Link href="/legal" className="text-sm font-bold text-brand-text hover:underline">
               {t("privacyLink")}
             </Link>
             <button
               type="button"
               onClick={() => setInfoOpen(false)}
-              className="rounded-full bg-create-primary px-5 py-2.5 text-sm font-bold text-white hover:bg-create-primary-hover"
+              className={buttonClass({ size: "sm" })}
             >
               {t("modalClose")}
             </button>
