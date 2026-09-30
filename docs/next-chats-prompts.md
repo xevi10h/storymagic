@@ -65,13 +65,13 @@ Proyecto meapica (Desktop/Casmar/kids-book). Bloque C: postcompra y zona de usua
 Lee primero: docs/audit-2026-09-28-commerce.md (sección 3), docs/user-experience.md, docs/product-spec.md, src/lib/email/, src/lib/fulfilment/emails.ts, src/app/[locale]/dashboard/.
 
 Objetivos:
-1. Dominio de email meapica.com en Resend: SPF, DKIM, DMARC y MX de retorno (DNS en Spaceship); EMAIL_FROM y OPS_ALERT_EMAIL en Vercel. Buzón real para hola@meapica.com si lo decido.
+1. Dominio de email meapica.shop en Resend: SPF, DKIM, DMARC y MX de retorno (DNS en Spaceship); EMAIL_FROM y OPS_ALERT_EMAIL en Vercel. Buzón real para hola@meapica.shop si lo decido.
 2. Emails: saludar al padre/madre (no al niño), confirmación como recibo (importe, "IVA incluido", líneas, dirección), PDF listo con enlace con token, en producción, enviado con tracking, entregado, y nuevos: retraso, reembolso, cancelación. es/ca/en/fr, HTML (nunca text/plain), diseño de marca.
 3. Invitados: recuperar sus libros en otro dispositivo (magic link con el email del pago o "encontrar mi pedido"), vincular orders.customer_email a la cuenta.
 4. "Mi biblioteca": todos los pedidos con estado, descargar PDF siempre (también enviado/entregado), pedir otra copia/regalar, crear otro libro con el mismo protagonista (avatar guardado incl. gafas/pecas).
 5. QA completo con Playwright (es/ca, desktop y móvil) y emails de prueba reales a mi correo.
 
-Antes de implementar pregúntame: magic link vs cuentas opcionales, ¿emails de retraso/reembolso automáticos o manuales?, ¿buzón real en hola@meapica.com?, qué necesitas que haga yo en DNS si no tienes acceso.
+Antes de implementar pregúntame: magic link vs cuentas opcionales, ¿emails de retraso/reembolso automáticos o manuales?, ¿buzón real en hola@meapica.shop?, qué necesitas que haga yo en DNS si no tienes acceso.
 
 Actualiza docs.
 ```
@@ -87,7 +87,7 @@ Lee primero: docs/audit-2026-09-28-commerce.md (sección 4, puntuación 62/100),
 
 Objetivos por orden:
 1. P0 técnicos: rendimiento móvil de la home (hoy LCP 11 s: fuente Material Symbols de 1,1 MB, imagen de Stitch enlazada en globals.css, /es sin caché), title/H1 con "cuento personalizado"/"conte personalitzat", llms.txt, schema Product completo (imagen real, shippingDetails, devoluciones), canonical de /crear, /en y /fr blog vacíos. Medir con Lighthouse móvil antes y después.
-2. Medición: dar de alta meapica en `cana` (sites.json) cuando yo verifique sc-domain:meapica.com en Search Console y añada la service account; Bing Webmaster + IndexNow. Dime exactamente qué tengo que hacer yo.
+2. Medición: dar de alta meapica en `cana` (sites.json) cuando yo verifique sc-domain:meapica.shop en Search Console y añada la service account; Bing Webmaster + IndexNow. Dime exactamente qué tengo que hacer yo.
 3. Página "¿Llega a tiempo para Reyes?" con fechas límite reales (del bloque B; si aún no están, deja la estructura y pregúntame).
 4. Estrategia catalana (Sant Jordi, Nadal) y página de comparativa honesta Meapica vs Wonderbly vs Hurra Héroes vs Mumablue con datos verificables.
 5. Plan de GEO: lista de medios/listicles a contactar con el email de pitch redactado (en mi voz), sin enviarlo.

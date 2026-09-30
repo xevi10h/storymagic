@@ -134,7 +134,7 @@ function CoverSpreadDocument({ ctx, layout }: { ctx: BookRenderContext; layout: 
   const runLength = spine.height - 2 * SPINE_END_MARGIN_MM * MM_TO_PT;
 
   return (
-    <Document title={ctx.input.story.bookTitle} author="Meapica" creator="Meapica — meapica.com" producer="Meapica">
+    <Document title={ctx.input.story.bookTitle} author="Meapica" creator="Meapica — meapica.shop" producer="Meapica">
       <Page size={[layout.pageWidth, layout.pageHeight]} style={{ backgroundColor: theme.coverGradientStart }}>
         <View wrap={false} style={{ width: "100%", height: rootBoxHeight(layout.pageHeight), position: "relative", overflow: "hidden", backgroundColor: theme.coverGradientStart }}>
         <BackCoverDesign frame={layout.back} theme={theme} texts={layout.texts} image={backCoverImage(ctx)} logoUri={ctx.logoOrnament} />

@@ -605,8 +605,8 @@ function ColophonPage({ page, colors }: { page: PageOf<"colophon">; colors: Book
           <Paragraphs text={page.text} style={{ fontFamily: BODY, fontSize: u(10), color: COLORS.textMuted, textAlign: "center", lineHeight: 1.8 }} />
           <div className="flex flex-col items-center" style={{ marginTop: u(20), gap: u(6) }}>
             {/* The home page, never a per-book URL (matches the printed QR) */}
-            <QRCodeSVG value="https://meapica.com" level="M" marginSize={0} fgColor={colors.gradientStart} bgColor="transparent" style={{ width: u(72), height: u(72) }} />
-            <span style={{ fontFamily: BODY, fontSize: u(7), lineHeight: 1.2, color: COLORS.textMuted, letterSpacing: u(0.5) }}>meapica.com</span>
+            <QRCodeSVG value="https://meapica.shop" level="M" marginSize={0} fgColor={colors.gradientStart} bgColor="transparent" style={{ width: u(72), height: u(72) }} />
+            <span style={{ fontFamily: BODY, fontSize: u(7), lineHeight: 1.2, color: COLORS.textMuted, letterSpacing: u(0.5) }}>meapica.shop</span>
           </div>
           <div style={{ width: u(48), height: u(0.5), backgroundColor: COLORS.textLight, marginTop: u(16) }} />
           <span style={{ fontFamily: DISPLAY, fontSize: u(12), lineHeight: 1.2, color: COLORS.textMuted, opacity: 0.6, letterSpacing: u(1), marginTop: u(12) }}>Meapica</span>
@@ -714,7 +714,7 @@ function BackCoverPage({ page, colors }: { page: PageOf<"back">; colors: BookCol
         </div>
         <div className="flex flex-col items-center" style={{ marginTop: u(BACK.brand.gapAboveMin) }}>
           <BrandLogo style={{ height: u(BACK.brand.logo), color: colors.ornamentColor }} />
-          <span style={{ marginTop: u(3), fontFamily: BODY, fontSize: u(BACK.brand.urlSize), lineHeight: 1.3, letterSpacing: u(1.5), color: COLORS.textMuted }}>meapica.com</span>
+          <span style={{ marginTop: u(3), fontFamily: BODY, fontSize: u(BACK.brand.urlSize), lineHeight: 1.3, letterSpacing: u(1.5), color: COLORS.textMuted }}>meapica.shop</span>
         </div>
       </div>
     </Page>

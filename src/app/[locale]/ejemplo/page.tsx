@@ -12,7 +12,7 @@ import { buttonClass, cx, focusRing } from "@/components/ui";
 import { Breadcrumbs, PageHero, kicker, marketingH1, marketingLead } from "@/components/seo-landing/MarketingHeader";
 import { getShowcaseStories } from "@/lib/showcase";
 
-const BASE_URL = "https://meapica.com";
+const BASE_URL = "https://meapica.shop";
 const PATH = "/ejemplo";
 
 type PageProps = { params: Promise<{ locale: string }> };

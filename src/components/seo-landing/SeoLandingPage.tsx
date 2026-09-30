@@ -25,7 +25,7 @@ import {
 import { CHRISTMAS_DELIVERY_PATH } from "@/lib/shipping";
 import { Breadcrumbs, PageHero, kicker, marketingH1, marketingLead } from "./MarketingHeader";
 
-const BASE_URL = "https://meapica.com";
+const BASE_URL = "https://meapica.shop";
 
 // Conversion-ordered subset of the legal FAQ reused on every SEO page.
 const FAQ_ORDER = [2, 3, 1, 4] as const;

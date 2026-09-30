@@ -14,7 +14,7 @@ import { PRICING, formatPrice } from "@/lib/pricing";
 import { buttonClass, cx, focusRing } from "@/components/ui";
 import { Breadcrumbs } from "@/components/seo-landing/MarketingHeader";
 
-const BASE_URL = "https://meapica.com";
+const BASE_URL = "https://meapica.shop";
 
 // Long-form reading: ~68ch measure, 17–18px text, generous leading, Fredoka headings.
 // Scoped here (only the blog renders markdown), on brand tokens.

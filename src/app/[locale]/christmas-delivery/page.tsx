@@ -21,7 +21,7 @@ import {
   spainToday,
 } from "@/lib/shipping";
 
-const BASE_URL = "https://meapica.com";
+const BASE_URL = "https://meapica.shop";
 const PATH = CHRISTMAS_DELIVERY_PATH;
 const INTL_LOCALE: Record<string, string> = { es: "es-ES", ca: "ca-ES", en: "en-GB", fr: "fr-FR" };
 

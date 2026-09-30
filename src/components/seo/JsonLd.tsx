@@ -1,6 +1,6 @@
 import { PRICING } from "@/lib/pricing";
 
-const BASE_URL = "https://meapica.com";
+const BASE_URL = "https://meapica.shop";
 
 /**
  * Organization + WebSite structured data for the landing page.

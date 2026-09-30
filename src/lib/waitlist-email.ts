@@ -45,7 +45,7 @@ export function getWaitlistEmail(locale: string, recipientName?: string) {
       <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;">
         <!-- Logo -->
         <tr><td style="padding-bottom:32px;">
-          <img src="https://meapica.com/images/meapica-logo.png" alt="Meapica" height="36" style="height:36px;width:auto;" />
+          <img src="https://meapica.shop/images/meapica-logo.png" alt="Meapica" height="36" style="height:36px;width:auto;" />
         </td></tr>
         <!-- Card -->
         <tr><td style="background-color:#ffffff;border-radius:16px;padding:40px 36px;box-shadow:0 2px 12px rgba(44,24,16,0.06);">
@@ -58,7 +58,7 @@ export function getWaitlistEmail(locale: string, recipientName?: string) {
         </td></tr>
         <!-- Footer -->
         <tr><td style="padding-top:24px;text-align:center;">
-          <p style="margin:0;font-size:12px;color:#7a6963;">&copy; 2026 Meapica. meapica.com</p>
+          <p style="margin:0;font-size:12px;color:#7a6963;">&copy; 2026 Meapica. meapica.shop</p>
         </td></tr>
       </table>
     </td></tr>

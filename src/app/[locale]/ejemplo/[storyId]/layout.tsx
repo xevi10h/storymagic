@@ -5,7 +5,7 @@ import type { Database } from "@/lib/database.types";
 import { toShowcaseUrl } from "@/lib/storage/illustration-refs";
 import { SHOWCASE_STATUSES } from "@/lib/showcase";
 
-const BASE_URL = "https://meapica.com";
+const BASE_URL = "https://meapica.shop";
 
 type Props = {
   children: React.ReactNode;

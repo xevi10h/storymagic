@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import HubPage from "@/components/seo-landing/HubPage";
 
-const BASE_URL = "https://meapica.com";
+const BASE_URL = "https://meapica.shop";
 const PATH = "/themes";
 
 type PageProps = { params: Promise<{ locale: string }> };

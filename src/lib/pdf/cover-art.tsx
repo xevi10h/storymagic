@@ -390,7 +390,7 @@ export function BackCoverDesign({
           ) : (
             <Text style={{ fontFamily: FONTS.display, fontSize: BACK.brand.logo, color: theme.ornamentColor, lineHeight: 1 }}>Meapica</Text>
           )}
-          <Text style={{ fontFamily: FONTS.body, fontSize: BACK.brand.urlSize, color: COLORS.textMuted, marginTop: 3, letterSpacing: 1.5, lineHeight: 1.3 }}>meapica.com</Text>
+          <Text style={{ fontFamily: FONTS.body, fontSize: BACK.brand.urlSize, color: COLORS.textMuted, marginTop: 3, letterSpacing: 1.5, lineHeight: 1.3 }}>meapica.shop</Text>
         </View>
       </View>
     </>

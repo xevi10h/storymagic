@@ -19,7 +19,7 @@ import {
 } from "@/lib/seo-landing";
 import { Breadcrumbs, PageHero, kicker, marketingH1, marketingLead } from "./MarketingHeader";
 
-const BASE_URL = "https://meapica.com";
+const BASE_URL = "https://meapica.shop";
 
 type Props = {
   type: SeoPageType;

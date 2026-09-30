@@ -129,7 +129,7 @@ export default async function OgImage({
             letterSpacing: "2px",
           }}
         >
-          meapica.com
+          meapica.shop
         </div>
       </div>
     ),

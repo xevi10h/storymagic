@@ -419,7 +419,7 @@ function BackCoverPage() {
       )
     ),
     el(View, { style: { position: "absolute", bottom: BOOK.contentMargin + 10, left: BOOK.contentMargin, right: BOOK.contentMargin, alignItems: "center" } },
-      el(Text, { style: { fontFamily: FONTS.body, fontSize: 7, color: "#ffffff44", textAlign: "center", lineHeight: 1.7 } }, "Texto generado por inteligencia artificial. Ilustraciones por Recraft V3.\nDiseño editorial por Meapica Press — meapica.com")
+      el(Text, { style: { fontFamily: FONTS.body, fontSize: 7, color: "#ffffff44", textAlign: "center", lineHeight: 1.7 } }, "Texto generado por inteligencia artificial. Ilustraciones por Recraft V3.\nDiseño editorial por Meapica Press — meapica.shop")
     )
   );
 }

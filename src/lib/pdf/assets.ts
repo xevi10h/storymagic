@@ -87,7 +87,7 @@ export function hexToRgbTuple(hex: string): [number, number, number] {
  */
 export async function generateQrDataUrl(color: string): Promise<string> {
   try {
-    return await QRCode.toDataURL("https://meapica.com", {
+    return await QRCode.toDataURL("https://meapica.shop", {
       width: 600,
       margin: 0,
       color: { dark: color, light: "#00000000" },

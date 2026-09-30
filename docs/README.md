@@ -22,6 +22,9 @@
 | [Business Model](./business-model.md) | Pricing, costs, margins, upsells, revenue projections |
 | [Marketing Strategy](./marketing-strategy.md) | Channels, copy, calendar, audience segmentation |
 | [Influencer Shortlist](./influencer-shortlist.md) | Potential creator partners, outreach tiers, and partner evaluation criteria |
+| [Ads creative pack](./ads/creative-pack.md) | Paid social (Meta/TikTok): angles, ES/CA/EN ad copy, 8 video scripts, statics, naming + UTMs, tracking status |
+| [Organic calendar](./ads/organic-calendar.md) | 4-week IG + TikTok organic plan from 2026-10-05, ES/CA alternating |
+| [Ads setup guide](./ads/setup-guide.md) | Owner account setup (IG, FB, Meta Business, TikTok), env wiring, first Meta campaign, what the site tracks |
 | [Influencer Outreach Messages](./influencer-outreach-messages.md) | Ready-to-send email and Instagram DM templates for shortlisted creators |
 | [Roadmap](./roadmap.md) | Phased execution plan with milestones and priorities |
 

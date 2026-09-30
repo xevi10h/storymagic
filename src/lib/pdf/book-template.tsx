@@ -768,7 +768,7 @@ function ColophonPage({ ctx }: { ctx: BookRenderContext }) {
           {qrDataUrl ? (
             <View style={{ marginTop: 20, alignItems: "center", gap: 6 }}>
               <Image src={qrDataUrl} style={{ width: 72, height: 72 }} />
-              <Text style={{ fontFamily: FONTS.body, fontSize: 7, color: COLORS.textMuted, letterSpacing: 0.5 }}>meapica.com</Text>
+              <Text style={{ fontFamily: FONTS.body, fontSize: 7, color: COLORS.textMuted, letterSpacing: 0.5 }}>meapica.shop</Text>
             </View>
           ) : null}
           <View style={{ width: 48, height: 0.5, backgroundColor: COLORS.textLight, marginTop: 16 }} />
@@ -843,7 +843,7 @@ function renderPlannedPage(page: PlannedPage, ctx: BookRenderContext): JSX.Eleme
 export function InteriorOnlyPdf({ ctx }: { ctx: BookRenderContext }) {
   // Pastedowns first and last (glued to the boards), as in Teo's printed book (layout.ts).
   return (
-    <Document title={ctx.input.story.bookTitle} author="Meapica" creator="Meapica — meapica.com" producer="Meapica">
+    <Document title={ctx.input.story.bookTitle} author="Meapica" creator="Meapica — meapica.shop" producer="Meapica">
       <EndpaperPage theme={ctx.theme} edition={ctx.edition} offsetX={0} />
       {ctx.plan.pages.map((p) => renderPlannedPage(p, ctx))}
       <EndpaperPage theme={ctx.theme} edition={ctx.edition} offsetX={GEOMETRY.spreadRightOffset} />
@@ -859,7 +859,7 @@ export function BookPdf({ ctx }: { ctx: BookRenderContext }) {
       title={input.story.bookTitle}
       author="Meapica"
       subject={joinName(pdfForName(input.locale, "personalizedStory", input.characterName, input.characterGender), input.characterName)}
-      creator="Meapica — meapica.com"
+      creator="Meapica — meapica.shop"
       producer="Meapica"
     >
       <CoverPage ctx={ctx} />

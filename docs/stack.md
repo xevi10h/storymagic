@@ -73,7 +73,7 @@ which records the version, or the SQL editor followed by
    `--dry-run` (copies showcase stories, waitlist covers, style samples, blog images; rewrites
    blog rows to the showcase URL). Must precede the deploy: the new code serves every public
    page (landing, `/ejemplo`, OG, waitlist) from `showcase`.
-4. **Env (Vercel prod):** `CRON_SECRET` set (both crons need it); `NEXT_PUBLIC_SITE_URL=https://meapica.com` (avatar anchors are fetched from it); `NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED`
+4. **Env (Vercel prod):** `CRON_SECRET` set (both crons need it); `NEXT_PUBLIC_SITE_URL=https://meapica.shop` (avatar anchors are fetched from it); `NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED`
    unset/false until the DPIA + OpenAI DPA are signed.
 5. **Deploy the code** (works with the bucket still public: signed URLs also work on public buckets).
    Check `/ejemplo`, landing BookCollection, waitlist page, blog; create a book end to end
@@ -107,7 +107,7 @@ old public URL. A preview tab left open > 1 h shows broken images for pages not 
 activated and configured 2026-09-28 (setup script run; live webhook `we_1UKekqAyKcfLUpfGWsbB0sRn`).
 Seller on invoices: Xavier Huix Trenco (autónomo), NIF 41649433K, Carrer Aribau 140, 5º, 08036 Barcelona.
 
-**Setup is code:** `STRIPE_KEY=sk_… npx tsx --tsconfig tsconfig.json scripts/stripe-setup-catalog.mts --webhook-url=https://meapica.com/api/webhooks/stripe`
+**Setup is code:** `STRIPE_KEY=sk_… npx tsx --tsconfig tsconfig.json scripts/stripe-setup-catalog.mts --webhook-url=https://meapica.shop/api/webhooks/stripe`
 (idempotent, `--dry-run` available) configures, on the account behind the key:
 - Stripe Tax: head office Barcelona, ES registration `standard` / `small_seller` (Spanish VAT also on
   EU digital sales while under the 10 000 € OSS threshold; switch to OSS with the gestor when crossed),
@@ -122,7 +122,7 @@ Seller on invoices: Xavier Huix Trenco (autónomo), NIF 41649433K, Carrer Aribau
 - Webhook endpoint (events: `checkout.session.completed`, `checkout.session.async_payment_succeeded`,
   `checkout.session.expired`, `charge.refunded`); a NEW endpoint prints its signing secret once.
 
-**Endpoints:** both modes point at `https://meapica.com/api/webhooks/stripe`; the route verifies with
+**Endpoints:** both modes point at `https://meapica.shop/api/webhooks/stripe`; the route verifies with
 `STRIPE_WEBHOOK_SECRET_LIVE` and `STRIPE_WEBHOOK_SECRET_TEST` and ignores events whose mode ≠
 `STRIPE_ENVIRONMENT`. Test endpoint: `we_1UKdD8BD04FISl5urkd8gXlZ` (sandbox). The old Constrack live
 endpoint `we_1T8hz2…` is obsolete once the new live account is in use.
@@ -168,7 +168,7 @@ one real live payment + immediate refund (owner OK) → disable the old Constrac
 No Gelato sandbox: orders are `draft` unless `STRIPE_ENVIRONMENT=live`.
 
 **Webhook:** register in Gelato → Developer → Webhooks
-`https://meapica.com/api/webhooks/gelato?secret=<GELATO_WEBHOOK_SECRET>` (Gelato sends no signature
+`https://meapica.shop/api/webhooks/gelato?secret=<GELATO_WEBHOOK_SECRET>` (Gelato sends no signature
 or custom headers) for `order_status_updated` and `order_item_tracking_code_updated`. Gelato retries
 a failed delivery only 3×, so the fulfilment cron also reconciles every hour via `GET /v4/orders/{id}`.
 **2026-09-28: the registered URL returns 401 (no/incorrect secret) — must be fixed in the dashboard.**
@@ -177,3 +177,21 @@ a failed delivery only 3×, so the fulfilment cron also reconciles every hour vi
 before print). Standard shipping included in the price; at submit a live quote picks the cheapest
 method. Phone collected in Checkout and sent to Gelato for the carrier. Delivery times and Reyes
 order cut-offs: `src/lib/shipping.ts` (re-quote before each campaign).
+
+## Ads tracking — Meta (2026-09-30)
+
+Meta Pixel + Conversions API behind an AEPD cookie banner. Off until the env vars exist (Vercel production):
+`NEXT_PUBLIC_META_PIXEL_ID` (build-time, redeploy after setting), `META_CAPI_TOKEN`, optional `META_CAPI_TEST_EVENT_CODE`
+(Stripe test-mode purchases → Events Manager › Test events). External: Meta Business portfolio, ad account (EUR, Europe/Madrid),
+dataset "Meapica web", `meapica.shop` domain verification (DNS TXT). Owner setup + first campaign: `docs/ads/setup-guide.md`.
+Code map: `docs/technical-architecture.md` › Ads tracking. No TikTok Pixel (TikTok is organic only).
+
+## Domains (2026-09-30)
+
+- **Primary: `meapica.shop`** (+ `www`), registered at **Hostinger** 2026-09-30, DNS managed there (API token at `~/.config/hostinger/token`,
+  `PUT https://developers.hostinger.com/api/dns/v1/zones/meapica.shop`). Records: `@ A 76.76.21.21`, `www CNAME cname.vercel-dns.com`.
+  All canonical URLs, sitemap, OG, emails, printed books (back cover + QR) and ads use it.
+- **Legacy: `meapica.com`** stays attached to the Vercel project and serves the same site, but its DNS (Spaceship) is no longer
+  under our control: nothing critical (Stripe/Gelato webhooks, auth redirects, email sending, Meta domain) may depend on it.
+- Moving webhooks/auth to `.shop`: Stripe webhook endpoint URL, Gelato webhook URL, Supabase Auth Site URL + redirect allow-list,
+  Resend sending domain, Meta domain verification (TXT on Hostinger), `NEXT_PUBLIC_SITE_URL=https://meapica.shop`.

@@ -35,7 +35,7 @@ export const avatarAssetPathSchema = z.string().max(200).regex(AVATAR_ASSET_PATH
 
 /**
  * Absolute URL the server downloads an avatar asset from: our own public site
- * (NEXT_PUBLIC_SITE_URL, default https://meapica.com). Never derived from the
+ * (NEXT_PUBLIC_SITE_URL, default https://meapica.shop). Never derived from the
  * request (Host / forwarded headers are client-influenced → SSRF). The path must
  * pass the strict avatar regex. Returns null for anything else. Server code loads
  * avatars through loadAvatarReference (book-images.ts), which reads the file from
