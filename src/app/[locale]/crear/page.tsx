@@ -33,6 +33,7 @@ import StepProtagonist from "@/components/crear/StepProtagonist";
 import StepAdventure from "@/components/crear/StepAdventure";
 import { BrandLoader } from "@/components/ui/BrandLoader";
 import { Spinner } from "@/components/ui/Spinner";
+import { trackEvent } from "@/lib/tracking/consent";
 
 /** POST /api/stories answers in < 1 s; past this the connection is considered stalled. */
 const CREATE_TIMEOUT_MS = 30_000;
@@ -198,12 +199,14 @@ function CrearPageContent() {
   );
 
   const setTemplate = useCallback(
-    (templateId: string) =>
+    (templateId: string) => {
+      trackEvent("ViewContent", { content_ids: [templateId], content_type: "product" });
       setState((prev) =>
         prev.selectedTemplate === templateId
           ? prev
           : { ...prev, selectedTemplate: templateId, decisions: {}, ending: null },
-      ),
+      );
+    },
     [setState],
   );
   const setTreePath = useCallback(

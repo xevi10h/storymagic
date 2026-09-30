@@ -7,6 +7,7 @@ import { cx } from "@/components/ui";
 import { SEO_GIFT_SLUGS, SEO_AGE_SLUGS, seoPath } from "@/lib/seo-landing";
 import { CHRISTMAS_DELIVERY_PATH } from "@/lib/shipping";
 import { SUPPORT_EMAIL } from "@/lib/pricing";
+import { CookieSettingsButton } from "@/components/tracking/Tracking";
 
 // Every link is a ≥ 44 px tap target (brand.md › Mobile rules).
 const linkClass = cx(
@@ -153,6 +154,7 @@ export default function Footer() {
                 {t("cookies")}
               </Link>
             </li>
+            <CookieSettingsButton className={linkClass} label={t("cookieSettings")} />
           </ul>
         </div>
       </div>

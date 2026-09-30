@@ -13,6 +13,7 @@ import {
   type PhysicalFormat,
 } from "@/lib/pricing";
 import { routing, type Locale } from "@/i18n/routing";
+import { CONSENT_COOKIE, UTM_COOKIE } from "@/lib/tracking/consent";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -45,6 +46,44 @@ const INVOICE_FOOTER = `${SELLER_IDENTITY} · IVA incluido (4 %, libros) · admi
 /** ponytail: 2-min idempotency window — a double click reuses the session; a
  * deliberate second purchase after 2 min gets a new one. Per-click client keys
  * if that window ever proves too short. */
+/**
+ * Ad attribution for the Stripe webhook (Meta CAPI) and for knowing where an
+ * order came from (UTMs). Only with advertising consent; Stripe metadata values
+ * are capped at 500 chars.
+ */
+function attributionMetadata(request: Request): Record<string, string> {
+  const cookies = new Map(
+    (request.headers.get("cookie") ?? "").split(/;\s*/).map((c) => {
+      const i = c.indexOf("=");
+      const raw = c.slice(i + 1);
+      try {
+        return [c.slice(0, i), decodeURIComponent(raw)] as const;
+      } catch {
+        return [c.slice(0, i), raw] as const;
+      }
+    }),
+  );
+  if (cookies.get(CONSENT_COOKIE) !== "granted") return {};
+  const meta: Record<string, string> = {
+    ads_consent: "1",
+    fbp: cookies.get("_fbp") ?? "",
+    fbc: cookies.get("_fbc") ?? "",
+    client_ip: (request.headers.get("x-forwarded-for") ?? "").split(",")[0].trim(),
+    client_ua: request.headers.get("user-agent") ?? "",
+    source_url: request.headers.get("referer") ?? "",
+  };
+  try {
+    Object.assign(meta, JSON.parse(cookies.get(UTM_COOKIE) ?? "{}"));
+  } catch {
+    // malformed cookie: no UTMs
+  }
+  return Object.fromEntries(
+    Object.entries(meta)
+      .filter(([, v]) => typeof v === "string" && v !== "")
+      .map(([k, v]) => [k, v.slice(0, 500)]),
+  );
+}
+
 function idempotencyKey(parts: string[]): string {
   const bucket = Math.floor(Date.now() / 120_000);
   return `checkout-${createHash("sha256").update([...parts, bucket].join("|")).digest("hex").slice(0, 40)}`;
@@ -133,6 +172,7 @@ export async function POST(request: Request) {
     const totalCents = PRICING[format].price + validAddons.reduce((sum, id) => sum + addonPrice(id, format), 0);
 
     const origin = new URL(request.url).origin;
+    const attribution = attributionMetadata(request);
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
       mode: "payment",
       payment_method_types: ["card"],
@@ -160,6 +200,7 @@ export async function POST(request: Request) {
         addons: JSON.stringify(validAddons),
         locale,
         withdrawal_consent_version: WITHDRAWAL_CONSENT_VERSION,
+        ...attribution,
       },
       payment_intent_data: { metadata: { story_id: storyId, format } },
       success_url: `${origin}/${locale}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
@@ -176,7 +217,8 @@ export async function POST(request: Request) {
     }
 
     const session = await getStripe().checkout.sessions.create(sessionParams, {
-      idempotencyKey: idempotencyKey([user.id, storyId, format, [...validAddons].sort().join(","), locale]),
+      // Attribution is part of the key: same key + different params is a Stripe error.
+      idempotencyKey: idempotencyKey([user.id, storyId, format, [...validAddons].sort().join(","), locale, JSON.stringify(attribution)]),
     });
 
     // An idempotent replay of a session that has since completed/expired has no URL.

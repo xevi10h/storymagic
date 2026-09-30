@@ -31,6 +31,7 @@ import { PREVIEW_CLEAR_SCENES, buildBookPages, toPreviewPages } from "@/lib/book
 import SharePreviewButton from "@/components/share/SharePreviewButton";
 import { BrandLoader } from "@/components/ui/BrandLoader";
 import { Spinner } from "@/components/ui/Spinner";
+import { trackEvent } from "@/lib/tracking/consent";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -337,6 +338,7 @@ export default function PreviewPage() {
     }
     setCheckingOut(true);
     setCheckoutError(null);
+    trackEvent("InitiateCheckout", { content_ids: [format], content_type: "product" });
 
     try {
       const res = await fetch("/api/checkout", {

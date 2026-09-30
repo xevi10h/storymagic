@@ -628,7 +628,8 @@
     "copyright": "© 2026 Meapica. Made with love.",
     "legalNotice": "Legal Notice",
     "privacy": "Privacy",
-    "cookies": "Cookies"
+    "cookies": "Cookies",
+    "cookieSettings": "Cookie settings"
   },
   "legal": {
     "backHome": "Back to home",
@@ -637,15 +638,15 @@
       "title": "Privacy Policy",
       "intro": "At Meapica, the privacy of our users — especially when it comes to children's data — is our top priority.",
       "section1Title": "1. Data controller",
-      "section1Text": "The data controller for personal data collected through meapica.com is Xavier Huix Trenco (Meapica), tax ID 41649433K, address Carrer Aribau 140, 5º, 08036 Barcelona (Spain). For any privacy question, write to admin@casmar.tech.",
+      "section1Text": "The data controller for personal data collected through meapica.shop is Xavier Huix Trenco (Meapica), tax ID 41649433K, address Carrer Aribau 140, 5º, 08036 Barcelona (Spain). For any privacy question, write to admin@casmar.tech.",
       "section2Title": "2. Data we collect",
       "section2Text": "We collect the data needed to create your personalised book: the child's name, age, city, interests and physical features for the illustrations and, only if you choose to upload one, a photo of the child (see section 8). We also collect your email and shipping address to process orders.",
       "section3Title": "3. Purpose of processing",
       "section3Text": "We use your data only to: create the personalised story and its illustrated character, process payment and shipping, and contact you about your order. We never sell data to third parties.",
       "section4Title": "4. Legal basis",
-      "section4Text": "Creating, previewing and printing your book, managing your account, payment and shipping: performance of the contract you request (Art. 6(1)(b) GDPR). The child's photo: explicit consent of the child's parent or legal guardian (Art. 6(1)(a) GDPR and Art. 7 of Spain's LOPDGDD), which you can withdraw at any time. Newsletter and waitlist: your consent (Art. 6(1)(a) GDPR), which you can withdraw whenever you like. Keeping invoices and accounting records: legal obligation (Art. 6(1)(c) GDPR). Service security and abuse prevention (for example, usage limits): legitimate interest (Art. 6(1)(f) GDPR).",
+      "section4Text": "Creating, previewing and printing your book, managing your account, payment and shipping: performance of the contract you request (Art. 6(1)(b) GDPR). The child's photo: explicit consent of the child's parent or legal guardian (Art. 6(1)(a) GDPR and Art. 7 of Spain's LOPDGDD), which you can withdraw at any time. Newsletter and waitlist: your consent (Art. 6(1)(a) GDPR), which you can withdraw whenever you like. Keeping invoices and accounting records: legal obligation (Art. 6(1)(c) GDPR). Service security and abuse prevention (for example, usage limits): legitimate interest (Art. 6(1)(f) GDPR). Measuring our ads with Meta (advertising cookies and purchase event): your consent (Art. 6(1)(a) GDPR), which you can withdraw from \"Cookie settings\".",
       "section5Title": "5. Processors and international transfers",
-      "section5Text": "To provide the service we work with providers that process data only on our instructions: OpenAI Ireland Ltd. (generating the story text and illustrations and, if you upload one, the character from the photo), Supabase (database and storage), Vercel (web hosting), Stripe Payments Europe Ltd. (payments), Gelato (printing and shipping) and Resend (order emails). OpenAI does not use the data we send it to train its models and may keep it for up to 30 days to detect abuse. When a provider or its sub-processors process data outside the European Economic Area (for example, in the United States), the transfer relies on the European Commission's Standard Contractual Clauses or the EU-US Data Privacy Framework.",
+      "section5Text": "To provide the service we work with providers that process data only on our instructions: OpenAI Ireland Ltd. (generating the story text and illustrations and, if you upload one, the character from the photo), Supabase (database and storage), Vercel (web hosting), Stripe Payments Europe Ltd. (payments), Gelato (printing and shipping) Resend (order emails) and, only if you accept advertising cookies, Meta Platforms Ireland Ltd. (measuring our ads). OpenAI does not use the data we send it to train its models and may keep it for up to 30 days to detect abuse. When a provider or its sub-processors process data outside the European Economic Area (for example, in the United States), the transfer relies on the European Commission's Standard Contractual Clauses or the EU-US Data Privacy Framework.",
       "section6Title": "6. Your rights",
       "section6Text": "You can exercise your rights of access, rectification, erasure, objection, restriction of processing and portability, and withdraw your consent at any time, by writing to admin@casmar.tech. We will reply within one month at the latest. If you believe we have not handled your data properly, you can lodge a complaint with the Spanish Data Protection Agency (AEPD, www.aepd.es).",
       "section7Title": "7. Children's data protection",
@@ -655,7 +656,7 @@
     },
     "terms": {
       "title": "Legal Notice and Terms of Use",
-      "intro": "By using meapica.com you accept the following terms.",
+      "intro": "By using meapica.shop you accept the following terms.",
       "section1Title": "1. Identification",
       "section1Text": "Meapica is a personalized children's book creation platform operated from Spain by Xavier Huix Trenco, with registered address at Carrer Aribau 140, 5º, 08036 Barcelona (Spain). Contact: admin@casmar.tech.",
       "section2Title": "2. Service",
@@ -671,15 +672,15 @@
     },
     "cookies": {
       "title": "Cookie Policy",
-      "intro": "Meapica uses strictly necessary cookies for the operation of the service.",
+      "intro": "Meapica uses technical cookies the service needs to work and, only if you accept them, advertising cookies from Meta.",
       "section1Title": "1. What are cookies?",
       "section1Text": "Cookies are small text files stored in your browser when visiting a website.",
       "section2Title": "2. Cookies we use",
-      "section2Text": "We only use technical cookies necessary to: keep your user session active, remember the selected language, and manage the purchase process. We do not use marketing or third-party tracking cookies.",
+      "section2Text": "Technical (always on): keeping you signed in, remembering your language, handling the purchase and storing your cookie choice (meapica_consent, 12 months). Advertising (only with your consent): the Meta Pixel (_fbp and _fbc, 90 days) measures which Instagram and Facebook ads lead to a purchase and helps show them to people who may be interested; meapica_utm (30 days) remembers which ad or post brought you here so it can be linked to your order.",
       "section3Title": "3. Third-party cookies",
-      "section3Text": "Stripe (payment processor) may set its own cookies during the checkout process. Please refer to Stripe's cookie policy for more information.",
+      "section3Text": "Meta Platforms Ireland Ltd., only if you accept advertising cookies: receives browsing data and, if you buy, the order amount and your hashed email and phone number to measure our ads. Meta may process data in the US under the EU-US Data Privacy Framework. Stripe (payment processor) may set its own cookies during payment.",
       "section4Title": "4. Cookie management",
-      "section4Text": "You can configure your browser to reject cookies, although this may affect the operation of the service."
+      "section4Text": "You can accept or reject advertising cookies in the notice shown on your first visit and change your mind at any time from \"Cookie settings\" at the bottom of every page. If you reject them, the site works just the same. You can also delete them from your browser."
     },
     "faq": {
       "title": "Frequently Asked Questions",
@@ -707,7 +708,7 @@
       "section3Title": "Protective packaging",
       "section3Text": "Your book travels in cardboard packaging designed to get it to you in perfect condition, ready to give. If it still arrives damaged, write to us and we'll send you a new one free of charge.",
       "section4Title": "Order tracking",
-      "section4Text": "Once the book leaves the printer, you'll receive an email with the tracking number. You can also check your order status from your user dashboard at meapica.com."
+      "section4Text": "Once the book leaves the printer, you'll receive an email with the tracking number. You can also check your order status from your user dashboard at meapica.shop."
     }
   },
   "notFound": {
@@ -2391,5 +2392,12 @@
       "createCta": "Create your own story",
       "home": "Go to Meapica"
     }
+  },
+  "cookieConsent": {
+    "title": "Cookies",
+    "text": "We use cookies the site needs to work and, if you accept, Meta cookies to measure our ads on Instagram and Facebook.",
+    "policy": "Learn more",
+    "accept": "Accept",
+    "reject": "Reject"
   }
 }

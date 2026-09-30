@@ -3,13 +3,14 @@ import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { routing } from "@/i18n/routing";
+import Tracking from "@/components/tracking/Tracking";
 
 type Props = {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
 };
 
-const BASE_URL = "https://meapica.com";
+const BASE_URL = "https://meapica.shop";
 
 const LOCALE_MAP: Record<string, string> = {
   es: "es_ES",
@@ -113,6 +114,7 @@ export default async function LocaleLayout({ children, params }: Props) {
   return (
     <NextIntlClientProvider messages={messages}>
       {children}
+      <Tracking />
     </NextIntlClientProvider>
   );
 }

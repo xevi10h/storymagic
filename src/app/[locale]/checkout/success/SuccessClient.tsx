@@ -6,6 +6,7 @@ import { Link } from "@/i18n/navigation";
 import CreationHeader from "@/components/crear/CreationHeader";
 import { Spinner } from "@/components/ui/Spinner";
 import { BrandLoader } from "@/components/ui/BrandLoader";
+import { purchaseEventId, trackEvent } from "@/lib/tracking/consent";
 
 interface OrderDetails {
   format: string;
@@ -45,6 +46,8 @@ export interface SuccessClientProps {
   format: string | null;
   /** Guest (anonymous) buyer: no account email, confirmation goes to checkout email. */
   isGuest: boolean;
+  purchaseValue: number | null;
+  purchaseCurrency: string | null;
 }
 
 export default function SuccessClient({
@@ -53,6 +56,8 @@ export default function SuccessClient({
   customerEmail,
   format,
   isGuest,
+  purchaseValue,
+  purchaseCurrency,
 }: SuccessClientProps) {
   const t = useTranslations("checkout.success");
 
@@ -143,6 +148,17 @@ export default function SuccessClient({
       setCompletionStatus("error");
     }
   }, []);
+
+  // Ad conversion (Pixel). Same event_id as the server CAPI event, so Meta counts
+  // it once even on a reload of this page.
+  useEffect(() => {
+    if (!verified || !sessionId || purchaseValue === null) return;
+    trackEvent(
+      "Purchase",
+      { value: purchaseValue, currency: purchaseCurrency ?? "EUR", content_ids: format ? [format] : undefined, content_type: "product" },
+      purchaseEventId(sessionId),
+    );
+  }, [verified, sessionId, purchaseValue, purchaseCurrency, format]);
 
   // Step 1: Verify payment, then trigger completion if needed
   useEffect(() => {

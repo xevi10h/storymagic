@@ -9,6 +9,7 @@ import { alertOperator } from "./alerts";
 import { sendOrderEmailOnce } from "./emails";
 import { orderReference, type OrderReceipt } from "@/lib/email/order-emails";
 import { catalogItemByLookupKey } from "@/lib/pricing";
+import { sendMetaPurchase } from "@/lib/tracking/meta-capi";
 import type { FulfilmentClient, FulfilmentDatabase } from "./db";
 
 type OrderRow = FulfilmentDatabase["public"]["Tables"]["orders"]["Row"];
@@ -126,6 +127,11 @@ export async function recordPaidSession(
     if (Object.keys(backfill).length > 0) await supabase.from("orders").update(backfill).eq("id", existing.id);
     order = existing;
   }
+
+  // Ad conversion exactly once (the pending → paid flip happened here). Before the
+  // email: a failing email makes Stripe retry, and a retry is no longer processedHere.
+  // sendMetaPurchase never throws.
+  if (processedHere) await sendMetaPurchase(session);
 
   // Confirmation email (with receipt) for EVERY format, exactly once across webhook + verify.
   const physical = PHYSICAL_FORMATS.has(order.format);

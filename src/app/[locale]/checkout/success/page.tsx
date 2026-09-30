@@ -12,6 +12,9 @@ interface VerifiedSession {
   verified: boolean;
   customerEmail: string | null;
   format: string | null;
+  /** For the ad Purchase event (Meta Pixel). */
+  value: number | null;
+  currency: string | null;
 }
 
 // Stripe Checkout Session IDs look like cs_test_… / cs_live_…
@@ -24,7 +27,7 @@ const SESSION_ID_RE = /^cs_(test|live)_[A-Za-z0-9]{10,}$/;
  * (metadata.story_id) renders the success state.
  */
 async function verifySession(sessionId: string | null): Promise<VerifiedSession> {
-  const unverified = { verified: false, customerEmail: null, format: null };
+  const unverified = { verified: false, customerEmail: null, format: null, value: null, currency: null };
   if (!sessionId || !SESSION_ID_RE.test(sessionId)) return unverified;
 
   try {
@@ -38,6 +41,8 @@ async function verifySession(sessionId: string | null): Promise<VerifiedSession>
       verified: true,
       customerEmail: session.customer_details?.email ?? session.customer_email ?? null,
       format: session.metadata?.format ?? null,
+      value: (session.amount_total ?? 0) / 100,
+      currency: (session.currency ?? "eur").toUpperCase(),
     };
   } catch (err) {
     console.error("[checkout/success] Stripe session verification failed:", err);
@@ -70,6 +75,8 @@ export default async function CheckoutSuccessPage({ searchParams }: Props) {
       verified={session.verified}
       customerEmail={session.customerEmail}
       format={session.format}
+      purchaseValue={session.value}
+      purchaseCurrency={session.currency}
       isGuest={isGuest}
     />
   );

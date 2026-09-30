@@ -638,7 +638,8 @@
     "copyright": "© 2026 Meapica. Fait avec amour.",
     "legalNotice": "Mentions Légales",
     "privacy": "Confidentialité",
-    "cookies": "Cookies"
+    "cookies": "Cookies",
+    "cookieSettings": "Paramètres des cookies"
   },
   "legal": {
     "backHome": "Retour à l'accueil",
@@ -647,15 +648,15 @@
       "title": "Politique de confidentialité",
       "intro": "Chez Meapica, la confidentialité de nos utilisateurs — en particulier concernant les données des enfants — est notre priorité absolue.",
       "section1Title": "1. Responsable du traitement",
-      "section1Text": "Le responsable du traitement des données personnelles collectées via meapica.com est Xavier Huix Trenco (Meapica), NIF 41649433K, domicilié à Carrer Aribau 140, 5º, 08036 Barcelone (Espagne). Pour toute question relative à la confidentialité, écrivez-nous à admin@casmar.tech.",
+      "section1Text": "Le responsable du traitement des données personnelles collectées via meapica.shop est Xavier Huix Trenco (Meapica), NIF 41649433K, domicilié à Carrer Aribau 140, 5º, 08036 Barcelone (Espagne). Pour toute question relative à la confidentialité, écrivez-nous à admin@casmar.tech.",
       "section2Title": "2. Données collectées",
       "section2Text": "Nous collectons les données nécessaires à la création de votre livre personnalisé : prénom de l'enfant, âge, ville, centres d'intérêt et caractéristiques physiques pour les illustrations et, uniquement si vous choisissez de la télécharger, une photo de l'enfant (voir la section 8). Nous collectons également votre e-mail et votre adresse de livraison pour traiter les commandes.",
       "section3Title": "3. Finalité du traitement",
       "section3Text": "Nous utilisons vos données exclusivement pour : créer l'histoire personnalisée et son personnage illustré, traiter le paiement et la livraison, et vous contacter au sujet de votre commande. Nous ne vendons jamais de données à des tiers.",
       "section4Title": "4. Base légale",
-      "section4Text": "Créer, prévisualiser et imprimer votre livre, gérer votre compte, le paiement et la livraison : exécution du contrat que vous nous demandez (art. 6.1.b RGPD). Photo de l'enfant : consentement explicite de sa mère, de son père ou de son tuteur légal (art. 6.1.a RGPD et art. 7 de la LOPDGDD espagnole), que vous pouvez retirer à tout moment. Newsletter et liste d'attente : votre consentement (art. 6.1.a RGPD), que vous pouvez retirer quand vous le souhaitez. Conservation des factures et des registres comptables : obligation légale (art. 6.1.c RGPD). Sécurité du service et prévention des abus (par exemple, limites d'utilisation) : intérêt légitime (art. 6.1.f RGPD).",
+      "section4Text": "Créer, prévisualiser et imprimer votre livre, gérer votre compte, le paiement et la livraison : exécution du contrat que vous nous demandez (art. 6.1.b RGPD). Photo de l'enfant : consentement explicite de sa mère, de son père ou de son tuteur légal (art. 6.1.a RGPD et art. 7 de la LOPDGDD espagnole), que vous pouvez retirer à tout moment. Newsletter et liste d'attente : votre consentement (art. 6.1.a RGPD), que vous pouvez retirer quand vous le souhaitez. Conservation des factures et des registres comptables : obligation légale (art. 6.1.c RGPD). Sécurité du service et prévention des abus (par exemple, limites d'utilisation) : intérêt légitime (art. 6.1.f RGPD). Mesure de nos publicités avec Meta (cookies publicitaires et événement d'achat) : votre consentement (art. 6.1.a RGPD), que vous pouvez retirer via « Paramètres des cookies ».",
       "section5Title": "5. Sous-traitants et transferts internationaux",
-      "section5Text": "Pour fournir le service, nous travaillons avec des prestataires qui traitent les données uniquement selon nos instructions : OpenAI Ireland Ltd. (génération du texte et des illustrations de l'histoire et, si vous en téléchargez une, du personnage à partir de la photo), Supabase (base de données et stockage), Vercel (hébergement web), Stripe Payments Europe Ltd. (paiements), Gelato (impression et livraison) et Resend (e-mails de commande). OpenAI n'utilise pas les données que nous lui envoyons pour entraîner ses modèles et peut les conserver jusqu'à 30 jours pour détecter les abus. Lorsqu'un prestataire ou ses sous-traitants traitent des données en dehors de l'Espace économique européen (par exemple, aux États-Unis), le transfert repose sur les clauses contractuelles types de la Commission européenne ou sur le cadre de protection des données UE-États-Unis.",
+      "section5Text": "Pour fournir le service, nous travaillons avec des prestataires qui traitent les données uniquement selon nos instructions : OpenAI Ireland Ltd. (génération du texte et des illustrations de l'histoire et, si vous en téléchargez une, du personnage à partir de la photo), Supabase (base de données et stockage), Vercel (hébergement web), Stripe Payments Europe Ltd. (paiements), Gelato (impression et livraison) Resend (e-mails de commande) et, uniquement si vous acceptez les cookies publicitaires, Meta Platforms Ireland Ltd. (mesure de nos publicités). OpenAI n'utilise pas les données que nous lui envoyons pour entraîner ses modèles et peut les conserver jusqu'à 30 jours pour détecter les abus. Lorsqu'un prestataire ou ses sous-traitants traitent des données en dehors de l'Espace économique européen (par exemple, aux États-Unis), le transfert repose sur les clauses contractuelles types de la Commission européenne ou sur le cadre de protection des données UE-États-Unis.",
       "section6Title": "6. Vos droits",
       "section6Text": "Vous pouvez exercer vos droits d'accès, de rectification, d'effacement, d'opposition, de limitation du traitement et de portabilité, et retirer votre consentement à tout moment, en écrivant à admin@casmar.tech. Nous vous répondrons dans un délai maximal d'un mois. Si vous estimez que vos données n'ont pas été traitées correctement, vous pouvez introduire une réclamation auprès de l'Agence espagnole de protection des données (AEPD, www.aepd.es).",
       "section7Title": "7. Protection des données des mineurs",
@@ -665,7 +666,7 @@
     },
     "terms": {
       "title": "Mentions légales et conditions d'utilisation",
-      "intro": "En utilisant meapica.com, vous acceptez les conditions suivantes.",
+      "intro": "En utilisant meapica.shop, vous acceptez les conditions suivantes.",
       "section1Title": "1. Identification",
       "section1Text": "Meapica est une plateforme de création de livres pour enfants personnalisés opérée depuis l'Espagne par Xavier Huix Trenco, domicilié Carrer Aribau 140, 5º, 08036 Barcelone (Espagne). Contact : admin@casmar.tech.",
       "section2Title": "2. Service",
@@ -681,15 +682,15 @@
     },
     "cookies": {
       "title": "Politique de cookies",
-      "intro": "Meapica utilise des cookies strictement nécessaires au fonctionnement du service.",
+      "intro": "Meapica utilise des cookies techniques nécessaires au fonctionnement du service et, uniquement si vous les acceptez, des cookies publicitaires de Meta.",
       "section1Title": "1. Que sont les cookies ?",
       "section1Text": "Les cookies sont de petits fichiers texte stockés dans votre navigateur lors de la visite d'un site web.",
       "section2Title": "2. Cookies utilisés",
-      "section2Text": "Nous utilisons uniquement des cookies techniques nécessaires pour : maintenir votre session utilisateur active, mémoriser la langue sélectionnée et gérer le processus d'achat. Nous n'utilisons pas de cookies marketing ni de suivi tiers.",
+      "section2Text": "Techniques (toujours actifs) : maintenir votre session, mémoriser la langue, gérer l'achat et enregistrer votre choix sur les cookies (meapica_consent, 12 mois). Publicitaires (uniquement avec votre consentement) : le pixel Meta (_fbp et _fbc, 90 jours) mesure quelles publicités Instagram et Facebook aboutissent à un achat et aide à les montrer aux personnes susceptibles d'être intéressées ; meapica_utm (30 jours) mémorise la publicité ou la publication qui vous a amené ici pour l'associer à votre commande.",
       "section3Title": "3. Cookies tiers",
-      "section3Text": "Stripe (processeur de paiement) peut définir ses propres cookies pendant le processus de paiement. Consultez la politique de cookies de Stripe pour plus d'informations.",
+      "section3Text": "Meta Platforms Ireland Ltd., uniquement si vous acceptez les cookies publicitaires : reçoit des données de navigation et, si vous achetez, le montant de la commande ainsi que votre e-mail et votre téléphone chiffrés (hachage) pour mesurer nos publicités. Meta peut traiter des données aux États-Unis dans le cadre du Data Privacy Framework UE-États-Unis. Stripe (processeur de paiement) peut définir ses propres cookies pendant le paiement.",
       "section4Title": "4. Gestion des cookies",
-      "section4Text": "Vous pouvez configurer votre navigateur pour refuser les cookies, bien que cela puisse affecter le fonctionnement du service."
+      "section4Text": "Vous pouvez accepter ou refuser les cookies publicitaires dans l'avis affiché lors de votre première visite et changer d'avis à tout moment via « Paramètres des cookies », en bas de chaque page. Si vous les refusez, le site fonctionne de la même façon. Vous pouvez aussi les supprimer depuis votre navigateur."
     },
     "faq": {
       "title": "Questions Fréquentes",
@@ -717,7 +718,7 @@
       "section3Title": "Emballage protecteur",
       "section3Text": "Votre livre voyage dans un emballage en carton conçu pour qu'il arrive en parfait état, prêt à offrir. S'il arrive malgré tout abîmé, écrivez-nous et nous vous en envoyons un nouveau sans frais.",
       "section4Title": "Suivi de commande",
-      "section4Text": "Dès que le livre quitte l'imprimerie, vous recevrez un e-mail avec le numéro de suivi. Vous pouvez aussi consulter l'état de vos commandes depuis votre espace utilisateur sur meapica.com."
+      "section4Text": "Dès que le livre quitte l'imprimerie, vous recevrez un e-mail avec le numéro de suivi. Vous pouvez aussi consulter l'état de vos commandes depuis votre espace utilisateur sur meapica.shop."
     }
   },
   "notFound": {
@@ -2401,5 +2402,12 @@
       "createCta": "Créez votre propre histoire",
       "home": "Aller sur Meapica"
     }
+  },
+  "cookieConsent": {
+    "title": "Cookies",
+    "text": "Nous utilisons des cookies nécessaires au fonctionnement du site et, si vous acceptez, des cookies Meta pour mesurer nos publicités sur Instagram et Facebook.",
+    "policy": "En savoir plus",
+    "accept": "Accepter",
+    "reject": "Refuser"
   }
 }
