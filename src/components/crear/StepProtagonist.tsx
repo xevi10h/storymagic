@@ -5,6 +5,7 @@ import ProtagonistAvatar, { type ProtagonistLook } from "@/components/avatar/Pro
 import { AVATAR_GLASSES_SHAPES, AVATAR_HAIRSTYLES, type AvatarGlassesColour } from "@/lib/avatar/manifest";
 import {
   EYE_COLORS,
+  FAVORITE_COLORS,
   HAIRSTYLES,
   HAIR_COLORS,
   SKIN_TONES,
@@ -46,8 +47,11 @@ const GLASSES_FRAMES: { id: AvatarGlassesColour; color: string }[] = [
   { id: "red", color: "#b23a2c" },
 ];
 
-/** Light swatches need a dark check mark. */
-const LIGHT_SWATCHES = new Set(["#fce4d6", "#eebb99", "#e6c07b", "#d4a574", "#a0875b"]);
+/** Light swatches need a dark check mark ("" = the "no preference" swatch). */
+const LIGHT_SWATCHES = new Set(["#fce4d6", "#eebb99", "#e6c07b", "#d4a574", "#a0875b", "#FDD835", ""]);
+
+/** Favourite colour: optional — "" (no preference) gives the book its neutral warm palette. */
+const FAVORITE_COLOR_OPTIONS: { id: string; color: string }[] = [{ id: "none", color: "" }, ...FAVORITE_COLORS];
 
 function SwatchGroup({
   id,
@@ -56,6 +60,8 @@ function SwatchGroup({
   value,
   labelFor,
   onChange,
+  hint,
+  className = "",
 }: {
   id: string;
   label: string;
@@ -63,13 +69,18 @@ function SwatchGroup({
   value: string;
   labelFor: (id: string) => string;
   onChange: (color: string) => void;
+  hint?: string;
+  className?: string;
 }) {
   const selectedId = options.find((o) => o.color === value)?.id ?? null;
   return (
-    <div className="flex flex-col gap-2.5">
-      <span className="text-xs font-bold uppercase tracking-wide text-create-text" id={`lbl-${id}`}>
-        {label}
-      </span>
+    <div className={`flex flex-col gap-2.5 ${className}`}>
+      <div className="flex flex-col gap-0.5">
+        <span className="text-xs font-bold uppercase tracking-wide text-create-text" id={`lbl-${id}`}>
+          {label}
+        </span>
+        {hint && <span className="text-xs text-create-text-sub">{hint}</span>}
+      </div>
       <div role="radiogroup" aria-labelledby={`lbl-${id}`} className="flex flex-wrap gap-2.5">
         {options.map((o) => {
           const selected = value === o.color;
@@ -82,10 +93,10 @@ function SwatchGroup({
               aria-label={labelFor(o.id)}
               title={labelFor(o.id)}
               onClick={() => onChange(o.color)}
-              className={`flex h-10 w-10 items-center justify-center rounded-full border border-black/10 transition-transform focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-create-primary ${
-                selected ? "scale-105 ring-[3px] ring-create-primary ring-offset-2 ring-offset-white" : "hover:scale-105"
-              }`}
-              style={{ backgroundColor: o.color }}
+              className={`flex h-10 w-10 items-center justify-center rounded-full border transition-transform focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-create-primary ${
+                o.color ? "border-black/10" : "border-dashed border-create-text-sub/50 bg-white"
+              } ${selected ? "scale-105 ring-[3px] ring-create-primary ring-offset-2 ring-offset-white" : "hover:scale-105"}`}
+              style={o.color ? { backgroundColor: o.color } : undefined}
             >
               {selected && (
                 <span
@@ -345,6 +356,18 @@ export default function StepProtagonist({
               <PhotoUploadPanel name={name} photoPath={photoPath} onPhotoChange={onPhotoChange} />
             </div>
           )}
+
+          {/* Leads the book's palette (src/lib/template-colors.ts) and the jacket colour of the Character Bible */}
+          <SwatchGroup
+            id="favoriteColor"
+            label={t("favoriteColor")}
+            hint={t("favoriteColorHint")}
+            options={FAVORITE_COLOR_OPTIONS}
+            value={character.favoriteColor}
+            labelFor={(id) => (id === "none" ? t("favoriteColorNone") : td(`favoriteColors.${id}`))}
+            onChange={(favoriteColor) => onUpdateCharacter({ favoriteColor })}
+            className="border-t border-create-primary/10 pt-5"
+          />
         </div>
       </main>
 

@@ -1,0 +1,952 @@
+/*
+ * Physical book mockup — CSS 3D, no WebGL.
+ *
+ * Every size is in cqw of the stage (a 5:4 inline-size container), so the model scales with
+ * its column and never shifts layout. The book geometry lives in custom properties on the
+ * stage and is switched per format; faces transition their transforms/sizes, so a format
+ * change morphs the board thickness instead of swapping models.
+ *
+ *   --w / --h   board size (a 20 × 20 cm square)
+ *   --d         total thickness (hardcover ≈ 9 mm, softcover ≈ 4 mm; slightly emphasised)
+ *   --b         board (or cover paper) thickness
+ *   --oh        board overhang past the page block (hardcover squares, ≈ 3 mm)
+ *   --r         corner radius
+ *
+ * Custom properties holding cqw resolve where they are used, so they must not be used
+ * inside .coverFace / .pageNode (those are containers of their own).
+ */
+
+/* ── Stage ─────────────────────────────────────────────────────────────── */
+
+.stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 5 / 4;
+  container-type: inline-size;
+  isolation: isolate;
+  user-select: none;
+  -webkit-user-select: none;
+
+  --w: 50cqw;
+  --h: 50cqw;
+  --pitch: -12deg;
+  --yaw: 31deg;
+  --ease: cubic-bezier(0.22, 0.7, 0.2, 1);
+  --morph: 700ms;
+
+  --paper: #f7f0e4;
+  --paper-shade: #e9dcc7;
+  --paper-line: rgba(118, 88, 58, 0.2);
+  --endpaper: #efe4d2;
+  --shadow-rgb: 58, 36, 22;
+}
+
+.stage[data-pose="pages"] {
+  --yaw: -29deg;
+}
+
+.stage[data-format="hardcover"] {
+  --d: 3.1cqw;
+  --b: 0.55cqw;
+  --oh: 0.6cqw;
+  --r: 0.55cqw;
+}
+
+.stage[data-format="softcover"] {
+  --d: 1.15cqw;
+  --b: 0.07cqw;
+  --oh: 0cqw;
+  --r: 0.12cqw;
+}
+
+.stage[data-variant="open"] {
+  --w: 39cqw;
+  --h: 39cqw;
+  --pitch: 44deg;
+  --yaw: 0deg;
+}
+
+/* Soft studio light on whatever warm background the page has */
+.backdrop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse 58% 52% at 50% 44%, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0) 72%);
+}
+
+/* One layer per world (physical book / digital devices), cross-faded on format change.
+   The layer is the perspective root: its own opacity/transform only composite the result. */
+.layer {
+  position: absolute;
+  inset: 0;
+  perspective: 190cqw;
+  perspective-origin: 50% 22%;
+  transition:
+    opacity 550ms var(--ease),
+    transform 750ms var(--ease),
+    visibility 0s linear 0s;
+}
+
+.layer[data-active="false"] {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(3cqw) scale(0.94);
+  pointer-events: none;
+  transition:
+    opacity 450ms var(--ease),
+    transform 650ms var(--ease),
+    visibility 0s linear 650ms;
+}
+
+.camera {
+  position: absolute;
+  left: 50%;
+  top: 44%;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+  transform: rotateX(calc(var(--pitch) + var(--tilt-x, 0deg))) rotateY(var(--tilt-y, 0deg));
+  transition: transform 800ms var(--ease);
+}
+
+.stage[data-variant="open"] .camera {
+  top: 47%;
+}
+
+.nudge,
+.sway {
+  transform-style: preserve-3d;
+}
+
+/* Idle: a slow, barely-there turn, like a product on a turntable */
+.sway {
+  animation: sway 11s ease-in-out infinite alternate;
+}
+
+.stage[data-variant="open"] .sway {
+  animation-name: sway-open;
+}
+
+@keyframes sway {
+  from { transform: rotateY(calc(var(--arch) * -1)); }
+  to { transform: rotateY(var(--arch)); }
+}
+
+/* Closed ↔ open swaps the model: it settles in with the individual scale/translate properties
+   (opacity would flatten the 3D context while it runs) */
+.book,
+.openBook {
+  animation: settle 650ms var(--ease) both;
+}
+
+@keyframes settle {
+  from { scale: 0.93; translate: 0 2.5cqw; }
+  to { scale: 1; translate: 0 0; }
+}
+
+@keyframes sway-open {
+  from { transform: rotateZ(-1.2deg); }
+  to { transform: rotateZ(1.2deg); }
+}
+
+/* ── Closed book ───────────────────────────────────────────────────────── */
+
+.book {
+  position: absolute;
+  left: calc(var(--w) / -2);
+  top: calc(var(--h) / -2);
+  width: var(--w);
+  height: var(--h);
+  transform-style: preserve-3d;
+  transform: rotateY(var(--yaw));
+  transition: transform 900ms var(--ease);
+}
+
+.face {
+  position: absolute;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transition:
+    transform var(--morph) var(--ease),
+    width var(--morph) var(--ease),
+    height var(--morph) var(--ease),
+    left var(--morph) var(--ease),
+    top var(--morph) var(--ease),
+    border-radius var(--morph) var(--ease),
+    opacity 400ms var(--ease);
+}
+
+.front {
+  left: 0;
+  top: 0;
+  width: var(--w);
+  height: var(--h);
+  overflow: hidden;
+  border-radius: calc(var(--r) * 0.3) var(--r) var(--r) calc(var(--r) * 0.3);
+  transform: translateZ(calc(var(--d) / 2));
+}
+
+/* Matt laminate: broad, soft light from the upper left — no specular hotspot */
+.frontLight {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    linear-gradient(118deg, rgba(255, 248, 236, 0.13) 0%, rgba(255, 248, 236, 0.03) 34%, rgba(0, 0, 0, 0) 55%, rgba(30, 16, 6, 0.13) 100%);
+  box-shadow:
+    inset 0 0 0 0.09cqw rgba(0, 0, 0, 0.2),
+    inset 0.12cqw 0.12cqw 0 rgba(255, 255, 255, 0.12);
+}
+
+/* Fine tooth of the matt film */
+.frontGrain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.22;
+  mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 1.1 -.2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+}
+
+/* Hardcover joint: the groove pressed into the board ~9 mm from the spine, and the cover
+   rolling over the rounded spine edge. Softcover: a faint score line only. */
+.hinge {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: calc(var(--w) * 0.075);
+  pointer-events: none;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.26) 0%,
+    rgba(0, 0, 0, 0.06) 22%,
+    rgba(0, 0, 0, 0) 38%,
+    rgba(0, 0, 0, 0.2) 52%,
+    rgba(0, 0, 0, 0.07) 60%,
+    rgba(255, 255, 255, 0.16) 66%,
+    rgba(255, 255, 255, 0) 84%
+  );
+  transition: opacity var(--morph) var(--ease);
+}
+
+.stage[data-format="softcover"] .hinge {
+  opacity: 0.4;
+}
+
+.spine {
+  left: 0;
+  top: 0;
+  width: var(--d);
+  height: var(--h);
+  overflow: hidden;
+  border-radius: calc(var(--r) * 0.3);
+  transform-origin: 0 50%;
+  transform: translateZ(calc(var(--d) / -2)) rotateY(-90deg);
+}
+
+/* Rounded hardcover spine: dark at both joints, a soft highlight on the crown */
+.spineShade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.06), rgba(0, 0, 0, 0.12)),
+    linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0.42) 0%,
+      rgba(0, 0, 0, 0.08) 22%,
+      rgba(255, 255, 255, 0.14) 48%,
+      rgba(0, 0, 0, 0.04) 74%,
+      rgba(0, 0, 0, 0.36) 100%
+    );
+}
+
+.stage[data-format="softcover"] .spineShade {
+  background:
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.12)),
+    linear-gradient(to right, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.06) 30%, rgba(0, 0, 0, 0.06) 70%, rgba(0, 0, 0, 0.3));
+}
+
+/* Spine title, reading top → bottom (ISO 6357), as printed */
+.spineText {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(var(--h) * 0.8);
+  height: var(--d);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--d) * 0.35);
+  transform: translate(-50%, -50%) rotate(90deg);
+  color: #fff;
+  font-family: var(--font-fredoka), "Fredoka", sans-serif;
+  font-weight: 600;
+  font-size: calc(var(--d) * 0.4);
+  line-height: 1;
+  white-space: nowrap;
+  transition: opacity 400ms var(--ease);
+}
+
+.spineText span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.spineText[data-visible="false"] {
+  opacity: 0;
+}
+
+.spineLogo {
+  height: calc(var(--d) * 0.34);
+  flex-shrink: 0;
+  opacity: 0.75;
+}
+
+/* Page block, top edge: leaves stacked back → front, with the headband at the spine */
+.topPages {
+  left: 0;
+  top: var(--oh);
+  width: calc(var(--w) - var(--oh));
+  height: calc(var(--d) - 2 * var(--b));
+  transform-origin: 50% 0;
+  transform: translateZ(calc(var(--b) - var(--d) / 2)) rotateX(90deg);
+  background:
+    repeating-linear-gradient(to bottom, var(--paper-line) 0 1px, rgba(0, 0, 0, 0) 1px 2.4px),
+    linear-gradient(to right, var(--paper-shade), var(--paper) 18%, var(--paper) 80%, #efe4d3);
+  box-shadow:
+    inset 0 0.35cqw 0.35cqw -0.2cqw rgba(0, 0, 0, 0.22),
+    inset 0 -0.3cqw 0.3cqw -0.2cqw rgba(0, 0, 0, 0.16);
+}
+
+.stage[data-format="hardcover"] .topPages::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: calc(var(--d) * 0.28);
+  background: repeating-linear-gradient(to bottom, #7a2d22 0 1.5px, #e9d9b8 1.5px 3px);
+  opacity: 0.85;
+}
+
+.topBoardFront,
+.topBoardBack {
+  left: 0;
+  top: 0;
+  width: var(--w);
+  height: var(--b);
+  transform-origin: 50% 0;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2));
+}
+
+.topBoardFront {
+  transform: translateZ(calc(var(--d) / 2 - var(--b))) rotateX(90deg);
+}
+
+.topBoardBack {
+  transform: translateZ(calc(var(--d) / -2)) rotateX(90deg);
+}
+
+/* Page block, fore-edge: leaves side by side front → back */
+.forePages {
+  left: calc(var(--w) - var(--oh));
+  top: var(--oh);
+  width: calc(var(--d) - 2 * var(--b));
+  height: calc(var(--h) - 2 * var(--oh));
+  transform-origin: 0 50%;
+  transform: translateZ(calc(var(--d) / 2 - var(--b))) rotateY(90deg);
+  background:
+    repeating-linear-gradient(to right, var(--paper-line) 0 1px, rgba(0, 0, 0, 0) 1px 2.4px),
+    linear-gradient(to bottom, #efe6d7, #e3d6c1);
+  box-shadow:
+    inset 0.3cqw 0 0.3cqw -0.2cqw rgba(0, 0, 0, 0.18),
+    inset -0.3cqw 0 0.3cqw -0.2cqw rgba(0, 0, 0, 0.14);
+}
+
+.foreBoardFront,
+.foreBoardBack {
+  left: var(--w);
+  top: 0;
+  width: var(--b);
+  height: var(--h);
+  transform-origin: 0 50%;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.18));
+}
+
+.foreBoardFront {
+  transform: translateZ(calc(var(--d) / 2)) rotateY(90deg);
+}
+
+.foreBoardBack {
+  transform: translateZ(calc(var(--b) - var(--d) / 2)) rotateY(90deg);
+}
+
+.backInner {
+  left: 0;
+  top: 0;
+  width: var(--w);
+  height: var(--h);
+  background: var(--endpaper);
+  transform: translateZ(calc(var(--b) - var(--d) / 2));
+}
+
+/* Shadow on the table the book stands on: one floor plane through the base (15 % of the
+   board width in front of it, the rest behind), so every falloff is a gradient — no plane edges.
+   Light from the upper left: tight contact occlusion, soft ambient pool, cast shadow back right. */
+.floorShadow {
+  position: absolute;
+  left: calc(var(--w) * -0.3);
+  top: var(--h);
+  width: calc(var(--w) * 1.6);
+  height: calc(var(--w) * 0.9);
+  pointer-events: none;
+  transform-origin: 50% 0;
+  transform: translateZ(calc(var(--d) / 2 + var(--w) * 0.15)) rotateX(-90deg);
+  background:
+    radial-gradient(ellipse 34% 6% at 50% 17.5%, rgba(var(--shadow-rgb), 0.62), rgba(var(--shadow-rgb), 0.16) 55%, rgba(var(--shadow-rgb), 0) 100%),
+    radial-gradient(ellipse 46% 24% at 50% 19%, rgba(var(--shadow-rgb), 0.28), rgba(var(--shadow-rgb), 0) 100%),
+    radial-gradient(ellipse 40% 55% at 62% 30%, rgba(var(--shadow-rgb), 0.24), rgba(var(--shadow-rgb), 0.09) 55%, rgba(var(--shadow-rgb), 0) 100%);
+  transition: transform var(--morph) var(--ease);
+}
+
+/* Dimension lines (scale cue), drawn in the cover plane so they follow the perspective */
+.dimension {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 1.2cqw;
+  color: #a1887f;
+  font-family: var(--font-plus-jakarta), "Plus Jakarta Sans", sans-serif;
+  font-weight: 600;
+  font-size: max(10px, 2.1cqw);
+  letter-spacing: 0.02em;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+  transform: translateZ(calc(var(--d) / 2));
+  transition: transform var(--morph) var(--ease), opacity 400ms var(--ease);
+}
+
+.dimLine {
+  flex: 1;
+  background: currentColor;
+  opacity: 0.55;
+}
+
+.dimensionH {
+  left: 0;
+  top: calc(var(--h) + 3.4cqw);
+  width: var(--w);
+  height: 2.4cqw;
+}
+
+.dimensionH .dimLine {
+  height: 1px;
+}
+
+.dimensionV {
+  left: calc(var(--w) + 2.6cqw);
+  top: 0;
+  width: 2.4cqw;
+  height: var(--h);
+  flex-direction: column;
+}
+
+.dimensionV .dimLine {
+  width: 1px;
+}
+
+.dimensionV .dimLabel {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+.dimensionH::before,
+.dimensionH::after,
+.dimensionV::before,
+.dimensionV::after {
+  content: "";
+  position: absolute;
+  background: currentColor;
+  opacity: 0.55;
+}
+
+.dimensionH::before,
+.dimensionH::after {
+  top: 50%;
+  width: 1px;
+  height: 1.6cqw;
+  transform: translateY(-50%);
+}
+
+.dimensionH::before { left: 0; }
+.dimensionH::after { right: 0; }
+
+.dimensionV::before,
+.dimensionV::after {
+  left: 50%;
+  height: 1px;
+  width: 1.6cqw;
+  transform: translateX(-50%);
+}
+
+.dimensionV::before { top: 0; }
+.dimensionV::after { bottom: 0; }
+
+/* ── Cover face (shared by the book and the device screens) ────────────── */
+
+.coverFace {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  container-type: size;
+}
+
+.coverImg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.coverFallback {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.3));
+}
+
+/* Print scrim (COVER_OVERLAY_STOPS) over the top ~56 % */
+.coverScrim {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 56%;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.62) 0%,
+    rgba(0, 0, 0, 0.52) 50%,
+    rgba(0, 0, 0, 0.26) 72%,
+    rgba(0, 0, 0, 0.06) 90%,
+    rgba(0, 0, 0, 0) 100%
+  );
+}
+
+.coverTitle {
+  position: absolute;
+  left: 7.5cqw;
+  right: 7.5cqw;
+  top: 7.5cqw;
+  text-align: center;
+  color: #fff;
+  font-family: var(--font-fredoka), "Fredoka", sans-serif;
+  font-weight: 600;
+  text-shadow: 0 0.2cqw 1cqw rgba(0, 0, 0, 0.18);
+  overflow-wrap: anywhere;
+}
+
+.coverTitle p {
+  margin: 0;
+}
+
+.coverHero {
+  line-height: 1.05;
+}
+
+.coverRest {
+  line-height: 1.15;
+  color: rgba(255, 255, 255, 0.94);
+}
+
+.coverSubtitle {
+  margin-top: 1.4cqw !important;
+  font-family: var(--font-plus-jakarta), "Plus Jakarta Sans", sans-serif;
+  font-weight: 400;
+  font-size: 1.95cqw;
+  letter-spacing: 0.09cqw;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.coverSubtitle strong {
+  font-weight: 600;
+  color: #fff;
+}
+
+/* ── Open book ─────────────────────────────────────────────────────────── */
+
+.openBook {
+  --stack: max(0.35cqw, calc(var(--d) / 2 - var(--b)));
+  /* Each half rises from the gutter by --arch; its outer edge sits --lift above the gutter */
+  --arch: 2.5deg;
+  --lift: calc(var(--w) * 0.0436); /* sin(2.5°) */
+  position: absolute;
+  left: calc(var(--w) * -1);
+  top: calc(var(--h) / -2);
+  width: calc(var(--w) * 2);
+  height: var(--h);
+  transform-style: preserve-3d;
+}
+
+.openShadow {
+  position: absolute;
+  left: -16%;
+  top: -24%;
+  width: 132%;
+  height: 158%;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 40.5% 34% at 50% 53%, rgba(var(--shadow-rgb), 0.34) 0%, rgba(var(--shadow-rgb), 0.3) 80%, rgba(var(--shadow-rgb), 0) 100%),
+    radial-gradient(ellipse 50% 46% at 52% 56%, rgba(var(--shadow-rgb), 0.16) 0%, rgba(var(--shadow-rgb), 0.08) 60%, rgba(var(--shadow-rgb), 0) 100%);
+}
+
+.openBoards {
+  position: absolute;
+  left: calc(var(--oh) * -1);
+  top: calc(var(--oh) * -1);
+  width: calc(100% + 2 * var(--oh));
+  height: calc(100% + 2 * var(--oh));
+  border-radius: var(--r);
+  background-image: linear-gradient(160deg, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.14));
+  transform: translateZ(var(--b));
+  transition: all var(--morph) var(--ease);
+}
+
+.openBoardEdge {
+  position: absolute;
+  left: calc(var(--oh) * -1);
+  top: calc(100% + var(--oh));
+  width: calc(100% + 2 * var(--oh));
+  height: var(--b);
+  transform-origin: 50% 0;
+  transform: translateZ(var(--b)) rotateX(-90deg);
+  background-image: linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25));
+  transition: all var(--morph) var(--ease);
+}
+
+.pageHalf {
+  position: absolute;
+  top: 0;
+  width: var(--w);
+  height: var(--h);
+  transform-style: preserve-3d;
+  transition: transform var(--morph) var(--ease);
+}
+
+.pageHalf[data-side="left"] {
+  left: 0;
+  transform-origin: 100% 50%;
+  transform: translateZ(calc(var(--b) + var(--stack))) rotateY(var(--arch));
+}
+
+.pageHalf[data-side="right"] {
+  left: var(--w);
+  transform-origin: 0 50%;
+  transform: translateZ(calc(var(--b) + var(--stack))) rotateY(calc(var(--arch) * -1));
+}
+
+.pageFace {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #fbf6ee;
+}
+
+.pageImg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+
+.pagePanorama {
+  width: 200%;
+}
+
+.pagePanorama[data-side="right"] {
+  left: -100%;
+}
+
+.pageNode {
+  position: absolute;
+  inset: 0;
+  container-type: size;
+}
+
+/* Paper curving down into the gutter, and a faint fall-off at the fore-edge */
+.gutterShade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.pageHalf[data-side="left"] .gutterShade {
+  background:
+    linear-gradient(to left, rgba(40, 24, 12, 0.38) 0%, rgba(40, 24, 12, 0.14) 3%, rgba(255, 250, 240, 0.1) 7.5%, rgba(255, 250, 240, 0) 15%, rgba(0, 0, 0, 0) 92%, rgba(0, 0, 0, 0.07) 100%),
+    linear-gradient(165deg, rgba(255, 250, 240, 0.08), rgba(0, 0, 0, 0.04));
+}
+
+.pageHalf[data-side="right"] .gutterShade {
+  background:
+    linear-gradient(to right, rgba(40, 24, 12, 0.34) 0%, rgba(40, 24, 12, 0.12) 3%, rgba(255, 250, 240, 0.08) 7.5%, rgba(255, 250, 240, 0) 15%, rgba(0, 0, 0, 0) 92%, rgba(0, 0, 0, 0.09) 100%),
+    linear-gradient(165deg, rgba(255, 250, 240, 0.05), rgba(0, 0, 0, 0.06));
+}
+
+.stackFront {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  width: 100%;
+  /* A wedge: page-block thickness at the gutter, plus the arch lift at the outer edge */
+  height: calc(var(--stack) + var(--lift));
+  transform-origin: 50% 0;
+  transform: rotateX(-90deg);
+  background:
+    repeating-linear-gradient(to bottom, var(--paper-line) 0 1px, rgba(0, 0, 0, 0) 1px 2.2px),
+    linear-gradient(to right, #eadfcd, #f3eadc 50%, #e6dac6);
+  transition: height var(--morph) var(--ease);
+}
+
+.pageHalf[data-side="left"] .stackFront {
+  clip-path: polygon(0 0, 100% 0, 100% var(--stack), 0 100%);
+}
+
+.pageHalf[data-side="right"] .stackFront {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 var(--stack));
+}
+
+.stackOuter {
+  position: absolute;
+  top: 0;
+  width: calc(var(--stack) + var(--lift));
+  height: 100%;
+  background:
+    repeating-linear-gradient(to right, var(--paper-line) 0 1px, rgba(0, 0, 0, 0) 1px 2.2px),
+    #e6dac6;
+  transition: width var(--morph) var(--ease), left var(--morph) var(--ease);
+}
+
+.pageHalf[data-side="left"] .stackOuter {
+  left: calc((var(--stack) + var(--lift)) * -1);
+  transform-origin: 100% 50%;
+  transform: rotateY(-90deg);
+}
+
+.pageHalf[data-side="right"] .stackOuter {
+  left: 100%;
+  transform-origin: 0 50%;
+  transform: rotateY(90deg);
+}
+
+/* ── Devices (PDF) ─────────────────────────────────────────────────────── */
+
+.devices {
+  position: absolute;
+  left: 50%;
+  top: 47%;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+  transform: rotateX(calc(7deg + var(--tilt-x, 0deg))) rotateY(calc(-13deg + var(--tilt-y, 0deg)));
+  transition: transform 800ms var(--ease);
+}
+
+.tablet,
+.phone {
+  position: absolute;
+  transform-style: preserve-3d;
+}
+
+.tablet {
+  left: -27cqw;
+  top: -30cqw;
+  width: 42cqw;
+  height: 56cqw;
+}
+
+.phone {
+  left: 6.5cqw;
+  top: -7cqw;
+  width: 17.5cqw;
+  height: 36cqw;
+  transform: translateZ(7cqw);
+}
+
+.tabletBody,
+.phoneBody {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(150deg, #2c2724, #171413);
+}
+
+.tabletBody {
+  border-radius: 3.2cqw;
+  box-shadow:
+    inset 0 0 0 0.22cqw #4a433d,
+    inset 0 0 0 0.34cqw #0d0b0a;
+}
+
+.phoneBody {
+  border-radius: 3cqw;
+  box-shadow:
+    inset 0 0 0 0.2cqw #4a433d,
+    inset 0 0 0 0.3cqw #0d0b0a;
+}
+
+/* Device thickness, seen on the right side */
+.tabletEdge,
+.phoneEdge {
+  position: absolute;
+  left: 100%;
+  transform-origin: 0 50%;
+  transform: translateX(-0.4cqw) rotateY(90deg);
+  background: linear-gradient(to bottom, #b9b1a8, #8b837b 50%, #a39b92);
+  border-radius: 0.5cqw;
+}
+
+.tabletEdge {
+  top: 2.4cqw;
+  height: calc(100% - 4.8cqw);
+  width: 0.9cqw;
+}
+
+.phoneEdge {
+  top: 2.4cqw;
+  height: calc(100% - 4.8cqw);
+  width: 0.8cqw;
+}
+
+.tabletScreen,
+.phoneScreen {
+  position: absolute;
+  overflow: hidden;
+  background: #f6efe4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tabletScreen {
+  inset: 1.8cqw;
+  border-radius: 1.5cqw;
+}
+
+.phoneScreen {
+  inset: 0.9cqw;
+  border-radius: 2.2cqw;
+  background: #1b120e;
+}
+
+.readerPage,
+.phonePage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+}
+
+.readerPage {
+  width: 88%;
+  box-shadow: 0 0.6cqw 1.6cqw rgba(var(--shadow-rgb), 0.22);
+  border-radius: 0.2cqw;
+}
+
+.readerBar {
+  position: absolute;
+  top: 3.5%;
+  left: 50%;
+  width: 26%;
+  height: 0.55cqw;
+  transform: translateX(-50%);
+  border-radius: 1cqw;
+  background: rgba(var(--shadow-rgb), 0.14);
+}
+
+.readerProgress {
+  position: absolute;
+  left: 14%;
+  right: 14%;
+  bottom: 4.5%;
+  height: 0.45cqw;
+  border-radius: 1cqw;
+  background: rgba(var(--shadow-rgb), 0.12);
+}
+
+.readerProgress span {
+  display: block;
+  width: 9%;
+  height: 100%;
+  border-radius: inherit;
+  background: #d2691e;
+}
+
+.phoneIsland {
+  position: absolute;
+  top: 1cqw;
+  left: 50%;
+  width: 5cqw;
+  height: 1.3cqw;
+  transform: translateX(-50%);
+  border-radius: 1cqw;
+  background: #0b0908;
+}
+
+/* Glass: screens are glossy, unlike the matt book */
+.screenGlass {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(128deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0.02) 38%, rgba(255, 255, 255, 0) 39%);
+}
+
+.deviceShadowTablet,
+.deviceShadowPhone {
+  position: absolute;
+  pointer-events: none;
+  background: rgba(var(--shadow-rgb), 0.3);
+  filter: blur(2.6cqw);
+}
+
+.deviceShadowTablet {
+  left: -25cqw;
+  top: -26cqw;
+  width: 42cqw;
+  height: 56cqw;
+  border-radius: 3cqw;
+  transform: translateZ(-4cqw);
+}
+
+.deviceShadowPhone {
+  left: 8cqw;
+  top: -4cqw;
+  width: 17.5cqw;
+  height: 36cqw;
+  border-radius: 3cqw;
+  transform: translateZ(4cqw);
+  opacity: 0.8;
+}
+
+/* ── Reduced motion ────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .sway,
+  .book,
+  .openBook {
+    animation: none;
+  }
+
+  .stage *,
+  .stage *::before,
+  .stage *::after {
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
+}

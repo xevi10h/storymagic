@@ -806,8 +806,8 @@
       "colophonText": "Ce livre a été créé avec amour par Meapica. Chaque histoire est unique, écrite et illustrée spécialement pour son protagoniste. Parce que chaque enfant mérite d'être le héros de sa propre aventure.",
       "synopsisFallback": "{name} s'apprête à vivre l'aventure la plus extraordinaire de sa vie.",
       "loadError": "Nous n'avons pas pu ouvrir ce livre. Vérifiez votre connexion et rechargez la page.",
-      "ctaPhysical": "Commander le livre {deName} · {price} TTC",
-      "ctaDigital": "Télécharger le livre {deName} · {price} TTC",
+      "ctaPhysical": "Commander le livre {deName} · {price}",
+      "ctaDigital": "Télécharger le livre {deName} · {price}",
       "stickyCtaPhysical": "Commander",
       "stickyCtaDigital": "Télécharger",
       "shippingIncluded": "Livraison incluse",
@@ -815,7 +815,11 @@
       "wantIt": "Je le veux",
       "previewOutdatedTitle": "Cet aperçu ne peut plus être acheté",
       "previewOutdatedBody": "Il a été créé avec une version précédente de Meapica et nous ne pouvons pas l'illustrer en qualité finale. Recréez le livre avec le même personnage : cela ne prend qu'une minute et l'aperçu est gratuit.",
-      "previewOutdatedCta": "Le recréer"
+      "previewOutdatedCta": "Le recréer",
+      "notAccessibleTitle": "Cette histoire a été ouverte dans un autre navigateur",
+      "notAccessibleBody": "Par sécurité, chaque histoire n'est visible que dans le navigateur où elle a été créée ou dans votre compte. Ouvrez-la depuis le lien que nous vous avons envoyé par e-mail, ou connectez-vous si vous l'avez enregistrée dans votre compte.",
+      "notAccessibleLogin": "Se connecter",
+      "notAccessibleCreate": "Créer une nouvelle histoire"
     },
     "errors": {
       "saveFailed": "Nous n'avons pas pu enregistrer votre livre. Vérifiez votre connexion et appuyez à nouveau sur le bouton : tout ce que vous avez saisi est toujours là.",
@@ -859,6 +863,9 @@
       "glassesFrame_dark": "Monture foncée",
       "glassesFrame_red": "Monture rouge",
       "freckles": "Taches de rousseur",
+      "favoriteColor": "Couleur préférée",
+      "favoriteColorHint": "Facultatif. Elle habillera sa veste et les détails du livre.",
+      "favoriteColorNone": "Pas de préférence",
       "avatarNote": "Son apparence dans le livre",
       "photoNote": "Nous dessinerons son personnage à partir de sa photo",
       "photoRequired": "Envoyez une photo ou revenez à « Créez-le »"
@@ -929,7 +936,7 @@
     },
     "sendPreview": {
       "title": "Vous déciderez plus tard ?",
-      "hint": "Nous vous envoyons le lien de l'aperçu pour le regarder tranquillement sur cet appareil. Sans abonnement.",
+      "hint": "Nous vous envoyons un lien vers l'aperçu pour le regarder tranquillement sur n'importe quel appareil, ou le transférer. Sans abonnement.",
       "placeholder": "vous@email.com",
       "send": "Envoyez-le-moi",
       "sending": "Envoi…",
@@ -957,6 +964,70 @@
         "rate_limited": "Vous avez téléchargé beaucoup de photos d'affilée. Patientez un peu et réessayez.",
         "upload_failed": "Nous n'avons pas pu télécharger la photo. Veuillez réessayer."
       }
+    },
+    "purchase": {
+      "scenesShown": "{shown} scènes sur {total}",
+      "editTitle": "Changer le titre",
+      "editPage": "Modifier",
+      "editLinks": "Changer le <title>titre</title>, la <dedication>dédicace</dedication> ou l’<look>apparence</look>",
+      "desktopHint": "Cliquez sur les pages ou utilisez les flèches ← → du clavier",
+      "headline": "Le livre {deName}, imprimé et livré chez vous",
+      "specs": "30 pages · 12 scènes illustrées · 20 × 20 cm · imprimé dans l'UE",
+      "mockupAlt": "Le livre {deName} en {format} : {title}",
+      "formatsLegend": "Choisissez le format",
+      "hardcoverGap": "Seulement {diff} de plus que la souple",
+      "freeShipping": "Livraison offerte",
+      "pdfIncluded": "PDF inclus",
+      "pdfInstant": "Numérique seulement, sans livre imprimé",
+      "pdfOnly": "Seulement le PDF ? {price} TTC",
+      "extraCopy": "Un autre exemplaire pour les grands-parents",
+      "extraCopyNote": "imprimé en même temps",
+      "deliverySameMonth": "Livré entre le {fromDay} et le {to}",
+      "deliveryCrossMonth": "Livré entre le {from} et le {to}",
+      "deliveryEstimate": "date estimée",
+      "deliveryArea": "Livraison offerte en Espagne péninsulaire et aux Baléares",
+      "digitalDelivery": "Téléchargeable dès que nous avons fini de l'illustrer",
+      "ctaNotePhysical": "TVA et livraison incluses",
+      "ctaNoteDigital": "TVA incluse",
+      "trustPreview": "Vous avez vu le livre avant de payer",
+      "trustPayment": "Paiement sécurisé avec Stripe",
+      "trustMadeIn": "Fait à Barcelone, imprimé dans l'UE",
+      "trustReprint": "Arrivé abîmé ou avec un défaut d'impression ? Nous le remplaçons sans frais",
+      "help": "Des questions ? Écrivez-nous à",
+      "teaserComingTitle": "La suite de l'histoire",
+      "teaserComingMore": "…et la fin, avec la fiche de héros {deName}",
+      "teaserOrderTitle": "Le livre {deName}, complet",
+      "teaserOrderBody": "12 scènes illustrées, imprimé et livré chez vous",
+      "teaserOrderPrice": "À partir de {price}",
+      "teaserOrderCta": "Choisir le format",
+      "stickyFrom": "Son livre imprimé · dès {price}",
+      "stickyNote": "TVA incluse · Livraison offerte",
+      "stickyChoose": "Je le veux",
+      "secondaryTitle": "Vous décidez plus tard ?",
+      "faqTitle": "Avant de commander",
+      "faq": {
+        "delivery": {
+          "q": "Quand arrive-t-il ?",
+          "a": "Il est imprimé à la demande et met 7 à 10 jours ouvrés. Nous vous envoyons le suivi par e-mail à l'expédition."
+        },
+        "canarias": {
+          "q": "Livrez-vous aux Canaries, à Ceuta ou à Melilla ?",
+          "a": "Pour l'instant nous livrons seulement l'Espagne péninsulaire et les Baléares. Le PDF peut s'acheter depuis n'importe où."
+        },
+        "quality": {
+          "q": "Comment est le livre ?",
+          "a": "20 × 20 cm, 30 pages en couleur sur papier couché satiné de 170 g. La couverture rigide a un pelliculage mat et c'est la plus résistante."
+        },
+        "changes": {
+          "q": "Puis-je changer quelque chose ?",
+          "a": "Oui, avant de commander : le titre, la dédicace et l'apparence. Nous l'imprimons tel que vous le voyez ici."
+        },
+        "returns": {
+          "q": "Et s'il arrive avec un problème ?",
+          "a": "Livre fait sur mesure, il n'a pas de droit de rétractation, mais s'il arrive avec un défaut de fabrication, écrivez-nous et nous trouvons une solution."
+        }
+      },
+      "softcoverNote": "Couverture souple, plus légère"
     }
   },
   "checkout": {
@@ -1175,7 +1246,7 @@
       }
     },
     "withdrawal": {
-      "label": "J'accepte que le livre soit fabriqué sur mesure et que le PDF me soit livré dès qu'il est prêt, et je comprends que je perds donc le droit de rétractation (art. 103 c et m, droit espagnol de la consommation).",
+      "label": "J'accepte de recevoir le PDF dès qu'il est prêt et je comprends que, s'agissant d'un livre sur mesure, je n'ai pas de droit de rétractation.",
       "required": "Cochez la case pour continuer vers le paiement."
     }
   },
@@ -2177,5 +2248,35 @@
     },
     "footerLink": "Arrivera-t-il pour les Rois mages ?",
     "seoCallout": "Arrivera-t-il à temps ? Voir les dates limites de Noël et des Rois mages"
+  },
+  "sharePreview": {
+    "share": {
+      "button": "Partager",
+      "sharing": "Préparation…",
+      "copied": "Lien copié",
+      "copyManually": "Copiez ce lien :",
+      "error": "Impossible de créer le lien. Réessayez.",
+      "shareTitle": "Le livre {deName}",
+      "shareText": "Regarde l'histoire que je prépare pour {name} :",
+      "hint": "Toute personne ayant le lien verra l'aperçu (sans pouvoir le modifier) pendant 30 jours."
+    },
+    "view": {
+      "metaTitle": "Le livre {deName} · Aperçu",
+      "badge": "Aperçu partagé",
+      "intro": "Un avant-goût de l'histoire personnalisée {deName} : les premières pages. La suite est une surprise.",
+      "restTitle": "La suite de l'histoire est une surprise",
+      "restBody": "Quelqu'un qui aime beaucoup {name} prépare ce livre. Vous en voulez un pour un autre enfant ? Avec son prénom, son apparence et sa propre aventure, prêt en quelques minutes.",
+      "createCta": "Créez le vôtre",
+      "ownerHint": "C'est votre histoire ?",
+      "ownerLogin": "Connectez-vous pour la terminer",
+      "readOnly": "Lecture seule",
+      "lockedDescription": "La suite de l'histoire est une surprise pour {name}."
+    },
+    "notFound": {
+      "title": "Ce lien ne fonctionne plus",
+      "body": "Il a expiré ou il est incomplet. Demandez un nouveau lien à la personne qui vous l'a envoyé : elle peut le créer en un instant depuis son histoire.",
+      "createCta": "Créez votre propre histoire",
+      "home": "Aller sur Meapica"
+    }
   }
 }

@@ -13,6 +13,13 @@ const SHOTS = process.env.SHOTS_DIR ?? "test-results/flow-v2";
 const PHOTO_FLAG = process.env.PHOTO_FLAG === "1";
 const STORY_ID = "11111111-2222-4333-8444-555555555555";
 const NAME = "Lucía Núria l'Olivé";
+/** Favourite colour picked on screen 2 (FAV_COLOR=red|blue|green|… to screenshot other palettes). */
+const FAVORITE_ORDER = ["none", "red", "blue", "green", "purple", "orange", "yellow", "pink", "turquoise"];
+const FAVORITE_HEX: Record<string, string> = {
+  red: "#E53935", blue: "#1E88E5", green: "#43A047", purple: "#8E24AA",
+  orange: "#FB8C00", yellow: "#FDD835", pink: "#EC407A", turquoise: "#00ACC1",
+};
+const FAV_COLOR = process.env.FAV_COLOR ?? "blue";
 
 const VIEWPORTS = {
   desktop: { viewport: { width: 1440, height: 900 } },
@@ -74,10 +81,11 @@ interface Mock {
   status: string;
   dedication: string | null;
   sender: string | null;
+  favoriteColor: string | null;
 }
 
 async function installMocks(page: Page): Promise<Mock> {
-  const mock: Mock = { requests: [], lightCalls: 0, status: "draft", dedication: null, sender: null };
+  const mock: Mock = { requests: [], lightCalls: 0, status: "draft", dedication: null, sender: null, favoriteColor: null };
 
   await page.route(/\/auth\/v1\//, async (route: Route) => {
     const url = route.request().url();
@@ -118,9 +126,10 @@ async function installMocks(page: Page): Promise<Mock> {
       return route.fulfill({ json: { photoPath: `${USER.id}/photo-abc.jpg` } });
     }
     if (path === "/api/stories" && req.method() === "POST") {
-      const b = body as { dedication?: string; senderName?: string };
+      const b = body as { dedication?: string; senderName?: string; character?: { favoriteColor?: string } };
       mock.dedication = b.dedication ?? null;
       mock.sender = b.senderName || null;
+      mock.favoriteColor = b.character?.favoriteColor || null;
       mock.status = "draft";
       mock.lightCalls = 0;
       return route.fulfill({ json: { storyId: STORY_ID, characterId: "c1" } });
@@ -139,6 +148,7 @@ async function installMocks(page: Page): Promise<Mock> {
     }
     if (path === `/api/stories/${STORY_ID}/title`) return route.fulfill({ json: { success: true } });
     if (path === `/api/stories/${STORY_ID}/send-preview`) return route.fulfill({ json: { sent: true } });
+    if (path === `/api/stories/${STORY_ID}/share`) return route.fulfill({ json: { path: "/es/preview/token" } });
     if (path === `/api/stories/${STORY_ID}` && url.searchParams.get("light") === "true") {
       mock.lightCalls += 1;
       const call = mock.lightCalls;
@@ -159,7 +169,7 @@ async function installMocks(page: Page): Promise<Mock> {
           sender_name: mock.sender,
           generated_text: done ? generatedText() : null,
           characters: {
-            name: NAME, age: 6, gender: "girl", city: null, interests: [], favorite_color: "#E53935",
+            name: NAME, age: 6, gender: "girl", city: null, interests: [], favorite_color: mock.favoriteColor,
             favorite_companion: null, future_dream: null, avatar_url: null,
             hair_color: "#e6c07b", skin_tone: "#eebb99", eye_color: "#1976d2", hairstyle: "curly",
           },
@@ -283,6 +293,12 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
         await expect(page.getByTestId("selected-skin")).toHaveText(/\S/);
         await expect(page.getByTestId("selected-glasses-frame")).toHaveText(/\S/);
         await expect(page.locator('[aria-labelledby="lbl-eyes"] [role=radio]:not([aria-label])')).toHaveCount(0);
+        // Favourite colour: optional (no preference by default), leads the book palette
+        const favGroup = page.locator('[aria-labelledby="lbl-favoriteColor"]');
+        await expect(favGroup.getByRole("radio")).toHaveCount(FAVORITE_ORDER.length);
+        await expect(favGroup.getByRole("radio").first()).toHaveAttribute("aria-checked", "true");
+        await favGroup.getByRole("radio").nth(FAVORITE_ORDER.indexOf(FAV_COLOR)).click();
+        await expect(page.getByTestId("selected-favoriteColor")).toHaveText(/\S/);
         await shot(page, `${tag}-2-protagonist`);
         if (vpName === "mobile") {
           // the portrait stays in view while scrolling the traits
@@ -317,6 +333,8 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
         await page.waitForURL(new RegExp(`/${locale}/crear/${STORY_ID}/generar`));
         const post = mock.requests.find((r) => r.path === "/api/stories")!.body as Record<string, unknown>;
         expect(post.characterPrepId).toBe("prep-123");
+        expect((post.character as { favoriteColor?: string }).favoriteColor).toBe(FAVORITE_HEX[FAV_COLOR] ?? "");
+        expect((post.character as { name?: string }).name).toBe(NAME);
         // The prep is only reused when the Bible matches: both bodies carry the same look.
         const look = ["gender", "age", "skinTone", "hairColor", "eyeColor", "hairstyle", "favoriteColor", "glasses", "freckles"];
         const storyChar = post.character as Record<string, unknown>;
@@ -364,16 +382,16 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
         await page.getByRole("button", { name: COPY[locale].see }).last().click();
         await page.waitForURL(new RegExp(`/crear/${STORY_ID}/preview`));
 
-        // 5 — The book + checklist
-        await expect(page.getByTestId("chip-dedication")).toBeVisible({ timeout: 20_000 });
+        // 5 — The book + in-place edits (✎ on the pages, quiet links under the book)
+        await expect(page.getByTestId("edit-link-dedication")).toBeVisible({ timeout: 20_000 });
         await page.waitForTimeout(3500); // one-shot reveal overlay
         await shot(page, `${tag}-5-book`);
-        await page.getByTestId("chip-dedication").click();
+        await page.getByTestId("edit-link-dedication").click();
         await expect(page.getByRole("dialog")).toBeVisible();
         await expect(page.getByRole("dialog").locator("textarea")).toHaveValue(custom);
         await shot(page, `${tag}-5-dedication-sheet`);
         await page.keyboard.press("Escape");
-        await page.getByTestId("chip-cover").click();
+        await page.getByTestId("edit-link-cover").click();
         await shot(page, `${tag}-5-cover-sheet`);
         await page.keyboard.press("Escape");
 
@@ -605,5 +623,21 @@ test.describe("photo tab", () => {
     await expect.poll(() => mock.requests.some((r) => r.path === "/api/characters/photo" && r.method === "DELETE")).toBe(true);
     await expect(page.getByRole("checkbox")).not.toBeChecked();
     expect(errors).toEqual([]);
+  });
+});
+
+test.describe("child name display form", () => {
+  test.use(VIEWPORTS.desktop);
+  test("lower-case input is capitalised on blur and on Enter", async ({ page }) => {
+    test.skip(PHOTO_FLAG, "flag-off suite");
+    await installMocks(page);
+    await freshStart(page, "es");
+    const input = page.locator("#child-name");
+    await input.fill("  maría   josé d'artagnan ");
+    await page.locator("h1").first().click(); // blur
+    await expect(input).toHaveValue("María José d'Artagnan");
+    await input.fill("pau-joan");
+    await input.press("Enter");
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("Pau-Joan");
   });
 });

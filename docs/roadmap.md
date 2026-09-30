@@ -56,6 +56,10 @@ character lock; per-stage resolution. (commits 5ebc2f1 → a883d60)
 - **Title edits after purchase** re-render nothing: block edits once paid or rebuild the PDF.
 - Bizum/PayPal (payment_method_types is card-only).
 
+## Next steps from favourite-colour palette + name display form (2026-09-30)
+- [ ] Data backfill (owner decision): every character created by flow v2 has `favorite_color = '#E53935'` (old silent default, never asked) → those books now print as deliberate red; `UPDATE characters SET favorite_color = NULL WHERE favorite_color = '#E53935'` would give them the neutral palette. Same for lower-case stored names (`formatChildName` backfill).
+- [ ] Show the chosen colour live on screen 2 (portrait ring / mini endpaper swatch) so parents see what it does.
+
 ## Next steps from commerce block B — Gelato (2026-09-28)
 - **Real paid print** of one hardcover to validate paper, colour and binding (drafts don't print; ~21 € incl. VAT).
 - **Canarias/Ceuta/Melilla** are excluded (decision 2026-09-28) but only enforced after payment (ops alert). Block it before paying: ask the postcode on the paywall, or move to Checkout `ui_mode: custom` with server-side shipping-address validation.

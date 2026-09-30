@@ -35,6 +35,16 @@ export function catalogItemByLookupKey(lookupKey: string | null | undefined): Ca
   return hit ?? null;
 }
 
+/** Help inbox shown to buyers (interim: the working inbox until a Meapica address is live). */
+export const SUPPORT_EMAIL = "admin@casmar.tech";
+
+/**
+ * Paywall trust line "¿Llega dañado o con un defecto de impresión? Te lo reponemos sin
+ * coste". Off until the owner confirms the promise (the terms only say defects are
+ * accepted back); the legal conformity guarantee applies either way.
+ */
+export const SHOW_REPRINT_GUARANTEE = false;
+
 /** Seller identity printed on Stripe invoices and on the order-confirmation receipt. */
 export const SELLER_IDENTITY = "Xavier Huix Trenco (Meapica) · NIF 41649433K · Carrer Aribau 140, 5º, 08036 Barcelona";
 
@@ -148,4 +158,4 @@ export const TOTAL_SCENE_COUNT = 12;
  * (art. 103 c + m LGDCU: personalised book + digital content supplied at once).
  * Bump it whenever that copy (pricing.withdrawal.* in the message files) changes.
  */
-export const WITHDRAWAL_CONSENT_VERSION = "2026-09-28";
+export const WITHDRAWAL_CONSENT_VERSION = "2026-09-30";

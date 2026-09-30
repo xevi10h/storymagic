@@ -17,6 +17,8 @@
  *   --out=DIR        output dir (default artifacts/print-test/<storyId>)
  *   --map-game=FILE  print pp. 28–29 with this MapGame JSON instead of the stored one
  *                    (same map image — layout check of the other age bands)
+ *   --color=X        override the child's favourite colour (palette check): a FAVORITE_COLORS
+ *                    id (red, blue, green, …), a #rrggbb hex, or "none" (neutral palette)
  *
  * Needs `pdftoppm` (poppler) for the PNG contact sheets.
  */
@@ -41,7 +43,8 @@ const args = process.argv.slice(2);
 const storyId = args.find((a) => !a.startsWith("--")) ?? "458956ca-2f76-4b2e-9061-e9d813dd4539";
 const flag = (f: string) => args.includes(f);
 const opt = (name: string) => args.find((a) => a.startsWith(`--${name}=`))?.split("=")[1];
-const outDir = resolve(process.cwd(), opt("out") ?? `artifacts/print-test/${storyId}${flag("--upscale") ? "-upscaled" : ""}${flag("--stress") ? "-stress" : ""}`);
+const colorOpt = opt("color");
+const outDir = resolve(process.cwd(), opt("out") ?? `artifacts/print-test/${storyId}${flag("--upscale") ? "-upscaled" : ""}${flag("--stress") ? "-stress" : ""}${colorOpt ? `-${colorOpt.replace("#", "")}` : ""}`);
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -118,6 +121,15 @@ const mapFile = opt("map-game");
 const mapGame = mapFile ? (JSON.parse(readFileSync(resolve(mapFile), "utf8")) as BookPdfInput["mapGame"]) : (assets?.mapGame ?? null);
 const mapImageUrl = assets?.finalMap?.url && mapGame ? await prefetchImageAsDataUri(assets.finalMap.url) : null;
 
+async function resolveColorOpt(v: string): Promise<string | null> {
+  if (v === "none") return null;
+  if (/^#[0-9a-f]{6}$/i.test(v)) return v;
+  const { FAVORITE_COLORS } = await import("../src/lib/create-store.ts");
+  const hit = FAVORITE_COLORS.find((f) => f.id === v);
+  if (!hit) throw new Error(`--color: unknown colour "${v}"`);
+  return hit.color;
+}
+
 const c = story.characters;
 const generated = structuredClone(story.generated_text);
 let characterName = c.name;
@@ -140,7 +152,7 @@ const input: BookPdfInput = {
   characterGender: c.gender,
   characterCity: c.city,
   characterInterests: c.interests,
-  favoriteColor: c.favorite_color,
+  favoriteColor: colorOpt ? await resolveColorOpt(colorOpt) : c.favorite_color,
   favoriteCompanion: c.favorite_companion,
   futureDream: c.future_dream,
   dedicationText,

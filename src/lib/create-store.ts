@@ -27,6 +27,7 @@ export interface CharacterData {
   glasses: AvatarGlasses;
   freckles: boolean;
   interests: string[];
+  /** FAVORITE_COLORS hex, or "" (no preference). Leads the book palette (lib/template-colors). */
   favoriteColor: string;
   favoriteCompanion: string;
   futureDream: string;
@@ -178,7 +179,7 @@ export const INITIAL_STATE: CreateBookState = {
     glasses: "none",
     freckles: false,
     interests: [],
-    favoriteColor: "#E53935",
+    favoriteColor: "", // optional: "" = no preference → neutral book palette
     favoriteCompanion: "",
     futureDream: "",
   },

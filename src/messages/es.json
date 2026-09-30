@@ -759,7 +759,7 @@
       "personalizedStory": "Una historia personalizada para",
       "createdFor": "Una historia creada especialmente para",
       "end": "Fin",
-      "previewBadge": "Preview",
+      "previewBadge": "Vista previa",
       "lockedTitle": "La aventura continúa...",
       "lockedDescription": "Desbloquea el cuento completo para descubrir cómo sigue la historia.",
       "lockedCta": "Desbloquear cuento",
@@ -796,8 +796,8 @@
       "colophonText": "Este libro ha sido creado con amor por Meapica. Cada historia es única, escrita e ilustrada especialmente para su protagonista. Porque cada niño merece ser el héroe de su propia aventura.",
       "synopsisFallback": "{name} está a punto de vivir la aventura más extraordinaria de su vida.",
       "loadError": "No hemos podido abrir este cuento. Comprueba tu conexión y recarga la página.",
-      "ctaPhysical": "Pedir el libro {deName} · {price} IVA incl.",
-      "ctaDigital": "Descargar el cuento {deName} · {price} IVA incl.",
+      "ctaPhysical": "Pedir el libro {deName} · {price}",
+      "ctaDigital": "Descargar el cuento {deName} · {price}",
       "stickyCtaPhysical": "Pedir el libro",
       "stickyCtaDigital": "Descargar",
       "shippingIncluded": "Envío incluido",
@@ -805,7 +805,11 @@
       "wantIt": "Lo quiero",
       "previewOutdatedTitle": "Esta vista previa ya no se puede comprar",
       "previewOutdatedBody": "Se creó con una versión anterior de Meapica y no podemos ilustrarla con la calidad final. Crea el libro de nuevo con el mismo protagonista: solo tarda un minuto y la vista previa es gratis.",
-      "previewOutdatedCta": "Crear de nuevo"
+      "previewOutdatedCta": "Crear de nuevo",
+      "notAccessibleTitle": "Este cuento se abrió en otro navegador",
+      "notAccessibleBody": "Por seguridad, cada cuento solo se ve en el navegador donde se creó o en tu cuenta. Ábrelo desde el enlace que te enviamos por email, o inicia sesión si lo guardaste en tu cuenta.",
+      "notAccessibleLogin": "Iniciar sesión",
+      "notAccessibleCreate": "Crear un cuento nuevo"
     },
     "errors": {
       "saveFailed": "No hemos podido guardar tu cuento. Revisa tu conexión y vuelve a pulsar el botón: todo lo que has escrito sigue aquí.",
@@ -849,6 +853,9 @@
       "glassesFrame_dark": "Marco oscuro",
       "glassesFrame_red": "Marco rojo",
       "freckles": "Pecas",
+      "favoriteColor": "Color favorito",
+      "favoriteColorHint": "Opcional. Vestirá su chaqueta y los detalles del libro.",
+      "favoriteColorNone": "Sin preferencia",
       "avatarNote": "Así aparecerá en su libro",
       "photoNote": "Lo dibujaremos a partir de su foto",
       "photoRequired": "Sube una foto o vuelve a «Créalo tú»"
@@ -919,7 +926,7 @@
     },
     "sendPreview": {
       "title": "¿Lo decides más tarde?",
-      "hint": "Te enviamos el enlace a la preview para verla con calma en este dispositivo. Sin suscripciones.",
+      "hint": "Te enviamos un enlace a la preview para verla con calma en cualquier dispositivo o reenviarla. Sin suscripciones.",
       "placeholder": "tu@email.com",
       "send": "Envíamela",
       "sending": "Enviando…",
@@ -947,6 +954,70 @@
         "rate_limited": "Has subido muchas fotos seguidas. Espera un rato y vuelve a probar.",
         "upload_failed": "No hemos podido subir la foto. Vuelve a intentarlo."
       }
+    },
+    "purchase": {
+      "scenesShown": "{shown} de {total} escenas",
+      "editTitle": "Cambiar el título",
+      "editPage": "Editar",
+      "editLinks": "Cambiar <title>título</title>, <dedication>dedicatoria</dedication> o <look>aspecto</look>",
+      "desktopHint": "Haz clic en las páginas o usa las flechas ← → del teclado",
+      "headline": "El libro {deName}, impreso y en tu casa",
+      "specs": "30 páginas · 12 escenas ilustradas · 20 × 20 cm · impreso en la UE",
+      "mockupAlt": "Así será el libro {deName} en {format}: {title}",
+      "formatsLegend": "Elige el formato",
+      "hardcoverGap": "Solo {diff} más que la blanda",
+      "freeShipping": "Envío gratis",
+      "pdfIncluded": "PDF incluido",
+      "pdfInstant": "Solo digital, sin libro impreso",
+      "pdfOnly": "¿Solo el PDF? {price} IVA incluido",
+      "extraCopy": "Otro ejemplar para los abuelos",
+      "extraCopyNote": "se imprime a la vez",
+      "deliverySameMonth": "Llega entre el {fromDay} y el {to}",
+      "deliveryCrossMonth": "Llega entre el {from} y el {to}",
+      "deliveryEstimate": "fecha estimada",
+      "deliveryArea": "Envío gratis a España peninsular y Baleares",
+      "digitalDelivery": "Lo descargas en cuanto terminemos de ilustrarlo",
+      "ctaNotePhysical": "IVA y envío incluidos",
+      "ctaNoteDigital": "IVA incluido",
+      "trustPreview": "Has visto su libro antes de pagar",
+      "trustPayment": "Pago seguro con Stripe",
+      "trustMadeIn": "Hecho en Barcelona, impreso en la UE",
+      "trustReprint": "¿Llega dañado o con un defecto de impresión? Te lo reponemos sin coste",
+      "help": "¿Dudas? Escríbenos a",
+      "teaserComingTitle": "Lo que viene en la historia",
+      "teaserComingMore": "…y el final, con la ficha de héroe {deName}",
+      "teaserOrderTitle": "El libro {deName}, completo",
+      "teaserOrderBody": "12 escenas ilustradas, impreso y en tu casa",
+      "teaserOrderPrice": "Desde {price}",
+      "teaserOrderCta": "Elegir formato",
+      "stickyFrom": "Su libro impreso · desde {price}",
+      "stickyNote": "IVA incluido · Envío gratis",
+      "stickyChoose": "Lo quiero",
+      "secondaryTitle": "¿Lo decides más tarde?",
+      "faqTitle": "Antes de pedirlo",
+      "faq": {
+        "delivery": {
+          "q": "¿Cuándo llega?",
+          "a": "Lo imprimimos bajo demanda y tarda de 7 a 10 días laborables. Te avisamos por correo con el seguimiento cuando sale."
+        },
+        "canarias": {
+          "q": "¿Enviáis a Canarias, Ceuta o Melilla?",
+          "a": "De momento solo enviamos a España peninsular y Baleares. El PDF sí puedes comprarlo desde cualquier sitio."
+        },
+        "quality": {
+          "q": "¿Cómo es el libro?",
+          "a": "20 × 20 cm, 30 páginas a todo color en papel estucado seda de 170 g. La tapa dura lleva laminado mate y es la más resistente."
+        },
+        "changes": {
+          "q": "¿Puedo cambiar algo?",
+          "a": "Sí, antes de pedirlo: el título, la dedicatoria y su aspecto. Lo imprimimos tal cual lo ves aquí."
+        },
+        "returns": {
+          "q": "¿Y si llega con algún problema?",
+          "a": "Al ser un libro hecho a medida no admite desistimiento, pero si llega con un defecto de fabricación escríbenos y lo solucionamos."
+        }
+      },
+      "softcoverNote": "Portada flexible, más ligera"
     }
   },
   "checkout": {
@@ -1165,7 +1236,7 @@
       }
     },
     "withdrawal": {
-      "label": "Acepto que el libro se crea a medida y que el PDF se me entregue en cuanto esté listo, y entiendo que por eso no tendré derecho de desistimiento (art. 103 c y m LGDCU).",
+      "label": "Acepto recibir el PDF en cuanto esté listo y entiendo que, al ser un libro hecho a medida, no tengo derecho de desistimiento.",
       "required": "Marca la casilla para continuar con el pago."
     }
   },
@@ -2167,5 +2238,35 @@
     },
     "footerLink": "¿Llega a tiempo para Reyes?",
     "seoCallout": "¿Llega a tiempo? Consulta las fechas límite de Navidad y Reyes"
+  },
+  "sharePreview": {
+    "share": {
+      "button": "Compartir",
+      "sharing": "Preparando…",
+      "copied": "Enlace copiado",
+      "copyManually": "Copia este enlace:",
+      "error": "No se ha podido crear el enlace. Inténtalo de nuevo.",
+      "shareTitle": "El libro {deName}",
+      "shareText": "Mira el cuento que estoy preparando para {name}:",
+      "hint": "Cualquiera con el enlace verá la preview (sin poder editarla) durante 30 días."
+    },
+    "view": {
+      "metaTitle": "El libro {deName} · Preview",
+      "badge": "Preview compartida",
+      "intro": "Un adelanto del cuento personalizado {deName}: las primeras páginas. El resto es sorpresa.",
+      "restTitle": "El resto del cuento es sorpresa",
+      "restBody": "Alguien que quiere mucho a {name} está preparando este libro. ¿Quieres uno así para otro niño o niña? Con su nombre, su aspecto y su aventura, listo en unos minutos.",
+      "createCta": "Crea el tuyo",
+      "ownerHint": "¿Es tu cuento?",
+      "ownerLogin": "Inicia sesión para terminarlo",
+      "readOnly": "Solo lectura",
+      "lockedDescription": "El resto del cuento es una sorpresa para {name}."
+    },
+    "notFound": {
+      "title": "Este enlace ya no funciona",
+      "body": "Ha caducado o no está completo. Pide a quien te lo envió un enlace nuevo: lo genera en un momento desde su cuento.",
+      "createCta": "Crea tu propio cuento",
+      "home": "Ir a Meapica"
+    }
   }
 }

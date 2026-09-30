@@ -14,6 +14,8 @@ interface FullscreenPageViewerProps {
   initialPage: number;
   onClose: () => void;
   onPageChange: (pageIndex: number) => void;
+  /** Preview only: CTA on the teaser_order page */
+  onOrder?: () => void;
 }
 
 export default function FullscreenPageViewer({
@@ -24,6 +26,7 @@ export default function FullscreenPageViewer({
   initialPage,
   onClose,
   onPageChange,
+  onOrder,
 }: FullscreenPageViewerProps) {
   const t = useTranslations("crear.preview");
   const [current, setCurrent] = useState(initialPage);
@@ -111,6 +114,7 @@ export default function FullscreenPageViewer({
             gender={gender}
             favoriteColor={favoriteColor}
             pageNumber={pages[current].type === "scene" ? getBookPageNumber(pages, current) : undefined}
+            onOrder={onOrder}
           />
         </div>
       </div>

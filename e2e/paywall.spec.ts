@@ -13,8 +13,8 @@ const VIEWPORTS = {
 } as const;
 
 const COPY = {
-  es: { hard: /Tapa dura/, soft: /Tapa blanda/, digital: /PDF Digital/, extra: /Ejemplar extra/, required: /Marca la casilla/, outdated: /ya no se puede comprar/, recreate: /Crear de nuevo/ },
-  ca: { hard: /Tapa dura/, soft: /Tapa tova/, digital: /PDF Digital/, extra: /Exemplar extra/, required: /Marca la casella/, outdated: /ja no es pot comprar/, recreate: /Crear de nou/ },
+  es: { pdfOnly: /Solo el PDF/, required: /Marca la casilla/, outdated: /ya no se puede comprar/, recreate: /Crear de nuevo/, delivery: /Llega entre el/, teaser: /Lo que viene en la historia/ },
+  ca: { pdfOnly: /Només el PDF/, required: /Marca la casella/, outdated: /ja no es pot comprar/, recreate: /Crear de nou/, delivery: /Arriba entre el/, teaser: /El que ve a la història/ },
 } as const;
 type Locale = keyof typeof COPY;
 
@@ -57,6 +57,7 @@ async function mockApi(page: Page, opts: { withPlan: boolean; checkoutError?: st
   await page.route(/\/api\//, async (route: Route) => {
     const url = new URL(route.request().url());
     if (url.pathname === `/api/stories/${STORY_ID}`) return route.fulfill({ json: story(opts.withPlan) });
+    if (url.pathname === `/api/stories/${STORY_ID}/share`) return route.fulfill({ json: { path: "/es/preview/token" } });
     if (url.pathname === "/api/checkout") {
       checkoutBodies.push(route.request().postDataJSON());
       if (opts.checkoutError) return route.fulfill({ status: 409, json: { error: opts.checkoutError } });
@@ -76,15 +77,17 @@ function trackErrors(page: Page) {
 }
 
 const section = (page: Page) => page.locator("#checkout-section");
-const card = (page: Page, re: RegExp) => section(page).locator("button").filter({ hasText: re }).first();
-const mainCta = (page: Page) => section(page).locator("button").filter({ hasText: /IVA incl\./ }).first();
+const format = (page: Page, key: "hardcover" | "softcover" | "digital_pdf") => page.getByTestId(`format-${key}`);
+const extra = (page: Page) => page.getByTestId("extra-copy");
+const mainCta = (page: Page) => page.getByTestId("checkout-cta");
+const sticky = (page: Page) => page.getByTestId("sticky-buy").locator("button");
 
 for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
   for (const locale of ["es", "ca"] as Locale[]) {
     test.describe(`${locale} ${vpName}`, () => {
       test.use(vp);
 
-      test(`consent gate, extra-copy price per format, checkout body [${locale} ${vpName}]`, async ({ page }) => {
+      test(`formats, extra copy per format, consent gate, checkout body [${locale} ${vpName}]`, async ({ page }) => {
         const errors = trackErrors(page);
         const bodies = await mockApi(page, { withPlan: true });
         const c = COPY[locale];
@@ -92,27 +95,29 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
         await section(page).waitFor();
         await section(page).scrollIntoViewIfNeeded();
 
+        // Hardcover pre-selected; delivery date next to the CTA; VAT next to every price.
+        await expect(format(page, "hardcover").locator("input")).toBeChecked();
+        await expect(section(page).getByTestId("delivery-line")).toContainText(c.delivery);
+        await expect(format(page, "hardcover")).toContainText(/49,90\s*€/);
+        await expect(format(page, "hardcover")).toContainText(/IVA incl/);
+
         // Extra copy follows the book's format.
-        await card(page, c.hard).click();
-        const extra = section(page).locator("button").filter({ hasText: c.extra });
-        await expect(extra).toContainText("29,90");
-        await card(page, c.soft).click();
-        await expect(extra).toContainText("19,90");
-        await extra.click();
-        await expect(section(page).getByText(/54,80\s*€/).first()).toBeVisible(); // 34,90 + 19,90
-        await card(page, c.hard).click();
-        await expect(section(page).getByText(/79,80\s*€/).first()).toBeVisible();
-        // Digital: no add-ons.
-        await card(page, c.digital).click();
-        await expect(extra).toHaveCount(0);
-        await card(page, c.hard).click();
-        await extra.click();
+        await expect(extra(page)).toContainText("29,90");
+        await format(page, "softcover").click();
+        await expect(extra(page)).toContainText("19,90");
+        await extra(page).click();
+        await expect(mainCta(page)).toContainText(/54,80\s*€/); // 34,90 + 19,90
+        await format(page, "hardcover").click();
+        await expect(mainCta(page)).toContainText(/79,80\s*€/);
+        // PDF only via the text link: no add-ons, back to printed keeps working.
+        await section(page).getByRole("button", { name: c.pdfOnly }).click();
+        await expect(format(page, "digital_pdf").locator("input")).toBeChecked();
+        await expect(extra(page)).toHaveCount(0);
+        await expect(mainCta(page)).toContainText(/9,90\s*€/);
+        await format(page, "hardcover").click();
+        await extra(page).click();
 
-        // Every price carries "IVA incl."
-        await expect(section(page).getByText(/IVA incl/).first()).toBeVisible();
-
-        // No consent → blocked, message, no request.
-        await page.locator("#withdrawal-consent").scrollIntoViewIfNeeded();
+        // No consent → blocked in place, message, no request.
         await mainCta(page).click();
         await expect(page.getByText(c.required)).toBeVisible();
         expect(bodies).toHaveLength(0);
@@ -120,7 +125,6 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
 
         await page.locator("#withdrawal-consent input").check();
         await expect(page.getByText(c.required)).toHaveCount(0);
-        await page.screenshot({ path: `${SHOTS}/${locale}-${vpName}-consent-ok.png` });
         await mainCta(page).click();
         await page.waitForURL("**/__stripe_mock");
         expect(bodies).toHaveLength(1);
@@ -128,22 +132,44 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
         expect(errors).toEqual([]);
       });
 
+      test(`preview ends on the chapters + printed book, not a padlock [${locale} ${vpName}]`, async ({ page }) => {
+        await mockApi(page, { withPlan: true });
+        await page.goto(`/${locale}/crear/${STORY_ID}/preview`);
+        await section(page).waitFor();
+        await expect(page.getByText(COPY[locale].teaser)).toHaveCount(1);
+        // The old blank padlock page ("Desbloquear cuento") is gone; the printed book closes the preview.
+        await expect(page.getByText(/Desbloquear cuento|Desbloquejar conte/)).toHaveCount(0);
+        await expect(page.getByTestId("checkout-cta")).toHaveCount(1);
+      });
+
       if (vpName === "mobile") {
-        test(`sticky buy bar needs consent [${locale}]`, async ({ page }) => {
+        test(`sticky bar: formats first, then a soft consent nudge, never the error [${locale}]`, async ({ page }) => {
           const bodies = await mockApi(page, { withPlan: true });
           await page.goto(`/${locale}/crear/${STORY_ID}/preview`);
           await section(page).waitFor();
-          // Scroll to the paywall once (sticky bar then pays directly), then back up.
-          await section(page).scrollIntoViewIfNeeded();
-          await page.waitForTimeout(300);
+          await page.waitForTimeout(500);
+          await expect(sticky(page)).toBeVisible();
+          // 1st tap: the format choice comes into view (below the sticky header).
+          await sticky(page).click();
+          await expect(page.locator("#formats")).toBeInViewport();
+          await expect(page.getByText(COPY[locale].required)).toHaveCount(0);
+          const top = await page.locator("#formats").evaluate((el) => el.getBoundingClientRect().top);
+          const header = await page.locator("header").evaluate((el) => el.getBoundingClientRect().bottom);
+          expect(top).toBeGreaterThanOrEqual(header);
+          // Choose → back to the top → the sticky now leads to the consent line, softly.
+          await format(page, "softcover").click();
           await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
-          const sticky = page.locator("div.fixed.inset-x-0.bottom-0 button");
-          await expect(sticky).toBeVisible();
-          await sticky.click();
-          await expect(page.getByText(COPY[locale].required)).toBeVisible();
+          await expect(sticky(page)).toBeVisible();
+          await sticky(page).click();
           await expect(page.locator("#withdrawal-consent")).toBeInViewport();
+          await expect(page.getByText(COPY[locale].required)).toHaveCount(0);
           expect(bodies).toHaveLength(0);
-          await page.screenshot({ path: `${SHOTS}/${locale}-mobile-sticky-consent.png` });
+          // Consent given → the sticky (or the CTA now in view) goes straight to Stripe.
+          await page.locator("#withdrawal-consent input").check();
+          await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+          await sticky(page).click();
+          await page.waitForURL("**/__stripe_mock");
+          expect(bodies[0]).toMatchObject({ format: "softcover", withdrawalConsent: true });
         });
       }
 

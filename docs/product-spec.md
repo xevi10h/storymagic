@@ -77,7 +77,7 @@ Each template is identified by an English slug and is backed by a branching stor
 
 | Variable | Type | Required | Description |
 |----------|------|----------|-------------|
-| `child_name` | string | Yes | Child's first name |
+| `child_name` | string | Yes | Child's name, stored in display form (`formatChildName`: "xavi" → "Xavi") |
 | `gender` | enum | Yes | "boy" / "girl" / "neutral" |
 | `age` | number (1-12) | Yes | Child's age |
 | `hair_color` | string | Yes | Hair color/style |
@@ -85,7 +85,7 @@ Each template is identified by an English slug and is backed by a branching stor
 | `eye_color` | string | Yes | Eye color |
 | `interests` | string[] (up to 4) | Yes | Child's interests (space, animals, sports, castles, dinosaurs, music) |
 | `city` | string | Yes | City where the child lives |
-| `favorite_color` | string | No | Favorite color (used as the book's theme accent) |
+| `favorite_color` | string | No | Favourite colour (hex of `FAVORITE_COLORS`, asked on screen 2, optional). Leads the whole book palette — accents, titles, ornaments, tinted text pages, endpapers, cover/spine deep tone — in print and web (`src/lib/template-colors.ts`), plus the Character Bible jacket. Null → neutral warm palette. |
 | `favorite_companion` | string | No | Best friend / companion |
 | `sender_name` | string | No | Gift sender's name (if it's a gift) |
 | `custom_dedication` | string | No | Custom dedication message |
@@ -106,6 +106,8 @@ Each template is identified by an English slug and is backed by a branching stor
 | Digital PDF (instant) | +5 EUR | Immediate PDF version of the book |
 | Second copy (discounted) | +15 EUR | Additional softcover copy |
 | Collection discount | 3 books = -20% | Encourage multi-purchase / saga adoption |
+
+Live today: extra copy only (hardcover 29,90 € / softcover 19,90 €, same format, printed at the same time; shown on the paywall as one checkbox line "Otro ejemplar para los abuelos"). The Pack Aventura is off (`ADDON_ENABLED`), no collection discount.
 
 All prices above (and the base book prices) are final VAT-inclusive consumer prices (B2C). Stripe Prices use `tax_behavior: inclusive`; the UI always shows "IVA incluido" next to the amount.
 
@@ -135,6 +137,7 @@ All prices above (and the base book prices) are final VAT-inclusive consumer pri
 - **Site-wide banner** (`src/components/seasonal/SeasonalBanner.tsx`, rendered by the marketing `Navbar`): visible 1 Nov – 5 Jan, shows the nearest open cut-off, then promotes the PDF once no printed book arrives; hidden on the page itself; dismissible per message (localStorage `meapica.seasonBanner.dismissed`, try/catch + in-memory fallback).
 - **Dev preview**: append `?now=YYYY-MM-DD` to any page (ignored in production).
 - Linked from the footer and the `gifts/christmas` + `gifts/three-kings` SEO pages.
+- **Paywall delivery line** (2026-09-30): `deliveryWindow(today, format)` in `src/lib/shipping.ts` = the customer promise (`PROMISED_BUSINESS_DAYS`, 7–10 business days, not the measured Gelato days) counted from the day after the order, skipping weekends and Spanish national holidays (1/1, 6/1, Good Friday, 1/5, 15/8, 12/10, 1/11, 6/12, 8/12, 25/12). Shown per format next to the CTA as "Llega entre el X y el Y (fecha estimada)"; from 1 Nov the paywall also shows the season cut-off linking to this page.
 
 ## Waitlist (Pre-Launch Gate)
 

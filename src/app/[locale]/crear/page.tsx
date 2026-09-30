@@ -25,6 +25,7 @@ import { usePersistedState, STORAGE_KEY } from "@/hooks/usePersistedState";
 import { ensureGuestSession } from "@/lib/guest-session";
 import CreationHeader from "@/components/crear/CreationHeader";
 import StepName from "@/components/crear/StepName";
+import { formatChildName } from "@/lib/child-name";
 import StepProtagonist from "@/components/crear/StepProtagonist";
 import StepAdventure from "@/components/crear/StepAdventure";
 
@@ -79,7 +80,7 @@ function CrearPageContent() {
             const { character: ch } = await res.json();
             character = {
               ...INITIAL_STATE.character,
-              name: ch.name ?? "",
+              name: formatChildName(ch.name ?? ""),
               gender: ch.gender ?? "boy",
               age: ch.age ?? 6,
               hairColor: ch.hair_color ?? INITIAL_STATE.character.hairColor,
@@ -90,6 +91,7 @@ function CrearPageContent() {
               freckles: ch.freckles === true,
               interests: ch.interests ?? [],
               city: ch.city ?? "",
+              favoriteColor: ch.favorite_color ?? "",
             };
           }
         } catch {
@@ -331,7 +333,12 @@ function CrearPageContent() {
           character={state.character}
           selectedTemplate={state.selectedTemplate}
           onUpdateCharacter={updateCharacter}
-          onNext={() => hasName && setStep(2)}
+          onNext={() => {
+            if (!hasName) return;
+            // Enter submits without a blur: normalise here too (lib/child-name)
+            updateCharacter({ name: formatChildName(state.character.name) });
+            setStep(2);
+          }}
         />
       )}
       {step === 2 && (

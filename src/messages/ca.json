@@ -769,7 +769,7 @@
       "personalizedStory": "Una història personalitzada per a",
       "createdFor": "Una història creada especialment per a",
       "end": "Fi",
-      "previewBadge": "Preview",
+      "previewBadge": "Vista prèvia",
       "lockedTitle": "L'aventura continua...",
       "lockedDescription": "Desbloqueja el conte complet per descobrir com segueix la història.",
       "lockedCta": "Desbloquejar conte",
@@ -806,8 +806,8 @@
       "colophonText": "Aquest llibre ha estat creat amb amor per Meapica. Cada història és única, escrita i il·lustrada especialment per al seu protagonista. Perquè cada nen mereix ser l'heroi de la seva pròpia aventura.",
       "synopsisFallback": "{name} està a punt de viure l'aventura més extraordinària de la seva vida.",
       "loadError": "No hem pogut obrir aquest conte. Comprova la connexió i torna a carregar la pàgina.",
-      "ctaPhysical": "Demanar el llibre {deName} · {price} IVA incl.",
-      "ctaDigital": "Descarregar el conte {deName} · {price} IVA incl.",
+      "ctaPhysical": "Demanar el llibre {deName} · {price}",
+      "ctaDigital": "Descarregar el conte {deName} · {price}",
       "stickyCtaPhysical": "Demanar el llibre",
       "stickyCtaDigital": "Descarregar",
       "shippingIncluded": "Enviament inclòs",
@@ -815,7 +815,11 @@
       "wantIt": "El vull",
       "previewOutdatedTitle": "Aquesta previsualització ja no es pot comprar",
       "previewOutdatedBody": "Es va crear amb una versió anterior de Meapica i no la podem il·lustrar amb la qualitat final. Crea el llibre de nou amb el mateix protagonista: només triga un minut i la previsualització és gratuïta.",
-      "previewOutdatedCta": "Crear de nou"
+      "previewOutdatedCta": "Crear de nou",
+      "notAccessibleTitle": "Aquest conte es va obrir en un altre navegador",
+      "notAccessibleBody": "Per seguretat, cada conte només es veu al navegador on es va crear o al teu compte. Obre'l des de l'enllaç que et vam enviar per correu, o inicia sessió si el vas desar al teu compte.",
+      "notAccessibleLogin": "Iniciar sessió",
+      "notAccessibleCreate": "Crear un conte nou"
     },
     "errors": {
       "saveFailed": "No hem pogut desar el conte. Revisa la connexió i torna a prémer el botó: tot el que has escrit continua aquí.",
@@ -859,6 +863,9 @@
       "glassesFrame_dark": "Muntura fosca",
       "glassesFrame_red": "Muntura vermella",
       "freckles": "Pigues",
+      "favoriteColor": "Color preferit",
+      "favoriteColorHint": "Opcional. Pintarà la seva jaqueta i els detalls del llibre.",
+      "favoriteColorNone": "Cap en concret",
       "avatarNote": "Així apareixerà al seu llibre",
       "photoNote": "El dibuixarem a partir de la seva foto",
       "photoRequired": "Puja una foto o torna a «Crea'l tu»"
@@ -929,7 +936,7 @@
     },
     "sendPreview": {
       "title": "Ho decideixes més tard?",
-      "hint": "T'enviem l'enllaç a la preview per mirar-la amb calma en aquest dispositiu. Sense subscripcions.",
+      "hint": "T'enviem un enllaç a la preview per mirar-la amb calma a qualsevol dispositiu o reenviar-la. Sense subscripcions.",
       "placeholder": "el.teu@email.com",
       "send": "Envia-me-la",
       "sending": "Enviant…",
@@ -957,6 +964,70 @@
         "rate_limited": "Has pujat moltes fotos seguides. Espera una estona i torna-ho a provar.",
         "upload_failed": "No hem pogut pujar la foto. Torna-ho a provar."
       }
+    },
+    "purchase": {
+      "scenesShown": "{shown} de {total} escenes",
+      "editTitle": "Canviar el títol",
+      "editPage": "Editar",
+      "editLinks": "Canviar <title>títol</title>, <dedication>dedicatòria</dedication> o <look>aspecte</look>",
+      "desktopHint": "Fes clic a les pàgines o fes servir les fletxes ← → del teclat",
+      "headline": "El llibre {deName}, imprès i a casa teva",
+      "specs": "30 pàgines · 12 escenes il·lustrades · 20 × 20 cm · imprès a la UE",
+      "mockupAlt": "Així serà el llibre {deName} en {format}: {title}",
+      "formatsLegend": "Tria el format",
+      "hardcoverGap": "Només {diff} més que la tova",
+      "freeShipping": "Enviament gratuït",
+      "pdfIncluded": "PDF inclòs",
+      "pdfInstant": "Només digital, sense llibre imprès",
+      "pdfOnly": "Només el PDF? {price} IVA inclòs",
+      "extraCopy": "Un altre exemplar per als avis",
+      "extraCopyNote": "s'imprimeix alhora",
+      "deliverySameMonth": "Arriba entre el {fromDay} i el {to}",
+      "deliveryCrossMonth": "Arriba entre el {from} i el {to}",
+      "deliveryEstimate": "data estimada",
+      "deliveryArea": "Enviament gratuït a l'Espanya peninsular i les Balears",
+      "digitalDelivery": "El descarregues quan acabem d'il·lustrar-lo",
+      "ctaNotePhysical": "IVA i enviament inclosos",
+      "ctaNoteDigital": "IVA inclòs",
+      "trustPreview": "Has vist el seu llibre abans de pagar",
+      "trustPayment": "Pagament segur amb Stripe",
+      "trustMadeIn": "Fet a Barcelona, imprès a la UE",
+      "trustReprint": "Arriba malmès o amb un defecte d'impressió? Te'l reposem sense cost",
+      "help": "Dubtes? Escriu-nos a",
+      "teaserComingTitle": "El que ve a la història",
+      "teaserComingMore": "…i el final, amb la fitxa d'heroi {deName}",
+      "teaserOrderTitle": "El llibre {deName}, complet",
+      "teaserOrderBody": "12 escenes il·lustrades, imprès i a casa teva",
+      "teaserOrderPrice": "Des de {price}",
+      "teaserOrderCta": "Triar format",
+      "stickyFrom": "El seu llibre imprès · des de {price}",
+      "stickyNote": "IVA inclòs · Enviament gratuït",
+      "stickyChoose": "El vull",
+      "secondaryTitle": "Ho decideixes més tard?",
+      "faqTitle": "Abans de demanar-lo",
+      "faq": {
+        "delivery": {
+          "q": "Quan arriba?",
+          "a": "L'imprimim sota demanda i triga de 7 a 10 dies laborables. T'avisem per correu amb el seguiment quan surt."
+        },
+        "canarias": {
+          "q": "Envieu a Canàries, Ceuta o Melilla?",
+          "a": "De moment només enviem a l'Espanya peninsular i les Balears. El PDF sí que el pots comprar des de qualsevol lloc."
+        },
+        "quality": {
+          "q": "Com és el llibre?",
+          "a": "20 × 20 cm, 30 pàgines a tot color en paper estucat setí de 170 g. La tapa dura porta laminat mat i és la més resistent."
+        },
+        "changes": {
+          "q": "Puc canviar alguna cosa?",
+          "a": "Sí, abans de demanar-lo: el títol, la dedicatòria i el seu aspecte. L'imprimim tal com el veus aquí."
+        },
+        "returns": {
+          "q": "I si arriba amb algun problema?",
+          "a": "Com que és un llibre fet a mida no admet desistiment, però si arriba amb un defecte de fabricació escriu-nos i ho solucionem."
+        }
+      },
+      "softcoverNote": "Coberta flexible, més lleugera"
     }
   },
   "checkout": {
@@ -1175,7 +1246,7 @@
       }
     },
     "withdrawal": {
-      "label": "Accepto que el llibre es crea a mida i que el PDF se m'entregui quan estigui llest, i entenc que per això no tindré dret de desistiment (art. 103 c i m LGDCU).",
+      "label": "Accepto rebre el PDF quan estigui llest i entenc que, com que és un llibre fet a mida, no tinc dret de desistiment.",
       "required": "Marca la casella per continuar amb el pagament."
     }
   },
@@ -2177,5 +2248,35 @@
     },
     "footerLink": "Arriba a temps per Reis?",
     "seoCallout": "Arriba a temps? Consulta les dates límit de Nadal i Reis"
+  },
+  "sharePreview": {
+    "share": {
+      "button": "Compartir",
+      "sharing": "Preparant…",
+      "copied": "Enllaç copiat",
+      "copyManually": "Copia aquest enllaç:",
+      "error": "No s'ha pogut crear l'enllaç. Torna-ho a provar.",
+      "shareTitle": "El llibre {deName}",
+      "shareText": "Mira el conte que estic preparant per a {name}:",
+      "hint": "Qualsevol amb l'enllaç veurà la preview (sense poder-la editar) durant 30 dies."
+    },
+    "view": {
+      "metaTitle": "El llibre {deName} · Preview",
+      "badge": "Preview compartida",
+      "intro": "Un tast del conte personalitzat {deName}: les primeres pàgines. La resta és sorpresa.",
+      "restTitle": "La resta del conte és sorpresa",
+      "restBody": "Algú que estima molt {name} està preparant aquest llibre. En vols un així per a un altre nen o nena? Amb el seu nom, el seu aspecte i la seva aventura, a punt en uns minuts.",
+      "createCta": "Crea el teu",
+      "ownerHint": "És el teu conte?",
+      "ownerLogin": "Inicia sessió per acabar-lo",
+      "readOnly": "Només lectura",
+      "lockedDescription": "La resta del conte és una sorpresa per a {name}."
+    },
+    "notFound": {
+      "title": "Aquest enllaç ja no funciona",
+      "body": "Ha caducat o no està complet. Demana a qui te l'ha enviat un enllaç nou: el genera en un moment des del seu conte.",
+      "createCta": "Crea el teu propi conte",
+      "home": "Anar a Meapica"
+    }
   }
 }

@@ -129,6 +129,18 @@ export type BookPage =
       templateId: string;
     }
   | { type: "colophon"; storyId: string }
+  /** Preview end, left: the chapters still to come over blurred art from the book. */
+  | { type: "teaser_chapters"; chapters: string[]; firstChapter: number; characterName: string; imageUrl: string | null }
+  /** Preview end, right: the printed book (mockup of the real cover) with price and CTA. */
+  | {
+      type: "teaser_order";
+      title: string;
+      characterName: string;
+      coverUrl: string | null;
+      format: "hardcover" | "softcover" | "pdf";
+      /** Formatted lowest printed price, e.g. "34,90 €" */
+      priceFrom: string;
+    }
   | {
       type: "back";
       title: string;
@@ -161,4 +173,10 @@ export interface BookViewerProps {
   favoriteColor?: string;
   currentPage: number;
   onPageChange: (pageIndex: number) => void;
+  /** Preview only: ✎ buttons on the cover (title) and dedication pages. */
+  onEdit?: (target: "cover" | "dedication") => void;
+  /** Preview only: the teaser_order page's CTA (scrolls to the formats). */
+  onOrder?: () => void;
+  /** Hide the "3 / 10" page count under the book (the preview shows "3 de 12 escenas" instead). */
+  hidePageCount?: boolean;
 }

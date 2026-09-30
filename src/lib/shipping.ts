@@ -168,3 +168,68 @@ export function parseDateOverride(value: string | null | undefined): string | nu
   const d = new Date(`${value}T00:00:00Z`);
   return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === value ? value : null;
 }
+
+// ── Delivery window shown on the paywall ("Llega entre el 9 y el 14 de octubre") ──
+// Follows the customer promise (7-10 business days, as in the checkout and legal
+// copy), not the measured Gelato days above: the promise is what we must keep.
+
+/** Business days from order to door, as promised to the customer, per printed format. */
+export const PROMISED_BUSINESS_DAYS: Record<PhysicalFormat, { min: number; max: number }> = {
+  hardcover: { min: 7, max: 10 },
+  softcover: { min: 7, max: 10 },
+};
+
+/** Easter Sunday (YYYY-MM-DD), anonymous Gregorian algorithm. */
+function easterSunday(year: number): string {
+  const a = year % 19;
+  const b = Math.floor(year / 100);
+  const c = year % 100;
+  const d = Math.floor(b / 4);
+  const e = b % 4;
+  const f = Math.floor((b + 8) / 25);
+  const g = Math.floor((b - f + 1) / 3);
+  const h = (19 * a + b - d - g + 15) % 30;
+  const i = Math.floor(c / 4);
+  const k = c % 4;
+  const l = (32 + 2 * e + 2 * i - h - k) % 7;
+  const m = Math.floor((a + 11 * h + 22 * l) / 451);
+  const month = Math.floor((h + l - 7 * m + 114) / 31);
+  const day = ((h + l - 7 * m + 114) % 31) + 1;
+  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+
+function addDays(date: string, days: number): string {
+  const d = new Date(`${date}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+
+/** Spanish national public holidays (fixed dates + Good Friday) for a year. */
+export function spanishNationalHolidays(year: number): Set<string> {
+  const fixed = ["01-01", "01-06", "05-01", "08-15", "10-12", "11-01", "12-06", "12-08", "12-25"];
+  return new Set([...fixed.map((md) => `${year}-${md}`), addDays(easterSunday(year), -2)]);
+}
+
+/** Whether a YYYY-MM-DD date is a working day (Mon-Fri, not a national holiday). */
+export function isBusinessDay(date: string): boolean {
+  const weekday = new Date(`${date}T00:00:00Z`).getUTCDay();
+  if (weekday === 0 || weekday === 6) return false;
+  return !spanishNationalHolidays(Number(date.slice(0, 4))).has(date);
+}
+
+/** The date `days` business days after `from` (the order day itself never counts). */
+export function addBusinessDays(from: string, days: number): string {
+  let date = from;
+  let left = days;
+  while (left > 0) {
+    date = addDays(date, 1);
+    if (isBusinessDay(date)) left--;
+  }
+  return date;
+}
+
+/** Earliest and latest arrival (YYYY-MM-DD) for a printed book ordered on `today`. */
+export function deliveryWindow(today: string, format: PhysicalFormat): { from: string; to: string } {
+  const { min, max } = PROMISED_BUSINESS_DAYS[format];
+  return { from: addBusinessDays(today, min), to: addBusinessDays(today, max) };
+}

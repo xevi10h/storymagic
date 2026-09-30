@@ -8,11 +8,11 @@ current-flow map, latency analysis, GDPR analysis. Screen-by-screen behaviour as
 | # | Screen | Status | Where |
 |---|--------|--------|-------|
 | 1 | Nombre + live cover | ✅ built | `StepName`, `LiveCover` (`/crear`) |
-| 2 | Protagonista (Créalo tú / Sube una foto) | ✅ built · real `WatercolorAvatar` (pre-rendered matrix, `src/lib/avatar/*`); full matrix rendered 2026-09-28 (950 bases × age band small 3–6 / big 7–12 + eye/freckles/glasses overlays); the vector `AvatarSketch` is only a fallback for a combination missing from the manifest · glasses = shape + frame colour · photo tab behind `NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED` | `StepProtagonist`, `PhotoUploadPanel`, `components/avatar/{ProtagonistAvatar,WatercolorAvatar,AvatarSketch}` |
+| 2 | Protagonista (Créalo tú / Sube una foto) + optional favourite colour (book palette) | ✅ built · real `WatercolorAvatar` (pre-rendered matrix, `src/lib/avatar/*`); full matrix rendered 2026-09-28 (950 bases × age band small 3–6 / big 7–12 + eye/freckles/glasses overlays); the vector `AvatarSketch` is only a fallback for a combination missing from the manifest · glasses = shape + frame colour · photo tab behind `NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED` | `StepProtagonist`, `PhotoUploadPanel`, `components/avatar/{ProtagonistAvatar,WatercolorAvatar,AvatarSketch}` |
 | 3 | Aventura (world + 3 chapters, one screen) | ✅ built | `StepAdventure` |
 | 4 | Mientras se pinta + dedicatoria | ✅ built · real progress from the signed `preview_progress` (light GET); the first image to land (usually scene 1) dresses the hero until the cover arrives | `crear/[storyId]/generar`, `DedicationEditor`, `PATCH /api/stories/{id}/dedication` |
-| 5 | Su libro + checklist chips | ✅ built · pages stream on screen 4 (thumbnails); the flipbook opens once the preview is ready | `crear/[storyId]/preview`, `BookChecklist`, `Sheet` |
-| 6 | Formato + pago | ✅ existing paywall reused, VAT next to every price, "Envíame la preview" added | `SendPreviewEmail`, `POST /api/stories/{id}/send-preview` |
+| 5 | Su libro + ✎ edits in place | ✅ built · chips replaced by ✎ on cover/dedication + quiet edit links (2026-09-30); preview ends on chapters-to-come + printed book | `crear/[storyId]/preview`, `BookEditSheets`, `Sheet`, `lib/preview-teaser.ts` |
+| 6 | Formato + pago | ✅ redesigned 2026-09-30: mockup of their book per format, compact radios, delivery date, one-line consent, sticky bar formats-first (see user-experience.md) | `components/purchase/*`, `SendPreviewEmail`, `SharePreviewButton` |
 
 Removed: `PortraitReveal` (AI portrait gate), `GuestGate`, `Step2CharacterCreation`, `Step5AuthorMessage`, `PathBuilder`, `PageFlip`, their i18n (`crear.step2/step5/portraitReveal/guestGate/regenerateConfirm/path`) and dead CSS. Ending picker dropped (the story closes from the chosen path).
 

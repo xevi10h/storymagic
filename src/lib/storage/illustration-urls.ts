@@ -43,6 +43,18 @@ export type IllustrationAccess = (path: string) => boolean;
 export const SERVICE_ACCESS: IllustrationAccess = () => true;
 
 /**
+ * Access for a read-only share link (lib/share/shared-preview.ts): only the images of
+ * that one story's folder — never portraits (they are not part of the preview).
+ */
+export function storyOnlyAccess(storyId: string): IllustrationAccess {
+  const id = storyId.toLowerCase();
+  return (path) => {
+    const scope = illustrationScope(path);
+    return scope.kind === "story" && scope.storyId === id;
+  };
+}
+
+/**
  * Access for a signed-in user (incl. anonymous guests) over rows they own:
  *  - story images only under the folders of `storyIds` (stories the caller loaded
  *    with the user's RLS client + user_id filter),

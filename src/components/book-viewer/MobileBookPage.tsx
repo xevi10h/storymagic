@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useSyncExternalStore } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { QRCodeSVG } from "qrcode.react";
 import BrandLogo from "@/components/BrandLogo";
 import { getBookColors } from "@/lib/template-colors";
 import { FAVORITE_COLORS } from "@/lib/create-store";
+import { BookMockup } from "@/components/book-mockup";
+import { deName } from "@/lib/creation-flow";
 import type { BookPage } from "./types";
 import EndpaperPattern from "./EndpaperPattern";
 
@@ -155,10 +157,14 @@ interface MobileBookPageProps {
   favoriteColor?: string;
   /** Real book page number (1-based, only for scene pages) */
   pageNumber?: number;
+  /** Preview only: ✎ on the cover (title) and dedication pages */
+  onEdit?: (target: "cover" | "dedication") => void;
+  /** Preview only: CTA of the teaser_order page */
+  onOrder?: () => void;
 }
 
 const MobileBookPage = React.forwardRef<HTMLDivElement, MobileBookPageProps>(
-  function MobileBookPage({ page, templateId, gender, favoriteColor, pageNumber }, ref) {
+  function MobileBookPage({ page, templateId, gender, favoriteColor, pageNumber, onEdit, onOrder }, ref) {
     const colors = getBookColors(templateId, gender, favoriteColor);
     return (
       <div
@@ -179,7 +185,10 @@ const MobileBookPage = React.forwardRef<HTMLDivElement, MobileBookPageProps>(
             "--bk-grad-end": colors.gradientEnd,
           } as React.CSSProperties}
         >
-          <PageContent page={page} templateId={templateId} gender={gender} favoriteColor={favoriteColor} pageNumber={pageNumber} />
+          <PageContent page={page} templateId={templateId} gender={gender} favoriteColor={favoriteColor} pageNumber={pageNumber} onOrder={onOrder} />
+          {onEdit && (page.type === "cover" || page.type === "title_dedication") && (
+            <EditPill onClick={() => onEdit(page.type === "cover" ? "cover" : "dedication")} target={page.type === "cover" ? "cover" : "dedication"} />
+          )}
           {/* Locked overlay */}
           {page.type === "scene" && page.locked && (
             <button
@@ -203,6 +212,25 @@ const MobileBookPage = React.forwardRef<HTMLDivElement, MobileBookPageProps>(
 );
 
 export default MobileBookPage;
+
+// ── Edit pill (preview) ──────────────────────────────────────────────────────
+// page-flip only lets a click through when the event target IS the button
+// (clickEventForward), so everything inside it ignores the pointer.
+
+function EditPill({ onClick, target }: { onClick: () => void; target: "cover" | "dedication" }) {
+  const t = useTranslations("crear.purchase");
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      data-testid={`edit-${target}`}
+      className="absolute right-[3%] top-[3%] z-20 inline-flex items-center gap-1 rounded-full bg-white/92 px-2.5 py-1 text-[11px] font-bold text-create-text-dark shadow-md shadow-black/15 ring-1 ring-black/5 transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-create-primary"
+    >
+      <span aria-hidden className="material-symbols-outlined pointer-events-none text-[14px]">edit</span>
+      <span className="pointer-events-none">{t("editPage")}</span>
+    </button>
+  );
+}
 
 // ── Locked text ───────────────────────────────────────────────────────────────
 
@@ -697,8 +725,10 @@ function ScenePage({ page, templateId, pageNumber }: SceneProps) {
 
 // ── Page content dispatcher ───────────────────────────────────────────────────
 
-function PageContent({ page, templateId, gender, favoriteColor, pageNumber }: { page: BookPage; templateId: string; gender?: string; favoriteColor?: string; pageNumber?: number }) {
+function PageContent({ page, templateId, gender, favoriteColor, pageNumber, onOrder }: { page: BookPage; templateId: string; gender?: string; favoriteColor?: string; pageNumber?: number; onOrder?: () => void }) {
   const t = useTranslations("crear.preview");
+  const tp = useTranslations("crear.purchase");
+  const locale = useLocale();
   const td = useTranslations("data");
   switch (page.type) {
 
@@ -920,6 +950,79 @@ function PageContent({ page, templateId, gender, favoriteColor, pageNumber }: { 
           </div>
           <div className="mt-4 h-px w-12 bg-border-light" />
           <BrandLogo className="h-4 text-text-muted/40 mt-3" />
+        </div>
+      );
+    }
+
+    case "teaser_chapters": {
+      return (
+        <div className="absolute inset-0 overflow-hidden bg-cream">
+          {page.imageUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={page.imageUrl} alt="" className="absolute inset-0 h-full w-full scale-110 object-cover opacity-60 blur-xl" />
+          )}
+          <div className="absolute inset-0 bg-cream/80" />
+          <div className="relative flex h-full flex-col justify-center px-[9%] py-[8%]">
+            <p className="font-display text-[clamp(0.95rem,5.2cqi,1.4rem)] font-bold leading-tight" style={{ color: "var(--bk-title)" }}>
+              {tp("teaserComingTitle")}
+            </p>
+            <div className="mt-[3%] mb-[4%] h-px w-12" style={{ backgroundColor: "var(--bk-ornament)" }} />
+            <ol className="space-y-[1.6cqi]">
+              {page.chapters.map((chapter, i) => (
+                <li key={i} className="flex items-baseline gap-[2.5cqi] text-[clamp(0.7rem,3.5cqi,0.95rem)] leading-snug text-create-text-dark">
+                  <span className="w-[5cqi] shrink-0 text-right font-display font-bold tabular-nums" style={{ color: "var(--bk-accent)" }}>
+                    {page.firstChapter + i}
+                  </span>
+                  <span className="min-w-0 truncate">{chapter}</span>
+                </li>
+              ))}
+            </ol>
+            <p className="mt-[4%] font-display text-[clamp(0.7rem,3.4cqi,0.95rem)] italic text-create-text-sub">
+              {tp("teaserComingMore", { name: page.characterName, deName: deName(page.characterName, locale) })}
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    case "teaser_order": {
+      const colors = getBookColors(templateId, gender, favoriteColor);
+      const names = { name: page.characterName, deName: deName(page.characterName, locale) };
+      return (
+        <div className="absolute inset-0 flex flex-col items-center overflow-hidden bg-cream px-[7%] pt-[3%] pb-[7%] text-center">
+          <div className="w-[82%]">
+            <BookMockup
+              coverUrl={page.coverUrl}
+              title={page.title}
+              childName={page.characterName}
+              subtitle={t("personalizedStory")}
+              format={page.format}
+              spineColor={colors.gradientStart}
+              showScale={false}
+              interactive={false}
+              alt={page.title}
+            />
+          </div>
+          <p className="-mt-[2%] font-display text-[clamp(0.9rem,4.6cqi,1.25rem)] font-bold leading-tight" style={{ color: "var(--bk-title)" }}>
+            {tp("teaserOrderTitle", names)}
+          </p>
+          <p className="mt-[1.5%] text-[clamp(0.65rem,3.1cqi,0.85rem)] leading-snug text-create-text-sub">
+            {tp("teaserOrderBody")}
+          </p>
+          <p className="mt-[2.5%] text-[clamp(0.7rem,3.4cqi,0.9rem)] text-create-text-dark">
+            <span className="font-bold tabular-nums">{tp("teaserOrderPrice", { price: page.priceFrom })}</span>
+            <span className="text-create-text-sub"> · {tp("ctaNotePhysical")}</span>
+          </p>
+          {onOrder && (
+            <button
+              type="button"
+              onClick={onOrder}
+              className="mt-auto inline-flex items-center gap-1.5 rounded-full bg-create-primary px-[6cqi] py-[2.4cqi] text-[clamp(0.75rem,3.6cqi,0.95rem)] font-bold text-white shadow-md shadow-create-primary/25 transition-colors hover:bg-create-primary-hover"
+            >
+              <span className="pointer-events-none">{tp("teaserOrderCta")}</span>
+              <span aria-hidden className="material-symbols-outlined pointer-events-none text-[1.1em]">arrow_downward</span>
+            </button>
+          )}
         </div>
       );
     }

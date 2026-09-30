@@ -8,12 +8,14 @@
 
 import {
   INITIAL_STATE,
+  FAVORITE_COLORS,
   GLASSES_OPTIONS,
   type CharacterData,
   type CreateBookState,
 } from "@/lib/create-store";
 import { avatarBaseKey, avatarTraitsFromCharacter, isAvatarRendered, type AvatarGlasses } from "@/lib/avatar/manifest";
 import { STORAGE_KEY } from "@/hooks/usePersistedState";
+import { formatChildName } from "@/lib/child-name";
 
 // Single source for the photo policy (pure module, client-safe).
 export { PHOTO_CONSENT_VERSION, PHOTO_MAX_UPLOAD_BYTES, PHOTO_MAX_EDGE, isPhotoUploadEnabled } from "@/lib/privacy/child-photo-policy";
@@ -69,6 +71,8 @@ export function migrateCreateState(raw: unknown): CreateBookState {
     age: typeof rawChar.age === "number" ? Math.min(12, Math.max(2, Math.round(rawChar.age))) : base.character.age,
     glasses: migrateGlasses(glasses),
     freckles: rawChar.freckles === true,
+    // Only palette colours (or "" = no preference) survive
+    favoriteColor: FAVORITE_COLORS.some((c) => c.color === rawChar.favoriteColor) ? (rawChar.favoriteColor as string) : "",
     interests: Array.isArray(rawChar.interests)
       ? rawChar.interests.filter((i): i is string => typeof i === "string")
       : [],
@@ -195,7 +199,7 @@ export function storyCharacterBody(state: Pick<CreateBookState, "character" | "p
   return {
     character: {
       ...characterLookPayload(c),
-      name: c.name.trim(),
+      name: formatChildName(c.name),
       city: c.city,
       interests: c.interests,
       favoriteCompanion: c.favoriteCompanion,

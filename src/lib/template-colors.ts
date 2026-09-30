@@ -1,248 +1,200 @@
 /**
- * Shared template color palettes — used by both web viewer and PDF.
+ * Book colour palette — shared by the web viewer (CSS custom properties) and the
+ * print PDF (getTheme in src/lib/pdf/theme.ts).
  *
- * Each book template has a coherent color identity derived from its theme
- * (space = indigo, forest = green, pirates = sky blue, etc.).
- * The web viewer uses these as CSS custom properties; the PDF uses them
- * via the extended TemplateTheme in theme.ts.
+ * The child's favourite colour (asked on the Protagonist screen, stored in
+ * characters.favorite_color) LEADS the whole palette: accents, titles, ornaments,
+ * text-page tints, endpapers and the deep cover/back-cover tone. Each colour of
+ * FAVORITE_COLORS has a hand-tuned, print-safe palette (muted, never neon) whose
+ * text roles pass WCAG contrast on the book's cream paper:
+ *   - titleColor on cream ≥ 7:1 (AAA) — scene titles, the hero page name
+ *   - accent on white, cream and accentLight ≥ 4.5:1 — small caps kickers, pills,
+ *     the white "hero" badge, drop caps
+ * Light grounds (accentLight, pageTint) are drawn toward the warm paper, not toward
+ * pure white, so a red book reads terracotta/peach rather than pink.
  *
- * Gender tinting: the character's gender subtly shifts the palette —
- * girl → warm rose, boy → cool blue, neutral → original colors unchanged.
+ * No favourite colour (optional question skipped, older books) → a neutral warm
+ * palette (caramel + cocoa). The world (templateId) and gender no longer tint the
+ * book: every child gets the same deliberate treatment of THEIR colour.
  */
 
-import type { Gender } from "./create-store";
+import { FAVORITE_COLORS } from "./create-store";
 
 export interface BookColors {
-  /** Primary accent (badges, borders, interactive elements) */
+  /** Primary accent (badges, drop caps, rules, kickers) */
   accent: string;
-  /** Light accent for backgrounds */
+  /** Light accent for backgrounds (tinted text pages, pills) */
   accentLight: string;
   /** Title text color */
   titleColor: string;
-  /** Decorative ornament color */
+  /** Decorative ornament color (frames, dividers, dots) */
   ornamentColor: string;
   /** Subtle page background tint */
   pageTint: string;
-  /** Dark gradient for cover/endpapers */
+  /** Deep tone for cover / back cover grounds and the QR code */
   gradientStart: string;
-  /** Secondary gradient color */
+  /** Secondary deep tone */
   gradientEnd: string;
 }
 
-// ── Color blending utility ──────────────────────────────────────────────────
+type FavoriteColorId = (typeof FAVORITE_COLORS)[number]["id"];
+
+/** Hand-tuned palettes, one per FAVORITE_COLORS entry. */
+const FAVORITE_PALETTES: Record<FavoriteColorId, BookColors> = {
+  red: {
+    accent: "#B23A2E",
+    accentLight: "#F5E8DC",
+    titleColor: "#6B1F17",
+    ornamentColor: "#D4705A",
+    pageTint: "#FCF6EF",
+    gradientStart: "#5C1A13",
+    gradientEnd: "#8A2B1F",
+  },
+  blue: {
+    accent: "#2F62AA",
+    accentLight: "#E3EBF6",
+    titleColor: "#1B3663",
+    ornamentColor: "#93B3DD",
+    pageTint: "#F5F8FC",
+    gradientStart: "#172D55",
+    gradientEnd: "#244A86",
+  },
+  green: {
+    accent: "#3A7442",
+    accentLight: "#E3EEDF",
+    titleColor: "#1E4426",
+    ornamentColor: "#9BC49C",
+    pageTint: "#F5F9F2",
+    gradientStart: "#1B3A22",
+    gradientEnd: "#2C5A34",
+  },
+  purple: {
+    accent: "#7A3F9C",
+    accentLight: "#EEE5F3",
+    titleColor: "#3E1F56",
+    ornamentColor: "#C0A0D5",
+    pageTint: "#FAF6FB",
+    gradientStart: "#301947",
+    gradientEnd: "#522E78",
+  },
+  orange: {
+    accent: "#A94C0C",
+    accentLight: "#FAE8D6",
+    titleColor: "#662D08",
+    ornamentColor: "#EFAE76",
+    pageTint: "#FEF6EE",
+    gradientStart: "#652B0B",
+    gradientEnd: "#944413",
+  },
+  yellow: {
+    accent: "#8C6400",
+    accentLight: "#F9EECB",
+    titleColor: "#533B00",
+    ornamentColor: "#E8C35A",
+    pageTint: "#FEFAEC",
+    gradientStart: "#4F3A05",
+    gradientEnd: "#7D5C0B",
+  },
+  pink: {
+    accent: "#B03466",
+    accentLight: "#F7E3EA",
+    titleColor: "#661D3B",
+    ornamentColor: "#E9A0BB",
+    pageTint: "#FDF5F7",
+    gradientStart: "#5A1833",
+    gradientEnd: "#882B52",
+  },
+  turquoise: {
+    accent: "#0E7480",
+    accentLight: "#DDEFF0",
+    titleColor: "#0C474E",
+    ornamentColor: "#86C9CE",
+    pageTint: "#F3F9F9",
+    gradientStart: "#0B3C42",
+    gradientEnd: "#13626C",
+  },
+};
+
+/** No favourite colour: warm caramel + cocoa on cream (neutral, never pink). */
+export const NEUTRAL_BOOK_COLORS: BookColors = {
+  accent: "#93552A",
+  accentLight: "#F4E9DC",
+  titleColor: "#5D4037",
+  ornamentColor: "#D6BA9E",
+  pageTint: "#FDF7F0",
+  gradientStart: "#4E342E",
+  gradientEnd: "#6D4C41",
+};
+
+// ── Colour maths (only for hex values outside FAVORITE_COLORS) ───────────────
+
+const HEX_RE = /^#[0-9a-f]{6}$/i;
+const PAPER = "#FDF8F0"; // COLORS.cream of the print theme
+const INK = "#1A1008";
 
 function hexToRgb(hex: string): [number, number, number] {
-  const n = parseInt(hex.replace("#", ""), 16);
+  const n = parseInt(hex.slice(1), 16);
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
 }
 
-function rgbToHex(r: number, g: number, b: number): string {
-  return "#" + [r, g, b].map((c) => c.toString(16).padStart(2, "0")).join("");
+/** Solid mix of two #rrggbb colours (t = 0 → a, 1 → b). */
+function mix(a: string, b: string, t: number): string {
+  const [x, y] = [hexToRgb(a), hexToRgb(b)];
+  return `#${x.map((v, i) => Math.round(v + (y[i] - v) * t).toString(16).padStart(2, "0")).join("")}`;
 }
 
-/** Linearly blend `base` toward `target` by `ratio` (0 = base, 1 = target). */
-function blendHex(base: string, target: string, ratio: number): string {
-  const [r1, g1, b1] = hexToRgb(base);
-  const [r2, g2, b2] = hexToRgb(target);
-  return rgbToHex(
-    Math.round(r1 + (r2 - r1) * ratio),
-    Math.round(g1 + (g2 - g1) * ratio),
-    Math.round(b1 + (b2 - b1) * ratio),
-  );
+function luminance(hex: string): number {
+  return hexToRgb(hex)
+    .map((c) => {
+      const s = c / 255;
+      return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+    })
+    .reduce((sum, c, i) => sum + c * [0.2126, 0.7152, 0.0722][i], 0);
 }
 
-// ── Gender tint definitions ─────────────────────────────────────────────────
-
-interface GenderTint {
-  /** Color to blend accents / ornaments toward */
-  accent: string;
-  /** Color to blend light backgrounds toward */
-  light: string;
-  /** Color to blend dark gradients toward */
-  dark: string;
+/** WCAG 2 contrast ratio between two #rrggbb colours. */
+export function contrastRatio(a: string, b: string): number {
+  const [x, y] = [luminance(a), luminance(b)];
+  return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
 }
 
-const GENDER_TINTS: Record<string, GenderTint> = {
-  girl: { accent: "#E91E87", light: "#FFF0F5", dark: "#6B1D4A" },
-  boy: { accent: "#2563EB", light: "#EFF6FF", dark: "#1E3A5F" },
-};
+/** Darken `hex` toward ink until it reaches `ratio` against `ground`. */
+function darkenTo(hex: string, ground: string, ratio: number): string {
+  for (let t = 0; t <= 1; t += 0.02) {
+    const c = mix(hex, INK, t);
+    if (contrastRatio(c, ground) >= ratio) return c;
+  }
+  return INK;
+}
 
-/** Blend ratio — subtle enough to preserve template identity. */
-const TINT_RATIO = 0.22;
-
-/** Apply gender tint to a BookColors palette. Neutral returns unchanged. */
-export function applyGenderTint(colors: BookColors, gender?: Gender | string): BookColors {
-  const tint = gender ? GENDER_TINTS[gender] : undefined;
-  if (!tint) return colors;
-
+/** Palette for an arbitrary hex (legacy/custom values): same roles and contrast floors. */
+function derivePalette(hex: string): BookColors {
+  const accentLight = mix(PAPER, hex, 0.13);
   return {
-    accent: blendHex(colors.accent, tint.accent, TINT_RATIO),
-    accentLight: blendHex(colors.accentLight, tint.light, TINT_RATIO),
-    titleColor: blendHex(colors.titleColor, tint.dark, TINT_RATIO * 0.6),
-    ornamentColor: blendHex(colors.ornamentColor, tint.accent, TINT_RATIO * 0.7),
-    pageTint: blendHex(colors.pageTint, tint.light, TINT_RATIO * 0.5),
-    gradientStart: blendHex(colors.gradientStart, tint.dark, TINT_RATIO),
-    gradientEnd: blendHex(colors.gradientEnd, tint.dark, TINT_RATIO),
+    accent: darkenTo(hex, accentLight, 4.6),
+    accentLight,
+    titleColor: darkenTo(mix(hex, INK, 0.45), PAPER, 7.5),
+    ornamentColor: mix(PAPER, hex, 0.5),
+    pageTint: mix(PAPER, hex, 0.04),
+    gradientStart: mix(hex, INK, 0.62),
+    gradientEnd: mix(hex, INK, 0.42),
   };
 }
 
-const PALETTES: Record<string, BookColors> = {
-  space: {
-    accent: "#6366f1",
-    accentLight: "#e8eaf6",
-    titleColor: "#312e81",
-    ornamentColor: "#a5b4fc",
-    pageTint: "#f8f7ff",
-    gradientStart: "#1a1a4e",
-    gradientEnd: "#2d1b69",
-  },
-  forest: {
-    accent: "#16a34a",
-    accentLight: "#dcfce7",
-    titleColor: "#14532d",
-    ornamentColor: "#86efac",
-    pageTint: "#f7fdf9",
-    gradientStart: "#1a3a2a",
-    gradientEnd: "#2d5016",
-  },
-  superhero: {
-    accent: "#dc2626",
-    accentLight: "#fee2e2",
-    titleColor: "#7f1d1d",
-    ornamentColor: "#fca5a5",
-    pageTint: "#fef7f7",
-    gradientStart: "#7f1d1d",
-    gradientEnd: "#991b1b",
-  },
-  pirates: {
-    accent: "#0284c7",
-    accentLight: "#e0f2fe",
-    titleColor: "#0c4a6e",
-    ornamentColor: "#7dd3fc",
-    pageTint: "#f6fbff",
-    gradientStart: "#0c2d48",
-    gradientEnd: "#0e4d64",
-  },
-  chef: {
-    accent: "#ea580c",
-    accentLight: "#fff7ed",
-    titleColor: "#7c2d12",
-    ornamentColor: "#fdba74",
-    pageTint: "#fffbf5",
-    gradientStart: "#7c2d12",
-    gradientEnd: "#9a3412",
-  },
-  dinosaurs: {
-    accent: "#40916c",
-    accentLight: "#d8f3dc",
-    titleColor: "#1b4332",
-    ornamentColor: "#95d5b2",
-    pageTint: "#f6fdf8",
-    gradientStart: "#1b4332",
-    gradientEnd: "#2d6a4f",
-  },
-  castle: {
-    accent: "#7c3aed",
-    accentLight: "#ede9fe",
-    titleColor: "#3b0764",
-    ornamentColor: "#c4b5fd",
-    pageTint: "#faf5ff",
-    gradientStart: "#2e1065",
-    gradientEnd: "#4c1d95",
-  },
-  safari: {
-    accent: "#d97706",
-    accentLight: "#fef3c7",
-    titleColor: "#78350f",
-    ornamentColor: "#fcd34d",
-    pageTint: "#fffbeb",
-    gradientStart: "#7c2d12",
-    gradientEnd: "#b45309",
-  },
-  inventor: {
-    accent: "#0284c7",
-    accentLight: "#e0f2fe",
-    titleColor: "#0c4a6e",
-    ornamentColor: "#7dd3fc",
-    pageTint: "#f0f9ff",
-    gradientStart: "#0c4a6e",
-    gradientEnd: "#075985",
-  },
-  candy: {
-    accent: "#db2777",
-    accentLight: "#fce7f3",
-    titleColor: "#831843",
-    ornamentColor: "#f9a8d4",
-    pageTint: "#fdf2f8",
-    gradientStart: "#831843",
-    gradientEnd: "#9d174d",
-  },
-};
+// ── Public API ───────────────────────────────────────────────────────────────
 
-/** Default palette (warm brown) — used when templateId is unknown */
-const DEFAULT_PALETTE: BookColors = {
-  accent: "#D2691E",
-  accentLight: "#FFF3E8",
-  titleColor: "#5D4037",
-  ornamentColor: "#D7CCC8",
-  pageTint: "#FFFCF7",
-  gradientStart: "#5D4037",
-  gradientEnd: "#4E342E",
-};
-
-// ── Favorite color accent override ────────────────────────────────────────
+/** Palette for a stored favourite colour (hex, any case), or the neutral palette. */
+export function paletteForFavoriteColor(favoriteColor?: string | null): BookColors {
+  const hex = favoriteColor?.trim();
+  if (!hex || !HEX_RE.test(hex)) return NEUTRAL_BOOK_COLORS;
+  const known = FAVORITE_COLORS.find((c) => c.color.toLowerCase() === hex.toLowerCase());
+  return known ? FAVORITE_PALETTES[known.id] : derivePalette(hex);
+}
 
 /**
- * Derives a complete accent palette from the child's favorite color.
- * The template's gradient identity (cover, endpapers) is preserved,
- * but accent elements (titles, ornaments, badges, borders) shift to
- * the child's color — making every book feel personally theirs.
+ * Book colours. `templateId` and `gender` are accepted for call-site compatibility
+ * but deliberately ignored: the favourite colour leads (see the header comment).
  */
-function deriveAccentPalette(base: BookColors, favoriteColor: string): BookColors {
-  const [r, g, b] = hexToRgb(favoriteColor);
-
-  // accentLight: very pale tint of the favorite color (10% opacity feel)
-  const accentLight = rgbToHex(
-    Math.min(255, Math.round(r + (255 - r) * 0.88)),
-    Math.min(255, Math.round(g + (255 - g) * 0.88)),
-    Math.min(255, Math.round(b + (255 - b) * 0.88)),
-  );
-
-  // titleColor: dark version of the favorite color
-  const titleColor = rgbToHex(
-    Math.round(r * 0.35),
-    Math.round(g * 0.35),
-    Math.round(b * 0.35),
-  );
-
-  // ornamentColor: medium-light version (50% toward white)
-  const ornamentColor = rgbToHex(
-    Math.round(r + (255 - r) * 0.5),
-    Math.round(g + (255 - g) * 0.5),
-    Math.round(b + (255 - b) * 0.5),
-  );
-
-  // pageTint: extremely subtle tint (5% opacity feel)
-  const pageTint = rgbToHex(
-    Math.min(255, Math.round(r + (255 - r) * 0.95)),
-    Math.min(255, Math.round(g + (255 - g) * 0.95)),
-    Math.min(255, Math.round(b + (255 - b) * 0.95)),
-  );
-
-  return {
-    accent: favoriteColor,
-    accentLight,
-    titleColor,
-    ornamentColor,
-    pageTint,
-    // Preserve template gradient identity (cover/endpapers stay thematic)
-    gradientStart: base.gradientStart,
-    gradientEnd: base.gradientEnd,
-  };
-}
-
-export function getBookColors(templateId: string, gender?: Gender | string, favoriteColor?: string): BookColors {
-  const base = PALETTES[templateId] ?? DEFAULT_PALETTE;
-  const palette = favoriteColor ? deriveAccentPalette(base, favoriteColor) : base;
-  return applyGenderTint(palette, gender);
+export function getBookColors(_templateId?: string, _gender?: string, favoriteColor?: string | null): BookColors {
+  return paletteForFavoriteColor(favoriteColor);
 }

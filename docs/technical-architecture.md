@@ -43,7 +43,7 @@ characters (saved hero profiles)
 ├── hairstyle (varies by gender)
 ├── interests (text[] — up to 4: space / animals / sports / castles / dinosaurs / music)
 ├── city
-├── favorite_color (book theme accent color)
+├── favorite_color (optional; leads the book palette, lib/template-colors.ts; null → neutral warm)
 ├── favorite_companion (open text — "best friend/companion")
 ├── glasses (text, default 'none' — avatar builder "{round|square}-{dark|red}"; feeds the Character Bible)
 ├── freckles (boolean, default false — feeds the Character Bible)
@@ -242,7 +242,7 @@ Screen 3 "Crear su libro" (world + 3 chapters)
 
 User clicks "Buy" in the preview
   │
-  └─→ Paywall: format + extra copy (price per format) + REQUIRED withdrawal-consent checkbox
+  └─→ Paywall (PurchasePanel): format + extra copy (price per format) + REQUIRED withdrawal-consent checkbox (one line, consent version 2026-09-30)
         └─→ POST /api/checkout { storyId, format, addons, locale, withdrawalConsent: true }
               ├─→ 400 withdrawal_consent_required · 409 preview_outdated (no imagePlan: old engine)
               ├─→ Prices by lookup_key (getStripeCatalog, 10-min cache; amount/tax drift → error)
@@ -373,7 +373,8 @@ src/
 │   │   ├── page.tsx                      — Creation flow v2 screens 1–3 (Nombre → Protagonista → Aventura), see creation-flow-v2.md
 │   │   └── [storyId]/
 │   │       ├── generar/page.tsx          — Screen 4: real progress (signed preview_progress) + dedication
-│   │       └── preview/page.tsx          — Screens 5–6: book + checklist, format + payment
+│   │       └── preview/page.tsx          — Screens 5–6: book + checklist, format + payment (401/404 → "opened in another browser" state)
+│   ├── preview/[token]/page.tsx          — Read-only SHARE view of a story preview (any browser; noindex, no-store) + not-found.tsx (invalid/expired link)
 │   ├── dashboard/page.tsx                — User dashboard
 │   ├── perfil/page.tsx                   — User profile
 │   └── checkout/success/page.tsx         — Post-purchase confirmation
@@ -393,7 +394,8 @@ src/
 │   │       ├── complete/route.ts         — POST: advance resumable fulfilment (lib/fulfilment)
 │   │       ├── title/route.ts            — POST: update story title
 │   │       ├── dedication/route.ts       — PATCH: verbatim dedication + sender (until ordered)
-│   │       ├── send-preview/route.ts     — POST: "Envíame la preview" email (3/h per user, address not stored)
+│   │       ├── send-preview/route.ts     — POST: "Envíame la preview" email with the share link (3/h per user, address not stored)
+│   │       ├── share/route.ts            — POST: owner-only → { url, path, expiresAt } read-only share link (30/10 min per user, in-memory)
 │   │       └── pdf/route.ts              — GET: owner + paid order → { url } (10-min signed Storage URL); never renders
 │   ├── checkout/route.ts                 — POST: create Stripe session (tax, invoice, consent, idempotent)
 │   ├── checkout/verify/route.ts          — GET: confirm payment (webhook fallback) via recordPaidSession
@@ -408,7 +410,7 @@ src/
 ├── components/
 │   ├── book-viewer/                      — react-pageflip book viewer
 │   ├── avatar/                           — ProtagonistAvatar (real WatercolorAvatar + AvatarSketch fallback), WatercolorAvatar (pre-rendered matrix layers), AvatarSketch (vector stand-in)
-│   ├── crear/                            — Creation flow v2: CreationHeader, StepName + LiveCover, StepProtagonist + PhotoUploadPanel, StepAdventure, DedicationEditor, BookChecklist, Sheet, SendPreviewEmail, CreationFooterNav
+│   ├── crear/                            — Creation flow v2: CreationHeader, StepName + LiveCover, StepProtagonist + PhotoUploadPanel, StepAdventure, DedicationEditor, BookEditSheets, Sheet, SendPreviewEmail, CreationFooterNav
 │   ├── landing/                          — Navbar, Footer, etc.
 │   ├── waitlist/
 │   │   └── WaitlistPage.tsx              — Full-screen waitlist gate (form + subscriber counter)
@@ -497,5 +499,6 @@ src/
 - **Illustration cache** — `illustration_library` table deduplicates by SHA-256 hash of the full prompt. Avoids regenerating the same scene twice.
 - **PDF caching** — `stories.pdf_url` stores the storage path. Cleared on re-generation. `?force=true` forces a new render.
 - **Print files (Gelato)** — Interior page 1 is a RIGHT-hand page (Gelato adds a blank endpaper before it), so the plan is: p1 title + verbatim dedication · p2–p25 one spread per scene (illustration left ↔ text right; panoramas 3 & 8 on even+odd) · p26 final ↔ p27 about the reader · p28–p29 adventure map spread (`imageAssets.finalMap`, 3840×1920 over both pages) with the search-and-find game on a paper panel over its right quarter (`GEOMETRY.mapPanel*`, fitted by `planMapPanel` in `layout.ts`, locale strings via `pdfT`, no folios) — books without a map print a light patterned endpaper spread in the theme tint · p30 colophon. Cover geometry comes live from `GET /v3/products/{uid}/cover-dimensions?pageCount=30` (softcover 408.88×206 mm, 3 mm bleed, 2.88 mm spine; hardcover 458×246 mm, 17 mm wrap + 3 mm edge, 8 mm joints, 6 mm spine — verified 2026-09-27). Front cover (`cover-art.tsx`, 2026-09-28): title lockup at the TOP inside the 15 mm safe area — the child's name as a large hero line, the rest of the title above/below it (auto-fit, max 3 lines, top ~36% of the panel; falls back to one size + "Una historia personalizada para {name}" when the title does not contain the name), over a top-down black scrim (`COVER_OVERLAY_STOPS`); no logo on the front (brand on back cover + spine); the cover art prompt asks for a calm top third and feet well above the bottom edge. Back cover (`BackCoverDesign`, 2026-09-29): cream paper like the title page — an arch-window vignette of the last scene (whole image in its own proportions, ≤ 70×80 mm, hairline frame in `ornamentColor`), title, "Una historia personalizada para {name}" (`pdfForName`/Catalan articles), ornamental divider, the synopsis in the body face at 12.5→9.5 pt (≤ 132 mm measure, locale quotes), logo (ornament tint) + meapica.com at the foot. `fitBackCover` sizes type first, the vignette takes what is left (shrinks to 28 mm, dropped only for extreme copy → "Cover text does not fit" warning). Print: the bottom 25 mm above the 15 mm safe margin (`BARCODE_RESERVE_MM`) stays empty for Gelato's barcode; the spine colour continues over the back joint (hardcover) / 3 mm past the fold (softcover) to hide fold tolerance. The digital book's last page uses the same design on the 200 mm trim. Images are placed with uniform cover-fit; `validatePrintableBook()` rejects missing art, DPI < 150 (warns < ~300), page count ≠ 30, text that does not fit, bad geometry. Final art (OpenAI engine): 2432² px full pages, 2432×1904 px split bands, 3840×1920 px panoramas (faces kept out of the middle fifth — glued binding), cover 2672×2912 px (300 dpi over the hardcover front art box incl. wrap; 8.29 MP model limit rules out 2900²). Engine validation: `npx tsx --tsconfig tsconfig.json scripts/generate-test-book.mts`. Local check: `npx tsx --tsconfig tsconfig.json scripts/render-test-book.mts <storyId> [--upscale] [--stress]`.
+- **Preview share links** (2026-09-30) — `/[locale]/preview/[token]` shows the owner's PREVIEW read-only to anyone (partner, grandparents; mail apps' in-app browsers). Token = stateless HMAC (`src/lib/share/preview-share-token.ts`): base64url(version · storyId · exp · HMAC-SHA256 truncated to 128 bits), 50 chars, key = HKDF(`SUPABASE_SERVICE_ROLE_KEY`, "meapica:story-preview-share:v1"); exp = +30 days rounded up to UTC midnight (same link all day). Verified before any DB access (no story-id enumeration); canonical encoding only. No table, so no per-link revocation: deleting the story or rotating the service-role key kills links (a `story_share_links` table is the upgrade path if owners ask to revoke). Data: `src/lib/share/shared-preview.ts` reads whitelisted columns with the service role, builds the pages with `src/lib/book-pages.ts` (`buildBookPages` + `toPreviewPages`, same slice as the owner: cover, endpaper, title/dedication, scenes 1–3, locked teaser) whatever the status — paid books still share only the preview; image prompts stripped, teaser text blanked, images signed for that story's folder only (`storyOnlyAccess`, 1 h). The owner hitting their own link is redirected to `/crear/{id}/preview`. Middleware: `/preview/*` bypasses the waitlist gate and gets `X-Robots-Tag: noindex` + `Referrer-Policy: no-referrer`; the page is `force-dynamic` (Cache-Control no-store) with robots noindex metadata. Owner UI: `src/components/share/SharePreviewButton.tsx` (Web Share API on touch devices, clipboard on desktop, manual-copy fallback).
 - **Route protection** — Middleware redirects unauthenticated users from `/dashboard`, `/perfil` to `/auth/login`.
 - **Locale routing** — URL prefix for all locales: `/es/crear`, `/en/crear`, `/ca/crear`, `/fr/crear`.

@@ -64,3 +64,19 @@ assert.equal(parseDateOverride("2026-12-11"), "2026-12-11");
 for (const bad of ["2026-02-30", "2026-13-01", "tomorrow", "", null, undefined]) assert.equal(parseDateOverride(bad), null);
 
 console.log("shipping.check: all assertions passed");
+
+// ── Paywall delivery window: 7-10 business days, weekends + national holidays skipped ──
+{
+  const { deliveryWindow, isBusinessDay, addBusinessDays } = await import("./shipping.ts");
+  // Wed 30 Sep 2026 → +7 bd = Fri 9 Oct; +10 bd skips Mon 12 Oct (Hispanidad) → Thu 15 Oct.
+  assert.deepEqual(deliveryWindow("2026-09-30", "hardcover"), { from: "2026-10-09", to: "2026-10-15" });
+  // Ordered on a Saturday: counting starts on Monday.
+  assert.equal(addBusinessDays("2026-10-03", 1), "2026-10-05");
+  // Good Friday 2027 = 26 March; 8 Dec and 25 Dec are holidays.
+  assert.equal(isBusinessDay("2027-03-26"), false);
+  assert.equal(isBusinessDay("2026-12-08"), false);
+  assert.equal(isBusinessDay("2026-12-09"), true);
+  // Mid-December: 8 Dec, 25 Dec and 1 Jan fall inside the window.
+  assert.deepEqual(deliveryWindow("2026-12-18", "softcover"), { from: "2026-12-30", to: "2027-01-05" });
+}
+console.log("shipping delivery window ✓");

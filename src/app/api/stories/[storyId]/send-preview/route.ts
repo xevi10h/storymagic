@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { sendEmail, getSiteUrl } from "@/lib/email/send";
 import { escapeHtml, renderEmailLayout } from "@/lib/email/layout";
+import { SHAREABLE_STORY_STATUSES, createPreviewShareToken, previewShareUrl } from "@/lib/share/preview-share-token";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -16,28 +17,28 @@ const COPY = {
   es: {
     subject: (n: string) => `La preview del libro de ${n}`,
     heading: (n: string) => `El libro de ${n} te espera`,
-    body: "Aquí tienes el enlace a la preview de su libro para verlo con calma. Ábrelo en el mismo navegador donde lo creaste.",
+    body: "Aquí tienes el enlace a la preview de su libro para verlo con calma. Funciona en cualquier móvil u ordenador, y puedes reenviarlo a quien quieras. Caduca en 30 días.",
     cta: "Ver su libro",
     signoff: "Un abrazo,\nMeapica",
   },
   ca: {
     subject: (n: string) => `La preview del llibre de ${n}`,
     heading: (n: string) => `El llibre de ${n} t'espera`,
-    body: "Aquí tens l'enllaç a la preview del seu llibre per mirar-lo amb calma. Obre'l al mateix navegador on el vas crear.",
+    body: "Aquí tens l'enllaç a la preview del seu llibre per mirar-lo amb calma. Funciona a qualsevol mòbil o ordinador, i el pots reenviar a qui vulguis. Caduca d'aquí a 30 dies.",
     cta: "Veure el seu llibre",
     signoff: "Una abraçada,\nMeapica",
   },
   en: {
     subject: (n: string) => `${n}'s book preview`,
     heading: (n: string) => `${n}'s book is waiting for you`,
-    body: "Here is the link to the book preview so you can look at it calmly. Open it in the same browser you created it in.",
+    body: "Here is the link to the book preview so you can look at it calmly. It works on any phone or computer, and you can forward it to anyone you like. It expires in 30 days.",
     cta: "See the book",
     signoff: "Warmly,\nMeapica",
   },
   fr: {
     subject: (n: string) => `L'aperçu du livre de ${n}`,
     heading: (n: string) => `Le livre de ${n} vous attend`,
-    body: "Voici le lien vers l'aperçu du livre, pour le regarder tranquillement. Ouvrez-le dans le navigateur où vous l'avez créé.",
+    body: "Voici le lien vers l'aperçu du livre, pour le regarder tranquillement. Il fonctionne sur n'importe quel téléphone ou ordinateur, et vous pouvez le transférer à qui vous voulez. Il expire dans 30 jours.",
     cta: "Voir le livre",
     signoff: "Bien à vous,\nMeapica",
   },
@@ -46,7 +47,8 @@ const COPY = {
 /**
  * "Envíame la preview" — optional, offered only after the parent has seen the
  * book (never a gate). Sends the preview link to the given address; the address
- * is not stored or subscribed to anything.
+ * is not stored or subscribed to anything. The link is the read-only share link
+ * (/[locale]/preview/[token]): it opens in any browser, incl. mail apps' in-app ones.
  */
 export async function POST(request: Request, { params }: { params: Promise<{ storyId: string }> }) {
   const { storyId } = await params;
@@ -80,7 +82,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ sto
     .eq("id", storyId)
     .eq("user_id", user.id)
     .single();
-  if (!story || !["preview", "ready", "ordered", "shipped"].includes(story.status)) {
+  if (!story || !(SHAREABLE_STORY_STATUSES as readonly string[]).includes(story.status)) {
     return NextResponse.json({ error: "not_found" }, { status: 404 });
   }
 
@@ -93,7 +95,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ sto
   const rawName = (Array.isArray(characters) ? characters[0]?.name : characters?.name) ?? "";
   const name = escapeHtml(rawName);
   const copy = COPY[locale];
-  const url = `${getSiteUrl()}/${locale}/crear/${storyId}/preview`;
+  const url = previewShareUrl(getSiteUrl(), locale, createPreviewShareToken(story.id).token);
 
   const ok = await sendEmail({
     to: email,

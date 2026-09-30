@@ -22,7 +22,9 @@ interface StoryCharacter {
   freckles?: boolean | null;
 }
 
-interface BookChecklistProps {
+export type EditPanel = "protagonist" | "dedication" | "cover";
+
+interface BookEditSheetsProps {
   storyId: string;
   childName: string;
   character: StoryCharacter;
@@ -32,12 +34,13 @@ interface BookChecklistProps {
   titleSuggestions: string[];
   dedication: string;
   senderName: string;
+  /** Which sheet is open (controlled by the preview page: ✎ on the pages, the edit links). */
+  open: EditPanel | null;
+  onOpenChange: (panel: EditPanel | null) => void;
   onTitleSaved: (title: string) => void;
   onDedicationSaved: (v: { dedication: string; senderName: string }) => void;
   onChangeLook: () => void;
 }
-
-type Panel = "protagonist" | "dedication" | "cover" | null;
 
 const HEX = /^#[0-9a-f]{6}$/i;
 
@@ -61,10 +64,11 @@ function traitsFor(character: StoryCharacter, useDraftLook: boolean): Protagonis
 }
 
 /**
- * Screen 5 checklist (✓ Protagonista · ✓ Dedicatoria · Portada). Each chip opens
- * a sheet that edits in place; the parent never leaves the book to fix something.
+ * Screen 5 edit sheets (title, dedication, protagonist look). Opened from the ✎
+ * buttons on the cover / dedication pages and the quiet "Cambiar …" links; each
+ * edits in place, so the parent never leaves the book to fix something.
  */
-export default function BookChecklist({
+export default function BookEditSheets({
   storyId,
   childName,
   character,
@@ -73,32 +77,14 @@ export default function BookChecklist({
   titleSuggestions,
   dedication,
   senderName,
+  open,
+  onOpenChange,
   onTitleSaved,
   onDedicationSaved,
   onChangeLook,
-}: BookChecklistProps) {
+}: BookEditSheetsProps) {
   const t = useTranslations("crear.checklist");
-  const [open, setOpen] = useState<Panel>(null);
-  const close = useCallback(() => setOpen(null), []);
-
-  // "Portada" is ✓ once the parent has looked at / confirmed the title
-  const reviewedKey = `meapica_cover_reviewed_${storyId}`;
-  const [coverReviewed, setCoverReviewed] = useState(false);
-  useEffect(() => {
-    try {
-      setCoverReviewed(sessionStorage.getItem(reviewedKey) === "1");
-    } catch {
-      // storage unavailable
-    }
-  }, [reviewedKey]);
-  const markCoverReviewed = useCallback(() => {
-    setCoverReviewed(true);
-    try {
-      sessionStorage.setItem(reviewedKey, "1");
-    } catch {
-      // storage unavailable
-    }
-  }, [reviewedKey]);
+  const close = useCallback(() => onOpenChange(null), [onOpenChange]);
 
   // Dedication sheet state (autosaved)
   const ded = useDedicationAutosave(storyId, onDedicationSaved);
@@ -121,10 +107,7 @@ export default function BookChecklist({
   const saveTitle = async () => {
     const next = titleDraft.trim();
     if (!next) return;
-    if (next === title) {
-      markCoverReviewed();
-      return close();
-    }
+    if (next === title) return close();
     setSavingTitle(true);
     setTitleError(false);
     try {
@@ -135,7 +118,6 @@ export default function BookChecklist({
       });
       if (!res.ok) throw new Error(`title_${res.status}`);
       onTitleSaved(next);
-      markCoverReviewed();
       close();
     } catch (err) {
       console.warn("[preview] saving title failed:", err);
@@ -145,43 +127,11 @@ export default function BookChecklist({
     }
   };
 
-  const hasDedication = (ded.values?.dedication ?? dedication).trim().length > 0;
-  const items: { id: Exclude<Panel, null>; label: string; value: string; done: boolean }[] = [
-    { id: "protagonist", label: t("protagonist"), value: childName, done: true },
-    { id: "dedication", label: t("dedication"), value: hasDedication ? t("dedicationDone") : t("dedicationTodo"), done: hasDedication },
-    { id: "cover", label: t("cover"), value: coverReviewed ? t("coverDone") : t("coverTodo"), done: coverReviewed },
-  ];
-
   const primaryBtn =
     "rounded-full bg-create-primary px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-create-primary-hover disabled:opacity-60";
 
   return (
     <>
-      <ul className="grid grid-cols-3 gap-1.5 sm:flex sm:justify-center sm:gap-2" aria-label={t("label")}>
-        {items.map((item) => (
-          <li key={item.id} className="min-w-0">
-            <button
-              type="button"
-              onClick={() => setOpen(item.id)}
-              data-testid={`chip-${item.id}`}
-              className="flex w-full min-w-0 items-center gap-1 rounded-xl border-2 border-create-neutral bg-white px-1.5 py-2 text-left transition-colors sm:gap-2 sm:pl-2.5 sm:pr-3.5 hover:border-create-primary/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-create-primary"
-            >
-              <span
-                aria-hidden
-                className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full sm:h-6 sm:w-6 ${item.done ? "bg-create-primary text-white" : "border-2 border-create-neutral text-transparent"}`}
-              >
-                <span className="material-symbols-outlined text-xs sm:text-sm">check</span>
-              </span>
-              <span className="flex min-w-0 flex-col leading-tight">
-                <span className="truncate text-[11px] font-bold text-create-text-dark sm:text-xs">{item.label}</span>
-                <span className="truncate text-[10px] text-create-text-sub sm:max-w-[150px] sm:text-[11px]">{item.value}</span>
-              </span>
-              <span className="sr-only">{item.done ? t("doneSr") : t("todoSr")}</span>
-            </button>
-          </li>
-        ))}
-      </ul>
-
       <Sheet
         open={open === "protagonist"}
         title={t("protagonistTitle", { name: childName })}
@@ -189,11 +139,12 @@ export default function BookChecklist({
         closeLabel={t("close")}
         footer={
           <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
-            <button type="button" onClick={close} className="rounded-full px-5 py-2.5 text-sm font-bold text-create-text-sub hover:text-create-text">
-              {t("keepLook")}
-            </button>
-            <button type="button" onClick={onChangeLook} className={primaryBtn}>
+            {/* Repainting the whole book costs a wait: keeping the look is the primary action. */}
+            <button type="button" onClick={onChangeLook} className="order-2 rounded-full px-5 py-2.5 text-sm font-bold text-create-text-sub hover:text-create-text sm:order-1">
               {t("changeLook")}
+            </button>
+            <button type="button" onClick={close} className={`order-1 sm:order-2 ${primaryBtn}`}>
+              {t("keepLook")}
             </button>
           </div>
         }

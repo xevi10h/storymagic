@@ -31,8 +31,12 @@ export default function MobileBookViewer({
   favoriteColor,
   currentPage,
   onPageChange,
+  onEdit,
+  onOrder,
+  hidePageCount = false,
 }: BookViewerProps) {
   const t = useTranslations("crear.preview");
+  const tPurchase = useTranslations("crear.purchase");
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const flipBookRef = useRef<any>(null);
   const lastReportedPage = useRef(currentPage);
@@ -90,6 +94,10 @@ export default function MobileBookViewer({
 
   const isOnCover = currentPage === 0;
   const isOnBack = currentPage === pages.length - 1;
+  // Two-page (landscape) view: the cover sits alone in the right half and a lone back
+  // cover in the left half. Slide the book by a quarter so a single page is centred.
+  const loneBack = isOnBack && pages.length % 2 === 0;
+  const centreShift = isNarrow ? 0 : isOnCover ? -25 : loneBack ? 25 : 0;
 
   // Page size for phones: exactly the container width, capped at 400.
   const portraitSize = sceneWidth !== null ? Math.min(sceneWidth, 400) : null;
@@ -111,9 +119,10 @@ export default function MobileBookViewer({
       {/* Open book */}
       <div ref={attachScene} className="book-scene w-full mx-auto">
         <div
-          className={`book-body w-full transition-opacity duration-300 ${
+          className={`book-body w-full transition-[opacity,transform] duration-500 ease-out motion-reduce:transition-none ${
             flipReady ? "opacity-100" : "opacity-0"
           }`}
+          style={centreShift ? { transform: `translateX(${centreShift}%) rotateX(2deg)` } : undefined}
         >
           <HTMLFlipBook
             key={isNarrow ? `portrait-${portraitSize}` : "landscape"}
@@ -154,6 +163,8 @@ export default function MobileBookViewer({
                 gender={gender}
                 favoriteColor={favoriteColor}
                 pageNumber={page.type === "scene" ? getBookPageNumber(pages, i) : undefined}
+                onEdit={onEdit}
+                onOrder={onOrder}
               />
             ))}
           </HTMLFlipBook>
@@ -166,7 +177,7 @@ export default function MobileBookViewer({
           onClick={() => setFullscreenPage(currentPage)}
           className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-border-light bg-white px-4 py-1.5 text-xs text-text-muted transition-colors hover:border-create-primary hover:text-create-primary"
         >
-          <span className="material-symbols-outlined text-sm">fullscreen</span>
+          <span aria-hidden className="material-symbols-outlined text-sm">fullscreen</span>
           {t("expandPage")}
         </button>
       )}
@@ -182,7 +193,7 @@ export default function MobileBookViewer({
           className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border-light bg-white text-text-muted transition-all hover:border-create-primary hover:text-create-primary disabled:opacity-30 disabled:hover:border-border-light disabled:hover:text-text-muted"
           aria-label={t("previous")}
         >
-          <span className="material-symbols-outlined text-lg">chevron_left</span>
+          <span aria-hidden className="material-symbols-outlined text-lg">chevron_left</span>
         </button>
 
         {/* Progress bar + page number */}
@@ -193,9 +204,11 @@ export default function MobileBookViewer({
               style={{ width: `${((currentPage) / Math.max(pages.length - 1, 1)) * 100}%` }}
             />
           </div>
-          <span className="text-[10px] font-bold text-text-muted tabular-nums">
-            {currentPage + 1} / {pages.length}
-          </span>
+          {!hidePageCount && (
+            <span className="text-[10px] font-bold text-text-muted tabular-nums">
+              {currentPage + 1} / {pages.length}
+            </span>
+          )}
         </div>
 
         <button
@@ -207,13 +220,13 @@ export default function MobileBookViewer({
           className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border-light bg-white text-text-muted transition-all hover:border-create-primary hover:text-create-primary disabled:opacity-30 disabled:hover:border-border-light disabled:hover:text-text-muted"
           aria-label={t("next")}
         >
-          <span className="material-symbols-outlined text-lg">chevron_right</span>
+          <span aria-hidden className="material-symbols-outlined text-lg">chevron_right</span>
         </button>
       </div>
 
-      {/* Interaction hint */}
+      {/* Interaction hint: swipe on phones, click / arrow keys with a mouse */}
       <p className="mt-2 text-center text-xs text-text-muted">
-        {t("swipeHint")}
+        {isNarrow ? t("swipeHint") : tPurchase("desktopHint")}
       </p>
 
       {/* Fullscreen page viewer modal */}
@@ -225,6 +238,14 @@ export default function MobileBookViewer({
           favoriteColor={favoriteColor}
           initialPage={fullscreenPage}
           onClose={() => setFullscreenPage(null)}
+          onOrder={
+            onOrder
+              ? () => {
+                  setFullscreenPage(null);
+                  onOrder();
+                }
+              : undefined
+          }
           onPageChange={(idx) => {
             // Sync flip book when user swipes in fullscreen
             const pf = flipBookRef.current?.pageFlip();

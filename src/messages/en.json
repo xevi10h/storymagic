@@ -796,8 +796,8 @@
       "colophonText": "This book was lovingly created by Meapica. Every story is unique, written and illustrated especially for its protagonist. Because every child deserves to be the hero of their own adventure.",
       "synopsisFallback": "{name} is about to live the most extraordinary adventure of their life.",
       "loadError": "We couldn't open this book. Check your connection and reload the page.",
-      "ctaPhysical": "Order {name}'s book · {price} incl. VAT",
-      "ctaDigital": "Download {name}'s book · {price} incl. VAT",
+      "ctaPhysical": "Order {name}'s book · {price}",
+      "ctaDigital": "Download {name}'s book · {price}",
       "stickyCtaPhysical": "Order the book",
       "stickyCtaDigital": "Download",
       "shippingIncluded": "Shipping included",
@@ -805,7 +805,11 @@
       "wantIt": "I want it",
       "previewOutdatedTitle": "This preview can no longer be purchased",
       "previewOutdatedBody": "It was made with an earlier version of Meapica and we cannot illustrate it at final quality. Create the book again with the same main character: it only takes a minute and the preview is free.",
-      "previewOutdatedCta": "Create it again"
+      "previewOutdatedCta": "Create it again",
+      "notAccessibleTitle": "This story was opened in another browser",
+      "notAccessibleBody": "For privacy, each story can only be seen in the browser where it was created or in your account. Open it from the link we emailed you, or log in if you saved it to your account.",
+      "notAccessibleLogin": "Log in",
+      "notAccessibleCreate": "Create a new story"
     },
     "errors": {
       "saveFailed": "We couldn't save your book. Check your connection and tap the button again: everything you've entered is still here.",
@@ -849,6 +853,9 @@
       "glassesFrame_dark": "Dark frame",
       "glassesFrame_red": "Red frame",
       "freckles": "Freckles",
+      "favoriteColor": "Favourite colour",
+      "favoriteColorHint": "Optional. We'll use it for their jacket and the book's details.",
+      "favoriteColorNone": "No preference",
       "avatarNote": "This is how they'll appear in the book",
       "photoNote": "We'll draw them from their photo",
       "photoRequired": "Upload a photo or go back to “Design it”"
@@ -919,7 +926,7 @@
     },
     "sendPreview": {
       "title": "Deciding later?",
-      "hint": "We'll email you the preview link to look at it calmly on this device. No subscriptions.",
+      "hint": "We'll email you a link to the preview to look at it calmly on any device, or forward it. No subscriptions.",
       "placeholder": "you@email.com",
       "send": "Email it to me",
       "sending": "Sending…",
@@ -947,6 +954,70 @@
         "rate_limited": "You've uploaded a lot of photos in a row. Wait a while and try again.",
         "upload_failed": "We couldn't upload the photo. Please try again."
       }
+    },
+    "purchase": {
+      "scenesShown": "{shown} of {total} scenes",
+      "editTitle": "Change the title",
+      "editPage": "Edit",
+      "editLinks": "Change the <title>title</title>, <dedication>dedication</dedication> or <look>look</look>",
+      "desktopHint": "Click the pages or use the ← → keys",
+      "headline": "{name}'s book, printed and delivered to your door",
+      "specs": "30 pages · 12 illustrated scenes · 20 × 20 cm · printed in the EU",
+      "mockupAlt": "{name}'s book as a {format}: {title}",
+      "formatsLegend": "Choose the format",
+      "hardcoverGap": "Only {diff} more than the softcover",
+      "freeShipping": "Free shipping",
+      "pdfIncluded": "PDF included",
+      "pdfInstant": "Digital only, no printed book",
+      "pdfOnly": "Just the PDF? {price} incl. VAT",
+      "extraCopy": "Another copy for the grandparents",
+      "extraCopyNote": "printed at the same time",
+      "deliverySameMonth": "Arrives between {fromDay} and {to}",
+      "deliveryCrossMonth": "Arrives between {from} and {to}",
+      "deliveryEstimate": "estimated date",
+      "deliveryArea": "Free shipping to mainland Spain and the Balearic Islands",
+      "digitalDelivery": "Download it as soon as we finish illustrating it",
+      "ctaNotePhysical": "VAT and shipping included",
+      "ctaNoteDigital": "VAT included",
+      "trustPreview": "You've seen the book before paying",
+      "trustPayment": "Secure payment with Stripe",
+      "trustMadeIn": "Made in Barcelona, printed in the EU",
+      "trustReprint": "Arrived damaged or with a printing defect? We replace it free of charge",
+      "help": "Questions? Write to",
+      "teaserComingTitle": "Still to come in the story",
+      "teaserComingMore": "…and the ending, with {name}'s hero card",
+      "teaserOrderTitle": "{name}'s complete book",
+      "teaserOrderBody": "12 illustrated scenes, printed and delivered to your door",
+      "teaserOrderPrice": "From {price}",
+      "teaserOrderCta": "Choose format",
+      "stickyFrom": "The printed book · from {price}",
+      "stickyNote": "VAT included · Free shipping",
+      "stickyChoose": "I want it",
+      "secondaryTitle": "Deciding later?",
+      "faqTitle": "Before you order",
+      "faq": {
+        "delivery": {
+          "q": "When does it arrive?",
+          "a": "It is printed on demand and takes 7 to 10 working days. We email you the tracking when it ships."
+        },
+        "canarias": {
+          "q": "Do you ship to the Canary Islands, Ceuta or Melilla?",
+          "a": "For now we only ship to mainland Spain and the Balearic Islands. The PDF can be bought from anywhere."
+        },
+        "quality": {
+          "q": "What is the book like?",
+          "a": "20 × 20 cm, 30 full-colour pages on 170 g silk coated paper. The hardcover has a matte laminate and is the most durable."
+        },
+        "changes": {
+          "q": "Can I change anything?",
+          "a": "Yes, before ordering: the title, the dedication and the look. We print it exactly as you see it here."
+        },
+        "returns": {
+          "q": "What if something is wrong with it?",
+          "a": "As a made-to-order book it has no right of withdrawal, but if it arrives with a manufacturing defect, write to us and we will sort it out."
+        }
+      },
+      "softcoverNote": "Flexible cover, lighter"
     }
   },
   "checkout": {
@@ -1165,7 +1236,7 @@
       }
     },
     "withdrawal": {
-      "label": "I agree that the book is made to order and that the PDF is delivered to me as soon as it is ready, and I understand that I therefore lose the right of withdrawal (art. 103 c and m, Spanish consumer law).",
+      "label": "I agree to receive the PDF as soon as it is ready and understand that, as a made-to-order book, it has no right of withdrawal.",
       "required": "Tick the box to continue to payment."
     }
   },
@@ -2167,5 +2238,35 @@
     },
     "footerLink": "Will it arrive by Three Kings' Day?",
     "seoCallout": "Will it arrive in time? See the Christmas and Three Kings order deadlines"
+  },
+  "sharePreview": {
+    "share": {
+      "button": "Share",
+      "sharing": "Preparing…",
+      "copied": "Link copied",
+      "copyManually": "Copy this link:",
+      "error": "We couldn't create the link. Please try again.",
+      "shareTitle": "{name}'s book",
+      "shareText": "Look at the story I'm making for {name}:",
+      "hint": "Anyone with the link can see the preview (without editing it) for 30 days."
+    },
+    "view": {
+      "metaTitle": "{name}'s book · Preview",
+      "badge": "Shared preview",
+      "intro": "A sneak peek at {name}'s personalised story: the first pages. The rest is a surprise.",
+      "restTitle": "The rest of the story is a surprise",
+      "restBody": "Someone who loves {name} very much is making this book. Would you like one like it for another child? With their name, their look and their own adventure, ready in a few minutes.",
+      "createCta": "Create yours",
+      "ownerHint": "Is this your story?",
+      "ownerLogin": "Log in to finish it",
+      "readOnly": "Read only",
+      "lockedDescription": "The rest of the story is a surprise for {name}."
+    },
+    "notFound": {
+      "title": "This link no longer works",
+      "body": "It has expired or is incomplete. Ask whoever sent it for a new link: they can create one in a moment from their story.",
+      "createCta": "Create your own story",
+      "home": "Go to Meapica"
+    }
   }
 }

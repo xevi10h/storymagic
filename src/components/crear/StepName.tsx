@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import type { CharacterData, Gender } from "@/lib/create-store";
 import { MAX_NAME_LENGTH } from "@/lib/creation-flow";
+import { formatChildName } from "@/lib/child-name";
 import LiveCover from "./LiveCover";
 import CreationFooterNav from "./CreationFooterNav";
 
@@ -60,6 +61,10 @@ export default function StepName({ character, selectedTemplate, onUpdateCharacte
               type="text"
               value={character.name}
               onChange={(e) => onUpdateCharacter({ name: e.target.value })}
+              onBlur={(e) => {
+                const name = formatChildName(e.target.value);
+                if (name !== e.target.value) onUpdateCharacter({ name });
+              }}
               placeholder={t("namePlaceholder")}
               maxLength={MAX_NAME_LENGTH}
               autoComplete="off"

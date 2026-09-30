@@ -42,11 +42,11 @@ export const BOOK = {
   folioInset: (4 + 10) * MM_TO_PT,
 } as const;
 
-// ── Template Color Palettes ────────────────────────────────────────────────
+// ── Book palette ───────────────────────────────────────────────────────────
 
 export interface TemplateTheme {
   id: string;
-  /** Primary gradient — used on cover and back */
+  /** Deep tones — cover / back cover grounds, QR code */
   coverGradientStart: string;
   coverGradientEnd: string;
   /** Accent color for decorations, page numbers, scene titles */
@@ -61,120 +61,15 @@ export interface TemplateTheme {
   ornamentColor: string;
 }
 
-export const TEMPLATE_THEMES: Record<string, TemplateTheme> = {
-  space: {
-    id: "space",
-    coverGradientStart: "#1a1a4e",
-    coverGradientEnd: "#2d1b69",
-    accent: "#6366f1",
-    accentLight: "#e8eaf6",
-    pageTint: "#f8f7ff",
-    titleColor: "#312e81",
-    ornamentColor: "#a5b4fc",
-  },
-  forest: {
-    id: "forest",
-    coverGradientStart: "#1a3a2a",
-    coverGradientEnd: "#2d5016",
-    accent: "#16a34a",
-    accentLight: "#dcfce7",
-    pageTint: "#f7fdf9",
-    titleColor: "#14532d",
-    ornamentColor: "#86efac",
-  },
-  superhero: {
-    id: "superhero",
-    coverGradientStart: "#7f1d1d",
-    coverGradientEnd: "#991b1b",
-    accent: "#dc2626",
-    accentLight: "#fee2e2",
-    pageTint: "#fef7f7",
-    titleColor: "#7f1d1d",
-    ornamentColor: "#fca5a5",
-  },
-  pirates: {
-    id: "pirates",
-    coverGradientStart: "#0c2d48",
-    coverGradientEnd: "#0e4d64",
-    accent: "#0284c7",
-    accentLight: "#e0f2fe",
-    pageTint: "#f6fbff",
-    titleColor: "#0c4a6e",
-    ornamentColor: "#7dd3fc",
-  },
-  chef: {
-    id: "chef",
-    coverGradientStart: "#7c2d12",
-    coverGradientEnd: "#9a3412",
-    accent: "#ea580c",
-    accentLight: "#fff7ed",
-    pageTint: "#fffbf5",
-    titleColor: "#7c2d12",
-    ornamentColor: "#fdba74",
-  },
-  dinosaurs: {
-    id: "dinosaurs",
-    coverGradientStart: "#1b4332",
-    coverGradientEnd: "#2d6a4f",
-    accent: "#40916c",
-    accentLight: "#d8f3dc",
-    pageTint: "#f6fdf8",
-    titleColor: "#1b4332",
-    ornamentColor: "#95d5b2",
-  },
-  castle: {
-    id: "castle",
-    coverGradientStart: "#2e1065",
-    coverGradientEnd: "#4c1d95",
-    accent: "#7c3aed",
-    accentLight: "#ede9fe",
-    pageTint: "#faf5ff",
-    titleColor: "#3b0764",
-    ornamentColor: "#c4b5fd",
-  },
-  safari: {
-    id: "safari",
-    coverGradientStart: "#7c2d12",
-    coverGradientEnd: "#b45309",
-    accent: "#d97706",
-    accentLight: "#fef3c7",
-    pageTint: "#fffbeb",
-    titleColor: "#78350f",
-    ornamentColor: "#fcd34d",
-  },
-  inventor: {
-    id: "inventor",
-    coverGradientStart: "#0c4a6e",
-    coverGradientEnd: "#075985",
-    accent: "#0284c7",
-    accentLight: "#e0f2fe",
-    pageTint: "#f0f9ff",
-    titleColor: "#0c4a6e",
-    ornamentColor: "#7dd3fc",
-  },
-  candy: {
-    id: "candy",
-    coverGradientStart: "#831843",
-    coverGradientEnd: "#9d174d",
-    accent: "#db2777",
-    accentLight: "#fce7f3",
-    pageTint: "#fdf2f8",
-    titleColor: "#831843",
-    ornamentColor: "#f9a8d4",
-  },
-};
-
 /**
- * Get the PDF theme for a template, optionally tinted by character gender.
- * Girl → warm rose shift, boy → cool blue shift, neutral → unchanged.
+ * PDF theme of a book. The child's favourite colour leads the whole palette
+ * (src/lib/template-colors.ts); no favourite colour → neutral warm palette.
+ * templateId / gender are kept for call-site compatibility only.
  */
 export function getTheme(templateId: string, gender?: string, favoriteColor?: string): TemplateTheme {
-  const base = TEMPLATE_THEMES[templateId] ?? TEMPLATE_THEMES.forest;
-  // Use getBookColors which handles both favoriteColor override and gender tinting
   const colors = getBookColors(templateId, gender, favoriteColor);
-
   return {
-    ...base,
+    id: templateId,
     accent: colors.accent,
     accentLight: colors.accentLight,
     titleColor: colors.titleColor,

@@ -35,9 +35,14 @@ export default function Sheet({ open, title, onClose, closeLabel, children, foot
     document.addEventListener("keydown", onKey);
     const { overflow } = document.body.style;
     document.body.style.overflow = "hidden";
-    // Focus the first field (or the panel) once mounted
+    // Focus the first field (or the panel) once mounted. On touch screens only the
+    // panel: focusing a field would pop the keyboard over the sheet before the
+    // parent has even read it.
     requestAnimationFrame(() => {
-      const target = panelRef.current?.querySelector<HTMLElement>("textarea, input, button:not([data-sheet-close])");
+      const touch = window.matchMedia("(pointer: coarse)").matches;
+      const target = touch
+        ? null
+        : panelRef.current?.querySelector<HTMLElement>("textarea, input, button:not([data-sheet-close])");
       (target ?? panelRef.current)?.focus();
     });
     return () => {

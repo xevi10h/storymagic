@@ -4,6 +4,7 @@ import { z } from "zod";
 import type { Json } from "@/lib/database.types";
 import { ownedPortraitPath } from "@/lib/storage/illustration-urls";
 import { avatarAssetPathSchema, characterLookShape } from "@/lib/character-look";
+import { formatChildName } from "@/lib/child-name";
 
 const VALID_TEMPLATE_IDS = ["space", "forest", "superhero", "pirates", "chef", "dinosaurs", "castle", "safari", "inventor", "candy"] as const;
 const VALID_MODES = ["solo", "juntos"] as const;
@@ -12,7 +13,8 @@ const VALID_LOCALES = ["es", "ca", "en", "fr"] as const;
 const storyInputSchema = z.object({
   character: z.object({
     ...characterLookShape,
-    name: z.string().min(1).max(50),
+    // Display form ("xavi" → "Xavi"): every surface (book, emails, LLM title) spells it the same
+    name: z.string().max(50).transform(formatChildName).pipe(z.string().min(1)),
     interests: z.array(z.string().max(50)).max(4).optional(),
     city: z.string().max(100).optional(),
     favoriteCompanion: z.string().max(100).optional(),
