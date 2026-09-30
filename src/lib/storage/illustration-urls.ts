@@ -62,7 +62,7 @@ export function storyOnlyAccess(storyId: string): IllustrationAccess {
  *  - legacy portraits (`portraits/<uuid>/file`, pre-2026-09-27, owner not in the
  *    path) only when `allowLegacyPortraits` — callers pass true only for values read
  *    from the user's own rows, which only the server writes (no client write grant,
- *    migration 20260930120000; ownedPortraitPath never stores a legacy path).
+ *    migration 20260930160000; ownedPortraitPath never stores a legacy path).
  */
 export function userAccess(opts: { userId: string; storyIds?: Iterable<string>; allowLegacyPortraits?: boolean }): IllustrationAccess {
   const stories = new Set([...(opts.storyIds ?? [])].map((id) => id.toLowerCase()));
