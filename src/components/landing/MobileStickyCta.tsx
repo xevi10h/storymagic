@@ -5,8 +5,6 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { buttonClass } from "@/components/ui";
 import { PRICING, formatPrice } from "@/lib/pricing";
-import { deName, firstName } from "@/lib/creation-flow";
-import { formatChildName } from "@/lib/child-name";
 import { crearHref, useHeroName } from "./HeroNameStore";
 
 /**
@@ -70,8 +68,8 @@ export default function MobileStickyCta() {
   }, []);
 
   const visible = heroPassed && !endVisible;
-  const first = firstName(formatChildName(name));
-  const ctaLabel = first ? t("ctaWithName", { deName: deName(first, locale) }) : t("cta");
+  // ponytail: fixed short label; "Crear el libro de {name}" truncates at 19px on phones. The link still carries the name.
+  const ctaLabel = t("cta");
 
   return (
     <div
