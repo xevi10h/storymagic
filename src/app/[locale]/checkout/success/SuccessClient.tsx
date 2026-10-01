@@ -190,12 +190,13 @@ export default function SuccessClient({
           // Trigger completion of remaining illustrations
           await triggerCompletion(order.storyId);
         } else {
-          // Stripe confirmed the payment server-side, but the order row isn't
-          // readable yet (webhook lag) — show the confirmed-payment state.
-          setCompletionStatus("ready");
+          // Stripe confirmed the payment server-side, but this browser can't read
+          // the order (webhook lag, or paid from another device than the one that
+          // created the book): "paid, we'll email you", never a "ready" we can't back.
+          setCompletionStatus("processing");
         }
       } catch {
-        setCompletionStatus("ready");
+        setCompletionStatus("processing");
       }
     }
 
