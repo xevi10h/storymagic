@@ -11,115 +11,226 @@
     },
     "gifts": {
       "three-kings": {
-        "metaTitle": "Conte personalitzat per Reis: el regal protagonista",
-        "metaDescription": "Aquest any, regala alguna cosa que els teus fills recordaran sempre: un conte on són els herois. Encarrega'l amb temps per als Reis.",
-        "h1": "El regal de Reis que no acaba en una capsa oblidada",
-        "heroIntro": "El matí del 6 de gener arriba un cop l'any. En lloc d'una joguina més de plàstic, deixa als Reis un conte on el teu fill és el protagonista de la seva pròpia aventura.",
-        "bodyHeading": "Un regal que es guarda, no que es trenca",
+        "metaTitle": "Regal de Reis personalitzat: el seu conte | Meapica",
+        "metaDescription": "Un conte de Reis amb el seu nom a la portada i la seva cara pintada a l'aquarel·la. El veus abans de pagar. Tapa dura o tova, enviament gratuït.",
+        "h1": "Regal de Reis personalitzat: el conte amb el seu nom i la seva cara",
+        "heroIntro": "El matí del 6 de gener, entre les sabates i el paper de regal, hi ha un llibre amb el seu nom a la portada. L'obre, es reconeix a la primera pàgina i et busca amb la mirada. Aquest any, que els Reis li portin el seu conte.",
+        "bodyHeading": "Per què un conte personalitzat és un bon regal de Reis",
         "bodyParagraphs": [
-          "Les joguines de moda canvien cada temporada; un llibre amb el nom, la cara i els somnis del teu fill no caduca mai. És el tipus de regal que es torna a obrir anys després, que es guarda a la prestatgeria i que un dia explicarà als seus propis fills. Paper per damunt de píxels, emoció per damunt del soroll.",
-          "Cada conte és una edició única: escrivim una història a mida a partir del nom, l'edat i els trets del teu fill, i ell mateix apareix dibuixat a cada escena. Pots veure la previsualització sencera abans de comprar, així que saps exactament quin regal hi haurà sota la falguera. Demana'l amb temps: l'enviament a l'Espanya peninsular tarda entre 5 i 8 dies laborables."
+          "Les joguines de moda duren una temporada. Un llibre on surt el seu nom, la seva cara pintada a l'aquarel·la i l'aventura que has triat per a ell es queda a la prestatgeria, es rellegeix cada nit durant setmanes i, d'aquí a uns anys, serà dels pocs regals d'aquells Reis que encara recordarà.",
+          "No és un llibre amb un nom enganxat. Tu tries el món de la història i decideixes els tres capítols, i cada decisió canvia el que passa. El text s'escriu per a la seva edat, en català o en la llengua que vulguis, i les {scenes} escenes il·lustrades el mostren com a protagonista de principi a fi.",
+          "I no hi ha sorpreses el dia 6: abans de pagar veus la portada amb el seu nom, el seu retrat i les primeres escenes il·lustrades del seu conte. Si alguna cosa no et convenç, canvies el seu aspecte, el títol o la dedicatòria."
         ],
-        "benefitsHeading": "Per què aquest Reis",
+        "benefitsHeading": "Per què aquest any, per Reis",
         "benefits": [
-          "El teu fill és l'heroi, no un espectador més",
-          "Un record que dura tota la vida, no una temporada",
-          "Previsualització completa abans de comprar"
-        ]
+          "El seu nom i la seva cara a cada pàgina, no un nom enganxat",
+          "Veus la portada i les primeres escenes abans de pagar",
+          "Demana'l fins al {reyesDate} perquè arribi abans de Reis"
+        ],
+        "sections": [
+          {
+            "heading": "Com es crea, pas a pas",
+            "paragraphs": [
+              "Escrius el seu nom i tries com és: la pell, els cabells, el pentinat, els ulls, si porta ulleres o té pigues. Amb això pintem el seu retrat a l'aquarel·la, el mateix que apareixerà a totes les escenes.",
+              "Després tries l'aventura, de l'espai als dinosaures o un castell de somni, i decideixes els tres capítols. En pocs minuts tens la portada i les primeres pàgines pintades. Crear-lo és gratuït i no cal registrar-se."
+            ]
+          },
+          {
+            "heading": "Què hi ha dins del llibre",
+            "paragraphs": [
+              "Un llibre quadrat de {size} × {size} cm, la mida que agafen bé les mans petites, amb {pages} pàgines i {scenes} escenes il·lustrades en paper estucat setinat de {paper} g. Porta la portada amb el seu nom, una dedicatòria escrita per vosaltres i la contraportada, i la coberta té un laminat mat.",
+              "La dedicatòria és la part que es rellegeix quan ja són grans. La pots signar com els Reis, com els avis o com vulguis: és el teu text, imprès a la primera pàgina."
+            ]
+          },
+          {
+            "heading": "Quan demanar-lo perquè arribi abans de Reis",
+            "paragraphs": [
+              "L'imprimim sota demanda a Europa i arriba en {minDays}-{maxDays} dies laborables, amb l'enviament inclòs, a l'Espanya peninsular i les Balears. Per tenir el llibre imprès a casa abans de la nit de Reis, demana'l com a tard el {reyesDate}. És una estimació amb marge pels festius i la saturació de missatgeria de desembre, no una garantia.",
+              "Si se t'ha passat la data, o el regal és per a Canàries, Ceuta o Melilla, on encara no enviem, el conte en PDF t'arriba per correu just després de pagar, normalment en menys d'una hora, i el pots imprimir o llegir a la tauleta."
+            ]
+          },
+          {
+            "heading": "Tapa dura, tapa tova o PDF",
+            "paragraphs": [
+              "La tapa dura, {hardcover} IVA inclòs, és la més resistent i la que aguanta anys de lectures. La tapa tova, {softcover} IVA inclòs, és més lleugera. Totes dues inclouen l'enviament i el PDF del conte complet.",
+              "Només el PDF costa {pdf} IVA inclòs. Si en vols un altre exemplar per als avis o per a l'altra casa, el pots afegir en fer la comanda."
+            ]
+          }
+        ],
+        "faq": {
+          "q1": "Fins quan el puc demanar perquè arribi per Reis?",
+          "a1": "Per tenir el llibre imprès a casa abans de la nit de Reis, demana'l com a tard el {reyesDate}. Després d'aquesta data encara pots regalar el conte en PDF, que t'arriba per correu el mateix dia.",
+          "q2": "Puc fer que sembli un regal dels Reis?",
+          "a2": "Sí. La dedicatòria de la primera pàgina l'escrius tu i la pots signar com a Melcior, Gaspar i Baltasar o com vulguis. També pots canviar el títol del llibre abans de demanar-lo.",
+          "q3": "Quant costa i què inclou?",
+          "a3": "Tapa dura, {hardcover} IVA inclòs. Tapa tova, {softcover} IVA inclòs. Només el PDF, {pdf} IVA inclòs. El llibre imprès inclou l'enviament gratuït i el PDF del conte complet.",
+          "q4": "I si arriba amb algun defecte?",
+          "a4": "Com que és un llibre fet a mida, no admet devolucions. Però si arriba amb un defecte d'impressió o malmès, escriu-nos en els {defectDays} dies següents amb una foto i te n'enviem un de nou sense cost."
+        }
       },
       "sant-jordi": {
-        "metaTitle": "Conte personalitzat per Sant Jordi: el llibre i la rosa",
+        "metaTitle": "Conte personalitzat per Sant Jordi | Meapica",
         "metaDescription": "Per Sant Jordi, regala el llibre més personal de tots: un conte on el teu fill és el protagonista. La rosa es marceix; aquest conte queda per sempre.",
         "h1": "El llibre de Sant Jordi amb el teu fill com a protagonista",
         "heroIntro": "Per Diada de Sant Jordi tothom regala un llibre. Aquest any regala'n un que ningú més té: un conte únic on el teu fill viu la seva pròpia aventura.",
         "bodyHeading": "La rosa es marceix, aquest conte no",
         "bodyParagraphs": [
           "Sant Jordi és la festa dels llibres i les roses, i no hi ha regal més fidel a aquest esperit que un conte fet expressament per a algú que estimes. La rosa dura uns dies; un llibre amb el nom i la cara del teu fill es guarda a la prestatgeria de casa i s'obre una vegada i una altra. És literatura i és record, tot alhora.",
-          "Escrivim una història original protagonitzada pel teu fill, amb els seus trets i els seus somnis dibuixats a cada escena, impresa en paper estucat setinat de 170 g. Un objecte digne de la millor llibreria, pensat per durar. Veuràs la previsualització sencera abans de decidir-te, perquè un regal així es mereix mirar-se amb calma."
+          "Escrivim una història original protagonitzada pel teu fill, amb els seus trets i els seus somnis dibuixats a cada escena, impresa en paper estucat setinat de 170 g. Un objecte digne de la millor llibreria, pensat per durar. Abans de pagar veuràs la portada amb el seu nom, el seu retrat i les primeres escenes del conte, perquè un regal així es mereix mirar-se amb calma."
         ],
         "benefitsHeading": "Per què per Sant Jordi",
         "benefits": [
           "El regal més personal d'una diada de llibres",
           "Paper estucat de 170 g, fet per durar",
           "Una edició única que la rosa no pot igualar"
-        ]
+        ],
+        "faq": {
+          "q1": "Arriba a temps per Sant Jordi?",
+          "a1": "L'imprimim sota demanda i arriba en {minDays}-{maxDays} dies laborables a l'Espanya peninsular i les Balears. Per tenir-lo el 23 d'abril, demana'l amb unes dues setmanes de marge. El PDF t'arriba per correu el mateix dia.",
+          "q2": "Puc fer-lo en català?",
+          "a2": "Sí. El conte es pot escriure en català, castellà, anglès o francès, i la dedicatòria l'escrius tu en la llengua que vulguis.",
+          "q3": "Quina història triar per Sant Jordi?",
+          "a3": "El Castell dels Somnis, de 6 a 10 anys, és la que més s'acosta a la llegenda de cavallers i castells. Per als més petits, El Bosc Màgic, de 2 a 5 anys."
+        }
       },
       "birthday": {
-        "metaTitle": "Conte personalitzat d'aniversari: ell n'és l'heroi",
-        "metaDescription": "Per al seu aniversari, regala-li la millor aventura: un conte únic on el teu fill és el protagonista. Previsualització completa abans de comprar.",
+        "metaTitle": "Conte personalitzat d'aniversari | Meapica",
+        "metaDescription": "Per al seu aniversari, regala-li la millor aventura: un conte únic on el teu fill és el protagonista. El veus abans de pagar.",
         "h1": "El conte d'aniversari on el protagonista és el teu fill",
         "heroIntro": "El dia del seu aniversari, el teu fill ho és tot. Regala-li un conte on també sigui l'heroi indiscutible d'una aventura escrita només per a ell.",
         "bodyHeading": "La cara que farà en reconèixer-se",
         "bodyParagraphs": [
-          "Hi ha un instant impagable quan un nen obre el llibre i descobreix que el protagonista té el seu nom, els seus cabells, els seus ulls i fins i tot la seva mascota. Deixa de ser un conte qualsevol i passa a ser el seu conte. Aquest moment, el dia del seu aniversari, val molt més que qualsevol joguina que oblidarà en una setmana.",
-          "Construïm una història a mida amb les dades del teu fill i una dedicatòria personalitzada a la primera pàgina, perquè recordi qui li va fer aquest regal i per quin motiu. Disponible en PDF digital, tapa tova o tapa dura, sempre amb la previsualització sencera abans de comprar. L'enviament a l'Espanya peninsular tarda entre 5 i 8 dies laborables, així que demana'l amb una mica d'antelació."
+          "Hi ha un instant impagable quan un nen obre el llibre i descobreix que el protagonista té el seu nom, els seus cabells i els seus ulls. Deixa de ser un conte qualsevol i passa a ser el seu conte. Aquest moment, el dia del seu aniversari, val molt més que qualsevol joguina que oblidarà en una setmana.",
+          "Construïm una història a mida amb les dades del teu fill i una dedicatòria personalitzada a la primera pàgina, perquè recordi qui li va fer aquest regal i per quin motiu. Disponible en PDF digital, tapa tova o tapa dura, i abans de pagar en veus la portada i les primeres escenes. L'imprès arriba en {minDays}-{maxDays} dies laborables a l'Espanya peninsular i les Balears, així que demana'l amb una mica d'antelació."
         ],
         "benefitsHeading": "Per què per l'aniversari",
         "benefits": [
           "El protagonista és ell, el dia que tot gira al seu voltant",
           "Dedicatòria personalitzada per recordar qui l'hi va regalar",
           "Un record que sobreviu a totes les joguines"
-        ]
+        ],
+        "faq": {
+          "q1": "Quant triga a arribar?",
+          "a1": "{minDays}-{maxDays} dies laborables des que fas la comanda, amb l'enviament gratuït a l'Espanya peninsular i les Balears. Si l'aniversari és d'aquí a pocs dies, el PDF t'arriba per correu just després de pagar.",
+          "q2": "La història té en compte l'edat que fa?",
+          "a2": "Sí. Indiques la seva edat i el text s'escriu per a aquesta edat. A la dedicatòria el pots felicitar amb les teves paraules.",
+          "q3": "Quant costa?",
+          "a3": "Tapa dura, {hardcover} IVA inclòs. Tapa tova, {softcover} IVA inclòs. Només el PDF, {pdf} IVA inclòs. El llibre imprès inclou l'enviament i el PDF."
+        }
       },
       "communion": {
-        "metaTitle": "Conte personalitzat de Primera Comunió: record elegant",
+        "metaTitle": "Conte personalitzat de Primera Comunió | Meapica",
         "metaDescription": "Un record elegant i ple de sentit per a la Primera Comunió: un conte únic amb el nom del nen i una dedicatòria especial. Fet per durar.",
         "h1": "Un conte de Primera Comunió que es guarda tota la vida",
         "heroIntro": "La Primera Comunió és una fita que es recorda per sempre. Acompanya-la amb un regal a l'altura: un conte únic, elegant i personalitzat, amb el protagonista que celebra el dia.",
         "bodyHeading": "Un record per a una ocasió que no es repeteix",
         "bodyParagraphs": [
           "En un dia tan assenyalat, els regals que perduren són els que tenen ànima. Un conte fet a mida, amb el nom del nen i una dedicatòria pensada per a l'ocasió, esdevé un d'aquests objectes que la família guarda amb cura i que el nen retrobarà de gran amb emoció. No és un detall més: és un record que el connecta amb un dels dies importants de la seva infància.",
-          "Cada llibre s'imprimeix en paper estucat setinat de 170 g, amb coberta de laminat mat i un acabat sobri i elegant a l'altura del moment. Pots triar tapa dura per a un objecte encara més durador i veuràs la previsualització completa abans de comprar. Recorda demanar-lo amb temps, perquè l'enviament a l'Espanya peninsular tarda entre 5 i 8 dies laborables."
+          "Cada llibre s'imprimeix en paper estucat setinat de 170 g, amb coberta de laminat mat i un acabat sobri i elegant a l'altura del moment. Pots triar tapa dura per a un objecte encara més durador, i abans de pagar en veuràs la portada i les primeres escenes. Recorda demanar-lo amb temps: arriba en {minDays}-{maxDays} dies laborables a l'Espanya peninsular i les Balears."
         ],
         "benefitsHeading": "Per què per la Comunió",
         "benefits": [
           "Un record elegant a l'altura d'una fita única",
           "Dedicatòria pensada especialment per a l'ocasió",
           "Tapa dura i paper estucat: fet per conservar-se"
-        ]
+        ],
+        "faq": {
+          "q1": "Quines històries van bé per a la Primera Comunió?",
+          "a1": "Per als 8 o 9 anys hi encaixen El Castell dels Somnis, Superheroi per un Dia i La Fàbrica d'Invents, amb una història més llarga i un vocabulari més ric.",
+          "q2": "Podem escriure una dedicatòria de la Comunió?",
+          "a2": "Sí, l'escriviu vosaltres i surt impresa a la primera pàgina. És la part que es rellegeix anys després, quan el llibre ja és un record.",
+          "q3": "Quin format triar per a un record així?",
+          "a3": "La tapa dura, {hardcover} IVA inclòs, és la més resistent i la que queda millor a la prestatgeria. Inclou l'enviament gratuït i el PDF."
+        }
       },
       "christmas": {
-        "metaTitle": "Conte personalitzat de Nadal: màgia sense pantalles",
-        "metaDescription": "Aquest Nadal, recupera la màgia de llegir junts: un conte únic amb el teu fill com a protagonista. Moments de família lluny de les pantalles.",
-        "h1": "El conte de Nadal per llegir junts, lluny de les pantalles",
-        "heroIntro": "El Nadal demana moments de calma compartida. Regala un conte on el teu fill és el protagonista i recupera el plaer de llegir junts, sense pantalles pel mig.",
-        "bodyHeading": "La màgia de Nadal es llegeix en veu alta",
+        "metaTitle": "Conte personalitzat de Nadal per a nens | Meapica",
+        "metaDescription": "Un conte de Nadal amb el seu nom i la seva cara pintada a l'aquarel·la, per llegir junts aquestes festes. El veus abans de pagar. Enviament gratuït.",
+        "h1": "Conte personalitzat de Nadal amb el seu nom i la seva cara",
+        "heroIntro": "El dia de Nadal, després de fer cagar el tió, hi ha un regal que no fa soroll: un llibre amb el seu nom a la portada. El llegireu al sofà aquella mateixa tarda, i per Sant Esteve us el tornarà a demanar.",
+        "bodyHeading": "Un conte de Nadal per llegir junts, no per desar en un calaix",
         "bodyParagraphs": [
-          "Entre llums i sobretaules, el millor regal de Nadal és el temps compartit. Un conte personalitzat convida pares i fills a seure plegats, llegir a poc a poc i descobrir què li passa al protagonista, que resulta ser el mateix nen que escolta. És la mena de moment que cap pantalla pot oferir i que es repetirà nit rere nit.",
-          "Escrivim una història única amb el nom, els trets i els somnis del teu fill, i l'imprimim en un llibre de 20×20 cm amb 12 escenes il·lustrades a doble pàgina. Una dedicatòria personalitzada el converteix en el regal perfecte per posar sota l'arbre. Veuràs tota la previsualització abans de comprar i, com que l'enviament a l'Espanya peninsular tarda entre 5 i 8 dies laborables, val la pena anticipar-se."
+          "Per Nadal hi ha estones que no tornen: la sobretaula llarga, els cosins per casa, la tarda del 25 amb els llums encesos. Un conte on el protagonista és ell converteix una d'aquestes estones en un ritual: seure plegats, passar pàgines de veritat i llegir en veu alta una aventura que li passa a ell.",
+          "Tu tries el món i decideixes els tres capítols; nosaltres escrivim la història per a la seva edat i la pintem a l'aquarel·la amb la seva cara a cada escena. Pot ser una nit a l'espai, un bosc màgic o un vaixell pirata: el toc de Nadal hi poses tu amb la dedicatòria.",
+          "Abans de pagar veus la portada amb el seu nom, el seu retrat i les primeres escenes del seu conte, així que saps exactament què hi haurà sota l'arbre o al costat del tió."
         ],
         "benefitsHeading": "Per què per Nadal",
         "benefits": [
-          "Moments de família lluny de les pantalles",
-          "Un ritual de lectura que es repeteix nit rere nit",
-          "El regal amb ànima per posar sota l'arbre"
-        ]
+          "Una estona per llegir junts, lluny de les pantalles",
+          "El seu nom i la seva cara a cada escena",
+          "Demana'l fins al {christmasDate} per tenir-lo per Nadal"
+        ],
+        "sections": [
+          {
+            "heading": "Com es fa el seu conte",
+            "paragraphs": [
+              "Escrius el seu nom i tries com és: la pell, els cabells, els ulls, les ulleres o les pigues. Amb això pintem el seu retrat, el que apareixerà a cada pàgina. Després tries l'aventura i els tres capítols, i en pocs minuts veus el llibre pintat.",
+              "No cal registrar-se ni pagar res per crear-lo. Només pagues si t'agrada el que veus."
+            ]
+          },
+          {
+            "heading": "Què rebràs a casa",
+            "paragraphs": [
+              "Un llibre de {size} × {size} cm amb {pages} pàgines i {scenes} escenes il·lustrades, imprès en paper estucat setinat de {paper} g, amb la coberta de laminat mat i una dedicatòria vostra a la primera pàgina. El text pot ser en català, castellà, anglès o francès.",
+              "Amb el llibre imprès també reps el PDF del conte complet, per llegir-lo a casa dels avis o guardar-ne una còpia."
+            ]
+          },
+          {
+            "heading": "Quan demanar-lo perquè arribi per Nadal",
+            "paragraphs": [
+              "Arriba en {minDays}-{maxDays} dies laborables a l'Espanya peninsular i les Balears, amb l'enviament gratuït. Per tenir-lo a casa per la Nit de Nadal, demana'l com a tard el {christmasDate}. És una estimació amb marge pels festius de desembre, no una garantia; totes les dates per format són a la pàgina de terminis.",
+              "Si vas tard, el conte en PDF t'arriba per correu just després de pagar, normalment en menys d'una hora. És el mateix llibre, amb les mateixes il·lustracions, per imprimir a casa o llegir a la tauleta."
+            ]
+          },
+          {
+            "heading": "Formats i preus",
+            "paragraphs": [
+              "Tapa dura, {hardcover} IVA inclòs, la més resistent. Tapa tova, {softcover} IVA inclòs. Totes dues amb l'enviament i el PDF inclosos. Només el PDF, {pdf} IVA inclòs."
+            ]
+          }
+        ],
+        "faq": {
+          "q1": "Fins quan el puc demanar perquè arribi per Nadal?",
+          "a1": "Per tenir el llibre imprès a casa el 24 de desembre, demana'l com a tard el {christmasDate}. Si vas més tard, el conte en PDF t'arriba per correu el mateix dia.",
+          "q2": "Puc regalar-lo de part del tió o del Pare Noel?",
+          "a2": "És clar. La dedicatòria l'escrius tu i la pots signar com vulguis. Si també el voleu tenir a casa dels avis, pots afegir un segon exemplar del mateix llibre en fer la comanda.",
+          "q3": "Per a quina edat és?",
+          "a3": "Hi ha històries per a infants de {ageMin} a {ageMax} anys, i cada món té la seva franja: el bosc màgic o el país dels dolços per als més petits, l'espai o els pirates de 5 a 8 anys, i la fàbrica d'invents fins als 12.",
+          "q4": "Envieu a Canàries?",
+          "a4": "De moment enviem a l'Espanya peninsular i a les Balears, no a Canàries, Ceuta ni Melilla. Per a aquests llocs, el conte en PDF arriba igual per correu."
+        }
       },
       "baptism": {
-        "metaTitle": "Conte personalitzat de bateig | Meapica",
-        "metaDescription": "Un conte imprès personalitzat amb el nom del nen, regal de bateig per a tota la vida. Padrins i família. Edició única, impresa a Europa.",
-        "h1": "El conte de bateig que creixerà amb ell",
-        "heroIntro": "Un record de bateig que no s'oblida dins un calaix. Un conte imprès, amb el seu nom, que el petit anirà descobrint a mesura que creix.",
-        "bodyHeading": "Un regal de bateig per recordar tota la vida",
+        "metaTitle": "Regal de bateig: un conte per als seus 2 anys | Meapica",
+        "metaDescription": "Un conte amb el seu nom per regalar el dia del bateig i llegir junts quan faci 2 anys. La dedicatòria d'avui, la llegirà de gran. Edició única.",
+        "h1": "Un regal de bateig per llegir-lo quan faci dos anys",
+        "heroIntro": "Avui encara no el pot llegir, i no passa res. Regala-li un conte amb el seu nom i una dedicatòria dels padrins, guardeu-lo, i obriu-lo junts quan faci dos anys.",
+        "bodyHeading": "Un regal per guardar, i per obrir quan arribi el moment",
         "bodyParagraphs": [
-          "El dia del bateig es regalen moltes coses, però poques arriben als deu anys. Un conte personalitzat sí. Escrivim una història única protagonitzada pel nen, amb el seu nom, els seus cabells, els seus ulls i fins i tot la seva mascota, perquè cada vegada que obri el llibre s'hi reconegui i recordi qui el va estimar des del primer dia.",
-          "Pensat per a padrins, avis i família que volen deixar empremta. El llibre arriba imprès en paper estucat setinat de 170 g, amb tapa dura opcional perquè aguanti anys de mans petites. Una dedicatòria personalitzada a la primera pàgina converteix el detall en una herència familiar que passarà de generació en generació."
+          "Els nostres contes són per a infants a partir de {ageMin} anys: no fem llibres per a nadons. Per això, com a regal de bateig, el plantegem com el que és: un llibre per guardar. El dia del bateig hi escriviu la dedicatòria, i el dia que faci dos anys el llegireu per primer cop junts, amb ell reconeixent-se a cada pàgina.",
+          "Pensat per a padrins, avis i família que hi volen deixar empremta. La dedicatòria és la part que més dura: unes paraules escrites el dia del bateig que llegirà als dos anys, als deu i de gran. El llibre fa {size} × {size} cm, en paper estucat setinat de {paper} g, i la tapa dura, {hardcover} IVA inclòs, és la que millor aguanta anys de prestatgeria i de mans petites."
         ],
-        "benefitsHeading": "Per què és el regal de bateig perfecte",
+        "benefitsHeading": "Per què té sentit com a regal de bateig",
         "benefits": [
-          "El nen és el protagonista de la seva pròpia història",
-          "Dedicatòria personalitzada per als padrins o la família",
-          "Tapa dura i paper estucat que dura anys",
-          "Edició única: no n'hi ha cap altra igual al món",
-          "Veus el conte sencer abans de comprar-lo"
-        ]
+          "Una dedicatòria dels padrins que llegirà de gran",
+          "Un llibre per guardar i obrir quan faci {ageMin} anys",
+          "Tapa dura i paper estucat que aguanten anys"
+        ],
+        "faq": {
+          "q1": "És un llibre per a nadons?",
+          "a1": "No. Les nostres històries són per a infants de {ageMin} a {ageMax} anys. Com a regal de bateig funciona com un llibre per guardar: el regales ara i el llegiu junts quan faci dos anys.",
+          "q2": "Com triem el seu aspecte si encara és un nadó?",
+          "a2": "Tries la pell, els cabells, els ulls i la resta de trets tal com us l'imagineu. Abans de pagar veus el seu retrat i les primeres escenes, i el pots ajustar tantes vegades com vulguis.",
+          "q3": "Quina història és millor per als més petits?",
+          "a3": "Per als dos anys, els mons més adequats són El Bosc Màgic, El País dels Dolços i El Xef Més Petit, amb frases curtes i escenes grans per assenyalar i anomenar."
+        }
       },
       "end-of-school": {
         "metaTitle": "Conte personalitzat de fi de curs | Meapica",
-        "metaDescription": "Celebra el final de curs amb un conte imprès personalitzat. El teu fill, protagonista de la seva aventura d'estiu. Edició única, vista prèvia gratuïta.",
+        "metaDescription": "Celebra el final de curs amb un conte imprès amb el seu nom, per llegir a l'estiu. Edició única, la veus abans de pagar.",
         "h1": "El conte de fi de curs que premia llegir",
         "heroIntro": "S'acaba el curs i comença l'estiu. Regala-li una aventura on és el protagonista, una manera de celebrar tot el que ha après i de mantenir el gust per la lectura.",
-        "bodyHeading": "Una aventura d'estiu amb el seu nom",
+        "bodyHeading": "Una aventura per a l'estiu, amb el seu nom",
         "bodyParagraphs": [
           "El final de curs mereix més que un diploma. Creem una història única protagonitzada pel teu fill, amb el seu nom, el seu aspecte i allò que més li agrada, perquè s'endinsi en una aventura feta a mida. És la recompensa perfecta per a tot un any d'esforç i la guspira ideal per encendre les ganes de llegir durant les vacances.",
           "Lluny de pantalles, amb un llibre que pot tocar, fullejar i tornar a obrir tantes vegades com vulgui. Imprès en paper estucat setinat de 170 g, és un objecte bonic de tenir a l'estanteria. Dotze escenes il·lustrades a doble pàgina on ell sempre és el centre de la història."
@@ -131,7 +242,15 @@
           "El teu fill és el protagonista de l'aventura",
           "Lectura en paper, lluny de les pantalles",
           "Dotze escenes il·lustrades a doble pàgina"
-        ]
+        ],
+        "faq": {
+          "q1": "Arriba abans que s'acabi el curs?",
+          "a1": "Arriba en {minDays}-{maxDays} dies laborables a l'Espanya peninsular i les Balears. Si el voleu donar l'últim dia de classe, demaneu-lo amb unes dues setmanes de marge.",
+          "q2": "Quina història va bé per a l'estiu?",
+          "a2": "Pirates del Mar, de 5 a 8 anys, i Safari a la Sabana, de 4 a 7, són aventures d'exploració que encaixen amb les vacances.",
+          "q3": "El podem llegir de vacances, fora de casa?",
+          "a3": "Sí. Amb el llibre imprès també reps el PDF del conte complet, per llegir-lo a la tauleta allà on sigueu."
+        }
       },
       "name-day": {
         "metaTitle": "Conte personalitzat per al sant | Meapica",
@@ -140,7 +259,7 @@
         "heroIntro": "El dia del sant té un protagonista clar: ell. Regala-li un conte imprès on, per fi, el seu nom és el del personatge principal de la història.",
         "bodyHeading": "El seu nom, el seu dia, la seva història",
         "bodyParagraphs": [
-          "El sant és un dia per fer-lo sentir especial sense necessitat d'un gran aniversari. Per això creem una història única on el protagonista porta el seu nom, té els seus cabells, els seus ulls i fins i tot la seva mascota. Una manera delicada de celebrar qui és, amb un detall pensat especialment per a ell que recordarà molt després que passi la data.",
+          "El sant és un dia per fer-lo sentir especial sense necessitat d'un gran aniversari. Per això creem una història on el protagonista porta el seu nom i té els seus cabells i els seus ulls. Una manera delicada de celebrar qui és, amb un detall pensat per a ell que recordarà molt després que passi la data.",
           "És un regal personal, gens improvisat, que diu molt amb poc. Arriba imprès en paper estucat setinat de 170 g, amb una dedicatòria a la primera pàgina. Dotze escenes il·lustrades a doble pàgina on el petit es reconeix de seguida, perquè el llibre és, literalment, sobre ell."
         ],
         "benefitsHeading": "Per què és el regal ideal per al sant",
@@ -149,8 +268,16 @@
           "Un detall personal que se surt del típic regal",
           "Dedicatòria escrita especialment per a ell",
           "Edició única, feta a mida del petit",
-          "Veus la història completa abans de comprar"
-        ]
+          "Veus la portada i les primeres escenes abans de pagar"
+        ],
+        "faq": {
+          "q1": "Surt el seu nom a tot el llibre?",
+          "a1": "Sí, a la portada i a cada pàgina de la història, i les {scenes} escenes el mostren amb els trets que hagis triat.",
+          "q2": "Funciona amb noms catalans o poc habituals?",
+          "a2": "Sí. Escrius el nom tal com és, amb accents, ç o l·l, i el conte el fa servir tal qual.",
+          "q3": "El puc tenir el mateix dia del sant?",
+          "a3": "El llibre imprès arriba en {minDays}-{maxDays} dies laborables. Si vas més just, el PDF t'arriba per correu després de pagar, normalment en menys d'una hora."
+        }
       },
       "graduation": {
         "metaTitle": "Conte personalitzat de graduació | Meapica",
@@ -169,65 +296,95 @@
           "Celebra una fita amb un record que perdura",
           "Edició única que parla de qui és ell",
           "Paper estucat de 170 g de qualitat"
-        ]
+        ],
+        "faq": {
+          "q1": "Per a quina edat és?",
+          "a1": "Per a graduacions de primària, de 8 a 12 anys. La Fàbrica d'Invents està pensada per a aquesta franja, i El Castell dels Somnis i Superheroi per un Dia arriben fins als 10.",
+          "q2": "La història és més llarga que per als petits?",
+          "a2": "Sí. El text s'escriu per a la seva edat: hi ha més trama, més vocabulari i decisions amb més pes. Els tres capítols els tries tu.",
+          "q3": "Podem incloure-hi un missatge de graduació?",
+          "a3": "Sí, a la dedicatòria de la primera pàgina. Escriu-li el que voldries que llegís d'aquí a uns anys."
+        }
       },
       "first-birthday": {
-        "metaTitle": "Conte personalitzat de primer aniversari | Meapica",
-        "metaDescription": "El seu primer llibre, amb el seu nom. Conte imprès personalitzat per al primer aniversari. Record per a tota la vida. Edició única, impresa a Europa.",
-        "h1": "El seu primer llibre, amb el seu nom",
-        "heroIntro": "Compleix un any. Regala-li el primer llibre de la seva vida, un conte imprès amb el seu nom que serà el record d'aquest primer aniversari per sempre.",
-        "bodyHeading": "El record del primer aniversari",
+        "metaTitle": "Regal de primer aniversari amb el seu nom | Meapica",
+        "metaDescription": "Per al seu primer any, un conte amb el seu nom per llegir junts quan en faci dos. Amb una dedicatòria vostra que guardarà tota la vida. Edició única.",
+        "h1": "Un conte pel seu primer aniversari, per llegir quan en faci dos",
+        "heroIntro": "Fa un any, i encara és aviat per llegir. Regala-li ara un conte amb el seu nom i la vostra dedicatòria, i guardeu-lo per a l'any que ve: als dos anys s'hi reconeixerà a cada pàgina.",
+        "bodyHeading": "El record del primer any, en un llibre que creix amb ell",
         "bodyParagraphs": [
-          "El primer aniversari és més per als pares que per al petit, i precisament per això mereix un record que duri. Creem un conte únic amb el seu nom, els seus cabells i els seus ulls, el primer llibre que tindrà mai. Encara no sap llegir, però el sentirà entre les mans, escoltarà la seva història i creixerà amb un objecte fet exclusivament per a ell.",
-          "És el regal que d'aquí a vint anys encara serà a casa. Imprès en paper estucat setinat de 170 g, amb tapa dura opcional perquè resisteixi els primers anys de mans curioses. Una dedicatòria a la primera pàgina deixa per escrit qui el va estimar quan tot just començava la seva història."
+          "El primer aniversari és sobretot dels pares, i per això mereix un record que duri. Els nostres contes comencen als {ageMin} anys, així que no és un llibre de nadons: és el llibre que li regaleu avui, guardeu a la prestatgeria i obriu junts quan sigui prou gran per seguir la història.",
+          "Escriviu la dedicatòria ara, amb el que sentiu en aquest primer any, i quedarà impresa a la primera pàgina. Quan faci dos anys la llegireu en veu alta; quan en faci deu, la llegirà sol. El llibre fa {size} × {size} cm, té {scenes} escenes il·lustrades a l'aquarel·la i la tapa dura és la que millor resisteix els primers anys de mans curioses."
         ],
-        "benefitsHeading": "Per què és el regal de primer aniversari ideal",
+        "benefitsHeading": "Per què té sentit pel primer aniversari",
         "benefits": [
-          "El primer llibre de la seva vida, amb el seu nom",
-          "Un record d'aquest aniversari per a tota la vida",
-          "Tapa dura i paper estucat que aguanta",
-          "Dedicatòria personalitzada a la primera pàgina",
-          "Edició única, feta exclusivament per a ell"
-        ]
+          "Una dedicatòria d'aquest primer any que llegirà de gran",
+          "Un llibre per guardar i estrenar quan faci {ageMin} anys",
+          "Tapa dura per resistir les mans petites"
+        ],
+        "faq": {
+          "q1": "Té sentit regalar un conte a un nen d'un any?",
+          "a1": "Com a llibre per llegir ara, no: les nostres històries són de {ageMin} a {ageMax} anys. Com a record, sí: el regales pel primer aniversari, hi escriviu la dedicatòria i el llegiu junts quan faci dos anys.",
+          "q2": "Quines històries van millor per començar?",
+          "a2": "El Bosc Màgic, El País dels Dolços i El Xef Més Petit estan pensats per als dos anys, amb frases curtes i escenes grans per assenyalar.",
+          "q3": "Quin format aguanta millor?",
+          "a3": "La tapa dura, {hardcover} IVA inclòs. Si el voleu guardar un temps abans d'estrenar-lo, és la que arriba en millor estat al dia que l'obriu."
+        }
       }
     },
     "ages": {
       "2-4": {
-        "metaTitle": "Conte personalitzat de 2 a 4 anys: primers llibres",
+        "metaTitle": "Conte personalitzat de 2 a 4 anys | Meapica",
         "metaDescription": "Els primers llibres del teu fill, amb el seu nom i la seva cara a cada pàgina. Desperta l'amor per la lectura des dels 2 anys. Edició única.",
         "h1": "Contes personalitzats per a nens de 2 a 4 anys",
         "heroIntro": "Els primers llibres marquen per sempre. Veure el propi nom i la pròpia cara a cada pàgina és la guspira que desperta l'amor per la lectura des de ben petits.",
         "bodyHeading": "El primer llibre que sent seu de debò",
         "bodyParagraphs": [
           "A aquesta edat, els nens encara no llegeixen, però reconeixen. Reconeixen el seu nom quan el dius, reconeixen una cara semblant a la seva i s'il·luminen quan entenen que aquell personatge són ells. Un conte personalitzat aprofita aquesta guspira primerenca per associar els llibres amb una emoció bona, la base de tot lector futur.",
-          "Les 12 escenes a doble pàgina, grans i de colors càlids, són ideals per assenyalar, anomenar i compartir en veu alta. El format de 20×20 cm i el paper estucat de 170 g aguanten bé mans petites i lectures repetides. Escrivim la història amb els trets del teu fill perquè es vegi reflectit a cada pàgina, i pots veure-la sencera abans de comprar."
+          "Les 12 escenes a doble pàgina, grans i de colors càlids, són ideals per assenyalar, anomenar i compartir en veu alta. El format de 20×20 cm i el paper estucat de 170 g aguanten bé mans petites i lectures repetides. Escrivim la història amb els trets del teu fill perquè es vegi reflectit a cada pàgina, i abans de pagar en veus la portada i les primeres escenes."
         ],
         "benefitsHeading": "Per als més petits",
         "benefits": [
           "Reconèixer el seu nom i la seva cara desperta la lectura",
           "Escenes grans i càlides per assenyalar i compartir",
           "Paper resistent, pensat per a mans petites"
-        ]
+        ],
+        "faq": {
+          "q1": "Quines històries hi ha per a 2 a 4 anys?",
+          "a1": "El Xef Més Petit (2-4), El Bosc Màgic (2-5), El País dels Dolços (2-5) i, a partir dels 4, La Terra dels Dinosaures i Safari a la Sabana.",
+          "q2": "Un nen de 2 anys entendrà la història?",
+          "a2": "A aquesta edat encara no llegeixen, però reconeixen: el seu nom, una cara que s'assembla a la seva. Les frases són curtes i les {scenes} escenes, grans per assenyalar i anomenar en veu alta.",
+          "q3": "Quin format aguanta millor les mans petites?",
+          "a3": "La tapa dura, {hardcover} IVA inclòs. La tapa tova, {softcover} IVA inclòs, és més lleugera. Totes dues porten paper estucat de {paper} g i inclouen el PDF."
+        }
       },
       "5-7": {
-        "metaTitle": "Conte personalitzat de 5 a 7 anys: el seu primer heroi",
+        "metaTitle": "Conte personalitzat de 5 a 7 anys | Meapica",
         "metaDescription": "Per als primers lectors: un conte on el teu fill reconeix el seu nom i es converteix en l'heroi de la història. Acompanya els seus primers passos llegint.",
         "h1": "Contes personalitzats per a primers lectors de 5 a 7 anys",
         "heroIntro": "Entre els 5 i els 7 anys, llegir comença a ser una aventura pròpia. Quan l'heroi de la història porta el seu nom, la motivació per seguir llegint es dispara.",
         "bodyHeading": "Llegir té molt més sentit quan el protagonista ets tu",
         "bodyParagraphs": [
           "En aquesta etapa els nens comencen a desxifrar paraules i a reconèixer el seu propi nom escrit. Trobar-lo una vegada i una altra al llarg d'un conte és una recompensa constant que els empeny a continuar pàgina rere pàgina. La lectura deixa de ser un deure per convertir-se en el desig de saber què li passarà al protagonista, que és precisament el lector.",
-          "Construïm una història amb el nivell de llenguatge adequat per a aquesta edat i amb el teu fill dibuixat a cada escena, amb els seus cabells, els seus ulls i fins i tot la seva mascota si vols. La dedicatòria personalitzada i la impressió de qualitat en fan un objecte que voldrà tornar a llegir. Veuràs la previsualització completa abans de comprar."
+          "Construïm una història amb el nivell de llenguatge adequat per a aquesta edat i amb el teu fill dibuixat a cada escena, amb els seus cabells i els seus ulls, i els tres capítols els tries tu. La dedicatòria personalitzada i la impressió de qualitat en fan un objecte que voldrà tornar a llegir. Abans de pagar en veuràs la portada i les primeres escenes."
         ],
         "benefitsHeading": "Per als primers lectors",
         "benefits": [
           "Reconèixer el seu nom escrit motiva a seguir llegint",
           "Llenguatge a mida per a primers lectors",
           "Es converteix en l'heroi de la seva pròpia història"
-        ]
+        ],
+        "faq": {
+          "q1": "Quines històries van bé de 5 a 7 anys?",
+          "a1": "La Gran Aventura Espacial i Pirates del Mar (5-8), La Terra dels Dinosaures i Safari a la Sabana (4-7) i, a partir dels 6, El Castell dels Somnis.",
+          "q2": "El pot llegir sol?",
+          "a2": "Als primers lectors els ajuda molt veure el seu nom escrit: el reconeixen i s'animen a continuar. El text s'adapta a la seva edat, però en aquesta franja el més habitual és llegir-lo junts.",
+          "q3": "En quina llengua pot ser el conte?",
+          "a3": "En català, castellà, anglès o francès. És útil si a l'escola llegeix en una llengua i a casa en parleu una altra."
+        }
       },
       "8-12": {
-        "metaTitle": "Conte personalitzat de 8 a 12 anys: aventures i valors",
+        "metaTitle": "Conte personalitzat de 8 a 12 anys | Meapica",
         "metaDescription": "Per a lectors segurs: aventures riques i valors per créixer, amb el teu fill com a protagonista. Una història a mida que els repta i els inspira.",
         "h1": "Contes personalitzats per a lectors de 8 a 12 anys",
         "heroIntro": "Els lectors d'aquesta edat busquen aventures de veritat. Un conte on són el protagonista els ofereix una història rica, amb valors per créixer i un repte a la seva alçada.",
@@ -241,63 +398,95 @@
           "Aventures riques amb valors que calen més fons",
           "Vocabulari i trama a la seva alçada lectora",
           "El seu somni de futur, integrat a la història"
-        ]
+        ],
+        "faq": {
+          "q1": "Hi ha contes per a nens i nenes de 10 o 12 anys?",
+          "a1": "Sí. La Fàbrica d'Invents és de 8 a 12 anys, i El Castell dels Somnis i Superheroi per un Dia arriben fins als 10.",
+          "q2": "No serà massa infantil per a la seva edat?",
+          "a2": "El text s'escriu per a la seva edat, amb més trama i vocabulari. I els tres capítols, que tries tu, poden girar al voltant del que li agrada de debò.",
+          "q3": "És un bon regal per a algú que ja llegeix sol?",
+          "a3": "Sí: el llegirà sol, i la dedicatòria li quedarà per rellegir de gran. El llibre imprès també inclou el PDF."
+        }
       }
     },
     "themes": {
       "dinosaurs": {
-        "metaTitle": "Conte personalitzat de dinosaures: viatge al passat",
+        "metaTitle": "Conte personalitzat de dinosaures | Meapica",
         "metaDescription": "El teu fill viatja en el temps fins a l'era dels dinosaures en un conte únic. Una aventura de valentia i curiositat amb ell com a protagonista.",
         "h1": "Conte personalitzat de dinosaures amb el teu fill d'heroi",
         "heroIntro": "Un viatge en el temps fins a l'era dels grans dinosaures, amb el teu fill al capdavant. Una aventura de valentia i curiositat escrita només per a ell.",
         "bodyHeading": "Cara a cara amb els gegants del passat",
         "bodyParagraphs": [
           "Pocs temes desperten tanta fascinació com els dinosaures. En aquest conte, el teu fill travessa el temps i es planta en un món de selves humides i criatures enormes, on cada pàgina demana una mica de valentia i molta curiositat. És la trama perfecta perquè el petit explorador que tots porten dins surti a la llum.",
-          "Escrivim la història al voltant del teu fill, amb els seus trets dibuixats a cada escena i, si vols, la seva mascota acompanyant-lo en l'aventura. Les 12 escenes a doble pàgina recreen un món prehistòric ple de detalls, impreses en paper estucat setinat de 170 g. Veuràs la previsualització sencera abans de comprar, així saps com quedarà cada dinosaure."
+          "Escrivim la història al voltant del teu fill, amb els seus trets dibuixats a cada escena, i tu tries qui l'acompanya en l'aventura. Les {scenes} escenes recreen un món prehistòric ple de detalls, impreses en paper estucat setinat de {paper} g. Abans de pagar en veuràs la portada i les primeres escenes, així saps com queda."
         ],
         "benefitsHeading": "Una aventura prehistòrica",
         "benefits": [
           "Viatge en el temps fins a l'era dels dinosaures",
           "Una història de valentia i curiositat",
           "El teu fill, dibuixat a cada escena de l'aventura"
-        ]
+        ],
+        "faq": {
+          "q1": "Per a quina edat és el conte de dinosaures?",
+          "a1": "La Terra dels Dinosaures és per a infants de 4 a 7 anys.",
+          "q2": "Què hi passa?",
+          "a2": "Viatja fins a l'època dels dinosaures, i tu decideixes els tres capítols: cada tria canvia l'aventura. El text és per a la seva edat i ell surt pintat a l'aquarel·la a cada escena.",
+          "q3": "I si li agraden els dinosaures però és més petit?",
+          "a3": "Per a 2 o 3 anys sol encaixar millor El Bosc Màgic, amb criatures i animals. El de dinosaures és a partir dels 4."
+        }
       },
       "space": {
-        "metaTitle": "Conte personalitzat de l'espai: viatge a les estrelles",
+        "metaTitle": "Conte personalitzat de l'espai | Meapica",
         "metaDescription": "El teu fill emprèn un viatge cap a les estrelles i planetes desconeguts en un conte únic. Una aventura còsmica amb ell com a protagonista.",
         "h1": "Conte personalitzat de l'espai amb el teu fill d'astronauta",
         "heroIntro": "Un viatge més enllà del cel, cap a les estrelles i els planetes desconeguts, amb el teu fill com a explorador de l'espai en una història feta a mida.",
         "bodyHeading": "Cap a l'infinit, amb el seu nom a la nau",
         "bodyParagraphs": [
           "L'espai és el llenç perfecte per a la imaginació: estrelles que no s'acaben mai, planetes per descobrir i la certesa que sempre hi ha alguna cosa nova més enllà. En aquest conte, el teu fill pilota la seva pròpia aventura còsmica, i cada nou món que visita és una excusa per somiar gran i preguntar-se què hi ha allà fora.",
-          "Construïm la història al voltant del teu fill, integrant els seus trets i els seus somnis a la trama i a les il·lustracions. Les 12 escenes a doble pàgina recreen galàxies, planetes i naus amb un nivell de detall pensat per fer-lo somiar despert. Pots veure la previsualització completa abans de comprar i tenir-ne una edició única."
+          "Construïm la història al voltant del teu fill, integrant els seus trets i els seus somnis a la trama i a les il·lustracions. Les 12 escenes a doble pàgina recreen galàxies, planetes i naus amb un nivell de detall pensat per fer-lo somiar despert. Abans de pagar en pots veure la portada i les primeres escenes."
         ],
         "benefitsHeading": "Una aventura còsmica",
         "benefits": [
           "Viatge a les estrelles i planetes desconeguts",
           "Desperta la curiositat per l'univers",
           "El teu fill, protagonista de la seva pròpia missió"
-        ]
+        ],
+        "faq": {
+          "q1": "Per a quina edat és el conte de l'espai?",
+          "a1": "La Gran Aventura Espacial és per a infants de 5 a 8 anys.",
+          "q2": "Què hi passa?",
+          "a2": "Un viatge a les estrelles, amb planetes per descobrir i amics nous. Tu tries els tres capítols i ell n'és el protagonista a les {scenes} escenes.",
+          "q3": "El puc demanar en una altra llengua?",
+          "a3": "Sí, en català, castellà, anglès o francès."
+        }
       },
       "pirates": {
-        "metaTitle": "Conte personalitzat de pirates: a la caça del tresor",
+        "metaTitle": "Conte personalitzat de pirates | Meapica",
         "metaDescription": "El teu fill navega els set mars a la caça d'un tresor en un conte únic. Una aventura de pirates amb ell com a capità protagonista.",
         "h1": "Conte personalitzat de pirates amb el teu fill de capità",
         "heroIntro": "Una recerca del tresor que travessa els set mars, amb el teu fill al timó. Una aventura de pirates valents escrita perquè ell en sigui el capità.",
         "bodyHeading": "Hissa l'àncora cap al tresor amagat",
         "bodyParagraphs": [
           "Els mapes amb una creu, els vaixells de veles esteses i els tresors amagats formen part de l'imaginari de qualsevol nen. En aquest conte, el teu fill comanda la seva pròpia tripulació i salpa a la recerca d'un tresor que només ell pot trobar, enfrontant-se a temporals i illes misterioses amb astúcia i coratge.",
-          "Escrivim la història amb el teu fill com a protagonista, amb els seus trets dibuixats a cada escena i, si vols, la seva mascota com a company de coberta. Les 12 escenes a doble pàgina recreen els mars, les illes i els vaixells amb tot luxe de detalls, impreses en paper estucat setinat de 170 g. Veuràs la previsualització sencera abans de comprar."
+          "Escrivim la història amb el teu fill com a protagonista, amb els seus trets dibuixats a cada escena, i tu tries qui serà el seu company de coberta. Les {scenes} escenes recreen els mars, les illes i els vaixells amb tot luxe de detalls, impreses en paper estucat setinat de {paper} g. Abans de pagar en veuràs la portada i les primeres escenes."
         ],
         "benefitsHeading": "Una aventura als set mars",
         "benefits": [
           "Recerca del tresor pels set mars",
           "El teu fill comanda la seva pròpia tripulació",
           "Una història de coratge i astúcia"
-        ]
+        ],
+        "faq": {
+          "q1": "Per a quina edat és el conte de pirates?",
+          "a1": "Pirates del Mar és per a infants de 5 a 8 anys.",
+          "q2": "És una història de por?",
+          "a2": "No. És una aventura de mar obert i tresors escrita per a la seva edat, i els tres capítols els decideixes tu.",
+          "q3": "Quant costa i quan arriba?",
+          "a3": "Tapa dura, {hardcover} IVA inclòs; tapa tova, {softcover} IVA inclòs, amb l'enviament gratuït a l'Espanya peninsular i les Balears en {minDays}-{maxDays} dies laborables. Només el PDF, {pdf} IVA inclòs."
+        }
       },
       "superheroes": {
-        "metaTitle": "Conte personalitzat de superherois: poders amagats",
+        "metaTitle": "Conte personalitzat de superherois | Meapica",
         "metaDescription": "El teu fill descobreix els seus poders amagats i salva la ciutat en un conte únic. Una aventura de superherois amb ell com a protagonista.",
         "h1": "Conte personalitzat de superherois amb el teu fill d'heroi",
         "heroIntro": "Tots els nens amaguen un superpoder esperant ser descobert. En aquest conte, el teu fill el desperta i es converteix en l'heroi que salva la seva ciutat.",
@@ -311,41 +500,65 @@
           "Descobreix el superpoder que amaga dins seu",
           "Reforça l'autoestima i el coratge",
           "El teu fill, l'heroi que salva la ciutat"
-        ]
+        ],
+        "faq": {
+          "q1": "Per a quina edat és el conte de superherois?",
+          "a1": "Superheroi per un Dia és per a infants de 7 a 10 anys.",
+          "q2": "Quin superpoder té?",
+          "a2": "Ho decideixes tu en triar els capítols: cada decisió canvia com descobreix els seus poders i com acaba la història.",
+          "q3": "Hi ha alguna opció per a més petits?",
+          "a3": "Per sota dels 7 anys, La Gran Aventura Espacial o Pirates del Mar, de 5 a 8, tenen el mateix punt d'aventura."
+        }
       },
       "magic-forest": {
-        "metaTitle": "Conte personalitzat del bosc màgic: secrets i criatures",
+        "metaTitle": "Conte personalitzat del bosc màgic | Meapica",
         "metaDescription": "El teu fill explora un bosc màgic ple de secrets i criatures fantàstiques en un conte únic. Una aventura encantada amb ell com a protagonista.",
         "h1": "Conte personalitzat del bosc màgic amb el teu fill d'heroi",
         "heroIntro": "Entre arbres antiquíssims i criatures fantàstiques s'amaguen secrets que esperen ser descoberts. El teu fill s'endinsa al bosc màgic en una aventura feta a mida.",
         "bodyHeading": "Secrets que només descobreix qui s'hi atreveix",
         "bodyParagraphs": [
           "El bosc màgic és un lloc on tot és possible: arbres que xiuxiuegen, camins que apareixen i desapareixen i criatures que només es deixen veure pels qui tenen el cor obert. En aquest conte, el teu fill recorre aquest món encantat descobrint-ne els secrets, en una aventura que celebra la imaginació i el respecte per la natura.",
-          "Escrivim la història al voltant del teu fill, amb els seus trets dibuixats a cada escena i, si vols, la seva mascota com a guia pel bosc. Les 12 escenes a doble pàgina recreen una natura frondosa i màgica plena de detalls, impreses en paper estucat setinat de 170 g. Veuràs la previsualització completa abans de comprar."
+          "Escrivim la història al voltant del teu fill, amb els seus trets dibuixats a cada escena, i tu tries qui el guia pel bosc. Les {scenes} escenes recreen una natura frondosa i màgica plena de detalls, impreses en paper estucat setinat de {paper} g. Abans de pagar en veuràs la portada i les primeres escenes."
         ],
         "benefitsHeading": "Una aventura encantada",
         "benefits": [
           "Secrets entre arbres antics i criatures fantàstiques",
           "Celebra la imaginació i el respecte per la natura",
           "El teu fill, explorador d'un món encantat"
-        ]
+        ],
+        "faq": {
+          "q1": "Per a quina edat és el conte del bosc màgic?",
+          "a1": "El Bosc Màgic és per a infants de 2 a 5 anys.",
+          "q2": "Va bé per a un nen o una nena de 2 anys?",
+          "a2": "Sí, és un dels tres mons pensats per als més petits, amb frases curtes i escenes grans per assenyalar.",
+          "q3": "Què el fa diferent?",
+          "a3": "És una aventura tranquil·la entre criatures i secrets del bosc, ideal per llegir abans d'anar a dormir."
+        }
       },
       "safari": {
-        "metaTitle": "Conte personalitzat de safari: la sabana africana",
+        "metaTitle": "Conte personalitzat de safari | Meapica",
         "metaDescription": "El teu fill explora la sabana africana entre lleons i elefants en un conte únic. Una aventura de safari amb ell com a protagonista.",
         "h1": "Conte personalitzat de safari amb el teu fill d'explorador",
         "heroIntro": "Un safari per la sabana africana, entre lleons, elefants i grans paisatges oberts, amb el teu fill com a explorador d'una aventura escrita només per a ell.",
         "bodyHeading": "Cara a cara amb els animals de la sabana",
         "bodyParagraphs": [
           "La sabana africana és un escenari de pel·lícula: horitzons infinits, postes de sol daurades i alguns dels animals més impressionants del planeta. En aquest conte, el teu fill recorre aquesta terra salvatge i s'hi troba cara a cara amb lleons, elefants i girafes, en una aventura que desperta el respecte i la fascinació per la vida animal.",
-          "Construïm la història amb el teu fill com a protagonista, integrant els seus trets a cada escena i, si vols, la seva mascota com a companya d'expedició. Les 12 escenes a doble pàgina recreen la sabana i la seva fauna amb molt de detall, impreses en paper estucat setinat de 170 g. Pots veure la previsualització sencera abans de comprar."
+          "Construïm la història amb el teu fill com a protagonista, amb els seus trets a cada escena, i tu tries qui serà el seu company d'expedició. Les {scenes} escenes recreen la sabana i la seva fauna amb molt de detall, impreses en paper estucat setinat de {paper} g. Abans de pagar en pots veure la portada i les primeres escenes."
         ],
         "benefitsHeading": "Una aventura salvatge",
         "benefits": [
           "Safari per la sabana entre lleons i elefants",
           "Desperta el respecte per la vida animal",
           "El teu fill, explorador d'una terra salvatge"
-        ]
+        ],
+        "faq": {
+          "q1": "Per a quina edat és el conte de safari?",
+          "a1": "Safari a la Sabana és per a infants de 4 a 7 anys.",
+          "q2": "Quins animals hi surten?",
+          "a2": "Lleons, elefants i els animals de la sabana africana, en una expedició on ell és l'explorador.",
+          "q3": "Com es fa?",
+          "a3": "Escrius el seu nom, tries com és i decideixes els tres capítols. Abans de pagar veus la portada i les primeres escenes del seu safari."
+        }
       }
     },
     "nav": {
@@ -389,7 +602,48 @@
         "metaTitle": "Contes personalitzats per edat | Meapica",
         "metaDescription": "Contes personalitzats adaptats a cada edat, dels 2 als 12 anys. Històries i il·lustracions on el teu fill és el protagonista.",
         "h1": "Contes personalitzats per edat",
-        "intro": "Cada edat demana la seva història. Tria la franja del teu fill i descobreix contes pensats per al seu moment lector, sempre amb ell com a protagonista."
+        "intro": "Cada edat demana la seva història. Tria la franja del teu fill i descobreix contes pensats per al seu moment lector, sempre amb ell com a protagonista.",
+        "guideHeading": "Com triar el conte segons l'edat",
+        "sections": [
+          {
+            "heading": "De 2 a 4 anys: reconèixer-se",
+            "paragraphs": [
+              "Als dos anys encara no llegeixen, però reconeixen. Quan veuen el seu nom a la portada i una cara que s'assembla a la seva, assenyalen i diuen «soc jo». Per això, en aquesta franja, les frases són curtes i les escenes, grans i clares, per anomenar en veu alta el que hi passa.",
+              "Els mons pensats per a aquesta edat són El Xef Més Petit (2-4), El Bosc Màgic (2-5) i El País dels Dolços (2-5)."
+            ]
+          },
+          {
+            "heading": "De 5 a 7 anys: els primers lectors",
+            "paragraphs": [
+              "És l'edat en què comencen a desxifrar paraules. Veure el seu nom escrit a cada pàgina ajuda molt: el reconeixen d'entrada i això els anima a seguir llegint. Les històries tenen més trama i més diàleg, però encara funcionen millor llegides junts.",
+              "Hi encaixen La Terra dels Dinosaures i Safari a la Sabana (4-7), La Gran Aventura Espacial i Pirates del Mar (5-8) i, a partir dels 6, El Castell dels Somnis."
+            ]
+          },
+          {
+            "heading": "De 8 a 12 anys: lectors que ja van sols",
+            "paragraphs": [
+              "Als vuit anys molts ja llegeixen sols i volen històries que no els tractin com a petits. El text s'escriu per a la seva edat, amb més vocabulari i decisions que pesen en el final. Els tres capítols els tries tu, així que pots portar la història cap al que li agrada de debò.",
+              "Per a aquesta franja hi ha La Fàbrica d'Invents (8-12), i El Castell dels Somnis i Superheroi per un Dia arriben fins als 10 anys."
+            ]
+          },
+          {
+            "heading": "El mateix llibre per a totes les edats",
+            "paragraphs": [
+              "Tots els contes tenen el mateix format: {size} × {size} cm, {pages} pàgines i {scenes} escenes il·lustrades a l'aquarel·la en paper estucat setinat de {paper} g. Pots triar tapa dura, {hardcover} IVA inclòs, o tapa tova, {softcover} IVA inclòs, totes dues amb el PDF, o només el PDF, {pdf} IVA inclòs.",
+              "L'imprimim sota demanda a Europa i arriba en {minDays}-{maxDays} dies laborables a l'Espanya peninsular i les Balears, amb l'enviament gratuït. Abans de pagar veus la portada amb el seu nom, el seu retrat i les primeres escenes del seu conte."
+            ]
+          }
+        ],
+        "faq": {
+          "q1": "Quin conte trio si està entre dues franges?",
+          "a1": "Fixa't en la franja de cada món, no en la de la pàgina: un conte de 2 a 5 anys surt tant a 2-4 com a 5-7. Si dubtes, tria el que coincideixi amb el que li agrada ara.",
+          "q2": "La història canvia segons l'edat?",
+          "a2": "Sí. Indiques la seva edat en crear-lo i el text s'escriu per a aquesta edat: frases més curtes per als petits, més trama i vocabulari per als grans.",
+          "q3": "Hi ha contes per a nadons?",
+          "a3": "No. Les nostres històries comencen als {ageMin} anys i arriben fins als {ageMax}.",
+          "q4": "En quines llengües es pot fer?",
+          "a4": "En català, castellà, anglès i francès."
+        }
       },
       "themes": {
         "metaTitle": "Contes personalitzats per temàtica | Meapica",
@@ -403,9 +657,14 @@
     "loading": "Carregant…"
   },
   "metadata": {
-    "title": "Meapica — Històries Reals per Tocar",
-    "description": "Recupera la màgia de passar les pàgines. Contes personalitzats impresos en paper d'alta qualitat, dissenyats per crear moments de connexió real.",
-    "keywords": "contes personalitzats, llibres infantils personalitzats, regal original nens, contes amb nom, llibres amb il·lustracions, regal personalitzat, llibre imprès nens"
+    "title": "Conte personalitzat per a nens amb el seu nom | Meapica",
+    "description": "El seu nom a la portada, la seva cara pintada a l'aquarel·la i l'aventura que tries tu. Veus el llibre abans de pagar. Tapa dura o tova, enviament gratuït.",
+    "keywords": "contes personalitzats, llibres infantils personalitzats, regal original nens, contes amb nom, llibres amb il·lustracions, regal personalitzat, llibre imprès nens",
+    "pages": {
+      "create": "Crea el seu conte",
+      "auth": "El teu compte",
+      "checkout": "La teva comanda"
+    }
   },
   "nav": {
     "manifesto": "Manifest",
@@ -430,7 +689,7 @@
     "language": "Idioma"
   },
   "hero": {
-    "eyebrow": "Conte personalitzat imprès",
+    "eyebrow": "Conte personalitzat per a nens",
     "title": "El conte que et demanarà <hl>un altre cop</hl>",
     "subtitle": "Perquè hi surt el seu nom a la portada, la seva cara pintada a l'aquarel·la i l'aventura que tries tu. Imprès i a casa teva.",
     "nameLabel": "Com es diu?",
@@ -471,7 +730,7 @@
       },
       "print": {
         "title": "Rep-lo a casa",
-        "text": "Tapa dura o tova, amb enviament gratuït. En 7–10 dies feiners és a la teva porta."
+        "text": "Tapa dura o tova, amb enviament gratuït. En {minDays}–{maxDays} dies feiners és a la teva porta."
       }
     },
     "lookAlt": "Retrat a l'aquarel·la {gender, select, girl {de la} other {d'en}} {name}",
@@ -554,11 +813,26 @@
     "subtitle": "Fet per aguantar mil lectures i quedar-se al seu prestatge quan es faci gran. I amb el seu PDF inclòs, per als viatges.",
     "mockupAlt": "El llibre {gender, select, girl {de la} other {d'en}} {name} en tapa dura, de 20 × 20 cm",
     "specs": {
-      "size": { "label": "Format", "value": "20 × 20 cm · 30 pàgines · 12 escenes il·lustrades" },
-      "paper": { "label": "Paper", "value": "Estucat setinat de 170 g, a tot color" },
-      "cover": { "label": "Tapes", "value": "Dura o tova, amb acabat mat" },
-      "shipping": { "label": "Enviament", "value": "Gratuït a la Península i les Balears, en 7–10 dies feiners" },
-      "digital": { "label": "Versió digital", "value": "El PDF va inclòs amb el llibre imprès" }
+      "size": {
+        "label": "Format",
+        "value": "{size} × {size} cm · {pages} pàgines · {scenes} escenes il·lustrades"
+      },
+      "paper": {
+        "label": "Paper",
+        "value": "Estucat setinat de {paper} g, a tot color"
+      },
+      "cover": {
+        "label": "Tapes",
+        "value": "Dura o tova, amb acabat mat"
+      },
+      "shipping": {
+        "label": "Enviament",
+        "value": "Gratuït a la Península i les Balears, en {minDays}–{maxDays} dies feiners"
+      },
+      "digital": {
+        "label": "Versió digital",
+        "value": "El PDF va inclòs amb el llibre imprès"
+      }
     },
     "softcover": "Tapa tova",
     "hardcover": "Tapa dura",
@@ -571,10 +845,22 @@
     "sceneAlt": "{name} a la seva aventura, escena {n}",
     "caption": "Pàgines reals de «{title}»",
     "points": {
-      "written": { "title": "Escrit per a la seva edat", "text": "El seu nom a cada pàgina i frases a la seva mida, de 2 a 12 anys." },
-      "painted": { "title": "Pintat escena a escena", "text": "12 il·lustracions de la seva aventura, amb el seu cabell, la seva pell i fins i tot les pigues." },
-      "colour": { "title": "Amb el seu color preferit", "text": "Vesteix la seva roba i els detalls de cada pàgina." },
-      "dedication": { "title": "Amb les teves paraules", "text": "La teva dedicatòria obre el llibre, perquè sempre sàpiga de qui va ser el regal." }
+      "written": {
+        "title": "Escrit per a la seva edat",
+        "text": "El seu nom a cada pàgina i frases a la seva mida, de {ageMin} a {ageMax} anys."
+      },
+      "painted": {
+        "title": "Pintat escena a escena",
+        "text": "12 il·lustracions de la seva aventura, amb el seu cabell, la seva pell i fins i tot les pigues."
+      },
+      "colour": {
+        "title": "Amb el seu color preferit",
+        "text": "Vesteix la seva roba i els detalls de cada pàgina."
+      },
+      "dedication": {
+        "title": "Amb les teves paraules",
+        "text": "La teva dedicatòria obre el llibre, perquè sempre sàpiga de qui va ser el regal."
+      }
     },
     "cta": "Crear el seu llibre",
     "seeInside": "Veure el llibre {gender, select, girl {de la} other {d'en}} {name} per dins"
@@ -585,7 +871,7 @@
     "description": "La màgia s'estén fora del llibre. Inclou",
     "letter": "carta física personalitzada",
     "descriptionEnd": "del personatge principal, full d'adhesius mat i punt de llibre de fusta.",
-    "cta": "Afegir extres físics (+12,90 € IVA incl.)",
+    "cta": "Afegir extres físics (+12,90 € IVA inclòs)",
     "imageCaption": "El regal perfecte",
     "imageAlt": "Capsa de regal amb el llibre, un full d'adhesius i llapis de colors sobre una taula"
   },
@@ -598,7 +884,7 @@
     "likenessQ": "I si no s'assembla al meu fill o filla?",
     "likenessA": "Tu decideixes com és: pell, color de cabell, pentinat, ulls, ulleres i pigues, i veus el seu retrat abans de continuar. Si a la vista prèvia el vols canviar, canvies el seu aspecte i tornem a pintar el llibre amb el nou personatge; tota la resta es manté. L'imprimim tal com el veus.",
     "deliveryQ": "Quan arriba? Arriba per a Reis?",
-    "deliveryA": "L'imprimim sota demanda a Europa tan bon punt fas la comanda i arriba en 7-10 dies laborables, amb l'enviament inclòs. Enviem a l'Espanya peninsular i a les Balears (de moment no a Canàries, Ceuta ni Melilla).",
+    "deliveryA": "L'imprimim sota demanda a Europa tan bon punt fas la comanda i arriba en {minDays}-{maxDays} dies laborables, amb l'enviament inclòs. Enviem a l'Espanya peninsular i a les Balears (de moment no a Canàries, Ceuta ni Melilla).",
     "deliverySeason": "Per tenir-lo a casa per Nadal, demana'l fins al {christmasDate}; per a Reis, fins al {reyesDate}.",
     "deliverySeasonReyes": "Per tenir-lo a casa abans de Reis, demana'l fins al {reyesDate}.",
     "deliverySeasonPdf": "El llibre imprès ja no arriba a temps per a Reis, però el conte en PDF sí: t'arriba per correu després del pagament, normalment en menys d'una hora.",
@@ -606,7 +892,7 @@
     "priceQ": "Quant costa i què inclou?",
     "priceA": "Tapa tova, {softcover}. Tapa dura, {hardcover}. Només el PDF, {pdf}. Tots els preus porten l'IVA inclòs. El llibre imprès inclou l'enviament i el PDF del conte complet.",
     "returnsQ": "El puc retornar?",
-    "returnsA": "Com que és un llibre fet a mida, amb el seu nom i el seu retrat, no admet devolucions; per això t'ensenyem el llibre sencer abans de pagar. Però si arriba amb qualsevol defecte d'impressió o es malmet durant l'enviament, t'enviem un altre de nou sense cost. Només cal que ens escriguis en els 30 dies següents a rebre'l, amb una foto del llibre i de l'embalatge.",
+    "returnsA": "Com que és un llibre fet a mida, amb el seu nom i el seu retrat, no admet devolucions; per això, abans de pagar, veus la portada, el seu retrat i les primeres escenes del conte. Però si arriba amb qualsevol defecte d'impressió o es malmet durant l'enviament, t'enviem un altre de nou sense cost. Només cal que ens escriguis en els 30 dies següents a rebre'l, amb una foto del llibre i de l'embalatge.",
     "moreQuestions": "Tens un altre dubte? Escriu-nos a"
   },
   "finalCta": {
@@ -648,27 +934,27 @@
       "title": "Política de Privacitat",
       "intro": "A Meapica, la privacitat dels nostres usuaris —especialment quan es tracta de dades de menors— és la nostra màxima prioritat.",
       "section1Title": "1. Responsable del tractament",
-      "section1Text": "El responsable del tractament de les dades personals recollides a través de meapica.shop és Xavier Huix Trenco (Meapica), NIF 41649433K, amb domicili a Carrer Aribau 140, 5è, 08036 Barcelona (Espanya). Per a qualsevol qüestió sobre privadesa pots escriure'ns a admin@casmar.tech.",
+      "section1Text": "El responsable del tractament de les dades personals recollides a través de meapica.shop és Xavier Huix Trenco (Meapica), NIF 41649433K, amb domicili a Carrer Aribau 140, 5è, 08036 Barcelona (Espanya). Per a qualsevol qüestió sobre privadesa pots escriure'ns a hola@meapica.shop.",
       "section2Title": "2. Dades que recollim",
       "section2Text": "Recollim les dades necessàries per crear el teu llibre personalitzat: nom de l'infant, edat, ciutat, interessos i característiques físiques per a la il·lustració i, només si decideixes pujar-la, una foto de l'infant (vegeu l'apartat 8). També recollim el correu electrònic i l'adreça d'enviament per processar les comandes.",
       "section3Title": "3. Finalitat del tractament",
       "section3Text": "Utilitzem les teves dades exclusivament per: generar el conte personalitzat i el seu personatge il·lustrat, processar el pagament i l'enviament, i comunicar-nos amb tu sobre la teva comanda. Mai no venem dades a tercers.",
       "section4Title": "4. Base legal",
-      "section4Text": "Crear, previsualitzar i imprimir el teu llibre, gestionar el teu compte, el pagament i l'enviament: execució del contracte que ens demanes (art. 6.1.b RGPD). Foto de l'infant: consentiment explícit de la seva mare, pare o tutor legal (art. 6.1.a RGPD i art. 7 LOPDGDD), que pots retirar en qualsevol moment. Butlletí i llista d'espera: el teu consentiment (art. 6.1.a RGPD), que pots retirar quan vulguis. Conservació de factures i registres comptables: obligació legal (art. 6.1.c RGPD). Seguretat del servei i prevenció d'abusos (per exemple, límits d'ús): interès legítim (art. 6.1.f RGPD). Mesura dels nostres anuncis amb Meta i TikTok (cookies publicitàries i esdeveniment de compra): el teu consentiment (art. 6.1.a RGPD), que pots retirar des de «Configurar cookies».",
+      "section4Text": "Crear, previsualitzar i imprimir el teu llibre, gestionar el teu compte, el pagament i l'enviament: execució del contracte que ens demanes (art. 6.1.b RGPD). Foto de l'infant: consentiment explícit de la seva mare, pare o tutor legal (art. 6.1.a RGPD i art. 7 LOPDGDD), que pots retirar en qualsevol moment. Butlletí i llista d'espera: el teu consentiment (art. 6.1.a RGPD), que pots retirar quan vulguis. Conservació de factures i registres comptables: obligació legal (art. 6.1.c RGPD). Seguretat del servei i prevenció d'abusos (per exemple, límits d'ús): interès legítim (art. 6.1.f RGPD). Mesura dels nostres anuncis amb Meta i TikTok i estadístiques de visites amb Google Analytics (cookies publicitàries i d'anàlisi, i esdeveniment de compra): el teu consentiment (art. 6.1.a RGPD), que pots retirar des de «Configurar cookies».",
       "section5Title": "5. Encarregats del tractament i transferències internacionals",
-      "section5Text": "Per prestar el servei treballem amb proveïdors que tracten les dades només seguint les nostres instruccions: OpenAI Ireland Ltd. (generació del text i les il·lustracions del conte i, si la puges, del personatge a partir de la foto), Supabase (base de dades i emmagatzematge), Vercel (allotjament web), Stripe Payments Europe Ltd. (pagaments), Gelato (impressió i enviament), Resend (correus de la comanda) i, només si acceptes les cookies publicitàries, Meta Platforms Ireland Ltd. i TikTok Technology Limited (mesura dels nostres anuncis). OpenAI no fa servir les dades que li enviem per entrenar els seus models i les pot conservar fins a 30 dies per detectar abusos. Quan un proveïdor o els seus subencarregats tracten dades fora de l'Espai Econòmic Europeu (per exemple, als Estats Units), la transferència s'empara en les clàusules contractuals tipus aprovades per la Comissió Europea o en el Marc de Privadesa de Dades UE-EUA.",
+      "section5Text": "Per prestar el servei treballem amb proveïdors que tracten les dades només seguint les nostres instruccions: OpenAI Ireland Ltd. (generació del text i les il·lustracions del conte i, si la puges, del personatge a partir de la foto), Supabase (base de dades i emmagatzematge), Vercel (allotjament web), Stripe Payments Europe Ltd. (pagaments), Gelato (impressió i enviament), Resend (correus de la comanda), Cloudflare, Inc. (Turnstile, verificació antibots en iniciar sessió i en començar com a convidat) i, només si acceptes les cookies publicitàries, Meta Platforms Ireland Ltd., TikTok Technology Limited (mesura dels nostres anuncis) i Google Ireland Limited (Google Analytics, estadístiques de visites i compres). OpenAI no fa servir les dades que li enviem per entrenar els seus models i les pot conservar fins a 30 dies per detectar abusos. Quan un proveïdor o els seus subencarregats tracten dades fora de l'Espai Econòmic Europeu (per exemple, als Estats Units), la transferència s'empara en les clàusules contractuals tipus aprovades per la Comissió Europea o en el Marc de Privadesa de Dades UE-EUA.",
       "section6Title": "6. Els teus drets",
-      "section6Text": "Pots exercir els teus drets d'accés, rectificació, supressió, oposició, limitació del tractament i portabilitat, i retirar el teu consentiment en qualsevol moment, escrivint a admin@casmar.tech. Et respondrem en el termini màxim d'un mes. Si consideres que no hem tractat les teves dades correctament, pots presentar una reclamació davant l'Agència Espanyola de Protecció de Dades (www.aepd.es).",
+      "section6Text": "Pots exercir els teus drets d'accés, rectificació, supressió, oposició, limitació del tractament i portabilitat, i retirar el teu consentiment en qualsevol moment, escrivint a hola@meapica.shop. Et respondrem en el termini màxim d'un mes. Si consideres que no hem tractat les teves dades correctament, pots presentar una reclamació davant l'Agència Espanyola de Protecció de Dades (www.aepd.es).",
       "section7Title": "7. Protecció de dades de menors",
       "section7Text": "No recollim dades directament de menors. Les dades del nen/a són proporcionades pel pare/mare o tutor legal que crea el llibre.",
       "section8Title": "8. Fotos de menors",
-      "section8Text": "Pujar una foto és opcional: també pots crear el personatge triant-ne els trets. Si la puges, la fem servir només per crear el seu personatge il·lustrat (el seu retrat i la seva fitxa de personatge) i només amb el consentiment de la seva mare, pare o tutor legal. Abans de desar-la n'eliminem totes les metadades, inclosa la ubicació GPS, i la guardem en un emmagatzematge privat al qual només accedeix el nostre servidor. La foto s'envia a OpenAI per dibuixar el personatge; OpenAI no la fa servir per entrenar els seus models i la pot conservar fins a 30 dies per detectar abusos. Esborrem la foto tan bon punt creem el seu personatge i, en qualsevol cas, en menys de 24 hores. El llibre (previsualització i versió final) s'il·lustra només a partir del personatge dibuixat, mai a partir de la foto. No la fem servir per a reconeixement facial ni per a cap altra finalitat. Pots retirar el teu consentiment en qualsevol moment escrivint a admin@casmar.tech i l'esborrarem immediatament. Guardem un registre del teu consentiment (data, versió del text acceptat i idioma) com a prova que el vas donar."
+      "section8Text": "Pujar una foto és opcional: també pots crear el personatge triant-ne els trets. Si la puges, la fem servir només per crear el seu personatge il·lustrat (el seu retrat i la seva fitxa de personatge) i només amb el consentiment de la seva mare, pare o tutor legal. Abans de desar-la n'eliminem totes les metadades, inclosa la ubicació GPS, i la guardem en un emmagatzematge privat al qual només accedeix el nostre servidor. La foto s'envia a OpenAI per dibuixar el personatge; OpenAI no la fa servir per entrenar els seus models i la pot conservar fins a 30 dies per detectar abusos. Esborrem la foto tan bon punt creem el seu personatge i, en qualsevol cas, en menys de 24 hores. El llibre (previsualització i versió final) s'il·lustra només a partir del personatge dibuixat, mai a partir de la foto. No la fem servir per a reconeixement facial ni per a cap altra finalitat. Pots retirar el teu consentiment en qualsevol moment escrivint a hola@meapica.shop i l'esborrarem immediatament. Guardem un registre del teu consentiment (data, versió del text acceptat i idioma) com a prova que el vas donar."
     },
     "terms": {
       "title": "Avís Legal i Condicions d'Ús",
       "intro": "En utilitzar meapica.shop acceptes les següents condicions.",
       "section1Title": "1. Identificació",
-      "section1Text": "Meapica és una plataforma de creació de llibres infantils personalitzats operada des d'Espanya per Xavier Huix Trenco, NIF 41649433K, amb domicili al Carrer Aribau 140, 5è, 08036 Barcelona (Espanya). Contacte: admin@casmar.tech.",
+      "section1Text": "Meapica és una plataforma de creació de llibres infantils personalitzats operada des d'Espanya per Xavier Huix Trenco, NIF 41649433K, amb domicili al Carrer Aribau 140, 5è, 08036 Barcelona (Espanya). Contacte: hola@meapica.shop.",
       "section2Title": "2. Servei",
       "section2Text": "Meapica ofereix la creació de contes infantils personalitzats amb il·lustracions úniques, impresos sota demanda.",
       "section3Title": "3. Propietat intel·lectual",
@@ -676,19 +962,19 @@
       "section4Title": "4. Preus i pagaments",
       "section4Text": "Tots els preus són finals, amb l'IVA inclòs, i es mostren en euros. En els llibres impresos, l'enviament a Espanya està inclòs en el preu. El pagament es processa de forma segura a través de Stripe.",
       "section5Title": "5. Enviaments i devolucions",
-      "section5Text": "Els llibres s'imprimeixen sota demanda a Europa i, de moment, només fem enviaments a adreces d'Espanya. Espanya peninsular: 7-10 dies laborables. Balears: 7-10 dies laborables. De moment no enviem a Canàries, Ceuta ni Melilla. En ser productes personalitzats, els llibres estan exclosos del dret de desistiment (art. 103 c) del text refós de la Llei general per a la defensa dels consumidors i usuaris) i no admeten devolucions. Si un llibre arriba amb qualsevol defecte d'impressió o de fabricació, o es malmet durant l'enviament, escriu-nos en els 30 dies següents a rebre'l, amb una foto del llibre i de l'embalatge, i t'enviem un altre de nou sense cost. Això no limita els drets de garantia que et reconeix la llei.",
+      "section5Text": "Els llibres s'imprimeixen sota demanda a Europa i, de moment, només fem enviaments a adreces d'Espanya. Espanya peninsular: {minDays}-{maxDays} dies laborables. Balears: {minDays}-{maxDays} dies laborables. De moment no enviem a Canàries, Ceuta ni Melilla. En ser productes personalitzats, els llibres estan exclosos del dret de desistiment (art. 103 c) del text refós de la Llei general per a la defensa dels consumidors i usuaris) i no admeten devolucions. Si un llibre arriba amb qualsevol defecte d'impressió o de fabricació, o es malmet durant l'enviament, escriu-nos en els 30 dies següents a rebre'l, amb una foto del llibre i de l'embalatge, i t'enviem un altre de nou sense cost. Això no limita els drets de garantia que et reconeix la llei.",
       "section6Title": "6. Limitació de responsabilitat",
       "section6Text": "Meapica no garanteix la disponibilitat ininterrompuda del servei. Les il·lustracions poden variar i no es garanteix un resultat específic."
     },
     "cookies": {
       "title": "Política de Cookies",
-      "intro": "Meapica fa servir cookies tècniques necessàries perquè el servei funcioni i, només si ho acceptes, cookies publicitàries de Meta i TikTok.",
+      "intro": "Meapica fa servir cookies tècniques necessàries perquè el servei funcioni i, només si ho acceptes, cookies publicitàries de Meta i TikTok i cookies d'anàlisi de Google Analytics.",
       "section1Title": "1. Què són les cookies?",
       "section1Text": "Les cookies són petits arxius de text que s'emmagatzemen al teu navegador en visitar un lloc web.",
       "section2Title": "2. Cookies que utilitzem",
-      "section2Text": "Tècniques (sempre actives): mantenir la teva sessió, recordar l'idioma, gestionar la compra i desar la teva elecció sobre cookies (meapica_consent, 12 mesos). Publicitàries (només amb el teu consentiment): el píxel de Meta (_fbp i _fbc, 90 dies) mesura quins anuncis d'Instagram i Facebook acaben en una compra i ajuda a mostrar-los a qui li poden interessar; el píxel de TikTok (_ttp, ttclid i _tt_enable_cookie, fins a 13 mesos) fa el mateix amb els anuncis de TikTok; meapica_utm (30 dies) recorda des de quin anunci o publicació has arribat per associar-ho a la teva comanda.",
+      "section2Text": "Tècniques (sempre actives): mantenir la teva sessió, recordar l'idioma, gestionar la compra i desar la teva elecció sobre cookies (meapica_consent, 12 mesos). Publicitàries (només amb el teu consentiment): el píxel de Meta (_fbp i _fbc, 90 dies) mesura quins anuncis d'Instagram i Facebook acaben en una compra i ajuda a mostrar-los a qui li poden interessar; el píxel de TikTok (_ttp, ttclid i _tt_enable_cookie, fins a 13 mesos) fa el mateix amb els anuncis de TikTok; Google Analytics (_ga i _ga_*, fins a 14 mesos) mesura de manera agregada quantes persones visiten la web, d'on arriben i quantes acaben comprant; meapica_utm (30 dies) recorda des de quin anunci o publicació has arribat per associar-ho a la teva comanda.",
       "section3Title": "3. Cookies de tercers",
-      "section3Text": "Meta Platforms Ireland Ltd., només si acceptes les cookies publicitàries: rep dades de navegació i, si compres, l'import de la comanda i el teu correu i telèfon xifrats (hash) per mesurar els nostres anuncis. Meta pot tractar dades als EUA a l'empara del Marc de Privadesa de Dades UE-EUA. TikTok Technology Limited (Irlanda), només amb el mateix consentiment: rep les mateixes dades per mesurar els nostres anuncis a TikTok i les pot tractar fora de l'EEE a l'empara de clàusules contractuals tipus de la Comissió Europea. Stripe (processador de pagaments) pot establir les seves pròpies cookies durant el pagament.",
+      "section3Text": "Meta Platforms Ireland Ltd., només si acceptes les cookies publicitàries: rep dades de navegació i, si compres, l'import de la comanda i el teu correu i telèfon xifrats (hash) per mesurar els nostres anuncis. Meta pot tractar dades als EUA a l'empara del Marc de Privadesa de Dades UE-EUA. TikTok Technology Limited (Irlanda), només amb el mateix consentiment: rep les mateixes dades per mesurar els nostres anuncis a TikTok i les pot tractar fora de l'EEE a l'empara de clàusules contractuals tipus de la Comissió Europea. Google Ireland Limited (Google Analytics), només amb el mateix consentiment: rep dades de navegació i, si compres, l'import i el format de la comanda (mai el teu nom, correu ni telèfon) per elaborar estadístiques; les pot tractar als EUA a l'empara del Marc de Privadesa de Dades UE-EUA. Stripe (processador de pagaments) pot establir les seves pròpies cookies durant el pagament.",
       "section4Title": "4. Gestió de cookies",
       "section4Text": "Pots acceptar o rebutjar les cookies publicitàries a l'avís de la primera visita i canviar d'opinió quan vulguis des de «Configurar cookies», al peu de cada pàgina. Si les rebutges, la web funciona igual. També les pots esborrar des del teu navegador."
     },
@@ -696,15 +982,15 @@
       "title": "Preguntes Freqüents",
       "intro": "Tot el que necessites saber sobre els contes personalitzats de Meapica.",
       "section1Title": "Com es crea el meu conte?",
-      "section1Text": "Tu tries l'aventura, personalitzes el personatge amb el nom, l'edat i les característiques del teu fill, i la nostra tecnologia escriu una història única amb il·lustracions originals. Cap altre nen al món tindrà mai el mateix llibre.",
+      "section1Text": "Escrius el seu nom i la seva edat, tries com és i esculls el seu món i els tres capítols de l'aventura. Amb això escrivim una història per a la seva edat i la pintem a l'aquarel·la, amb el seu retrat a cada escena. Cap altre infant tindrà el mateix llibre.",
       "section2Title": "Quant triga l'enviament?",
-      "section2Text": "Cada llibre s'imprimeix sota demanda a Europa tan bon punt fas la comanda. De moment només enviem a Espanya. Espanya peninsular: 7-10 dies laborables. Balears: 7-10 dies laborables. De moment no enviem a Canàries, Ceuta ni Melilla. Rebràs un correu amb el número de seguiment quan el paquet estigui en camí.",
+      "section2Text": "Cada llibre s'imprimeix sota demanda a Europa tan bon punt fas la comanda. De moment només enviem a Espanya. Espanya peninsular: {minDays}-{maxDays} dies laborables. Balears: {minDays}-{maxDays} dies laborables. De moment no enviem a Canàries, Ceuta ni Melilla. Rebràs un correu amb el número de seguiment quan el paquet estigui en camí.",
       "section3Title": "Puc personalitzar el personatge?",
-      "section3Text": "Sí! Pots triar el nom, l'edat, el color de cabell, ulls i pell, el pentinat, el gènere, i fins i tot afegir la seva mascota, menjar preferit o somni de futur. Tot apareix a la història i a les il·lustracions.",
+      "section3Text": "Sí! Tries el seu nom i la seva edat, el color de la pell, dels cabells i dels ulls, el pentinat, si porta ulleres o pigues i si el conte s'escriu en femení, masculí o neutre. Abans de pagar veus el seu retrat i, si vols, el canvies i tornem a pintar el llibre.",
       "section4Title": "Quin paper utilitzeu?",
       "section4Text": "Imprimim en paper estucat setinat de 170 g, que reprodueix les il·lustracions amb colors vius i un tacte suau. L'enquadernació és encolada, com la d'un bon àlbum de fotos, i la coberta porta laminat mat. Pots triar tapa tova o tapa dura, l'opció més resistent.",
       "section5Title": "Puc demanar canvis després de la compra?",
-      "section5Text": "Com que cada llibre és una edició única generada en el moment, no és possible modificar-lo un cop creat. Per això et mostrem una previsualització completa abans de comprar, perquè puguis revisar la història i les il·lustracions.",
+      "section5Text": "Cada llibre és una edició única, així que no es pot modificar un cop demanat. Per això, abans de pagar, veus la portada amb el seu nom, el seu retrat i les primeres escenes il·lustrades del conte, i pots canviar el títol, la dedicatòria i el seu aspecte.",
       "section6Title": "Quina mida té el llibre?",
       "section6Text": "El llibre fa 20×20 cm, el format ideal per a mans petites. Té 30 pàgines amb 12 escenes il·lustrades, portada, dedicatòria personalitzada i contraportada."
     },
@@ -712,7 +998,7 @@
       "title": "Enviaments i Embalatge",
       "intro": "Cada llibre de Meapica és un regal. Per això, l'experiència de rebre'l a casa ha de ser tan especial com obrir-lo.",
       "section1Title": "Terminis d'enviament",
-      "section1Text": "De moment només enviem a Espanya. Espanya peninsular: 7-10 dies laborables. Balears: 7-10 dies laborables. De moment no enviem a Canàries, Ceuta ni Melilla. Cada llibre s'imprimeix sota demanda a Europa, per això el termini inclou la impressió.",
+      "section1Text": "De moment només enviem a Espanya. Espanya peninsular: {minDays}-{maxDays} dies laborables. Balears: {minDays}-{maxDays} dies laborables. De moment no enviem a Canàries, Ceuta ni Melilla. Cada llibre s'imprimeix sota demanda a Europa, per això el termini inclou la impressió.",
       "section2Title": "Cost d'enviament",
       "section2Text": "L'enviament estàndard està inclòs en el preu del llibre, que ja porta l'IVA inclòs. No hi ha costos ocults ni sorpreses a la caixa.",
       "section3Title": "Embalatge protector",
@@ -1084,7 +1370,7 @@
       "faq": {
         "delivery": {
           "q": "Quan arriba?",
-          "a": "L'imprimim sota demanda i triga de 7 a 10 dies laborables. T'avisem per correu amb el seguiment quan surt."
+          "a": "L'imprimim sota demanda i triga de {minDays} a {maxDays} dies laborables. T'avisem per correu amb el seguiment quan surt."
         },
         "canarias": {
           "q": "Envieu a Canàries, Ceuta o Melilla?",
@@ -1092,7 +1378,7 @@
         },
         "quality": {
           "q": "Com és el llibre?",
-          "a": "20 × 20 cm, 30 pàgines a tot color en paper estucat setí de 170 g. La tapa dura porta laminat mat i és la més resistent."
+          "a": "{size} × {size} cm, {pages} pàgines a tot color en paper estucat setí de {paper} g. La tapa dura porta laminat mat i és la més resistent."
         },
         "changes": {
           "q": "Puc canviar alguna cosa?",
@@ -1149,7 +1435,7 @@
       "nextStepsTitle": "Llibre físic en camí",
       "nextStepsDescription": "L'imprimim sota demanda i t'avisarem per correu amb el seguiment quan surti.",
       "deliveryTitle": "Temps de lliurament",
-      "deliveryDescription": "Espanya peninsular: 7-10 dies laborables. Balears: 7-10 dies laborables. De moment no enviem a Canàries, Ceuta ni Melilla.",
+      "deliveryDescription": "Espanya peninsular: {minDays}-{maxDays} dies laborables. Balears: {minDays}-{maxDays} dies laborables. De moment no enviem a Canàries, Ceuta ni Melilla.",
       "formatLabel": "Format: {format}",
       "formatDigital": "PDF Digital",
       "formatHardcover": "Tapa dura",
@@ -1160,7 +1446,7 @@
       "viewOrders": "Veure les meves comandes",
       "notVerifiedTitle": "No hem pogut confirmar aquest pagament",
       "notVerifiedDescription": "Aquest enllaç no correspon a un pagament completat. Si acabes de pagar, la comanda apareixerà a la teva biblioteca d'aquí a uns minuts i rebràs la confirmació per correu. Si alguna cosa no quadra, escriu-nos i ho resolem.",
-      "contactUs": "Escriu-nos a admin@casmar.tech",
+      "contactUs": "Escriu-nos a hola@meapica.shop",
       "confirmationEmail": "T'enviarem la confirmació i el seguiment a {email}",
       "guestNote": "Has comprat sense compte: guarda aquest correu, és el comprovant de la comanda.",
       "processingTitle": "Pagament confirmat!",
@@ -1223,7 +1509,7 @@
       "title": "Una altra còpia de {title}",
       "intro": "El mateix llibre, imprès de nou. Al pagament tries l'adreça d'enviament. Enviament estàndard inclòs a la península i les Balears.",
       "formatLabel": "Format",
-      "pay": "Pagar {price}",
+      "pay": "Pagar {price} · IVA inclòs",
       "error": "No hem pogut obrir el pagament. Torna-ho a provar d'aquí a un moment.",
       "close": "Tancar",
       "titleUpgrade": "{title}, imprès",
@@ -1485,11 +1771,11 @@
       "foodies": "Per a cuiners",
       "explorers": "Per a exploradors"
     },
+    "ageRange": "{min}-{max} anys",
     "templates": {
       "space": {
         "title": "La Gran Aventura Espacial",
         "description": "Un viatge a les estrelles on descobriran planetes desconeguts i faran amics alienígenes.",
-        "ageRange": "5-8 anys",
         "previewChapterTitle": "La Nau dels Somnis",
         "decisions": {
           "encounter": {
@@ -1568,7 +1854,6 @@
       "forest": {
         "title": "El Bosc Màgic",
         "description": "Secrets entre els arbres antics i criatures fantàstiques que necessiten ajuda.",
-        "ageRange": "2-5 anys",
         "previewChapterTitle": "El Bosc dels Xiuxiueigs",
         "decisions": {
           "encounter": {
@@ -1647,7 +1932,6 @@
       "superhero": {
         "title": "Superheroi per un Dia",
         "description": "A salvar la ciutat! Descobreix superpoders ocults i aprèn el valor de la valentia.",
-        "ageRange": "7-10 anys",
         "previewChapterTitle": "El Despertar de l'Heroi",
         "decisions": {
           "encounter": {
@@ -1726,7 +2010,6 @@
       "pirates": {
         "title": "Pirates del Mar",
         "description": "A la recerca del tresor perdut navegant els set mars amb una tripulació molt divertida.",
-        "ageRange": "5-8 anys",
         "previewChapterTitle": "L'Illa del Capità",
         "decisions": {
           "encounter": {
@@ -1805,7 +2088,6 @@
       "chef": {
         "title": "El Xef Més Petit",
         "description": "Una cuina plena de màgia on els ingredients prenen vida i ballen a l'olla.",
-        "ageRange": "2-4 anys",
         "previewChapterTitle": "La Cuina Encantada",
         "decisions": {
           "encounter": {
@@ -1884,7 +2166,6 @@
       "dinosaurs": {
         "title": "La Terra dels Dinosaures",
         "description": "Un viatge en el temps a l'era dels dinosaures, on la valentia i l'amistat ho canvien tot.",
-        "ageRange": "4-7 anys",
         "previewChapterTitle": "El Portal del Temps",
         "decisions": {
           "encounter": {
@@ -1963,7 +2244,6 @@
       "castle": {
         "title": "El Castell dels Somnis",
         "description": "Un castell encantat on els somnis prenen vida i cal salvar el regne de la foscor.",
-        "ageRange": "6-10 anys",
         "previewChapterTitle": "Les Portes del Castell",
         "decisions": {
           "encounter": {
@@ -2042,7 +2322,6 @@
       "safari": {
         "title": "Safari a la Sabana",
         "description": "Una aventura per la sabana africana entre lleons, elefants i postes de sol que tallen l'alè.",
-        "ageRange": "4-7 anys",
         "previewChapterTitle": "L'Alba a la Sabana",
         "decisions": {
           "encounter": {
@@ -2121,7 +2400,6 @@
       "inventor": {
         "title": "La Fàbrica d'Invents",
         "description": "Un taller d'invents bojos on la creativitat i la ciència es barrejen amb la màgia.",
-        "ageRange": "8-12 anys",
         "previewChapterTitle": "El Taller Secret",
         "decisions": {
           "encounter": {
@@ -2200,7 +2478,6 @@
       "candy": {
         "title": "El País dels Dolços",
         "description": "Un món on tot està fet de dolços, xocolata i caramel. Però compte amb menjar-ne massa!",
-        "ageRange": "2-5 anys",
         "previewChapterTitle": "La Porta de Caramel",
         "decisions": {
           "encounter": {
@@ -2340,7 +2617,7 @@
   },
   "christmasDelivery": {
     "metaTitle": "Arriba a temps per Reis {reyesYear}? Dates límit de comanda",
-    "metaDescription": "Fins quan pots demanar un conte personalitzat imprès per tenir-lo a casa per Nadal o abans de Reis. Dates per format, enviament a la península i les Balears. El PDF sempre arriba a temps.",
+    "metaDescription": "Fins quan demanar un conte personalitzat imprès per a Nadal o Reis: dates límit per format, a la península i les Balears. El PDF sempre arriba a temps.",
     "ogEyebrow": "Nadal i Reis {christmasYear}-{reyesYear}",
     "breadcrumb": "Arriba a temps?",
     "eyebrow": "Nadal i Reis {christmasYear}-{reyesYear}",
@@ -2374,7 +2651,7 @@
     "regionNote": "De moment no enviem a les Canàries, Ceuta ni Melilla. Si el regal és per allà, el conte en PDF hi arriba igual.",
     "methodHeading": "Com calculem aquestes dates",
     "method": [
-      "Imprimim cada llibre sota demanda a Europa. Avui, entre la impressió i l'enviament, una comanda triga {min}-{max} dies naturals a arribar a casa.",
+      "Imprimim cada llibre sota demanda a Europa i et prometem l'entrega en {promisedMin}-{promisedMax} dies laborables. Per a aquestes dates partim del termini real del transportista, que avui és de {min}-{max} dies naturals de la impremta a casa teva.",
       "Al desembre hi sumem {buffer} dies de marge per la saturació de la paqueteria i els festius del 8 de desembre, Nadal i Cap d'Any.",
       "El termini comença quan completes el pagament, no quan comences a crear el conte.",
       "Són estimacions basades en els terminis actuals del transportista, no una garantia. Si canvien, actualitzem aquesta pàgina."
@@ -2388,7 +2665,7 @@
       "christmasQ": "I per tenir-lo per Nadal?",
       "christmasA": "Per tenir el llibre imprès a casa el 24 de desembre, demana'l fins al {date}. Després d'aquesta data encara pots regalar el conte en PDF.",
       "timeQ": "Quant triga a arribar el llibre imprès?",
-      "timeA": "L'imprimim sota demanda a Europa tan bon punt fas la comanda. Espanya peninsular i Balears: 7-10 dies laborables, amb l'enviament inclòs en el preu. Rebràs el número de seguiment per correu.",
+      "timeA": "L'imprimim sota demanda a Europa tan bon punt fas la comanda. Espanya peninsular i Balears: {minDays}-{maxDays} dies laborables, amb l'enviament inclòs en el preu. Rebràs el número de seguiment per correu.",
       "regionQ": "Envieu a les Canàries, Ceuta o Melilla?",
       "regionA": "De moment no. Si el regal és per allà, el conte en PDF t'arriba per correu i pots imprimir-lo o llegir-lo a la tauleta."
     },
@@ -2462,7 +2739,7 @@
   },
   "cookieConsent": {
     "title": "Cookies",
-    "text": "Fem servir cookies necessàries perquè la web funcioni i, si ho acceptes, cookies de Meta i TikTok per mesurar els nostres anuncis a Instagram, Facebook i TikTok.",
+    "text": "Fem servir cookies necessàries perquè la web funcioni i, si ho acceptes, cookies de Meta, TikTok i Google per mesurar els nostres anuncis a Instagram, Facebook i TikTok i les visites a la web.",
     "policy": "Més informació",
     "accept": "Acceptar",
     "reject": "Rebutjar"

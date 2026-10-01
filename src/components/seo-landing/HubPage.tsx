@@ -5,10 +5,12 @@ import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import MobileStickyCta from "@/components/landing/MobileStickyCta";
 import FinalCta from "@/components/landing/FinalCta";
-import { BreadcrumbJsonLd } from "@/components/seo/JsonLd";
-import { buttonClass, cx, focusRing } from "@/components/ui";
+import FaqItem from "@/components/landing/FaqItem";
+import { BreadcrumbJsonLd, FAQJsonLd } from "@/components/seo/JsonLd";
+import { Heading, buttonClass, cx, focusRing } from "@/components/ui";
 import { STORY_TEMPLATES } from "@/lib/create-store";
 import { PRICING, formatPrice } from "@/lib/pricing";
+import { factParams } from "@/lib/product-facts";
 import {
   type SeoPageType,
   SEO_SLUGS,
@@ -52,13 +54,27 @@ export default async function HubPage({ type, locale }: Props) {
   const art = cardArt(type, slugs);
   const fromPrice = formatPrice(Math.min(PRICING.softcover.price, PRICING.hardcover.price), locale);
 
+  const values = factParams((cents) => formatPrice(cents, locale));
   const cards = slugs.map((slug) => ({
     slug,
     label: t(`nav.${type}.${slug}`),
-    intro: t(`${type}.${slug}.heroIntro`),
+    intro: t(`${type}.${slug}.heroIntro`, values),
     href: seoPath(type, slug),
     image: art[slug],
   }));
+
+  // Optional long-form guide + FAQ under the cards: seo.hubs.{type}.sections / .faq (q1/a1 … q4/a4).
+  const base = `hubs.${type}`;
+  const guideHeading = t.has(`${base}.guideHeading`) ? t(`${base}.guideHeading`, values) : null;
+  const sections = t.has(`${base}.sections`)
+    ? (t.raw(`${base}.sections`) as { heading: string; paragraphs: string[] }[]).map((sec, i) => ({
+        heading: t(`${base}.sections.${i}.heading`, values),
+        paragraphs: sec.paragraphs.map((_, j) => t(`${base}.sections.${i}.paragraphs.${j}`, values)),
+      }))
+    : [];
+  const faqs = ([1, 2, 3, 4] as const)
+    .filter((n) => t.has(`${base}.faq.q${n}`))
+    .map((n) => ({ question: t(`${base}.faq.q${n}`, values), answer: t(`${base}.faq.a${n}`, values) }));
 
   // ItemList structured data for the hub.
   const itemList = {
@@ -81,6 +97,7 @@ export default async function HubPage({ type, locale }: Props) {
         ]}
       />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemList) }} />
+      {faqs.length > 0 && <FAQJsonLd questions={faqs} />}
       <Navbar />
 
       <main>
@@ -94,7 +111,7 @@ export default async function HubPage({ type, locale }: Props) {
             <h1 className={cx("mt-2", marketingH1)}>{t(`hubs.${type}.h1`)}</h1>
             <p className={cx("mt-4 max-w-2xl", marketingLead)}>{t(`hubs.${type}.intro`)}</p>
             <div className="mt-7 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-5">
-              <Link id="hero-cta" href="/crear" className={buttonClass({ className: "min-h-14 w-full sm:w-auto sm:px-8" })}>
+              <Link id="hero-cta" href="/create" className={buttonClass({ className: "min-h-14 w-full sm:w-auto sm:px-8" })}>
                 {th("cta")}
                 <span aria-hidden className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1">
                   arrow_forward
@@ -151,6 +168,45 @@ export default async function HubPage({ type, locale }: Props) {
             ))}
           </ul>
         </section>
+
+        {sections.length > 0 && (
+          <section aria-labelledby="hub-guide-title" className="mt-16 border-y border-line bg-surface px-4 py-16 sm:mt-24 sm:px-6 sm:py-24">
+            <div className="mx-auto max-w-3xl">
+              {guideHeading && (
+                <Heading id="hub-guide-title" as="h2" size="page" className="text-balance">
+                  {guideHeading}
+                </Heading>
+              )}
+              {sections.map((sec) => (
+                <div key={sec.heading} className="mt-10 first:mt-0">
+                  <h3 className="font-display text-lg font-semibold leading-snug text-ink sm:text-xl">{sec.heading}</h3>
+                  <div className="mt-3 flex flex-col gap-4">
+                    {sec.paragraphs.map((p, i) => (
+                      <p key={i} className="text-base leading-relaxed text-ink-body sm:text-lg sm:leading-[1.75]">
+                        {p}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {faqs.length > 0 && (
+          <section aria-labelledby="hub-faq-title" className="bg-paper px-4 py-16 sm:px-6 sm:py-24">
+            <div className="mx-auto max-w-3xl">
+              <Heading id="hub-faq-title" as="h2" size="page" className="mb-8 text-balance text-center">
+                {t("common.faqHeading")}
+              </Heading>
+              <div className="divide-y divide-line overflow-hidden rounded-2xl border-2 border-line bg-surface">
+                {faqs.map((f) => (
+                  <FaqItem key={f.question} question={f.question} answer={f.answer} />
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
 
         <FinalCta />
       </main>

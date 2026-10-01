@@ -5,7 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { buttonClass } from "@/components/ui";
 import { PRICING, formatPrice } from "@/lib/pricing";
-import { crearHref, useHeroName } from "./HeroNameStore";
+import { createPageHref, useHeroName } from "./HeroNameStore";
 
 /**
  * Bottom "Crear su libro" bar for phones and tablets (< lg). It appears once the
@@ -35,7 +35,7 @@ export default function MobileStickyCta() {
       observers.push(io);
     }
 
-    // Pages without the landing hero (blog, /ejemplo, SEO pages…): show it once the
+    // Pages without the landing hero (blog, /examples, SEO pages…): show it once the
     // reader has scrolled past most of the first screen.
     let onScroll: (() => void) | null = null;
     if (!heroCta) {
@@ -89,7 +89,7 @@ export default function MobileStickyCta() {
           <span className="block text-xs text-ink-muted">{tPricing("vatIncluded")}</span>
         </p>
         <Link
-          href={crearHref(name)}
+          href={createPageHref(name)}
           // 19px bold label (AA on --brand); tight gaps so "Crear el seu llibre" fits at 360px
           className={buttonClass({ className: "h-12 min-w-0 flex-1 gap-1.5! px-4! sm:flex-none sm:px-8!" })}
         >

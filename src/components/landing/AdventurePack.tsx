@@ -19,7 +19,7 @@ export default function AdventurePack() {
           <p className="mt-4 max-w-prose text-base leading-relaxed text-ink-body sm:text-lg">
             {t("description")} <strong className="font-semibold text-ink">{t("letter")}</strong> {t("descriptionEnd")}
           </p>
-          <Link href="/crear" className={buttonClass({ variant: "secondary", className: "mt-8 max-w-full whitespace-normal text-center" })}>
+          <Link href="/create" className={buttonClass({ variant: "secondary", className: "mt-8 max-w-full whitespace-normal text-center" })}>
             {t("cta")}
           </Link>
         </div>

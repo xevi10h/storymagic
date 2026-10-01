@@ -140,9 +140,9 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
       test.setTimeout(120_000);
       const errors = trackConsole(page);
       const auth = await installMocks(page);
-      await page.goto("/es/crear", { waitUntil: "domcontentloaded" });
+      await page.goto("/es/create", { waitUntil: "domcontentloaded" });
       await page.evaluate(() => localStorage.clear());
-      await page.goto("/es/crear", { waitUntil: "domcontentloaded" });
+      await page.goto("/es/create", { waitUntil: "domcontentloaded" });
       await page.locator("#child-name").fill("Lucía");
       await page.getByRole("radio", { name: /^6/ }).click();
       await page.getByRole("radio", { name: "Una niña" }).click();
@@ -153,7 +153,7 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
       if (MODE === "interactive") {
         await interactiveCheckbox(page);
         await page.waitForTimeout(1200);
-        await page.screenshot({ path: `${SHOTS}/crear-interactive-${vpName}.png` });
+        await page.screenshot({ path: `${SHOTS}/create-interactive-${vpName}.png` });
         // Escape cancels: the overlay goes away, no sign-up without a token
         await page.keyboard.press("Escape");
         await expect(page.getByTestId("captcha-overlay")).toHaveCount(0);
@@ -172,14 +172,14 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
         await page.getByRole("button", { name: /Crear su libro/ }).click();
         await expect(page.getByText("No hemos podido comprobar que eres una persona").first()).toBeVisible({ timeout: 20_000 });
         expect(auth.filter((c) => c.path.endsWith("/signup"))).toHaveLength(0);
-        await page.screenshot({ path: `${SHOTS}/crear-fail-${vpName}.png` });
+        await page.screenshot({ path: `${SHOTS}/create-fail-${vpName}.png` });
       } else {
         await expect.poll(() => auth.some((c) => c.path.endsWith("/signup")), { timeout: 20_000 }).toBe(true);
         const signup = auth.find((c) => c.path.endsWith("/signup"))!;
         const security = signup.body?.gotrue_meta_security as { captcha_token?: string } | undefined;
         if (MODE === "pass") expect(security?.captcha_token).toBe(DUMMY_TOKEN);
         else expect(security?.captcha_token).toBeUndefined();
-        await page.screenshot({ path: `${SHOTS}/crear-${MODE}-${vpName}.png` });
+        await page.screenshot({ path: `${SHOTS}/create-${MODE}-${vpName}.png` });
       }
       await expect(page.getByTestId("captcha-overlay")).toHaveCount(0);
       expect(ownErrors(errors)).toEqual([]);

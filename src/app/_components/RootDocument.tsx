@@ -1,4 +1,5 @@
 import { Plus_Jakarta_Sans, Fredoka } from "next/font/google";
+import localFont from "next/font/local";
 import "../globals.css";
 import { DISMISSED_HEAD_SCRIPT } from "@/components/seasonal/season-scripts";
 
@@ -13,6 +14,20 @@ const fredoka = Fredoka({
   // latin-ext: children's names like Ștefan, Łucja or Ŀlúcia render in the brand face
   subsets: ["latin", "latin-ext"],
   display: "swap",
+});
+
+// Material Symbols Outlined, self-hosted subset of the icons the app uses (~90 KB
+// instead of Google's 1.1 MB full font behind a render-blocking stylesheet).
+// Regenerate after adding an icon: node scripts/material-symbols-subset.mjs.
+// display: block (Google's guidance for icon fonts): ligature names never flash as
+// words; the 1em box in globals.css keeps the invisible fallback from shifting layout.
+const materialSymbols = localFont({
+  src: "../../fonts/material-symbols-outlined.woff2",
+  variable: "--font-material-symbols",
+  weight: "100 700",
+  display: "block",
+  adjustFontFallback: false,
+  fallback: [],
 });
 
 /**
@@ -37,20 +52,9 @@ export default function RootDocument({ lang, children }: { lang: string; childre
         <meta name="facebook-domain-verification" content="z5fupvnf0dmkjlx3uo5mxgkz7df78s" />
         {/* Hides a seasonal banner the visitor closed before first paint (no flash, no shift). */}
         <script dangerouslySetInnerHTML={{ __html: DISMISSED_HEAD_SCRIPT }} />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* Icon font: display=block (Google's guidance for icon fonts) so the
-            ligature names never flash as words; the 1em box in globals.css
-            keeps the invisible fallback from shifting layout (CLS).
-            Rendered by every root layout = every page, so no-page-custom-font does not apply. */}
-        {/* eslint-disable-next-line @next/next/google-font-display, @next/next/no-page-custom-font */}
-        <link
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=block"
-          rel="stylesheet"
-        />
       </head>
       <body
-        className={`${plusJakarta.variable} ${fredoka.variable} font-sans bg-paper overflow-x-hidden relative text-text-main antialiased`}
+        className={`${plusJakarta.variable} ${fredoka.variable} ${materialSymbols.variable} font-sans bg-paper overflow-x-hidden relative text-text-main antialiased`}
       >
         <div className="relative z-[1]">{children}</div>
       </body>

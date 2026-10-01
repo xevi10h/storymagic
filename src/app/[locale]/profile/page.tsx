@@ -6,7 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useAuth } from "@/hooks/useAuth";
 import { createClient } from "@/lib/supabase/client";
 import EmailSignIn from "@/components/auth/EmailSignIn";
-import Sheet from "@/components/crear/Sheet";
+import Sheet from "@/components/create/Sheet";
 import { BrandLoader, Button, Card, Eyebrow, Heading, Spinner, brandBadge, buttonClass, cx, focusRing } from "@/components/ui";
 import { SUPPORT_EMAIL } from "@/lib/support";
 

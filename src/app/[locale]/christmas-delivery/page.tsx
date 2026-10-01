@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
 import Navbar from "@/components/landing/Navbar";
@@ -12,6 +12,7 @@ import { Breadcrumbs, PageHero, kicker, marketingH1, marketingLead } from "@/com
 import DeliveryCountdown from "@/components/seasonal/DeliveryCountdown";
 import DeadlineCards from "@/components/seasonal/DeadlineCards";
 import { PRICING, formatPrice } from "@/lib/pricing";
+import { COPY_PARAMS, DELIVERY_BUSINESS_DAYS } from "@/lib/product-facts";
 import {
   CHRISTMAS_DELIVERY_PATH,
   DELIVERY_DAYS,
@@ -54,6 +55,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function Page({ params }: PageProps) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "christmasDelivery" });
   const ts = await getTranslations({ locale, namespace: "seo" });
   const tp = await getTranslations({ locale, namespace: "pricing" });
@@ -77,7 +79,7 @@ export default async function Page({ params }: PageProps) {
   const faqs = [
     { question: t("faq.reyesQ"), answer: t("faq.reyesA", { date: faqDate("reyes") }) },
     { question: t("faq.christmasQ"), answer: t("faq.christmasA", { date: faqDate("christmas") }) },
-    { question: t("faq.timeQ"), answer: t("faq.timeA") },
+    { question: t("faq.timeQ"), answer: t("faq.timeA", COPY_PARAMS) },
     { question: t("faq.regionQ"), answer: t("faq.regionA") },
   ];
 
@@ -86,7 +88,9 @@ export default async function Page({ params }: PageProps) {
     line
       .replace("{min}", String(days.min))
       .replace("{max}", String(days.max))
-      .replace("{buffer}", String(PEAK_BUFFER_DAYS)),
+      .replace("{buffer}", String(PEAK_BUFFER_DAYS))
+      .replace("{promisedMin}", String(DELIVERY_BUSINESS_DAYS.min))
+      .replace("{promisedMax}", String(DELIVERY_BUSINESS_DAYS.max)),
   );
 
   return (
@@ -163,7 +167,7 @@ export default async function Page({ params }: PageProps) {
                 <span className="font-bold tabular-nums text-brand-deep">{formatPrice(PRICING.digital_pdf.price, locale)}</span>
                 <span> · {tp("vatIncluded")}</span>
               </p>
-              <Link href="/crear" className={buttonClass({ variant: "secondary", block: true, className: "mt-4" })}>
+              <Link href="/create" className={buttonClass({ variant: "secondary", block: true, className: "mt-4" })}>
                 {t("ctaDigital")}
                 <span aria-hidden className="material-symbols-outlined !text-lg transition-transform group-hover:translate-x-1">
                   arrow_forward
@@ -193,7 +197,7 @@ export default async function Page({ params }: PageProps) {
             <h2 id="xmas-final-title" className="text-balance font-display text-[28px] font-bold leading-[1.12] text-ink sm:text-4xl">
               {t("finalHeading")}
             </h2>
-            <Link href="/crear" className={buttonClass({ className: "min-h-14 sm:px-8" })}>
+            <Link href="/create" className={buttonClass({ className: "min-h-14 sm:px-8" })}>
               {ctaLabel}
               <span aria-hidden className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1">
                 arrow_forward

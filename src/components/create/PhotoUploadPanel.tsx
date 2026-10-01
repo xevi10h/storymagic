@@ -123,7 +123,7 @@ export default function PhotoUploadPanel({ name, photoPath, onPhotoChange }: Pho
       try {
         jpeg = await toUploadJpeg(file);
       } catch (err) {
-        console.warn("[crear] photo decode failed:", err);
+        console.warn("[create] photo decode failed:", err);
         setError(err instanceof Error && err.message === "still_too_large" ? "too_large" : "unsupported_type");
         return;
       }
@@ -142,7 +142,7 @@ export default function PhotoUploadPanel({ name, photoPath, onPhotoChange }: Pho
       setPreviewUrl(URL.createObjectURL(jpeg));
       onPhotoChange(data.photoPath);
     } catch (err) {
-      console.warn("[crear] photo upload failed:", err);
+      console.warn("[create] photo upload failed:", err);
       setError(isCaptchaError(err) ? "captcha_failed" : "upload_failed");
     } finally {
       setBusy(null);
@@ -165,7 +165,7 @@ export default function PhotoUploadPanel({ name, photoPath, onPhotoChange }: Pho
       setConsent(false); // withdrawal: a new upload needs fresh consent
       onPhotoChange(null);
     } catch (err) {
-      console.warn("[crear] photo delete failed:", err);
+      console.warn("[create] photo delete failed:", err);
       setError("remove_failed");
     } finally {
       setBusy(null);

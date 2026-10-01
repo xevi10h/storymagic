@@ -2,7 +2,7 @@ import { createFulfilmentClient } from "@/lib/fulfilment/db";
 import { illustrationPath, toShowcaseUrl } from "@/lib/storage/illustration-refs";
 
 // Read-side helper for showcase example stories (is_showcase + finished book).
-// Mirrors /api/showcase mapping but runs server-side for the /ejemplo index.
+// Mirrors /api/showcase mapping but runs server-side for the /examples index.
 
 /** A finished book stays a valid example after it is ordered (the owner's print-checked books are). */
 export const SHOWCASE_STATUSES = ["ready", "ordered"];

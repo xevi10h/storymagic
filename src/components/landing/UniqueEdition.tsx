@@ -2,6 +2,7 @@ import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Heading, buttonClass } from "@/components/ui";
+import { COPY_PARAMS } from "@/lib/product-facts";
 import { LANDING_EXAMPLE, landingExampleBook } from "./HowItWorksExample";
 
 const POINTS = ["written", "painted", "colour", "dedication"] as const;
@@ -64,7 +65,7 @@ export default function UniqueEdition() {
                 </span>
                 <div>
                   <h3 className="font-display text-base font-bold leading-tight text-ink">{t(`points.${id}.title`)}</h3>
-                  <p className="mt-0.5 text-sm leading-snug text-ink-body">{t(`points.${id}.text`)}</p>
+                  <p className="mt-0.5 text-sm leading-snug text-ink-body">{t(`points.${id}.text`, COPY_PARAMS)}</p>
                 </div>
               </li>
             ))}
@@ -72,14 +73,14 @@ export default function UniqueEdition() {
 
           <div className="mt-7 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-5">
             {/* Phones already have the sticky "Crear su libro" bar: one CTA per viewport. */}
-            <Link href="/crear" className={buttonClass({ size: "md", className: "max-sm:hidden" })}>
+            <Link href="/create" className={buttonClass({ size: "md", className: "max-sm:hidden" })}>
               {t("cta")}
               <span aria-hidden className="material-symbols-outlined text-lg transition-transform group-hover:translate-x-1">
                 arrow_forward
               </span>
             </Link>
             <Link
-              href={`/ejemplo/${book.storyId}`}
+              href={`/examples/${book.storyId}`}
               className="inline-flex min-h-11 items-center text-sm font-semibold text-ink-soft underline decoration-ink-soft/30 underline-offset-2 hover:text-brand-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
             >
               {t("seeInside", { name, gender: LANDING_EXAMPLE.gender })}

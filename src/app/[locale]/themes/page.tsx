@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import HubPage from "@/components/seo-landing/HubPage";
 
@@ -27,5 +27,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function Page({ params }: PageProps) {
   const { locale } = await params;
+  setRequestLocale(locale);
   return <HubPage type="themes" locale={locale} />;
 }

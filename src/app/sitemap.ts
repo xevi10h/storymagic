@@ -18,6 +18,10 @@ function buildAlternates(path: string): Record<string, string> {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const entries: MetadataRoute.Sitemap = [];
 
+  // lastModified only where there is a real content date (blog rows). Static and
+  // programmatic pages have none: omitting it beats a deploy-time date, which
+  // Google learns to ignore for the whole sitemap.
+
   // ── Static pages ──────────────────────────────────────────────────────
   const staticPages: { path: string; changeFrequency: "weekly" | "monthly"; priority: number }[] = [
     { path: "", changeFrequency: "weekly", priority: 1.0 },
@@ -25,7 +29,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: CHRISTMAS_DELIVERY_PATH, changeFrequency: "weekly", priority: 0.8 },
     { path: "/personalized-books", changeFrequency: "monthly", priority: 0.9 },
     { path: "/themes", changeFrequency: "monthly", priority: 0.9 },
-    { path: "/ejemplo", changeFrequency: "weekly", priority: 0.7 },
+    { path: "/examples", changeFrequency: "weekly", priority: 0.7 },
     { path: "/legal", changeFrequency: "monthly", priority: 0.3 },
   ];
 
@@ -33,7 +37,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const locale of routing.locales) {
       entries.push({
         url: `${BASE_URL}/${locale}${page.path}`,
-        lastModified: new Date(),
         changeFrequency: page.changeFrequency,
         priority: page.priority,
         alternates: {
@@ -48,7 +51,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const locale of routing.locales) {
       entries.push({
         url: `${BASE_URL}/${locale}${path}`,
-        lastModified: new Date(),
         changeFrequency: "monthly",
         priority: 0.8,
         alternates: {
@@ -69,10 +71,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     if (blogLocales.includes(routing.defaultLocale)) {
       blogLanguages["x-default"] = `${BASE_URL}/${routing.defaultLocale}/blog`;
     }
+    const latestUpdate = (loc: string): Date | undefined => {
+      const times = refs
+        .filter((r) => r.locale === loc && r.updatedAt)
+        .map((r) => new Date(r.updatedAt as string).getTime());
+      return times.length ? new Date(Math.max(...times)) : undefined;
+    };
     for (const loc of blogLocales) {
+      const lastModified = latestUpdate(loc);
       entries.push({
         url: `${BASE_URL}/${loc}/blog`,
-        lastModified: new Date(),
+        ...(lastModified ? { lastModified } : {}),
         changeFrequency: "weekly",
         priority: 0.6,
         alternates: { languages: blogLanguages },
@@ -88,12 +97,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const r of refs) {
       const postPath = `/blog/${r.slug}`;
       const languages: Record<string, string> = {};
-      for (const loc of localesBySlug.get(r.slug) ?? []) {
+      const postLocales = localesBySlug.get(r.slug) ?? [];
+      for (const loc of postLocales) {
         languages[loc] = `${BASE_URL}/${loc}${postPath}`;
+      }
+      // Same x-default rule as the post's HTML hreflang.
+      if (postLocales.includes(routing.defaultLocale)) {
+        languages["x-default"] = `${BASE_URL}/${routing.defaultLocale}${postPath}`;
       }
       entries.push({
         url: `${BASE_URL}/${r.locale}${postPath}`,
-        lastModified: r.updatedAt ? new Date(r.updatedAt) : new Date(),
+        ...(r.updatedAt ? { lastModified: new Date(r.updatedAt) } : {}),
         changeFrequency: "monthly",
         priority: 0.6,
         alternates: { languages },
@@ -103,9 +117,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("[Sitemap] Failed to fetch blog posts:", error);
   }
 
-  // Individual showcase stories (/ejemplo/[storyId]) are deliberately NOT
-  // listed: they are client-rendered shells (no server-rendered story text),
-  // so Google sees thin/empty pages. Re-add them once the viewer is SSR'd.
+  // Individual showcase stories (/examples/[storyId]) are deliberately NOT
+  // listed: they are client-rendered shells (the viewer is ssr:false, no story
+  // text in the HTML), so Google sees thin pages. Re-add once the text is SSR'd.
 
   return entries;
 }

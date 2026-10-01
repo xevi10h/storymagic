@@ -24,6 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     robots: { index: false, follow: false, nocache: true, googleBot: { index: false, follow: false } },
     // The token is in the URL: never leak it through the Referer header.
     referrer: "no-referrer",
+    alternates: { canonical: null },
   };
   if (!result.ok) return { ...base, title: t("notFound.title") };
   const name = result.preview.childName;
@@ -41,7 +42,7 @@ export default async function SharedPreviewPage({ params }: Props) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (user && user.id === preview.ownerId) redirect(`/${locale}/crear/${preview.storyId}/preview`);
+  if (user && user.id === preview.ownerId) redirect(`/${locale}/create/${preview.storyId}/preview`);
 
   return (
     <SharedPreviewView

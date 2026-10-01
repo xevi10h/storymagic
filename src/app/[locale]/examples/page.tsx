@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
 import Navbar from "@/components/landing/Navbar";
@@ -13,7 +13,7 @@ import { Breadcrumbs, PageHero, kicker, marketingH1, marketingLead } from "@/com
 import { getShowcaseStories } from "@/lib/showcase";
 
 const BASE_URL = "https://meapica.shop";
-const PATH = "/ejemplo";
+const PATH = "/examples";
 
 type PageProps = { params: Promise<{ locale: string }> };
 
@@ -40,6 +40,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function ShowcaseIndex({ params }: PageProps) {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "showcase" });
   const tc = await getTranslations({ locale, namespace: "bookCollection" });
   const ts = await getTranslations({ locale, namespace: "seo" });
@@ -59,7 +60,7 @@ export default async function ShowcaseIndex({ params }: PageProps) {
         "@type": "ListItem",
         position: i + 1,
         name: s.title,
-        url: `${BASE_URL}/${locale}/ejemplo/${s.id}`,
+        url: `${BASE_URL}/${locale}/examples/${s.id}`,
       })),
     },
   };
@@ -90,7 +91,7 @@ export default async function ShowcaseIndex({ params }: PageProps) {
             <p className={cx("mt-4 max-w-2xl", marketingLead)}>{t("subtitle")}</p>
             <Link
               id="hero-cta"
-              href="/crear"
+              href="/create"
               className={buttonClass({ className: "mt-7 min-h-14 w-full sm:w-auto sm:px-8" })}
             >
               {th("cta")}
@@ -110,7 +111,7 @@ export default async function ShowcaseIndex({ params }: PageProps) {
                 {stories.map((s, i) => (
                   <li key={s.id}>
                     <Link
-                      href={`/ejemplo/${s.id}`}
+                      href={`/examples/${s.id}`}
                       className={cx(
                         "group flex h-full flex-col overflow-hidden rounded-2xl border-2 border-line bg-surface transition-colors hover:border-brand/40",
                         focusRing,

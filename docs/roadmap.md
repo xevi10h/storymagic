@@ -66,7 +66,9 @@ character lock; per-stage resolution. (commits 5ebc2f1 → a883d60)
 
 ## Next steps from showcase v2 (2026-09-30)
 
-- [ ] **HIGH — Next session: platform-wide SEO review** (every public route × 4 locales: titles/meta/OG, hreflang + canonicals, JSON-LD incl. `Offer` VAT flags, sitemap, internal links, Core Web Vitals, the new showcase books on `/ejemplo` + theme pages)
+- [x] SEO/GEO content pass 2026-10-01: head-term titles/H1, product facts single source (`src/lib/product-facts.ts`), Organization + Product JSON-LD (real covers, 3 offers, shipping, return policy), per-page FAQ + FAQPage on all SEO landings, three-kings/christmas de-cannibalised + order-by cards, honest baptism/first-birthday, `/llms.txt`.
+- [ ] **Owner:** decide whether the 7–10 business-day promise should change in December (a Reyes order on the 22 Dec cut-off can exceed 10 business days because of holidays; cut-offs use measured 7–8 calendar days); swap `SUPPORT_EMAIL`/`CONTACT_EMAIL` to hola@meapica.shop; add IG/TikTok URLs to `SOCIAL_PROFILES` once the accounts exist; Google Merchant Center free listings feed.
+- [ ] **HIGH — Next session: platform-wide SEO review** (every public route × 4 locales: titles/meta/OG, hreflang + canonicals, JSON-LD incl. `Offer` VAT flags, sitemap, internal links, Core Web Vitals, the new showcase books on `/examples` + theme pages)
 - [ ] Showcase v2 for the remaining 5 worlds (superhero, chef, safari, inventor, candy) with the same rule: production pipeline + page-by-page QA in 4 locales; a `castle` theme SEO page (`THEME_TEMPLATE` has no castle slug yet)
 - [x] Pipeline findings from the showcase QA (customer-facing): Done 2026-09-30: U+202F (narrow no-break space) now prints — the embedded fonts gained the glyph (`scripts/patch-font-nnbsp.py`), the web viewer uses the same one
 - [x] QA judge rework (2026-09-30): claims from the page text → per-check vision verdicts → pass/fail in code, limb counting on crops, full-res image, extra sheet; the repair prompt no longer re-states the shot action. Labelled set recall 2/12 → 11/12, false alarms 0 → 2/12, judge ~$0.35 → ~$0.67 per book (`docs/generation-pipeline.md` §QA, `scripts/qa-eval/`)
@@ -101,8 +103,8 @@ Brand spec in `docs/brand.md`; semantic tokens in `globals.css`; primitives in `
 ## Next steps from brand loader (2026-09-30)
 - [x] `BrandLoader` (self-drawing book mark) + `PageLoader` + `Spinner` replace every Material `progress_activity` / CSS-ring spinner; route `loading.tsx` on dashboard, perfil, checkout/success, crear/[storyId], ejemplo/[storyId]. See docs/brand.md › Loader.
 - [ ] Replace the raster `BrandIcon` mask (`/images/m-icon-mask.png`) and favicons with a static vector of the same stroke mark (crisper at 16–32 px, one source of truth).
-- [ ] Use the drawn mark as the brand moment of the /crear "mientras se pinta" screen (draw once, then hand over to the real progress bar) and in the order-confirmation email header (animated SVG/GIF).
-- [ ] /crear hydration hold (`!hydrated || !prefillReady`) renders an empty screen; consider `PageLoader` after ~300 ms if it is ever slow on real devices.
+- [ ] Use the drawn mark as the brand moment of the /create "mientras se pinta" screen (draw once, then hand over to the real progress bar) and in the order-confirmation email header (animated SVG/GIF).
+- [ ] /create hydration hold (`!hydrated || !prefillReady`) renders an empty screen; consider `PageLoader` after ~300 ms if it is ever slow on real devices.
 
 ## Next steps from commerce block B — Gelato (2026-09-28)
 - **Real paid print** of one hardcover to validate paper, colour and binding (drafts don't print; ~21 € incl. VAT).
@@ -155,7 +157,7 @@ Brand spec in `docs/brand.md`; semantic tokens in `globals.css`; primitives in `
 - [x] Generation animation with whimsical progress messages
 - [x] Interactive book viewer (page-flip animation + sound) + checkout UI
 - [x] User authentication (Supabase Auth: email + Google OAuth + anonymous guest sign-in)
-- [x] Guest flow: /crear is unprotected; on finish, non-logged users continue seamlessly as guest (anonymous sign-in, no modal). See Phase 2 — Conversion (GuestGate removed for zero-friction creation)
+- [x] Guest flow: /create is unprotected; on finish, non-logged users continue seamlessly as guest (anonymous sign-in, no modal). See Phase 2 — Conversion (GuestGate removed for zero-friction creation)
 - [x] State persistence in localStorage for guests (usePersistedState hook)
 - [x] Creation-flow state: create-store.ts — branching story-tree architecture for all 10 templates
 - [x] Supabase schema: profiles, characters, stories, story_illustrations, orders, sagas, illustration_library tables with RLS
@@ -357,7 +359,7 @@ English slugs (global URL convention). Config-driven registry `src/lib/seo-landi
 
 - [x] **Gift occasion pages** `/gifts/[occasion]`: three-kings, sant-jordi, birthday, communion, christmas, **baptism, end-of-school, name-day, graduation, first-birthday** (10 total)
 - [x] **Age pages** `/personalized-books/[age]`: 2-4, 5-7, 8-12 (featured templates auto-filtered by age overlap)
-- [x] **Theme pages** `/themes/[theme]`: dinosaurs, space, pirates, superheroes, magic-forest, safari (CTA prefills `/crear?template=…&from=seo`; featured = main template + tag-related)
+- [x] **Theme pages** `/themes/[theme]`: dinosaurs, space, pirates, superheroes, magic-forest, safari (CTA prefills `/create?template=…&from=seo`; featured = main template + tag-related)
 - [x] Per-page metadata: `absolute` title, description, canonical, hreflang alternates (4 locales + x-default), OpenGraph
 - [x] Structured data: `BreadcrumbJsonLd` + `ProductJsonLd` per page
 - [x] Internal linking: related-pages cross-links on every SEO page + global footer block (gift occasions + age ranges)
@@ -375,13 +377,13 @@ Quality-first editorial, NOT mass auto-generation (avoids Google scaled-content-
 - [x] `blog_posts` table in Supabase (RLS: public read `published` only; writes service-role only). Additive migration `create_blog_posts`.
 - [x] `src/lib/blog.ts` — untyped client read helpers (`getPublishedPosts`, `getPost`, `getLocalesForSlug`, `getAllPublishedPostRefs`)
 - [x] `/blog` index + `/blog/[slug]` post (markdown via `marked`, `.prose-article` styles in globals.css). `Article` + `BreadcrumbList` schema, reading time, author.
-- [x] 6 articles es+ca (English shared slugs), AI-drafted + reviewed, genuinely useful; each funnels to its related SEO page + `/crear`.
+- [x] 6 articles es+ca (English shared slugs), AI-drafted + reviewed, genuinely useful; each funnels to its related SEO page + `/create`.
 - [x] Sitemap (index + posts, alternates per published locale) + footer Blog link.
 - [x] **Cover images** — 6 on-brand watercolor illustrations (Recraft V3 `digital_illustration`, 1536×1024), generated + self-hosted in Supabase Storage `illustrations/blog/{slug}.png`, one per slug (shared es/ca). Shown on index cards + post hero + used in OG.
 - [ ] Future: admin editor UI (`/admin/blog`), per-post OG images, en/fr translations, more articles. (Note: regenerate Sant Jordi cover — minor AI text artifact.)
 
 ### Phase 3 — remaining
-- [x] **Showcase/examples index `/ejemplo`** (`src/lib/showcase.ts` + page): lists real showcase books (locale-filtered, cover from first illustration), `CollectionPage` + `ItemList` + breadcrumb schema, in sitemap + footer link. Reuses `bookCollection` card i18n.
+- [x] **Showcase/examples index `/examples`** (`src/lib/showcase.ts` + page): lists real showcase books (locale-filtered, cover from first illustration), `CollectionPage` + `ItemList` + breadcrumb schema, in sitemap + footer link. Reuses `bookCollection` card i18n.
 - [ ] Future: expand themes to all 10 templates, ISR/static optimization
 
 ---
@@ -395,14 +397,14 @@ Replaced the old "mode → template → 3 decision knobs" with a single vertical
 - [x] `PathBuilder.tsx` — vertical trail of resolved milestones (tappable to edit) + active beat with illustrated options. Beats: **world** (1st fork = template choice, ranked by `getRecommendedTemplates`) → encounter → companion → challenge → time → setting.
 - [x] `getTemplateBeats` / `beatDecisionField` helpers in `create-store`. Reuses existing decision/atmosphere data + i18n (`data.templates.{id}.*`). **Generation backend untouched** (payload = same `selectedTemplate` + `decisions`).
 - [x] Downward chapter transition (`beat-animate-in` slide-up + `scrollIntoView`) replacing horizontal book-flip within the path.
-- [x] Orchestrator rewired (`crear/page.tsx`): step remap, portrait → path, catalog/SEO prefill land on character (world pre-answered if template passed).
+- [x] Orchestrator rewired (`create/page.tsx`): step remap, portrait → path, catalog/SEO prefill land on character (world pre-answered if template passed).
 - [x] Verified: PathBuilder walk (world → ch1 → ch2) mobile + desktop, `tsc` clean, titles/questions/options localized.
 - [x] **Full E2E walk (mock mode):** `e2e/qa-walkthrough.spec.ts` — character → portrait → path → dedication → preview, desktop (1440×900) + mobile (390×844), screenshots per phase, zero console errors. Run on every flow change.
 - [x] **Quality pass (2026-06-10):** picsum placeholder option images replaced with themed gradient+icon cards (`OptionVisual` in PathBuilder; `icon` field added to `TreeOption` + 39 space-tree options); end-of-path celebration state (recap chips + `crear.path.complete*` i18n ×4 locales); rotating portrait-generation status messages (`crear.portraitReveal.step1-4` ×4); mobile preview flipbook fixed (forced portrait sizing measured from container + 3D tilt/spine disabled <768px); landing showcase 400s fixed (4 mock-tainted stories unflagged in DB + `/api/showcase` filters `/illustrations/mock/` URLs).
 - [~] **Illustrated option art:** real FLUX.2 watercolor art per space-tree option (39 imgs, character-neutral scenes) → `public/images/path/space/{imageSeed}.webp` + `art-manifest.ts`; PathBuilder falls back to gradient+icon when art missing. Legacy (non-tree) templates still icon-only.
 - [x] **Cleanup debt:** orphaned `Step1ModeSelection`, `Step3AdventureSelection`, `Step4Decisions/Solo/Juntos` deleted + i18n `crear.step1/step3/step4` removed (×4 locales). `GuestGate` intentionally kept for post-purchase account-claim reuse.
 - [ ] **BLOCKED (BFL credits):** remaining 17/39 space path-art images — top up at dashboard.bfl.ai, then `node scripts/generate-path-art.mjs` (resumable; rewrites `art-manifest.ts`).
-- [x] **Space tree EN/FR translations** (2026-06-11): all 13 questions + 39×3 option texts now es/ca/en/fr (EN/FR users previously saw Spanish fallbacks in tree mode). Verified in-browser on /en/crear.
+- [x] **Space tree EN/FR translations** (2026-06-11): all 13 questions + 39×3 option texts now es/ca/en/fr (EN/FR users previously saw Spanish fallbacks in tree mode). Verified in-browser on /en/create.
 - [x] **Forest story tree** (2026-06-11): `src/lib/story-trees/forest.ts` — 14 nodes / 39 options / 4 locales / icons, registered in `STORY_TREES`. Branches: dragon (Brasa's lost flame), chest (flower-key hunt), door (Whisper Garden colors). `validateTree` clean, browser-verified ES. Art prompts ready in `generate-path-art.mjs` (39 forest entries, `--manifest-only` flag added; manifest now rescans disk, idempotent).
 - [x] **e2e specs updated** to the new completion CTA ("Escribir la dedicatoria"); full mock-safe suite (fullflow, branching, dedication, path2, recommend, qa-walkthrough) 10/10 green serial.
 - [x] **`e2e/all-trees.spec.ts`** (2026-06-12): walks all 10 template paths to completion, asserts celebration CTA + zero console errors. 10/10 green.
@@ -410,14 +412,14 @@ Replaced the old "mode → template → 3 decision knobs" with a single vertical
 - [x] **Edge-case QA, character step** (2026-06-12): 50-char name cap aligned client/server, XSS rendered escaped (React), blank-name Next disabled, emojis deliberately allowed. No defects.
 - [x] **Tree chunk failure fallback** (2026-06-12): if a tree chunk fails to load (offline/deploy skew), PathBuilder logs and falls back to the legacy flat-decision flow instead of spinning forever — legacy code retained as the resilience path.
 - [x] **WebKit (Safari) sweep** (2026-06-12): full creation flow on WebKit mobile 390px — character → portrait → space path with art → celebration → dedication → preview, 0 console errors, flipbook cover centered. Safari engine verified.
-- [x] **"Book is born" reveal** (2026-06-12): one-shot full-screen moment on first preview load after generation — cover scales in with glow + gold sparkles + "¡El cuento de {name} está listo!" (`BookRevealOverlay`, sessionStorage flag set by /generar, tap-to-skip, auto-dismiss ~3.4s, no replay on reload, prefers-reduced-motion respected, 4 locales). Verified e2e.
+- [x] **"Book is born" reveal** (2026-06-12): one-shot full-screen moment on first preview load after generation — cover scales in with glow + gold sparkles + "¡El cuento de {name} está listo!" (`BookRevealOverlay`, sessionStorage flag set by /generate, tap-to-skip, auto-dismiss ~3.4s, no replay on reload, prefers-reduced-motion respected, 4 locales). Verified e2e.
 - [x] **PDF deliverable verified** (2026-06-12, mock): full flow → dev unlock → `/api/stories/{id}/pdf` returns valid 32-page 1.9MB PDF — branded cover, themed endpapers, dedication title page, chapter spreads. Print-layout sound; real watercolor art lands automatically once credits allow real generation.
 - [x] **Dinosaurs + pirates story trees** (2026-06-12): same shape as forest (14 nodes / 39 options / 4 locales / icons each), `validateTree` clean, registered, browser-verified, suite 10/10.
 - [x] **Superhero + chef + castle story trees** (2026-06-12): same shape/quality bar, descs child-free for auto art prompts. Registered, browser spot-checked (3/3 complete, 0 console errors), suite 10/10. **7 of 10 templates now branch; safari/inventor/candy in progress.**
 - [x] **Real-mode pipeline verified** (2026-06-12, MOCK_MODE=false locally): story TEXT generates via OpenAI; tree narratives reach the real story (visual-asset refs built for "Brasa", "Enchanted Forest", "Girona Street"); visual-ref failures non-fatal; scene-illustration billing errors fail loud by design (whole generation aborts at ~85% with error screen).
 - [x] **All 10 story trees authored + registered** (2026-06-12): space, forest, dinosaurs, pirates, superhero, chef, castle, safari, inventor, candy — each 14 nodes / 39 options / 4 locales / icons, `validateTree` clean, 390 unique seeds, browser spot-checked, suite 10/10. **Every template now has true branching.**
 - [~] **Path-art coverage 120/390** (real cost ≈ $0.10/img at flux-2-flex 1408×960, not the $0.03 first estimated): space 39/39, forest 39/39, dinosaurs 39/39, pirates 3/39, other 6 templates 0/39. Manifest idempotent; uncovered options use the gradient+icon fallback. Remaining 270 images ≈ $27 — rerun `node scripts/generate-path-art.mjs` after next top-up (resumable).
-- [x] **Tree data lazy-loaded** (2026-06-12): `story-trees/loaders.ts` — PathBuilder dynamically imports only the selected template's tree as its own chunk (~600KB source kept out of the /crear client bundle); quiet hold state while the chunk lands; mid-path draft restore replays `treePath` once the tree arrives. Server generator keeps the static `index.ts`. Verified: 21/21 e2e green incl. mid-path reload restore.
+- [x] **Tree data lazy-loaded** (2026-06-12): `story-trees/loaders.ts` — PathBuilder dynamically imports only the selected template's tree as its own chunk (~600KB source kept out of the /create client bundle); quiet hold state while the chunk lands; mid-path draft restore replays `treePath` once the tree arrives. Server generator keeps the static `index.ts`. Verified: 21/21 e2e green incl. mid-path reload restore.
 - [ ] Future: per-world atmosphere framing, option art for legacy decision/atmosphere beats (legacy flow now dead in practice — all 10 templates branch; consider removing legacy beats code after a deprecation pass).
 
 **Tooling note:** `@playwright/test` added as devDependency for E2E verification (per global CLAUDE.md convention).

@@ -25,7 +25,8 @@ export default function WaitlistPage() {
   >("idle");
   const [visible, setVisible] = useState(false);
   useEffect(() => {
-    setVisible(true);
+    const raf = requestAnimationFrame(() => setVisible(true));
+    return () => cancelAnimationFrame(raf);
   }, []);
 
   // Public `showcase` bucket (marketing mirror; the `illustrations` bucket is private).

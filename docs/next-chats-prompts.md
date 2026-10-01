@@ -86,7 +86,7 @@ Proyecto meapica (Desktop/Casmar/kids-book). Bloque D: SEO y GEO para empezar a 
 Lee primero: docs/audit-2026-09-28-commerce.md (sección 4, puntuación 62/100), docs/roadmap.md (iniciativa de growth) y las memorias project_growth_initiative_2026 y feedback_no_fake_content (nunca reseñas ni cifras inventadas).
 
 Objetivos por orden:
-1. P0 técnicos: rendimiento móvil de la home (hoy LCP 11 s: fuente Material Symbols de 1,1 MB, imagen de Stitch enlazada en globals.css, /es sin caché), title/H1 con "cuento personalizado"/"conte personalitzat", llms.txt, schema Product completo (imagen real, shippingDetails, devoluciones), canonical de /crear, /en y /fr blog vacíos. Medir con Lighthouse móvil antes y después.
+1. P0 técnicos: rendimiento móvil de la home (hoy LCP 11 s: fuente Material Symbols de 1,1 MB, imagen de Stitch enlazada en globals.css, /es sin caché), title/H1 con "cuento personalizado"/"conte personalitzat", llms.txt, schema Product completo (imagen real, shippingDetails, devoluciones), canonical de /create, /en y /fr blog vacíos. Medir con Lighthouse móvil antes y después.
 2. Medición: dar de alta meapica en `cana` (sites.json) cuando yo verifique sc-domain:meapica.shop en Search Console y añada la service account; Bing Webmaster + IndexNow. Dime exactamente qué tengo que hacer yo.
 3. Página "¿Llega a tiempo para Reyes?" con fechas límite reales (del bloque B; si aún no están, deja la estructura y pregúntame).
 4. Estrategia catalana (Sant Jordi, Nadal) y página de comparativa honesta Meapica vs Wonderbly vs Hurra Héroes vs Mumablue con datos verificables.

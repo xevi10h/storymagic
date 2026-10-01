@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import SeoLandingPage from "@/components/seo-landing/SeoLandingPage";
 import { SEO_GIFT_SLUGS, isValidSeoSlug, seoPath } from "@/lib/seo-landing";
 
 const BASE_URL = "https://meapica.shop";
 const TYPE = "gifts" as const;
+
+// Christmas / Reyes pages quote this season's order-by dates (FAQ + deadline cards): refresh daily.
+export const revalidate = 86400;
 
 type PageProps = {
   params: Promise<{ locale: string; occasion: string }>;
@@ -40,6 +43,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function Page({ params }: PageProps) {
   const { locale, occasion } = await params;
+  setRequestLocale(locale);
   if (!isValidSeoSlug(TYPE, occasion)) notFound();
   return <SeoLandingPage type={TYPE} slug={occasion} locale={locale} />;
 }

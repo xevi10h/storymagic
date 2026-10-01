@@ -4,10 +4,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import CreationHeader from "@/components/crear/CreationHeader";
-import CreationFooterNav from "@/components/crear/CreationFooterNav";
-import LiveCover from "@/components/crear/LiveCover";
-import DedicationEditor from "@/components/crear/DedicationEditor";
+import CreationHeader from "@/components/create/CreationHeader";
+import CreationFooterNav from "@/components/create/CreationFooterNav";
+import LiveCover from "@/components/create/LiveCover";
+import DedicationEditor from "@/components/create/DedicationEditor";
 import { useDedicationAutosave } from "@/hooks/useDedicationAutosave";
 import { deName, patchStoredDraft } from "@/lib/creation-flow";
 import { Spinner } from "@/components/ui/Spinner";
@@ -292,7 +292,7 @@ export default function GenerarPage() {
   const handleBack = useCallback(async () => {
     await dedication.flush();
     patchStoredDraft({ currentStep: 3 }, storyId);
-    router.push("/crear");
+    router.push("/create");
   }, [dedication, storyId, router]);
 
   const openBook = useCallback(async () => {
@@ -303,7 +303,7 @@ export default function GenerarPage() {
     } catch {
       // private mode — reveal skipped
     }
-    router.push(`/crear/${storyId}/preview`);
+    router.push(`/create/${storyId}/preview`);
   }, [dedication, storyId, router]);
 
   const goToCreateStep = useCallback(
@@ -312,7 +312,7 @@ export default function GenerarPage() {
       if (step > 3) return;
       await dedication.flush();
       patchStoredDraft({ currentStep: step }, storyId);
-      router.push("/crear");
+      router.push("/create");
     },
     [dedication, storyId, router, phase, openBook],
   );

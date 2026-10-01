@@ -9,12 +9,12 @@ import { authErrorKey, isExistingAccountError, queryErrorKey } from "./auth-erro
 const D = DEFAULT_NEXT_PATH;
 assert.equal(sanitizeNextPath("/dashboard"), "/dashboard");
 assert.equal(sanitizeNextPath("/dashboard?tab=orders"), "/dashboard?tab=orders");
-assert.equal(sanitizeNextPath("/crear/abc/preview"), "/crear/abc/preview");
-assert.equal(sanitizeNextPath("%2Fcrear%2Fabc%2Fpreview"), "/crear/abc/preview");
+assert.equal(sanitizeNextPath("/create/abc/preview"), "/create/abc/preview");
+assert.equal(sanitizeNextPath("%2Fcreate%2Fabc%2Fpreview"), "/create/abc/preview");
 assert.equal(sanitizeNextPath("/ca/dashboard"), "/dashboard", "leading locale stripped");
 assert.equal(sanitizeNextPath("/fr"), "/");
 assert.equal(sanitizeNextPath("/es-mx/x"), "/es-mx/x", "not a locale prefix");
-assert.equal(sanitizeNextPath("/perfil#frag"), "/perfil", "hash dropped");
+assert.equal(sanitizeNextPath("/profile#frag"), "/profile", "hash dropped");
 for (const bad of [
   null,
   undefined,
@@ -47,7 +47,7 @@ assert.equal(localizedPath("en", "/"), "/en");
 assert.equal(localizedPath("xx", "//evil.com"), "/es/dashboard");
 
 assert.equal(loginHref("/dashboard"), "/auth/login");
-assert.equal(loginHref("/crear/1/preview", "a@b.com"), "/auth/login?next=%2Fcrear%2F1%2Fpreview&email=a%40b.com");
+assert.equal(loginHref("/create/1/preview", "a@b.com"), "/auth/login?next=%2Fcreate%2F1%2Fpreview&email=a%40b.com");
 assert.equal(loginHref("https://evil.com"), "/auth/login");
 
 const orderUrl = new URL(orderAccessUrl("https://meapica.com/", "ca", "ana+test@x.com"));

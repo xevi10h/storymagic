@@ -4,7 +4,7 @@ import { Link } from "@/i18n/navigation";
 import { Heading } from "@/components/ui";
 import { FAQJsonLd } from "@/components/seo/JsonLd";
 import { PRICING, SUPPORT_EMAIL, formatPrice } from "@/lib/pricing";
-import { CHRISTMAS_DELIVERY_PATH, formatDeadlines, spainToday, type SeasonOccasion } from "@/lib/shipping";
+import { CHRISTMAS_DELIVERY_PATH, DELIVERY_PARAMS, formatDeadlines, spainToday, type SeasonOccasion } from "@/lib/shipping";
 import FaqItem from "./FaqItem";
 
 const INTL_LOCALE: Record<string, string> = { es: "es-ES", ca: "ca-ES", en: "en-GB", fr: "fr-FR" };
@@ -52,7 +52,7 @@ export default function FaqSection() {
     {
       id: "delivery",
       question: t("deliveryQ"),
-      answer: `${t("deliveryA")} ${season}`,
+      answer: `${t("deliveryA", DELIVERY_PARAMS)} ${season}`,
       extra: (
         <Link
           href={CHRISTMAS_DELIVERY_PATH}

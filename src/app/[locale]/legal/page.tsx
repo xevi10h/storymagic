@@ -1,10 +1,10 @@
-import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import Navbar from "@/components/landing/Navbar";
 import { FAQJsonLd } from "@/components/seo/JsonLd";
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
+import { COPY_PARAMS } from "@/lib/product-facts";
 
 const BASE_URL = "https://meapica.shop";
 
@@ -30,13 +30,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     fr: "Politique de confidentialité, conditions d'utilisation, cookies, FAQ et informations de livraison de Meapica.",
   };
 
+  const description = descriptionMap[locale] || descriptionMap.es;
   return {
     title: t("title"),
-    description: descriptionMap[locale] || descriptionMap.es,
+    description,
     alternates: {
       canonical: canonicalUrl,
       languages,
     },
+    // Own og:url (the layout's would say /{locale}); same shape as the other pages.
+    openGraph: { title: t("title"), description, url: canonicalUrl, type: "website" },
     robots: {
       index: true,
       follow: true,
@@ -50,7 +53,7 @@ function LegalSection({
   sectionKey,
   sectionCount,
 }: {
-  t: (key: string) => string;
+  t: (key: string, values?: Record<string, string | number>) => string;
   sectionKey: string;
   sectionCount: number;
 }) {
@@ -59,11 +62,11 @@ function LegalSection({
       <p className="text-text-soft leading-relaxed">{t(`${sectionKey}.intro`)}</p>
       {Array.from({ length: sectionCount }, (_, i) => (
         <div key={i}>
-          <h2 className="font-display text-lg font-bold text-secondary mb-2">
+          <h3 className="font-display text-lg font-bold text-secondary mb-2">
             {t(`${sectionKey}.section${i + 1}Title`)}
-          </h2>
+          </h3>
           <p className="text-text-soft leading-relaxed">
-            {t(`${sectionKey}.section${i + 1}Text`)}
+            {t(`${sectionKey}.section${i + 1}Text`, COPY_PARAMS)}
           </p>
         </div>
       ))}
@@ -71,8 +74,10 @@ function LegalSection({
   );
 }
 
-export default function LegalPage() {
-  const t = useTranslations("legal");
+export default async function LegalPage({ params }: PageProps) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: "legal" });
 
   const pages = [
     { id: "privacy", sectionCount: 8 },
@@ -85,7 +90,7 @@ export default function LegalPage() {
   // FAQPage structured data — enables FAQ rich results in Google SERP
   const faqQuestions = Array.from({ length: 6 }, (_, i) => ({
     question: t(`faq.section${i + 1}Title`),
-    answer: t(`faq.section${i + 1}Text`),
+    answer: t(`faq.section${i + 1}Text`, COPY_PARAMS),
   }));
 
   return (
@@ -102,17 +107,21 @@ export default function LegalPage() {
             {t("backHome")}
           </Link>
 
-          {pages.map(({ id, sectionCount }, index) => (
+          {pages.map(({ id, sectionCount }, index) => {
+            // One <h1> per page (the first policy); the others are h2, same look.
+            const Heading = index === 0 ? "h1" : "h2";
+            return (
             <article key={id} id={id} className={index > 0 ? "mt-16 pt-16 border-t border-border-light" : ""}>
-              <h1 className="font-display text-3xl font-bold text-secondary mb-2">
+              <Heading className="font-display text-3xl font-bold text-secondary mb-2">
                 {t(`${id}.title`)}
-              </h1>
+              </Heading>
               <p className="text-xs text-text-muted mb-8">
                 {t("lastUpdated", { date: "2026-09-27" })}
               </p>
               <LegalSection t={t} sectionKey={id} sectionCount={sectionCount} />
             </article>
-          ))}
+            );
+          })}
         </div>
       </main>
     </>

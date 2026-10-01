@@ -7,10 +7,26 @@ import { localizedPath, sanitizeNextPath } from "@/lib/auth/next-path";
 
 const intlMiddleware = createIntlMiddleware(routing);
 
+/** The one public host. Every alias below is 308'd here (same path + query). */
+const CANONICAL_HOST = "meapica.shop";
+/** Hosts attached to the Vercel project that serve the same site: duplicates for
+ *  crawlers (and meapica.com's DNS is no longer ours). Explicit list on purpose:
+ *  localhost, *.vercel.app previews and any other host are left alone. */
+const ALIAS_HOSTS = new Set(["www.meapica.shop", "meapica.com", "www.meapica.com"]);
+
 export async function middleware(request: NextRequest) {
-  // Skip locale middleware for API routes
+  // Skip locale middleware for API routes. Never host-redirect them either: a
+  // webhook (Stripe, Gelato, Resend) still registered on an alias host would get
+  // a 308 it may not follow, and lose the event.
   if (request.nextUrl.pathname.startsWith("/api")) {
     return NextResponse.next();
+  }
+
+  // Host canonicalization (before anything else, so aliases never render a page).
+  const host = (request.headers.get("host") ?? "").toLowerCase().replace(/:\d+$/, "");
+  if (ALIAS_HOSTS.has(host)) {
+    const target = new URL(`${request.nextUrl.pathname}${request.nextUrl.search}`, `https://${CANONICAL_HOST}`);
+    return NextResponse.redirect(target, 308);
   }
 
   // Operator panel: English, unlocalized, outside the waitlist gate. Access is
@@ -135,7 +151,7 @@ export async function middleware(request: NextRequest) {
     : pathname;
 
   // Protected routes: redirect to login if not authenticated
-  const protectedPaths = ["/dashboard", "/perfil"];
+  const protectedPaths = ["/dashboard", "/profile"];
   const isProtected = protectedPaths.some((path) =>
     pathWithoutLocale.startsWith(path)
   );

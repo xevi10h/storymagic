@@ -1,10 +1,10 @@
 // Creation flow v2 — shared, client-safe helpers (no React, no server imports).
 //
 // 6 screens, one progress indicator:
-//   1 Name · 2 Protagonist · 3 Adventure        → /crear (state in localStorage)
-//   4 Dedication while the preview is painted  → /crear/{storyId}/generar
-//   5 The book (flipbook + checklist)           → /crear/{storyId}/preview
-//   6 Format + payment                          → /crear/{storyId}/preview#checkout-section
+//   1 Name · 2 Protagonist · 3 Adventure        → /create (state in localStorage)
+//   4 Dedication while the preview is painted  → /create/{storyId}/generate
+//   5 The book (flipbook + checklist)           → /create/{storyId}/preview
+//   6 Format + payment                          → /create/{storyId}/preview#checkout-section
 
 import {
   INITIAL_STATE,
@@ -22,7 +22,7 @@ export { PHOTO_CONSENT_VERSION, PHOTO_MAX_UPLOAD_BYTES, PHOTO_MAX_EDGE, isPhotoU
 
 export const CREATE_STORAGE_KEY = STORAGE_KEY;
 export const TOTAL_CREATION_STEPS = 6;
-/** Number of screens handled by the /crear orchestrator (1..3). */
+/** Number of screens handled by the /create orchestrator (1..3). */
 export const CREATE_PAGE_STEPS = 3;
 /** Chapters decided on the Adventure screen (depth of every story tree). */
 export const ADVENTURE_CHAPTERS = 3;
@@ -116,7 +116,7 @@ export function migrateCreateState(raw: unknown): CreateBookState {
 }
 
 /**
- * Read-modify-write the persisted draft from outside /crear (wait + preview
+ * Read-modify-write the persisted draft from outside /create (wait + preview
  * screens). With `forStoryId`, only touches the draft that created that story.
  */
 export function patchStoredDraft(patch: Partial<CreateBookState>, forStoryId?: string): void {

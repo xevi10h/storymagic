@@ -100,7 +100,7 @@ function UserMenu({ user, onSignOut }: { user: NavUser; onSignOut: () => void })
             <Icon name="auto_stories" />
             {t("myBooks")}
           </Link>
-          <Link href="/perfil" className={menuItem} onClick={() => setOpen(false)}>
+          <Link href="/profile" className={menuItem} onClick={() => setOpen(false)}>
             <Icon name="settings" />
             {t("myProfile")}
           </Link>
@@ -147,7 +147,7 @@ export default function NavbarClient({ seasonToday }: { seasonToday: string | nu
   const navLinks = [
     { label: t("howItWorks"), href: "/#manifesto" },
     { label: t("books"), href: "/#catalog" },
-    { label: t("sample"), href: "/ejemplo" },
+    { label: t("sample"), href: "/examples" },
     { label: t("faq"), href: "/#faq" },
   ];
 
@@ -227,13 +227,13 @@ export default function NavbarClient({ seasonToday }: { seasonToday: string | nu
                   <span aria-hidden className={cx(buttonClass({ variant: "quiet", size: "sm" }), "invisible max-xl:hidden")}>
                     {t("signIn")}
                   </span>
-                  <Link href="/crear" className={buttonClass({ size: "sm" })}>
+                  <Link href="/create" className={buttonClass({ size: "sm" })}>
                     {t("createBook")}
                   </Link>
                 </>
               ) : user ? (
                 <>
-                  <Link href="/crear" className={buttonClass({ size: "sm" })}>
+                  <Link href="/create" className={buttonClass({ size: "sm" })}>
                     {t("createBook")}
                   </Link>
                   <div className="hidden xl:block">
@@ -245,7 +245,7 @@ export default function NavbarClient({ seasonToday }: { seasonToday: string | nu
                   <Link href={loginHref} className={buttonClass({ variant: "quiet", size: "sm", className: "max-xl:hidden" })}>
                     {t("signIn")}
                   </Link>
-                  <Link href="/crear" className={buttonClass({ size: "sm" })}>
+                  <Link href="/create" className={buttonClass({ size: "sm" })}>
                     {t("createBook")}
                   </Link>
                 </>
@@ -309,7 +309,7 @@ export default function NavbarClient({ seasonToday }: { seasonToday: string | nu
               )}
 
               <div className="mt-4 flex flex-col gap-2.5">
-                <Link href="/crear" onClick={close} className={buttonClass({ block: true, className: "h-12 lg:hidden" })}>
+                <Link href="/create" onClick={close} className={buttonClass({ block: true, className: "h-12 lg:hidden" })}>
                   {t("createBook")}
                 </Link>
                 {loading ? null : user ? (
@@ -317,7 +317,7 @@ export default function NavbarClient({ seasonToday }: { seasonToday: string | nu
                     <Link href="/dashboard" onClick={close} className={buttonClass({ variant: "secondary", size: "sm", block: true })}>
                       {t("myBooks")}
                     </Link>
-                    <Link href="/perfil" onClick={close} className={buttonClass({ variant: "secondary", size: "sm", block: true })}>
+                    <Link href="/profile" onClick={close} className={buttonClass({ variant: "secondary", size: "sm", block: true })}>
                       {t("myProfile")}
                     </Link>
                     <button

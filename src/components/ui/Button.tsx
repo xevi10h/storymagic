@@ -16,7 +16,7 @@ export interface ButtonClassOptions {
 }
 
 // Extracted from the creation flow (CreationFooterNav, BookEditSheets, PurchasePanel)
-// so landing/SEO CTAs match /crear exactly.
+// so landing/SEO CTAs match /create exactly.
 //
 // Contrast (WCAG AA): white on --brand is 3.2:1, which passes only as LARGE text
 // (>= 18.66px bold). So a filled orange button always carries a 19px bold label
@@ -40,7 +40,7 @@ const SIZES: Record<ButtonSize, string> = {
 
 /**
  * Class string for a brand button. Use it on anything clickable that should look
- * like a button, including links: `<Link href="/crear" className={buttonClass()}>`.
+ * like a button, including links: `<Link href="/create" className={buttonClass()}>`.
  */
 export function buttonClass({ variant = "primary", size = "md", block = false, className }: ButtonClassOptions = {}) {
   return cx(

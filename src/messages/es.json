@@ -11,21 +11,62 @@
     },
     "gifts": {
       "three-kings": {
-        "metaTitle": "Regalo de Reyes personalizado | Cuento Meapica",
-        "metaDescription": "Un cuento de Reyes Magos donde tu peque es el héroe de la noche más mágica. Un recuerdo que dura, no otro juguete olvidado. Crea el tuyo.",
-        "h1": "Regalo de Reyes personalizado: el cuento donde tu hijo es el protagonista",
-        "heroIntro": "La noche del 5 de enero merece algo que se recuerde toda la vida. Un libro impreso donde tu peque vive su propia aventura de Reyes, con su nombre y su rostro en cada página.",
+        "metaTitle": "Regalo de Reyes personalizado para niños | Meapica",
+        "metaDescription": "El cuento que encontrará la mañana de Reyes: su nombre en la portada, su cara pintada en acuarela y la aventura que eliges tú. Envío gratis.",
+        "h1": "Regalo de Reyes personalizado: un cuento con su nombre y su cara",
+        "heroIntro": "La mañana del 6 de enero, junto a los zapatos, un libro con su nombre en la portada. Su cara pintada en acuarela, la aventura que eliges tú y una dedicatoria firmada por los Reyes Magos.",
         "bodyHeading": "Por qué un cuento personalizado es el mejor regalo de Reyes",
         "bodyParagraphs": [
-          "El plástico se rompe y para febrero ya nadie se acuerda de él. Un cuento impreso en el que tu hijo es el héroe de la noche de Reyes no se olvida: se guarda en la estantería, se relee en familia y, con los años, se convierte en uno de esos objetos que cuentan quién fue de pequeño.",
-          "Personalizamos la historia con su nombre, su edad, su color de pelo y de ojos, y los detalles que lo hacen único. La inteligencia artificial escribe una aventura distinta para cada niño, y las 12 escenas a doble página lo muestran a él como verdadero protagonista. Una edición única que ningún otro niño tendrá."
+          "Los juguetes de Reyes duran lo que dura enero. Un cuento con su nombre en la portada y en cada página se queda en la estantería, se relee cada noche y, con los años, cuenta quién era de pequeño.",
+          "Rompe el papel, ve su nombre y busca su cara en el primer dibujo. Después llega el «otra vez», y se lo vuelves a leer, porque la aventura la vive él o ella.",
+          "Tú eliges el mundo (dinosaurios, espacio, piratas, un castillo, un safari…) y decides los tres capítulos. La dedicatoria la escribes tú, y puedes firmarla como Melchor, Gaspar y Baltasar."
         ],
-        "benefitsHeading": "Lo que hace especial este regalo",
+        "benefitsHeading": "Lo que encontrará el 6 de enero",
         "benefits": [
-          "Tu peque es el héroe de la noche de Reyes",
-          "Un recuerdo que perdura, no un juguete más",
-          "Pídelo con tiempo para tenerlo bajo el árbol"
-        ]
+          "Su nombre en la portada y en cada página",
+          "Su cara pintada en acuarela en cada escena",
+          "Una dedicatoria que puedes firmar como los Reyes Magos"
+        ],
+        "sections": [
+          {
+            "heading": "Cómo se crea su cuento de Reyes",
+            "paragraphs": [
+              "Escribe su nombre, elige cómo es (piel, pelo, peinado, ojos, gafas y pecas) y escoge su mundo entre diez aventuras, cada una con su franja de edad, de los {ageMin} a los {ageMax} años. Luego decides los tres capítulos: a quién se encuentra, quién le acompaña y cómo supera el reto final. Cada elección cambia la historia.",
+              "Antes de pagar ves la portada con su nombre, su retrato a acuarela y las primeras escenas ilustradas de su libro. Crearlo es gratis y no hace falta registrarse."
+            ]
+          },
+          {
+            "heading": "Qué hay dentro del libro",
+            "paragraphs": [
+              "Un libro cuadrado de {size} × {size} cm, el tamaño justo para sus manos: {pages} páginas, {scenes} escenas ilustradas, tu dedicatoria y papel estucado seda de {paper} g que aguanta muchas lecturas. La portada lleva laminado mate.",
+              "El texto está escrito para su edad, en femenino, masculino o neutro, y en el idioma que elijas: castellano, catalán, inglés o francés."
+            ]
+          },
+          {
+            "heading": "Cuándo pedirlo para que llegue a Reyes",
+            "paragraphs": [
+              "Lo imprimimos bajo demanda en Europa en cuanto haces el pedido y llega en {minDays}-{maxDays} días laborables, con el envío gratis a España peninsular y Baleares. Para tenerlo impreso en casa antes de la noche de Reyes, pídelo hasta el {reyesDate}.",
+              "Diciembre va cargado de festivos y paquetes, así que no lo dejes para el final. Si se te pasa la fecha, el cuento en PDF te llega por correo tras el pago, normalmente en menos de una hora: el mismo libro, para imprimir en casa o leer en la tableta."
+            ]
+          },
+          {
+            "heading": "Tapa dura, tapa blanda o PDF",
+            "paragraphs": [
+              "La tapa dura ({hardcover} IVA incluido) es la más resistente, la que aguanta años de estantería. La tapa blanda ({softcover} IVA incluido) es más ligera. Las dos incluyen el envío y el PDF del cuento.",
+              "Si solo quieres el cuento digital, el PDF cuesta {pdf} IVA incluido. Y si hay primos o abuelos que también lo quieren, puedes añadir otro ejemplar del mismo libro al pedirlo."
+            ]
+          }
+        ],
+        "faq": {
+          "q1": "¿Hasta cuándo puedo pedirlo para Reyes?",
+          "a1": "Para tenerlo impreso en casa antes del 5 de enero, pídelo hasta el {reyesDate}. Es una fecha estimada, con margen para la saturación de diciembre. El cuento en PDF puedes pedirlo incluso el mismo 5 de enero.",
+          "q2": "¿Puedo firmar la dedicatoria como los Reyes Magos?",
+          "a2": "Sí. La dedicatoria la escribes tú antes de pedirlo y va impresa en el libro, así que puedes firmarla como Melchor, Gaspar y Baltasar, o con vuestros nombres.",
+          "q3": "¿Es un cuento sobre los Reyes Magos?",
+          "a3": "No: es su aventura en el mundo que elijas, como el espacio, los dinosaurios o los piratas, según lo que más le guste. Lo de Reyes lo ponen la dedicatoria y la mañana del 6 de enero.",
+          "q4": "¿Cuánto cuesta?",
+          "a4": "Tapa dura, {hardcover} IVA incluido; tapa blanda, {softcover} IVA incluido; solo el PDF, {pdf} IVA incluido. El libro impreso lleva el envío gratis y el PDF incluido."
+        }
       },
       "sant-jordi": {
         "metaTitle": "Regalo Sant Jordi para niños | Cuento personalizado",
@@ -42,7 +83,15 @@
           "El libro más personal para el día de los libros",
           "Una rosa se marchita; este cuento permanece",
           "Una historia única, impresa para durar"
-        ]
+        ],
+        "faq": {
+          "q1": "¿Llega a tiempo para Sant Jordi?",
+          "a1": "Sí, si lo pides con unas dos semanas de margen: tarda {minDays}-{maxDays} días laborables en llegar, con el envío gratis a España peninsular y Baleares. Para ir sobre seguro, pídelo a principios de abril.",
+          "q2": "¿Puedo pedirlo en catalán?",
+          "a2": "Sí. El cuento se escribe en el idioma que elijas al crearlo: catalán, castellano, inglés o francés.",
+          "q3": "¿Qué aventura le regalo por Sant Jordi?",
+          "a3": "Para quien sueña con castillos, El Castillo de los Sueños (6 a 10 años), donde hay que salvar el reino. Para los más pequeños, El Bosque Mágico (2 a 5 años)."
+        }
       },
       "birthday": {
         "metaTitle": "Regalo de cumpleaños personalizado para niño",
@@ -52,14 +101,22 @@
         "bodyHeading": "Por qué regalar un cuento personalizado por su cumpleaños",
         "bodyParagraphs": [
           "El cumpleaños se llena de juguetes que en pocas semanas acaban en un cajón. Un cuento en el que el niño que cumple años es el héroe de su propia historia ocupa otro lugar: el de los regalos que se abren con los ojos muy abiertos y se releen una y otra vez. Verse a uno mismo dentro de un libro es una sorpresa que ningún juguete iguala.",
-          "Escribimos una aventura única a partir de su nombre, su edad y su aspecto, e incluimos los detalles que más le gustan: su mascota, su afición o aquello que sueña ser de mayor aparecen en la historia y en las ilustraciones. Antes de comprar verás una vista previa completa del cuento, para que sepas exactamente qué vas a regalar."
+          "Escribimos una aventura a partir de su nombre, su edad y su aspecto, y tú decides los tres capítulos: a quién se encuentra, quién le acompaña y cómo supera el reto final. Antes de pagar ves la portada con su nombre, su retrato y las primeras escenas ilustradas, para que sepas qué vas a regalar."
         ],
         "benefitsHeading": "Lo que hace especial este regalo",
         "benefits": [
           "El niño que cumple años es la estrella del cuento",
           "Mejor que otro juguete que acaba olvidado",
-          "Vista previa completa antes de comprar"
-        ]
+          "Ves su portada y las primeras escenas antes de pagar"
+        ],
+        "faq": {
+          "q1": "¿Cuánto tarda en llegar para su cumpleaños?",
+          "a1": "{minDays}-{maxDays} días laborables desde el pedido, con el envío gratis a España peninsular y Baleares. Si la fiesta es antes, el PDF te llega por correo tras el pago, normalmente en menos de una hora.",
+          "q2": "¿Puedo poner una dedicatoria de cumpleaños?",
+          "a2": "Sí. La escribes tú antes de pedirlo y va impresa al principio del libro: lo que le deseas para este año, o lo que te gustaría que leyera dentro de diez.",
+          "q3": "¿Qué cuento elijo según los años que cumple?",
+          "a3": "Cada mundo tiene su edad: de 2 a 5 años, El Bosque Mágico o El País de los Dulces; de 5 a 8, La Gran Aventura Espacial o Piratas del Mar; a partir de 8, La Fábrica de Inventos."
+        }
       },
       "communion": {
         "metaTitle": "Regalo de comunión personalizado niño y niña",
@@ -76,41 +133,97 @@
           "Un recuerdo elegante para un día importante",
           "Dedicatoria personalizada para la ocasión",
           "Tapa dura y papel estucado de 170 g"
-        ]
+        ],
+        "faq": {
+          "q1": "¿Sirve para un niño o una niña de 8 o 9 años?",
+          "a1": "Sí. Para esa edad encajan El Castillo de los Sueños (6 a 10 años), Superhéroe por un Día (7 a 10) y La Fábrica de Inventos (8 a 12), con historias más largas y frases a su altura.",
+          "q2": "¿Puedo dedicarlo para el día de la comunión?",
+          "a2": "Sí. La dedicatoria va impresa en el libro: la fecha, quién se lo regala y unas palabras para que lo recuerde.",
+          "q3": "¿Con cuánto tiempo lo pido?",
+          "a3": "Tarda {minDays}-{maxDays} días laborables en llegar a España peninsular y Baleares, con el envío gratis. En mayo hay muchas celebraciones: pídelo con dos o tres semanas de margen."
+        }
       },
       "christmas": {
-        "metaTitle": "Regalo de Navidad personalizado para niños",
-        "metaDescription": "Magia sin pantallas bajo el árbol: un cuento donde tu peque protagoniza su propia aventura navideña. Momentos de lectura en familia. Créalo.",
-        "h1": "Regalo de Navidad personalizado para niños: magia sin pantallas",
-        "heroIntro": "Estas Navidades, deja a un lado las pantallas y abre un libro juntos. Un cuento impreso donde tu peque es el protagonista de su propia historia.",
-        "bodyHeading": "Por qué un cuento personalizado es el regalo de Navidad que de verdad conecta",
+        "metaTitle": "Cuento personalizado de Navidad para niños | Meapica",
+        "metaDescription": "Un cuento para abrir en Nochebuena o el día de Navidad: su nombre en la portada, su cara en acuarela y la aventura que eliges tú. Envío gratis.",
+        "h1": "Cuento personalizado de Navidad: el regalo con su nombre bajo el árbol",
+        "heroIntro": "Para Nochebuena o la mañana del 25, un libro impreso con su nombre en la portada y su cara pintada en acuarela. Lo abrís juntos y lo leéis en el sofá, sin pantallas.",
+        "bodyHeading": "Un regalo de Navidad para leer juntos",
         "bodyParagraphs": [
-          "Las fiestas se llenan de luces, pantallas y ruido. Un cuento impreso invita justo a lo contrario: sentarse juntos en el sofá, pasar páginas de verdad y leer en voz alta. Apostamos por el papel sobre los píxeles porque esos ratos de lectura compartida son los recuerdos que de verdad quedan de la Navidad.",
-          "La historia se personaliza con el nombre y el aspecto de tu hijo, convirtiéndolo en el héroe de su propia aventura navideña. Recibirás un libro de 20×20 cm con 12 escenas ilustradas a doble página y una dedicatoria a tu gusto, además de la versión digital incluida. Un regalo que se abre bajo el árbol y se relee durante años."
+          "En Navidad hay luces, ruido y pantallas por todas partes. Un cuento con su nombre invita a lo contrario: sentarse juntos, pasar páginas de papel y leer en voz alta mientras fuera hace frío.",
+          "Lo abre bajo el árbol, ve su nombre en la portada y levanta la vista para buscarte. Esa noche no querrá otro cuento. Y en enero, cuando los juguetes ya estén en el cajón, te lo seguirá pidiendo.",
+          "Si en casa los regalos los trae Papá Noel, la dedicatoria puede ir firmada por él. Y si es para un sobrino o una nieta, es un regalo que nadie más va a repetir: ese libro solo existe una vez."
         ],
         "benefitsHeading": "Lo que hace especial este regalo",
         "benefits": [
-          "Magia sin pantallas para las fiestas",
-          "Momentos de lectura compartida en familia",
-          "Versión digital incluida con el libro impreso"
-        ]
+          "Su nombre en la portada y su cara en cada escena",
+          "Un rato de lectura juntos, sin pantallas",
+          "PDF incluido con el libro impreso"
+        ],
+        "sections": [
+          {
+            "heading": "Cómo se crea",
+            "paragraphs": [
+              "Escribe su nombre, elige su aspecto y escoge el mundo que más le guste: el espacio, un bosque mágico, los dinosaurios, un castillo o la cocina del chef más pequeño, entre diez aventuras para niños de {ageMin} a {ageMax} años. Después decides los tres capítulos y la historia se escribe para su edad.",
+              "Ves la portada, su retrato y las primeras escenas antes de pagar, sin registrarte. Si su retrato no te convence, cambias su aspecto y volvemos a pintar el libro."
+            ]
+          },
+          {
+            "heading": "Lo que recibe",
+            "paragraphs": [
+              "Un libro de {size} × {size} cm con {pages} páginas y {scenes} escenas ilustradas a acuarela, impreso en papel estucado seda de {paper} g, con tapa dura o blanda. Siempre con el PDF del cuento, para leerlo también en el viaje a casa de los abuelos."
+            ]
+          },
+          {
+            "heading": "Cuándo pedirlo para Nochebuena",
+            "paragraphs": [
+              "Para tenerlo en casa el 24 de diciembre, pídelo impreso hasta el {christmasDate}. Lo imprimimos en Europa y llega en {minDays}-{maxDays} días laborables, con el envío gratis a España peninsular y Baleares (de momento no enviamos a Canarias, Ceuta ni Melilla).",
+              "¿Se te ha echado el tiempo encima? El PDF llega por correo tras el pago, normalmente en menos de una hora: es el mismo libro, con las mismas ilustraciones."
+            ]
+          },
+          {
+            "heading": "Precio",
+            "paragraphs": [
+              "Tapa dura, {hardcover} IVA incluido. Tapa blanda, {softcover} IVA incluido. Las dos llevan el envío gratis y el PDF. Solo el cuento digital: {pdf} IVA incluido."
+            ]
+          }
+        ],
+        "faq": {
+          "q1": "¿Hasta cuándo puedo pedirlo para Nochebuena?",
+          "a1": "Para tenerlo impreso en casa el 24 de diciembre, pídelo hasta el {christmasDate}. Es una fecha estimada, con margen para la saturación de diciembre. Después aún puedes regalar el cuento en PDF.",
+          "q2": "¿Es un cuento sobre la Navidad?",
+          "a2": "No: es su aventura en el mundo que elijas (el espacio, los piratas, un safari…), escrita para su edad. Lo navideño es el momento de abrirlo y la dedicatoria, que puedes firmar como Papá Noel.",
+          "q3": "¿Puedo enviarlo directamente a casa de los abuelos?",
+          "a3": "Sí. Pones la dirección de envío al pagar, en cualquier punto de España peninsular o Baleares. Si viven en Canarias, Ceuta o Melilla, el cuento en PDF te llega a ti por correo y se lo puedes reenviar.",
+          "q4": "¿Qué formato elijo para Navidad?",
+          "a4": "La tapa dura ({hardcover} IVA incluido) aguanta años de relecturas. La tapa blanda ({softcover} IVA incluido) es más ligera. Las dos incluyen el envío y el PDF."
+        }
       },
       "baptism": {
-        "metaTitle": "Regalo de Bautizo Personalizado | Libro Meapica",
-        "metaDescription": "Un libro infantil personalizado con su nombre: el regalo de bautizo que se convierte en tesoro cuando crezca. Vista previa antes de comprar.",
-        "h1": "Un regalo de bautizo personalizado que durará toda la vida",
-        "heroIntro": "Para ese día tan especial, un libro impreso con su nombre y su historia. Un recuerdo que esperará paciente hasta que tenga edad de leerlo.",
-        "bodyHeading": "Un tesoro para el día de su bautizo",
+        "metaTitle": "Regalo de bautizo personalizado para guardar | Meapica",
+        "metaDescription": "Un libro con su nombre para regalar en el bautizo y leer juntos a partir de los 2 años. Tu dedicatoria de hoy, impresa para que la lea de mayor.",
+        "h1": "Regalo de bautizo personalizado: un libro que le espera hasta que pueda leerlo",
+        "heroIntro": "Un libro impreso con su nombre en la portada y tu dedicatoria del día del bautizo. Hoy se guarda; a partir de los 2 años, lo leeréis juntos.",
+        "bodyHeading": "Un regalo que se abre dos veces",
         "bodyParagraphs": [
-          "El bautizo marca un comienzo, y los mejores regalos acompañan ese camino durante años. En lugar de algo que pasa de moda, Meapica crea un libro impreso único protagonizado por el pequeño: su nombre, su color de ojos, su pelo, escritos en una historia hecha solo para él.",
-          "Impreso en papel estucado seda de 170 g, y con tapa dura si lo prefieres, es un objeto pensado para guardarse. Lo recibís hoy como padrinos o familia, y el niño lo descubrirá mañana, cuando ya sepa reconocer su propio nombre entre las páginas."
+          "Nuestros cuentos están escritos para niños a partir de 2 años, así que no es un libro para bebés. Es un regalo para guardar: se entrega el día del bautizo y se estrena cuando empiece a señalar dibujos y a reconocer su nombre.",
+          "Tú eliges su aspecto tal como lo imaginas de niño, el mundo de la aventura y los tres capítulos. La dedicatoria la escribes hoy, como padrino, madrina o familia, y queda impresa: la leerá contigo y volverá a leerla de mayor.",
+          "Para empezar encajan los mundos pensados para los más pequeños, como El Bosque Mágico o El País de los Dulces (2 a 5 años) y El Chef Más Pequeño (2 a 4), con frases cortas y escenas sencillas."
         ],
-        "benefitsHeading": "Por qué emociona",
+        "benefitsHeading": "Por qué es un buen regalo de bautizo",
         "benefits": [
-          "Su nombre y rasgos dentro de la historia y las ilustraciones",
-          "Dedicatoria personalizada para el día del bautizo",
-          "Tapa dura y papel estucado de calidad"
-        ]
+          "Tu dedicatoria del bautizo, impresa en el libro",
+          "Para leerlo juntos a partir de los 2 años",
+          "Tapa dura y papel de {paper} g, hecho para guardarse"
+        ],
+        "faq": {
+          "q1": "¿Es un libro para bebés?",
+          "a1": "No. Los cuentos están escritos para niños de {ageMin} a {ageMax} años; los más sencillos, a partir de los 2. Es un regalo para guardar el día del bautizo y leer juntos cuando crezca.",
+          "q2": "¿Cómo lo personalizo si aún es un bebé?",
+          "a2": "Eliges su aspecto (piel, pelo, ojos) como lo imaginas de niño, y antes de pagar ves su retrato y las primeras escenas. Si quieres cambiarlo, cambias su aspecto y volvemos a pintar el libro.",
+          "q3": "¿Qué formato aguanta mejor hasta que pueda leerlo?",
+          "a3": "La tapa dura, {hardcover} IVA incluido: es la más resistente y la que mejor se guarda. Incluye el envío gratis y el PDF del cuento."
+        }
       },
       "end-of-school": {
         "metaTitle": "Regalo Fin de Curso para Niños | Libro Personalizado",
@@ -119,7 +232,7 @@
         "heroIntro": "Cerrar el curso merece algo especial. Un libro impreso donde el niño es el héroe de su propia historia, listo para leer durante todo el verano.",
         "bodyHeading": "Celebra el final del curso con su propia historia",
         "bodyParagraphs": [
-          "Después de meses de esfuerzo en el cole, pocos regalos premian tanto como ver al niño convertido en protagonista de un libro. Meapica escribe una historia única con su nombre, su edad y sus rasgos, e incluso su mascota o su sueño de mayor, para que se reconozca en cada página.",
+          "Después de meses de esfuerzo en el cole, pocos regalos premian tanto como verse convertido en protagonista de un libro. Meapica escribe una historia con su nombre, para su edad y con su aspecto, para que se reconozca en cada página.",
           "Es el plan perfecto para el verano: lejos de las pantallas, con un libro físico que invita a leer una y otra vez. Ideal como detalle de padres orgullosos o como recuerdo de fin de curso de un profesor que quiere dejar huella en sus alumnos."
         ],
         "benefitsHeading": "Por qué funciona",
@@ -127,7 +240,15 @@
           "Una aventura de verano protagonizada por el niño",
           "Fomenta la lectura lejos de las pantallas",
           "Recuerdo personalizado del curso que termina"
-        ]
+        ],
+        "faq": {
+          "q1": "¿Llega para el último día de cole?",
+          "a1": "Si lo pides con dos semanas de margen, sí: tarda {minDays}-{maxDays} días laborables en llegar, con el envío gratis a España peninsular y Baleares.",
+          "q2": "¿Qué aventura elijo para el verano?",
+          "a2": "Para 4 a 7 años, La Tierra de los Dinosaurios o Safari en la Sabana. Si ya lee solo, La Gran Aventura Espacial o Piratas del Mar (5 a 8 años).",
+          "q3": "¿Lo podemos leer de vacaciones?",
+          "a3": "Sí: el libro impreso incluye el PDF del cuento, así que también podéis leerlo en la tableta o el móvil durante el viaje."
+        }
       },
       "name-day": {
         "metaTitle": "Regalo para el Santo del Niño | Libro Personalizado",
@@ -144,7 +265,15 @@
           "El niño protagoniza la historia con su nombre",
           "Un detalle único para celebrar su santo",
           "Dedicatoria personalizada y edición irrepetible"
-        ]
+        ],
+        "faq": {
+          "q1": "¿Su nombre sale en todo el libro?",
+          "a1": "Sí: en la portada y en cada página de la historia. Por eso es un regalo tan propio del día de su santo.",
+          "q2": "¿Llega a tiempo para su santo?",
+          "a2": "Tarda {minDays}-{maxDays} días laborables en llegar, con el envío gratis a España peninsular y Baleares. Si el día ya está encima, el PDF te llega por correo tras el pago, normalmente en menos de una hora.",
+          "q3": "¿En qué idiomas puedo pedirlo?",
+          "a3": "En castellano, catalán, inglés o francés: lo eliges al crearlo."
+        }
       },
       "graduation": {
         "metaTitle": "Regalo de Graduación para Niños | Libro a Medida",
@@ -161,24 +290,41 @@
           "Pensado para chicos y chicas de 8 a 12 años",
           "Guarda sus sueños y su forma de ser de hoy",
           "Una edición única para conservar"
-        ]
+        ],
+        "faq": {
+          "q1": "¿Qué cuento elijo para su graduación?",
+          "a1": "Para la graduación de infantil, a los 5 o 6 años, La Gran Aventura Espacial o Piratas del Mar (5 a 8). Al acabar primaria, La Fábrica de Inventos (8 a 12) o Superhéroe por un Día (7 a 10).",
+          "q2": "¿Puedo poner el curso y la fecha en la dedicatoria?",
+          "a2": "Sí. La escribes tú y va impresa en el libro: el curso, el cole, la fecha o lo que quieras que recuerde de esta etapa.",
+          "q3": "¿Cuánto cuesta?",
+          "a3": "Tapa dura, {hardcover} IVA incluido; tapa blanda, {softcover} IVA incluido; solo el PDF, {pdf} IVA incluido. El libro impreso lleva el envío gratis y el PDF incluido."
+        }
       },
       "first-birthday": {
-        "metaTitle": "Regalo Primer Cumpleaños Bebé Personalizado | Meapica",
-        "metaDescription": "Su primer libro, con su nombre dentro de la historia: el regalo personalizado para su primer cumpleaños. Un tesoro para el futuro. Vista previa incluida.",
-        "h1": "Su primer libro personalizado para su primer cumpleaños",
-        "heroIntro": "El primer cumpleaños se celebra una sola vez. Un libro impreso con su nombre y sus rasgos, el primero de su biblioteca y un tesoro para el mañana.",
-        "bodyHeading": "Un tesoro para celebrar su primer año",
+        "metaTitle": "Regalo primer cumpleaños: un libro para guardar | Meapica",
+        "metaDescription": "Un libro con su nombre por su primer cumpleaños, para leer juntos a partir de los 2 años. Tu dedicatoria de hoy, impresa para siempre.",
+        "h1": "Regalo de primer cumpleaños: un libro con su nombre para cuando crezca",
+        "heroIntro": "Un año. Un libro impreso con su nombre en la portada y una dedicatoria escrita hoy. Se guarda en su estantería y lo estrenáis juntos a partir de los 2 años.",
+        "bodyHeading": "El libro que le espera en la estantería",
         "bodyParagraphs": [
-          "El primer cumpleaños es un momento que las familias guardan para siempre. Por eso un libro impreso con el nombre del bebé dentro de la historia es un regalo que va más allá del día: es su primer libro, escrito con sus rasgos y pensado para acompañarle mientras crece.",
-          "Impreso en papel estucado seda de 170 g, y con tapa dura si lo prefieres, es un objeto hecho para perdurar. Los padres lo leerán en voz alta este año, y dentro de unos cuantos el niño se reconocerá en sus páginas, descubriendo que la historia siempre fue suya."
+          "El primer cumpleaños se celebra una vez. Un libro con su nombre es un regalo que no se rompe ni se queda pequeño: hoy va a la estantería y, a partir de los 2 años, se convierte en el cuento que te pide cada noche.",
+          "Nuestras historias están escritas para niños de 2 años en adelante, no para bebés. Para empezar, elige un mundo de 2 a 5 años, como El Bosque Mágico o El País de los Dulces: frases cortas, escenas sencillas y su nombre en cada página.",
+          "Escribe la dedicatoria pensando en quién es hoy: lo que le hace reír, cómo te mira, lo que pesa en brazos. La leeréis juntos dentro de poco y volverá a leerla de mayor."
         ],
         "benefitsHeading": "Por qué emociona",
         "benefits": [
-          "Su primer libro, con su nombre dentro de la historia",
-          "Un tesoro pensado para conservar y crecer con él",
-          "Tapa dura y papel estucado de calidad"
-        ]
+          "Su nombre en la portada y en cada página",
+          "Una dedicatoria de su primer año, impresa",
+          "Para leer juntos a partir de los 2 años"
+        ],
+        "faq": {
+          "q1": "¿Es un libro para un niño de 1 año?",
+          "a1": "No exactamente: los cuentos están escritos a partir de los 2 años. Es un regalo para guardar por su primer cumpleaños y estrenar juntos un poco más adelante.",
+          "q2": "¿Qué aventura elijo para un niño tan pequeño?",
+          "a2": "Las pensadas para los más pequeños: El Bosque Mágico o El País de los Dulces (2 a 5 años) y El Chef Más Pequeño (2 a 4). Tienen frases cortas y escenas sencillas.",
+          "q3": "¿Cuándo llega?",
+          "a3": "En {minDays}-{maxDays} días laborables, con el envío gratis a España peninsular y Baleares. Si la fiesta es antes, el PDF te llega por correo tras el pago, normalmente en menos de una hora."
+        }
       }
     },
     "ages": {
@@ -197,7 +343,15 @@
           "Reconocerse despierta el amor por la lectura",
           "Escenas claras, ideales para leer en voz alta",
           "Su nombre y su rostro en cada página"
-        ]
+        ],
+        "faq": {
+          "q1": "¿Qué cuentos hay para 2, 3 y 4 años?",
+          "a1": "El Chef Más Pequeño (2 a 4 años), El Bosque Mágico y El País de los Dulces (2 a 5) y, desde los 4, La Tierra de los Dinosaurios y Safari en la Sabana (4 a 7).",
+          "q2": "¿No es mucho texto para un niño de 2 años?",
+          "a2": "Los mundos para los más pequeños tienen frases cortas y escenas sencillas, pensadas para leer en voz alta. Ver su nombre y su cara en cada página hace que quiera escucharlo otra vez.",
+          "q3": "¿Aguanta las manos de un niño pequeño?",
+          "a3": "La tapa dura ({hardcover} IVA incluido) es la más resistente, con laminado mate y papel de {paper} g. La tapa blanda ({softcover} IVA incluido) es más ligera."
+        }
       },
       "5-7": {
         "metaTitle": "Cuento personalizado para 5, 6 y 7 años",
@@ -207,14 +361,22 @@
         "bodyHeading": "Por qué un cuento personalizado para niños de 5 a 7 años",
         "bodyParagraphs": [
           "Entre los 5 y los 7 años los niños dan el gran salto: empiezan a leer solos. En ese momento, la motivación lo es todo. Cuando reconocen su nombre en la página y entienden que ellos son el héroe de la historia, leer deja de ser una tarea y se convierte en un juego que quieren repetir. Es el empujón perfecto para los primeros lectores.",
-          "Creamos una aventura a su medida, con una historia que entienden y disfrutan a esta edad, y los protagonizan ellos: su nombre, su aspecto y los detalles que eligen, como su mascota o aquello que sueñan ser de mayores. Verán su propia cara en 12 escenas ilustradas a doble página, en un libro hecho para releer una y otra vez."
+          "Creamos una aventura a su medida, con una historia que entienden y disfrutan a esta edad, y la protagonizan ellos: su nombre, su aspecto y los tres capítulos que eliges tú. Verán su propia cara en {scenes} escenas ilustradas, en un libro hecho para releer una y otra vez."
         ],
         "benefitsHeading": "Lo que hace especial a esta edad",
         "benefits": [
           "Motiva a los que empiezan a leer solos",
           "Reconocer su nombre convierte la lectura en juego",
           "El héroe de la historia es él mismo"
-        ]
+        ],
+        "faq": {
+          "q1": "¿Qué cuentos hay para 5, 6 y 7 años?",
+          "a1": "La Gran Aventura Espacial y Piratas del Mar (5 a 8 años), La Tierra de los Dinosaurios y Safari en la Sabana (4 a 7) y El Castillo de los Sueños (6 a 10).",
+          "q2": "¿Le ayuda a empezar a leer solo?",
+          "a2": "Ver su nombre escrito en cada página es un buen motivo para intentarlo. El texto está escrito para su edad, para leerlo juntos o a solas.",
+          "q3": "¿Qué decido yo en la historia?",
+          "a3": "Eliges el mundo y los tres capítulos: a quién se encuentra, quién le acompaña y cómo supera el reto final. Cada elección cambia el cuento."
+        }
       },
       "8-12": {
         "metaTitle": "Libro personalizado para niños de 8 a 12 años",
@@ -231,7 +393,15 @@
           "Aventuras con más profundidad y valores",
           "La magia de protagonizar, también de mayores",
           "Un libro del que sentirse orgulloso"
-        ]
+        ],
+        "faq": {
+          "q1": "¿Qué cuentos hay para 8 a 12 años?",
+          "a1": "La Fábrica de Inventos (8 a 12 años), Superhéroe por un Día (7 a 10) y El Castillo de los Sueños (6 a 10), con historias más largas y más reto.",
+          "q2": "¿No es demasiado infantil a los 10 años?",
+          "a2": "Las aventuras para esta edad tienen más texto y retos de verdad. Y ser el protagonista con tu propio nombre funciona a cualquier edad: es un recuerdo de quién era en ese momento.",
+          "q3": "¿Puede leerlo en inglés o francés?",
+          "a3": "Sí. Puedes crearlo en castellano, catalán, inglés o francés. Leer su propia aventura en otro idioma es un buen empujón si lo está aprendiendo."
+        }
       }
     },
     "themes": {
@@ -243,14 +413,22 @@
         "bodyHeading": "Una aventura entre dinosaurios protagonizada por tu peque",
         "bodyParagraphs": [
           "Pocos temas despiertan tanto la imaginación de los niños como los dinosaurios. En este cuento, tu peque viaja en el tiempo hasta la era de los grandes reptiles y se adentra en un mundo de selvas, huellas gigantes y criaturas asombrosas. Una historia que celebra la curiosidad y la valentía de quien se atreve a explorar lo desconocido.",
-          "Lo convertimos a él en el protagonista de la aventura: su nombre, su aspecto y los detalles que lo hacen único aparecen en la historia y en las 12 escenas ilustradas a doble página. Si quiere, su mascota o su sueño de mayor también forman parte del viaje. Una edición única que ningún otro pequeño explorador tendrá."
+          "Lo convertimos en el protagonista de la aventura: su nombre y su aspecto aparecen en la historia y en las {scenes} escenas ilustradas, y tú decides con quién se encuentra, quién le acompaña y cómo supera el reto final. Una edición única que ningún otro pequeño explorador tendrá."
         ],
         "benefitsHeading": "Lo que hace especial este cuento",
         "benefits": [
           "Un viaje en el tiempo a la era de los dinosaurios",
           "Celebra la valentía y la curiosidad",
           "Tu peque, protagonista de cada escena"
-        ]
+        ],
+        "faq": {
+          "q1": "¿Para qué edad es La Tierra de los Dinosaurios?",
+          "a1": "Está pensado para niños de 4 a 7 años. El texto se escribe para su edad y en el idioma que elijas: castellano, catalán, inglés o francés.",
+          "q2": "¿Qué pasa en la historia?",
+          "a2": "Un viaje en el tiempo a la era de los dinosaurios, donde la valentía y la amistad lo cambian todo. Tú decides tres momentos: a quién se encuentra, quién le acompaña y cómo supera el reto final. Cada elección cambia el cuento.",
+          "q3": "¿Cuánto cuesta y cuándo llega?",
+          "a3": "Tapa dura, {hardcover} IVA incluido; tapa blanda, {softcover} IVA incluido, con el envío gratis a España peninsular y Baleares en {minDays}-{maxDays} días laborables. Solo el PDF, {pdf} IVA incluido."
+        }
       },
       "space": {
         "metaTitle": "Cuento personalizado del espacio y astronautas",
@@ -267,7 +445,15 @@
           "Un viaje a las estrellas y planetas desconocidos",
           "Tu peque se convierte en astronauta",
           "Alimenta la curiosidad por el universo"
-        ]
+        ],
+        "faq": {
+          "q1": "¿Para qué edad es La Gran Aventura Espacial?",
+          "a1": "Está pensado para niños de 5 a 8 años. El texto se escribe para su edad y en el idioma que elijas: castellano, catalán, inglés o francés.",
+          "q2": "¿Qué pasa en la historia?",
+          "a2": "Un viaje a las estrellas para descubrir planetas desconocidos y hacer amigos alienígenas. Tú decides tres momentos: a quién se encuentra, quién le acompaña y cómo supera el reto final. Cada elección cambia el cuento.",
+          "q3": "¿Cuánto cuesta y cuándo llega?",
+          "a3": "Tapa dura, {hardcover} IVA incluido; tapa blanda, {softcover} IVA incluido, con el envío gratis a España peninsular y Baleares en {minDays}-{maxDays} días laborables. Solo el PDF, {pdf} IVA incluido."
+        }
       },
       "pirates": {
         "metaTitle": "Cuento personalizado de piratas para niños",
@@ -277,14 +463,22 @@
         "bodyHeading": "Una aventura pirata protagonizada por tu peque",
         "bodyParagraphs": [
           "Izad velas: en este cuento, tu peque surca los siete mares en busca de un tesoro escondido. Entre islas misteriosas, mapas antiguos y mares bravos, vive una aventura llena de coraje e ingenio en la que cada decisión lo acerca un poco más al cofre. Una historia de las que se leen conteniendo la respiración hasta la última página.",
-          "Tu hijo es el capitán indiscutible de la historia: su nombre, su aspecto y los detalles que lo hacen único protagonizan la trama y las 12 escenas ilustradas. Si lo desea, su mascota se enrola también en la tripulación. Una edición irrepetible, impresa en papel estucado seda de 170 g para que dure."
+          "Tu hijo es el capitán de la historia: su nombre y su aspecto protagonizan la trama y las {scenes} escenas ilustradas, y tú eliges quién se enrola en su tripulación. Una edición irrepetible, impresa en papel estucado seda de {paper} g para que dure."
         ],
         "benefitsHeading": "Lo que hace especial este cuento",
         "benefits": [
           "A la caza del tesoro por los siete mares",
           "Tu peque capitanea su propia aventura",
           "Una edición única encuadernada para durar"
-        ]
+        ],
+        "faq": {
+          "q1": "¿Para qué edad es Piratas del Mar?",
+          "a1": "Está pensado para niños de 5 a 8 años. El texto se escribe para su edad y en el idioma que elijas: castellano, catalán, inglés o francés.",
+          "q2": "¿Qué pasa en la historia?",
+          "a2": "La búsqueda de un tesoro perdido por los siete mares, con una tripulación muy divertida. Tú decides tres momentos: a quién se encuentra, quién le acompaña y cómo supera el reto final. Cada elección cambia el cuento.",
+          "q3": "¿Cuánto cuesta y cuándo llega?",
+          "a3": "Tapa dura, {hardcover} IVA incluido; tapa blanda, {softcover} IVA incluido, con el envío gratis a España peninsular y Baleares en {minDays}-{maxDays} días laborables. Solo el PDF, {pdf} IVA incluido."
+        }
       },
       "superheroes": {
         "metaTitle": "Cuento personalizado de superhéroes para niños",
@@ -301,7 +495,15 @@
           "Descubre sus superpoderes y salva la ciudad",
           "Transmite el valor de ayudar y ser valiente",
           "Refuerza su confianza viéndose como héroe"
-        ]
+        ],
+        "faq": {
+          "q1": "¿Para qué edad es Superhéroe por un Día?",
+          "a1": "Está pensado para niños de 7 a 10 años. El texto se escribe para su edad y en el idioma que elijas: castellano, catalán, inglés o francés.",
+          "q2": "¿Qué pasa en la historia?",
+          "a2": "Descubre sus superpoderes ocultos y tiene que salvar la ciudad: una historia sobre la valentía. Tú decides tres momentos: a quién se encuentra, quién le acompaña y cómo supera el reto final. Cada elección cambia el cuento.",
+          "q3": "¿Cuánto cuesta y cuándo llega?",
+          "a3": "Tapa dura, {hardcover} IVA incluido; tapa blanda, {softcover} IVA incluido, con el envío gratis a España peninsular y Baleares en {minDays}-{maxDays} días laborables. Solo el PDF, {pdf} IVA incluido."
+        }
       },
       "magic-forest": {
         "metaTitle": "Cuento personalizado del bosque mágico",
@@ -311,14 +513,22 @@
         "bodyHeading": "Una aventura en el bosque mágico protagonizada por tu peque",
         "bodyParagraphs": [
           "Hay bosques que guardan secretos entre sus raíces. En este cuento, tu peque se adentra en uno de ellos: un lugar de árboles centenarios, luz tamizada entre las hojas y criaturas fantásticas que solo se muestran a quien sabe mirar. Una aventura delicada y llena de asombro, donde la naturaleza es tan protagonista como la magia.",
-          "Tu hijo recorre ese mundo encantado como protagonista de la historia: personalizamos la trama y las 12 escenas ilustradas con su nombre, su aspecto y los detalles que elija. Si quiere, su mascota lo acompaña entre los árboles. El resultado es un libro impreso en papel estucado de calidad, una edición única para soñar despierto."
+          "Tu hijo recorre ese mundo encantado como protagonista: personalizamos la trama y las {scenes} escenas ilustradas con su nombre y su aspecto, y tú eliges quién le acompaña entre los árboles. El resultado es un libro impreso en papel estucado de calidad, una edición única para soñar despierto."
         ],
         "benefitsHeading": "Lo que hace especial este cuento",
         "benefits": [
           "Secretos entre árboles centenarios",
           "Criaturas fantásticas en un mundo encantado",
           "Tu peque descubre la magia del bosque"
-        ]
+        ],
+        "faq": {
+          "q1": "¿Para qué edad es El Bosque Mágico?",
+          "a1": "Está pensado para niños de 2 a 5 años. El texto se escribe para su edad y en el idioma que elijas: castellano, catalán, inglés o francés.",
+          "q2": "¿Qué pasa en la historia?",
+          "a2": "Secretos entre árboles antiguos y criaturas fantásticas que necesitan su ayuda. Tú decides tres momentos: a quién se encuentra, quién le acompaña y cómo supera el reto final. Cada elección cambia el cuento.",
+          "q3": "¿Cuánto cuesta y cuándo llega?",
+          "a3": "Tapa dura, {hardcover} IVA incluido; tapa blanda, {softcover} IVA incluido, con el envío gratis a España peninsular y Baleares en {minDays}-{maxDays} días laborables. Solo el PDF, {pdf} IVA incluido."
+        }
       },
       "safari": {
         "metaTitle": "Cuento personalizado de safari y animales",
@@ -335,7 +545,15 @@
           "Explora la sabana entre leones y elefantes",
           "Despierta el amor por los animales",
           "Perfecto para los peques que adoran la naturaleza"
-        ]
+        ],
+        "faq": {
+          "q1": "¿Para qué edad es Safari en la Sabana?",
+          "a1": "Está pensado para niños de 4 a 7 años. El texto se escribe para su edad y en el idioma que elijas: castellano, catalán, inglés o francés.",
+          "q2": "¿Qué pasa en la historia?",
+          "a2": "Una aventura por la sabana africana entre leones, elefantes y atardeceres que quitan el aliento. Tú decides tres momentos: a quién se encuentra, quién le acompaña y cómo supera el reto final. Cada elección cambia el cuento.",
+          "q3": "¿Cuánto cuesta y cuándo llega?",
+          "a3": "Tapa dura, {hardcover} IVA incluido; tapa blanda, {softcover} IVA incluido, con el envío gratis a España peninsular y Baleares en {minDays}-{maxDays} días laborables. Solo el PDF, {pdf} IVA incluido."
+        }
       }
     },
     "nav": {
@@ -377,9 +595,46 @@
       },
       "ages": {
         "metaTitle": "Cuentos personalizados por edad | Meapica",
-        "metaDescription": "Cuentos personalizados adaptados a cada edad, de los 2 a los 12 años. Historias e ilustraciones donde tu hijo es el protagonista.",
+        "metaDescription": "Cuentos personalizados para cada edad, de 2 a 12 años: qué aventura elegir, cómo cambia el texto y qué formato aguanta más. Envío gratis.",
         "h1": "Cuentos personalizados por edad",
-        "intro": "Cada edad pide su historia. Elige la franja de tu hijo y descubre cuentos pensados para su momento lector, siempre con él como protagonista."
+        "intro": "Cada edad pide su historia. Elige la franja de tu hijo y descubre cuentos pensados para su momento lector, siempre con él como protagonista.",
+        "guideHeading": "Cómo elegir su cuento según la edad",
+        "sections": [
+          {
+            "heading": "De 2 a 4 años: escuchar su nombre",
+            "paragraphs": [
+              "A esta edad el cuento se lee en voz alta. Lo que engancha es reconocerse: su nombre en la portada, su cara en cada dibujo, un compañero de aventura al que señalar. Por eso los mundos para los más pequeños, El Chef Más Pequeño (2 a 4 años), El Bosque Mágico y El País de los Dulces (2 a 5), tienen frases cortas y escenas sencillas.",
+              "Para estas manos, la tapa dura es la apuesta segura: aguanta mejor las relecturas y los tirones."
+            ]
+          },
+          {
+            "heading": "De 5 a 7 años: empezar a leer",
+            "paragraphs": [
+              "Es la edad de las primeras palabras leídas a solas, y su propio nombre es la primera que reconoce sin ayuda. Las historias son más largas y tienen un reto que resolver. Encajan La Gran Aventura Espacial y Piratas del Mar (5 a 8 años), La Tierra de los Dinosaurios y Safari en la Sabana (4 a 7) y El Castillo de los Sueños (6 a 10)."
+            ]
+          },
+          {
+            "heading": "De 8 a 12 años: lectores con criterio",
+            "paragraphs": [
+              "A partir de los 8 ya lee solo y quiere historias con más fondo. La Fábrica de Inventos (8 a 12 años) y Superhéroe por un Día (7 a 10) tienen más texto y retos de verdad. Ser protagonista funciona a cualquier edad, y a esta, además, se convierte en un recuerdo de quién era."
+            ]
+          },
+          {
+            "heading": "Lo mismo en todas las edades",
+            "paragraphs": [
+              "Cada libro mide {size} × {size} cm y tiene {pages} páginas, {scenes} escenas ilustradas a acuarela y papel estucado seda de {paper} g. Tú eliges el mundo y los tres capítulos, escribes la dedicatoria y ves la portada, su retrato y las primeras escenas antes de pagar.",
+              "Tapa dura, {hardcover} IVA incluido; tapa blanda, {softcover} IVA incluido; las dos con el envío gratis y el PDF. Llega en {minDays}-{maxDays} días laborables a España peninsular y Baleares. Solo el PDF cuesta {pdf} IVA incluido y te llega por correo tras el pago."
+            ]
+          }
+        ],
+        "faq": {
+          "q1": "¿Para qué edades hay cuentos?",
+          "a1": "De {ageMin} a {ageMax} años. Cada uno de los diez mundos tiene su franja de edad, y el texto se escribe para la edad del niño.",
+          "q2": "¿Qué pasa si mi hijo está entre dos franjas?",
+          "a2": "Elige por lo que le gusta más que por la edad exacta: las franjas se solapan (por ejemplo, El Bosque Mágico es de 2 a 5 años y La Tierra de los Dinosaurios de 4 a 7), así que casi siempre hay más de una opción.",
+          "q3": "¿Hay cuentos para bebés?",
+          "a3": "Todavía no. El más pequeño es para niños de 2 años. Si es para un bebé, puede ser un regalo para guardar y leer juntos cuando crezca."
+        }
       },
       "themes": {
         "metaTitle": "Cuentos personalizados por temática | Meapica",
@@ -393,9 +648,14 @@
     "loading": "Cargando…"
   },
   "metadata": {
-    "title": "Meapica — Historias Reales para Tocar",
-    "description": "Recupera la magia de pasar las páginas. Cuentos personalizados impresos en papel de alta calidad, diseñados para crear momentos de conexión real.",
-    "keywords": "cuentos personalizados, libros infantiles personalizados, regalo original niños, cuentos con nombre, libros con ilustraciones, regalo personalizado, libro impreso niños"
+    "title": "Cuento personalizado para niños con su nombre | Meapica",
+    "description": "Su nombre en la portada, su cara pintada en acuarela y la aventura que eliges tú. Ves su libro antes de pagar. Tapa dura o blanda, envío gratis.",
+    "keywords": "cuentos personalizados, libros infantiles personalizados, regalo original niños, cuentos con nombre, libros con ilustraciones, regalo personalizado, libro impreso niños",
+    "pages": {
+      "create": "Crea su cuento",
+      "auth": "Tu cuenta",
+      "checkout": "Tu pedido"
+    }
   },
   "nav": {
     "manifesto": "Manifiesto",
@@ -420,7 +680,7 @@
     "language": "Idioma"
   },
   "hero": {
-    "eyebrow": "Cuento personalizado impreso",
+    "eyebrow": "Cuento personalizado para niños",
     "title": "El cuento que te pedirá <hl>otra vez</hl>",
     "subtitle": "Porque sale su nombre en la portada, su cara pintada en acuarela y la aventura que eliges tú. Impreso y en tu casa.",
     "nameLabel": "¿Cómo se llama?",
@@ -461,7 +721,7 @@
       },
       "print": {
         "title": "Recíbelo en casa",
-        "text": "Tapa dura o blanda, con envío gratis. En 7–10 días laborables está en tu puerta."
+        "text": "Tapa dura o blanda, con envío gratis. En {minDays}–{maxDays} días laborables está en tu puerta."
       }
     },
     "lookAlt": "Retrato a acuarela de {name}",
@@ -544,11 +804,26 @@
     "subtitle": "Hecho para aguantar mil lecturas y quedarse en su estantería cuando crezca. Y con su PDF incluido, para los viajes.",
     "mockupAlt": "El libro de {name} en tapa dura, de 20 × 20 cm",
     "specs": {
-      "size": { "label": "Formato", "value": "20 × 20 cm · 30 páginas · 12 escenas ilustradas" },
-      "paper": { "label": "Papel", "value": "Estucado seda de 170 g, a todo color" },
-      "cover": { "label": "Tapas", "value": "Dura o blanda, con acabado mate" },
-      "shipping": { "label": "Envío", "value": "Gratis a España peninsular y Baleares, en 7–10 días laborables" },
-      "digital": { "label": "Versión digital", "value": "El PDF va incluido con el libro impreso" }
+      "size": {
+        "label": "Formato",
+        "value": "{size} × {size} cm · {pages} páginas · {scenes} escenas ilustradas"
+      },
+      "paper": {
+        "label": "Papel",
+        "value": "Estucado seda de {paper} g, a todo color"
+      },
+      "cover": {
+        "label": "Tapas",
+        "value": "Dura o blanda, con acabado mate"
+      },
+      "shipping": {
+        "label": "Envío",
+        "value": "Gratis a España peninsular y Baleares, en {minDays}–{maxDays} días laborables"
+      },
+      "digital": {
+        "label": "Versión digital",
+        "value": "El PDF va incluido con el libro impreso"
+      }
     },
     "softcover": "Tapa blanda",
     "hardcover": "Tapa dura",
@@ -561,10 +836,22 @@
     "sceneAlt": "{name} en su aventura, escena {n}",
     "caption": "Páginas reales de «{title}»",
     "points": {
-      "written": { "title": "Escrito para su edad", "text": "Su nombre en cada página y frases a su medida, de 2 a 12 años." },
-      "painted": { "title": "Pintado escena a escena", "text": "12 ilustraciones de su aventura, con su pelo, su piel y hasta sus pecas." },
-      "colour": { "title": "Con su color favorito", "text": "Viste su ropa y los detalles de cada página." },
-      "dedication": { "title": "Con tus palabras", "text": "Tu dedicatoria abre el libro, para que siempre sepa de quién fue el regalo." }
+      "written": {
+        "title": "Escrito para su edad",
+        "text": "Su nombre en cada página y frases a su medida, de {ageMin} a {ageMax} años."
+      },
+      "painted": {
+        "title": "Pintado escena a escena",
+        "text": "12 ilustraciones de su aventura, con su pelo, su piel y hasta sus pecas."
+      },
+      "colour": {
+        "title": "Con su color favorito",
+        "text": "Viste su ropa y los detalles de cada página."
+      },
+      "dedication": {
+        "title": "Con tus palabras",
+        "text": "Tu dedicatoria abre el libro, para que siempre sepa de quién fue el regalo."
+      }
     },
     "cta": "Crear su libro",
     "seeInside": "Ver el libro de {name} por dentro"
@@ -575,7 +862,7 @@
     "description": "La magia se extiende fuera del libro. Incluye",
     "letter": "carta física personalizada",
     "descriptionEnd": "del personaje principal, hoja de pegatinas mate y marcapáginas de madera.",
-    "cta": "Añadir extras físicos (+12,90 € IVA incl.)",
+    "cta": "Añadir extras físicos (+12,90 € IVA incluido)",
     "imageCaption": "El regalo perfecto",
     "imageAlt": "Caja de regalo con el libro, una hoja de pegatinas y lápices de colores sobre una mesa"
   },
@@ -588,7 +875,7 @@
     "likenessQ": "¿Y si no se parece a mi hijo o hija?",
     "likenessA": "Tú decides cómo es: piel, color de pelo, peinado, ojos, gafas y pecas, y ves su retrato antes de seguir. Si en la vista previa quieres cambiarlo, cambias su aspecto y volvemos a pintar el libro con el nuevo personaje; todo lo demás se mantiene. Lo imprimimos tal cual lo ves.",
     "deliveryQ": "¿Cuándo llega? ¿Llega para Reyes?",
-    "deliveryA": "Lo imprimimos bajo demanda en Europa en cuanto haces el pedido y llega en 7-10 días laborables, con el envío incluido. Enviamos a España peninsular y Baleares (de momento no a Canarias, Ceuta ni Melilla).",
+    "deliveryA": "Lo imprimimos bajo demanda en Europa en cuanto haces el pedido y llega en {minDays}-{maxDays} días laborables, con el envío incluido. Enviamos a España peninsular y Baleares (de momento no a Canarias, Ceuta ni Melilla).",
     "deliverySeason": "Para tenerlo en casa en Nochebuena, pídelo hasta el {christmasDate}; para Reyes, hasta el {reyesDate}.",
     "deliverySeasonReyes": "Para tenerlo en casa antes de Reyes, pídelo hasta el {reyesDate}.",
     "deliverySeasonPdf": "El libro impreso ya no llega a tiempo para Reyes, pero el cuento en PDF sí: te llega por correo tras el pago, normalmente en menos de una hora.",
@@ -596,7 +883,7 @@
     "priceQ": "¿Cuánto cuesta y qué incluye?",
     "priceA": "Tapa blanda, {softcover}. Tapa dura, {hardcover}. Solo el PDF, {pdf}. Todos los precios llevan el IVA incluido. El libro impreso incluye el envío y el PDF del cuento completo.",
     "returnsQ": "¿Puedo devolverlo?",
-    "returnsA": "Al ser un libro hecho a medida, con su nombre y su retrato, no admite devoluciones; por eso te enseñamos el libro entero antes de pagar. Pero si llega con cualquier defecto de impresión o se daña en el envío, te enviamos otro nuevo sin coste. Solo tienes que escribirnos en los 30 días siguientes a recibirlo, con una foto del libro y del embalaje.",
+    "returnsA": "Al ser un libro hecho a medida, con su nombre y su retrato, no admite devoluciones; por eso, antes de pagar, ves su portada, su retrato y las primeras escenas de su cuento. Pero si llega con cualquier defecto de impresión o se daña en el envío, te enviamos otro nuevo sin coste. Solo tienes que escribirnos en los 30 días siguientes a recibirlo, con una foto del libro y del embalaje.",
     "moreQuestions": "¿Tienes otra duda? Escríbenos a"
   },
   "finalCta": {
@@ -638,27 +925,27 @@
       "title": "Política de Privacidad",
       "intro": "En Meapica, la privacidad de nuestros usuarios —especialmente cuando se trata de datos de menores— es nuestra máxima prioridad.",
       "section1Title": "1. Responsable del tratamiento",
-      "section1Text": "El responsable del tratamiento de los datos personales recogidos a través de meapica.shop es Xavier Huix Trenco (Meapica), NIF 41649433K, con domicilio en Carrer Aribau 140, 5º, 08036 Barcelona (España). Para cualquier cuestión sobre privacidad puedes escribirnos a admin@casmar.tech.",
+      "section1Text": "El responsable del tratamiento de los datos personales recogidos a través de meapica.shop es Xavier Huix Trenco (Meapica), NIF 41649433K, con domicilio en Carrer Aribau 140, 5º, 08036 Barcelona (España). Para cualquier cuestión sobre privacidad puedes escribirnos a hola@meapica.shop.",
       "section2Title": "2. Datos que recogemos",
       "section2Text": "Recogemos los datos necesarios para crear tu libro personalizado: nombre del niño/a, edad, ciudad, intereses y características físicas para la ilustración y, solo si decides subirla, una foto del niño/a (ver el apartado 8). También recogemos email y dirección de envío para procesar pedidos.",
       "section3Title": "3. Finalidad del tratamiento",
       "section3Text": "Utilizamos tus datos exclusivamente para: generar el cuento personalizado y su personaje ilustrado, procesar el pago y envío, y comunicarnos contigo sobre tu pedido. Nunca vendemos datos a terceros.",
       "section4Title": "4. Base legal",
-      "section4Text": "Crear, previsualizar e imprimir tu libro, gestionar tu cuenta, el pago y el envío: ejecución del contrato que nos pides (art. 6.1.b RGPD). Foto del niño/a: consentimiento explícito de su madre, padre o tutor legal (art. 6.1.a RGPD y art. 7 LOPDGDD), que puedes retirar en cualquier momento. Newsletter y lista de espera: tu consentimiento (art. 6.1.a RGPD), que puedes retirar cuando quieras. Conservación de facturas y registros contables: obligación legal (art. 6.1.c RGPD). Seguridad del servicio y prevención de abusos (por ejemplo, límites de uso): interés legítimo (art. 6.1.f RGPD). Medición de nuestros anuncios con Meta y TikTok (cookies publicitarias y evento de compra): tu consentimiento (art. 6.1.a RGPD), que puedes retirar desde «Configurar cookies».",
+      "section4Text": "Crear, previsualizar e imprimir tu libro, gestionar tu cuenta, el pago y el envío: ejecución del contrato que nos pides (art. 6.1.b RGPD). Foto del niño/a: consentimiento explícito de su madre, padre o tutor legal (art. 6.1.a RGPD y art. 7 LOPDGDD), que puedes retirar en cualquier momento. Newsletter y lista de espera: tu consentimiento (art. 6.1.a RGPD), que puedes retirar cuando quieras. Conservación de facturas y registros contables: obligación legal (art. 6.1.c RGPD). Seguridad del servicio y prevención de abusos (por ejemplo, límites de uso): interés legítimo (art. 6.1.f RGPD). Medición de nuestros anuncios con Meta y TikTok y estadísticas de visitas con Google Analytics (cookies publicitarias y de análisis, y evento de compra): tu consentimiento (art. 6.1.a RGPD), que puedes retirar desde «Configurar cookies».",
       "section5Title": "5. Encargados del tratamiento y transferencias internacionales",
-      "section5Text": "Para prestar el servicio trabajamos con proveedores que tratan los datos solo siguiendo nuestras instrucciones: OpenAI Ireland Ltd. (generación del texto y las ilustraciones del cuento y, si la subes, del personaje a partir de la foto), Supabase (base de datos y almacenamiento), Vercel (alojamiento web), Stripe Payments Europe Ltd. (pagos), Gelato (impresión y envío), Resend (correos del pedido) y, solo si aceptas las cookies publicitarias, Meta Platforms Ireland Ltd. y TikTok Technology Limited (medición de nuestros anuncios). OpenAI no usa los datos que le enviamos para entrenar sus modelos y puede conservarlos hasta 30 días para detectar abusos. Cuando un proveedor o sus subencargados tratan datos fuera del Espacio Económico Europeo (por ejemplo, en Estados Unidos), la transferencia se ampara en las cláusulas contractuales tipo aprobadas por la Comisión Europea o en el Marco de Privacidad de Datos UE-EE. UU.",
+      "section5Text": "Para prestar el servicio trabajamos con proveedores que tratan los datos solo siguiendo nuestras instrucciones: OpenAI Ireland Ltd. (generación del texto y las ilustraciones del cuento y, si la subes, del personaje a partir de la foto), Supabase (base de datos y almacenamiento), Vercel (alojamiento web), Stripe Payments Europe Ltd. (pagos), Gelato (impresión y envío), Resend (correos del pedido), Cloudflare, Inc. (Turnstile, verificación anti-bots al iniciar sesión y al empezar como invitado) y, solo si aceptas las cookies publicitarias, Meta Platforms Ireland Ltd., TikTok Technology Limited (medición de nuestros anuncios) y Google Ireland Limited (Google Analytics, estadísticas de visitas y compras). OpenAI no usa los datos que le enviamos para entrenar sus modelos y puede conservarlos hasta 30 días para detectar abusos. Cuando un proveedor o sus subencargados tratan datos fuera del Espacio Económico Europeo (por ejemplo, en Estados Unidos), la transferencia se ampara en las cláusulas contractuales tipo aprobadas por la Comisión Europea o en el Marco de Privacidad de Datos UE-EE. UU.",
       "section6Title": "6. Tus derechos",
-      "section6Text": "Puedes ejercer tus derechos de acceso, rectificación, supresión, oposición, limitación del tratamiento y portabilidad, y retirar tu consentimiento en cualquier momento, escribiendo a admin@casmar.tech. Te responderemos en el plazo máximo de un mes. Si consideras que no hemos tratado tus datos correctamente, puedes presentar una reclamación ante la Agencia Española de Protección de Datos (www.aepd.es).",
+      "section6Text": "Puedes ejercer tus derechos de acceso, rectificación, supresión, oposición, limitación del tratamiento y portabilidad, y retirar tu consentimiento en cualquier momento, escribiendo a hola@meapica.shop. Te responderemos en el plazo máximo de un mes. Si consideras que no hemos tratado tus datos correctamente, puedes presentar una reclamación ante la Agencia Española de Protección de Datos (www.aepd.es).",
       "section7Title": "7. Protección de datos de menores",
       "section7Text": "No recogemos datos directamente de menores. Los datos del niño/a son proporcionados por el padre/madre o tutor legal que crea el libro.",
       "section8Title": "8. Fotos de menores",
-      "section8Text": "Subir una foto es opcional: también puedes crear el personaje eligiendo sus rasgos. Si la subes, la usamos solo para crear su personaje ilustrado (su retrato y su ficha de personaje) y solo con el consentimiento de su madre, padre o tutor legal. Antes de guardarla eliminamos todos sus metadatos, incluida la ubicación GPS, y la guardamos en un almacenamiento privado al que solo accede nuestro servidor. La foto se envía a OpenAI para dibujar el personaje; OpenAI no la usa para entrenar sus modelos y puede conservarla hasta 30 días para detectar abusos. Borramos la foto en cuanto creamos su personaje y, en cualquier caso, en menos de 24 horas. El libro (previsualización y versión final) se ilustra solo a partir del personaje dibujado, nunca a partir de la foto. No la usamos para reconocimiento facial ni para ninguna otra finalidad. Puedes retirar tu consentimiento en cualquier momento escribiendo a admin@casmar.tech y la borraremos de inmediato. Guardamos un registro de tu consentimiento (fecha, versión del texto aceptado e idioma) como prueba de que lo diste."
+      "section8Text": "Subir una foto es opcional: también puedes crear el personaje eligiendo sus rasgos. Si la subes, la usamos solo para crear su personaje ilustrado (su retrato y su ficha de personaje) y solo con el consentimiento de su madre, padre o tutor legal. Antes de guardarla eliminamos todos sus metadatos, incluida la ubicación GPS, y la guardamos en un almacenamiento privado al que solo accede nuestro servidor. La foto se envía a OpenAI para dibujar el personaje; OpenAI no la usa para entrenar sus modelos y puede conservarla hasta 30 días para detectar abusos. Borramos la foto en cuanto creamos su personaje y, en cualquier caso, en menos de 24 horas. El libro (previsualización y versión final) se ilustra solo a partir del personaje dibujado, nunca a partir de la foto. No la usamos para reconocimiento facial ni para ninguna otra finalidad. Puedes retirar tu consentimiento en cualquier momento escribiendo a hola@meapica.shop y la borraremos de inmediato. Guardamos un registro de tu consentimiento (fecha, versión del texto aceptado e idioma) como prueba de que lo diste."
     },
     "terms": {
       "title": "Aviso Legal y Condiciones de Uso",
       "intro": "Al usar meapica.shop aceptas las siguientes condiciones.",
       "section1Title": "1. Identificación",
-      "section1Text": "Meapica es una plataforma de creación de libros infantiles personalizados operada desde España por Xavier Huix Trenco, NIF 41649433K, con domicilio en Carrer Aribau 140, 5º, 08036 Barcelona (España). Contacto: admin@casmar.tech.",
+      "section1Text": "Meapica es una plataforma de creación de libros infantiles personalizados operada desde España por Xavier Huix Trenco, NIF 41649433K, con domicilio en Carrer Aribau 140, 5º, 08036 Barcelona (España). Contacto: hola@meapica.shop.",
       "section2Title": "2. Servicio",
       "section2Text": "Meapica ofrece la creación de cuentos infantiles personalizados con ilustraciones únicas, impresos bajo demanda.",
       "section3Title": "3. Propiedad intelectual",
@@ -666,19 +953,19 @@
       "section4Title": "4. Precios y pagos",
       "section4Text": "Todos los precios son finales, con el IVA incluido, y se muestran en euros. En los libros impresos, el envío a España está incluido en el precio. El pago se procesa de forma segura a través de Stripe.",
       "section5Title": "5. Envíos y devoluciones",
-      "section5Text": "Los libros se imprimen bajo demanda en Europa y, por ahora, solo realizamos envíos a direcciones de España. España peninsular: 7-10 días laborables. Baleares: 7-10 días laborables. De momento no enviamos a Canarias, Ceuta ni Melilla. Al ser productos personalizados, los libros están excluidos del derecho de desistimiento (art. 103 c) del texto refundido de la Ley General para la Defensa de los Consumidores y Usuarios) y no admiten devoluciones. Si un libro llega con cualquier defecto de impresión o fabricación, o se daña durante el envío, escríbenos en los 30 días siguientes a recibirlo, con una foto del libro y del embalaje, y te enviamos otro nuevo sin coste. Esto no limita los derechos de garantía que te reconoce la ley.",
+      "section5Text": "Los libros se imprimen bajo demanda en Europa y, por ahora, solo realizamos envíos a direcciones de España. España peninsular: {minDays}-{maxDays} días laborables. Baleares: {minDays}-{maxDays} días laborables. De momento no enviamos a Canarias, Ceuta ni Melilla. Al ser productos personalizados, los libros están excluidos del derecho de desistimiento (art. 103 c) del texto refundido de la Ley General para la Defensa de los Consumidores y Usuarios) y no admiten devoluciones. Si un libro llega con cualquier defecto de impresión o fabricación, o se daña durante el envío, escríbenos en los 30 días siguientes a recibirlo, con una foto del libro y del embalaje, y te enviamos otro nuevo sin coste. Esto no limita los derechos de garantía que te reconoce la ley.",
       "section6Title": "6. Limitación de responsabilidad",
       "section6Text": "Meapica no garantiza la disponibilidad ininterrumpida del servicio. Las ilustraciones pueden variar y no se garantiza un resultado específico."
     },
     "cookies": {
       "title": "Política de Cookies",
-      "intro": "Meapica usa cookies técnicas necesarias para que el servicio funcione y, solo si lo aceptas, cookies publicitarias de Meta y TikTok.",
+      "intro": "Meapica usa cookies técnicas necesarias para que el servicio funcione y, solo si lo aceptas, cookies publicitarias de Meta y TikTok y cookies de análisis de Google Analytics.",
       "section1Title": "1. ¿Qué son las cookies?",
       "section1Text": "Las cookies son pequeños archivos de texto que se almacenan en tu navegador al visitar un sitio web.",
       "section2Title": "2. Cookies que utilizamos",
-      "section2Text": "Técnicas (siempre activas): mantener tu sesión, recordar el idioma, gestionar la compra y guardar tu elección sobre cookies (meapica_consent, 12 meses). Publicitarias (solo con tu consentimiento): el píxel de Meta (_fbp y _fbc, 90 días) mide qué anuncios de Instagram y Facebook terminan en una compra y ayuda a mostrarlos a quien le pueden interesar; el píxel de TikTok (_ttp, ttclid y _tt_enable_cookie, hasta 13 meses) hace lo mismo con los anuncios de TikTok; meapica_utm (30 días) recuerda desde qué anuncio o publicación llegaste para asociarlo a tu pedido.",
+      "section2Text": "Técnicas (siempre activas): mantener tu sesión, recordar el idioma, gestionar la compra y guardar tu elección sobre cookies (meapica_consent, 12 meses). Publicitarias (solo con tu consentimiento): el píxel de Meta (_fbp y _fbc, 90 días) mide qué anuncios de Instagram y Facebook terminan en una compra y ayuda a mostrarlos a quien le pueden interesar; el píxel de TikTok (_ttp, ttclid y _tt_enable_cookie, hasta 13 meses) hace lo mismo con los anuncios de TikTok; Google Analytics (_ga y _ga_*, hasta 14 meses) mide de forma agregada cuántas personas visitan la web, de dónde llegan y cuántas terminan comprando; meapica_utm (30 días) recuerda desde qué anuncio o publicación llegaste para asociarlo a tu pedido.",
       "section3Title": "3. Cookies de terceros",
-      "section3Text": "Meta Platforms Ireland Ltd., solo si aceptas las cookies publicitarias: recibe datos de navegación y, si compras, el importe del pedido y tu correo y teléfono cifrados (hash) para medir nuestros anuncios. Meta puede tratar datos en EE. UU. al amparo del Marco de Privacidad de Datos UE-EE. UU. TikTok Technology Limited (Irlanda), solo con el mismo consentimiento: recibe los mismos datos para medir nuestros anuncios en TikTok y puede tratarlos fuera del EEE al amparo de cláusulas contractuales tipo de la Comisión Europea. Stripe (procesador de pagos) puede establecer sus propias cookies durante el pago.",
+      "section3Text": "Meta Platforms Ireland Ltd., solo si aceptas las cookies publicitarias: recibe datos de navegación y, si compras, el importe del pedido y tu correo y teléfono cifrados (hash) para medir nuestros anuncios. Meta puede tratar datos en EE. UU. al amparo del Marco de Privacidad de Datos UE-EE. UU. TikTok Technology Limited (Irlanda), solo con el mismo consentimiento: recibe los mismos datos para medir nuestros anuncios en TikTok y puede tratarlos fuera del EEE al amparo de cláusulas contractuales tipo de la Comisión Europea. Google Ireland Limited (Google Analytics), solo con el mismo consentimiento: recibe datos de navegación y, si compras, el importe y el formato del pedido (nunca tu nombre, correo ni teléfono) para elaborar estadísticas; puede tratarlos en EE. UU. al amparo del Marco de Privacidad de Datos UE-EE. UU. Stripe (procesador de pagos) puede establecer sus propias cookies durante el pago.",
       "section4Title": "4. Gestión de cookies",
       "section4Text": "Puedes aceptar o rechazar las cookies publicitarias en el aviso de tu primera visita y cambiar de opinión cuando quieras desde «Configurar cookies», al pie de cada página. Si las rechazas, la web funciona igual. También puedes borrarlas desde tu navegador."
     },
@@ -686,15 +973,15 @@
       "title": "Preguntas Frecuentes",
       "intro": "Todo lo que necesitas saber sobre los cuentos personalizados de Meapica.",
       "section1Title": "¿Cómo se crea mi cuento?",
-      "section1Text": "Tú eliges la aventura, personalizas al protagonista con el nombre, la edad y las características de tu hijo, y nuestra tecnología escribe una historia única con ilustraciones originales. Ningún otro niño en el mundo tendrá jamás el mismo libro.",
+      "section1Text": "Escribes su nombre y su edad, eliges cómo es y escoges su mundo y los tres capítulos de la aventura. Con eso escribimos una historia para su edad y la pintamos a acuarela, con su retrato en cada escena. Ningún otro niño tendrá el mismo libro.",
       "section2Title": "¿Cuánto tarda el envío?",
-      "section2Text": "Cada libro se imprime bajo demanda en Europa en cuanto haces el pedido. Por ahora solo enviamos a España. España peninsular: 7-10 días laborables. Baleares: 7-10 días laborables. De momento no enviamos a Canarias, Ceuta ni Melilla. Recibirás un correo con el número de seguimiento cuando tu paquete esté en camino.",
+      "section2Text": "Cada libro se imprime bajo demanda en Europa en cuanto haces el pedido. Por ahora solo enviamos a España. España peninsular: {minDays}-{maxDays} días laborables. Baleares: {minDays}-{maxDays} días laborables. De momento no enviamos a Canarias, Ceuta ni Melilla. Recibirás un correo con el número de seguimiento cuando tu paquete esté en camino.",
       "section3Title": "¿Puedo personalizar el personaje?",
-      "section3Text": "¡Sí! Puedes elegir el nombre, la edad, el color de pelo, ojos y piel, el peinado, el género, e incluso añadir su mascota, comida favorita o sueño de futuro. Todo aparece en la historia y en las ilustraciones.",
+      "section3Text": "¡Sí! Eliges su nombre y su edad, el color de piel, de pelo y de ojos, el peinado, si lleva gafas o pecas y si el cuento se escribe en femenino, masculino o neutro. Antes de pagar ves su retrato y, si quieres, lo cambias y volvemos a pintar el libro.",
       "section4Title": "¿Qué papel utilizáis?",
       "section4Text": "Imprimimos en papel estucado seda de 170 g, que reproduce las ilustraciones con colores vivos y un tacto suave. La encuadernación es encolada, como la de un buen álbum de fotos, y la portada lleva laminado mate. Puedes elegir tapa blanda o tapa dura, la opción más resistente.",
       "section5Title": "¿Puedo pedir cambios después de la compra?",
-      "section5Text": "Como cada libro es una edición única generada en el momento, no es posible modificarlo una vez creado. Por eso te mostramos una previsualización completa antes de comprar, para que puedas revisar la historia y las ilustraciones.",
+      "section5Text": "Cada libro es una edición única, así que no se puede modificar una vez pedido. Por eso, antes de pagar, ves la portada con su nombre, su retrato y las primeras escenas ilustradas de su cuento, y puedes cambiar el título, la dedicatoria y su aspecto.",
       "section6Title": "¿Qué tamaño tiene el libro?",
       "section6Text": "El libro mide 20×20 cm, el formato ideal para manos pequeñas. Tiene 30 páginas con 12 escenas ilustradas, portada, dedicatoria personalizada y contraportada."
     },
@@ -702,7 +989,7 @@
       "title": "Envíos y Empaquetado",
       "intro": "Cada libro de Meapica es un regalo. Por eso, la experiencia de recibirlo en casa tiene que ser tan especial como abrirlo.",
       "section1Title": "Plazos de envío",
-      "section1Text": "Por ahora solo enviamos a España. España peninsular: 7-10 días laborables. Baleares: 7-10 días laborables. De momento no enviamos a Canarias, Ceuta ni Melilla. Cada libro se imprime bajo demanda en Europa, por eso el plazo incluye la impresión.",
+      "section1Text": "Por ahora solo enviamos a España. España peninsular: {minDays}-{maxDays} días laborables. Baleares: {minDays}-{maxDays} días laborables. De momento no enviamos a Canarias, Ceuta ni Melilla. Cada libro se imprime bajo demanda en Europa, por eso el plazo incluye la impresión.",
       "section2Title": "Coste de envío",
       "section2Text": "El envío estándar está incluido en el precio del libro, que ya lleva el IVA incluido. No hay costes ocultos ni sorpresas en la caja.",
       "section3Title": "Embalaje protector",
@@ -1074,7 +1361,7 @@
       "faq": {
         "delivery": {
           "q": "¿Cuándo llega?",
-          "a": "Lo imprimimos bajo demanda y tarda de 7 a 10 días laborables. Te avisamos por correo con el seguimiento cuando sale."
+          "a": "Lo imprimimos bajo demanda y tarda de {minDays} a {maxDays} días laborables. Te avisamos por correo con el seguimiento cuando sale."
         },
         "canarias": {
           "q": "¿Enviáis a Canarias, Ceuta o Melilla?",
@@ -1082,7 +1369,7 @@
         },
         "quality": {
           "q": "¿Cómo es el libro?",
-          "a": "20 × 20 cm, 30 páginas a todo color en papel estucado seda de 170 g. La tapa dura lleva laminado mate y es la más resistente."
+          "a": "{size} × {size} cm, {pages} páginas a todo color en papel estucado seda de {paper} g. La tapa dura lleva laminado mate y es la más resistente."
         },
         "changes": {
           "q": "¿Puedo cambiar algo?",
@@ -1139,7 +1426,7 @@
       "nextStepsTitle": "Libro físico en camino",
       "nextStepsDescription": "Lo imprimimos bajo demanda y te avisaremos por correo con el seguimiento cuando salga.",
       "deliveryTitle": "Tiempo de entrega",
-      "deliveryDescription": "España peninsular: 7-10 días laborables. Baleares: 7-10 días laborables. De momento no enviamos a Canarias, Ceuta ni Melilla.",
+      "deliveryDescription": "España peninsular: {minDays}-{maxDays} días laborables. Baleares: {minDays}-{maxDays} días laborables. De momento no enviamos a Canarias, Ceuta ni Melilla.",
       "formatLabel": "Formato: {format}",
       "formatDigital": "PDF Digital",
       "formatHardcover": "Tapa dura",
@@ -1150,7 +1437,7 @@
       "viewOrders": "Ver mis pedidos",
       "notVerifiedTitle": "No hemos podido confirmar este pago",
       "notVerifiedDescription": "Este enlace no corresponde a un pago completado. Si acabas de pagar, tu pedido aparecerá en tu biblioteca en unos minutos y recibirás la confirmación por correo. Si algo no cuadra, escríbenos y lo resolvemos.",
-      "contactUs": "Escríbenos a admin@casmar.tech",
+      "contactUs": "Escríbenos a hola@meapica.shop",
       "confirmationEmail": "Te enviaremos la confirmación y el seguimiento a {email}",
       "guestNote": "Has comprado sin cuenta: guarda ese correo, es tu comprobante del pedido.",
       "processingTitle": "¡Pago confirmado!",
@@ -1213,7 +1500,7 @@
       "title": "Otra copia de {title}",
       "intro": "El mismo libro, impreso de nuevo. En el pago eliges la dirección de envío. Envío estándar incluido a la península y Baleares.",
       "formatLabel": "Formato",
-      "pay": "Pagar {price}",
+      "pay": "Pagar {price} · IVA incluido",
       "error": "No hemos podido abrir el pago. Inténtalo de nuevo en un momento.",
       "close": "Cerrar",
       "titleUpgrade": "{title}, impreso",
@@ -1475,11 +1762,11 @@
       "foodies": "Para cocinillas",
       "explorers": "Para exploradores"
     },
+    "ageRange": "{min}-{max} años",
     "templates": {
       "space": {
         "title": "La Gran Aventura Espacial",
         "description": "Un viaje a las estrellas donde descubrirán planetas desconocidos y harán amigos alienígenas.",
-        "ageRange": "5-8 años",
         "previewChapterTitle": "La Nave de los Sueños",
         "decisions": {
           "encounter": {
@@ -1558,7 +1845,6 @@
       "forest": {
         "title": "El Bosque Mágico",
         "description": "Secretos entre los árboles antiguos y criaturas fantásticas que necesitan ayuda.",
-        "ageRange": "2-5 años",
         "previewChapterTitle": "El Bosque de los Susurros",
         "decisions": {
           "encounter": {
@@ -1637,7 +1923,6 @@
       "superhero": {
         "title": "Superhéroe por un Día",
         "description": "¡A salvar la ciudad! Descubre superpoderes ocultos y aprende el valor de la valentía.",
-        "ageRange": "7-10 años",
         "previewChapterTitle": "El Despertar del Héroe",
         "decisions": {
           "encounter": {
@@ -1716,7 +2001,6 @@
       "pirates": {
         "title": "Piratas del Mar",
         "description": "En busca del tesoro perdido navegando los siete mares con una tripulación muy divertida.",
-        "ageRange": "5-8 años",
         "previewChapterTitle": "La Isla del Capitán",
         "decisions": {
           "encounter": {
@@ -1795,7 +2079,6 @@
       "chef": {
         "title": "El Chef Más Pequeño",
         "description": "Una cocina llena de magia donde los ingredientes cobran vida y bailan en la olla.",
-        "ageRange": "2-4 años",
         "previewChapterTitle": "La Cocina Encantada",
         "decisions": {
           "encounter": {
@@ -1874,7 +2157,6 @@
       "dinosaurs": {
         "title": "La Tierra de los Dinosaurios",
         "description": "Un viaje en el tiempo a la era de los dinosaurios, donde la valentía y la amistad lo cambian todo.",
-        "ageRange": "4-7 años",
         "previewChapterTitle": "El Portal del Tiempo",
         "decisions": {
           "encounter": {
@@ -1953,7 +2235,6 @@
       "castle": {
         "title": "El Castillo de los Sueños",
         "description": "Un castillo encantado donde los sueños cobran vida y hay que salvar al reino de la oscuridad.",
-        "ageRange": "6-10 años",
         "previewChapterTitle": "Las Puertas del Castillo",
         "decisions": {
           "encounter": {
@@ -2032,7 +2313,6 @@
       "safari": {
         "title": "Safari en la Sabana",
         "description": "Una aventura por la sabana africana entre leones, elefantes y atardeceres que quitan el aliento.",
-        "ageRange": "4-7 años",
         "previewChapterTitle": "El Amanecer en la Sabana",
         "decisions": {
           "encounter": {
@@ -2111,7 +2391,6 @@
       "inventor": {
         "title": "La Fábrica de Inventos",
         "description": "Un taller de inventos locos donde la creatividad y la ciencia se mezclan con la magia.",
-        "ageRange": "8-12 años",
         "previewChapterTitle": "El Taller Secreto",
         "decisions": {
           "encounter": {
@@ -2190,7 +2469,6 @@
       "candy": {
         "title": "El País de los Dulces",
         "description": "Un mundo donde todo está hecho de dulces, chocolate y caramelo. ¡Pero cuidado con comer demasiado!",
-        "ageRange": "2-5 años",
         "previewChapterTitle": "La Puerta de Caramelo",
         "decisions": {
           "encounter": {
@@ -2330,7 +2608,7 @@
   },
   "christmasDelivery": {
     "metaTitle": "¿Llega a tiempo para Reyes {reyesYear}? Fechas límite de pedido",
-    "metaDescription": "Hasta cuándo pedir un cuento personalizado impreso para tenerlo en casa en Nochebuena o antes de Reyes. Fechas por formato, envío a península y Baleares. El PDF llega siempre a tiempo.",
+    "metaDescription": "Hasta cuándo pedir un cuento personalizado para Nochebuena o Reyes: fechas límite por formato, a península y Baleares. El PDF llega siempre a tiempo.",
     "ogEyebrow": "Navidad y Reyes {christmasYear}-{reyesYear}",
     "breadcrumb": "¿Llega a tiempo?",
     "eyebrow": "Navidad y Reyes {christmasYear}-{reyesYear}",
@@ -2364,7 +2642,7 @@
     "regionNote": "De momento no enviamos a Canarias, Ceuta ni Melilla. Si el regalo es para allí, el cuento en PDF llega igual.",
     "methodHeading": "Cómo calculamos estas fechas",
     "method": [
-      "Imprimimos cada libro bajo demanda en Europa. Hoy, entre la impresión y el envío, un pedido tarda {min}-{max} días naturales en llegar a casa.",
+      "Imprimimos cada libro bajo demanda en Europa y te prometemos la entrega en {promisedMin}-{promisedMax} días laborables. Para estas fechas partimos del plazo real del transportista, que hoy es de {min}-{max} días naturales de la imprenta a tu casa.",
       "En diciembre sumamos {buffer} días de margen por la saturación de la paquetería y los festivos del 8 de diciembre, Navidad y Año Nuevo.",
       "El plazo empieza cuando completas el pago, no cuando empiezas a crear el cuento.",
       "Son estimaciones basadas en los plazos actuales del transportista, no una garantía. Si cambian, actualizamos esta página."
@@ -2378,7 +2656,7 @@
       "christmasQ": "¿Y para tenerlo en Nochebuena?",
       "christmasA": "Para tener el libro impreso en casa el 24 de diciembre, pídelo hasta el {date}. Después de esa fecha aún puedes regalar el cuento en PDF.",
       "timeQ": "¿Cuánto tarda en llegar el libro impreso?",
-      "timeA": "Lo imprimimos bajo demanda en Europa en cuanto haces el pedido. España peninsular y Baleares: 7-10 días laborables, con el envío incluido en el precio. Recibirás el número de seguimiento por correo.",
+      "timeA": "Lo imprimimos bajo demanda en Europa en cuanto haces el pedido. España peninsular y Baleares: {minDays}-{maxDays} días laborables, con el envío incluido en el precio. Recibirás el número de seguimiento por correo.",
       "regionQ": "¿Enviáis a Canarias, Ceuta o Melilla?",
       "regionA": "De momento no. Si el regalo es para allí, el cuento en PDF te llega por correo y puedes imprimirlo o leerlo en la tableta."
     },
@@ -2452,7 +2730,7 @@
   },
   "cookieConsent": {
     "title": "Cookies",
-    "text": "Usamos cookies necesarias para que la web funcione y, si aceptas, cookies de Meta y TikTok para medir nuestros anuncios en Instagram, Facebook y TikTok.",
+    "text": "Usamos cookies necesarias para que la web funcione y, si aceptas, cookies de Meta, TikTok y Google para medir nuestros anuncios en Instagram, Facebook y TikTok y las visitas a la web.",
     "policy": "Más información",
     "accept": "Aceptar",
     "reject": "Rechazar"

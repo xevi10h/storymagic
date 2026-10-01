@@ -18,7 +18,7 @@ button, [role="button"] {
 /* ============================
    Design Token System — Meapica brand (see docs/brand.md)
    ============================
-   ONE semantic set, derived from the creation flow (/crear), which is the
+   ONE semantic set, derived from the creation flow (/create), which is the
    reference look & feel of the product. New code uses ONLY the semantic
    tokens below (bg-brand, text-ink, border-line…). The legacy names further
    down are kept as aliases so older screens keep rendering; do not use them
@@ -55,7 +55,7 @@ button, [role="button"] {
      Legacy aliases (pre-brand landing palette). Same names, now pointing
      at the semantic set. Where a legacy colour is still painted inside the
      creation flow with a value the semantic set does not have, the old
-     value is kept verbatim (marked "legacy value") so /crear stays
+     value is kept verbatim (marked "legacy value") so /create stays
      pixel-identical; retire them as screens are rebuilt.
      ------------------------------------------------------------------ */
   --primary: var(--brand);
@@ -237,6 +237,27 @@ h1, h2, h3, h4 {
 /* Base layer: element defaults that utilities must be able to override.
    Unlayered rules beat every @layer rule in Tailwind v4, so these live in
    `base`; otherwise `outline-none`, `w-*` etc. could not win. */
+/* Material Symbols (self-hosted subset via next/font/local, RootDocument): the
+   icon-font class Google's stylesheet used to provide. Deliberately UNLAYERED, like
+   that external stylesheet was: it beats Tailwind's layered utilities, so icons keep
+   rendering exactly as before (24px / line-height 1 unless a `!text-*` override). */
+.material-symbols-outlined {
+  font-family: var(--font-material-symbols);
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+}
+
 @layer base {
   /* Accessible focus ring (components may replace it, e.g. a border +
      halo on inputs, via `outline-none` + their own focus style). */

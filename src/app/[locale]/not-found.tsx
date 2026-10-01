@@ -21,7 +21,7 @@ export default function NotFound() {
           <Link href="/" className={buttonClass()}>
             {t("backHome")}
           </Link>
-          <Link href="/crear" className={buttonClass({ variant: "quiet" })}>
+          <Link href="/create" className={buttonClass({ variant: "quiet" })}>
             {t("createStory")}
           </Link>
         </div>

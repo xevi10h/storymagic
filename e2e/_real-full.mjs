@@ -21,9 +21,9 @@ await page.waitForURL((u) => !u.pathname.includes("/auth/login"), { timeout: 300
 
 let storyId = process.env.STORY;
 if (!storyId) {
-await page.goto(`${BASE}/es/crear`);
+await page.goto(`${BASE}/es/create`);
 await page.evaluate(() => localStorage.clear());
-await page.goto(`${BASE}/es/crear`);
+await page.goto(`${BASE}/es/create`);
 await page.locator("#child-name").fill(process.env.NAME ?? "Martina");
 await page.getByRole("radio", { name: new RegExp(`^${process.env.AGE ?? 5}`) }).click();
 await page.getByRole("radio", { name: process.env.GENDER === "boy" ? "Un niño" : "Una niña" }).click();
@@ -39,13 +39,13 @@ for (let ch = 1; ch <= 3; ch++) {
   await o.click();
 }
 await page.getByRole("button", { name: /Crear su libro/ }).click();
-await page.waitForURL(/\/crear\/[0-9a-f-]{36}\/generar/, { timeout: 60000 });
-storyId = page.url().match(/crear\/([0-9a-f-]{36})/)[1];
+await page.waitForURL(/\/create\/[0-9a-f-]{36}\/generate/, { timeout: 60000 });
+storyId = page.url().match(/create\/([0-9a-f-]{36})/)[1];
 console.log("storyId", storyId);
 // v2: the generation screen waits for a click to open the finished book.
 await page.getByRole("button", { name: /Ver el libro/i }).first().click({ timeout: 300000 });
 await page.waitForURL(/\/preview/, { timeout: 60000 });
-} else await page.goto(`${BASE}/es/crear/${storyId}/preview`);
+} else await page.goto(`${BASE}/es/create/${storyId}/preview`);
 await page.waitForTimeout(3000);
 await shot("1-preview");
 

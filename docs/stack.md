@@ -34,7 +34,7 @@ Illustrated likenesses of real children were world-readable by URL, forever. Now
   | AI portrait (`POST /api/characters/portrait`, not used by the v2 UI) | signed on upload; re-sign own refs via `POST /api/illustrations/sign` | 24 h |
   | OpenAI references, QA judge, PDF render (preview, final, print) | `toServerFetchUrl` (service role) | 10 min |
   | Gelato | never sees illustrations: images are embedded in the print PDFs (`book-pdfs`, 7-day signed URL) | — |
-  | Showcase / ejemplo / landing / OG / waitlist | `toShowcaseUrl` → public `showcase` mirror (never signed: cached pages + OG) | public |
+  | Showcase / examples / landing / OG / waitlist | `toShowcaseUrl` → public `showcase` mirror (never signed: cached pages + OG) | public |
   | Emails | contain no child imagery | — |
 
 - **Anonymous guests** are `authenticated` Supabase users with a uid, so they own their
@@ -72,16 +72,16 @@ which records the version, or the SQL editor followed by
 3. **Run** `npx tsx --tsconfig tsconfig.json scripts/publish-showcase.mts --dry-run`, then without
    `--dry-run` (copies showcase stories, waitlist covers, style samples, blog images; rewrites
    blog rows to the showcase URL). Must precede the deploy: the new code serves every public
-   page (landing, `/ejemplo`, OG, waitlist) from `showcase`.
+   page (landing, `/examples`, OG, waitlist) from `showcase`.
 4. **Env (Vercel prod):** `CRON_SECRET` set (both crons need it); `NEXT_PUBLIC_SITE_URL=https://meapica.shop` (avatar anchors are fetched from it); `NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED`
    unset/false until the DPIA + OpenAI DPA are signed.
 5. **Deploy the code** (works with the bucket still public: signed URLs also work on public buckets).
-   Check `/ejemplo`, landing BookCollection, waitlist page, blog; create a book end to end
+   Check `/examples`, landing BookCollection, waitlist page, blog; create a book end to end
    (protagonist → prepare → story → generating screen shows images → preview).
 6. **Apply** 140400 (flip `illustrations` to private + owner read policies).
 7. **Apply** 140500 whenever convenient.
 8. Smoke test: preview of an existing story, dashboard avatar, a new book's generating screen and
-   preview, `/ejemplo/[id]`, an old public illustrations URL → 400. `GET /api/cron/purge-photos`
+   preview, `/examples/[id]`, an old public illustrations URL → 400. `GET /api/cron/purge-photos`
    with the bearer secret → 200.
 
 **Rollback:** `update storage.buckets set public = true where id = 'illustrations';` (code keeps working).
@@ -230,6 +230,12 @@ Code map: `docs/technical-architecture.md` › Ads tracking. No TikTok Pixel (Ti
   All canonical URLs, sitemap, OG, emails, printed books (back cover + QR) and ads use it.
 - **Legacy: `meapica.com`** stays attached to the Vercel project and serves the same site, but its DNS (Spaceship) is no longer
   under our control: nothing critical (Stripe/Gelato webhooks, auth redirects, email sending, Meta domain) may depend on it.
+- **Host canonicalization (2026-10-01):** `src/middleware.ts` 308-redirects `www.meapica.shop`, `meapica.com` and
+  `www.meapica.com` to `https://meapica.shop` + same path/query (explicit alias list: localhost and `*.vercel.app`
+  previews untouched). `/api/*` is never redirected (a webhook left on an alias host must not get a 308), and files
+  outside the middleware matcher (sitemap.xml, robots.txt, images) are still served on the aliases: also set
+  www → apex as a redirect in Vercel › Domains. next-intl's `Link` hreflang response header is off
+  (`alternateLinks: false` in `src/i18n/routing.ts`); hreflang lives only in each page's `<link rel="alternate">`.
 - Status 2026-09-30: `NEXT_PUBLIC_SITE_URL=https://meapica.shop` (prod) ✔; Supabase Auth Site URL `https://meapica.shop` + allow-list
   (.shop, www.shop, .com, www.com, localhost:3013) ✔ via Management API (`SUPABASE_ACCESS_TOKEN=$(cat ~/.config/supabase-profiles/meapica)`);
   Stripe live webhook `we_1UKekqAyKcfLUpfGWsbB0sRn` → `https://meapica.shop/api/webhooks/stripe` ✔ (owner, 2026-10-01; CLI profile `stripe -p meapica` can read, lacks `webhook_write`);
@@ -242,3 +248,20 @@ TikTok Ads account (advertiser id 7691596144782180404, under review 2026-10-01) 
 consent banner. Env (Vercel production): `NEXT_PUBLIC_TIKTOK_PIXEL_ID` (build-time), `TIKTOK_EVENTS_TOKEN` (Events Manager › pixel ›
 Settings › Generate access token; token file `~/.config/meapica/tiktok_events_token`), optional `TIKTOK_TEST_EVENT_CODE`.
 Status 2026-10-01: Events API token set in prod (test event accepted, code 0). Plan: 3-day paid test (~20 €/day ad group) created in the Ads Manager UI (the campaign API needs an approved developer app).
+
+## Search & analytics measurement (2026-10-01)
+
+- **Google Search Console:** Domain property `sc-domain:meapica.shop` (owner admin@casmar.tech, verified by DNS TXT
+  `google-site-verification=TCFgqmj9…` on Hostinger @, next to the facebook TXT). Sitemap `https://meapica.shop/sitemap.xml` submitted.
+  meapica.com has no GSC property (its DNS isn't ours).
+- **GA4:** property `556936860` "Meapica" (account 384452227, Europe/Madrid, EUR, 14-month retention), web stream `15937070228`,
+  measurement ID `G-R4KZQ2ZYQ2`. Key events: `purchase`, `begin_checkout`. Browser gtag loads only after cookie consent (same banner
+  as the pixels), Consent Mode v2 default denied → update granted, revoked on withdrawal. Events: view_item, add_to_cart,
+  begin_checkout, generate_lead, purchase (via `trackEvent()`). Server purchase: GA4 Measurement Protocol (EU endpoint
+  `region1.google-analytics.com/mp/collect`) from the Stripe webhook, only with consent + `_ga` client id + live mode;
+  dedup with the browser purchase via `transaction_id = purchase_<checkout session id>`. Check: `npx tsx scripts/check-ga4-mp.mts`.
+- **Env (Vercel production):** `NEXT_PUBLIC_GA4_ID` (build-time; unset = GA4 off), `GA4_API_SECRET` (MP secret "stripe-webhook",
+  copy at `~/.config/meapica/ga4_api_secret`).
+- **cana:** project key `meapica` in `~/.config/casmar-analytics/sites.json` (`cana gsc …` / `cana ga4 …` from this repo).
+- **IndexNow:** key file `public/2ecdea1c8139eed8afa1e608880f24f7.txt`; after a deploy run `node scripts/indexnow-ping.mjs`
+  (pings api.indexnow.org with every sitemap URL; `--dry-run` to count). Bing Webmaster Tools import from GSC: owner, pending.

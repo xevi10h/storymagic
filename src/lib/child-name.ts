@@ -1,5 +1,5 @@
 // Display form of the child's name, applied where it enters the system (name
-// input on blur / Next in /crear, and server-side in POST /api/stories) so the
+// input on blur / Next in /create, and server-side in POST /api/stories) so the
 // book, the UI, emails and the LLM title all spell it the same way.
 // Pure: safe on client and server.
 

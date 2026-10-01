@@ -60,8 +60,8 @@ export function catalogItemByLookupKey(lookupKey: string | null | undefined): Ca
   return hit ?? null;
 }
 
-/** Help inbox shown to buyers (interim: the working inbox until a Meapica address is live). */
-export const SUPPORT_EMAIL = "admin@casmar.tech";
+/** Help inbox shown to buyers. Single definition in lib/support.ts (re-exported for older imports). */
+export { SUPPORT_EMAIL } from "./support";
 
 /**
  * Paywall trust line "¿Llega dañado o con un defecto de impresión? Te lo reponemos sin

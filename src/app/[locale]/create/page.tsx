@@ -27,11 +27,11 @@ import {
 import { usePersistedState, STORAGE_KEY } from "@/hooks/usePersistedState";
 import { ensureGuestSession } from "@/lib/guest-session";
 import { isCaptchaError } from "@/lib/captcha/turnstile";
-import CreationHeader from "@/components/crear/CreationHeader";
-import StepName from "@/components/crear/StepName";
+import CreationHeader from "@/components/create/CreationHeader";
+import StepName from "@/components/create/StepName";
 import { formatChildName } from "@/lib/child-name";
-import StepProtagonist from "@/components/crear/StepProtagonist";
-import StepAdventure from "@/components/crear/StepAdventure";
+import StepProtagonist from "@/components/create/StepProtagonist";
+import StepAdventure from "@/components/create/StepAdventure";
 import { BrandLoader } from "@/components/ui/BrandLoader";
 import { Spinner } from "@/components/ui/Spinner";
 import { trackEvent } from "@/lib/tracking/consent";
@@ -86,7 +86,7 @@ function CrearPageContent() {
     if (!templateParam && !characterIdParam) {
       const draft = readStoredDraft();
       if (!nameParam || (draft && formatChildName(draft.character.name) === nameParam)) {
-        router.replace("/crear");
+        router.replace("/create");
         setPrefillReady(true);
         return;
       }
@@ -127,7 +127,7 @@ function CrearPageContent() {
         currentStep: characterIdParam && character.name.trim() ? 2 : 1,
       });
       // Clean URL so a reload resumes the draft instead of re-applying the prefill
-      router.replace("/crear");
+      router.replace("/create");
       setPrefillReady(true);
     })();
   }, [prefillReady, setState, router, searchParams]);
@@ -161,7 +161,7 @@ function CrearPageContent() {
     (step: number) => {
       if (!canNavigate(step)) return;
       if (step <= CREATE_PAGE_STEPS) setStep(step);
-      else if (state.createdStory) router.push(`/crear/${state.createdStory.id}/generar`);
+      else if (state.createdStory) router.push(`/create/${state.createdStory.id}/generate`);
     },
     [canNavigate, setStep, state.createdStory, router],
   );
@@ -252,7 +252,7 @@ function CrearPageContent() {
           );
         } catch (err) {
           // Best effort: without a prep id the book pipeline builds the sheet itself.
-          console.warn("[crear] character prep not started:", err);
+          console.warn("[create] character prep not started:", err);
         } finally {
           if (prepInFlight.current === snapshot) prepInFlight.current = null;
         }
@@ -274,7 +274,7 @@ function CrearPageContent() {
     // Back → Create with nothing changed: reuse the book already being painted.
     if (state.createdStory?.snapshot === snapshot) {
       setNavigating(true);
-      router.push(`/crear/${state.createdStory.id}/generar`);
+      router.push(`/create/${state.createdStory.id}/generate`);
       return;
     }
     setSaving(true);
@@ -307,15 +307,15 @@ function CrearPageContent() {
         }),
       });
       if (!res.ok) {
-        console.warn("[crear] saving story failed:", res.status, await res.text().catch(() => ""));
+        console.warn("[create] saving story failed:", res.status, await res.text().catch(() => ""));
         throw new Error("save_failed");
       }
       const { storyId } = (await res.json()) as { storyId: string };
       setState((prev) => ({ ...prev, dedication, createdStory: { id: storyId, snapshot } }));
       setNavigating(true);
-      router.push(`/crear/${storyId}/generar`);
+      router.push(`/create/${storyId}/generate`);
     } catch (err) {
-      console.warn("[crear] create failed:", err);
+      console.warn("[create] create failed:", err);
       setError(isCaptchaError(err) ? t("errors.captchaFailed") : t("errors.saveFailed"));
       setCreateFailed(true);
       setSaving(false);

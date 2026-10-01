@@ -7,9 +7,9 @@ const page = await ctx.newPage();
 const errors = [];
 page.on("pageerror", (e) => errors.push(String(e)));
 page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
-await page.goto("http://localhost:3013/es/crear");
+await page.goto("http://localhost:3013/es/create");
 await page.evaluate(() => localStorage.clear());
-await page.goto("http://localhost:3013/es/crear");
+await page.goto("http://localhost:3013/es/create");
 await page.locator("#child-name").fill("Martina");
 await page.getByRole("radio", { name: /^5/ }).click();
 await page.getByRole("radio", { name: "Una niña" }).click();
@@ -23,8 +23,8 @@ for (let ch = 1; ch <= 3; ch++) {
   await o.click();
 }
 await page.getByRole("button", { name: /Crear su libro/ }).click();
-await page.waitForURL(/\/crear\/[0-9a-f-]{36}\/generar/, { timeout: 60000 });
-const storyId = page.url().match(/crear\/([0-9a-f-]{36})/)[1];
+await page.waitForURL(/\/create\/[0-9a-f-]{36}\/generate/, { timeout: 60000 });
+const storyId = page.url().match(/create\/([0-9a-f-]{36})/)[1];
 console.log("storyId", storyId);
 await page.waitForURL(/\/preview/, { timeout: 300000 });
 await page.waitForTimeout(3000);

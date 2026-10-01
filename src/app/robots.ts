@@ -8,9 +8,9 @@ export default function robots(): MetadataRoute.Robots {
         allow: "/",
         disallow: [
           "/api/",
-          "/*/crear/",
+          "/*/create/",
           "/*/dashboard",
-          "/*/perfil",
+          "/*/profile",
           "/*/auth/",
           "/*/checkout/",
         ],

@@ -80,7 +80,9 @@ export default function WritingAnimation({
   const uid     = useId().replace(/:/g, "");
   const scale   = duration / BASE_DURATION;
   const cbRef   = useRef(onComplete);
-  cbRef.current = onComplete;
+  useEffect(() => {
+    cbRef.current = onComplete;
+  }, [onComplete]);
 
   useEffect(() => {
     const svg = svgRef.current;
@@ -97,8 +99,8 @@ export default function WritingAnimation({
     });
 
     // ② Double-rAF: let browser commit the hidden state, then start transitions
-    let r1: number, r2: number;
-    r1 = requestAnimationFrame(() => {
+    let r2 = 0;
+    const r1 = requestAnimationFrame(() => {
       r2 = requestAnimationFrame(() => {
         paths.forEach((p, i) => {
           const { t, dt } = STROKES[i];

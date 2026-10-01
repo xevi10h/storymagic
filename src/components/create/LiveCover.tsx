@@ -61,6 +61,14 @@ export default function LiveCover({
     return () => ro.disconnect();
   }, [measure]);
 
+  // Fade only when the art is swapped (a world picked in the creation flow), never
+  // on first paint: an opacity-0 start delays the LCP of the hero cover.
+  const [firstArt] = useState(art);
+  const artClass = art === firstArt ? "" : "cover-art-in ";
+  // Local static art (the landing's painted example) can go through the optimizer;
+  // signed/remote URLs of children's covers must not.
+  const localArt = art.startsWith("/");
+
   const w = width || 300;
   const nameSize = coverNameFontSize(displayName, w);
   const joiner = prefix.endsWith("'") || prefix.endsWith("’") ? "" : " ";
@@ -74,13 +82,31 @@ export default function LiveCover({
       data-testid="live-cover"
       className={`relative aspect-square w-full select-none overflow-hidden rounded-[4px_14px_14px_4px] bg-create-neutral shadow-[0_22px_40px_-22px_rgba(58,36,24,.55),0_2px_6px_rgba(58,36,24,.12)] ${className}`}
     >
-      {painted ? (
+      {painted && !localArt ? (
         // The painted cover is a short-lived signed URL of the private bucket (or a
         // mock image): plain <img>, never the optimizer (it would outlive the signature).
         // eslint-disable-next-line @next/next/no-img-element
-        <img key={art} src={art} alt="" className="cover-art-in absolute inset-0 h-full w-full object-cover" />
+        <img
+          key={art}
+          src={art}
+          alt=""
+          loading={priority ? "eager" : "lazy"}
+          fetchPriority={priority ? "high" : "auto"}
+          decoding="async"
+          className={`${artClass}absolute inset-0 h-full w-full object-cover`}
+        />
       ) : (
-        <Image key={art} src={art} alt="" fill priority={priority} sizes={sizes} className="cover-art-in object-cover" />
+        <Image
+          key={art}
+          src={art}
+          alt=""
+          fill
+          preload={priority}
+          loading={priority ? "eager" : "lazy"}
+          fetchPriority={priority ? "high" : "auto"}
+          sizes={sizes}
+          className={`${artClass}object-cover`}
+        />
       )}
       {painted ? (
         // Real painted cover: same treatment as the book viewer's cover page

@@ -23,7 +23,7 @@ if (process.env.VIA_API) {
   console.log("api", JSON.stringify(res).slice(0, 80));
   await page.goto(res.url);
 } else {
-await page.goto(`http://localhost:3013/es/crear/${STORY}/preview`);
+await page.goto(`http://localhost:3013/es/create/${STORY}/preview`);
 await page.locator("#checkout-section").waitFor({ timeout: 30000 });
 await page.locator("#checkout-section").scrollIntoViewIfNeeded();
 const labels = { digital_pdf: /PDF Digital/, softcover: /blanda/i, hardcover: /dura/i };

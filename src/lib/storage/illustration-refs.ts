@@ -11,7 +11,7 @@
 // /images assets) is not an illustration ref and is passed through untouched.
 // Refs are turned into short-lived signed URLs server-side (illustration-urls.ts).
 //
-// Marketing example books ("ejemplo", landing, waitlist) are served from the PUBLIC
+// Marketing example books ("examples", landing, waitlist) are served from the PUBLIC
 // `showcase` bucket, which mirrors the same object paths (scripts/publish-showcase.mts).
 
 export const ILLUSTRATIONS_BUCKET = "illustrations";

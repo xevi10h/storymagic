@@ -1,7 +1,7 @@
 # Meapica brand system
 
 The single reference for how Meapica looks, sounds and moves. It is derived from the
-creation flow (`/crear` → preview → checkout), the most polished surface of the product.
+creation flow (`/create` → preview → checkout), the most polished surface of the product.
 Every new screen (landing, SEO pages, blog, dashboard) is built from this file; when this
 file and an older screen disagree, this file wins.
 
@@ -120,7 +120,7 @@ Accessibility (measured on `--paper`; all pass WCAG AA 4.5:1 for body text unles
 - `::selection` is a 30 % brand wash with `ink` text (not white on orange).
 - Audit: a Playwright script that asserts every visible text node on a brand-orange background is
   ≥ 18.66 px and ≥ 700 weight (last run 2026-09-30: 0 violations on /es, /es/themes,
-  /es/christmas-delivery, /es/crear 1–3 at 360/390/1440).
+  /es/christmas-delivery, /es/create 1–3 at 360/390/1440).
 - `ink-muted` with opacity (e.g. placeholder `/45`) is decorative only; never convey required info.
 
 Legacy names (`primary`, `secondary`, `cream`, `text-main`, `text-muted`, `border-light`,
@@ -251,7 +251,7 @@ dark variant `bg-brand-deep text-white` ("Tapa dura").
 **Progress:** stepper dots `h-6 w-6` (active orange + `ring-4 ring-brand/15`, done orange + ✓, todo white + `border-line`);
 mobile = "Paso 2 de 6 · Protagonista" + 6 segments `h-1.5`.
 
-**Sheets:** bottom sheet on mobile / centred dialog ≥ 640 px (`src/components/crear/Sheet.tsx`), `bg-scrim` backdrop,
+**Sheets:** bottom sheet on mobile / centred dialog ≥ 640 px (`src/components/create/Sheet.tsx`), `bg-scrim` backdrop,
 Esc/backdrop close, focus trapped and restored. Edit in place, never navigate away to edit.
 
 **Focus:** every interactive element shows `focus-visible:outline-2 outline-offset-2 outline-brand`
@@ -261,9 +261,12 @@ wins: inputs use `outline-none focus:border-brand` as their single ring (no doub
 
 **Icons:** Material Symbols Outlined (`<span class="material-symbols-outlined">`), 18–20 px inline,
 always `aria-hidden` with a text label. Allowed metaphors: arrows, check, edit, local_shipping,
-event_available, download, close. The font loads with `display=block` and globals.css locks every
-icon to a 1em box, so ligature names never flash or shift layout (CLS). Known gap: Google's unlayered
-`.material-symbols-outlined { font-size: 24px }` beats Tailwind `text-*` on the icon span, so every icon
+event_available, download, close. The font is a self-hosted subset (`src/fonts/material-symbols-outlined.woff2`,
+~90 KB, only the icons the code uses, next/font/local in `RootDocument`): **after adding a new icon name run
+`node scripts/material-symbols-subset.mjs`** (a missing glyph renders as its ligature text; `--check` verifies offline).
+It loads with `display: block` and globals.css locks every icon to a 1em box, so ligature names never flash or
+shift layout (CLS). Known gap: the unlayered `.material-symbols-outlined { font-size: 24px }` in globals.css (kept
+from Google's stylesheet so nothing changed visually) beats Tailwind `text-*` on the icon span, so every icon
 renders at 24 px today; use `!text-lg` (or inline style) when a smaller icon is really needed.
 **Banned:** `auto_awesome`/sparkles, bolts, magic wands, robots, rockets-as-"growth".
 
@@ -315,7 +318,7 @@ styles in `BrandLoader.module.css`; `import { BrandLoader, PageLoader, Spinner }
   `common.loading` ("Cargando…"). All instances are phase-locked to the document timeline, so a
   route `loading.tsx` handing over to the page's own loader continues the same stroke.
 - **`PageLoader`**: full-viewport centred `BrandLoader size="lg"`. Used by the route `loading.tsx`
-  of `dashboard`, `perfil`, `checkout/success`, `crear/[storyId]`, `ejemplo/[storyId]`.
+  of `dashboard`, `profile`, `checkout/success`, `create/[storyId]`, `examples/[storyId]`.
 - **`Spinner`**: buttons and tiny inline waits (1em arc on a 22 % track, `currentColor`, 0.9 s).
   The drawn mark is legible down to ~24 px when static, but at 18–20 px a 2.4 s draw reads as a
   scribble and is slower than most button waits, so buttons keep a quiet spinner. `Button loading`

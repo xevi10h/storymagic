@@ -3,8 +3,8 @@
 import { useSyncExternalStore } from "react";
 
 // The name typed on the landing hero, shared with the mobile sticky CTA so both
-// read "Crear el libro de Lucía" and deep-link to /crear with it. In-memory only:
-// the creation draft (localStorage) is written by /crear once the parent arrives.
+// read "Crear el libro de Lucía" and deep-link to /create with it. In-memory only:
+// the creation draft (localStorage) is written by /create once the parent arrives.
 
 let heroName = "";
 const listeners = new Set<() => void>();
@@ -29,8 +29,8 @@ export function useHeroName(): string {
   );
 }
 
-/** /crear entry link, with ?name= when there is one (read by the creation page's prefill). */
-export function crearHref(name: string): { pathname: "/crear"; query?: { name: string } } {
+/** /create entry link, with ?name= when there is one (read by the creation page's prefill). */
+export function createPageHref(name: string): { pathname: "/create"; query?: { name: string } } {
   const trimmed = name.trim();
-  return trimmed ? { pathname: "/crear", query: { name: trimmed } } : { pathname: "/crear" };
+  return trimmed ? { pathname: "/create", query: { name: trimmed } } : { pathname: "/create" };
 }

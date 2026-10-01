@@ -12,6 +12,17 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Non-source dirs (agent worktrees, tooling, generated artifacts).
+    ".claude/**",
+    ".codex/**",
+    ".firecrawl/**",
+    ".playwright-mcp/**",
+    ".vercel/**",
+    "artifacts/**",
+    "refs/**",
+    "test-results/**",
+    "playwright-report/**",
+    "node_modules/**",
   ]),
 ]);
 

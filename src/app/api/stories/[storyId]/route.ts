@@ -34,7 +34,7 @@ export async function GET(
 
   const db = createFulfilmentClient();
 
-  // Light mode: status + preview progress for polling (/generar every 3 s, checkout
+  // Light mode: status + preview progress for polling (/generate every 3 s, checkout
   // success). Avoids the JOINs on characters + story_illustrations.
   const url = new URL(request.url);
   const isLight = url.searchParams.get("light") === "true";

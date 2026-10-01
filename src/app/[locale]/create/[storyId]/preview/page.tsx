@@ -14,14 +14,14 @@ import {
   type AddonId,
 } from "@/lib/pricing";
 import { useAuth } from "@/hooks/useAuth";
-import CreationHeader from "@/components/crear/CreationHeader";
-import BookRevealOverlay from "@/components/crear/BookRevealOverlay";
-import BookEditSheets, { type EditPanel } from "@/components/crear/BookEditSheets";
+import CreationHeader from "@/components/create/CreationHeader";
+import BookRevealOverlay from "@/components/create/BookRevealOverlay";
+import BookEditSheets, { type EditPanel } from "@/components/create/BookEditSheets";
 import PurchasePanel, { type ConsentState } from "@/components/purchase/PurchasePanel";
 import PreviewFaq from "@/components/purchase/PreviewFaq";
 import { withTeaserEnd } from "@/lib/preview-teaser";
 import { getBookColors } from "@/lib/template-colors";
-import SendPreviewEmail from "@/components/crear/SendPreviewEmail";
+import SendPreviewEmail from "@/components/create/SendPreviewEmail";
 import { clearStoredDraft, patchStoredDraft, readStoredDraft } from "@/lib/creation-flow";
 import BookViewerSwitch from "@/components/book-viewer/BookViewerSwitch";
 import { spreadIndexOf, spreadStart } from "@/components/book-viewer/spreads";
@@ -106,7 +106,7 @@ export default function PreviewPage() {
   const [notAccessible, setNotAccessible] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
 
-  // One-shot "book is born" reveal — flagged by /generar right before redirect
+  // One-shot "book is born" reveal — flagged by /generate right before redirect
   const [showReveal, setShowReveal] = useState(false);
   useEffect(() => {
     try {
@@ -181,7 +181,7 @@ export default function PreviewPage() {
         const data = await res.json();
         // Redirect to generation page if not yet generated
         if (data.status === "draft" || data.status === "generating") {
-          router.replace(`/crear/${storyId}/generar`);
+          router.replace(`/create/${storyId}/generate`);
           return;
         }
         setStory(data);
@@ -315,11 +315,11 @@ export default function PreviewPage() {
   // Earlier screens stay reachable without losing anything (the draft is kept).
   const goToStep = useCallback(
     (step: number) => {
-      if (step === 4) return router.push(`/crear/${storyId}/generar`);
+      if (step === 4) return router.push(`/create/${storyId}/generate`);
       if (step === 6) return scrollToCheckout();
       if (step === 5) return window.scrollTo({ top: 0, behavior: "smooth" });
       patchStoredDraft({ currentStep: step }, storyId);
-      router.push("/crear");
+      router.push("/create");
     },
     [router, storyId, scrollToCheckout],
   );
@@ -476,14 +476,14 @@ export default function PreviewPage() {
             <div className="mt-8 flex flex-col items-center gap-3">
               {needsAccount && (
                 <Link
-                  href={`/auth/login?next=/crear/${storyId}/preview`}
+                  href={`/auth/login?next=/create/${storyId}/preview`}
                   className="min-h-12 inline-flex items-center gap-2 rounded-xl bg-create-primary px-6 py-3.5 text-[19px] font-bold leading-tight text-white transition-colors hover:bg-create-primary-hover"
                 >
                   <span aria-hidden className="material-symbols-outlined text-lg">login</span>
                   {t("notAccessibleLogin")}
                 </Link>
               )}
-              <Link href="/crear" className="text-sm text-text-muted transition-colors hover:text-brand-text">
+              <Link href="/create" className="text-sm text-text-muted transition-colors hover:text-brand-text">
                 {t("notAccessibleCreate")}
               </Link>
             </div>
@@ -503,7 +503,7 @@ export default function PreviewPage() {
           </span>
           <p className="mt-4 text-base text-text-main">{error}</p>
           <Link
-            href="/crear"
+            href="/create"
             className="mt-6 text-sm text-brand-text hover:underline"
           >
             {t("backToCreate")}
@@ -578,7 +578,7 @@ export default function PreviewPage() {
     <div className={`min-h-screen bg-create-bg ${showBuy ? "pb-28 sm:pb-0" : ""}`}>
       <CreationHeader
         currentStep={isPreviewMode ? ((isWide ? formatChosen : checkoutInView) ? 6 : 5) : undefined}
-        onBack={() => router.push(`/crear/${storyId}/generar`)}
+        onBack={() => router.push(`/create/${storyId}/generate`)}
         onStepClick={goToStep}
         canStepNavigate={(step) => isPreviewMode && (step >= 4 || draftMatches)}
       />
@@ -748,7 +748,7 @@ export default function PreviewPage() {
             <h2 className="font-display text-xl font-bold text-secondary">{t("previewOutdatedTitle")}</h2>
             <p className="mt-2 text-sm text-text-muted">{t("previewOutdatedBody")}</p>
             <Link
-              href={`/crear?characterId=${story.character_id}`}
+              href={`/create?characterId=${story.character_id}`}
               className="min-h-12 mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-create-primary px-6 py-3.5 text-[19px] font-bold leading-tight text-white transition-colors hover:bg-create-primary-hover"
             >
               <span aria-hidden className="material-symbols-outlined text-lg">auto_stories</span>
@@ -773,7 +773,7 @@ export default function PreviewPage() {
                   body={needsAccount ? tPurchase("later.saveBody") : tPurchase("later.savedBody")}
                 >
                   <Link
-                    href={needsAccount ? `/auth/login?next=/crear/${storyId}/preview` : "/dashboard"}
+                    href={needsAccount ? `/auth/login?next=/create/${storyId}/preview` : "/dashboard"}
                     className={LATER_BUTTON}
                     data-testid="later-save"
                   >

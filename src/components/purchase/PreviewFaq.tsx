@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { SUPPORT_EMAIL } from "@/lib/pricing";
+import { COPY_PARAMS } from "@/lib/product-facts";
 
 const ITEMS = ["delivery", "canarias", "quality", "changes", "returns"] as const;
 
@@ -22,7 +23,7 @@ export default function PreviewFaq() {
                 expand_more
               </span>
             </summary>
-            <p className="-mt-1 px-5 pb-4 pr-12 text-sm leading-relaxed text-create-text-body sm:px-6 sm:pr-14">{t(`faq.${id}.a`)}</p>
+            <p className="-mt-1 px-5 pb-4 pr-12 text-sm leading-relaxed text-create-text-body sm:px-6 sm:pr-14">{t(`faq.${id}.a`, COPY_PARAMS)}</p>
           </details>
         ))}
       </div>

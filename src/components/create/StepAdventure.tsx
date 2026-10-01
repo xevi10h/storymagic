@@ -102,7 +102,7 @@ export default function StepAdventure({
         setFailedFor(null);
       })
       .catch((err) => {
-        console.warn("[crear] story tree failed to load:", err);
+        console.warn("[create] story tree failed to load:", err);
         if (alive) setFailedFor(selectedTemplate);
       });
     return () => {

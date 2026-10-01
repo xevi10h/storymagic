@@ -1,7 +1,7 @@
 // The web book = the printed book. Builds the viewer's pages from the print plan
 // (src/lib/book/book-plan.ts — made server-side with the PDF's own planner), in the PDF's
 // reading order: cover · endpaper · p1–p30 · endpaper · back cover (34 pages).
-// Used by the owner preview (/crear/[storyId]/preview), the example books (/ejemplo/[id])
+// Used by the owner preview (/create/[storyId]/preview), the example books (/examples/[id])
 // and the read-only share view (/preview/[token]). Pure, client- and server-safe.
 
 import type { BookPage, ScenePrint } from "@/components/book-viewer/types";

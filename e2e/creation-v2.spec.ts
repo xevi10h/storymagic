@@ -203,9 +203,9 @@ async function shot(page: Page, name: string) {
 
 async function freshStart(page: Page, locale: Locale) {
   // Not the landing: its showcase images depend on the prod `showcase` bucket (deploy step).
-  await page.goto(`/${locale}/crear`);
+  await page.goto(`/${locale}/create`);
   await page.evaluate(() => localStorage.clear());
-  await page.goto(`/${locale}/crear`);
+  await page.goto(`/${locale}/create`);
   await expect(page.getByTestId("live-cover")).toBeVisible();
 }
 
@@ -330,7 +330,7 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
         await page.getByRole("button", { name: COPY[locale].create }).click();
 
         // Story POST carries the pre-filled dedication (verbatim template with the name) + prep id
-        await page.waitForURL(new RegExp(`/${locale}/crear/${STORY_ID}/generar`));
+        await page.waitForURL(new RegExp(`/${locale}/create/${STORY_ID}/generate`));
         const post = mock.requests.find((r) => r.path === "/api/stories")!.body as Record<string, unknown>;
         expect(post.characterPrepId).toBe("prep-123");
         expect((post.character as { favoriteColor?: string }).favoriteColor).toBe(FAVORITE_HEX[FAV_COLOR] ?? "");
@@ -380,7 +380,7 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
         await expect(page.getByRole("button", { name: COPY[locale].see }).last()).toBeEnabled({ timeout: 20_000 });
         await shot(page, `${tag}-4-ready`);
         await page.getByRole("button", { name: COPY[locale].see }).last().click();
-        await page.waitForURL(new RegExp(`/crear/${STORY_ID}/preview`));
+        await page.waitForURL(new RegExp(`/create/${STORY_ID}/preview`));
 
         // 5 — The book + in-place edits (✎ on the pages, quiet links under the book)
         await expect(page.getByTestId("edit-link-dedication")).toBeVisible({ timeout: 20_000 });
@@ -503,14 +503,14 @@ test.describe("state", () => {
 
     // 3 → 4, then Back from 4 returns to 3 with choices, and re-create reuses the same story
     await page.getByRole("button", { name: /Crear su libro/ }).click();
-    await page.waitForURL(/\/generar/);
+    await page.waitForURL(/\/generate/);
     await expect(page.locator("textarea")).toBeVisible();
     await page.getByRole("button", { name: "Atrás" }).last().click();
-    await page.waitForURL(/\/es\/crear$/);
+    await page.waitForURL(/\/es\/create$/);
     await expect(page.locator(`[role=radio][aria-checked=true]`)).toHaveCount(4);
     const postsBefore = mock.requests.filter((r) => r.path === "/api/stories").length;
     await page.getByRole("button", { name: /Crear su libro/ }).click();
-    await page.waitForURL(/\/generar/);
+    await page.waitForURL(/\/generate/);
     expect(mock.requests.filter((r) => r.path === "/api/stories").length).toBe(postsBefore);
     expect(errors).toEqual([]);
   });
@@ -518,7 +518,7 @@ test.describe("state", () => {
   test("an old v1 draft migrates gracefully", async ({ page }) => {
     test.skip(PHOTO_FLAG, "flag-off suite");
     await installMocks(page);
-    await page.goto("/ca/crear");
+    await page.goto("/ca/create");
     await page.evaluate(() =>
       localStorage.setItem(
         "meapica_create_state",
@@ -538,7 +538,7 @@ test.describe("state", () => {
         }),
       ),
     );
-    await page.goto("/ca/crear");
+    await page.goto("/ca/create");
     await expect(page.getByRole("heading", { name: /Quina aventura viurà Àlex/ })).toBeVisible();
     // Catalan elision on the cover: "L'aventura d'Àlex"
     await expect(page.getByTestId("live-cover").first()).toHaveAttribute("aria-label", /L'aventura d'Àlex/);
@@ -552,9 +552,9 @@ test.describe("en/fr smoke", () => {
       const errors = trackConsole(page);
       await installMocks(page);
       // Not the landing: its showcase images depend on the prod `showcase` bucket (deploy step).
-      await page.goto(`/${locale}/crear`);
+      await page.goto(`/${locale}/create`);
       await page.evaluate(() => localStorage.clear());
-      await page.goto(`/${locale}/crear`);
+      await page.goto(`/${locale}/create`);
       await fillName(page);
       await page.getByRole("button", { name: locale === "en" ? /^Next$/ : /^Suivant$/ }).click();
       await expect(page.getByTestId("protagonist-portrait")).toBeVisible();

@@ -124,7 +124,7 @@ export default function ShowcasePage() {
         <h1 className="text-balance font-display text-[26px] font-bold leading-tight text-ink sm:text-4xl">{t("notFound")}</h1>
         <p className="mt-2 max-w-md text-base leading-relaxed text-ink-body">{t("notFoundHint")}</p>
         <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row">
-          <Link href="/ejemplo" className={buttonClass()}>
+          <Link href="/examples" className={buttonClass()}>
             {tCollection("viewAll")}
             <span aria-hidden className="material-symbols-outlined text-lg transition-transform group-hover:translate-x-1">
               arrow_forward
@@ -142,7 +142,7 @@ export default function ShowcasePage() {
   const softcoverPrice = formatPrice(PRICING.softcover.price, locale);
   const hardcoverPrice = formatPrice(PRICING.hardcover.price, locale);
   // Same world as this example, pre-chosen in the creation flow.
-  const createHref = `/crear?template=${encodeURIComponent(story.template_id)}&from=example`;
+  const createHref = `/create?template=${encodeURIComponent(story.template_id)}&from=example`;
 
   return (
     <div className="min-h-[100dvh] bg-paper">
@@ -151,7 +151,7 @@ export default function ShowcasePage() {
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-3 px-4 sm:px-6">
           <div className="flex min-w-0 items-center gap-1">
             <Link
-              href="/ejemplo"
+              href="/examples"
               aria-label={t("title")}
               className={cx(
                 "-ml-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-ink-muted transition-colors hover:bg-line hover:text-ink-soft",

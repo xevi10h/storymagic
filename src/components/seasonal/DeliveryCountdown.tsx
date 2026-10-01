@@ -35,7 +35,7 @@ export default function DeliveryCountdown({ serverToday, ctaLabel }: { serverTod
           </>
         )}
       </div>
-      <Link id="hero-cta" href="/crear" className={buttonClass({ className: "min-h-14 shrink-0 sm:px-8" })}>
+      <Link id="hero-cta" href="/create" className={buttonClass({ className: "min-h-14 shrink-0 sm:px-8" })}>
         {next ? ctaLabel : t("ctaDigital")}
         <span aria-hidden className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1">
           arrow_forward

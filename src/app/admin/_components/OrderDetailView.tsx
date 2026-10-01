@@ -167,7 +167,7 @@ export function OrderDetailView({ detail, files }: OrderDetailViewProps) {
                 </Field>
                 {story.is_showcase && (
                   <Field label="Ejemplo público">
-                    <ExtLink href={`/es/ejemplo/${story.id}`}>/ejemplo</ExtLink>
+                    <ExtLink href={`/es/examples/${story.id}`}>/examples</ExtLink>
                   </Field>
                 )}
               </>

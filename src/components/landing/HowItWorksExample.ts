@@ -29,7 +29,7 @@ export const LANDING_EXAMPLE = {
   ],
 } as const;
 
-/** The same book in each locale: its showcase story (for /ejemplo/{id}) and printed title. */
+/** The same book in each locale: its showcase story (for /examples/{id}) and printed title. */
 const EXAMPLE_BOOK: Record<string, { storyId: string; title: string }> = {
   es: { storyId: "bc6e2dbd-fd14-4c5d-a9d0-07b10cffdbf2", title: "Noa y la llave de flor" },
   ca: { storyId: "5dfc4f5e-9a42-4ae5-a42b-a821d36c2f01", title: "La Noa i la clau de flor" },

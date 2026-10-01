@@ -14,6 +14,7 @@ import { closeExcludedAreaOrder, EXCLUDED_AREA_HOLD } from "./excluded-area";
 import { suppressEmail } from "@/lib/marketing/suppression";
 import { sendMetaPurchase } from "@/lib/tracking/meta-capi";
 import { sendTikTokPurchase } from "@/lib/tracking/tiktok-events";
+import { sendGa4Purchase } from "@/lib/tracking/ga4-mp";
 import type { FulfilmentClient, FulfilmentDatabase } from "./db";
 
 type OrderRow = FulfilmentDatabase["public"]["Tables"]["orders"]["Row"];
@@ -158,7 +159,7 @@ export async function recordPaidSession(
   // Ad conversion exactly once (the pending → paid flip happened here). Before the
   // email: a failing email makes Stripe retry, and a retry is no longer processedHere.
   // Neither sender throws.
-  if (processedHere) await Promise.all([sendMetaPurchase(session), sendTikTokPurchase(session)]);
+  if (processedHere) await Promise.all([sendMetaPurchase(session), sendTikTokPurchase(session), sendGa4Purchase(session)]);
   // Checkout opt-out ("No quiero recibir ofertas…"): the order flag already keeps offers
   // out of this order's emails; the suppression list extends it to the address (other
   // orders, the reminder). Idempotent. A failure is logged, never blocks the payment.

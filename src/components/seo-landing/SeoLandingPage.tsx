@@ -7,8 +7,9 @@ import FaqItem from "@/components/landing/FaqItem";
 import FinalCta from "@/components/landing/FinalCta";
 import BookCollectionCard from "@/components/landing/BookCollectionCard";
 import type { CatalogWorld } from "@/components/landing/BookCollectionData";
-import LiveCover from "@/components/crear/LiveCover";
-import { BreadcrumbJsonLd, ProductJsonLd } from "@/components/seo/JsonLd";
+import LiveCover from "@/components/create/LiveCover";
+import { BreadcrumbJsonLd, FAQJsonLd } from "@/components/seo/JsonLd";
+import DeadlineCards from "@/components/seasonal/DeadlineCards";
 import { Heading, buttonClass, cx, focusRing } from "@/components/ui";
 import { STORY_TEMPLATES } from "@/lib/create-store";
 import { getShowcaseStories } from "@/lib/showcase";
@@ -22,13 +23,17 @@ import {
   seoHubPath,
   SEO_HUB_HEADING_KEY,
 } from "@/lib/seo-landing";
-import { CHRISTMAS_DELIVERY_PATH } from "@/lib/shipping";
+import { CHRISTMAS_DELIVERY_PATH, earliestPrintedCutoff, spainToday } from "@/lib/shipping";
+import { factParams } from "@/lib/product-facts";
 import { Breadcrumbs, PageHero, kicker, marketingH1, marketingLead } from "./MarketingHeader";
 
 const BASE_URL = "https://meapica.shop";
 
-// Conversion-ordered subset of the legal FAQ reused on every SEO page.
-const FAQ_ORDER = [2, 3, 1, 4] as const;
+// Fallback only: a page without its own `faq` block shows this subset of the legal FAQ.
+const FALLBACK_FAQ_ORDER = [2, 3, 1, 4] as const;
+// Each page carries its own questions: seo.{type}.{slug}.faq.q1/a1 … q4/a4.
+const PAGE_FAQ_SLOTS = [1, 2, 3, 4] as const;
+const INTL_LOCALE: Record<string, string> = { es: "es-ES", ca: "ca-ES", en: "en-GB", fr: "fr-FR" };
 
 // Gift pages that link to the Christmas / Reyes delivery deadlines.
 const SEASONAL_GIFT_SLUGS = new Set(["christmas", "three-kings"]);
@@ -51,7 +56,9 @@ export default async function SeoLandingPage({ type, slug, locale }: Props) {
   const th = await getTranslations({ locale, namespace: "hero" });
   const tp = await getTranslations({ locale, namespace: "pricing" });
 
-  const k = (field: string) => t(`${type}.${slug}.${field}`);
+  // Every field may quote product facts ({ageMin}, {hardcover}…); unused params are ignored.
+  const facts = factParams((cents) => formatPrice(cents, locale));
+  const k = (field: string) => t(`${type}.${slug}.${field}`, facts);
   const ctaHref = seoCtaHref(type, slug);
   const ctaLabel = th("cta");
   const fromPrice = formatPrice(Math.min(PRICING.softcover.price, PRICING.hardcover.price), locale);
@@ -70,15 +77,45 @@ export default async function SeoLandingPage({ type, slug, locale }: Props) {
     };
   });
 
+  // Per-page FAQ. Answers may quote product facts and this season's order-by dates.
+  const today = spainToday();
+  const cutoffDate = (occasion: "christmas" | "reyes") =>
+    new Intl.DateTimeFormat(INTL_LOCALE[locale] ?? "es-ES", { timeZone: "UTC", day: "numeric", month: "long" }).format(
+      new Date(`${earliestPrintedCutoff(today, occasion)}T00:00:00Z`),
+    );
+  const faqValues = {
+    ...facts,
+    christmasDate: cutoffDate("christmas"),
+    reyesDate: cutoffDate("reyes"),
+  };
+  const pageFaq = PAGE_FAQ_SLOTS.filter((n) => t.has(`${type}.${slug}.faq.q${n}`)).map((n) => ({
+    question: t(`${type}.${slug}.faq.q${n}`, faqValues),
+    answer: t(`${type}.${slug}.faq.a${n}`, faqValues),
+  }));
+  const faqs =
+    pageFaq.length > 0
+      ? pageFaq
+      : FALLBACK_FAQ_ORDER.map((n) => ({ question: tf(`faq.section${n}Title`), answer: tf(`faq.section${n}Text`, faqValues) }));
+  const isSeasonal = type === "gifts" && SEASONAL_GIFT_SLUGS.has(slug);
+
   const related = relatedSeoPages(type, slug);
   const pageUrl = `${BASE_URL}/${locale}${seoPath(type, slug)}`;
   const hubPath = seoHubPath(type);
   const hubLabel = t(SEO_HUB_HEADING_KEY[type]);
   const heroTemplateId = featured[0]?.id ?? null;
 
-  // benefits is a JSON array — next-intl t.raw returns it as-is
-  const benefits = t.raw(`${type}.${slug}.benefits`) as string[];
-  const bodyParagraphs = t.raw(`${type}.${slug}.bodyParagraphs`) as string[];
+  // Arrays are read with t.raw for their length, then each item is formatted (facts as ICU params).
+  const list = (key: string) =>
+    (t.raw(`${type}.${slug}.${key}`) as string[]).map((_, i) => t(`${type}.${slug}.${key}.${i}`, faqValues));
+  const benefits = list("benefits");
+  const bodyParagraphs = list("bodyParagraphs");
+  // Optional long-form guide under the body copy: seo.{type}.{slug}.sections = [{ heading, paragraphs[] }].
+  const sections = t.has(`${type}.${slug}.sections`)
+    ? (t.raw(`${type}.${slug}.sections`) as { heading: string; paragraphs: string[] }[]).map((sec, i) => ({
+        heading: t(`${type}.${slug}.sections.${i}.heading`, faqValues),
+        paragraphs: sec.paragraphs.map((_, j) => t(`${type}.${slug}.sections.${i}.paragraphs.${j}`, faqValues)),
+      }))
+    : [];
 
   return (
     <>
@@ -89,7 +126,7 @@ export default async function SeoLandingPage({ type, slug, locale }: Props) {
           { name: k("h1"), url: pageUrl },
         ]}
       />
-      <ProductJsonLd locale={locale} />
+      <FAQJsonLd questions={faqs} />
       <Navbar />
 
       <main>
@@ -122,7 +159,7 @@ export default async function SeoLandingPage({ type, slug, locale }: Props) {
                   </span>
                 </Link>
                 <Link
-                  href="/ejemplo"
+                  href="/examples"
                   className={cx(
                     "inline-flex min-h-11 items-center justify-center gap-1 self-center rounded-full px-3 text-sm font-semibold text-ink-soft underline decoration-brand/30 underline-offset-4 transition-colors hover:text-brand-text sm:self-auto",
                     focusRing,
@@ -149,7 +186,7 @@ export default async function SeoLandingPage({ type, slug, locale }: Props) {
                 ))}
               </ul>
 
-              {type === "gifts" && SEASONAL_GIFT_SLUGS.has(slug) && (
+              {isSeasonal && (
                 <Link
                   href={CHRISTMAS_DELIVERY_PATH}
                   className={cx(
@@ -181,6 +218,18 @@ export default async function SeoLandingPage({ type, slug, locale }: Props) {
                   </p>
                 ))}
               </div>
+              {sections.map((sec) => (
+                <div key={sec.heading} className="mt-10 max-w-prose">
+                  <h3 className="font-display text-lg font-semibold leading-snug text-ink sm:text-xl">{sec.heading}</h3>
+                  <div className="mt-3 flex flex-col gap-4">
+                    {sec.paragraphs.map((p, i) => (
+                      <p key={i} className="text-base leading-relaxed text-ink-body sm:text-lg sm:leading-[1.75]">
+                        {p}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
             <aside className="self-start rounded-2xl border-2 border-line bg-paper p-6 sm:p-7">
               <h3 className="font-display text-lg font-semibold leading-snug text-ink sm:text-xl">{k("benefitsHeading")}</h3>
@@ -197,6 +246,33 @@ export default async function SeoLandingPage({ type, slug, locale }: Props) {
             </aside>
           </div>
         </section>
+
+        {/* Christmas / Reyes: this season's order-by dates, same cards as /christmas-delivery */}
+        {isSeasonal && (
+          <section aria-labelledby="seo-deadlines-title" className="border-b border-line bg-paper px-4 py-16 sm:px-6 sm:py-24">
+            <div className="mx-auto max-w-[1200px]">
+              <Heading
+                id="seo-deadlines-title"
+                as="h2"
+                size="page"
+                subtitle={tcd("formatsSub")}
+                className="mb-8 max-w-2xl text-balance"
+              >
+                {tcd("formatsHeading")}
+              </Heading>
+              <DeadlineCards serverToday={today} />
+              <p className="mt-6 max-w-prose text-sm leading-relaxed text-ink-soft">
+                {tcd("regionNote")}{" "}
+                <Link
+                  href={CHRISTMAS_DELIVERY_PATH}
+                  className={cx("font-semibold text-brand-text underline decoration-brand/30 underline-offset-4", focusRing)}
+                >
+                  {tcd("seoCallout")}
+                </Link>
+              </p>
+            </div>
+          </section>
+        )}
 
         {/* Worlds for this page, same cards as the landing catalog */}
         <section aria-labelledby="seo-featured-title" className="bg-paper px-4 py-16 sm:px-6 sm:py-24">
@@ -225,8 +301,8 @@ export default async function SeoLandingPage({ type, slug, locale }: Props) {
               {t("common.faqHeading")}
             </Heading>
             <div className="divide-y divide-line overflow-hidden rounded-2xl border-2 border-line bg-surface">
-              {FAQ_ORDER.map((n) => (
-                <FaqItem key={n} question={tf(`faq.section${n}Title`)} answer={tf(`faq.section${n}Text`)} />
+              {faqs.map((f) => (
+                <FaqItem key={f.question} question={f.question} answer={f.answer} />
               ))}
             </div>
           </div>

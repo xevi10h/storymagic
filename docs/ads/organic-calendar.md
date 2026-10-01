@@ -13,7 +13,7 @@ labelled "Ejemplo"/"Exemple"). Link in bio → `https://meapica.shop/{lang}?utm_
 | Date | Lang | Format | Hook (first 2 s / first line) | Asset to produce |
 |---|---|---|---|---|
 | Mon 5 Oct | ES | Reel/TikTok 15 s | A finger types "Martina" and her name paints itself on the cover | V1 organic cut (no price card, end on meapica.shop) |
-| Wed 7 Oct | CA | Carousel 6 | "Així és un llibre Meapica per dins" | S1 with the CA Hugo book (`/ca/ejemplo/2152a65e-…`) |
+| Wed 7 Oct | CA | Carousel 6 | "Així és un llibre Meapica per dins" | S1 with the CA Hugo book (`/ca/examples/2152a65e-…`) |
 | Fri 9 Oct | ES | Reel/TikTok 12 s | Macro of watercolor paper, pull back to the full page | V4 (Hugo scene-7 → 5 → 11), ambient piano |
 | Sun 11 Oct | CA | Reel/TikTok 10 s + story poll | 10 covers flicking fast, freeze: "On comença l'aventura?" | 10 × `public/images/templates/*.jpg`; story poll with 2 worlds |
 
@@ -35,7 +35,7 @@ Captions
 | Date | Lang | Format | Hook | Asset to produce |
 |---|---|---|---|---|
 | Mon 12 Oct | ES | Carousel 11 | "10 mundos. ¿En cuál empezaría su aventura?" | Cover per world + 1 card per world with its path art (`public/images/path/{world}/`) |
-| Wed 14 Oct | CA | Reel/TikTok 25 s | "Això ho veus gratis abans de pagar" | V2 in CA (screen recording `/ca/crear` → preview at 390 px) |
+| Wed 14 Oct | CA | Reel/TikTok 25 s | "Això ho veus gratis abans de pagar" | V2 in CA (screen recording `/ca/create` → preview at 390 px) |
 | Fri 16 Oct | ES | Reel/TikTok 20 s | "El mismo libro no sirve a los 5 y a los 11" | V7 (Hugo / Carla / Pau text pages, ES books) |
 | Sun 18 Oct | CA | Reel/TikTok 45–60 s | "Conte per anar a dormir: comencem?" | Brand voice reads the first 2 pages of *En Hugo i la clau de flor* over slow pans of the pages |
 

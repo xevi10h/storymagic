@@ -28,7 +28,7 @@ export function sanitizeNextPath(raw: string | null | undefined, fallback: strin
   let value = raw.trim();
   if (!value || value.length > MAX_LENGTH) return fallback;
 
-  // One level of encoding ("%2Fcrear%2Fabc%2Fpreview") from older links.
+  // One level of encoding ("%2Fcreate%2Fabc%2Fpreview") from older links.
   if (/^%2f/i.test(value)) {
     try {
       value = decodeURIComponent(value);

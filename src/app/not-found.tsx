@@ -26,7 +26,7 @@ export default function RootNotFound() {
           <Link href="/es" className={buttonClass()}>
             Volver al inicio
           </Link>
-          <Link href="/es/crear" className={buttonClass({ variant: "quiet" })}>
+          <Link href="/es/create" className={buttonClass({ variant: "quiet" })}>
             o crea un cuento nuevo
           </Link>
         </div>

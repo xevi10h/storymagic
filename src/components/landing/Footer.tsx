@@ -4,7 +4,7 @@ import { Link } from "@/i18n/navigation";
 import BrandLogo from "@/components/BrandLogo";
 import NewsletterForm from "@/components/landing/NewsletterForm";
 import { cx } from "@/components/ui";
-import { SEO_GIFT_SLUGS, SEO_AGE_SLUGS, seoPath } from "@/lib/seo-landing";
+import { SEO_HUB_HEADING_KEY, SEO_SLUGS, seoHubPath, seoPath, type SeoPageType } from "@/lib/seo-landing";
 import { CHRISTMAS_DELIVERY_PATH } from "@/lib/shipping";
 import { SUPPORT_EMAIL } from "@/lib/pricing";
 import { CookieSettingsButton } from "@/components/tracking/Tracking";
@@ -15,6 +15,8 @@ const linkClass = cx(
   // White ring: the brand-orange focus ring is too faint on brand-deep.
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white",
 );
+
+const SEO_LINK_TYPES: SeoPageType[] = ["gifts", "ages", "themes"];
 
 function FooterColumn({ title, children }: { title: ReactNode; children: ReactNode }) {
   return (
@@ -53,7 +55,7 @@ export default function Footer() {
               </Link>
             </li>
             <li>
-              <Link className={linkClass} href="/ejemplo">
+              <Link className={linkClass} href="/examples">
                 {tsc("title")}
               </Link>
             </li>
@@ -100,40 +102,27 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* SEO landing links — internal linking for gift occasions & age ranges */}
-        <div className="mt-12 grid gap-8 border-t border-white/15 pt-10 sm:grid-cols-2">
-          <div>
-            <h2 className="mb-1 text-xs font-bold uppercase tracking-wide text-white">
-              <Link className={linkClass} href="/gifts">
-                {ts("nav.giftHeading")}
-              </Link>
-            </h2>
-            <ul className="flex flex-wrap gap-x-5 text-sm">
-              {SEO_GIFT_SLUGS.map((slug) => (
-                <li key={slug}>
-                  <Link className={linkClass} href={seoPath("gifts", slug)}>
-                    {ts(`nav.gifts.${slug}`)}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <h2 className="mb-1 text-xs font-bold uppercase tracking-wide text-white">
-              <Link className={linkClass} href="/personalized-books">
-                {ts("nav.ageHeading")}
-              </Link>
-            </h2>
-            <ul className="flex flex-wrap gap-x-5 text-sm">
-              {SEO_AGE_SLUGS.map((slug) => (
-                <li key={slug}>
-                  <Link className={linkClass} href={seoPath("ages", slug)}>
-                    {ts(`nav.ages.${slug}`)}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+        {/* SEO landing links: every hub and every landing (occasions, ages, themes)
+            is one click from every marketing page, home included. */}
+        <div className="mt-12 grid gap-8 border-t border-white/15 pt-10 sm:grid-cols-2 lg:grid-cols-3">
+          {SEO_LINK_TYPES.map((type) => (
+            <div key={type}>
+              <h2 className="mb-1 text-xs font-bold uppercase tracking-wide text-white">
+                <Link className={linkClass} href={seoHubPath(type)}>
+                  {ts(SEO_HUB_HEADING_KEY[type])}
+                </Link>
+              </h2>
+              <ul className="flex flex-wrap gap-x-5 text-sm">
+                {SEO_SLUGS[type].map((slug) => (
+                  <li key={slug}>
+                    <Link className={linkClass} href={seoPath(type, slug)}>
+                      {ts(`nav.${type}.${slug}`)}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
         <div className="mt-10 flex flex-col gap-2 border-t border-white/15 pt-6 text-sm sm:flex-row sm:items-center sm:justify-between">

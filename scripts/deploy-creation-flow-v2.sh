@@ -2,7 +2,7 @@
 # One-off deploy runbook for creation flow v2 (see docs/stack.md). Run steps in order:
 #   bash scripts/deploy-creation-flow-v2.sh 1   # showcase bucket + publish marketing images
 #   bash scripts/deploy-creation-flow-v2.sh 2   # push main + deploy to Vercel prod
-#   (smoke test https://meapica.shop/es/crear and the landing images)
+#   (smoke test https://meapica.shop/es/create and the landing images)
 #   bash scripts/deploy-creation-flow-v2.sh 3   # make illustrations private + backfill paths
 # Migrations 140000-140200 are already applied (2026-09-28).
 set -euo pipefail

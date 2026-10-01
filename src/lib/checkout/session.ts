@@ -182,7 +182,7 @@ export function buildCheckoutSession(input: CheckoutSessionInput): CheckoutSessi
     payment_intent_data: { metadata: { story_id: storyId, format, ...(appliedOffer ? { offer: appliedOffer.offer } : {}) } },
     success_url: `${origin}/${locale}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
     // Another copy is bought from the library: back there if they change their mind.
-    cancel_url: isReorder ? `${origin}/${locale}/dashboard?tab=orders` : `${origin}/${locale}/crear/${storyId}/preview`,
+    cancel_url: isReorder ? `${origin}/${locale}/dashboard?tab=orders` : `${origin}/${locale}/create/${storyId}/preview`,
   };
   if (requiresShipping) {
     // Decision 2026-09-28: Spain only (Gelato ships from an EU plant; no customs).

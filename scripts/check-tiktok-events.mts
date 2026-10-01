@@ -6,6 +6,7 @@ import type Stripe from "stripe";
 import { sendTikTokPurchase } from "../src/lib/tracking/tiktok-events.ts";
 
 const sha = (v: string) => createHash("sha256").update(v).digest("hex");
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- test double: loose payload shape is asserted field by field below
 const calls: { url: string; headers: Record<string, string>; body: Record<string, any> }[] = [];
 globalThis.fetch = (async (url: string, init: RequestInit) => {
   calls.push({ url, headers: init.headers as Record<string, string>, body: JSON.parse(String(init.body)) });

@@ -3,10 +3,11 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import CreationHeader from "@/components/crear/CreationHeader";
+import CreationHeader from "@/components/create/CreationHeader";
 import { Spinner } from "@/components/ui/Spinner";
 import { BrandLoader } from "@/components/ui/BrandLoader";
 import { SUPPORT_EMAIL } from "@/lib/support";
+import { DELIVERY_PARAMS } from "@/lib/shipping";
 import { purchaseEventId, trackEvent } from "@/lib/tracking/consent";
 
 interface OrderDetails {
@@ -457,7 +458,7 @@ export default function SuccessClient({
                   </p>
                 </div>
                 <Link
-                  href={`/crear/${order.storyId}/preview`}
+                  href={`/create/${order.storyId}/preview`}
                   className="shrink-0 rounded-lg border border-brand bg-brand-tint px-3 py-1.5 text-xs font-bold text-brand-text transition-all hover:bg-surface"
                 >
                   {t("viewBook")}
@@ -503,7 +504,7 @@ export default function SuccessClient({
                       {t("deliveryTitle")}
                     </p>
                     <p className="mt-0.5 text-xs text-text-muted">
-                      {t("deliveryDescription")}
+                      {t("deliveryDescription", DELIVERY_PARAMS)}
                     </p>
                   </div>
                 </div>
@@ -536,7 +537,7 @@ export default function SuccessClient({
           {/* Actions */}
           <div className="mt-8 flex flex-col gap-3">
             <Link
-              href="/crear"
+              href="/create"
               className="min-h-12 flex w-full items-center justify-center gap-2 rounded-xl bg-create-primary px-6 py-3.5 text-[19px] font-bold leading-tight text-white transition-all hover:bg-create-primary-hover active:scale-[0.98] shadow-lg shadow-create-primary/20"
             >
               <span className="material-symbols-outlined text-lg">

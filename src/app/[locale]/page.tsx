@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { setRequestLocale } from "next-intl/server";
 import Navbar from "@/components/landing/Navbar";
 import Hero from "@/components/landing/Hero";
 import HowItWorks from "@/components/landing/HowItWorks";
@@ -26,6 +27,7 @@ type Props = {
 
 export default async function Home({ params }: Props) {
   const { locale } = await params;
+  setRequestLocale(locale);
 
   // Waitlist mode: show waitlist unless user has access cookie
   const isWaitlistMode = process.env.WAITLIST_MODE === "true";

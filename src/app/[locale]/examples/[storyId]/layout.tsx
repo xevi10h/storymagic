@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { cache } from "react";
+import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { toShowcaseUrl } from "@/lib/storage/illustration-refs";
 import { SHOWCASE_STATUSES, showcaseReadClient } from "@/lib/showcase";
@@ -10,11 +12,9 @@ type Props = {
   params: Promise<{ locale: string; storyId: string }>;
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale, storyId } = await params;
-  const supabase = showcaseReadClient();
-
-  const { data: story } = await supabase
+/** One query per request for metadata + the 404 check (React cache dedupes it). */
+const getShowcaseStory = cache(async (storyId: string) => {
+  const { data, error } = await showcaseReadClient()
     .from("stories")
     .select(`
       id,
@@ -26,14 +26,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .eq("id", storyId)
     .eq("is_showcase", true)
     .in("status", SHOWCASE_STATUSES)
-    .single();
+    .maybeSingle();
+  // 22P02 = not a UUID → simply not found. Any other error is an outage: throw
+  // (500, not cached) rather than answer a cacheable 404 for a real example.
+  if (error && error.code !== "22P02") throw new Error(`showcase story ${storyId}: ${error.message}`);
+  return data;
+});
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale, storyId } = await params;
+  const story = await getShowcaseStory(storyId);
 
   if (!story) {
     const t = await getTranslations({ locale, namespace: "showcase" });
-    return {
-      title: t("notFound"),
-      robots: { index: false, follow: false },
-    };
+    // The layout answers notFound() (404), and Next adds the noindex tag itself.
+    return { title: t("notFound") };
   }
 
   const generated = story.generated_text as unknown as {
@@ -67,15 +74,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 
   const description = descriptionMap[locale] || descriptionMap.es;
-  const canonicalUrl = `${BASE_URL}/${locale}/ejemplo/${storyId}`;
+  const canonicalUrl = `${BASE_URL}/${locale}/examples/${storyId}`;
 
   // Build hreflang alternates
   const languages: Record<string, string> = {
-    es: `${BASE_URL}/es/ejemplo/${storyId}`,
-    ca: `${BASE_URL}/ca/ejemplo/${storyId}`,
-    en: `${BASE_URL}/en/ejemplo/${storyId}`,
-    fr: `${BASE_URL}/fr/ejemplo/${storyId}`,
-    "x-default": `${BASE_URL}/es/ejemplo/${storyId}`,
+    es: `${BASE_URL}/es/examples/${storyId}`,
+    ca: `${BASE_URL}/ca/examples/${storyId}`,
+    en: `${BASE_URL}/en/examples/${storyId}`,
+    fr: `${BASE_URL}/fr/examples/${storyId}`,
+    "x-default": `${BASE_URL}/es/examples/${storyId}`,
   };
 
   return {
@@ -116,6 +123,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default function ShowcaseStoryLayout({ children }: Props) {
+export default async function ShowcaseStoryLayout({ children, params }: Props) {
+  // Unknown / unpublished id → a real 404 (not a 200 "not found" shell).
+  const { storyId } = await params;
+  if (!(await getShowcaseStory(storyId))) notFound();
   return children;
 }

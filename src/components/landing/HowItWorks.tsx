@@ -2,10 +2,11 @@ import Image from "next/image";
 import type { ReactNode } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import LiveCover from "@/components/crear/LiveCover";
+import LiveCover from "@/components/create/LiveCover";
 import { BookMockup } from "@/components/book-mockup";
 import { Heading, brandBadge, buttonClass } from "@/components/ui";
 import { AVATAR_SKIN_TONES } from "@/lib/avatar/manifest";
+import { COPY_PARAMS } from "@/lib/product-facts";
 import { LANDING_EXAMPLE, landingExampleBook } from "./HowItWorksExample";
 
 // Screen 2 offers "Sube una foto" only behind this flag (docs/user-experience.md).
@@ -18,7 +19,7 @@ const CHOSEN_ADVENTURE = 1;
 type StepId = "name" | "look" | "adventure" | "preview" | "print";
 
 /**
- * "Cómo funciona": the real creation flow (/crear) in five cards, each with the
+ * "Cómo funciona": the real creation flow (/create) in five cards, each with the
  * product's own art following one example child (Noa, a real showcase book).
  * Mobile/tablet: horizontal snap carousel; desktop: 5-column grid.
  */
@@ -127,7 +128,7 @@ export default function HowItWorks() {
     { id: "look", text: t(PHOTO_UPLOAD_ENABLED ? "steps.look.textPhoto" : "steps.look.text") },
     { id: "adventure", text: t("steps.adventure.text") },
     { id: "preview", text: t("steps.preview.text") },
-    { id: "print", text: t("steps.print.text") },
+    { id: "print", text: t("steps.print.text", COPY_PARAMS) },
   ];
 
   return (
@@ -174,7 +175,7 @@ export default function HowItWorks() {
         </ol>
 
         <div className="mt-10 hidden justify-center lg:flex">
-          <Link href="/crear" className={buttonClass({ size: "md" })}>
+          <Link href="/create" className={buttonClass({ size: "md" })}>
             {t("cta")}
             <span aria-hidden className="material-symbols-outlined text-lg transition-transform group-hover:translate-x-1">
               arrow_forward

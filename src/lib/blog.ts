@@ -25,6 +25,18 @@ export interface BlogPost extends BlogPostMeta {
   relatedSlug: string | null;
 }
 
+// Post bodies stored before the 2026-10-01 slug rename still link /crear, /ejemplo
+// and /perfil. next.config.ts 308s them, but rewrite at read time so pages link
+// the final URL directly (no redirect hop for crawlers or readers).
+const LEGACY_SLUGS: Record<string, string> = { crear: "create", ejemplo: "examples", perfil: "profile" };
+const LEGACY_LINK_RE = /((?:\]\(|href=["'])(?:https:\/\/meapica\.shop)?\/(?:(?:es|ca|en|fr)\/)?)(crear|ejemplo|perfil)(?=[/)?#"'\s]|$)/g;
+
+export function rewriteLegacyLinks(markdown: string): string {
+  return markdown
+    .replace(LEGACY_LINK_RE, (_m, prefix: string, slug: string) => `${prefix}${LEGACY_SLUGS[slug]}`)
+    .replace(/(\/create\/[^/)\s"']+\/)generar(?=[/)?#"'\s]|$)/g, "$1generate");
+}
+
 function publicClient() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -82,7 +94,7 @@ export async function getPost(
   const row: any = data;
   return {
     ...toMeta(row),
-    bodyMarkdown: row.body_markdown ?? "",
+    bodyMarkdown: rewriteLegacyLinks(row.body_markdown ?? ""),
     seoTitle: row.seo_title ?? null,
     seoDescription: row.seo_description ?? null,
     relatedType: (row.related_type as SeoPageType | null) ?? null,

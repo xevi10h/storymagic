@@ -91,7 +91,7 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
         const errors = trackErrors(page);
         const bodies = await mockApi(page, { withPlan: true });
         const c = COPY[locale];
-        await page.goto(`/${locale}/crear/${STORY_ID}/preview`);
+        await page.goto(`/${locale}/create/${STORY_ID}/preview`);
         await section(page).waitFor();
         await section(page).scrollIntoViewIfNeeded();
 
@@ -134,7 +134,7 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
 
       test(`preview ends on the chapters + printed book, not a padlock [${locale} ${vpName}]`, async ({ page }) => {
         await mockApi(page, { withPlan: true });
-        await page.goto(`/${locale}/crear/${STORY_ID}/preview`);
+        await page.goto(`/${locale}/create/${STORY_ID}/preview`);
         await section(page).waitFor();
         await expect(page.getByText(COPY[locale].teaser)).toHaveCount(1);
         // The old blank padlock page ("Desbloquear cuento") is gone; the printed book closes the preview.
@@ -145,7 +145,7 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
       if (vpName === "mobile") {
         test(`sticky bar: formats first, then a soft consent nudge, never the error [${locale}]`, async ({ page }) => {
           const bodies = await mockApi(page, { withPlan: true });
-          await page.goto(`/${locale}/crear/${STORY_ID}/preview`);
+          await page.goto(`/${locale}/create/${STORY_ID}/preview`);
           await section(page).waitFor();
           await page.waitForTimeout(500);
           await expect(sticky(page)).toBeVisible();
@@ -176,11 +176,11 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
       test(`outdated preview can't be bought [${locale} ${vpName}]`, async ({ page }) => {
         const errors = trackErrors(page);
         await mockApi(page, { withPlan: false });
-        await page.goto(`/${locale}/crear/${STORY_ID}/preview`);
+        await page.goto(`/${locale}/create/${STORY_ID}/preview`);
         await expect(page.getByText(COPY[locale].outdated)).toBeVisible();
         await expect(page.locator("#withdrawal-consent")).toHaveCount(0);
         const link = page.getByRole("link", { name: COPY[locale].recreate });
-        await expect(link).toHaveAttribute("href", new RegExp(`/crear\\?characterId=${CHARACTER_ID}`));
+        await expect(link).toHaveAttribute("href", new RegExp(`/create\\?characterId=${CHARACTER_ID}`));
         await section(page).scrollIntoViewIfNeeded();
         await page.screenshot({ path: `${SHOTS}/${locale}-${vpName}-outdated.png` });
         expect(errors).toEqual([]);
@@ -191,7 +191,7 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
 
 test("server says preview_outdated → outdated notice", async ({ page }) => {
   await mockApi(page, { withPlan: true, checkoutError: "preview_outdated" });
-  await page.goto(`/es/crear/${STORY_ID}/preview`);
+  await page.goto(`/es/create/${STORY_ID}/preview`);
   await section(page).waitFor();
   await page.locator("#withdrawal-consent input").check();
   await mainCta(page).click();

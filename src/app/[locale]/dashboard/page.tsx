@@ -171,14 +171,14 @@ export default function DashboardPage() {
 
           <div className="flex items-center gap-3">
             <Link
-              href="/crear"
+              href="/create"
               className="flex items-center gap-2 rounded-lg border border-brand bg-brand-tint px-4 py-2 text-sm font-bold text-brand-text transition-all hover:bg-surface active:scale-[0.98]"
             >
               <span className="material-symbols-outlined text-lg">add</span>
               <span className="hidden sm:inline">{t("newStory")}</span>
             </Link>
             <Link
-              href="/perfil"
+              href="/profile"
               className="flex h-9 w-9 items-center justify-center rounded-full text-text-soft transition-colors hover:bg-cream hover:text-text-main"
               aria-label={t("tabs.characters")}
             >
@@ -261,7 +261,7 @@ export default function DashboardPage() {
                 title={t("emptyOrders.title")}
                 description={t("emptyOrders.description")}
                 ctaLabel={t("emptyOrders.cta")}
-                ctaHref="/crear"
+                ctaHref="/create"
               />
             }
           />
@@ -295,7 +295,7 @@ function StoriesTab({
         title={t("emptyStories.title")}
         description={t("emptyStories.description")}
         ctaLabel={t("emptyStories.cta")}
-        ctaHref="/crear"
+        ctaHref="/create"
       />
     );
   }
@@ -353,12 +353,12 @@ function StoryCard({
 
   const actionHref =
     story.status === "preview"
-      ? `/crear/${story.id}/preview`
+      ? `/create/${story.id}/preview`
       : story.status === "ready" || story.status === "ordered"
-        ? `/crear/${story.id}/preview`
+        ? `/create/${story.id}/preview`
         : story.status === "generating" || story.status === "completing"
-          ? `/crear/${story.id}/generar`
-          : `/crear/${story.id}/generar`;
+          ? `/create/${story.id}/generate`
+          : `/create/${story.id}/generate`;
 
   const actionLabel =
     story.status === "preview" ? t("storyActions.viewPreview") :
@@ -561,8 +561,8 @@ function getStoryTitle(story: CharacterStory, fallback: string): string {
 
 function getStoryHref(story: CharacterStory): string {
   return story.status === "preview" || story.status === "ready" || story.status === "ordered"
-    ? `/crear/${story.id}/preview`
-    : `/crear/${story.id}/generar`;
+    ? `/create/${story.id}/preview`
+    : `/create/${story.id}/generate`;
 }
 
 function CharactersTab({
@@ -584,7 +584,7 @@ function CharactersTab({
         title={t("emptyCharacters.title")}
         description={t("emptyCharacters.description")}
         ctaLabel={t("emptyCharacters.cta")}
-        ctaHref="/crear"
+        ctaHref="/create"
       />
     );
   }
@@ -680,7 +680,7 @@ function CharactersTab({
                   {t("viewDetail")}
                 </button>
                 <Link
-                  href="/crear"
+                  href="/create"
                   className="flex-1 rounded-lg border border-brand bg-brand-tint px-3 py-2 text-center text-xs font-bold text-brand-text transition-colors hover:bg-surface"
                 >
                   {t("createBook")}
@@ -850,7 +850,7 @@ function CharacterDetailModal({
                     </div>
                   )}
                   <Link
-                    href={`/crear?template=${tpl.id}&characterId=${character.id}`}
+                    href={`/create?template=${tpl.id}&characterId=${character.id}`}
                     onClick={onClose}
                     className="group flex items-center gap-4 rounded-xl border border-border-light bg-white p-4 transition-all hover:border-transparent hover:shadow-md"
                     style={{ borderLeftWidth: "4px", borderLeftColor: tpl.themeColor }}
@@ -861,7 +861,7 @@ function CharacterDetailModal({
                           {td(`templates.${tpl.id}.title`)}
                         </p>
                         <span className="shrink-0 rounded-full bg-cream px-2 py-0.5 text-[10px] font-medium text-text-muted">
-                          {tpl.ageRange}
+                          {td("ageRange", { min: tpl.ageMin, max: tpl.ageMax })}
                         </span>
                       </div>
                       <p className="mt-0.5 line-clamp-1 text-xs text-text-muted">
@@ -885,7 +885,7 @@ function CharacterDetailModal({
           <div className="border-t border-border-light px-6 py-5">
             <p className="mb-3 text-sm text-text-muted">{t("allAdventuresDone", { name: character.name })}</p>
             <Link
-              href={`/crear?characterId=${character.id}`}
+              href={`/create?characterId=${character.id}`}
               onClick={onClose}
               className="min-h-12 flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 text-[19px] font-bold leading-tight text-white transition-colors hover:bg-primary-hover active:scale-[0.98]"
             >

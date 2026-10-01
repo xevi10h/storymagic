@@ -11,144 +11,259 @@
     },
     "gifts": {
       "three-kings": {
-        "metaTitle": "Three Kings' Day Gift: Personalized Kids' Book",
-        "metaDescription": "Make this Epiphany unforgettable with a printed book where your child is the hero. Order in time for January 6 and preview before you buy.",
-        "h1": "A Three Kings' Day gift your child will keep for years",
-        "heroIntro": "On the morning of January 6, while the wrapping paper piles up, one gift stands apart: a printed book where your child is the hero of the story. Not another toy lost by February.",
-        "bodyHeading": "The present the Kings could never bring twice",
+        "metaTitle": "Personalised Three Kings' Day Gift Book | Meapica",
+        "metaDescription": "A Three Kings' Day book where your child is the hero: their name, a watercolour portrait and the story you choose. Free shipping in Spain.",
+        "h1": "A personalised Three Kings' Day gift: the book where your child is the hero",
+        "heroIntro": "On the morning of 6 January, among the shoes by the window and the wrapping paper, one gift has their name on the cover. A printed book where your child lives the adventure, painted in watercolour on every page.",
+        "bodyHeading": "Why a personalised book works for Three Kings' Day",
         "bodyParagraphs": [
-          "Most Epiphany gifts are forgotten within weeks. A personalized book is different. Your child's name, face, hair and eyes live inside an adventure written for them alone, printed on 170 g coated silk paper and made to last. It becomes the book they ask you to read again, long after the new toys go quiet.",
-          "Each book is written for your child alone, with a dedication you write yourself. You see the full story and illustrations before deciding, so there are no surprises on the big morning. Order with enough lead time and the Kings arrive carrying something no shop window can match."
+          "By February most Epiphany toys are at the bottom of the box. A book with their name on the cover stays on the shelf. It is the one they bring to you at bedtime and ask for again, because the child on every page looks like them and the adventure is theirs.",
+          "You build it in a few minutes. Type their name, choose their look and pick the three chapters of the story: each choice changes what happens. Before paying you see the cover with their name, their watercolour portrait and the first illustrated scenes of their own book."
         ],
-        "benefitsHeading": "Why it wins on January 6",
+        "benefitsHeading": "What makes this Three Kings' gift different",
         "benefits": [
-          "Your child is the named hero, not a bystander",
-          "A keepsake that outlasts every plastic toy",
-          "Full preview before you commit to print"
-        ]
+          "Their name on the cover and a portrait that looks like them",
+          "You see their book before paying",
+          "Order by {reyesDate} to have it home before the Kings"
+        ],
+        "sections": [
+          {
+            "heading": "How you create it",
+            "paragraphs": [
+              "Start with their name. Then choose skin, hair colour, hairstyle, eyes, glasses and freckles, and whether the story speaks of them as a girl, a boy or in neutral terms. Choose a world (space, dinosaurs, pirates, a magic forest and more) and decide the three chapters. Last, write a dedication: the line they will read again years from now.",
+              "Creating the book and seeing the preview is free and needs no account. You only pay if you like it."
+            ]
+          },
+          {
+            "heading": "What is inside the book",
+            "paragraphs": [
+              "A {size} × {size} cm square book, {pages} pages with {scenes} illustrated scenes, printed on {paper} g silk coated paper with a matte laminated cover. Their name appears on the cover and throughout the story, and your dedication opens the book."
+            ]
+          },
+          {
+            "heading": "Hardcover, softcover or PDF",
+            "paragraphs": [
+              "Hardcover {hardcover} VAT included, the most durable. Softcover {softcover} VAT included. Both are printed on demand in Europe, shipped free to mainland Spain and the Balearic Islands and include the PDF. The PDF alone is {pdf} VAT included and arrives by email after payment, normally in under an hour."
+            ]
+          },
+          {
+            "heading": "When to order for 6 January",
+            "paragraphs": [
+              "Printed books arrive in {minDays}-{maxDays} business days. For it to be home before the Kings come, order the printed book by {reyesDate}. That date already includes a December margin for carrier delays, and the full calendar is on our delivery dates page. Miss it and the PDF still arrives in time, even on 5 January."
+            ]
+          }
+        ],
+        "faq": {
+          "q1": "When should I order so it arrives for Three Kings' Day?",
+          "a1": "Order the printed book by {reyesDate} to have it home before 6 January. Printing and delivery take {minDays}-{maxDays} business days and we add extra margin in December. After that date, the PDF ({pdf} VAT included) still arrives by email after payment.",
+          "q2": "Can the book mention the Three Kings?",
+          "a2": "The story is one of our adventure worlds (space, dinosaurs, pirates and more), not a Kings' story. What makes it a Three Kings' gift is your dedication: you can write it from the Kings, from the family or from the godparents.",
+          "q3": "How much does it cost?",
+          "a3": "Hardcover {hardcover} VAT included, softcover {softcover} VAT included, both with free shipping and the PDF included. The PDF alone is {pdf} VAT included.",
+          "q4": "What if it arrives damaged?",
+          "a4": "Because it is made to order with their name, it cannot be returned. But if it arrives with a print defect or damaged in transit, write to us within {defectDays} days with a photo and we send you a new one free of charge."
+        }
       },
       "sant-jordi": {
-        "metaTitle": "Sant Jordi Gift: A Personalized Book to Keep",
-        "metaDescription": "This Sant Jordi, give the most personal book of all: one starring your child. A rose fades; this story lasts forever. Preview before you buy.",
+        "metaTitle": "Personalised Sant Jordi Book for Kids | Meapica",
+        "metaDescription": "This Sant Jordi, give a book starring your child: their name, a watercolour portrait and the story you choose. See it before paying. Free shipping.",
         "h1": "The most personal book to give this Sant Jordi",
         "heroIntro": "On April 23, Catalonia trades roses and books. The rose will wilt by the weekend. The book, if you choose the right one, can last a lifetime.",
         "bodyHeading": "A book no other family owns",
         "bodyParagraphs": [
           "Sant Jordi rewards the thoughtful giver. Anyone can buy a bestseller off the table; almost no one arrives with a book where the child on every page shares your child's name, hair and eyes. It turns the day's oldest tradition into something deeply, unmistakably theirs.",
-          "We write a unique story around your child and print it on 170 g coated silk paper, a book meant for the shelf, not the bin. Add a handwritten-style dedication, preview the whole edition before printing, and give a book that earns its place beside the rose for far longer than a single spring day."
+          "We write a unique story around your child and print it on {paper} g silk coated paper, a book meant for the shelf. Add your dedication, see the cover, their portrait and the first illustrated scenes before paying, and give a book that earns its place beside the rose for far longer than one spring day."
         ],
         "benefitsHeading": "Worthy of the day of books",
         "benefits": [
           "A unique edition no bookshop can stock",
           "Lasts long after the rose has faded",
-          "Your dedication printed inside the cover"
-        ]
+          "Your dedication printed on the first page"
+        ],
+        "faq": {
+          "q1": "Can the book be written in Catalan?",
+          "a1": "Yes. Every book can be written in Catalan, Spanish, English or French: you choose when you create it.",
+          "q2": "When should I order for 23 April?",
+          "a2": "Printed books arrive in {minDays}-{maxDays} business days, so order at least two weeks ahead. The PDF ({pdf} VAT included) arrives by email after payment.",
+          "q3": "What does it cost?",
+          "a3": "Hardcover {hardcover} VAT included, softcover {softcover} VAT included, free shipping and PDF included."
+        }
       },
       "birthday": {
-        "metaTitle": "Personalized Birthday Book: Make Them the Star",
-        "metaDescription": "Give the birthday child a book where they are the hero of their own adventure. Better than one more toy. Full preview before you buy.",
+        "metaTitle": "Personalised Birthday Book for Kids | Meapica",
+        "metaDescription": "A birthday book where the birthday child is the hero: their name on the cover, a watercolour portrait and the story you choose. See it before paying.",
         "h1": "A birthday book where the birthday child is the star",
         "heroIntro": "Every birthday brings another pile of toys. This year, give the one present that puts your child's name on the cover and their face on every page.",
         "bodyHeading": "The gift they remember the candle by",
         "bodyParagraphs": [
           "Toys come and go, but few children forget the year they opened a book and found themselves inside it. We build a one-of-a-kind story around your child, their age, their look and the things they love, so the hero turning each page is unmistakably them on the day they grow a year older.",
-          "It reads like a real bookshop find, printed on 170 g coated silk paper to survive bedtime after bedtime. Write a birthday dedication they will reread as a teenager, preview the entire edition before printing, and hand over a present that still means something long after the cake is gone."
+          "It is printed on {paper} g silk coated paper to survive bedtime after bedtime. Write a birthday dedication they will reread as a teenager, see the cover, their portrait and the first scenes before paying, and give a present that still means something long after the cake is gone."
         ],
         "benefitsHeading": "Better than another toy",
         "benefits": [
           "Their name on the cover, their face on every page",
           "A dedication they will treasure for years",
           "Built to survive countless rereads"
-        ]
+        ],
+        "faq": {
+          "q1": "Which story fits their age?",
+          "a1": "Each world has its own range: the magic forest and the land of sweets from 2, dinosaurs and safari from 4, space and pirates from 5, the castle from 6, superheroes from 7 and the invention factory from 8 to 12.",
+          "q2": "Will it arrive for the party?",
+          "a2": "Printed books take {minDays}-{maxDays} business days. If the party is sooner, the PDF ({pdf} VAT included) arrives by email after payment, normally in under an hour.",
+          "q3": "Can I order a second copy?",
+          "a3": "Yes, you can add an extra copy of the same book at checkout, for example one for the grandparents' house."
+        }
       },
       "communion": {
-        "metaTitle": "First Communion Gift: A Personalized Keepsake Book",
-        "metaDescription": "Mark a First Communion with an elegant personalized book starring the child. A meaningful heirloom for a milestone day. Preview before buying.",
+        "metaTitle": "Personalised First Communion Book | Meapica",
+        "metaDescription": "Mark a First Communion with a printed book starring the child, with your dedication from the day. See it before paying. Free shipping in Spain.",
         "h1": "An elegant First Communion keepsake, made for one child",
         "heroIntro": "A First Communion is a day of meaning, not of plastic. It calls for a gift with the same weight: a printed book the child will keep into adulthood.",
         "bodyHeading": "A milestone deserves a milestone gift",
         "bodyParagraphs": [
           "Envelopes are forgotten and trinkets get misplaced, but a beautifully made book finds a permanent home on the shelf. We craft a unique story around the child being celebrated, printed on 170 g coated silk paper, with a hardcover option, so the keepsake feels as considered as the occasion itself.",
-          "Inside, you can write a dedication that names the day, the family and the moment, turning the book into a quiet record of the milestone. You preview the complete edition before it prints, ensuring the story, the look and the dedication are exactly right for such a meaningful celebration."
+          "Inside, you write a dedication that names the day, the family and the moment, turning the book into a quiet record of the milestone. Before paying you see the cover, the portrait and the first illustrated scenes, so the look and the dedication are exactly right."
         ],
         "benefitsHeading": "Fitting for the occasion",
         "benefits": [
           "An heirloom keepsake, not a forgettable trinket",
           "A dedication that records the special day",
           "Hardcover option, made to be kept"
-        ]
+        ],
+        "faq": {
+          "q1": "Which story suits a seven or eight-year-old?",
+          "a1": "For that age: space or pirates (5-8), the castle of dreams (6-10) or superhero for a day (7-10). The dedication is where you name the day.",
+          "q2": "How far ahead should I order?",
+          "a2": "Printed books arrive in {minDays}-{maxDays} business days. Order at least two weeks before the celebration to be calm.",
+          "q3": "Is the hardcover worth it?",
+          "a3": "For a keepsake, yes: hardcover {hardcover} VAT included, matte laminated, the most durable. Softcover is {softcover} VAT included. Both include the PDF."
+        }
       },
       "christmas": {
-        "metaTitle": "Christmas Gift: Personalized Screen-Free Kids' Book",
-        "metaDescription": "Put screen-free magic under the tree: a printed book starring your child. Real family reading moments that last. Full preview before you buy.",
-        "h1": "Screen-free Christmas magic, starring your child",
-        "heroIntro": "Amid the screens and the batteries, leave one gift under the tree that asks for nothing but your voice and a lap to sit on: a book where your child is the hero.",
-        "bodyHeading": "The quiet centre of Christmas morning",
+        "metaTitle": "Personalised Christmas Book for Kids | Meapica",
+        "metaDescription": "A Christmas book starring your child: their name on the cover, a watercolour portrait and the story you choose. See it before paying. Free shipping.",
+        "h1": "A personalised Christmas book for children, to open on Christmas morning",
+        "heroIntro": "On 25 December, between the stockings and the batteries, one present asks only for your voice and a lap: a book with their name on the cover, where they are the hero of every page.",
+        "bodyHeading": "The quiet moment of Christmas morning",
         "bodyParagraphs": [
-          "The best Christmas mornings have a moment of stillness, and a personalized book creates it. Your child finds their own name on the cover and their own face in the illustrations, then climbs into your lap to be read to. It is the antidote to the flashing, beeping pile of everything else.",
-          "Printed on 170 g coated silk paper and made to last, it becomes the December book your family returns to year after year. Write a Christmas dedication, preview the whole story and its illustrations before printing, and give a present that trades screen time for the kind of reading moments children actually remember."
+          "Every Christmas morning has a pause after the wrapping paper. That is when they open their book, find their own name on the cover and climb onto your lap to hear the story. It becomes the December book you bring out every year, with a dedication that marks the Christmas it arrived.",
+          "You create it in a few minutes and see the cover with their name, their watercolour portrait and the first illustrated scenes before paying. No screens, no batteries: a real printed book made for one child."
         ],
-        "benefitsHeading": "Magic without a screen",
+        "benefitsHeading": "Why it belongs under the tree",
         "benefits": [
-          "Real reading moments instead of screen time",
-          "Your child is the hero under the tree",
-          "A December keepsake to revisit each year"
-        ]
+          "A real reading moment instead of more screen time",
+          "Their name and portrait on every page",
+          "Order by {christmasDate} to have it home for Christmas Eve"
+        ],
+        "sections": [
+          {
+            "heading": "How it works",
+            "paragraphs": [
+              "Type their name, choose their look (skin, hair, eyes, glasses, freckles) and pick a world and the three chapters of the story. Write a Christmas dedication. Creating it and seeing the preview is free and needs no sign-up."
+            ]
+          },
+          {
+            "heading": "Formats and prices",
+            "paragraphs": [
+              "Hardcover {hardcover} VAT included or softcover {softcover} VAT included: {size} × {size} cm, {pages} pages, {scenes} illustrated scenes on {paper} g paper, PDF included and free shipping to mainland Spain and the Balearic Islands. The PDF alone is {pdf} VAT included."
+            ]
+          },
+          {
+            "heading": "Delivery before Christmas Eve",
+            "paragraphs": [
+              "Printed books arrive in {minDays}-{maxDays} business days. To have it under the tree on 24 December, order the printed book by {christmasDate}. If you are late, the PDF arrives by email after payment, normally in under an hour, ready to print at home or read on a tablet."
+            ]
+          }
+        ],
+        "faq": {
+          "q1": "What is the last day to order for Christmas?",
+          "a1": "Order the printed book by {christmasDate} to have it home on 24 December. After that, the PDF ({pdf} VAT included) arrives by email after payment and is always on time.",
+          "q2": "Which story suits a Christmas gift?",
+          "a2": "Any of the worlds: choose the one they love most, from space to a magic forest. Each world has its own age range, and the Christmas touch comes from your dedication.",
+          "q3": "Do you deliver to the Canary Islands?",
+          "a3": "Not yet. We ship to mainland Spain and the Balearic Islands. For the Canary Islands, Ceuta or Melilla, the PDF works anywhere.",
+          "q4": "Hardcover or softcover?",
+          "a4": "Hardcover ({hardcover} VAT included) is the most durable for a book that comes back every December. Softcover ({softcover} VAT included) is lighter. Both include the PDF and free shipping."
+        }
       },
       "baptism": {
-        "metaTitle": "Personalized Baptism Book | A Keepsake to Grow Into",
-        "metaDescription": "A christening keepsake starring the child by name. 170 g coated silk paper, printed in Europe. Full preview before you buy. From €9.90 (VAT included).",
-        "h1": "A christening keepsake the child grows into",
-        "heroIntro": "A printed book written for one child alone, kept on the shelf long after the day itself has passed. The kind of gift a godparent gives once and is remembered for.",
-        "bodyHeading": "A gift that outlasts the day",
+        "metaTitle": "Christening Gift Book to Keep for Later | Meapica",
+        "metaDescription": "A christening keepsake: a book with their name and portrait, written for when they turn 2. Your dedication from the day, printed. Free shipping in Spain.",
+        "h1": "A christening gift to keep until they can enjoy it",
+        "heroIntro": "Our stories are written for children from {ageMin} years. As a christening gift, it is the book you give today and read together when they are old enough: with their name on the cover and your dedication from the day.",
+        "bodyHeading": "A gift for later, with words from today",
         "bodyParagraphs": [
-          "Christening presents are often outgrown within a season. A book is not. We write a unique story around the child by name, age and likeness, then illustrate them across twelve double-page scenes they can return to year after year. It waits on the shelf until the day they are old enough to read their own name on the page.",
-          "Every book is written for this one child. The dedication page carries your own words to them, set in print rather than scribbled in a card. 170 g coated silk paper, an optional hardcover, twenty by twenty centimetres, made to be handled gently and passed down rather than discarded."
+          "Most christening presents are outgrown in a season. This one waits. Keep it on the shelf, and when they turn two, open it together: their name on the cover, a portrait that looks like them and a gentle adventure such as the magic forest or the land of sweets, written for the youngest readers.",
+          "The dedication is the part that belongs to the day. Write it now, as the godparent or grandparent, and it is printed on the first page. Years later they will read the words you wrote at their christening."
         ],
-        "benefitsHeading": "Why it makes a lasting christening gift",
+        "benefitsHeading": "Why it works as a christening gift",
         "benefits": [
-          "A keepsake the child grows into, not out of",
-          "Personalized dedication set in print, in your words",
-          "Hardcover option and 170 g coated silk paper, made to last"
-        ]
+          "Your dedication from the christening, printed",
+          "Stories for ages {ageMin} and up, to read together when they are ready",
+          "Hardcover {hardcover} VAT included, made to be kept"
+        ],
+        "faq": {
+          "q1": "Is it a book for babies?",
+          "a1": "No. Our youngest stories are for ages {ageMin} to 5. As a christening gift it is a keepsake to put away and read together when they turn two.",
+          "q2": "What should I choose for such a young child?",
+          "a2": "The worlds written for the youngest readers: the magic forest, the land of sweets or the little chef. Short scenes and big illustrations.",
+          "q3": "Which format lasts best?",
+          "a3": "The hardcover ({hardcover} VAT included) with a matte laminated cover, made to wait on a shelf. It includes the PDF, so the family also keeps a digital copy."
+        }
       },
       "end-of-school": {
-        "metaTitle": "End-of-School Gift Book | Reward the Reader in Them",
-        "metaDescription": "Celebrate the school year with a story starring your child by name. 30 pages, printed in Europe, full preview before you buy. From €9.90 (VAT included).",
+        "metaTitle": "End-of-School Gift Book for Kids | Meapica",
+        "metaDescription": "Celebrate the school year with a book starring your child: their name, a watercolour portrait and the story you choose. See it before paying.",
         "h1": "Close the school year with an adventure of their own",
         "heroIntro": "A personalized book to mark the end of term, where the child who worked all year becomes the hero of the summer ahead. From parents who are proud, or a teacher who noticed.",
         "bodyHeading": "The reward that keeps them reading",
         "bodyParagraphs": [
           "The last day of school deserves more than a certificate. We write an original story with the child at its centre, weaving in their name, their looks and the things they love, so the reward for a year of reading is a book they actually want to open. Twelve illustrated scenes carry them from the classroom into a summer of their own making.",
-          "It is the gift a teacher gives the class reader, or parents leave on the bed the morning term ends. You preview the full story before anything is printed, then it arrives as a printed book on 170 g coated silk paper. A quiet, screen-free way to keep a child turning pages through the long holiday."
+          "It is the gift a teacher gives the class reader, or parents leave on the bed the morning term ends. You see the cover, their portrait and the first scenes before paying, then it arrives printed on {paper} g silk coated paper. A screen-free way to keep a child turning pages through the long holiday."
         ],
         "benefitsHeading": "Why it works as an end-of-term gift",
         "benefits": [
           "Rewards a year of reading with a story they star in",
           "Screen-free summer reading they return to",
           "Choose digital, softcover or hardcover to suit"
-        ]
+        ],
+        "faq": {
+          "q1": "Can a teacher give it to a pupil?",
+          "a1": "Yes. You only need the child's name and their look. The dedication can come from the teacher or the class.",
+          "q2": "Which format suits a summer gift?",
+          "a2": "Softcover ({softcover} VAT included) is light for holidays; hardcover ({hardcover} VAT included) lasts longest. The PDF alone is {pdf} VAT included.",
+          "q3": "When does it arrive?",
+          "a3": "{minDays}-{maxDays} business days with free shipping to mainland Spain and the Balearic Islands."
+        }
       },
       "name-day": {
-        "metaTitle": "Name Day Gift Book | A Story That Bears Their Name",
-        "metaDescription": "Celebrate their saint's day with a personalized book starring the child by name. Printed in Europe, full preview before you buy. From €9.90 (VAT included).",
+        "metaTitle": "Personalised Name Day Gift Book | Meapica",
+        "metaDescription": "Celebrate their name day with a book that carries their name on the cover and every page, and a portrait that looks like them. See it before paying.",
         "h1": "A book that carries their name, for the day that does too",
         "heroIntro": "The saint's day is a second birthday in everything but cake. This is the gift that makes the day truly personal, with the child written in as the hero of their own story.",
         "bodyHeading": "A gift as personal as the day itself",
         "bodyParagraphs": [
-          "A name day is about one person and the name they carry. So is this book. We write an original adventure around the child by name, age and likeness, with room for a pet, a favourite thing or the dream they hope to grow into, woven through both the words and the illustrations. The result is a story that could belong to no one else.",
-          "Twelve double-page scenes, a dedication in your own words, and a story written for this one child. You see the whole story in preview before it goes to print, so nothing is left to chance. A name day gift that honours the name, rather than another toy forgotten by the next one."
+          "A name day is about one person and the name they carry. So is this book. We write an original adventure around the child by name and look, in the world and the chapters you choose, so the result is a story that could belong to no one else.",
+          "{scenes} illustrated scenes, a dedication in your own words, and a story written for this one child. You see the cover, their portrait and the first scenes before it goes to print. A name day gift that honours the name, rather than another toy forgotten by the next one."
         ],
         "benefitsHeading": "Why it suits a name day",
         "benefits": [
           "A story written around their name and likeness",
-          "Pet, favourite thing or dream woven into the tale",
+          "The world and the three chapters chosen by you",
           "A one-of-a-kind story, written for them"
-        ]
+        ],
+        "faq": {
+          "q1": "Does the name appear on every page?",
+          "a1": "Yes: on the cover and throughout the story. Names with accents and special letters are supported.",
+          "q2": "Can I add things they love?",
+          "a2": "Yes: you choose their look, the world and the three chapters, and the dedication is yours.",
+          "q3": "How long does it take?",
+          "a3": "Printed: {minDays}-{maxDays} business days, free shipping. PDF: by email after payment, {pdf} VAT included."
+        }
       },
       "graduation": {
-        "metaTitle": "Graduation Keepsake Book | A Milestone in Print",
-        "metaDescription": "Mark a milestone with a personalized story starring the child, ages 8-12. Printed in Europe, full preview before you buy. From €9.90 (VAT included).",
+        "metaTitle": "Graduation Keepsake Book for Kids 8-12 | Meapica",
+        "metaDescription": "Mark a milestone with a book starring the child, for ages 8-12, with your dedication printed. See it before paying. Free shipping in Spain.",
         "h1": "A milestone kept, for the child who reached it",
         "heroIntro": "For the older child crossing a threshold, a book that holds who they were at this moment, and the values you hope they carry forward. A keepsake, not a trophy.",
         "bodyHeading": "Who they were, kept in print",
@@ -161,47 +276,71 @@
           "Written for ages 8-12, not for little ones",
           "A keepsake of who they were at this milestone",
           "Dedication in your words, printed to last"
-        ]
+        ],
+        "faq": {
+          "q1": "Is it too young for a ten-year-old?",
+          "a1": "No. The invention factory is written for ages 8 to 12, and superhero for a day and the castle of dreams reach 10.",
+          "q2": "What makes it a graduation gift?",
+          "a2": "The dedication: write what this milestone means and it is printed on the first page.",
+          "q3": "How much is it?",
+          "a3": "Hardcover {hardcover} VAT included, softcover {softcover} VAT included, free shipping and PDF included."
+        }
       },
       "first-birthday": {
-        "metaTitle": "First Birthday Book | Their First Book, With Their Name",
-        "metaDescription": "Their very first book, starring them by name. A first birthday keepsake, printed in Europe. Full preview before you buy. From €9.90 (VAT included).",
-        "h1": "Their first book, with their name on every page",
-        "heroIntro": "A first birthday is remembered by everyone but the child. This is the keepsake that lets them hold it later: their very first book, written for them alone.",
-        "bodyHeading": "A treasure for the years to come",
+        "metaTitle": "First Birthday Keepsake Book for Later | Meapica",
+        "metaDescription": "A first birthday keepsake: a book with their name and portrait to read together from age 2, with your dedication from today. Free shipping in Spain.",
+        "h1": "A first birthday keepsake to read together from age two",
+        "heroIntro": "Our stories start at age {ageMin}. For a first birthday, it is a present for the child they are about to become: give it now, keep it close, and make it their first story when they turn two.",
+        "bodyHeading": "Given at one, read from two",
         "bodyParagraphs": [
-          "At one, the story is read to them. The gift is really for the child they will become, the one who finds this book years from now and reads their own name as the hero. We write an original tale around their name, age and likeness, illustrated across twelve double-page scenes, so their first book is unlike any other first book given that year.",
-          "A book written for them alone, printed on 170 g coated silk paper. The dedication page holds your words from this birthday. While the toys come and go, this is the one gift built to still be on the shelf when they are old enough to understand whose book it is."
+          "At one, they will not read it yet, and that is the point. It is a keepsake with their name on the cover, a portrait that looks like them and a dedication you write on this first birthday. When they turn two, it becomes the first story where they find themselves.",
+          "Pick a world written for the youngest readers, like the magic forest or the land of sweets. Short scenes, big illustrations and a printed book that waits on the shelf while the first-birthday toys come and go."
         ],
         "benefitsHeading": "Why it makes a first birthday keepsake",
         "benefits": [
-          "Their very first book, starring them by name",
-          "A dedication kept in your words from day one",
-          "170 g coated silk paper, made to be treasured"
-        ]
+          "A dedication written on their first birthday",
+          "Stories for ages {ageMin} and up, ready when they are",
+          "Their name on the cover, kept for years"
+        ],
+        "faq": {
+          "q1": "Can a one-year-old use this book?",
+          "a1": "Not yet: our youngest stories are for ages {ageMin} to 5. It is a keepsake to give now and read together from their second birthday.",
+          "q2": "What do I write in the dedication?",
+          "a2": "Whatever you want them to read one day: who gave it, what they were like at one, a wish. It is printed on the first page.",
+          "q3": "How long does delivery take?",
+          "a3": "{minDays}-{maxDays} business days, free shipping to mainland Spain and the Balearic Islands, with tracking by email."
+        }
       }
     },
     "ages": {
       "2-4": {
-        "metaTitle": "Personalized Books for Ages 2-4 | First Stories",
-        "metaDescription": "First books for toddlers, starring your child by name and face. Short, sensory scenes that spark an early love of reading. Preview before you buy.",
+        "metaTitle": "Personalised Books for Ages 2-4 | Meapica",
+        "metaDescription": "First books for toddlers, with their name on the cover and a portrait that looks like them. Short scenes, big illustrations. See it before paying.",
         "h1": "First personalized books for ages 2 to 4",
         "heroIntro": "At this age, a book is something to point at, name and hold close. When the child on the page is your child, every reading turns into a little moment of recognition.",
         "bodyHeading": "Where the love of books begins",
         "bodyParagraphs": [
-          "Two- to four-year-olds learn the world by spotting what they know. A familiar face, a familiar name, a beloved pet appearing in big, clear illustrations gives them exactly that thrill on every spread. The scenes stay short and warm, made for small attention spans and well-loved bedtime routines.",
-          "We build the story around your toddler's name, age and features, then print it on sturdy 170 g coated silk paper, with a hardcover option for curious hands. Seeing themselves as the hero, again and again, is often a child's very first reason to ask for one more page, and then another."
+          "Two- to four-year-olds learn the world by spotting what they know. A familiar face and their own name in big, clear illustrations give them exactly that thrill on every spread. The scenes stay short and warm, made for small attention spans and well-loved bedtime routines.",
+          "We build the story around your toddler's name and look, then print it on {paper} g silk coated paper, with a hardcover option for curious hands. Seeing themselves as the hero, again and again, is often a child's first reason to ask for one more page."
         ],
         "benefitsHeading": "Made for little ones",
         "benefits": [
           "Short, warm scenes for small attention spans",
           "Big, clear illustrations they recognize",
           "Sturdy pages and a hardcover option for curious hands"
-        ]
+        ],
+        "faq": {
+          "q1": "Which stories are for ages 2 to 4?",
+          "a1": "The little chef (2-4), the magic forest and the land of sweets (2-5), and from age 4 dinosaurs and safari.",
+          "q2": "Is the paper strong enough for small hands?",
+          "a2": "Pages are {paper} g silk coated paper; for toddlers we recommend the hardcover ({hardcover} VAT included), the most durable.",
+          "q3": "Do they need to read?",
+          "a3": "No. At this age you read it to them; they point at themselves and their name on every page."
+        }
       },
       "5-7": {
-        "metaTitle": "Personalized Books for Ages 5-7 | Early Readers",
-        "metaDescription": "Early readers light up when they spot their own name and become the hero. A printed book that motivates reading. Full preview before you buy.",
+        "metaTitle": "Personalised Books for Ages 5-7 | Meapica",
+        "metaDescription": "Early readers light up when they find their own name and become the hero. A printed book to build reading confidence. See it before paying.",
         "h1": "Personalized books for early readers, ages 5 to 7",
         "heroIntro": "This is the age when reading clicks. There is no stronger motivation than turning a page and finding your own name, written like it belongs there.",
         "bodyHeading": "The book that makes reading their idea",
@@ -214,11 +353,19 @@
           "Their own name turns reading into motivation",
           "They are the hero, so finishing matters",
           "Confidence built one proud page at a time"
-        ]
+        ],
+        "faq": {
+          "q1": "Which worlds suit ages 5 to 7?",
+          "a1": "Space and pirates (5-8), dinosaurs and safari (4-7), the castle of dreams from 6 and superhero for a day from 7.",
+          "q2": "Is the text adapted to their age?",
+          "a2": "Yes: each world is written for its age range, and the text speaks of your child as a girl, a boy or in neutral terms, as you choose.",
+          "q3": "How much does it cost?",
+          "a3": "Softcover {softcover} VAT included, hardcover {hardcover} VAT included, PDF {pdf} VAT included. Printed books ship free."
+        }
       },
       "8-12": {
-        "metaTitle": "Personalized Books for Ages 8-12 | Big Adventures",
-        "metaDescription": "Richer adventures and real values for confident readers, with your child as the protagonist. A keepsake they outgrow but never give up. Preview first.",
+        "metaTitle": "Personalised Books for Ages 8-12 | Meapica",
+        "metaDescription": "Bigger adventures for confident readers, with your child as the protagonist. Their name, their portrait, the chapters you choose. See it before paying.",
         "h1": "Personalized adventures for confident readers, ages 8 to 12",
         "heroIntro": "Older readers want a real story, not a picture book. They also still want, secretly, to be the hero. This book gives them both.",
         "bodyHeading": "A bigger story, built around them",
@@ -231,13 +378,21 @@
           "Richer adventures with real stakes and values",
           "Their dreams and traits drive the plot",
           "A keepsake they keep long past childhood"
-        ]
+        ],
+        "faq": {
+          "q1": "Which stories are for ages 8 to 12?",
+          "a1": "The invention factory (8-12), plus superhero for a day (7-10) and the castle of dreams (6-10) for the younger end.",
+          "q2": "Will an older child find it babyish?",
+          "a2": "The worlds for this age have more text and bigger choices. And they choose the three chapters with you, which changes the plot.",
+          "q3": "Can it be written in English, Catalan or French?",
+          "a3": "Yes: Spanish, Catalan, English or French, chosen when you create it."
+        }
       }
     },
     "themes": {
       "dinosaurs": {
-        "metaTitle": "Personalized Dinosaur Book: Your Child Time-Travels",
-        "metaDescription": "Send your child back to the age of dinosaurs as the brave hero of the story. A printed adventure built around them. Full preview before you buy.",
+        "metaTitle": "Personalised Dinosaur Book for Kids | Meapica",
+        "metaDescription": "Send your child back to the age of dinosaurs as the brave hero of the story. A printed adventure built around them. See it before paying.",
         "h1": "A personalized dinosaur adventure starring your child",
         "heroIntro": "Long before there were cities, there were giants. In this story your child travels back to walk among them, as the curious, brave hero of the age of dinosaurs.",
         "bodyHeading": "Back to the age of giants",
@@ -250,10 +405,18 @@
           "Your child time-travels as the brave hero",
           "A story about curiosity and courage",
           "Twelve double-page scenes among the giants"
-        ]
+        ],
+        "faq": {
+          "q1": "What age is the dinosaur book for?",
+          "a1": "Ages 4 to 7: a time-travel adventure with short chapters and big illustrations.",
+          "q2": "Can I choose what happens?",
+          "a2": "Yes: you pick the three chapters, and each choice changes the story.",
+          "q3": "What does it cost?",
+          "a3": "Softcover {softcover} VAT included, hardcover {hardcover} VAT included, both with free shipping and PDF included."
+        }
       },
       "space": {
-        "metaTitle": "Personalized Space Book: A Journey to the Stars",
+        "metaTitle": "Personalised Space Book for Kids | Meapica",
         "metaDescription": "Launch your child to the stars and unknown planets as the hero of their own space adventure. A printed keepsake built around them. Preview first.",
         "h1": "A personalized space adventure to the stars",
         "heroIntro": "Past the last cloud and into the dark between the stars, a small explorer sets off. In this story, that explorer has your child's name and your child's face.",
@@ -267,10 +430,18 @@
           "Your child is the explorer of the stars",
           "Unknown planets and quiet cosmic wonders",
           "Twelve double-page scenes across the galaxy"
-        ]
+        ],
+        "faq": {
+          "q1": "What age is the space adventure for?",
+          "a1": "Ages 5 to 8: a journey to unknown planets with your child as the explorer.",
+          "q2": "Does it look like my child?",
+          "a2": "You choose skin, hair, eyes, glasses and freckles, and you see their watercolour portrait before paying.",
+          "q3": "How long does delivery take?",
+          "a3": "{minDays}-{maxDays} business days to mainland Spain and the Balearic Islands, free."
+        }
       },
       "pirates": {
-        "metaTitle": "Personalized Pirate Book: A Treasure-Hunt Adventure",
+        "metaTitle": "Personalised Pirate Book for Kids | Meapica",
         "metaDescription": "Send your child across the seven seas on a treasure hunt as the captain of the story. A printed adventure built around them. Preview before you buy.",
         "h1": "A personalized pirate adventure across the seven seas",
         "heroIntro": "Salt air, a worn map, and somewhere over the horizon, buried treasure. In this story your child takes the helm as the bold captain of the hunt.",
@@ -284,10 +455,18 @@
           "Your child captains the treasure hunt",
           "A bold voyage across the seven seas",
           "Twelve double-page scenes of high-seas adventure"
-        ]
+        ],
+        "faq": {
+          "q1": "What age is the pirate book for?",
+          "a1": "Ages 5 to 8: a treasure hunt across the sea with your child as captain.",
+          "q2": "Is it only for boys?",
+          "a2": "No. The text speaks of your child as a girl, a boy or in neutral terms, as you choose.",
+          "q3": "Can I see it before buying?",
+          "a3": "Yes: the cover with their name, their portrait and the first illustrated scenes, free and without signing up."
+        }
       },
       "superheroes": {
-        "metaTitle": "Personalized Superhero Book: Save the City",
+        "metaTitle": "Personalised Superhero Book for Kids | Meapica",
         "metaDescription": "Your child discovers hidden superpowers and saves the city as the hero of the story. A printed adventure about helping others. Preview before buying.",
         "h1": "A personalized superhero adventure starring your child",
         "heroIntro": "Somewhere beneath the everyday, a hidden power is waiting. In this story your child discovers it, puts on the cape and learns that the greatest strength is helping others.",
@@ -301,10 +480,18 @@
           "Your child discovers their hidden superpowers",
           "A story about the value of helping others",
           "Twelve double-page scenes of saving the city"
-        ]
+        ],
+        "faq": {
+          "q1": "What age is the superhero book for?",
+          "a1": "Ages 7 to 10: your child discovers a hidden power and saves the city.",
+          "q2": "What is the story about?",
+          "a2": "Courage and helping others. You choose the three chapters, and each one changes how the day is saved.",
+          "q3": "What formats are there?",
+          "a3": "Hardcover {hardcover} VAT included, softcover {softcover} VAT included or PDF {pdf} VAT included."
+        }
       },
       "magic-forest": {
-        "metaTitle": "Personalized Magic Forest Book: Enchanted Adventure",
+        "metaTitle": "Personalised Magic Forest Book for Kids | Meapica",
         "metaDescription": "Your child explores an enchanted forest of ancient trees and fantastic creatures as the hero. A printed keepsake built around them. Preview first.",
         "h1": "A personalized magic forest adventure for your child",
         "heroIntro": "Beyond the last familiar path, the trees grow older and stranger, and something is watching from between them. In this story your child steps in as the brave hero of the wood.",
@@ -318,10 +505,18 @@
           "Your child is the hero of the enchanted wood",
           "Fantastic creatures and ancient, whispering trees",
           "Twelve double-page scenes of quiet magic"
-        ]
+        ],
+        "faq": {
+          "q1": "What age is the magic forest book for?",
+          "a1": "Ages 2 to 5, one of our gentlest stories for the youngest readers.",
+          "q2": "Is it good for bedtime?",
+          "a2": "Yes: calm scenes and soft watercolour illustrations, made for slow evenings.",
+          "q3": "Which format for a small child?",
+          "a3": "The hardcover ({hardcover} VAT included) is the most durable for little hands."
+        }
       },
       "safari": {
-        "metaTitle": "Personalized Safari Book: An African Savanna Adventure",
+        "metaTitle": "Personalised Safari Book for Kids | Meapica",
         "metaDescription": "Take your child across the African savanna among lions and elephants as the hero of the story. A printed adventure built around them. Preview first.",
         "h1": "A personalized safari adventure across the savanna",
         "heroIntro": "Golden grass to the horizon, a watering hole at dawn, and the great animals moving through the heat. In this story your child crosses the African savanna as the hero of the journey.",
@@ -335,7 +530,15 @@
           "Your child explores the savanna as the hero",
           "Up close with lions, elephants and more",
           "Twelve double-page scenes of wild adventure"
-        ]
+        ],
+        "faq": {
+          "q1": "What age is the safari book for?",
+          "a1": "Ages 4 to 7: an expedition across the savanna among lions and elephants.",
+          "q2": "How big is the book?",
+          "a2": "{size} × {size} cm, {pages} pages with {scenes} illustrated scenes on {paper} g paper.",
+          "q3": "What if it arrives damaged?",
+          "a3": "Write to us within {defectDays} days with a photo and we send you a new one free of charge."
+        }
       }
     },
     "nav": {
@@ -376,10 +579,39 @@
         "intro": "A book where your child is the hero is the gift they remember. Pick the occasion and create a one-of-a-kind printed edition made to keep for life."
       },
       "ages": {
-        "metaTitle": "Personalized Books by Age | Meapica",
-        "metaDescription": "Personalized books tailored to every age, from 2 to 12. Stories and illustrations where your child is the protagonist.",
+        "metaTitle": "Personalised Children's Books by Age | Meapica",
+        "metaDescription": "Personalised books for ages 2 to 12: each story is written for its age range, with your child as the hero. See it before paying. Free shipping in Spain.",
         "h1": "Personalized books by age",
-        "intro": "Every age calls for its own story. Choose your child’s range and discover books made for their reading stage, always with them as the hero."
+        "intro": "Every age calls for its own story. Choose your child’s range and discover books made for their reading stage, always with them as the hero.",
+        "guideHeading": "How to choose a personalised book by age",
+        "sections": [
+          {
+            "heading": "Each world has its own age range",
+            "paragraphs": [
+              "We write for children from {ageMin} to {ageMax}. For the youngest: the little chef (2-4), the magic forest and the land of sweets (2-5). From four: dinosaurs and safari (4-7). From five: space and pirates (5-8). Older readers: the castle of dreams (6-10), superhero for a day (7-10) and the invention factory (8-12)."
+            ]
+          },
+          {
+            "heading": "What changes with age",
+            "paragraphs": [
+              "Little ones get short scenes and big illustrations to point at; you read to them. From five, the story has more words and they start reading it themselves. Older readers get adventures with bigger choices. At every age they are the hero, with their name on the cover and a portrait that looks like them."
+            ]
+          },
+          {
+            "heading": "Formats, prices and delivery",
+            "paragraphs": [
+              "Hardcover {hardcover} VAT included, softcover {softcover} VAT included, both {size} × {size} cm with {pages} pages and the PDF included. The PDF alone is {pdf} VAT included. Printed books arrive in {minDays}-{maxDays} business days with free shipping to mainland Spain and the Balearic Islands."
+            ]
+          }
+        ],
+        "faq": {
+          "q1": "Is there a book for children under two?",
+          "a1": "Not yet: our youngest stories start at {ageMin}.",
+          "q2": "My child is between two ranges. Which one?",
+          "a2": "Go by how they read now. Every world shows its range, and you see the first scenes before paying.",
+          "q3": "Do I see the book before paying?",
+          "a3": "Yes: the cover with their name, their watercolour portrait and the first illustrated scenes, free and without signing up."
+        }
       },
       "themes": {
         "metaTitle": "Personalized Books by Theme | Meapica",
@@ -393,9 +625,14 @@
     "loading": "Loading…"
   },
   "metadata": {
-    "title": "Meapica — Real Stories You Can Touch",
-    "description": "Bring back the magic of turning pages. Personalized stories printed on premium paper, designed to create moments of real connection.",
-    "keywords": "personalized children's books, custom story books, unique kids gift, personalized storybook, illustrated children's book, printed book for kids"
+    "title": "Personalised children's book with their name | Meapica",
+    "description": "Their name on the cover, their face in watercolour and the adventure you choose. See their book before paying. Hardcover or softcover, free shipping.",
+    "keywords": "personalized children's books, custom story books, unique kids gift, personalized storybook, illustrated children's book, printed book for kids",
+    "pages": {
+      "create": "Create their book",
+      "auth": "Your account",
+      "checkout": "Your order"
+    }
   },
   "nav": {
     "manifesto": "Manifesto",
@@ -420,7 +657,7 @@
     "language": "Language"
   },
   "hero": {
-    "eyebrow": "Personalised printed book",
+    "eyebrow": "Personalised children's book",
     "title": "The story they'll ask for <hl>again and again</hl>",
     "subtitle": "Because their name is on the cover, their face is painted in watercolour and you choose the adventure. Printed and delivered to your door.",
     "nameLabel": "What's their name?",
@@ -461,7 +698,7 @@
       },
       "print": {
         "title": "Delivered to your door",
-        "text": "Hardcover or softcover, with free shipping. At your door in 7–10 working days."
+        "text": "Hardcover or softcover, with free shipping. At your door in {minDays}–{maxDays} working days."
       }
     },
     "lookAlt": "Watercolour portrait of {name}",
@@ -544,11 +781,26 @@
     "subtitle": "Made to survive a thousand readings and stay on their shelf when they're grown. And with its PDF included, for trips.",
     "mockupAlt": "{name}'s book in hardcover, 20 × 20 cm",
     "specs": {
-      "size": { "label": "Format", "value": "20 × 20 cm · 30 pages · 12 illustrated scenes" },
-      "paper": { "label": "Paper", "value": "170 gsm silk coated paper, full colour" },
-      "cover": { "label": "Covers", "value": "Hardcover or softcover, matte finish" },
-      "shipping": { "label": "Shipping", "value": "Free to mainland Spain and the Balearic Islands, in 7–10 working days" },
-      "digital": { "label": "Digital version", "value": "The PDF comes with the printed book" }
+      "size": {
+        "label": "Format",
+        "value": "{size} × {size} cm · {pages} pages · {scenes} illustrated scenes"
+      },
+      "paper": {
+        "label": "Paper",
+        "value": "{paper} gsm silk coated paper, full colour"
+      },
+      "cover": {
+        "label": "Covers",
+        "value": "Hardcover or softcover, matte finish"
+      },
+      "shipping": {
+        "label": "Shipping",
+        "value": "Free to mainland Spain and the Balearic Islands, in {minDays}–{maxDays} working days"
+      },
+      "digital": {
+        "label": "Digital version",
+        "value": "The PDF comes with the printed book"
+      }
     },
     "softcover": "Softcover",
     "hardcover": "Hardcover",
@@ -561,10 +813,22 @@
     "sceneAlt": "{name} in the adventure, scene {n}",
     "caption": "Real pages from “{title}”",
     "points": {
-      "written": { "title": "Written for their age", "text": "Their name on every page, with sentences pitched to them, from 2 to 12." },
-      "painted": { "title": "Painted scene by scene", "text": "12 illustrations of their adventure, with their hair, their skin and even their freckles." },
-      "colour": { "title": "In their favourite colour", "text": "It dresses their clothes and the details on every page." },
-      "dedication": { "title": "With your words", "text": "Your dedication opens the book, so they'll always know who it came from." }
+      "written": {
+        "title": "Written for their age",
+        "text": "Their name on every page, with sentences pitched to them, from {ageMin} to {ageMax}."
+      },
+      "painted": {
+        "title": "Painted scene by scene",
+        "text": "12 illustrations of their adventure, with their hair, their skin and even their freckles."
+      },
+      "colour": {
+        "title": "In their favourite colour",
+        "text": "It dresses their clothes and the details on every page."
+      },
+      "dedication": {
+        "title": "With your words",
+        "text": "Your dedication opens the book, so they'll always know who it came from."
+      }
     },
     "cta": "Create their book",
     "seeInside": "Look inside {name}'s book"
@@ -575,7 +839,7 @@
     "description": "The magic extends beyond the book. Includes a",
     "letter": "personalized handwritten letter",
     "descriptionEnd": "from the main character, a sheet of matte stickers, and a wooden bookmark.",
-    "cta": "Add physical extras (+€12.90 incl. VAT)",
+    "cta": "Add physical extras (+€12.90 VAT included)",
     "imageCaption": "The perfect gift",
     "imageAlt": "Gift box with the book, a sticker sheet and coloured pencils on a table"
   },
@@ -588,7 +852,7 @@
     "likenessQ": "What if it doesn't look like my child?",
     "likenessA": "You decide how they look: skin, hair colour, hairstyle, eyes, glasses and freckles, and you see their portrait before moving on. If you want to change it in the preview, change their look and we paint the book again with the new character; everything else stays. We print it exactly as you see it.",
     "deliveryQ": "When does it arrive? Will it arrive for Christmas?",
-    "deliveryA": "We print it on demand in Europe as soon as you order, and it arrives in 7-10 business days, shipping included. We ship to mainland Spain and the Balearic Islands (not yet to the Canary Islands, Ceuta or Melilla).",
+    "deliveryA": "We print it on demand in Europe as soon as you order, and it arrives in {minDays}-{maxDays} business days, shipping included. We ship to mainland Spain and the Balearic Islands (not yet to the Canary Islands, Ceuta or Melilla).",
     "deliverySeason": "To have it at home for Christmas Eve, order by {christmasDate}; for Three Kings' Day, by {reyesDate}.",
     "deliverySeasonReyes": "To have it at home before Three Kings' Day, order by {reyesDate}.",
     "deliverySeasonPdf": "The printed book no longer arrives in time for Three Kings' Day, but the PDF story does: it reaches your inbox after payment, usually in under an hour.",
@@ -596,7 +860,7 @@
     "priceQ": "How much is it and what's included?",
     "priceA": "Softcover, {softcover}. Hardcover, {hardcover}. PDF only, {pdf}. All prices include VAT. The printed book includes shipping and the PDF of the full story.",
     "returnsQ": "Can I return it?",
-    "returnsA": "As a made-to-order book with their name and portrait, it can't be returned, which is why you see the whole book before paying. But if it arrives with any printing defect or gets damaged in transit, we'll send you a new one free of charge. Just write to us within 30 days of receiving it, with a photo of the book and the packaging.",
+    "returnsA": "As a made-to-order book with their name and portrait, it can't be returned, which is why, before paying, you see the cover, their portrait and the first scenes of their story. But if it arrives with any printing defect or gets damaged in transit, we'll send you a new one free of charge. Just write to us within 30 days of receiving it, with a photo of the book and the packaging.",
     "moreQuestions": "Another question? Write to us at"
   },
   "finalCta": {
@@ -638,27 +902,27 @@
       "title": "Privacy Policy",
       "intro": "At Meapica, the privacy of our users — especially when it comes to children's data — is our top priority.",
       "section1Title": "1. Data controller",
-      "section1Text": "The data controller for personal data collected through meapica.shop is Xavier Huix Trenco (Meapica), tax ID 41649433K, address Carrer Aribau 140, 5º, 08036 Barcelona (Spain). For any privacy question, write to admin@casmar.tech.",
+      "section1Text": "The data controller for personal data collected through meapica.shop is Xavier Huix Trenco (Meapica), tax ID 41649433K, address Carrer Aribau 140, 5º, 08036 Barcelona (Spain). For any privacy question, write to hola@meapica.shop.",
       "section2Title": "2. Data we collect",
       "section2Text": "We collect the data needed to create your personalised book: the child's name, age, city, interests and physical features for the illustrations and, only if you choose to upload one, a photo of the child (see section 8). We also collect your email and shipping address to process orders.",
       "section3Title": "3. Purpose of processing",
       "section3Text": "We use your data only to: create the personalised story and its illustrated character, process payment and shipping, and contact you about your order. We never sell data to third parties.",
       "section4Title": "4. Legal basis",
-      "section4Text": "Creating, previewing and printing your book, managing your account, payment and shipping: performance of the contract you request (Art. 6(1)(b) GDPR). The child's photo: explicit consent of the child's parent or legal guardian (Art. 6(1)(a) GDPR and Art. 7 of Spain's LOPDGDD), which you can withdraw at any time. Newsletter and waitlist: your consent (Art. 6(1)(a) GDPR), which you can withdraw whenever you like. Keeping invoices and accounting records: legal obligation (Art. 6(1)(c) GDPR). Service security and abuse prevention (for example, usage limits): legitimate interest (Art. 6(1)(f) GDPR). Measuring our ads with Meta and TikTok (advertising cookies and purchase event): your consent (Art. 6(1)(a) GDPR), which you can withdraw from \"Cookie settings\".",
+      "section4Text": "Creating, previewing and printing your book, managing your account, payment and shipping: performance of the contract you request (Art. 6(1)(b) GDPR). The child's photo: explicit consent of the child's parent or legal guardian (Art. 6(1)(a) GDPR and Art. 7 of Spain's LOPDGDD), which you can withdraw at any time. Newsletter and waitlist: your consent (Art. 6(1)(a) GDPR), which you can withdraw whenever you like. Keeping invoices and accounting records: legal obligation (Art. 6(1)(c) GDPR). Service security and abuse prevention (for example, usage limits): legitimate interest (Art. 6(1)(f) GDPR). Measuring our ads with Meta and TikTok and site statistics with Google Analytics (advertising and analytics cookies, and purchase event): your consent (Art. 6(1)(a) GDPR), which you can withdraw from \"Cookie settings\".",
       "section5Title": "5. Processors and international transfers",
-      "section5Text": "To provide the service we work with providers that process data only on our instructions: OpenAI Ireland Ltd. (generating the story text and illustrations and, if you upload one, the character from the photo), Supabase (database and storage), Vercel (web hosting), Stripe Payments Europe Ltd. (payments), Gelato (printing and shipping), Resend (order emails) and, only if you accept advertising cookies, Meta Platforms Ireland Ltd. and TikTok Technology Limited (measuring our ads). OpenAI does not use the data we send it to train its models and may keep it for up to 30 days to detect abuse. When a provider or its sub-processors process data outside the European Economic Area (for example, in the United States), the transfer relies on the European Commission's Standard Contractual Clauses or the EU-US Data Privacy Framework.",
+      "section5Text": "To provide the service we work with providers that process data only on our instructions: OpenAI Ireland Ltd. (generating the story text and illustrations and, if you upload one, the character from the photo), Supabase (database and storage), Vercel (web hosting), Stripe Payments Europe Ltd. (payments), Gelato (printing and shipping), Resend (order emails), Cloudflare, Inc. (Turnstile, anti-bot verification at sign-in and when starting as a guest) and, only if you accept advertising cookies, Meta Platforms Ireland Ltd., TikTok Technology Limited (measuring our ads) and Google Ireland Limited (Google Analytics, visit and purchase statistics). OpenAI does not use the data we send it to train its models and may keep it for up to 30 days to detect abuse. When a provider or its sub-processors process data outside the European Economic Area (for example, in the United States), the transfer relies on the European Commission's Standard Contractual Clauses or the EU-US Data Privacy Framework.",
       "section6Title": "6. Your rights",
-      "section6Text": "You can exercise your rights of access, rectification, erasure, objection, restriction of processing and portability, and withdraw your consent at any time, by writing to admin@casmar.tech. We will reply within one month at the latest. If you believe we have not handled your data properly, you can lodge a complaint with the Spanish Data Protection Agency (AEPD, www.aepd.es).",
+      "section6Text": "You can exercise your rights of access, rectification, erasure, objection, restriction of processing and portability, and withdraw your consent at any time, by writing to hola@meapica.shop. We will reply within one month at the latest. If you believe we have not handled your data properly, you can lodge a complaint with the Spanish Data Protection Agency (AEPD, www.aepd.es).",
       "section7Title": "7. Children's data protection",
       "section7Text": "We do not collect data directly from children. The child's data is provided by the parent or legal guardian who creates the book.",
       "section8Title": "8. Photos of children",
-      "section8Text": "Uploading a photo is optional: you can also create the character by choosing their features. If you upload one, we use it only to create the child's illustrated character (their portrait and character sheet), and only with the consent of the child's parent or legal guardian. Before storing it we remove all its metadata, including GPS location, and keep it in private storage that only our server can access. The photo is sent to OpenAI to draw the character; OpenAI does not use it to train its models and may keep it for up to 30 days to detect abuse. We delete the photo as soon as the character is created, and in any case within 24 hours. The book (preview and final version) is illustrated only from the drawn character, never from the photo. We do not use it for facial recognition or for any other purpose. You can withdraw your consent at any time by writing to admin@casmar.tech and we will delete it immediately. We keep a record of your consent (date, version of the accepted text and language) as proof that you gave it."
+      "section8Text": "Uploading a photo is optional: you can also create the character by choosing their features. If you upload one, we use it only to create the child's illustrated character (their portrait and character sheet), and only with the consent of the child's parent or legal guardian. Before storing it we remove all its metadata, including GPS location, and keep it in private storage that only our server can access. The photo is sent to OpenAI to draw the character; OpenAI does not use it to train its models and may keep it for up to 30 days to detect abuse. We delete the photo as soon as the character is created, and in any case within 24 hours. The book (preview and final version) is illustrated only from the drawn character, never from the photo. We do not use it for facial recognition or for any other purpose. You can withdraw your consent at any time by writing to hola@meapica.shop and we will delete it immediately. We keep a record of your consent (date, version of the accepted text and language) as proof that you gave it."
     },
     "terms": {
       "title": "Legal Notice and Terms of Use",
       "intro": "By using meapica.shop you accept the following terms.",
       "section1Title": "1. Identification",
-      "section1Text": "Meapica is a personalized children's book creation platform operated from Spain by Xavier Huix Trenco, tax ID (NIF) 41649433K, with registered address at Carrer Aribau 140, 5º, 08036 Barcelona (Spain). Contact: admin@casmar.tech.",
+      "section1Text": "Meapica is a personalized children's book creation platform operated from Spain by Xavier Huix Trenco, tax ID (NIF) 41649433K, with registered address at Carrer Aribau 140, 5º, 08036 Barcelona (Spain). Contact: hola@meapica.shop.",
       "section2Title": "2. Service",
       "section2Text": "Meapica offers the creation of personalized children's stories with unique illustrations, printed on demand.",
       "section3Title": "3. Intellectual property",
@@ -666,19 +930,19 @@
       "section4Title": "4. Prices and payments",
       "section4Text": "All prices are final, VAT included, and shown in euros. For printed books, shipping within Spain is included in the price. Payment is processed securely through Stripe.",
       "section5Title": "5. Shipping and returns",
-      "section5Text": "Books are printed on demand in Europe, and for now we only ship to addresses in Spain. Mainland Spain: 7-10 business days. Balearic Islands: 7-10 business days. We don't ship to the Canary Islands, Ceuta or Melilla yet. As personalized products, books are excluded from the right of withdrawal (Art. 103(c) of the Spanish consolidated consumer protection law, TRLGDCU) and cannot be returned. If a book arrives with any printing or manufacturing defect, or is damaged in transit, write to us within 30 days of receiving it, with a photo of the book and the packaging, and we will send you a new one free of charge. This does not limit your statutory warranty rights.",
+      "section5Text": "Books are printed on demand in Europe, and for now we only ship to addresses in Spain. Mainland Spain: {minDays}-{maxDays} business days. Balearic Islands: {minDays}-{maxDays} business days. We don't ship to the Canary Islands, Ceuta or Melilla yet. As personalized products, books are excluded from the right of withdrawal (Art. 103(c) of the Spanish consolidated consumer protection law, TRLGDCU) and cannot be returned. If a book arrives with any printing or manufacturing defect, or is damaged in transit, write to us within 30 days of receiving it, with a photo of the book and the packaging, and we will send you a new one free of charge. This does not limit your statutory warranty rights.",
       "section6Title": "6. Limitation of liability",
       "section6Text": "Meapica does not guarantee uninterrupted service availability. Illustrations may vary and a specific result is not guaranteed."
     },
     "cookies": {
       "title": "Cookie Policy",
-      "intro": "Meapica uses technical cookies the service needs to work and, only if you accept them, advertising cookies from Meta and TikTok.",
+      "intro": "Meapica uses technical cookies the service needs to work and, only if you accept them, advertising cookies from Meta and TikTok and Google Analytics cookies.",
       "section1Title": "1. What are cookies?",
       "section1Text": "Cookies are small text files stored in your browser when visiting a website.",
       "section2Title": "2. Cookies we use",
-      "section2Text": "Technical (always on): keeping you signed in, remembering your language, handling the purchase and storing your cookie choice (meapica_consent, 12 months). Advertising (only with your consent): the Meta Pixel (_fbp and _fbc, 90 days) measures which Instagram and Facebook ads lead to a purchase and helps show them to people who may be interested; the TikTok pixel (_ttp, ttclid and _tt_enable_cookie, up to 13 months) does the same for TikTok ads; meapica_utm (30 days) remembers which ad or post brought you here so it can be linked to your order.",
+      "section2Text": "Technical (always on): keeping you signed in, remembering your language, handling the purchase and storing your cookie choice (meapica_consent, 12 months). Advertising (only with your consent): the Meta Pixel (_fbp and _fbc, 90 days) measures which Instagram and Facebook ads lead to a purchase and helps show them to people who may be interested; the TikTok pixel (_ttp, ttclid and _tt_enable_cookie, up to 13 months) does the same for TikTok ads; Google Analytics (_ga and _ga_*, up to 14 months) measures in aggregate how many people visit the site, where they come from and how many end up buying; meapica_utm (30 days) remembers which ad or post brought you here so it can be linked to your order.",
       "section3Title": "3. Third-party cookies",
-      "section3Text": "Meta Platforms Ireland Ltd., only if you accept advertising cookies: receives browsing data and, if you buy, the order amount and your hashed email and phone number to measure our ads. Meta may process data in the US under the EU-US Data Privacy Framework. TikTok Technology Limited (Ireland), only with the same consent: receives the same data to measure our TikTok ads and may process it outside the EEA under the European Commission's Standard Contractual Clauses. Stripe (payment processor) may set its own cookies during payment.",
+      "section3Text": "Meta Platforms Ireland Ltd., only if you accept advertising cookies: receives browsing data and, if you buy, the order amount and your hashed email and phone number to measure our ads. Meta may process data in the US under the EU-US Data Privacy Framework. TikTok Technology Limited (Ireland), only with the same consent: receives the same data to measure our TikTok ads and may process it outside the EEA under the European Commission's Standard Contractual Clauses. Google Ireland Limited (Google Analytics), only with the same consent: receives browsing data and, if you buy, the order amount and format (never your name, email or phone) to compile statistics; it may process data in the US under the EU-US Data Privacy Framework. Stripe (payment processor) may set its own cookies during payment.",
       "section4Title": "4. Cookie management",
       "section4Text": "You can accept or reject advertising cookies in the notice shown on your first visit and change your mind at any time from \"Cookie settings\" at the bottom of every page. If you reject them, the site works just the same. You can also delete them from your browser."
     },
@@ -686,15 +950,15 @@
       "title": "Frequently Asked Questions",
       "intro": "Everything you need to know about Meapica's personalized storybooks.",
       "section1Title": "How is my book created?",
-      "section1Text": "You choose the adventure, customize the character with your child's name, age and features, and our technology writes a unique story with original illustrations. No other child in the world will ever have the same book.",
+      "section1Text": "You type their name and age, choose how they look, and pick their world and the three chapters of the adventure. We write a story for their age and paint it in watercolour, with their portrait in every scene. No other child will have the same book.",
       "section2Title": "How long does shipping take?",
-      "section2Text": "Each book is printed on demand in Europe as soon as you order. For now we only ship within Spain. Mainland Spain: 7-10 business days. Balearic Islands: 7-10 business days. We don't ship to the Canary Islands, Ceuta or Melilla yet. You'll receive an email with the tracking number once your parcel is on its way.",
+      "section2Text": "Each book is printed on demand in Europe as soon as you order. For now we only ship within Spain. Mainland Spain: {minDays}-{maxDays} business days. Balearic Islands: {minDays}-{maxDays} business days. We don't ship to the Canary Islands, Ceuta or Melilla yet. You'll receive an email with the tracking number once your parcel is on its way.",
       "section3Title": "Can I customize the character?",
-      "section3Text": "Yes! You can choose the name, age, hair/eye/skin color, hairstyle, gender, and even add their pet, favorite food, or future dream. Everything appears in the story and illustrations.",
+      "section3Text": "Yes! You choose their name and age, skin, hair and eye colour, hairstyle, glasses or freckles, and whether the story is written in the feminine, masculine or neutral. Before you pay you see their portrait and, if you like, change it and we repaint the book.",
       "section4Title": "What paper do you use?",
       "section4Text": "We print on 170 g coated silk paper, which renders the illustrations in vivid colour with a soft touch. The binding is glued, like a premium photo album, and the cover is matt-laminated. Choose softcover or hardcover, the sturdiest option.",
       "section5Title": "Can I request changes after purchase?",
-      "section5Text": "Since each book is a unique edition generated on the spot, it cannot be modified once created. That's why we show you a full preview before purchase, so you can review the story and illustrations.",
+      "section5Text": "Each book is a unique edition, so it can't be changed once ordered. That's why, before you pay, you see the cover with their name, their portrait and the first illustrated scenes of their story, and you can change the title, the dedication and their look.",
       "section6Title": "What size is the book?",
       "section6Text": "The book measures 20×20 cm (8×8 inches), the ideal format for little hands. It has 30 pages with 12 illustrated scenes, a cover, a personalized dedication and a back cover."
     },
@@ -702,7 +966,7 @@
       "title": "Shipping & Packaging",
       "intro": "Every Meapica book is a gift. That's why the experience of receiving it at home should be as special as opening it.",
       "section1Title": "Shipping times",
-      "section1Text": "For now we only ship within Spain. Mainland Spain: 7-10 business days. Balearic Islands: 7-10 business days. We don't ship to the Canary Islands, Ceuta or Melilla yet. Each book is printed on demand in Europe, so the timeframe includes printing.",
+      "section1Text": "For now we only ship within Spain. Mainland Spain: {minDays}-{maxDays} business days. Balearic Islands: {minDays}-{maxDays} business days. We don't ship to the Canary Islands, Ceuta or Melilla yet. Each book is printed on demand in Europe, so the timeframe includes printing.",
       "section2Title": "Shipping cost",
       "section2Text": "Standard shipping is included in the book price, which already includes VAT. No hidden costs or surprises in the box.",
       "section3Title": "Protective packaging",
@@ -1074,7 +1338,7 @@
       "faq": {
         "delivery": {
           "q": "When does it arrive?",
-          "a": "It is printed on demand and takes 7 to 10 working days. We email you the tracking when it ships."
+          "a": "It is printed on demand and takes {minDays} to {maxDays} working days. We email you the tracking when it ships."
         },
         "canarias": {
           "q": "Do you ship to the Canary Islands, Ceuta or Melilla?",
@@ -1082,7 +1346,7 @@
         },
         "quality": {
           "q": "What is the book like?",
-          "a": "20 × 20 cm, 30 full-colour pages on 170 g silk coated paper. The hardcover has a matte laminate and is the most durable."
+          "a": "{size} × {size} cm, {pages} full-colour pages on {paper} g silk coated paper. The hardcover has a matte laminate and is the most durable."
         },
         "changes": {
           "q": "Can I change anything?",
@@ -1139,7 +1403,7 @@
       "nextStepsTitle": "Physical book on its way",
       "nextStepsDescription": "We print it on demand and will email you the tracking link once it ships.",
       "deliveryTitle": "Delivery time",
-      "deliveryDescription": "Mainland Spain: 7-10 business days. Balearic Islands: 7-10 business days. We don't ship to the Canary Islands, Ceuta or Melilla yet.",
+      "deliveryDescription": "Mainland Spain: {minDays}-{maxDays} business days. Balearic Islands: {minDays}-{maxDays} business days. We don't ship to the Canary Islands, Ceuta or Melilla yet.",
       "formatLabel": "Format: {format}",
       "formatDigital": "Digital PDF",
       "formatHardcover": "Hardcover",
@@ -1150,7 +1414,7 @@
       "viewOrders": "View my orders",
       "notVerifiedTitle": "We couldn't confirm this payment",
       "notVerifiedDescription": "This link doesn't match a completed payment. If you've just paid, your order will appear in your library within a few minutes and you'll get a confirmation email. If something doesn't add up, write to us and we'll sort it out.",
-      "contactUs": "Email us at admin@casmar.tech",
+      "contactUs": "Email us at hola@meapica.shop",
       "confirmationEmail": "We'll send the confirmation and tracking to {email}",
       "guestNote": "You checked out as a guest: keep that email, it's your order confirmation.",
       "processingTitle": "Payment confirmed!",
@@ -1213,7 +1477,7 @@
       "title": "Another copy of {title}",
       "intro": "The same book, printed again. You choose the shipping address at checkout. Standard shipping included to mainland Spain and the Balearic Islands.",
       "formatLabel": "Format",
-      "pay": "Pay {price}",
+      "pay": "Pay {price} · VAT included",
       "error": "We couldn't open the payment page. Please try again in a moment.",
       "close": "Close",
       "titleUpgrade": "{title}, in print",
@@ -1475,11 +1739,11 @@
       "foodies": "For foodies",
       "explorers": "For explorers"
     },
+    "ageRange": "Ages {min}-{max}",
     "templates": {
       "space": {
         "title": "The Great Space Adventure",
         "description": "A journey to the stars where they'll discover unknown planets and make alien friends.",
-        "ageRange": "Ages 5-8",
         "previewChapterTitle": "The Ship of Dreams",
         "decisions": {
           "encounter": {
@@ -1558,7 +1822,6 @@
       "forest": {
         "title": "The Enchanted Forest",
         "description": "Secrets among ancient trees and fantastic creatures that need help.",
-        "ageRange": "Ages 2-5",
         "previewChapterTitle": "The Whispering Woods",
         "decisions": {
           "encounter": {
@@ -1637,7 +1900,6 @@
       "superhero": {
         "title": "Superhero for a Day",
         "description": "Save the city! Discover hidden superpowers and learn the value of bravery.",
-        "ageRange": "Ages 7-10",
         "previewChapterTitle": "The Hero Awakens",
         "decisions": {
           "encounter": {
@@ -1716,7 +1978,6 @@
       "pirates": {
         "title": "Pirates of the Sea",
         "description": "Searching for the lost treasure across the seven seas with a hilarious crew.",
-        "ageRange": "Ages 5-8",
         "previewChapterTitle": "The Captain's Island",
         "decisions": {
           "encounter": {
@@ -1795,7 +2056,6 @@
       "chef": {
         "title": "The Littlest Chef",
         "description": "A kitchen full of magic where ingredients come to life and dance in the pot.",
-        "ageRange": "Ages 2-4",
         "previewChapterTitle": "The Enchanted Kitchen",
         "decisions": {
           "encounter": {
@@ -1874,7 +2134,6 @@
       "dinosaurs": {
         "title": "The Land of the Dinosaurs",
         "description": "A time-travel journey to the age of dinosaurs, where bravery and friendship change everything.",
-        "ageRange": "Ages 4-7",
         "previewChapterTitle": "The Time Portal",
         "decisions": {
           "encounter": {
@@ -1953,7 +2212,6 @@
       "castle": {
         "title": "The Castle of Dreams",
         "description": "An enchanted castle where dreams come to life and the kingdom must be saved from darkness.",
-        "ageRange": "Ages 6-10",
         "previewChapterTitle": "The Castle Gates",
         "decisions": {
           "encounter": {
@@ -2032,7 +2290,6 @@
       "safari": {
         "title": "Savanna Safari",
         "description": "An adventure across the African savanna among lions, elephants, and breathtaking sunsets.",
-        "ageRange": "Ages 4-7",
         "previewChapterTitle": "Sunrise on the Savanna",
         "decisions": {
           "encounter": {
@@ -2111,7 +2368,6 @@
       "inventor": {
         "title": "The Invention Factory",
         "description": "A workshop full of wacky inventions where creativity and science blend with magic.",
-        "ageRange": "Ages 8-12",
         "previewChapterTitle": "The Secret Workshop",
         "decisions": {
           "encounter": {
@@ -2190,7 +2446,6 @@
       "candy": {
         "title": "Candy Land",
         "description": "A world where everything is made of sweets, chocolate, and caramel. But be careful not to eat too much!",
-        "ageRange": "Ages 2-5",
         "previewChapterTitle": "The Caramel Gate",
         "decisions": {
           "encounter": {
@@ -2330,7 +2585,7 @@
   },
   "christmasDelivery": {
     "metaTitle": "Will it arrive by Three Kings' Day {reyesYear}? Order deadlines",
-    "metaDescription": "Last order dates for a printed personalized children's book to arrive by Christmas Eve or Three Kings' Day in Spain. Dates per format, mainland Spain and the Balearic Islands. The PDF always arrives in time.",
+    "metaDescription": "Last order dates for a printed personalised children's book to arrive by Christmas Eve or Three Kings' Day in Spain. The PDF always arrives in time.",
     "ogEyebrow": "Christmas and Three Kings {christmasYear}-{reyesYear}",
     "breadcrumb": "Will it arrive in time?",
     "eyebrow": "Christmas and Three Kings {christmasYear}-{reyesYear}",
@@ -2364,7 +2619,7 @@
     "regionNote": "We don't ship to the Canary Islands, Ceuta or Melilla yet. If the gift is for there, the PDF story works just as well.",
     "methodHeading": "How we work out these dates",
     "method": [
-      "Every book is printed on demand in Europe. Today, printing plus delivery takes {min}-{max} calendar days door to door.",
+      "Every book is printed on demand in Europe, and our delivery promise is {promisedMin}-{promisedMax} business days. These dates start from the carrier's real current time: {min}-{max} calendar days from the printer to your door.",
       "In December we add {buffer} days of margin for carrier backlogs and the 8 December, Christmas and New Year holidays.",
       "The clock starts when you complete payment, not when you start creating the story.",
       "These are estimates based on current carrier times, not a guarantee. If they change, we update this page."
@@ -2378,7 +2633,7 @@
       "christmasQ": "And to have it by Christmas Eve?",
       "christmasA": "To have the printed book home on 24 December, order by {date}. After that you can still give the PDF story.",
       "timeQ": "How long does the printed book take to arrive?",
-      "timeA": "We print it on demand in Europe as soon as you order. Mainland Spain and the Balearic Islands: 7-10 working days, with delivery included in the price. You'll get the tracking number by email.",
+      "timeA": "We print it on demand in Europe as soon as you order. Mainland Spain and the Balearic Islands: {minDays}-{maxDays} working days, with delivery included in the price. You'll get the tracking number by email.",
       "regionQ": "Do you ship to the Canary Islands, Ceuta or Melilla?",
       "regionA": "Not yet. If the gift is for there, the PDF story reaches your inbox and you can print it or read it on a tablet."
     },
@@ -2452,7 +2707,7 @@
   },
   "cookieConsent": {
     "title": "Cookies",
-    "text": "We use cookies the site needs to work and, if you accept, Meta and TikTok cookies to measure our ads on Instagram, Facebook and TikTok.",
+    "text": "We use cookies the site needs to work and, if you accept, Meta, TikTok and Google cookies to measure our ads on Instagram, Facebook and TikTok and visits to the site.",
     "policy": "Learn more",
     "accept": "Accept",
     "reject": "Reject"

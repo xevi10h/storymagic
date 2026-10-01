@@ -2,7 +2,7 @@
 
 import { useId, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import Sheet from "@/components/crear/Sheet";
+import Sheet from "@/components/create/Sheet";
 import { MarketingOptOut } from "@/components/purchase/MarketingOptOut";
 import { Button, buttonClass, cx } from "@/components/ui";
 import { formatPrice, offerPrice, PRICING, STRIPE_CATALOG, type PhysicalFormat } from "@/lib/pricing";

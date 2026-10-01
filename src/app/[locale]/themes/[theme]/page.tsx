@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import SeoLandingPage from "@/components/seo-landing/SeoLandingPage";
 import { SEO_THEME_SLUGS, isValidSeoSlug, seoPath } from "@/lib/seo-landing";
@@ -40,6 +40,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function Page({ params }: PageProps) {
   const { locale, theme } = await params;
+  setRequestLocale(locale);
   if (!isValidSeoSlug(TYPE, theme)) notFound();
   return <SeoLandingPage type={TYPE} slug={theme} locale={locale} />;
 }

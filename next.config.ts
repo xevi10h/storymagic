@@ -3,7 +3,26 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
+// Legacy Spanish route slugs (renamed to English 2026-10-01). Keep these
+// redirects forever: old emails, Stripe cancel URLs, ads and bookmarks still
+// point at them. Each rule is emitted with and without the locale prefix;
+// `:path*` matches zero or more segments and the query string is passed on.
+const LOCALE_PARAM = ":locale(es|ca|en|fr)";
+const LEGACY_SLUG_REDIRECTS: Array<[from: string, to: string]> = [
+  // Most specific first: the nested /generar segment was renamed too.
+  ["/crear/:storyId/generar", "/create/:storyId/generate"],
+  ["/crear/:path*", "/create/:path*"],
+  ["/ejemplo/:path*", "/examples/:path*"],
+  ["/perfil/:path*", "/profile/:path*"],
+];
+
 const nextConfig: NextConfig = {
+  async redirects() {
+    return LEGACY_SLUG_REDIRECTS.flatMap(([from, to]) => [
+      { source: `/${LOCALE_PARAM}${from}`, destination: `/:locale${to}`, permanent: true },
+      { source: from, destination: to, permanent: true },
+    ]);
+  },
   serverExternalPackages: ["sharp", "@react-pdf/renderer"],
   images: {
     formats: ["image/avif", "image/webp"],

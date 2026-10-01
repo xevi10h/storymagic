@@ -122,6 +122,13 @@ export function formatDeadlines(today: string, format: PhysicalFormat, occasion:
     });
 }
 
+/** Earliest printed-book cut-off (any format/region) for an occasion in the season of `today`: valid for every buyer. */
+export function earliestPrintedCutoff(today: string, occasion: SeasonOccasion): string {
+  return orderCutoffs(giftSeason(today).deliverBy[occasion])
+    .map((c) => c.lastOrderDate)
+    .sort()[0];
+}
+
 export interface NextCutoff {
   occasion: SeasonOccasion;
   lastOrderDate: string;
@@ -180,6 +187,16 @@ export function parseDateOverride(value: string | null | undefined): string | nu
 export const PROMISED_BUSINESS_DAYS: Record<PhysicalFormat, { min: number; max: number }> = {
   hardcover: { min: 7, max: 10 },
   softcover: { min: 7, max: 10 },
+};
+
+/**
+ * ICU params for every message quoting the promise ("{minDays}-{maxDays} días laborables"):
+ * the widest window across printed formats. Kept here (no heavy imports) so client
+ * components can use it; lib/product-facts.ts re-exports it.
+ */
+export const DELIVERY_PARAMS = {
+  minDays: Math.min(...Object.values(PROMISED_BUSINESS_DAYS).map((d) => d.min)),
+  maxDays: Math.max(...Object.values(PROMISED_BUSINESS_DAYS).map((d) => d.max)),
 };
 
 /** Easter Sunday (YYYY-MM-DD), anonymous Gregorian algorithm. */

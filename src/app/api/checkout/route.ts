@@ -6,12 +6,13 @@ import { getStripe, getStripeCatalog, PRICING, type BookFormat } from "@/lib/str
 import { routing, type Locale } from "@/i18n/routing";
 import { purchaseEligibility } from "@/lib/fulfilment/logic";
 import { buildCheckoutSession, checkoutOffer } from "@/lib/checkout/session";
-import { CONSENT_COOKIE, UTM_COOKIE } from "@/lib/tracking/consent";
+import { CONSENT_COOKIE, GA_SESSION_COOKIE, UTM_COOKIE } from "@/lib/tracking/consent";
+import { gaClientId, gaSessionId } from "@/lib/tracking/ga4-mp";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
- * Ad attribution for the Stripe webhook (Meta CAPI) and for knowing where an
+ * Ad attribution for the Stripe webhook (Meta CAPI, TikTok, GA4) and for knowing where an
  * order came from (UTMs). Only with advertising consent; Stripe metadata values
  * are capped at 500 chars.
  */
@@ -33,6 +34,8 @@ function attributionMetadata(request: Request): Record<string, string> {
     fbp: cookies.get("_fbp") ?? "",
     fbc: cookies.get("_fbc") ?? "",
     ttp: cookies.get("_ttp") ?? "",
+    ga_cid: gaClientId(cookies.get("_ga")),
+    ga_sid: GA_SESSION_COOKIE ? gaSessionId(cookies.get(GA_SESSION_COOKIE)) : "",
     client_ip: (request.headers.get("x-forwarded-for") ?? "").split(",")[0].trim(),
     client_ua: request.headers.get("user-agent") ?? "",
     source_url: request.headers.get("referer") ?? "",

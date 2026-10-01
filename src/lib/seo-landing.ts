@@ -4,6 +4,7 @@
 // all visible/meta content is localized via the `seo` message namespace.
 
 import { STORY_TEMPLATES } from "@/lib/create-store";
+import { AGE_BANDS } from "@/lib/product-facts";
 
 export type SeoPageType = "gifts" | "ages" | "themes";
 
@@ -27,7 +28,8 @@ export const SEO_GIFT_SLUGS = [
   "first-birthday",
 ] as const;
 
-export const SEO_AGE_SLUGS = ["2-4", "5-7", "8-12"] as const;
+// Same bands as the landing catalog filter (single source: lib/product-facts.ts).
+export const SEO_AGE_SLUGS = AGE_BANDS.map((b) => b.slug);
 
 // Theme slug → underlying STORY_TEMPLATES id.
 export const THEME_TEMPLATE: Record<string, string> = {
@@ -94,29 +96,44 @@ export function featuredTemplateIds(type: SeoPageType, slug: string): string[] {
 /** Primary CTA deep-link into the creation flow, prefilling the theme template. */
 export function seoCtaHref(type: SeoPageType, slug: string): string {
   if (type === "themes") {
-    return `/crear?template=${THEME_TEMPLATE[slug]}&from=seo`;
+    return `/create?template=${THEME_TEMPLATE[slug]}&from=seo`;
   }
-  return "/crear";
+  return "/create";
 }
 
-/** Related pages (cross-links) for a page, for internal linking. */
+/**
+ * Related pages (cross-links) for a page, for internal linking: 2 of the same type
+ * + 2 of each other type. Deterministic rotation (no slice(0, 2)), so the links are
+ * spread over every slug instead of always pointing at the first ones:
+ * - same type: the next two slugs after this one (wrapping), so each page of a
+ *   type gets exactly two inbound links from its siblings;
+ * - other types: a window that advances by 2 per source page (its position in
+ *   allSeoPaths()), so inbound links cycle evenly over that type's slugs.
+ */
 export function relatedSeoPages(
   type: SeoPageType,
   slug: string,
 ): { type: SeoPageType; slug: string }[] {
-  const all: { type: SeoPageType; slug: string }[] = [];
-  (Object.keys(SEO_SLUGS) as SeoPageType[]).forEach((t) => {
-    SEO_SLUGS[t].forEach((s) => {
-      if (!(t === type && s === slug)) all.push({ type: t, slug: s });
-    });
-  });
-  // Prefer a spread: a couple from each other type.
-  const sameType = all.filter((p) => p.type === type).slice(0, 2);
-  const otherTypes = all.filter((p) => p.type !== type);
-  const giftsPick = otherTypes.filter((p) => p.type === "gifts").slice(0, 2);
-  const agesPick = otherTypes.filter((p) => p.type === "ages").slice(0, 2);
-  const themesPick = otherTypes.filter((p) => p.type === "themes").slice(0, 2);
-  return [...sameType, ...giftsPick, ...agesPick, ...themesPick].slice(0, 6);
+  const PER_TYPE = 2;
+  const own = SEO_SLUGS[type];
+  const ownIndex = Math.max(0, own.indexOf(slug));
+  const globalIndex = Math.max(0, allSeoPaths().findIndex((p) => p.type === type && p.slug === slug));
+  const out: { type: SeoPageType; slug: string }[] = [];
+  const order: SeoPageType[] = [type, ...(Object.keys(SEO_SLUGS) as SeoPageType[]).filter((t) => t !== type)];
+  for (const t of order) {
+    const slugs = SEO_SLUGS[t];
+    if (t === type) {
+      for (let k = 1; k <= PER_TYPE && k < slugs.length; k++) {
+        out.push({ type: t, slug: slugs[(ownIndex + k) % slugs.length] });
+      }
+    } else {
+      const picks = Math.min(PER_TYPE, slugs.length);
+      for (let k = 0; k < picks; k++) {
+        out.push({ type: t, slug: slugs[(globalIndex * PER_TYPE + k) % slugs.length] });
+      }
+    }
+  }
+  return out;
 }
 
 /** All SEO landing paths (no locale prefix), for sitemap + static params. */

@@ -4,7 +4,7 @@ import { useEffect, useRef, type ReactNode } from "react";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import BrandLogo from "@/components/BrandLogo";
-import LiveCover from "@/components/crear/LiveCover";
+import LiveCover from "@/components/create/LiveCover";
 import { deName, firstName } from "@/lib/creation-flow";
 import { formatChildName } from "@/lib/child-name";
 import { useHeroName } from "./HeroNameStore";

@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { marked } from "marked";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import MobileStickyCta from "@/components/landing/MobileStickyCta";
 import { BreadcrumbJsonLd } from "@/components/seo/JsonLd";
-import { getPost, getLocalesForSlug, blogOgImageUrl } from "@/lib/blog";
+import { getPost, getLocalesForSlug, blogOgImageUrl, getAllPublishedPostRefs } from "@/lib/blog";
 import { seoPath } from "@/lib/seo-landing";
 import { PRICING, formatPrice } from "@/lib/pricing";
 import { buttonClass, cx, focusRing } from "@/components/ui";
@@ -33,6 +33,17 @@ const PROSE = [
 
 type PageProps = { params: Promise<{ locale: string; slug: string }> };
 
+// Prerendered (ISR): generateMetadata resolves at build/revalidate time, so the
+// title, description, canonical and hreflang are in <head> of the HTML (a dynamic
+// render streams them into <body>, where Google ignores the canonical). Posts
+// published later render on first request and are cached the same way.
+export const revalidate = 3600;
+
+export async function generateStaticParams() {
+  const refs = await getAllPublishedPostRefs();
+  return refs.map(({ locale, slug }) => ({ locale, slug }));
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale, slug } = await params;
   const post = await getPost(locale, slug);
@@ -49,8 +60,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const title = post.seoTitle || post.title;
   const description = post.seoDescription || post.excerpt;
 
+  // Keep the SERP title within ~60 chars: drop the brand suffix when it would overflow.
+  const branded = `${title} | Meapica`;
+
   return {
-    title: { absolute: `${title} | Meapica` },
+    title: { absolute: branded.length <= 60 ? branded : title },
     description,
     alternates: { canonical: url, languages },
     openGraph: {
@@ -65,6 +79,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function BlogPost({ params }: PageProps) {
   const { locale, slug } = await params;
+  setRequestLocale(locale);
   const post = await getPost(locale, slug);
   if (!post) notFound();
 
@@ -161,7 +176,7 @@ export default async function BlogPost({ params }: PageProps) {
               {tb("relatedHeading")}
             </h2>
             <div className="mt-6 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
-              <Link href="/crear" className={buttonClass({ className: "min-h-14 sm:px-8" })}>
+              <Link href="/create" className={buttonClass({ className: "min-h-14 sm:px-8" })}>
                 {th("cta")}
                 <span aria-hidden className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1">
                   arrow_forward

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { NextIntlClientProvider, useLocale, useMessages, useTimeZone, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import CreationHeader from "@/components/crear/CreationHeader";
+import CreationHeader from "@/components/create/CreationHeader";
 import BookViewerSwitch from "@/components/book-viewer/BookViewerSwitch";
 import { spreadIndexOf, spreadStart } from "@/components/book-viewer/spreads";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -91,7 +91,7 @@ export default function SharedPreviewView({ storyId, title, childName, templateI
           <h2 className="font-display text-2xl font-bold text-secondary">{t("restTitle")}</h2>
           <p className="mt-2 text-sm text-text-muted">{t("restBody", { name: childName })}</p>
           <Link
-            href="/crear"
+            href="/create"
             className="min-h-12 mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-create-primary px-6 py-4 text-[19px] font-bold leading-tight text-white shadow-lg shadow-create-primary/20 transition-colors hover:bg-create-primary-hover active:scale-[0.98]"
             data-testid="share-create-cta"
           >
@@ -101,7 +101,7 @@ export default function SharedPreviewView({ storyId, title, childName, templateI
           <p className="mt-6 text-xs text-text-muted">
             {t("ownerHint")}{" "}
             <Link
-              href={`/auth/login?next=${encodeURIComponent(`/crear/${storyId}/preview`)}`}
+              href={`/auth/login?next=${encodeURIComponent(`/create/${storyId}/preview`)}`}
               className="font-semibold text-brand-text hover:underline"
             >
               {t("ownerLogin")}

@@ -88,7 +88,7 @@ grant update (name) on table public.profiles to authenticated;
 -- ── 4. Showcase: no public row access ───────────────────────────────────────
 -- These exposed EVERY column of showcase rows (user_id, story_decisions, sender,
 -- characters' traits…) to anyone with the anon key. Showcase is read server-side
--- (src/lib/showcase.ts, /api/showcase*, /ejemplo) with the service role and a
+-- (src/lib/showcase.ts, /api/showcase*, /examples) with the service role and a
 -- column whitelist.
 drop policy if exists "Anyone can read showcase stories" on public.stories;
 drop policy if exists "Anyone can read illustrations of showcase stories" on public.story_illustrations;

@@ -14,7 +14,7 @@ const DEBOUNCE_MS = 700;
 
 /**
  * Local dedication state with debounced autosave to PATCH /api/stories/{id}/dedication.
- * The creation draft (localStorage) is mirrored too, so Back to /crear keeps it.
+ * The creation draft (localStorage) is mirrored too, so Back to /create keeps it.
  * `flush()` saves any pending change immediately (call before navigating away).
  */
 export function useDedicationAutosave(storyId: string, onSaved?: (v: Values) => void) {

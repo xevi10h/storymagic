@@ -23,10 +23,10 @@ export default function BookCollectionCard({ world, fromPrice, className }: Book
   const { template, example } = world;
   const title = td(`templates.${template.id}.title`);
   // The creation flow reads ?template= and opens with this world pre-chosen.
-  const createHref = `/crear?template=${template.id}&from=catalog`;
+  const createHref = `/create?template=${template.id}&from=catalog`;
 
   return (
-    // The whole card is one link to /crear (stretched ::after over the card); "Ver por dentro"
+    // The whole card is one link to /create (stretched ::after over the card); "Ver por dentro"
     // sits above it (z-10), so there are no nested interactive elements.
     <Card as="article" interactive className={cx("group relative flex flex-col overflow-hidden", className)}>
       {/* Covers are square (the book is 20 × 20 cm): no cropping. */}
@@ -39,11 +39,11 @@ export default function BookCollectionCard({ world, fromPrice, className }: Book
           className="object-cover"
         />
         <span className="absolute left-2.5 top-2.5 rounded-full bg-white/95 px-2.5 py-1 text-xs font-bold text-ink-soft shadow-sm tabular-nums">
-          {td(`templates.${template.id}.ageRange`)}
+          {td("ageRange", { min: template.ageMin, max: template.ageMax })}
         </span>
         {example && (
           <Link
-            href={`/ejemplo/${example.id}`}
+            href={`/examples/${example.id}`}
             className={cx(
               "absolute bottom-2.5 left-2.5 z-10 inline-flex min-h-11 items-center gap-1.5 rounded-full bg-white/95 px-3.5 text-[13px] font-bold text-ink-soft shadow-sm transition-colors hover:text-brand-text",
               focusRing,

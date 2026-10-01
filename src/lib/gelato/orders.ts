@@ -18,6 +18,7 @@
 //   GELATO_OWNER_EMAIL, GELATO_OWNER_PHONE (optional)
 
 import { gelatoOrderFetch } from "./client";
+import { BOOK_INNER_PAGES } from "@/lib/product-facts";
 import type { GelatoAddress } from "./types";
 
 // ── Inner type helpers ──────────────────────────────────────────────────────
@@ -134,7 +135,7 @@ function resolveShippingAddress(params: PrintOrderParams): GelatoAddress {
 // Our book: 32 total pages — 1 front cover + 30 inner pages + 1 back cover.
 // The front and back cover form the cover spread (type: "default").
 // Gelato counts only inner pages in pageCount.
-export const INNER_PAGE_COUNT = 30;
+export const INNER_PAGE_COUNT = BOOK_INNER_PAGES;
 
 // ── Public API ──────────────────────────────────────────────────────────────
 

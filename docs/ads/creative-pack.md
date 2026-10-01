@@ -25,7 +25,7 @@ Covers: `public/images/templates/{id}.jpg`; path art: `public/images/path/{id}/`
 
 **Real example books (ES/CA, use only these, always labelled "Ejemplo"/"Exemple", never as a customer):**
 
-| Child (age) | World | ES title → `/es/ejemplo/{id}` | CA title → `/ca/ejemplo/{id}` |
+| Child (age) | World | ES title → `/es/examples/{id}` | CA title → `/ca/examples/{id}` |
 |---|---|---|---|
 | Hugo (5) | forest | Hugo y la llave de flor · `1a924f3c-969a-488e-9da8-1164680c57e5` | En Hugo i la clau de flor · `2152a65e-b1f3-4a46-8f96-2c06f906d0a5` |
 | Carla (8) | pirates | Carla y el faro dormido · `e1a4d845-42e8-4307-b3d1-23d8bc3058a2` | La Carla i el far adormit · `cd2336ca-ec00-47c5-bb9a-ec91df308301` |
@@ -56,7 +56,7 @@ screen shows better than a photo would: the name appearing, the painted pages, t
 | # | Angle | Why it works (and why digitally) | Primary targets | Landing |
 |---|---|---|---|---|
 | **A1** | **Su nombre en la portada** — type the name, the cover changes live | The name is the product (brand.md). A live screen recording *is* the proof; it is the one moment competitors can't match without sign-up. Highest thumb-stop: viewers mentally type their own child's name. | Parents 28–42 (ES + CA), aunts/uncles/godparents 25–45 | `/{lang}` (hero name field) |
-| **A2** | **Lo ves antes de pagar** — free preview, no sign-up, first 3 painted scenes | Kills the #1 objection for a 35–50 € gift bought from an ad ("¿y si no se parece?"). Screen recording of the real flow = demonstrable, not claimed. | Parents 28–42; retargeting of landing visitors | `/{lang}/crear` |
+| **A2** | **Lo ves antes de pagar** — free preview, no sign-up, first 3 painted scenes | Kills the #1 objection for a 35–50 € gift bought from an ad ("¿y si no se parece?"). Screen recording of the real flow = demonstrable, not claimed. | Parents 28–42; retargeting of landing visitors | `/{lang}/create` |
 | **A3** | **Tú eliges la aventura** — 10 worlds, 3 chapters, written for their age | Turns a purchase into something you do *with* the child at bedtime. Path art and the chapter choice are visually rich and exist today. Separates us from "template with a face pasted in". | Parents 28–42, esp. kids 4–9 | `/{lang}#catalog` or `/{lang}/themes/{theme}` |
 | **A4** | **El regalo que abre con tus palabras** — dedication + extra copy for the grandparents' house | Gift-givers want to be remembered as the giver. The dedication page ("para que siempre sepa de quién fue el regalo") is a real feature and a real page. Extra copy is an AOV lever. | Grandparents 55–70, godparents/aunts/uncles 25–50 (ES + CA) | `/{lang}` |
 | **A5** | **Llega a tiempo** — real cut-offs: 10 Dec (Nochebuena), 22 Dec (Reyes), PDF after that | Q4 gift buyers buy against a date; honest dates + a live countdown convert and are true. Run from 1 Nov, scale 25 Nov–22 Dec, PDF-only 23 Dec–5 Jan. | All segments, retargeting first | `/{lang}/christmas-delivery` |
@@ -182,8 +182,8 @@ Production kit (all digital, capture once, reuse everywhere):
 - **Phone screen recordings** at 390×844 (iPhone 14/15 viewport) on meapica.shop, in ES and in CA. Use Playwright
   `recordVideo` or iOS screen record; hide status-bar clutter. Record with a demo name, never a real customer's child.
 - **Art stills**: `public/images/landing/hugo/*.webp`, `public/images/templates/{world}.jpg`, `public/images/path/{world}/`,
-  portraits `public/images/avatar/{boy|girl|neutral}/…`, example books at `/{lang}/ejemplo/{id}` (swipe viewer on mobile).
-- **3D book**: the draggable 3D book on the preview screen (`/{lang}/crear/{storyId}/preview`) and the harness
+  portraits `public/images/avatar/{boy|girl|neutral}/…`, example books at `/{lang}/examples/{id}` (swipe viewer on mobile).
+- **3D book**: the draggable 3D book on the preview screen (`/{lang}/create/{storyId}/preview`) and the harness
   `/{lang}/dev/book-mockup` (dev only, run locally with `npm run dev`).
 - **Safe zones**: keep text out of the top 220 px and bottom 420 px (Reels/TikTok UI). One idea per card, Fredoka 64–80 px.
 - **VO**: brand voice (the founder or a hired voice), warm, calm; it never says "my son loved it" or poses as a customer.
@@ -204,7 +204,7 @@ Production kit (all digital, capture once, reuse everywhere):
 - On-screen ES: "Su nombre" · "Cómo es" · "Su aventura" · "Y su libro, antes de pagar" · "Sin registrarte · 34,90 € IVA incluido"
 - On-screen CA: "El seu nom" · "Com és" · "La seva aventura" · "I el seu llibre, abans de pagar" · "Sense registrar-te · 34,90 € IVA inclòs"
 - VO ES: "En unos minutos ves su libro: su portada, su retrato y sus primeras páginas pintadas. Solo pagas si te gusta." · VO CA: "En uns minuts veus el seu llibre: la portada, el retrat i les primeres pàgines pintades. Només pagues si t'agrada."
-- Capture: full run of `/{lang}/crear` → `/{lang}/crear/{storyId}/preview` at 390 px, sped up 3–4× between steps, real speed on the reveal.
+- Capture: full run of `/{lang}/create` → `/{lang}/create/{storyId}/preview` at 390 px, sped up 3–4× between steps, real speed on the reveal.
 
 ### V3 · "Elegid juntos" (A3) · 20 s
 - **Hook 0–2 s:** fast 10-cover flick (all `templates/*.jpg`), freeze on one: "¿Dónde empieza su aventura?" (CA: "On comença la seva aventura?").
@@ -212,7 +212,7 @@ Production kit (all digital, capture once, reuse everywhere):
 - On-screen ES: "10 mundos" · "3 capítulos que eliges tú" · "Cada elección cambia la historia" · "Desde 34,90 € IVA incluido"
 - On-screen CA: "10 mons" · "3 capítols que tries tu" · "Cada elecció canvia la història" · "Des de 34,90 € IVA inclòs"
 - VO ES: "Piratas, dinosaurios o el espacio. Lo decidís juntos, capítulo a capítulo." · VO CA: "Pirates, dinosaures o l'espai. Ho decidiu junts, capítol a capítol."
-- Capture: `/{lang}/crear` step 3 recording (pirates, to match Carla's book); Carla pages from `/{lang}/ejemplo/{carla-id}`.
+- Capture: `/{lang}/create` step 3 recording (pirates, to match Carla's book); Carla pages from `/{lang}/examples/{carla-id}`.
 
 ### V4 · "No es una plantilla" (A1 proof) · 20 s
 - **Hook 0–2 s:** macro zoom into a watercolor page (Hugo scene-7) so the paper texture fills the screen: "Pintado escena a escena" (CA: "Pintat escena a escena").
@@ -228,7 +228,7 @@ Production kit (all digital, capture once, reuse everywhere):
 - On-screen ES: "La primera página la escribes tú" · "Se imprime tal cual la escribes" · "¿Y otro para casa de los abuelos?" · "Tapa dura 49,90 € IVA incluido · Envío gratis"
 - On-screen CA: "La primera pàgina l'escrius tu" · "S'imprimeix tal com l'escrius" · "I un altre per a casa dels avis?" · "Tapa dura 49,90 € IVA inclòs · Enviament gratuït"
 - VO ES: "Para que, cuando crezca, sepa de quién fue el regalo." · VO CA: "Perquè, quan sigui gran, sàpiga de qui va ser el regal."
-- Capture: `/{lang}/crear` dedication step (sender "Los abuelos" / "Els avis") + preview dedication page + paywall extra-copy line (Pedido step).
+- Capture: `/{lang}/create` dedication step (sender "Los abuelos" / "Els avis") + preview dedication page + paywall extra-copy line (Pedido step).
 
 ### V6 · "Cuenta atrás" (A5) · 15 s · live 1 Nov → 22 Dec
 - **Hook 0–2 s:** the real countdown on `/{lang}/christmas-delivery`: "Quedan N días" (CA "Queden N dies"), filmed the day you publish.
@@ -244,7 +244,7 @@ Production kit (all digital, capture once, reuse everywhere):
 - On-screen ES: "5 años: frases cortas, letra grande" · "8 años: diálogos y misterio" · "11 años: una novela ilustrada" · "Escrito para su edad"
 - On-screen CA: "5 anys: frases curtes, lletra gran" · "8 anys: diàlegs i misteri" · "11 anys: una novel·la il·lustrada" · "Escrit per a la seva edat"
 - VO ES: "Escrito para su edad: de los primeros cuentos a las primeras novelas." · VO CA: "Escrit per a la seva edat: dels primers contes a les primeres novel·les."
-- Capture: text pages from `/{lang}/ejemplo/{hugo|carla|pau}` (screen recording of the mobile viewer). Label "Ejemplos"/"Exemples".
+- Capture: text pages from `/{lang}/examples/{hugo|carla|pau}` (screen recording of the mobile viewer). Label "Ejemplos"/"Exemples".
 
 ### V8 · "Por qué lo hacemos" (brand creator VO, A2 + A1) · 30 s
 - **Hook 0–2 s:** a name typed in the hero, VO cold open: "Esto es lo que ve un padre la primera vez que escribe el nombre de su hija." (CA: "Això és el que veu un pare el primer cop que escriu el nom de la seva filla.")
@@ -293,7 +293,7 @@ Organic posts: `org_{platform}_w{week}{day}_{lang}` → `org_ig_w1mon_es`.
 | TikTok organic | `utm_source=tiktok&utm_medium=organic_social&utm_campaign=org_q4-26&utm_content=org_tt_w1wed_ca&lang=ca` |
 
 `utm_content` = the platform ad id (paid) so spend joins cleanly to orders; the human-readable ad name lives in the ad itself.
-Example final URL: `https://meapica.shop/ca/crear?utm_source=meta&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_term={{adset.name}}&utm_content={{ad.id}}&utm_id={{campaign.id}}&lang=ca`
+Example final URL: `https://meapica.shop/ca/create?utm_source=meta&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_term={{adset.name}}&utm_content={{ad.id}}&utm_id={{campaign.id}}&lang=ca`
 
 ---
 

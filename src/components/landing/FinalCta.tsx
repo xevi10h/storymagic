@@ -3,19 +3,19 @@
 import type { FormEvent } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { getPathname, useRouter } from "@/i18n/navigation";
-import LiveCover from "@/components/crear/LiveCover";
+import LiveCover from "@/components/create/LiveCover";
 import { buttonClass } from "@/components/ui";
 import { MAX_NAME_LENGTH, deName, firstName } from "@/lib/creation-flow";
 import { formatChildName } from "@/lib/child-name";
 import { PRICING, formatPrice } from "@/lib/pricing";
-import { crearHref, setHeroName, useHeroName } from "./HeroNameStore";
+import { createPageHref, setHeroName, useHeroName } from "./HeroNameStore";
 
 /**
  * Last section of the landing: one emotional line + "¿Cómo se llama?". It shares the
  * hero's name (HeroNameStore): a name typed at the top is already here, so this is the
  * same field at the close, not a second form. The name renders the real cover live and
- * deep-links to /crear?name=… (step 1 pre-filled).
- * Works without JS too: the form is a plain GET to the localized /crear.
+ * deep-links to /create?name=… (step 1 pre-filled).
+ * Works without JS too: the form is a plain GET to the localized /create.
  */
 export default function FinalCta() {
   const t = useTranslations("finalCta");
@@ -31,7 +31,7 @@ export default function FinalCta() {
     e.preventDefault();
     const formatted = formatChildName(trimmed);
     setHeroName(formatted);
-    router.push(crearHref(formatted));
+    router.push(createPageHref(formatted));
   }
 
   return (
@@ -44,7 +44,7 @@ export default function FinalCta() {
           <p className="mt-3 max-w-prose text-base leading-relaxed text-ink-body sm:text-lg">{t("subtitle")}</p>
 
           <form
-            action={getPathname({ href: "/crear", locale })}
+            action={getPathname({ href: "/create", locale })}
             method="get"
             onSubmit={onSubmit}
             className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-end"

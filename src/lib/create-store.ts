@@ -1,7 +1,7 @@
 // State + static data for the book creation flow (creation flow v2, 6 screens):
-// 1 Name → 2 Protagonist → 3 Adventure (world + 3 tree chapters) live on /crear;
-// 4 Dedication-while-painting (/crear/{id}/generar); 5 Book preview + 6 Format/payment
-// (/crear/{id}/preview). See docs/creation-flow-v2.md.
+// 1 Name → 2 Protagonist → 3 Adventure (world + 3 tree chapters) live on /create;
+// 4 Dedication-while-painting (/create/{id}/generate); 5 Book preview + 6 Format/payment
+// (/create/{id}/preview). See docs/creation-flow-v2.md.
 
 // ============================================================
 // TYPES
@@ -55,7 +55,7 @@ export type ProtagonistMode = "avatar" | "photo";
 export interface CreateBookState {
   /** Persisted draft schema version (see migrateCreateState in lib/creation-flow). */
   version: 2;
-  /** Screen on /crear: 1 name, 2 protagonist, 3 adventure. */
+  /** Screen on /create: 1 name, 2 protagonist, 3 adventure. */
   currentStep: number;
   mode: CreationMode;
   character: CharacterData;
@@ -140,7 +140,6 @@ export interface StoryTemplateConfig {
   title: string;
   ageMin: number;
   ageMax: number;
-  ageRange: string;
   description: string;
   image: string;
   theme: string;
@@ -298,7 +297,6 @@ export const STORY_TEMPLATES: StoryTemplateConfig[] = [
     title: "La Gran Aventura Espacial",
     ageMin: 5,
     ageMax: 8,
-    ageRange: "5-8 años",
     description:
       "Un viaje a las estrellas donde descubrirán planetas desconocidos y harán amigos alienígenas.",
     image: "/images/templates/space.jpg",
@@ -489,7 +487,6 @@ export const STORY_TEMPLATES: StoryTemplateConfig[] = [
     title: "El Bosque Mágico",
     ageMin: 2,
     ageMax: 5,
-    ageRange: "2-5 años",
     description:
       "Secretos entre los árboles antiguos y criaturas fantásticas que necesitan ayuda.",
     image: "/images/templates/forest.jpg",
@@ -680,7 +677,6 @@ export const STORY_TEMPLATES: StoryTemplateConfig[] = [
     title: "Superhéroe por un Día",
     ageMin: 7,
     ageMax: 10,
-    ageRange: "7-10 años",
     description:
       "¡A salvar la ciudad! Descubre superpoderes ocultos y aprende el valor de la valentía.",
     image: "/images/templates/superhero.jpg",
@@ -871,7 +867,6 @@ export const STORY_TEMPLATES: StoryTemplateConfig[] = [
     title: "Piratas del Mar",
     ageMin: 5,
     ageMax: 8,
-    ageRange: "5-8 años",
     description:
       "En busca del tesoro perdido navegando los siete mares con una tripulación muy divertida.",
     image: "/images/templates/pirates.jpg",
@@ -1062,7 +1057,6 @@ export const STORY_TEMPLATES: StoryTemplateConfig[] = [
     title: "El Chef Más Pequeño",
     ageMin: 2,
     ageMax: 4,
-    ageRange: "2-4 años",
     description:
       "Una cocina llena de magia donde los ingredientes cobran vida y bailan en la olla.",
     image: "/images/templates/chef.jpg",
@@ -1253,7 +1247,6 @@ export const STORY_TEMPLATES: StoryTemplateConfig[] = [
     title: "La Tierra de los Dinosaurios",
     ageMin: 4,
     ageMax: 7,
-    ageRange: "4-7 años",
     description:
       "Un viaje en el tiempo a la era de los dinosaurios, donde la valentía y la amistad lo cambian todo.",
     image: "/images/templates/dinosaurs.jpg",
@@ -1444,7 +1437,6 @@ export const STORY_TEMPLATES: StoryTemplateConfig[] = [
     title: "El Castillo de los Sueños",
     ageMin: 6,
     ageMax: 10,
-    ageRange: "6-10 años",
     description:
       "Un castillo encantado donde los sueños cobran vida y hay que salvar al reino de la oscuridad.",
     image: "/images/templates/castle.jpg",
@@ -1635,7 +1627,6 @@ export const STORY_TEMPLATES: StoryTemplateConfig[] = [
     title: "Safari en la Sabana",
     ageMin: 4,
     ageMax: 7,
-    ageRange: "4-7 años",
     description:
       "Una aventura por la sabana africana entre leones, elefantes y atardeceres que quitan el aliento.",
     image: "/images/templates/safari.jpg",
@@ -1826,7 +1817,6 @@ export const STORY_TEMPLATES: StoryTemplateConfig[] = [
     title: "La Fábrica de Inventos",
     ageMin: 8,
     ageMax: 12,
-    ageRange: "8-12 años",
     description:
       "Un taller de inventos locos donde la creatividad y la ciencia se mezclan con la magia.",
     image: "/images/templates/inventor.jpg",
@@ -2017,7 +2007,6 @@ export const STORY_TEMPLATES: StoryTemplateConfig[] = [
     title: "El País de los Dulces",
     ageMin: 2,
     ageMax: 5,
-    ageRange: "2-5 años",
     description:
       "Un mundo donde todo está hecho de dulces, chocolate y caramelo. ¡Pero cuidado con comer demasiado!",
     image: "/images/templates/candy.jpg",

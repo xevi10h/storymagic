@@ -28,7 +28,7 @@ async function openBook(page: Page) {
   if (code) await page.context().addCookies([{ name: "meapica_access", value: code, url: "http://localhost:3013" }]);
   const res = await page.request.get(`/api/showcase/${LEO}`);
   test.skip(!res.ok(), "example book not available");
-  await page.goto(`/es/ejemplo/${LEO}`);
+  await page.goto(`/es/examples/${LEO}`);
   await page.getByTestId("book-viewer").waitFor({ timeout: 60_000 });
   await expect(page.getByTestId("book-page-count")).toHaveText("1 / 34");
 }

@@ -1,4 +1,5 @@
 import { STORY_TEMPLATES, type StoryTemplateConfig } from "@/lib/create-store";
+import { AGE_BANDS, type AgeBandSlug } from "@/lib/product-facts";
 
 /** Real book made on the platform (GET /api/showcase). */
 export interface ShowcaseBook {
@@ -8,15 +9,14 @@ export interface ShowcaseBook {
   coverImage: string | null;
 }
 
-export type AgeFilter = "all" | "2-4" | "5-7" | "8-12";
+export type AgeFilter = "all" | AgeBandSlug;
 
-export const AGE_FILTERS: AgeFilter[] = ["all", "2-4", "5-7", "8-12"];
+export const AGE_FILTERS: AgeFilter[] = ["all", ...AGE_BANDS.map((b) => b.slug)];
 
-const AGE_BUCKETS: Record<Exclude<AgeFilter, "all">, readonly [number, number]> = {
-  "2-4": [2, 4],
-  "5-7": [5, 7],
-  "8-12": [8, 12],
-};
+const AGE_BUCKETS = Object.fromEntries(AGE_BANDS.map((b) => [b.slug, [b.min, b.max] as const])) as Record<
+  AgeBandSlug,
+  readonly [number, number]
+>;
 
 /**
  * A world belongs to every age bucket its own range (ageMin–ageMax) touches, so the

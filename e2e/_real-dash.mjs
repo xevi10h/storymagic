@@ -19,7 +19,7 @@ for (const [name, vp] of [["desktop", { width: 1440, height: 900 }], ["mobile", 
   const [dl] = await Promise.all([page.waitForEvent("download", { timeout: 30000 }), btn.click()]);
   console.log(name, "dashboard download:", dl.suggestedFilename());
   // Ready book view: download button
-  await page.goto("http://localhost:3013/es/crear/f5e6bb9a-4f46-4995-82dc-4bd7d7a2605d/preview");
+  await page.goto("http://localhost:3013/es/create/f5e6bb9a-4f46-4995-82dc-4bd7d7a2605d/preview");
   const b2 = page.getByRole("button", { name: /Descargar/ }).first();
   await b2.waitFor({ timeout: 20000 });
   const [dl2] = await Promise.all([page.waitForEvent("download", { timeout: 30000 }), b2.click()]);

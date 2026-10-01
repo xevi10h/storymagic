@@ -3,13 +3,13 @@
 import type { FormEvent } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
-import LiveCover from "@/components/crear/LiveCover";
+import LiveCover from "@/components/create/LiveCover";
 import { useDeliveryLine } from "@/components/purchase/delivery";
 import { buttonClass } from "@/components/ui";
 import { PRICING, formatPrice } from "@/lib/pricing";
 import { MAX_NAME_LENGTH, deName, firstName } from "@/lib/creation-flow";
 import { formatChildName } from "@/lib/child-name";
-import { crearHref, setHeroName, useHeroName } from "./HeroNameStore";
+import { createPageHref, setHeroName, useHeroName } from "./HeroNameStore";
 
 /** Material Symbols glyph with a fixed box, so the late icon font never shifts the text. */
 function Icon({ name, className = "" }: { name: string; className?: string }) {
@@ -26,7 +26,7 @@ function Icon({ name, className = "" }: { name: string; className?: string }) {
 /**
  * Landing hero: the child is the protagonist. The parent types the name, the real
  * cover from the creation flow (LiveCover) updates on every keystroke, and the CTA
- * opens /crear with the name already filled in (?name=, read by the crear prefill).
+ * opens /create with the name already filled in (?name=, read by the create-page prefill).
  */
 export default function Hero() {
   const t = useTranslations("hero");
@@ -42,11 +42,11 @@ export default function Hero() {
   const ctaLabel = first ? t("ctaWithName", { deName: deName(first, locale) }) : t("cta");
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
-    // Without JS the form still works: GET /{locale}/crear?name=… (same prefill).
+    // Without JS the form still works: GET /{locale}/create?name=… (same prefill).
     e.preventDefault();
     const formatted = formatChildName(name);
     setHeroName(formatted);
-    router.push(crearHref(formatted));
+    router.push(createPageHref(formatted));
   }
 
   return (
@@ -59,12 +59,15 @@ export default function Hero() {
       <div className="mx-auto grid max-w-[1200px] grid-cols-1 lg:grid-cols-[minmax(0,1fr)_440px] lg:grid-rows-[auto_auto] lg:gap-x-20 lg:pt-14 xl:grid-cols-[minmax(0,1fr)_480px]">
         {/* Copy */}
         <div className="mx-auto max-w-xl text-center text-balance lg:col-start-1 lg:row-start-1 lg:mx-0 lg:max-w-none lg:self-end lg:text-left">
-          <p className="mb-3 hidden text-xs font-bold uppercase tracking-wide text-brand-text sm:block">{t("eyebrow")}</p>
-          <h1
-            id="hero-title"
-            className="font-display text-[32px] font-bold leading-[1.08] text-ink min-[380px]:text-[34px] sm:text-5xl lg:text-[60px] xl:text-[64px]"
-          >
-            {t.rich("title", { hl: (chunks) => <span className="text-brand">{chunks}</span> })}
+          {/* The H1 carries the head term ("Cuento personalizado para niños", the eyebrow line) and the
+              brand promise as one heading; the eyebrow keeps its kicker style. */}
+          <h1 id="hero-title" className="font-display font-bold text-ink">
+            <span className="mb-2 block font-sans text-xs font-bold uppercase tracking-wide text-brand-text sm:mb-3">
+              {t("eyebrow")}
+            </span>
+            <span className="block text-[32px] leading-[1.08] min-[380px]:text-[34px] sm:text-5xl lg:text-[60px] xl:text-[64px]">
+              {t.rich("title", { hl: (chunks) => <span className="text-brand">{chunks}</span> })}
+            </span>
           </h1>
           <p className="mx-auto mt-3 max-w-[34rem] text-[15px] font-medium leading-relaxed text-ink-muted sm:mt-4 sm:text-lg lg:mx-0">
             {t("subtitle")}
@@ -97,7 +100,7 @@ export default function Hero() {
 
         {/* Name → CTA */}
         <div className="mx-auto mt-5 w-full max-w-xl sm:mt-8 lg:col-start-1 lg:row-start-2 lg:mx-0 lg:mt-9 lg:self-start">
-          <form action={`/${locale}/crear`} method="get" onSubmit={onSubmit} noValidate>
+          <form action={`/${locale}/create`} method="get" onSubmit={onSubmit} noValidate>
             <label
               htmlFor="hero-name"
               className="block text-center font-display text-lg font-semibold text-ink lg:text-left lg:text-xl"
@@ -173,7 +176,7 @@ export default function Hero() {
             </li>
             <li>
               <Link
-                href="/ejemplo"
+                href="/examples"
                 className="inline-flex min-h-11 items-center gap-1 font-semibold text-ink-soft underline decoration-brand/30 underline-offset-4 transition-colors hover:text-brand-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand sm:min-h-0"
               >
                 {t("sampleCta")}
