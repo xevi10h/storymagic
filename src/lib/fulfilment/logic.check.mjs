@@ -3,6 +3,10 @@
 import assert from "node:assert/strict";
 import {
   backoffMs,
+  CONFIRMATION_RETRY_MAX_AGE_MIN,
+  CONFIRMATION_RETRY_SLOTS_MIN,
+  confirmationRetryDue,
+  EXCLUDED_AREA_HOLD,
   decideFullRefund,
   decideGelatoTransition,
   isAdoptableGelatoOrder,
@@ -185,3 +189,36 @@ for (const s of ["ready", "ordered", "shipped", "delivered"]) {
 }
 for (const s of ["draft", "generating", "completing"]) assert.equal(purchaseEligibility(s, "hardcover"), "not_ready", s);
 console.log("purchase eligibility ✓");
+
+// ── Confirmation email retry (cron) ──────────────────────────────────────────
+{
+  const T0 = Date.parse("2026-10-01T10:00:00Z");
+  const at = (min) => T0 + min * 60_000;
+  const base = {
+    status: "paid",
+    created_at: new Date(T0).toISOString(),
+    confirmation_email_sent_at: null,
+    story_id: "s",
+    user_id: "u",
+    fulfilment_hold_reason: null,
+  };
+  assert.equal(confirmationRetryDue(base, at(5)), false, "never before 10 min (webhook / success page still sending)");
+  assert.equal(confirmationRetryDue(base, at(10)), true);
+  assert.equal(confirmationRetryDue(base, at(14.9)), true);
+  assert.equal(confirmationRetryDue(base, at(15)), false, "between slots");
+  assert.equal(confirmationRetryDue(base, at(1440)), true, "last slot ~24 h");
+  assert.equal(confirmationRetryDue(base, at(1446)), false, "gives up after 24 h");
+  assert.equal(CONFIRMATION_RETRY_MAX_AGE_MIN, 1445);
+  // A 5-min cron hits each slot exactly once → bounded number of attempts.
+  let hits = 0;
+  for (let tick = 0; tick <= 3 * 24 * 60; tick += 5) if (confirmationRetryDue(base, at(tick + 2))) hits++;
+  assert.equal(hits, CONFIRMATION_RETRY_SLOTS_MIN.length, "one retry per slot");
+  for (const status of ["producing", "shipped", "delivered"]) assert.equal(confirmationRetryDue({ ...base, status }, at(30)), true, status);
+  for (const status of ["pending", "cancelled", "refunded"]) assert.equal(confirmationRetryDue({ ...base, status }, at(30)), false, status);
+  assert.equal(confirmationRetryDue({ ...base, confirmation_email_sent_at: new Date(T0).toISOString() }, at(30)), false, "already sent");
+  assert.equal(confirmationRetryDue({ ...base, story_id: null }, at(30)), false, "account deleted");
+  assert.equal(confirmationRetryDue({ ...base, fulfilment_hold_reason: EXCLUDED_AREA_HOLD }, at(30)), false, "excluded area: refunded, not confirmed");
+  assert.equal(confirmationRetryDue({ ...base, fulfilment_hold_reason: "dispute" }, at(30)), true, "a chargeback hold still owes the receipt");
+  assert.equal(confirmationRetryDue({ ...base, created_at: "garbage" }, at(30)), false);
+}
+console.log("confirmation retry ✓");

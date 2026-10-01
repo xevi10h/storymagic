@@ -278,9 +278,18 @@ User clicks "Buy" in the preview
                     both via recordPaidSession (src/lib/fulfilment/payments.ts)
                     ├─→ payment_status must be 'paid' (async methods: checkout.session.async_payment_succeeded)
                     ├─→ Order pending → 'paid' (conditional update) + customer_email, invoice id/url, total
+                    ├─→ Printed book to postcode 35/38/51/52 (Canarias/Ceuta/Melilla; Checkout can only
+                    │     restrict by country): fulfilment_hold_reason 'excluded_area' set IN the same
+                    │     update (nothing is generated), then src/lib/fulfilment/excluded-area.ts: full
+                    │     Stripe refund (idempotency key excluded-area-refund-{orderId}) → 'refunded' →
+                    │     one "excluded_area" email (refund + reorder with a mainland address or buy the
+                    │     PDF), claimed on refund_email_sent_at so charge.refunded doesn't send a second →
+                    │     operator alert. No confirmation, no ad conversion. Refund failure → alert + throw
+                    │     (webhook 500 → Stripe redelivers; order stays on hold)
                     └─→ Email "order_confirmed" (physical) / "order_confirmed_digital", exactly-once
                           via orders.confirmation_email_sent_at — includes the consent confirmation
-                          (durable medium, art. 98.7) and the invoice link
+                          (durable medium, art. 98.7) and the invoice link. A failed send releases
+                          the claim; the cron retries it (below)
         checkout.session.expired → 'cancelled' · charge.refunded (full) → 'refunded' (see below)
 
 Post-purchase fulfilment — resumable (src/lib/fulfilment/pipeline.ts)
@@ -324,10 +333,15 @@ Post-purchase fulfilment — resumable (src/lib/fulfilment/pipeline.ts)
   │     alerts for orders stranded > 48 h and stories with 12 consecutive failed runs.
   │     First tick of each hour: reconcile orders 'producing'/'shipped' (< 45 days) with
   │     GET /v4/orders/{id} (status + shipment.packages[] tracking) through the same
-  │     applyGelatoStatus as the webhook; alert if still not shipped > 5 days after purchase
+  │     applyGelatoStatus as the webhook; alert if still not shipped > 5 days after purchase.
+  │     Every tick: confirmation emails still unsent (claim released by a failed send; the webhook
+  │     already answered 200) → recordPaidSession again (same idempotent path as the webhook and
+  │     /admin "Reenviar confirmación"). Stateless bounded backoff confirmationRetryDue (logic.ts):
+  │     one retry when the order's age hits 10/30/60/120/240/480/960/1440 min (≤ 8 tries, ≤ 10 per
+  │     tick); each failure alerts the operator (deduped 24 h)
   │
-  ├─→ Before print: postcode 35/38/51/52 (Canarias/Ceuta/Melilla) → not submitted, attempts
-  │     maxed, operator alerted (Checkout can only restrict by country)
+  ├─→ Before print: postcode 35/38/51/52 (Canarias/Ceuta/Melilla) → same auto-refund as at payment
+  │     (safety net for orders paid before 2026-10-01); if the refund fails: attempts maxed, alerted
   ├─→ Gelato submit: shipping quote first → cheapest shipmentMethodUid (Baleares' cheapest is
   │     the "express" domestic parcel); phone from Checkout passed to the carrier
   │
@@ -419,7 +433,7 @@ src/
 │   │       ├── title/route.ts            — POST: update story title
 │   │       ├── dedication/route.ts       — PATCH: verbatim dedication + sender (until ordered)
 │   │       ├── send-preview/route.ts     — POST: "Envíame la preview" email with the share link (3/h per user, address not stored)
-│   │       ├── share/route.ts            — POST: owner-only → { url, path, expiresAt } read-only share link (30/10 min per user, in-memory)
+│   │       ├── share/route.ts            — POST: owner-only → { url, path, expiresAt } read-only share link (30/10 min per user, in-memory). Stateless HMAC token: minting writes/publishes nothing. SharePreviewButton prefetches it once per page (deduped across its instances) so iOS opens the share sheet within the tap
 │   │       └── pdf/route.ts              — GET: owner + paid order → { url } (10-min signed Storage URL); never renders
 │   ├── checkout/route.ts                 — POST: create Stripe session (tax, invoice, consent, idempotent)
 │   ├── checkout/verify/route.ts          — GET: confirm payment (webhook fallback) via recordPaidSession

@@ -44,6 +44,7 @@ import { getSiteUrl } from "@/lib/email/send";
 import type { FulfilmentClient, FulfilmentDatabase } from "./db";
 import { adminOrderUrl, alertOperator, alertProviderUnavailable } from "./alerts";
 import { sendOrderEmailOnce } from "./emails";
+import { closeExcludedAreaOrder } from "./excluded-area";
 import { classifyProviderError } from "./provider-errors";
 import { cancelGelatoForRefund } from "./payments";
 import {
@@ -529,31 +530,24 @@ async function fulfilPhysicalOrder(ctx: RunContext, order: OrderRow): Promise<Or
   if (order.gelato_submit_attempts >= GELATO_MAX_ATTEMPTS) return "gave_up";
   if (order.gelato_next_attempt_at && new Date(order.gelato_next_attempt_at).getTime() > Date.now()) return "backoff";
 
-  // 0. Shipping area (Checkout can only restrict by country). Parked for a human:
-  // attempts maxed so neither the cron nor a re-run submits it.
+  // 0. Shipping area (Checkout can only restrict by country). recordPaidSession
+  // already refunds these at payment; this catches orders paid before that existed.
   const postcode = (order.shipping_address as { postal_code?: string } | null)?.postal_code;
   if (isExcludedSpanishPostcode(postcode)) {
-    await ctx.supabase
-      .from("orders")
-      .update({ gelato_submit_attempts: GELATO_MAX_ATTEMPTS, gelato_last_error: `excluded shipping area (postcode ${postcode})` })
-      .eq("id", order.id);
-    await alertOperator(ctx.supabase, {
-      key: `excluded-area:${order.id}`,
-      subject: `Order ${order.id} ships to an excluded area (postcode ${postcode}) — NOT sent to print`,
-      lines: [
-        `Story ${ctx.storyId} · format ${order.format} · ${order.customer_email ?? "no email"}`,
-        "Canarias/Ceuta/Melilla are not served. Contact the customer: refund the printed part in Stripe (they keep the PDF) or get a mainland address (update orders.shipping_address), then use \"Reenviar a Gelato\" in the admin panel.",
-        `Admin: ${adminOrderUrl(order.id)}`,
-      ],
-      dedupeSeconds: 7 * 24 * 3600,
-    });
-    // The buyer hears it from us too (once): new address or refund of the print.
-    await sendOrderEmailOnce(ctx.supabase, {
+    const closed = await closeExcludedAreaOrder(ctx.supabase, {
       order,
-      column: "excluded_area_email_sent_at",
-      event: "excluded_area",
-      postcode: postcode ?? null,
+      postcode: postcode ?? "",
+      paymentId: order.stripe_payment_id,
+      amountCents: Math.round((order.total ?? 0) * 100),
+      email: order.customer_email,
     });
+    // Refund failed (operator alerted, order on hold): park it so no run submits it.
+    if (!closed.ok) {
+      await ctx.supabase
+        .from("orders")
+        .update({ gelato_submit_attempts: GELATO_MAX_ATTEMPTS, gelato_last_error: `excluded shipping area (postcode ${postcode}): ${closed.error}`.slice(0, 1000) })
+        .eq("id", order.id);
+    }
     return "gave_up";
   }
 

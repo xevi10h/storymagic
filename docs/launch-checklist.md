@@ -1,5 +1,19 @@
 # Launch Readiness Checklist
 
+> ## 📦 2026-10-01 — order-safety fixes (on branch `local`, not deployed)
+> - **Confirmation email retried**: a failed confirmation (claim released, webhook already 200) is re-sent by
+>   `/api/cron/fulfill-orders` via `recordPaidSession` at order age 10/30/60/120/240/480/960/1440 min
+>   (`confirmationRetryDue`, ≤ 8 tries); each failed retry → operator alert (deduped 24 h).
+> - **Canarias/Ceuta/Melilla auto-refund**: printed order with postcode 35/38/51/52 is held at payment (no
+>   generation), refunded in full in Stripe, closed as 'refunded', customer gets one localized email (refund +
+>   reorder with a mainland address or buy the PDF), operator alerted. The shipping notice on the Stripe
+>   Checkout address step and the preview FAQ "¿Enviáis a Canarias…?" stay. No manual refunds needed any more.
+>   Owner decision open: full refund (current) vs. refund only the print and still deliver the PDF.
+> - Preview share link: one prefetch per page (was one per button = 2 POSTs); the token is stateless and
+>   publishes nothing until the owner shares it.
+> - Smoke after deploy: a test-mode hardcover purchase with postcode 35001 → refund in Stripe, order
+>   'refunded', one email, ops alert, no book generation.
+
 > ## 👤 2026-09-30 — accounts, orders & data — DEPLOYED to prod 2026-09-30 (47f6378)
 > Done by Claude: migrations 130000–156000 (before) + 160000–180000 (after) applied and recorded in
 > schema_migrations; `ADMIN_EMAILS=admin@casmar.tech` in Vercel; Stripe live + test webhooks now send

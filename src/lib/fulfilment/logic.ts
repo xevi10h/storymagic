@@ -162,6 +162,9 @@ export function purchaseEligibility(storyStatus: string, format: string): "ok" |
 
 // ── Shipping area ────────────────────────────────────────────────────────────
 
+/** orders.fulfilment_hold_reason of a printed order to an excluded area (auto-refunded, excluded-area.ts). */
+export const EXCLUDED_AREA_HOLD = "excluded_area";
+
 /**
  * Decision 2026-09-28: Spain only, and not Canarias (35, 38), Ceuta (51) or
  * Melilla (52): they are outside the EU VAT area (IGIC / customs on delivery).
@@ -169,6 +172,45 @@ export function purchaseEligibility(storyStatus: string, format: string): "ok" |
  */
 export function isExcludedSpanishPostcode(postcode: string | null | undefined): boolean {
   return /^(35|38|51|52)\d{3}$/.test((postcode ?? "").replace(/\s/g, ""));
+}
+
+// ── Confirmation email retry ─────────────────────────────────────────────────
+
+/**
+ * A failed order confirmation releases its claim (confirmation_email_sent_at back
+ * to NULL) but the webhook still answers 200, so the fulfilment cron re-sends it.
+ * Stateless backoff: one retry when the order's age (from Checkout start) falls in
+ * each slot below. Slots are one cron period wide (5 min), so each one is hit by
+ * one tick: at most 8 attempts, the last ~24 h after the order. Never sooner than
+ * 10 min, so it can't race the webhook / success page that sends it first.
+ */
+export const CONFIRMATION_RETRY_SLOTS_MIN: readonly number[] = [10, 30, 60, 120, 240, 480, 960, 1440];
+export const CONFIRMATION_RETRY_SLOT_WIDTH_MIN = 5;
+/** Oldest order age (minutes) the cron needs to look at. */
+export const CONFIRMATION_RETRY_MAX_AGE_MIN =
+  CONFIRMATION_RETRY_SLOTS_MIN[CONFIRMATION_RETRY_SLOTS_MIN.length - 1] + CONFIRMATION_RETRY_SLOT_WIDTH_MIN;
+
+/** Order statuses whose buyer is owed a confirmation (paid and not refunded/cancelled). */
+const CONFIRMABLE_STATUSES = new Set(["paid", "producing", "shipped", "delivered"]);
+
+export function confirmationRetryDue(
+  order: {
+    status: string;
+    created_at: string;
+    confirmation_email_sent_at: string | null;
+    story_id: string | null;
+    user_id: string | null;
+    fulfilment_hold_reason?: string | null;
+  },
+  now: number,
+): boolean {
+  if (order.confirmation_email_sent_at || !order.story_id || !order.user_id) return false;
+  if (!CONFIRMABLE_STATUSES.has(order.status)) return false;
+  // Excluded shipping area: refunded instead of confirmed (excluded-area.ts).
+  if (order.fulfilment_hold_reason === EXCLUDED_AREA_HOLD) return false;
+  const ageMin = (now - new Date(order.created_at).getTime()) / 60_000;
+  if (!Number.isFinite(ageMin)) return false;
+  return CONFIRMATION_RETRY_SLOTS_MIN.some((slot) => ageMin >= slot && ageMin < slot + CONFIRMATION_RETRY_SLOT_WIDTH_MIN);
 }
 
 // ── Retry backoff ────────────────────────────────────────────────────────────

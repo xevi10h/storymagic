@@ -9,7 +9,8 @@ import { adminOrderUrl, alertOperator } from "./alerts";
 import { sendOrderEmailOnce } from "./emails";
 import { orderReference, type OrderReceipt } from "@/lib/email/order-emails";
 import { catalogItemByLookupKey } from "@/lib/pricing";
-import { decideFullRefund } from "./logic";
+import { decideFullRefund, isExcludedSpanishPostcode } from "./logic";
+import { closeExcludedAreaOrder, EXCLUDED_AREA_HOLD } from "./excluded-area";
 import { suppressEmail } from "@/lib/marketing/suppression";
 import { sendMetaPurchase } from "@/lib/tracking/meta-capi";
 import { sendTikTokPurchase } from "@/lib/tracking/tiktok-events";
@@ -81,6 +82,12 @@ export async function recordPaidSession(
   }
   const paymentId =
     (typeof session.payment_intent === "string" ? session.payment_intent : session.payment_intent?.id) ?? null;
+  // Printed book to Canarias/Ceuta/Melilla: held in the same update that marks it
+  // paid (so the success page's /complete never starts generating it), then refunded.
+  const excludedPostcode =
+    PHYSICAL_FORMATS.has(session.metadata?.format ?? "") && isExcludedSpanishPostcode(shippingAddress?.postal_code)
+      ? (shippingAddress?.postal_code ?? "")
+      : null;
 
   const { data: flipped, error } = await supabase
     .from("orders")
@@ -93,10 +100,11 @@ export async function recordPaidSession(
       stripe_invoice_id: invoiceId,
       invoice_url: invoiceUrl,
       total: (session.amount_total ?? 0) / 100,
+      ...(excludedPostcode ? { fulfilment_hold_reason: EXCLUDED_AREA_HOLD } : {}),
     })
     .eq("stripe_checkout_session_id", session.id)
     .eq("status", "pending")
-    .select("id, story_id, user_id, format, marketing_opt_out");
+    .select("id, story_id, user_id, format, status, marketing_opt_out");
   if (error) throw new Error(`Failed to update order for session ${session.id}: ${error.message}`);
 
   let order = flipped?.[0];
@@ -129,6 +137,22 @@ export async function recordPaidSession(
     if (!existing.invoice_url && invoiceUrl) backfill.invoice_url = invoiceUrl;
     if (Object.keys(backfill).length > 0) await supabase.from("orders").update(backfill).eq("id", existing.id);
     order = existing;
+  }
+
+  // Excluded area: no ad conversion, no confirmation; refund + one explanatory email.
+  // Only while it is 'paid' (a retry after the refund has already returned 'closed').
+  if (excludedPostcode && order.status === "paid") {
+    const closed = await closeExcludedAreaOrder(supabase, {
+      order,
+      postcode: excludedPostcode,
+      paymentId,
+      amountCents: session.amount_total ?? 0,
+      email: customerEmail,
+      buyerName: session.customer_details?.name ?? null,
+    });
+    // Throw so the webhook answers 500 and Stripe redelivers (the refund is idempotent).
+    if (!closed.ok) throw new Error(`Excluded-area order ${order.id}: ${closed.error}`);
+    return { state: "closed", status: "refunded" };
   }
 
   // Ad conversion exactly once (the pending → paid flip happened here). Before the
@@ -210,7 +234,7 @@ export async function recordRefund(supabase: FulfilmentClient, charge: Stripe.Ch
   if (!paymentId) return;
   const { data: order, error } = await supabase
     .from("orders")
-    .select("id, story_id, user_id, format, status, gelato_order_id, gelato_status, refunded_at, stripe_invoice_id")
+    .select("id, story_id, user_id, format, status, gelato_order_id, gelato_status, refunded_at, stripe_invoice_id, fulfilment_hold_reason, shipping_address")
     .eq("stripe_payment_id", paymentId)
     .maybeSingle();
   if (error) throw new Error(`Failed to read order for payment ${paymentId}: ${error.message}`);
@@ -263,13 +287,16 @@ export async function recordRefund(supabase: FulfilmentClient, charge: Stripe.Ch
     return; // cancelled / pending: never paid, nothing to tell the customer
   }
 
-  // Exactly once, also when this is a retry of an event whose email failed.
+  // Exactly once, also when this is a retry of an event whose email failed. An
+  // excluded-area order gets its own notice (closeExcludedAreaOrder may send it first).
+  const excludedArea = order.fulfilment_hold_reason === EXCLUDED_AREA_HOLD;
   await sendOrderEmailOnce(supabase, {
     order,
     column: "refund_email_sent_at",
-    event: "refund_issued",
+    event: excludedArea ? "excluded_area" : "refund_issued",
     amountCents: charge.amount_refunded,
     cancelledBeforeShipping,
+    postcode: excludedArea ? ((order.shipping_address as { postal_code?: string } | null)?.postal_code ?? null) : null,
   });
   await issueCreditNote(supabase, order, charge);
 }

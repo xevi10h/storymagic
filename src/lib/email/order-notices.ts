@@ -1,6 +1,6 @@
 // Customer emails for the orders that don't go to plan (es / ca / en / fr):
 // refund issued, payment failed (order cancelled), print delayed, print problem
-// (Gelato failed / parcel returned), excluded shipping area, and the tracking
+// (Gelato failed / parcel returned), excluded shipping area (auto-refunded), and the tracking
 // code that arrives after the "shipped" email. Merged into the lifecycle email
 // table of order-emails.ts, so they share its layout, greeting and sign-off.
 //
@@ -82,13 +82,18 @@ export const ORDER_NOTICES: Record<Locale, Record<OrderNoticeEvent, NoticeEventS
       ],
     },
     excluded_area: {
-      subject: (c) => `Necesitamos otra dirección para ${c.bookTitle}`,
-      heading: "Revisemos tu dirección de envío",
-      paragraphs: (c) => [
-        `Tu pedido ${ref(c)} va a un código postal${c.postcode ? ` (${postcode(c)})` : ""} de Canarias, Ceuta o Melilla, y de momento no podemos enviar allí. Por eso aún no lo hemos mandado a imprimir.`,
-        `Escríbenos a ${support} con una dirección de la península o Baleares y lo ponemos en marcha. Si lo prefieres, te devolvemos la parte del libro impreso y te quedas con el PDF.`,
-        "El PDF te llega igualmente en cuanto esté listo.",
-      ],
+      subject: (c) => (amount(c, "es") ? `Te hemos devuelto el pedido de ${c.bookTitle}` : `Hemos cancelado tu pedido de ${c.bookTitle}`),
+      heading: "De momento no enviamos allí",
+      ctaLabel: "Ir a mi biblioteca",
+      paragraphs: (c) =>
+        compact([
+          `Tu pedido ${ref(c)} iba a un código postal${c.postcode ? ` (${postcode(c)})` : ""} de Canarias, Ceuta o Melilla, y de momento no podemos enviar libros impresos allí. Lo sentimos mucho.`,
+          amount(c, "es")
+            ? `Por eso lo hemos cancelado y te hemos devuelto el importe completo, ${amount(c, "es")}. Según tu banco, puede tardar entre 5 y 10 días en aparecer en tu cuenta.`
+            : "Por eso lo hemos cancelado. No se te ha cobrado nada.",
+          `Tu cuento sigue guardado en tu biblioteca. Puedes pedirlo de nuevo con una dirección de la península o Baleares (la de un familiar, por ejemplo) o elegir el PDF, que llega a cualquier sitio.`,
+          `Si tienes cualquier duda, escríbenos a ${support}.`,
+        ]),
     },
     tracking_update: {
       subject: (c) => `Ya puedes seguir el envío de ${c.bookTitle}`,
@@ -144,13 +149,18 @@ export const ORDER_NOTICES: Record<Locale, Record<OrderNoticeEvent, NoticeEventS
       ],
     },
     excluded_area: {
-      subject: (c) => `Necessitem una altra adreça per a ${c.bookTitle}`,
-      heading: "Revisem la teva adreça d'enviament",
-      paragraphs: (c) => [
-        `La teva comanda ${ref(c)} va a un codi postal${c.postcode ? ` (${postcode(c)})` : ""} de les Canàries, Ceuta o Melilla, i de moment no hi podem enviar. Per això encara no l'hem enviat a imprimir.`,
-        `Escriu-nos a ${support} amb una adreça de la península o les Balears i la posem en marxa. Si ho prefereixes, et retornem la part del llibre imprès i et quedes el PDF.`,
-        "El PDF t'arriba igualment quan estigui llest.",
-      ],
+      subject: (c) => (amount(c, "ca") ? `T'hem retornat la comanda de ${c.bookTitle}` : `Hem cancel·lat la teva comanda de ${c.bookTitle}`),
+      heading: "De moment no hi enviem",
+      ctaLabel: "Anar a la meva biblioteca",
+      paragraphs: (c) =>
+        compact([
+          `La teva comanda ${ref(c)} anava a un codi postal${c.postcode ? ` (${postcode(c)})` : ""} de les Canàries, Ceuta o Melilla, i de moment no hi podem enviar llibres impresos. Ho sentim molt.`,
+          amount(c, "ca")
+            ? `Per això l'hem cancel·lada i t'hem retornat l'import complet, ${amount(c, "ca")}. Segons el teu banc, pot trigar entre 5 i 10 dies a aparèixer al teu compte.`
+            : "Per això l'hem cancel·lada. No se t'ha cobrat res.",
+          `El teu conte continua guardat a la teva biblioteca. El pots tornar a demanar amb una adreça de la península o les Balears (la d'un familiar, per exemple) o triar el PDF, que arriba a qualsevol lloc.`,
+          `Si tens qualsevol dubte, escriu-nos a ${support}.`,
+        ]),
     },
     tracking_update: {
       subject: (c) => `Ja pots seguir l'enviament de ${c.bookTitle}`,
@@ -206,13 +216,18 @@ export const ORDER_NOTICES: Record<Locale, Record<OrderNoticeEvent, NoticeEventS
       ],
     },
     excluded_area: {
-      subject: (c) => `We need another address for ${c.bookTitle}`,
-      heading: "Let's check your shipping address",
-      paragraphs: (c) => [
-        `Your order ${ref(c)} is going to a postcode${c.postcode ? ` (${postcode(c)})` : ""} in the Canary Islands, Ceuta or Melilla, where we can't ship yet. So we haven't sent it to print.`,
-        `Write to ${support} with an address in mainland Spain or the Balearic Islands and we'll get it going. Or, if you prefer, we'll refund the printed book and you keep the PDF.`,
-        "You'll still get the PDF as soon as it's ready.",
-      ],
+      subject: (c) => (amount(c, "en") ? `We've refunded your order of ${c.bookTitle}` : `We've cancelled your order of ${c.bookTitle}`),
+      heading: "We don't ship there yet",
+      ctaLabel: "Go to my library",
+      paragraphs: (c) =>
+        compact([
+          `Your order ${ref(c)} was going to a postcode${c.postcode ? ` (${postcode(c)})` : ""} in the Canary Islands, Ceuta or Melilla, where we can't ship printed books yet. We're really sorry.`,
+          amount(c, "en")
+            ? `So we've cancelled it and refunded the full amount, ${amount(c, "en")}. Depending on your bank, it can take 5 to 10 days to show in your account.`
+            : "So we've cancelled it. You haven't been charged anything.",
+          `Your story is still saved in your library. You can order it again with an address in mainland Spain or the Balearic Islands (a relative's, for example) or choose the PDF, which reaches you anywhere.`,
+          `If you have any questions, write to us at ${support}.`,
+        ]),
     },
     tracking_update: {
       subject: (c) => `You can now track ${c.bookTitle}`,
@@ -268,13 +283,18 @@ export const ORDER_NOTICES: Record<Locale, Record<OrderNoticeEvent, NoticeEventS
       ],
     },
     excluded_area: {
-      subject: (c) => `Nous avons besoin d'une autre adresse pour ${c.bookTitle}`,
-      heading: "Vérifions votre adresse de livraison",
-      paragraphs: (c) => [
-        `Votre commande ${ref(c)} doit être livrée à un code postal${c.postcode ? ` (${postcode(c)})` : ""} des Canaries, de Ceuta ou de Melilla, où nous ne livrons pas encore. Nous ne l'avons donc pas encore envoyée à l'impression.`,
-        `Écrivez-nous à ${support} avec une adresse en Espagne péninsulaire ou aux Baléares et nous la lançons. Si vous préférez, nous vous remboursons le livre imprimé et vous gardez le PDF.`,
-        "Vous recevrez quand même le PDF dès qu'il sera prêt.",
-      ],
+      subject: (c) => (amount(c, "fr") ? `Nous vous avons remboursé la commande ${c.bookTitle}` : `Nous avons annulé votre commande ${c.bookTitle}`),
+      heading: "Nous ne livrons pas encore là-bas",
+      ctaLabel: "Aller à ma bibliothèque",
+      paragraphs: (c) =>
+        compact([
+          `Votre commande ${ref(c)} devait être livrée à un code postal${c.postcode ? ` (${postcode(c)})` : ""} des Canaries, de Ceuta ou de Melilla, où nous ne pouvons pas encore livrer de livres imprimés. Nous en sommes vraiment désolés.`,
+          amount(c, "fr")
+            ? `Nous l'avons donc annulée et vous avons remboursé la totalité, ${amount(c, "fr")}. Selon votre banque, le montant peut mettre 5 à 10 jours à apparaître sur votre compte.`
+            : "Nous l'avons donc annulée. Rien ne vous a été débité.",
+          `Votre histoire reste enregistrée dans votre bibliothèque. Vous pouvez la commander à nouveau avec une adresse en Espagne péninsulaire ou aux Baléares (celle d'un proche, par exemple) ou choisir le PDF, qui arrive partout.`,
+          `Pour toute question, écrivez-nous à ${support}.`,
+        ]),
     },
     tracking_update: {
       subject: (c) => `Vous pouvez suivre l'envoi de ${c.bookTitle}`,

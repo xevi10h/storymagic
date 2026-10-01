@@ -61,6 +61,7 @@ assert.deepEqual(orderProblems({ ...base, created_at: h(7) }, NOW), ["stuck_paid
 assert.deepEqual(orderProblems({ ...base, created_at: h(200), fulfilment_requeued_at: h(1) }, NOW), [], "a recent re-queue resets the clock");
 assert.deepEqual(orderProblems({ ...base, gelato_last_error: "boom" }, NOW), ["stuck_paid"], "an error flags immediately");
 assert.deepEqual(orderProblems({ ...base, fulfilment_hold_reason: "dispute" }, NOW), ["on_hold"], "a chargeback hold is flagged");
+assert.deepEqual(orderProblems({ ...base, status: "refunded", fulfilment_hold_reason: "excluded_area" }, NOW), ["refunded"], "an auto-refunded excluded-area order needs no action");
 assert.deepEqual(
   orderProblems({ ...base, status: "producing", gelato_order_id: "g1", gelato_status: "on_hold" }, NOW),
   ["gelato_problem"],

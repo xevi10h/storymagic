@@ -3,7 +3,11 @@ import { createFulfilmentClient } from "@/lib/fulfilment/db";
 import { adminOrderUrl, alertOperator } from "@/lib/fulfilment/alerts";
 import { applyGelatoStatus } from "@/lib/fulfilment/gelato-status";
 import { sendOrderEmailOnce } from "@/lib/fulfilment/emails";
+import { recordPaidSession } from "@/lib/fulfilment/payments";
 import {
+  CONFIRMATION_RETRY_MAX_AGE_MIN,
+  CONFIRMATION_RETRY_SLOTS_MIN,
+  confirmationRetryDue,
   fulfilmentAgeHours,
   GELATO_MAX_ATTEMPTS,
   GELATO_STUCK_PRODUCING_HOURS,
@@ -207,13 +211,76 @@ export async function GET(request: Request) {
   // leave the order (and the customer's tracking) stuck forever.
   const reconciled = new Date(now).getUTCMinutes() < 5 ? await reconcileGelatoOrders(admin, now) : null;
 
+  const confirmations = await retryConfirmationEmails(admin, now);
+
   return NextResponse.json({
     scanned: orders?.length ?? 0,
     triggered,
     skipped,
     escalated: (escalate ?? []).map((o) => o.id),
     reconciled,
+    confirmations,
   });
+}
+
+/** Confirmation retries per tick (each one reads the Checkout Session from Stripe). */
+const CONFIRMATION_RETRY_LIMIT = 10;
+
+/**
+ * Re-send order confirmations whose send failed (the claim was released, the
+ * webhook still answered 200 so Stripe won't redeliver). recordPaidSession is the
+ * same idempotent path as the webhook / admin "Reenviar confirmación": it rebuilds
+ * the receipt from the paid session and claims confirmation_email_sent_at, so a
+ * concurrent sender can never produce a duplicate. Bounded by
+ * confirmationRetryDue (8 slots over 24 h); every failed retry alerts (deduped).
+ */
+async function retryConfirmationEmails(admin: ReturnType<typeof createFulfilmentClient>, now: number) {
+  const oldest = new Date(now - CONFIRMATION_RETRY_MAX_AGE_MIN * 60_000).toISOString();
+  const newest = new Date(now - CONFIRMATION_RETRY_SLOTS_MIN[0] * 60_000).toISOString();
+  const { data: unsent, error } = await admin
+    .from("orders")
+    .select("id, story_id, user_id, status, format, created_at, customer_email, confirmation_email_sent_at, fulfilment_hold_reason, stripe_checkout_session_id")
+    .in("status", ["paid", "producing", "shipped", "delivered"])
+    .is("confirmation_email_sent_at", null)
+    .gte("created_at", oldest)
+    .lte("created_at", newest)
+    .order("created_at", { ascending: true })
+    .limit(50);
+  if (error) {
+    console.error("[cron/fulfill] confirmation retry query failed:", error.message);
+    return { error: error.message };
+  }
+
+  const due = (unsent ?? [])
+    .filter((o) => isOrderForActiveStripeMode(o) && confirmationRetryDue(o, now))
+    .slice(0, CONFIRMATION_RETRY_LIMIT);
+  const result = { retried: 0, sent: 0, failed: 0 };
+  for (const order of due) {
+    result.retried++;
+    let failure: string | null = null;
+    try {
+      const outcome = await recordPaidSession(admin, order.stripe_checkout_session_id!);
+      const { data: after } = await admin.from("orders").select("confirmation_email_sent_at").eq("id", order.id).maybeSingle();
+      if (after?.confirmation_email_sent_at) result.sent++;
+      else failure = `still not sent (${outcome.state})`;
+    } catch (err) {
+      failure = err instanceof Error ? err.message : String(err);
+    }
+    if (!failure) continue;
+    result.failed++;
+    await alertOperator(admin, {
+      key: `confirmation-email-failed:${order.id}`,
+      subject: `Order confirmation email to the customer keeps failing (order ${order.id})`,
+      lines: [
+        `Format ${order.format} · status ${order.status} · ${order.customer_email ?? "no email on the order"} · ordered ${order.created_at}`,
+        `Last retry: ${failure.slice(0, 500)}`,
+        "Retried automatically up to ~24 h after the order. Check the address / Resend, then use \"Reenviar confirmación\" on the order in the admin panel.",
+        `Admin: ${adminOrderUrl(order.id)}`,
+      ],
+      dedupeSeconds: 24 * 3600,
+    });
+  }
+  return result;
 }
 
 async function reconcileGelatoOrders(admin: ReturnType<typeof createFulfilmentClient>, now: number) {

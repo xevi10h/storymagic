@@ -29,7 +29,7 @@ export interface AdminOrderRow {
   gelato_submit_attempts: number;
   fulfilment_alerted_at: string | null;
   fulfilment_requeued_at?: string | null;
-  /** Set by a chargeback (payments.ts): nothing is generated or printed until an operator re-sends. */
+  /** Set by a chargeback (payments.ts) or an excluded shipping area (excluded-area.ts): nothing is generated or printed. */
   fulfilment_hold_reason?: string | null;
   stripe_payment_id: string | null;
   stripe_checkout_session_id: string | null;
@@ -45,7 +45,7 @@ export interface AdminOrderRow {
 export type OrderProblem = "on_hold" | "stuck_paid" | "gelato_problem" | "not_shipped" | "refunded";
 
 export const PROBLEM_LABELS: Record<OrderProblem, string> = {
-  on_hold: "En pausa (contracargo)",
+  on_hold: "En pausa (contracargo / reembolso pendiente)",
   stuck_paid: "Pagado y atascado",
   gelato_problem: "Gelato con incidencia",
   not_shipped: "Sin enviar > 5 días",
@@ -68,7 +68,8 @@ const hoursSince = (iso: string | null | undefined, now: number) =>
 /** Operator attention flags of one order. */
 export function orderProblems(order: AdminOrderRow, now: number): OrderProblem[] {
   const problems: OrderProblem[] = [];
-  if (order.fulfilment_hold_reason) problems.push("on_hold");
+  // A refunded order is closed: its hold (e.g. excluded_area, auto-refunded) needs no action.
+  if (order.fulfilment_hold_reason && order.status !== "refunded") problems.push("on_hold");
   const physical = PHYSICAL_FORMATS.has(order.format);
   // Age counts from the last operator re-queue when there is one.
   const since =
