@@ -230,5 +230,15 @@ Code map: `docs/technical-architecture.md` › Ads tracking. No TikTok Pixel (Ti
   All canonical URLs, sitemap, OG, emails, printed books (back cover + QR) and ads use it.
 - **Legacy: `meapica.com`** stays attached to the Vercel project and serves the same site, but its DNS (Spaceship) is no longer
   under our control: nothing critical (Stripe/Gelato webhooks, auth redirects, email sending, Meta domain) may depend on it.
-- Moving webhooks/auth to `.shop`: Stripe webhook endpoint URL, Gelato webhook URL, Supabase Auth Site URL + redirect allow-list,
-  Resend sending domain, Meta domain verification (TXT on Hostinger), `NEXT_PUBLIC_SITE_URL=https://meapica.shop`.
+- Status 2026-09-30: `NEXT_PUBLIC_SITE_URL=https://meapica.shop` (prod) ✔; Supabase Auth Site URL `https://meapica.shop` + allow-list
+  (.shop, www.shop, .com, www.com, localhost:3013) ✔ via Management API (`SUPABASE_ACCESS_TOKEN=$(cat ~/.config/supabase-profiles/meapica)`);
+  Stripe live webhook `we_1UKekqAyKcfLUpfGWsbB0sRn` → `https://meapica.shop/api/webhooks/stripe` ✔ (owner, 2026-10-01; CLI profile `stripe -p meapica` can read, lacks `webhook_write`);
+  Gelato webhook moved to `.shop` by the owner 2026-10-01 (endpoint verified: 200 with secret, 401 without; old secretless webhook deleted); Meta domain verification: meapica.com + meapica.shop VERIFIED 2026-10-01 (meta tags in root layout + TXT `facebook-domain-verification=…` on Hostinger @).
+- **Email (2026-10-01):** Resend domain `meapica.shop` (id `ac086507-5e3d-4851-a800-bd85e4d7be6c`, eu-west-1, Atalaya Resend account) **verified**; DNS on Hostinger: `resend._domainkey` TXT, `send` MX + TXT (SPF), `rsend` CNAME, `_dmarc` TXT `p=none; rua=admin@casmar.tech`. Prod env: `RESEND_API_KEY` = sending-only key scoped to that domain (`meapica-prod-sending`), `EMAIL_FROM=Meapica <pedidos@meapica.shop>`, `EMAIL_REPLY_TO=admin@casmar.tech` (customer replies land in the owner's Gmail). Admin key for domain management: `~/.config/resend/meapica`.
+
+## Ads tracking — TikTok (2026-10-01)
+
+TikTok Ads account (advertiser id 7691596144782180404, under review 2026-10-01) + pixel `DAV0N7JC77U88MSOEFPG` behind the same
+consent banner. Env (Vercel production): `NEXT_PUBLIC_TIKTOK_PIXEL_ID` (build-time), `TIKTOK_EVENTS_TOKEN` (Events Manager › pixel ›
+Settings › Generate access token; token file `~/.config/meapica/tiktok_events_token`), optional `TIKTOK_TEST_EVENT_CODE`.
+Plan: 3-day paid test (~20 €/day ad group) created in the Ads Manager UI (the campaign API needs an approved developer app).

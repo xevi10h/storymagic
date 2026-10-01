@@ -32,6 +32,7 @@ function attributionMetadata(request: Request): Record<string, string> {
     ads_consent: "1",
     fbp: cookies.get("_fbp") ?? "",
     fbc: cookies.get("_fbc") ?? "",
+    ttp: cookies.get("_ttp") ?? "",
     client_ip: (request.headers.get("x-forwarded-for") ?? "").split(",")[0].trim(),
     client_ua: request.headers.get("user-agent") ?? "",
     source_url: request.headers.get("referer") ?? "",

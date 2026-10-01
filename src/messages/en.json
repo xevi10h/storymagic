@@ -644,9 +644,9 @@
       "section3Title": "3. Purpose of processing",
       "section3Text": "We use your data only to: create the personalised story and its illustrated character, process payment and shipping, and contact you about your order. We never sell data to third parties.",
       "section4Title": "4. Legal basis",
-      "section4Text": "Creating, previewing and printing your book, managing your account, payment and shipping: performance of the contract you request (Art. 6(1)(b) GDPR). The child's photo: explicit consent of the child's parent or legal guardian (Art. 6(1)(a) GDPR and Art. 7 of Spain's LOPDGDD), which you can withdraw at any time. Newsletter and waitlist: your consent (Art. 6(1)(a) GDPR), which you can withdraw whenever you like. Keeping invoices and accounting records: legal obligation (Art. 6(1)(c) GDPR). Service security and abuse prevention (for example, usage limits): legitimate interest (Art. 6(1)(f) GDPR). Measuring our ads with Meta (advertising cookies and purchase event): your consent (Art. 6(1)(a) GDPR), which you can withdraw from \"Cookie settings\".",
+      "section4Text": "Creating, previewing and printing your book, managing your account, payment and shipping: performance of the contract you request (Art. 6(1)(b) GDPR). The child's photo: explicit consent of the child's parent or legal guardian (Art. 6(1)(a) GDPR and Art. 7 of Spain's LOPDGDD), which you can withdraw at any time. Newsletter and waitlist: your consent (Art. 6(1)(a) GDPR), which you can withdraw whenever you like. Keeping invoices and accounting records: legal obligation (Art. 6(1)(c) GDPR). Service security and abuse prevention (for example, usage limits): legitimate interest (Art. 6(1)(f) GDPR). Measuring our ads with Meta and TikTok (advertising cookies and purchase event): your consent (Art. 6(1)(a) GDPR), which you can withdraw from \"Cookie settings\".",
       "section5Title": "5. Processors and international transfers",
-      "section5Text": "To provide the service we work with providers that process data only on our instructions: OpenAI Ireland Ltd. (generating the story text and illustrations and, if you upload one, the character from the photo), Supabase (database and storage), Vercel (web hosting), Stripe Payments Europe Ltd. (payments), Gelato (printing and shipping) Resend (order emails) and, only if you accept advertising cookies, Meta Platforms Ireland Ltd. (measuring our ads). OpenAI does not use the data we send it to train its models and may keep it for up to 30 days to detect abuse. When a provider or its sub-processors process data outside the European Economic Area (for example, in the United States), the transfer relies on the European Commission's Standard Contractual Clauses or the EU-US Data Privacy Framework.",
+      "section5Text": "To provide the service we work with providers that process data only on our instructions: OpenAI Ireland Ltd. (generating the story text and illustrations and, if you upload one, the character from the photo), Supabase (database and storage), Vercel (web hosting), Stripe Payments Europe Ltd. (payments), Gelato (printing and shipping), Resend (order emails) and, only if you accept advertising cookies, Meta Platforms Ireland Ltd. and TikTok Technology Limited (measuring our ads). OpenAI does not use the data we send it to train its models and may keep it for up to 30 days to detect abuse. When a provider or its sub-processors process data outside the European Economic Area (for example, in the United States), the transfer relies on the European Commission's Standard Contractual Clauses or the EU-US Data Privacy Framework.",
       "section6Title": "6. Your rights",
       "section6Text": "You can exercise your rights of access, rectification, erasure, objection, restriction of processing and portability, and withdraw your consent at any time, by writing to admin@casmar.tech. We will reply within one month at the latest. If you believe we have not handled your data properly, you can lodge a complaint with the Spanish Data Protection Agency (AEPD, www.aepd.es).",
       "section7Title": "7. Children's data protection",
@@ -672,13 +672,13 @@
     },
     "cookies": {
       "title": "Cookie Policy",
-      "intro": "Meapica uses technical cookies the service needs to work and, only if you accept them, advertising cookies from Meta.",
+      "intro": "Meapica uses technical cookies the service needs to work and, only if you accept them, advertising cookies from Meta and TikTok.",
       "section1Title": "1. What are cookies?",
       "section1Text": "Cookies are small text files stored in your browser when visiting a website.",
       "section2Title": "2. Cookies we use",
-      "section2Text": "Technical (always on): keeping you signed in, remembering your language, handling the purchase and storing your cookie choice (meapica_consent, 12 months). Advertising (only with your consent): the Meta Pixel (_fbp and _fbc, 90 days) measures which Instagram and Facebook ads lead to a purchase and helps show them to people who may be interested; meapica_utm (30 days) remembers which ad or post brought you here so it can be linked to your order.",
+      "section2Text": "Technical (always on): keeping you signed in, remembering your language, handling the purchase and storing your cookie choice (meapica_consent, 12 months). Advertising (only with your consent): the Meta Pixel (_fbp and _fbc, 90 days) measures which Instagram and Facebook ads lead to a purchase and helps show them to people who may be interested; the TikTok pixel (_ttp, ttclid and _tt_enable_cookie, up to 13 months) does the same for TikTok ads; meapica_utm (30 days) remembers which ad or post brought you here so it can be linked to your order.",
       "section3Title": "3. Third-party cookies",
-      "section3Text": "Meta Platforms Ireland Ltd., only if you accept advertising cookies: receives browsing data and, if you buy, the order amount and your hashed email and phone number to measure our ads. Meta may process data in the US under the EU-US Data Privacy Framework. Stripe (payment processor) may set its own cookies during payment.",
+      "section3Text": "Meta Platforms Ireland Ltd., only if you accept advertising cookies: receives browsing data and, if you buy, the order amount and your hashed email and phone number to measure our ads. Meta may process data in the US under the EU-US Data Privacy Framework. TikTok Technology Limited (Ireland), only with the same consent: receives the same data to measure our TikTok ads and may process it outside the EEA under the European Commission's Standard Contractual Clauses. Stripe (payment processor) may set its own cookies during payment.",
       "section4Title": "4. Cookie management",
       "section4Text": "You can accept or reject advertising cookies in the notice shown on your first visit and change your mind at any time from \"Cookie settings\" at the bottom of every page. If you reject them, the site works just the same. You can also delete them from your browser."
     },
@@ -2452,7 +2452,7 @@
   },
   "cookieConsent": {
     "title": "Cookies",
-    "text": "We use cookies the site needs to work and, if you accept, Meta cookies to measure our ads on Instagram and Facebook.",
+    "text": "We use cookies the site needs to work and, if you accept, Meta and TikTok cookies to measure our ads on Instagram, Facebook and TikTok.",
     "policy": "Learn more",
     "accept": "Accept",
     "reject": "Reject"

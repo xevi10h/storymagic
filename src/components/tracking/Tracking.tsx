@@ -8,7 +8,9 @@ import { buttonClass } from "@/components/ui/Button";
 import {
   CONSENT_CHANGE_EVENT,
   CONSENT_OPEN_EVENT,
+  ADS_TRACKING_ENABLED,
   META_PIXEL_ID,
+  TIKTOK_PIXEL_ID,
   captureUtm,
   getConsent,
   setConsent,
@@ -16,6 +18,7 @@ import {
 } from "@/lib/tracking/consent";
 
 type Fbq = (...args: unknown[]) => void;
+type TtqConsent = { grantConsent?: () => void; revokeConsent?: () => void };
 
 // Meta's standard base code. PageView on client navigations comes for free: the
 // Pixel tracks history.pushState itself (opt-out is fbq.disablePushState).
@@ -25,9 +28,14 @@ n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElemen
 s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
 fbq('init',${JSON.stringify(META_PIXEL_ID)});fbq('track','PageView');`;
 
+// TikTok's standard base code (Events Manager › Meapica web). ttq.page() covers the
+// landing page only. ponytail: no page() on client navigations; add a pathname
+// effect if TikTok audiences ever need per-page views.
+const TIKTOK_SNIPPET = `!function(w,d,t){w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};ttq.load(${JSON.stringify(TIKTOK_PIXEL_ID)});ttq.page();}(window,document,'ttq');`;
+
 /**
- * Cookie banner + Meta Pixel. Renders nothing while NEXT_PUBLIC_META_PIXEL_ID is
- * unset (no non-essential cookies exist then). Consent is read on the client:
+ * Cookie banner + Meta and TikTok pixels. Renders nothing while no pixel id is
+ * set (no non-essential cookies exist then). Consent is read on the client:
  * marketing pages are ISR, so the server can't know it.
  */
 const subscribe = (onChange: () => void) => {
@@ -42,7 +50,7 @@ export default function Tracking() {
   const t = useTranslations("cookieConsent");
   const consent = useSyncExternalStore(subscribe, readConsent, serverConsent);
   const [reopened, setReopened] = useState(false);
-  const open = META_PIXEL_ID !== "" && (consent === "unset" || reopened);
+  const open = ADS_TRACKING_ENABLED && (consent === "unset" || reopened);
 
   useEffect(() => {
     const onOpen = () => setReopened(true);
@@ -52,12 +60,13 @@ export default function Tracking() {
 
   useEffect(() => {
     if (consent === "granted") captureUtm(location.search);
-    // Revoked after the Pixel already loaded in this tab: stop it sending.
-    const fbq = (window as unknown as { fbq?: Fbq }).fbq;
-    if (fbq) fbq("consent", consent === "granted" ? "grant" : "revoke");
+    // Revoked after a pixel already loaded in this tab: stop it sending.
+    const w = window as unknown as { fbq?: Fbq; ttq?: TtqConsent };
+    if (w.fbq) w.fbq("consent", consent === "granted" ? "grant" : "revoke");
+    if (w.ttq) (consent === "granted" ? w.ttq.grantConsent : w.ttq.revokeConsent)?.();
   }, [consent]);
 
-  if (!META_PIXEL_ID) return null;
+  if (!ADS_TRACKING_ENABLED) return null;
 
   const choose = (value: Consent) => {
     setConsent(value);
@@ -69,9 +78,14 @@ export default function Tracking() {
 
   return (
     <>
-      {consent === "granted" && (
+      {consent === "granted" && META_PIXEL_ID && (
         <Script id="meta-pixel" strategy="afterInteractive">
           {PIXEL_SNIPPET}
+        </Script>
+      )}
+      {consent === "granted" && TIKTOK_PIXEL_ID && (
+        <Script id="tiktok-pixel" strategy="afterInteractive">
+          {TIKTOK_SNIPPET}
         </Script>
       )}
       {open && (
@@ -105,7 +119,7 @@ export default function Tracking() {
 
 /** Footer list item that re-opens the banner (withdrawing must be as easy as giving consent). */
 export function CookieSettingsButton({ className, label }: { className: string; label: string }) {
-  if (!META_PIXEL_ID) return null;
+  if (!ADS_TRACKING_ENABLED) return null;
   return (
     <li>
       <button type="button" className={className} onClick={() => window.dispatchEvent(new Event(CONSENT_OPEN_EVENT))}>

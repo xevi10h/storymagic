@@ -167,7 +167,7 @@ Navbar links: Cómo funciona (`/#manifesto`), Cuentos (`/#catalog`), Ver un ejem
 
 ### Cookie consent + ad measurement (2026-09-30)
 
-When Meta ads are live (`NEXT_PUBLIC_META_PIXEL_ID` set), first-time visitors see a small cookie notice (bottom; full width on mobile, bottom-left card on desktop) with **Rechazar / Aceptar** at equal weight and a link to `/legal#cookies`. Rejecting keeps the site fully usable. "Configurar cookies" in the footer reopens it; withdrawing deletes the ad cookies. Only with consent: Meta Pixel events (view, story chosen, preview emailed, checkout started, purchase), the purchase sent server-side to Meta, and the visit's UTMs attached to the order in Stripe. Legal texts (cookies + privacy, 4 locales) list Meta Platforms Ireland and the consent basis.
+When ads tracking is on (`NEXT_PUBLIC_META_PIXEL_ID` and/or `NEXT_PUBLIC_TIKTOK_PIXEL_ID` set), first-time visitors see a small cookie notice (bottom; full width on mobile, bottom-left card on desktop) with **Rechazar / Aceptar** at equal weight and a link to `/legal#cookies`. Rejecting keeps the site fully usable. "Configurar cookies" in the footer reopens it; withdrawing deletes the ad cookies. Only with consent: Meta and TikTok pixel events (view, story chosen, preview emailed, checkout started, purchase), the purchase sent server-side to Meta and TikTok, and the visit's UTMs attached to the order in Stripe. Legal texts (cookies + privacy, 4 locales) list Meta Platforms Ireland, TikTok Technology Limited and the consent basis.
 
 ## Waitlist (Pre-Launch Gate)
 
