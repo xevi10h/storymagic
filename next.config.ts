@@ -11,9 +11,13 @@ const LOCALE_PARAM = ":locale(es|ca|en|fr)";
 const LEGACY_SLUG_REDIRECTS: Array<[from: string, to: string]> = [
   // Most specific first: the nested /generar segment was renamed too.
   ["/crear/:storyId/generar", "/create/:storyId/generate"],
-  ["/crear/:path*", "/create/:path*"],
-  ["/ejemplo/:path*", "/examples/:path*"],
-  ["/perfil/:path*", "/profile/:path*"],
+  // Exact paths first: `:path*` with zero segments leaves a trailing slash (extra hop).
+  ["/crear", "/create"],
+  ["/ejemplo", "/examples"],
+  ["/perfil", "/profile"],
+  ["/crear/:path+", "/create/:path+"],
+  ["/ejemplo/:path+", "/examples/:path+"],
+  ["/perfil/:path+", "/profile/:path+"],
 ];
 
 const nextConfig: NextConfig = {
