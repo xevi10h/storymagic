@@ -2,12 +2,13 @@
 
 > ## ✉️ 2026-10-01 — Stripe branding + inbound mail (on `local`, not deployed)
 > - Checkout shows Meapica branding per session (`branding_settings` in `src/lib/checkout/session.ts`; logo/icon by public URL).
-> - Inbound `*@meapica.shop`: Resend receiving ENABLED on the domain; `POST /api/webhooks/resend-inbound` forwards each mail
->   to `INBOUND_FORWARD_TO` (default admin@casmar.tech) with Reply-To = sender. **Pending (needs owner OK):** root MX
->   `10 inbound-smtp.eu-west-1.amazonaws.com` in Hostinger; Resend webhook (event `email.received`) → env
->   `RESEND_INBOUND_WEBHOOK_SECRET` + `RESEND_INBOUND_API_KEY` (full-access key); Gmail "Send mail as" hola@meapica.shop
->   via smtp.resend.com:465; then switch `SUPPORT_EMAIL` + messages + Supabase templates to hola@meapica.shop.
-> - Supabase Auth SMTP (Resend) + templates + OTP 6: still pending (needs owner OK to write the SMTP secret).
+> - Inbound `*@meapica.shop`: LIVE 2026-10-01 (Resend receiving + root MX `10 inbound-smtp.eu-west-1.amazonaws.com` in
+>   Hostinger + Resend webhook → `POST /api/webhooks/resend-inbound`, env `RESEND_INBOUND_WEBHOOK_SECRET` +
+>   `RESEND_INBOUND_API_KEY`). Each mail is forwarded to `INBOUND_FORWARD_TO` (default admin@casmar.tech), Reply-To = sender.
+>   Owner: Gmail "Send mail as" hola@meapica.shop via smtp.resend.com:465 to reply as hola@. Pending: `SUPPORT_EMAIL` +
+>   messages still say admin@casmar.tech (being switched in the session editing messages).
+> - Supabase Auth SMTP = Resend (pedidos@meapica.shop, domain-scoped key), 100 emails/h, OTP 6, ES/CA/EN/FR templates
+>   (magic link + confirmation + email change): LIVE 2026-10-01, test code delivered.
 
 > ## 📦 2026-10-01 — order-safety fixes (on branch `local`, not deployed)
 > - **Confirmation email retried**: a failed confirmation (claim released, webhook already 200) is re-sent by
