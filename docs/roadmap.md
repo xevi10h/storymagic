@@ -67,7 +67,7 @@ character lock; per-stage resolution. (commits 5ebc2f1 → a883d60)
 ## Next steps from showcase v2 (2026-09-30)
 
 - [x] SEO/GEO content pass 2026-10-01: head-term titles/H1, product facts single source (`src/lib/product-facts.ts`), Organization + Product JSON-LD (real covers, 3 offers, shipping, return policy), per-page FAQ + FAQPage on all SEO landings, three-kings/christmas de-cannibalised + order-by cards, honest baptism/first-birthday, `/llms.txt`.
-- [ ] **Owner:** decide whether the 7–10 business-day promise should change in December (a Reyes order on the 22 Dec cut-off can exceed 10 business days because of holidays; cut-offs use measured 7–8 calendar days); swap `SUPPORT_EMAIL`/`CONTACT_EMAIL` to hola@meapica.shop; add IG/TikTok URLs to `SOCIAL_PROFILES` once the accounts exist; Google Merchant Center free listings feed.
+- [ ] **Owner, mid-Nov 2026:** review the Reyes cut-off (22 Dec) against Gelato's official peak dates and the 7–10 business-day promise (decided 2026-10-01: keep until then). Add IG/TikTok URLs to `SOCIAL_PROFILES` once the accounts exist. Google Merchant Center free listings (owner creates account; code adds feed). Contact already switched to hola@meapica.shop (2026-10-01).
 - [ ] **HIGH — Next session: platform-wide SEO review** (every public route × 4 locales: titles/meta/OG, hreflang + canonicals, JSON-LD incl. `Offer` VAT flags, sitemap, internal links, Core Web Vitals, the new showcase books on `/examples` + theme pages)
 - [ ] Showcase v2 for the remaining 5 worlds (superhero, chef, safari, inventor, candy) with the same rule: production pipeline + page-by-page QA in 4 locales; a `castle` theme SEO page (`THEME_TEMPLATE` has no castle slug yet)
 - [x] Pipeline findings from the showcase QA (customer-facing): Done 2026-09-30: U+202F (narrow no-break space) now prints — the embedded fonts gained the glyph (`scripts/patch-font-nnbsp.py`), the web viewer uses the same one
@@ -467,3 +467,12 @@ Replaced the old "mode → template → 3 decision knobs" with a single vertical
 - Print polish: "about the reader" page design, panorama upscale to 300 dpi. (Illustrated adventure map + search-and-find game on pp. 28–29 shipped 2026-09-28.)
 - Adventure map follow-ups: fold compliance of the map (the model tends to centre the largest landmark on the gutter — try a narrower panel for ages 2–6 or a two-half layout brief); picture thumbnails next to each item for 2–4 pre-readers (crop from the map via the QA figure locator); show the map in the web viewer / preview as a teaser.
 - **Phase 3 — sales:** analytics (GA4 + Meta pixel + funnel events); guarantee; −20% on 2+ books; Reyes positioning (cutoff ~29 Dec) + gift card; "Pedir a los abuelos" WhatsApp payment link; AMPA/school class orders; 3 real orders for photos.
+
+## SEO/GEO wave 2 (from the 2026-10-01 audit)
+- Free Reyes tools live by 25 Oct (es/ca): printable "Carta a los Reyes" with the child drawn in, "Respuesta de los Reyes", colouring page; pitch to "plantillas carta Reyes" roundups early Nov.
+- Merchant Center product feed + ChatGPT merchant feed; Bing Webmaster (owner OAuth) + run `node scripts/indexnow-ping.mjs` after each deploy.
+- New pages: `/personalized-books/with-photo`, per-age pages 2–10, `/themes/castle|chef|inventor|candy`, `/gifts/grandchildren`, honest dated `/compare` vs Mumablue/Wonderbly/Hurra Héroes, Catalan-native landing "conte personalitzat en català".
+- Server-render `/examples/[id]` story text and make it indexable; name pages only for names with a real book.
+- Off-site GEO: Christmas gift-guide pitches (Webedia, El País Escaparate, Ara Criatures, Serpadres), Trustpilot/Google profile with honest post-delivery review request, YouTube flip-throughs, Pinterest; Awin affiliate programme.
+- Vercel › Domains: www.meapica.shop → apex redirect so alias hosts don't serve sitemap/robots/llms.txt.
+- Sant Jordi (23 Apr) Catalan push: classroom kit in Jan, school/AMPA outreach Feb–Mar.
