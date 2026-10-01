@@ -7,6 +7,9 @@
 >   `RESEND_INBOUND_API_KEY`). Each mail is forwarded to `INBOUND_FORWARD_TO` (default admin@casmar.tech), Reply-To = sender.
 >   Owner: Gmail "Send mail as" hola@meapica.shop via smtp.resend.com:465 to reply as hola@. Pending: `SUPPORT_EMAIL` +
 >   messages still say admin@casmar.tech (being switched in the session editing messages).
+> - Turnstile LIVE 2026-10-01: `NEXT_PUBLIC_TURNSTILE_SITE_KEY` in Vercel prod (redeployed) + Supabase CAPTCHA = turnstile.
+>   Verified on prod: real Chrome login 200 and guest sign-up 200 (silent pass), no token / fake token / replayed token → 400
+>   `captcha_failed`. Rollback = Supabase `security_captcha_enabled=false` (instant). Privacy §processors must list Cloudflare.
 > - Supabase Auth SMTP = Resend (pedidos@meapica.shop, domain-scoped key), 100 emails/h, OTP 6, ES/CA/EN/FR templates
 >   (magic link + confirmation + email change): LIVE 2026-10-01, test code delivered.
 
