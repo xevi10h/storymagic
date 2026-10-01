@@ -1,4 +1,4 @@
-// Self-check for the TikTok Events API CompletePayment payload (fetch mocked).
+// Self-check for the TikTok Events API Purchase payload (fetch mocked).
 // Run: npx tsx scripts/check-tiktok-events.mts
 import assert from "node:assert";
 import { createHash } from "node:crypto";
@@ -40,7 +40,7 @@ assert.equal(headers["Access-Token"], "tok");
 assert.equal(body.event_source, "web");
 assert.equal(body.event_source_id, "PIX");
 assert.equal(body.test_event_code, "TEST1");
-assert.equal(ev.event, "CompletePayment");
+assert.equal(ev.event, "Purchase");
 assert.equal(ev.event_id, "purchase_cs_test_abc", "must match the browser pixel event id");
 assert.equal(ev.user.email, sha("ana@example.com"));
 assert.equal(ev.user.phone, sha("+34600111222"), "E.164 then hashed");

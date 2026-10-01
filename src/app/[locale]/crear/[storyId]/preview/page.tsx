@@ -331,6 +331,8 @@ export default function PreviewPage() {
   const chooseFormat = useCallback((next: BookFormat) => {
     setFormat(next);
     setFormatChosen(true);
+    // Picking a format is this shop's "add to cart" (Meta + TikTok funnel step).
+    trackEvent("AddToCart", { content_ids: [next], content_type: "product", value: PRICING[next].price / 100, currency: "EUR" });
   }, []);
 
   // Mobile sticky buy bar: shown while the main CTA is off-screen.

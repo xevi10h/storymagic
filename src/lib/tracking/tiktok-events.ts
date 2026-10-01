@@ -1,4 +1,4 @@
-// TikTok Events API 2.0: server-side CompletePayment from the Stripe payment,
+// TikTok Events API 2.0: server-side Purchase from the Stripe payment,
 // deduplicated with the browser pixel via event_id. Plain fetch. Server only.
 
 import { createHash } from "node:crypto";
@@ -16,7 +16,7 @@ function e164(phone: string): string {
 }
 
 /**
- * Send one CompletePayment for a paid Checkout Session. Only when the buyer
+ * Send one Purchase for a paid Checkout Session. Only when the buyer
  * accepted advertising cookies (metadata.ads_consent, set by /api/checkout).
  * Never throws: tracking must not fail a payment webhook.
  */
@@ -37,7 +37,7 @@ export async function sendTikTokPurchase(session: Stripe.Checkout.Session): Prom
     ...(session.livemode ? {} : { test_event_code: testCode }),
     data: [
       {
-        event: "CompletePayment",
+        event: "Purchase",
         event_time: Math.floor(Date.now() / 1000),
         event_id: purchaseEventId(session.id),
         user: {

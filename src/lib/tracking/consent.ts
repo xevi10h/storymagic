@@ -68,9 +68,10 @@ type Ttq = { track: (event: string, params?: Record<string, unknown>, options?: 
 // Our (Meta standard) event names → TikTok standard events.
 const TIKTOK_EVENT: Record<string, string> = {
   ViewContent: "ViewContent",
+  AddToCart: "AddToCart",
   Lead: "SubmitForm",
   InitiateCheckout: "InitiateCheckout",
-  Purchase: "CompletePayment",
+  Purchase: "Purchase", // TikTok renamed CompletePayment → Purchase (2025)
 };
 
 /** Meta-style params → TikTok's (`contents` instead of `content_ids`). */
