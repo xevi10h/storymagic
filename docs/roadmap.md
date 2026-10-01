@@ -474,5 +474,5 @@ Replaced the old "mode → template → 3 decision knobs" with a single vertical
 - New pages: `/personalized-books/with-photo`, per-age pages 2–10, `/themes/castle|chef|inventor|candy`, `/gifts/grandchildren`, honest dated `/compare` vs Mumablue/Wonderbly/Hurra Héroes, Catalan-native landing "conte personalitzat en català".
 - Server-render `/examples/[id]` story text and make it indexable; name pages only for names with a real book.
 - Off-site GEO: Christmas gift-guide pitches (Webedia, El País Escaparate, Ara Criatures, Serpadres), Trustpilot/Google profile with honest post-delivery review request, YouTube flip-throughs, Pinterest; Awin affiliate programme.
-- Vercel › Domains: www.meapica.shop → apex redirect so alias hosts don't serve sitemap/robots/llms.txt.
+- ~~Vercel › Domains: www.meapica.shop → apex 308~~ DONE 2026-10-01. Deployed wave 1 (main e7670ee+), IndexNow pinged (118 URLs), GA4 verified live after consent.
 - Sant Jordi (23 Apr) Catalan push: classroom kit in Jan, school/AMPA outreach Feb–Mar.
