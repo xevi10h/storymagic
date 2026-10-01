@@ -241,4 +241,4 @@ Code map: `docs/technical-architecture.md` › Ads tracking. No TikTok Pixel (Ti
 TikTok Ads account (advertiser id 7691596144782180404, under review 2026-10-01) + pixel `DAV0N7JC77U88MSOEFPG` behind the same
 consent banner. Env (Vercel production): `NEXT_PUBLIC_TIKTOK_PIXEL_ID` (build-time), `TIKTOK_EVENTS_TOKEN` (Events Manager › pixel ›
 Settings › Generate access token; token file `~/.config/meapica/tiktok_events_token`), optional `TIKTOK_TEST_EVENT_CODE`.
-Plan: 3-day paid test (~20 €/day ad group) created in the Ads Manager UI (the campaign API needs an approved developer app).
+Status 2026-10-01: Events API token set in prod (test event accepted, code 0). Plan: 3-day paid test (~20 €/day ad group) created in the Ads Manager UI (the campaign API needs an approved developer app).
