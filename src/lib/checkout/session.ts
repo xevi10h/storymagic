@@ -54,7 +54,20 @@ const SHIPPING_AREA_NOTICE: Record<Locale, string> = {
   fr: "Livraison standard incluse en Espagne péninsulaire et aux Baléares (7 à 10 jours ouvrés). Pas encore de livraison aux Canaries, à Ceuta ni à Melilla.",
 };
 
-const INVOICE_FOOTER = `${SELLER_IDENTITY} · IVA incluido (4 %, libros) · ${SUPPORT_EMAIL}`;
+// Brand on the hosted Checkout page (docs/brand.md). Images by public prod URL: Stripe
+// fetches them, so never `origin` (localhost in dev). Invoices keep Dashboard branding.
+// Button = --brand-text, not --brand: Stripe's 16 px white label needs ≥ 4.5:1.
+const CHECKOUT_BRANDING: Stripe.Checkout.SessionCreateParams.BrandingSettings = {
+  display_name: "Meapica",
+  logo: { type: "url", url: "https://meapica.shop/images/meapica-logo.png" },
+  icon: { type: "url", url: "https://meapica.shop/images/icon-512.png" },
+  background_color: "#FFF8F0",
+  button_color: "#b94f1f",
+  border_style: "rounded",
+  font_family: "nunito",
+};
+
+const INVOICE_FOOTER =`${SELLER_IDENTITY} · IVA incluido (4 %, libros) · ${SUPPORT_EMAIL}`;
 
 /**
  * The post-purchase offer that applies to this checkout, decided from the buyer's
@@ -155,6 +168,7 @@ export function buildCheckoutSession(input: CheckoutSessionInput): CheckoutSessi
       },
     },
     custom_text: { submit: { message: (isReorder ? REORDER_NOTICE : WITHDRAWAL_NOTICE)[locale] } },
+    branding_settings: CHECKOUT_BRANDING,
     metadata: {
       story_id: storyId,
       user_id: userId,
