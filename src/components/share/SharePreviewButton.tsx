@@ -34,6 +34,34 @@ function prefersNativeShare(): boolean {
 }
 
 /**
+ * One share-link request per story + locale per page load, shared by every button
+ * instance (the preview screen renders two). The link is a stateless signed token:
+ * minting it writes nothing and exposes nothing until the owner actually shares it.
+ * A failed request is dropped so the next click retries.
+ */
+const linkRequests = new Map<string, Promise<string>>();
+
+function requestShareUrl(storyId: string, locale: string): Promise<string> {
+  const key = `${storyId}:${locale}`;
+  let pending = linkRequests.get(key);
+  if (!pending) {
+    pending = (async () => {
+      const res = await fetch(`/api/stories/${storyId}/share`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ locale }),
+      });
+      const data = (await res.json().catch(() => ({}))) as { path?: string };
+      if (!res.ok || !data.path) throw new Error(`share_${res.status}`);
+      return new URL(data.path, window.location.origin).toString();
+    })();
+    linkRequests.set(key, pending);
+    pending.catch(() => linkRequests.delete(key));
+  }
+  return pending;
+}
+
+/**
  * "Compartir" for the owner's preview: mints a read-only share link
  * (POST /api/stories/[storyId]/share) and hands it to the OS share sheet on
  * mobile or copies it on desktop. The link shows only the preview pages.
@@ -52,19 +80,13 @@ export default function SharePreviewButton({ storyId, childName, className, show
 
   const getUrl = useCallback(async (): Promise<string> => {
     if (cachedUrl.current) return cachedUrl.current;
-    const res = await fetch(`/api/stories/${storyId}/share`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ locale }),
-    });
-    const data = (await res.json().catch(() => ({}))) as { path?: string };
-    if (!res.ok || !data.path) throw new Error(`share_${res.status}`);
-    cachedUrl.current = new URL(data.path, window.location.origin).toString();
+    cachedUrl.current = await requestShareUrl(storyId, locale);
     return cachedUrl.current;
   }, [storyId, locale]);
 
   // Mint the link ahead of the tap: iOS Safari only opens the share sheet while the
   // tap's user activation is fresh, which an await on the network can outlive.
+  // Deduplicated across instances (requestShareUrl); nothing is published by it.
   useEffect(() => {
     getUrl().catch(() => {
       // Retried on click (and reported there).
