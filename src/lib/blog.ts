@@ -118,3 +118,22 @@ export async function getAllPublishedPostRefs(): Promise<
     updatedAt: r.updated_at ?? null,
   }));
 }
+
+/** Locales with at least one published post: the blog index is indexable (and
+ *  listed in the sitemap / hreflang) only there, so an empty "coming soon" index
+ *  never gets indexed and a locale's index goes live with its first post. */
+export async function getBlogLocales(): Promise<string[]> {
+  const refs = await getAllPublishedPostRefs();
+  return [...new Set(refs.map((r) => r.locale))];
+}
+
+/**
+ * Share image for a post: the PNG covers in the public `showcase` bucket weigh
+ * ~2.3 MB, too heavy for WhatsApp link previews, so `scripts/blog-og-images.mjs`
+ * uploads a 1200x630 JPG (< 300 KB) next to each one as `<name>-og.jpg`. Covers
+ * hosted anywhere else are shared as they are.
+ */
+export function blogOgImageUrl(coverImageUrl: string): { url: string; width?: number; height?: number } {
+  const m = coverImageUrl.match(/^(.*\/storage\/v1\/object\/public\/showcase\/blog\/[^/]+)\.png$/);
+  return m ? { url: `${m[1]}-og.jpg`, width: 1200, height: 630 } : { url: coverImageUrl };
+}

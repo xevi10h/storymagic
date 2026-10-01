@@ -195,7 +195,9 @@ blog_posts (editorial blog — Supabase CMS)
 └── updated_at
 ```
 
-**Blog read path:** `src/lib/blog.ts` (untyped Supabase client) → `/blog` index + `/blog/[slug]` post. Markdown rendered with `marked`; styled via `.prose-article` in globals.css. `Article` + `BreadcrumbList` JSON-LD. Authoring v1 = seed via service role (no admin UI yet).
+**Blog read path:** `src/lib/blog.ts` (untyped Supabase client) → `/blog` index + `/blog/[slug]` post. Markdown rendered with `marked`; styled via `.prose-article` in globals.css. `Article` + `BreadcrumbList` JSON-LD. Authoring v1 = seed via service role (no admin UI yet). Indexing is data-driven: a locale's `/blog` index is indexable, in hreflang and in the sitemap only when it has at least one published post (`getBlogLocales()`); an empty "coming soon" index (en/fr today) is `noindex, follow`. og:image: index = `blog/opengraph-image.tsx` (shared `seoOgImage`); post = a 1200x630 JPG copy of its cover (`blogOgImageUrl()` maps `showcase/blog/<slug>.png` → `<slug>-og.jpg`, ~100-130 KB) because the ~2.3 MB PNG covers are too heavy for WhatsApp previews. **After publishing a post with a new cover run `node --env-file=.env.local scripts/blog-og-images.mjs`** (idempotent, keeps the originals).
+
+**Root layouts / `<html lang>`:** `src/app/layout.tsx` is a pass-through (next-intl pattern). The document (`<html>`, `<head>`, fonts, globals.css) lives in `src/app/_components/RootDocument.tsx` and is rendered by each real root layout: `[locale]/layout.tsx` (`lang` = URL locale, so SSR HTML is `lang="ca"` on /ca etc.), `admin/layout.tsx` and the unlocalized `src/app/not-found.tsx` (both `lang="es"`). Any new route outside `[locale]` must render `RootDocument` in its own layout.
 
 ## Storage Buckets
 
@@ -400,7 +402,7 @@ ProviderUnavailableError: the run stops before new paid calls, retries in 15 min
 src/
 ├── app/[locale]/
 │   ├── page.tsx                          — Landing page
-│   ├── layout.tsx                        — NextIntlClientProvider + locale metadata
+│   ├── layout.tsx                        — root layout of the site: RootDocument (<html lang={locale}>) + NextIntlClientProvider + locale metadata
 │   ├── auth/
 │   │   ├── login/page.tsx
 │   │   ├── signup/page.tsx

@@ -26,7 +26,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/personalized-books", changeFrequency: "monthly", priority: 0.9 },
     { path: "/themes", changeFrequency: "monthly", priority: 0.9 },
     { path: "/ejemplo", changeFrequency: "weekly", priority: 0.7 },
-    { path: "/blog", changeFrequency: "weekly", priority: 0.6 },
     { path: "/legal", changeFrequency: "monthly", priority: 0.3 },
   ];
 
@@ -59,9 +58,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  // ── Blog posts (per locale, alternates only for published locales) ────
+  // ── Blog index + posts (only locales with published posts) ──────────
   try {
     const refs = await getAllPublishedPostRefs();
+    // An index with zero posts is a noindex "coming soon" page: list it only
+    // once its locale has a post (same rule as the page's robots/hreflang).
+    const blogLocales = routing.locales.filter((loc) => refs.some((r) => r.locale === loc));
+    const blogLanguages: Record<string, string> = {};
+    for (const loc of blogLocales) blogLanguages[loc] = `${BASE_URL}/${loc}/blog`;
+    if (blogLocales.includes(routing.defaultLocale)) {
+      blogLanguages["x-default"] = `${BASE_URL}/${routing.defaultLocale}/blog`;
+    }
+    for (const loc of blogLocales) {
+      entries.push({
+        url: `${BASE_URL}/${loc}/blog`,
+        lastModified: new Date(),
+        changeFrequency: "weekly",
+        priority: 0.6,
+        alternates: { languages: blogLanguages },
+      });
+    }
+
     const localesBySlug = new Map<string, string[]>();
     for (const r of refs) {
       const arr = localesBySlug.get(r.slug) ?? [];

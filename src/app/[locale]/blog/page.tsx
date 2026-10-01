@@ -9,7 +9,7 @@ import MobileStickyCta from "@/components/landing/MobileStickyCta";
 import FinalCta from "@/components/landing/FinalCta";
 import { cx, focusRing } from "@/components/ui";
 import { Breadcrumbs, PageHero, kicker, marketingH1, marketingLead } from "@/components/seo-landing/MarketingHeader";
-import { getPublishedPosts } from "@/lib/blog";
+import { getPublishedPosts, getBlogLocales } from "@/lib/blog";
 
 const BASE_URL = "https://meapica.shop";
 const PATH = "/blog";
@@ -20,14 +20,23 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "blog" });
   const url = `${BASE_URL}/${locale}${PATH}`;
+  // Data-driven indexing: a locale's index is indexable (and in hreflang/sitemap)
+  // only once it has a published post; an empty "coming soon" index is noindex.
+  const blogLocales = await getBlogLocales();
   const languages: Record<string, string> = {};
-  for (const loc of routing.locales) languages[loc] = `${BASE_URL}/${loc}${PATH}`;
-  languages["x-default"] = `${BASE_URL}/${routing.defaultLocale}${PATH}`;
+  for (const loc of routing.locales) {
+    if (blogLocales.includes(loc)) languages[loc] = `${BASE_URL}/${loc}${PATH}`;
+  }
+  if (blogLocales.includes(routing.defaultLocale)) {
+    languages["x-default"] = `${BASE_URL}/${routing.defaultLocale}${PATH}`;
+  }
+  const hasPosts = blogLocales.includes(locale);
   return {
     title: { absolute: `${t("title")} | Meapica` },
     description: t("subtitle"),
     alternates: { canonical: url, languages },
     openGraph: { title: t("title"), description: t("subtitle"), url, type: "website" },
+    ...(hasPosts ? {} : { robots: { index: false, follow: true } }),
   };
 }
 

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { requireAdminPage } from "@/lib/admin/auth";
 import { AdminShell } from "./_components/AdminShell";
+import RootDocument from "@/app/_components/RootDocument";
 
 // Internal operator panel. Non-operators get the 404 page (requireAdminPage); each
 // page re-checks too, since layouts and pages render in parallel.
@@ -13,5 +14,10 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const admin = await requireAdminPage();
-  return <AdminShell email={admin.email}>{children}</AdminShell>;
+  // Root layout of /admin (the app root layout is a pass-through): owns <html>, Spanish UI.
+  return (
+    <RootDocument lang="es">
+      <AdminShell email={admin.email}>{children}</AdminShell>
+    </RootDocument>
+  );
 }

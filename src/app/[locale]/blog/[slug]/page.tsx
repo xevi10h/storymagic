@@ -8,7 +8,7 @@ import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import MobileStickyCta from "@/components/landing/MobileStickyCta";
 import { BreadcrumbJsonLd } from "@/components/seo/JsonLd";
-import { getPost, getLocalesForSlug } from "@/lib/blog";
+import { getPost, getLocalesForSlug, blogOgImageUrl } from "@/lib/blog";
 import { seoPath } from "@/lib/seo-landing";
 import { PRICING, formatPrice } from "@/lib/pricing";
 import { buttonClass, cx, focusRing } from "@/components/ui";
@@ -58,7 +58,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description,
       url,
       type: "article",
-      ...(post.coverImageUrl ? { images: [post.coverImageUrl] } : {}),
+      ...(post.coverImageUrl ? { images: [{ ...blogOgImageUrl(post.coverImageUrl), alt: post.title }] } : {}),
     },
   };
 }
