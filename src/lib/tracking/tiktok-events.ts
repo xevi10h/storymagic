@@ -25,7 +25,12 @@ export async function sendTikTokPurchase(session: Stripe.Checkout.Session): Prom
   const token = process.env.TIKTOK_EVENTS_TOKEN;
   const testCode = process.env.TIKTOK_TEST_EVENT_CODE;
   const meta = session.metadata ?? {};
-  if (!pixelId || !token || meta.ads_consent !== "1") return;
+  if (meta.ads_consent !== "1") return; // no ads consent: nothing to send, by design
+  if (!pixelId || !token) {
+    // Consented purchase that can't be reported: say so instead of failing silently.
+    console.warn(`[tiktok-events] Purchase ${session.id} not sent: missing NEXT_PUBLIC_TIKTOK_PIXEL_ID / TIKTOK_EVENTS_TOKEN`);
+    return;
+  }
   // Test-mode payments only reach TikTok as test events (Events Manager › Test events).
   if (!session.livemode && !testCode) return;
 

@@ -26,7 +26,12 @@ export async function sendMetaPurchase(session: Stripe.Checkout.Session): Promis
   const token = process.env.META_CAPI_TOKEN;
   const testCode = process.env.META_CAPI_TEST_EVENT_CODE;
   const meta = session.metadata ?? {};
-  if (!pixelId || !token || meta.ads_consent !== "1") return;
+  if (meta.ads_consent !== "1") return; // no ads consent: nothing to send, by design
+  if (!pixelId || !token) {
+    // Consented purchase that can't be reported: say so instead of failing silently.
+    console.warn(`[meta-capi] Purchase ${session.id} not sent: missing NEXT_PUBLIC_META_PIXEL_ID / META_CAPI_TOKEN`);
+    return;
+  }
   // Test-mode payments only reach Meta as test events (Events Manager › Test events).
   if (!session.livemode && !testCode) return;
 
