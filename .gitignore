@@ -58,3 +58,7 @@ artifacts/
 test-results/
 .codex/
 playwright-report/
+
+# ad creatives / stock media (large binaries, kept local)
+docs/ads/creatives/
+docs/ads/stock/
