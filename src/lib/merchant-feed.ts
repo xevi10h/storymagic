@@ -23,7 +23,6 @@ import {
   PDF_DELIVERY_MAX_MINUTES,
   RETURNS_ACCEPTED,
   SHIPPING_COST_CENTS,
-  SHIPPING_POSTCODE_RANGES,
   SITE_URL,
 } from "./product-facts";
 
@@ -155,16 +154,16 @@ function shipping(printed: boolean): FeedShipping[] {
   if (!printed) {
     return [{ country: "ES", service: "Descarga digital", priceCents: 0, handling: { min: 0, max: 0 }, transit: { min: 0, max: 0 } }];
   }
-  // Peninsula + Balearics only: listing the covered ranges leaves Canarias (35, 38),
-  // Ceuta (51) and Melilla (52) without a shipping rate, so the item is not shown there.
-  return SHIPPING_POSTCODE_RANGES.map((r) => ({
-    country: "ES" as const,
-    postalCode: `${r.begin}-${r.end}`,
+  // ponytail: whole of ES. Google rejects item-level postal codes for Spain
+  // (region_not_allowed: only US/AU/JP). Canarias/Ceuta/Melilla are blocked at
+  // checkout; exclude them via account-level shipping regions if that ever matters.
+  return [{
+    country: "ES",
     service: "Envío estándar",
     priceCents: SHIPPING_COST_CENTS,
     handling: HANDLING_BUSINESS_DAYS,
     transit: TRANSIT_BUSINESS_DAYS,
-  }));
+  }];
 }
 
 export function buildFeedItems(): FeedItem[] {

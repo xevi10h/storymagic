@@ -57,15 +57,10 @@ for (const item of items) {
     for (const d of [s.handling.min, s.handling.max, s.transit.min, s.transit.max]) assert.ok(Number.isInteger(d) && d >= 0 && d <= 30, `${where} days 0-30`);
     assert.ok(s.handling.min <= s.handling.max && s.transit.min <= s.transit.max, `${where} min ≤ max`);
     if (item.printed) {
-      assert.match(s.postalCode ?? "", /^\d{5}-\d{5}$/, `${where} postal range`);
+      assert.equal(s.postalCode, undefined, `${where} no postal code (Google rejects it for ES)`);
       assert.equal(s.handling.min + s.transit.min, DELIVERY_BUSINESS_DAYS.min, `${where} min days = promise`);
       assert.equal(s.handling.max + s.transit.max, DELIVERY_BUSINESS_DAYS.max, `${where} max days = promise`);
     }
-  }
-  if (item.printed) {
-    const covered = (pc: string) => item.shipping.some((s) => { const [a, b] = s.postalCode!.split("-"); return pc >= a && pc <= b; });
-    for (const pc of ["08036", "28001", "07001", "41001", "50001", "36201", "39001"]) assert.ok(covered(pc), `${where} ships to ${pc}`);
-    for (const pc of ["35001", "38001", "51001", "52001"]) assert.ok(!covered(pc), `${where} no shipping to ${pc}`);
   }
 }
 
