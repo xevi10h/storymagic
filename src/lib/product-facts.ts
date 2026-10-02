@@ -21,12 +21,12 @@ export const CONTACT_EMAIL = SUPPORT_EMAIL;
 
 /**
  * Official social profiles (schema.org sameAs). Only profiles that really exist:
- * none yet (docs/roadmap.md, IG/TikTok accounts pending on the owner).
+ * Brand accounts (also connected in Zernio, profile 6abe71b148592fa1769c3511).
  */
 export const SOCIAL_PROFILES: string[] = [
   "https://www.instagram.com/meapica_books/",
   "https://www.tiktok.com/@meapica_books",
-  "https://www.facebook.com/1372668209255492",
+  "https://www.facebook.com/61595107133823",
 ];
 
 // ── The book ────────────────────────────────────────────────────────────────
