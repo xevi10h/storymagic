@@ -23,7 +23,7 @@ export const CONTACT_EMAIL = SUPPORT_EMAIL;
  * Official social profiles (schema.org sameAs). Only profiles that really exist:
  * none yet (docs/roadmap.md, IG/TikTok accounts pending on the owner).
  */
-export const SOCIAL_PROFILES: string[] = [];
+export const SOCIAL_PROFILES: string[] = ["https://www.instagram.com/meapica_books/"];
 
 // ── The book ────────────────────────────────────────────────────────────────
 
