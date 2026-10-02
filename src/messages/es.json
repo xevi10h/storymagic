@@ -2734,5 +2734,287 @@
     "policy": "Más información",
     "accept": "Aceptar",
     "reject": "Rechazar"
+  },
+  "tools": {
+    "common": {
+      "hubBreadcrumb": "Imprimibles de Reyes",
+      "freeBadge": "Gratis · PDF A4 · Sin registro",
+      "nameLabel": "¿Cómo se llama?",
+      "nameHint": "Irá impreso en la carta.",
+      "namePlaceholder": "Escribe su nombre",
+      "nameRequired": "Escribe su nombre para preparar el PDF.",
+      "nameInvalid": "Usa solo letras: sin emojis ni números.",
+      "genderLabel": "Es…",
+      "genderHint": "Para escribirle en femenino, masculino o neutro.",
+      "genderGirl": "Una niña",
+      "genderBoy": "Un niño",
+      "genderNeutral": "Prefiero no decirlo",
+      "portraitHeading": "Elige su retrato",
+      "portraitHint": "Retratos a acuarela de nuestra biblioteca. No hace falta ninguna foto.",
+      "portraitAlt": "Retrato a acuarela de {name}",
+      "portraitAltNoName": "Retrato a acuarela elegido",
+      "ageBand": "Edad",
+      "ageSmall": "Hasta 6 años",
+      "ageBig": "7 años o más",
+      "downloading": "Preparando el PDF…",
+      "downloaded": "¡Listo! Ya tienes el PDF.",
+      "openPdf": "¿No se ha descargado? Ábrelo aquí",
+      "printTip": "Imprímelo en A4 al 100 % (tamaño real), mejor en color.",
+      "errorGeneric": "No hemos podido preparar el PDF. Inténtalo de nuevo.",
+      "errorRateLimited": "Has descargado muchos PDF seguidos. Espera unos minutos y vuelve a probar.",
+      "privacyNote": "No guardamos su nombre ni su retrato: el PDF se crea al momento.",
+      "reminderLabel": "Avísame antes de la fecha límite de Reyes",
+      "reminderHint": "Te escribiremos antes del último día para pedir un libro impreso que llegue a Reyes. Solo para eso, y te puedes dar de baja cuando quieras.",
+      "reminderEmail": "Tu correo electrónico",
+      "reminderSubmit": "Avisarme",
+      "reminderSending": "Guardando…",
+      "reminderDone": "¡Hecho! Te avisaremos antes de la fecha límite.",
+      "reminderError": "No se ha podido guardar. Revisa el correo e inténtalo de nuevo.",
+      "reminderInvalid": "Escribe un correo válido.",
+      "privacyLink": "Privacidad",
+      "agesHeading": "Ideas según la edad",
+      "bookEyebrow": "Para la mañana de Reyes",
+      "bookHeading": "¿Y si este año los Reyes le traen su propio cuento?",
+      "bookText": "Un libro de {size} × {size} cm con su nombre en la portada, su retrato a acuarela en cada escena y la aventura que eliges tú. Antes de pagar ves la portada y las primeras escenas pintadas.",
+      "bookDeadline": "Para que el libro impreso llegue antes de Reyes, pídelo antes del {date}.",
+      "bookLate": "El libro impreso ya no llega a tiempo para Reyes, pero el cuento en PDF está listo en menos de una hora.",
+      "bookPdfLabel": "Cuento en PDF",
+      "deadlineLink": "Ver todas las fechas límite",
+      "relatedHeading": "Más para la noche de Reyes",
+      "relatedGifts": "Regalo de Reyes personalizado",
+      "relatedBlog": "Ideas de regalos de Reyes originales",
+      "hubLink": "Todos los imprimibles de Reyes",
+      "footerLink": "Carta a los Reyes para imprimir",
+      "seoLink": "Gratis: carta a los Reyes para imprimir con su nombre",
+      "ogEyebrow": "Imprimible gratis",
+      "toolSectionLabel": "Prepara el PDF"
+    },
+    "hub": {
+      "metaTitle": "Imprimibles gratis de Reyes Magos para niños | Meapica",
+      "metaDescription": "Carta a los Reyes Magos para imprimir y respuesta de los Reyes, con el nombre y el retrato de tu hijo. Gratis, en PDF A4 y sin registro.",
+      "eyebrow": "Plantillas de Reyes",
+      "h1": "Imprimibles gratis de Reyes Magos, con su nombre",
+      "intro": "Dos plantillas para vivir la ilusión de Reyes en casa: la carta que escribe tu hijo y la respuesta que le dejan Melchor, Gaspar y Baltasar. Con su nombre y un retrato a acuarela, listas para imprimir en A4.",
+      "cards": {
+        "letter": {
+          "title": "Carta a los Reyes Magos",
+          "description": "Para que la rellene, dibuje y firme. Con líneas para escribir o con recuadros para los más peques.",
+          "cta": "Preparar su carta"
+        },
+        "reply": {
+          "title": "Respuesta de los Reyes Magos",
+          "description": "Una carta de Melchor, Gaspar y Baltasar con lo que ha hecho bien este año y un pequeño reto.",
+          "cta": "Preparar la respuesta"
+        }
+      },
+      "sections": [
+        {
+          "heading": "Cómo usarlas",
+          "paragraphs": [
+            "Imprime la carta a principios de diciembre y escribidla juntos, con calma. La respuesta de los Reyes guárdala para el final: déjala la tarde del 5 de enero junto a los zapatos, o por la mañana al lado de los regalos.",
+            "Las dos llevan su nombre y un retrato a acuarela que eliges en un momento: piel, pelo, peinado, gafas y pecas. No hace falta subir ninguna foto ni registrarse, y no guardamos nada de lo que escribes."
+          ]
+        },
+        {
+          "heading": "Las hacemos en Meapica",
+          "paragraphs": [
+            "En Meapica hacemos cuentos infantiles personalizados: su nombre en la portada, su cara pintada en acuarela y la aventura que eliges tú, impresos y enviados a casa. Estos imprimibles son nuestro regalo para estas fiestas, sin letra pequeña."
+          ]
+        }
+      ],
+      "faq": [
+        {
+          "q": "¿Son gratis de verdad?",
+          "a": "Sí. Se descargan en PDF sin registrarse ni dejar el correo. Si quieres, puedes pedirnos que te avisemos antes de la fecha límite de Reyes, pero es opcional."
+        },
+        {
+          "q": "¿En qué idiomas están?",
+          "a": "En castellano y en catalán. Cada versión está escrita en su idioma, no traducida."
+        },
+        {
+          "q": "¿Qué impresora necesito?",
+          "a": "Cualquier impresora de casa con papel A4. Están pensadas para gastar poca tinta: fondo blanco y líneas finas."
+        }
+      ]
+    },
+    "letter": {
+      "metaTitle": "Carta a los Reyes Magos para imprimir, con su nombre",
+      "metaDescription": "Descarga gratis la carta a los Reyes Magos para imprimir con el nombre y el retrato de tu hijo. Con líneas para escribir o recuadros para dibujar.",
+      "eyebrow": "Carta para imprimir",
+      "h1": "Carta a los Reyes Magos para imprimir, con su nombre y su retrato",
+      "intro": "Escribe su nombre, elige cómo es y descarga su carta en PDF, lista para imprimir en A4. Gratis, sin registrarte y en un minuto. Solo tiene que rellenarla, hacer un dibujo y dejarla en el buzón real.",
+      "download": "Descargar su carta en PDF",
+      "ageLabel": "¿Cuántos años tiene?",
+      "ageHint": "Opcional. Si lo dejas en blanco, lo escribe a mano.",
+      "ageNone": "Lo escribe a mano",
+      "ageOption": "{age} años",
+      "layoutLabel": "¿Ya sabe escribir?",
+      "layoutHint": "La versión para dibujar cambia las líneas por recuadros grandes.",
+      "layoutWrite": "Sí, con líneas",
+      "layoutDraw": "Aún no, para dibujar",
+      "previewCaption": "Su carta · A4, una página",
+      "sections": [
+        {
+          "heading": "Cómo escribir la carta a los Reyes con tu hijo",
+          "paragraphs": [
+            "La carta sale mejor cuando es un rato juntos y no un trámite. Elige una tarde tranquila, imprímela, saca los lápices de colores y siéntate a su lado. Léele cada apartado en voz alta y deja que conteste a su manera, aunque tarde un poco.",
+            "Empezad por cómo se ha portado: marcar una casilla es fácil y abre la conversación. Pregúntale qué es lo que mejor ha hecho este año. Muchas veces sale algo que no esperabas, y esa línea es la que más os gustará releer dentro de unos años.",
+            "Después vienen los deseos. Tres líneas bastan: ayudan a elegir y evitan la lista infinita. Si pide algo que sabes que no llegará, no hace falta corregirle ahora; los Reyes podrán explicarle en su respuesta que no siempre pueden traerlo todo.",
+            "Antes de cerrar, el apartado «Para otros niños y niñas pido…». Pensar en los demás también es parte de la ilusión de Reyes, y es la parte de la carta que más sorprende a los mayores. Al final, su dibujo y su firma, aunque todavía sea un garabato."
+          ]
+        },
+        {
+          "heading": "Cuándo y cómo se entrega la carta",
+          "paragraphs": [
+            "Lo tradicional es escribirla a principios de diciembre, cuando se monta el belén o el árbol, y entregarla antes de Navidad. Así hay tiempo de sobra para que llegue a Oriente y los Reyes la lean con calma.",
+            "Hay muchas formas de hacerla llegar: el buzón real que muchos ayuntamientos y centros comerciales instalan en diciembre, el paje real o el cartero real que visita plazas y colegios, o los propios Reyes en la cabalgata del 5 de enero. En casa también vale: dejarla en la ventana o junto al belén.",
+            "Antes de entregarla, hazle una foto o guarda una copia. Dentro de unos años será uno de esos papeles que da gusto encontrar en un cajón."
+          ]
+        },
+        {
+          "heading": "¿Y si contestan los Reyes?",
+          "paragraphs": [
+            "Una respuesta de los Reyes Magos con su nombre y lo que ha hecho bien este año es de esas cosas que no se olvidan. Puedes prepararla aquí mismo: eliges lo que ha conseguido y un pequeño reto para el año que viene, y la descargas firmada por Melchor, Gaspar y Baltasar."
+          ]
+        }
+      ],
+      "ages": [
+        {
+          "band": "De 2 a 4 años",
+          "text": "Elige la versión para dibujar: en lugar de líneas tiene tres recuadros para dibujar los regalos. También puede pegar recortes de un catálogo de juguetes, y tú escribes al lado lo que te dicte."
+        },
+        {
+          "band": "5 y 6 años",
+          "text": "Empieza a escribir palabras sueltas. Escríbele en un papel aparte lo que quiere decir y que lo copie a su ritmo. Lo importante es que la letra sea suya, no que quede perfecta."
+        },
+        {
+          "band": "De 7 a 9 años",
+          "text": "Ya puede escribirla sin ayuda. Anímale a explicar por qué quiere cada regalo y a contar algo que haya aprendido este año: es un buen ejercicio de escritura sin que lo parezca."
+        },
+        {
+          "band": "De 10 a 12 años",
+          "text": "Si ya es de los mayores de la casa, puede ayudar a sus hermanos pequeños a escribir la suya. Se sentirá parte de la magia, y la ilusión sigue en casa."
+        }
+      ],
+      "faq": [
+        {
+          "q": "¿Es gratis? ¿Tengo que registrarme?",
+          "a": "Sí, es gratis y no hace falta registrarse ni dejar el correo. Escribes su nombre, eliges su retrato y descargas el PDF al momento."
+        },
+        {
+          "q": "¿Guardáis el nombre o el retrato de mi hijo?",
+          "a": "No. La carta se crea al momento en nuestro servidor y no guardamos ni el nombre ni el retrato que eliges. Los retratos son ilustraciones a acuarela de nuestra biblioteca: no hace falta subir ninguna foto."
+        },
+        {
+          "q": "¿Cómo la imprimo para que quede bien?",
+          "a": "Está pensada para A4 y una impresora de casa: fondo blanco y poca tinta. Imprímela al 100 % (tamaño real), en color si puedes para que se vea el retrato. Un papel algo más grueso, de 120 a 160 g, aguanta mejor los lápices y las ceras."
+        },
+        {
+          "q": "¿Cuándo hay que entregar la carta a los Reyes?",
+          "a": "Lo habitual es escribirla en diciembre y entregarla antes de Navidad: en un buzón real, a un paje o cartero real, o en la cabalgata del 5 de enero. Si además quieres regalarle un cuento con su nombre, el libro impreso hay que pedirlo antes del {reyesDate} para que llegue antes de Reyes."
+        }
+      ]
+    },
+    "reply": {
+      "metaTitle": "Respuesta de los Reyes Magos a los niños, para imprimir",
+      "metaDescription": "Crea gratis la carta de respuesta de los Reyes Magos con su nombre, su retrato y lo que ha hecho bien este año. Firmada por Melchor, Gaspar y Baltasar.",
+      "eyebrow": "Carta de los Reyes",
+      "h1": "Respuesta de los Reyes Magos, personalizada para tu hijo",
+      "intro": "Elige lo que ha hecho bien este año, un pequeño reto para el que viene y cuándo la va a leer. Componemos la carta con la voz de Melchor, Gaspar y Baltasar, con su nombre y su retrato, lista para imprimir.",
+      "download": "Descargar la respuesta en PDF",
+      "achievementsLabel": "¿Qué ha hecho bien este año?",
+      "achievementsHint": "Elige hasta 3.",
+      "maxReached": "Ya has elegido 3. Quita uno para cambiarlo.",
+      "achievements": {
+        "reading": "Ha aprendido a leer",
+        "schoolStart": "Ha empezado el cole",
+        "schoolEffort": "Se ha esforzado en el cole",
+        "helpingHome": "Ha ayudado en casa",
+        "sibling": "Ha cuidado de sus hermanos",
+        "sharing": "Ha compartido sus juguetes",
+        "brave": "Ha sido valiente",
+        "newSkills": "Ha aprendido cosas nuevas",
+        "friends": "Ha hecho nuevos amigos",
+        "kindness": "Ha sido amable con todos",
+        "ownBed": "Duerme en su cama sin miedo",
+        "pet": "Ha cuidado de su mascota"
+      },
+      "customLabel": "Algo más que haya hecho (opcional)",
+      "customHint": "Escríbelo como si le hablaras: «has aprendido a montar en bici».",
+      "customPlaceholder": "has aprendido a…",
+      "challengeLabel": "Un pequeño reto para el año que viene (opcional)",
+      "challengeNone": "Sin reto",
+      "challenges": {
+        "tidyToys": "Recoger los juguetes",
+        "bedtime": "Irse a dormir sin protestar",
+        "veggies": "Probar la verdura",
+        "patience": "Tener más paciencia",
+        "siblingPeace": "Hacer las paces con sus hermanos",
+        "teeth": "Lavarse los dientes",
+        "homework": "Hacer los deberes con calma",
+        "noShouting": "Hablar sin gritar",
+        "screens": "Dejar la pantalla",
+        "listening": "Hacer caso a la primera"
+      },
+      "momentLabel": "¿Cuándo la leerá?",
+      "momentBefore": "La tarde del 5 de enero",
+      "momentMorning": "La mañana de Reyes, con los regalos",
+      "psLabel": "Posdata (opcional)",
+      "psHint": "Una pista, un recado o una sorpresa.",
+      "psPlaceholder": "mira detrás de la cortina del salón",
+      "previewHeading": "Así quedará la carta",
+      "previewHint": "Escribe su nombre para ver la carta completa.",
+      "anotherVersion": "Otra versión del texto",
+      "sections": [
+        {
+          "heading": "Por qué una respuesta de los Reyes",
+          "paragraphs": [
+            "Escribir la carta es la mitad de la ilusión. La otra mitad llega cuando los Reyes contestan: alguien muy importante ha leído lo que pedía, sabe cómo se llama y se ha fijado en lo que ha hecho bien este año.",
+            "Una respuesta también es una forma suave de decir cosas que cuestan. Los Reyes pueden reconocer un esfuerzo, proponer un pequeño reto o recordar que no siempre pueden traerlo todo, y el mensaje llega sin sermones."
+          ]
+        },
+        {
+          "heading": "Cómo escribimos la carta",
+          "paragraphs": [
+            "Cada carta se compone a partir de textos que hemos escrito nosotros con la voz de los Reyes: cálidos, sencillos y pensados para leerse en voz alta a niños y niñas de 3 a 12 años. Tú eliges los logros y el reto, y nosotros los encajamos en frases que suenan a Oriente.",
+            "Si un párrafo no te convence, pulsa «Otra versión del texto» y cambia sin perder lo que has elegido. La lees entera antes de descargarla."
+          ]
+        },
+        {
+          "heading": "Consejos para que sea mágica",
+          "paragraphs": [
+            "Imprímela en un papel algo más grueso o de color crema y, si te animas, enróllala con un lazo o métela en un sobre con su nombre.",
+            "Elige bien el momento: la tarde del 5 de enero, junto al agua para los camellos, o la mañana del 6, al lado de los regalos. En el formulario puedes indicar cuándo la leerá y el texto se adapta.",
+            "Que lo que marques en «¿Qué ha hecho bien este año?» sea concreto y verdad. «Has aprendido a leer» emociona más que «te has portado bien», porque sabe que es suyo.",
+            "Usa la posdata para una pista: dónde está escondido un regalo, una sorpresa para el desayuno o un recado del paje real."
+          ]
+        },
+        {
+          "heading": "Tradiciones de la noche de Reyes",
+          "paragraphs": [
+            "En casi toda España, la tarde del 5 de enero los Reyes recorren las calles en la cabalgata, reparten caramelos y recogen las últimas cartas. Esa noche los niños dejan los zapatos a la vista, a veces con turrón para los Reyes y agua para los camellos, y se acuestan pronto.",
+            "Por la mañana llegan los regalos y el roscón de Reyes, con su sorpresa y su haba: quien encuentra la figurita se corona, y quien encuentra el haba paga el roscón el año que viene."
+          ]
+        }
+      ],
+      "faq": [
+        {
+          "q": "¿Quién escribe el texto de la carta?",
+          "a": "Lo hemos escrito nosotros, con tiempo: varias versiones de cada párrafo con la voz de los Reyes, en castellano y en catalán. La carta se compone con lo que tú eliges y puedes leerla entera antes de descargarla."
+        },
+        {
+          "q": "¿Qué pongo si este año no se ha portado muy bien?",
+          "a": "Los Reyes no regañan. Elige algo que sí haya hecho bien, aunque sea pequeño, y usa el reto para lo que queréis mejorar: «hacer las paces rápido con tus hermanos» suena a reto, no a castigo."
+        },
+        {
+          "q": "¿Guardáis los datos que escribo?",
+          "a": "No. La carta se crea al momento y no guardamos ni el nombre, ni el retrato, ni lo que escribes."
+        },
+        {
+          "q": "¿Y si quiero que los Reyes le traigan un cuento con su nombre?",
+          "a": "En Meapica hacemos cuentos personalizados con su nombre en la portada y su retrato en cada escena. Para que el libro impreso llegue antes de Reyes, pídelo antes del {reyesDate}; si se te pasa la fecha, el PDF está listo en menos de una hora."
+        }
+      ]
+    }
   }
 }

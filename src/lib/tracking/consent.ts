@@ -86,7 +86,12 @@ const GA4_EVENT: Record<string, string> = {
   Lead: "generate_lead",
   InitiateCheckout: "begin_checkout",
   Purchase: "purchase",
+  // Custom: a free Reyes printable downloaded (/tools/*), params { tool }.
+  ToolDownload: "tool_download",
 };
+
+/** Our events that are Meta standard events (fbq "track"); anything else goes through "trackCustom". */
+const META_STANDARD = new Set(["ViewContent", "AddToCart", "Lead", "InitiateCheckout", "Purchase"]);
 
 /** Meta-style params → GA4's (`items`; `transaction_id` = the shared event id, deduped with the server purchase). */
 function toGa4Params(params: Record<string, unknown> = {}, eventId?: string): Record<string, unknown> {
@@ -114,7 +119,7 @@ function toTikTokParams(params: Record<string, unknown> = {}): Record<string, un
 export function trackEvent(name: string, params?: Record<string, unknown>, eventId?: string) {
   if (!ADS_TRACKING_ENABLED || getConsent() !== "granted") return;
   if (META_PIXEL_ID) {
-    whenLoaded("fbq", (fbq: Fbq) => fbq("track", name, params ?? {}, eventId ? { eventID: eventId } : undefined));
+    whenLoaded("fbq", (fbq: Fbq) => fbq(META_STANDARD.has(name) ? "track" : "trackCustom", name, params ?? {}, eventId ? { eventID: eventId } : undefined));
   }
   const tiktokEvent = TIKTOK_EVENT[name];
   if (TIKTOK_PIXEL_ID && tiktokEvent) {

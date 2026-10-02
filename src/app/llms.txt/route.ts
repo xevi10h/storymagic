@@ -21,6 +21,7 @@ import {
 } from "@/lib/product-facts";
 import { CHRISTMAS_DELIVERY_PATH, earliestPrintedCutoff, giftSeason, spainToday } from "@/lib/shipping";
 import { SEO_GIFT_SLUGS, SEO_THEME_SLUGS, seoHubPath, seoPath } from "@/lib/seo-landing";
+import { TOOLS_HUB_PATH, toolPath } from "@/lib/tools/registry";
 
 // Quotes this season's order-by dates: rebuild daily.
 export const revalidate = 86400;
@@ -72,6 +73,7 @@ function body(): string {
 - Books by age: ${es(seoHubPath("ages"))}
 - Books by theme: ${es(seoHubPath("themes"))} (${SEO_THEME_SLUGS.length} themes)
 - Delivery deadlines for Christmas and Reyes: ${es(CHRISTMAS_DELIVERY_PATH)}
+- Free printables, Spanish and Catalan only (A4 PDF, no sign-up, nothing stored): letter to the Three Kings with the child's name and portrait ${es(toolPath("letter"))}, reply from the Three Kings ${es(toolPath("reply"))}; Catalan: ${SITE_URL}/ca${TOOLS_HUB_PATH}
 - Terms, shipping, returns and FAQ: ${es("/legal")}
 - Blog: ${es("/blog")}
 

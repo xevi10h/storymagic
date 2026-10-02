@@ -32,6 +32,8 @@ const LIMITS: Record<string, RateLimitConfig> = {
   // one inbox from many throwaway guest accounts. Rows are kept 24 h (cleanup_old_rate_limits).
   send_preview_recipient: { maxRequests: 3, windowSeconds: 86_400 },
   delete_account: { maxRequests: 5, windowSeconds: 3600 },      // 5 erasure attempts per hour
+  // Free Reyes printables, per hashed IP (subject = rateLimitSubject("tools:<ip>")): free, but CPU-bound.
+  tool_pdf: { maxRequests: 40, windowSeconds: 3600 },
 };
 
 /**

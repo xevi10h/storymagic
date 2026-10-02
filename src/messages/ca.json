@@ -2743,5 +2743,287 @@
     "policy": "Més informació",
     "accept": "Acceptar",
     "reject": "Rebutjar"
+  },
+  "tools": {
+    "common": {
+      "hubBreadcrumb": "Imprimibles de Reis",
+      "freeBadge": "Gratuït · PDF A4 · Sense registre",
+      "nameLabel": "Com es diu?",
+      "nameHint": "Sortirà imprès a la carta.",
+      "namePlaceholder": "Escriu el seu nom",
+      "nameRequired": "Escriu el seu nom per preparar el PDF.",
+      "nameInvalid": "Fes servir només lletres: sense emojis ni números.",
+      "genderLabel": "És…",
+      "genderHint": "Per escriure-li en femení, masculí o neutre.",
+      "genderGirl": "Una nena",
+      "genderBoy": "Un nen",
+      "genderNeutral": "Prefereixo no dir-ho",
+      "portraitHeading": "Tria el seu retrat",
+      "portraitHint": "Retrats a l'aquarel·la de la nostra biblioteca. No cal cap foto.",
+      "portraitAlt": "Retrat a l'aquarel·la de {name}",
+      "portraitAltNoName": "Retrat a l'aquarel·la triat",
+      "ageBand": "Edat",
+      "ageSmall": "Fins a 6 anys",
+      "ageBig": "7 anys o més",
+      "downloading": "Preparant el PDF…",
+      "downloaded": "Fet! Ja tens el PDF.",
+      "openPdf": "No s'ha descarregat? Obre'l aquí",
+      "printTip": "Imprimeix-lo en A4 al 100 % (mida real), millor en color.",
+      "errorGeneric": "No hem pogut preparar el PDF. Torna-ho a provar.",
+      "errorRateLimited": "Has descarregat molts PDF seguits. Espera uns minuts i torna-ho a provar.",
+      "privacyNote": "No desem el seu nom ni el seu retrat: el PDF es crea al moment.",
+      "reminderLabel": "Avisa'm abans de la data límit de Reis",
+      "reminderHint": "T'escriurem abans de l'últim dia per demanar un llibre imprès que arribi per Reis. Només per a això, i et pots donar de baixa quan vulguis.",
+      "reminderEmail": "El teu correu electrònic",
+      "reminderSubmit": "Avisa'm",
+      "reminderSending": "Desant…",
+      "reminderDone": "Fet! T'avisarem abans de la data límit.",
+      "reminderError": "No s'ha pogut desar. Revisa el correu i torna-ho a provar.",
+      "reminderInvalid": "Escriu un correu vàlid.",
+      "privacyLink": "Privacitat",
+      "agesHeading": "Idees segons l'edat",
+      "bookEyebrow": "Per al matí de Reis",
+      "bookHeading": "I si aquest any els Reis li porten el seu propi conte?",
+      "bookText": "Un llibre de {size} × {size} cm amb el seu nom a la portada, el seu retrat a l'aquarel·la a cada escena i l'aventura que tries tu. Abans de pagar veus la portada i les primeres escenes pintades.",
+      "bookDeadline": "Perquè el llibre imprès arribi abans de Reis, demana'l abans del {date}.",
+      "bookLate": "El llibre imprès ja no arriba a temps per Reis, però el conte en PDF està a punt en menys d'una hora.",
+      "bookPdfLabel": "Conte en PDF",
+      "deadlineLink": "Veure totes les dates límit",
+      "relatedHeading": "Més per a la nit de Reis",
+      "relatedGifts": "Regal de Reis personalitzat",
+      "relatedBlog": "Idees de regals de Reis originals",
+      "hubLink": "Tots els imprimibles de Reis",
+      "footerLink": "Carta als Reis per imprimir",
+      "seoLink": "Gratuït: carta als Reis per imprimir amb el seu nom",
+      "ogEyebrow": "Imprimible gratuït",
+      "toolSectionLabel": "Prepara el PDF"
+    },
+    "hub": {
+      "metaTitle": "Imprimibles gratuïts de Reis per a nens | Meapica",
+      "metaDescription": "Carta als Reis d'Orient per imprimir i resposta dels Reis, amb el nom i el retrat del teu fill. Gratuïtes, en PDF A4 i sense registre.",
+      "eyebrow": "Plantilles de Reis",
+      "h1": "Imprimibles gratuïts de Reis, amb el seu nom",
+      "intro": "Dues plantilles per viure la il·lusió de Reis a casa: la carta que escriu el teu fill o filla i la resposta que li deixen en Melcior, en Gaspar i en Baltasar. Amb el seu nom i un retrat a l'aquarel·la, a punt per imprimir en A4.",
+      "cards": {
+        "letter": {
+          "title": "Carta als Reis d'Orient",
+          "description": "Perquè l'ompli, la dibuixi i la signi. Amb línies per escriure o amb requadres per als més petits.",
+          "cta": "Preparar la seva carta"
+        },
+        "reply": {
+          "title": "Resposta dels Reis d'Orient",
+          "description": "Una carta d'en Melcior, en Gaspar i en Baltasar amb el que ha fet bé aquest any i un petit repte.",
+          "cta": "Preparar la resposta"
+        }
+      },
+      "sections": [
+        {
+          "heading": "Com fer-les servir",
+          "paragraphs": [
+            "Imprimeix la carta a principis de desembre i escriviu-la junts, amb calma; després, lliureu-la al Carter Reial o al Patge Reial. La resposta dels Reis, guarda-la per al final: deixa-la la tarda del 5 de gener al costat de les sabates, o al matí amb els regals.",
+            "Totes dues porten el seu nom i un retrat a l'aquarel·la que tries en un moment: pell, cabells, pentinat, ulleres i pigues. No cal pujar cap foto ni registrar-se, i no desem res del que escrius."
+          ]
+        },
+        {
+          "heading": "Les fem a Meapica",
+          "paragraphs": [
+            "A Meapica fem contes infantils personalitzats: el seu nom a la portada, la seva cara pintada a l'aquarel·la i l'aventura que tries tu, impresos i enviats a casa. Aquests imprimibles són el nostre regal per a aquestes festes, sense lletra petita."
+          ]
+        }
+      ],
+      "faq": [
+        {
+          "q": "Són gratuïts de debò?",
+          "a": "Sí. Es descarreguen en PDF sense registrar-se ni deixar el correu. Si vols, ens pots demanar que t'avisem abans de la data límit de Reis, però és opcional."
+        },
+        {
+          "q": "En quins idiomes estan?",
+          "a": "En català i en castellà. Cada versió està escrita en la seva llengua, no traduïda."
+        },
+        {
+          "q": "Quina impressora necessito?",
+          "a": "Qualsevol impressora de casa amb paper A4. Estan pensades per gastar poca tinta: fons blanc i línies fines."
+        }
+      ]
+    },
+    "letter": {
+      "metaTitle": "Carta als Reis d'Orient per imprimir, amb el seu nom",
+      "metaDescription": "Descarrega gratis la carta als Reis d'Orient per imprimir amb el nom i el retrat del teu fill o filla. Amb línies per escriure o requadres per dibuixar.",
+      "eyebrow": "Carta per imprimir",
+      "h1": "Carta als Reis d'Orient per imprimir, amb el seu nom i el seu retrat",
+      "intro": "Escriu el seu nom, tria com és i descarrega la seva carta en PDF, a punt per imprimir en A4. És gratuïta, sense registre i en un minut. Només li cal omplir-la, fer-hi un dibuix i lliurar-la al Patge Reial.",
+      "download": "Descarregar la seva carta en PDF",
+      "ageLabel": "Quants anys té?",
+      "ageHint": "Opcional. Si ho deixes en blanc, ho escriu a mà.",
+      "ageNone": "Ho escriu a mà",
+      "ageOption": "{age} anys",
+      "layoutLabel": "Ja sap escriure?",
+      "layoutHint": "La versió per dibuixar canvia les línies per requadres grans.",
+      "layoutWrite": "Sí, amb línies",
+      "layoutDraw": "Encara no, per dibuixar",
+      "previewCaption": "La seva carta · A4, una pàgina",
+      "sections": [
+        {
+          "heading": "Com escriure la carta als Reis amb els nens",
+          "paragraphs": [
+            "La carta surt millor quan és una estona compartida i no una feina. Tria una tarda tranquil·la, imprimeix-la, treu els colors i seu al seu costat. Llegeix-li cada apartat en veu alta i deixa que respongui a la seva manera, encara que s'hi estigui una estona.",
+            "Comenceu per com s'ha portat: marcar una casella és fàcil i obre la conversa. Pregunta-li què és el que ha fet millor aquest any. Sovint surt una cosa que no t'esperaves, i aquesta línia és la que més us agradarà rellegir d'aquí a uns anys.",
+            "Després venen els desitjos. Tres línies són suficients: ajuden a triar i eviten la llista infinita. Si demana una cosa que saps que no arribarà, no cal corregir-lo ara; els Reis ja li explicaran a la resposta que no sempre ho poden portar tot.",
+            "Abans d'acabar, l'apartat «Per als altres nens i nenes demano…». Pensar en els altres també forma part de la il·lusió de Reis, i és la part de la carta que més sorprèn els grans. Al final, el dibuix i la signatura, encara que sigui un gargot."
+          ]
+        },
+        {
+          "heading": "Com i quan es lliura la carta als Reis",
+          "paragraphs": [
+            "A Catalunya, la carta se sol escriure a principis de desembre, quan es fa el pessebre, i es lliura abans de Reis. Uns dies abans, a molts pobles i ciutats arriba el Carter Reial o el Patge Reial, que recull les cartes dels infants a la plaça, al mercat o a l'escola.",
+            "També hi ha bústies reials a molts ajuntaments i botigues durant el desembre, i la tarda del 5 de gener, a la Cavalcada, els Reis i els seus patges encara recullen les últimes cartes. A casa també val: deixar-la a la finestra o al costat del pessebre.",
+            "Abans de lliurar-la, fes-ne una foto o una còpia. D'aquí a uns anys serà un d'aquells papers que fa goig trobar en un calaix."
+          ]
+        },
+        {
+          "heading": "I si els Reis contesten?",
+          "paragraphs": [
+            "Una resposta dels Reis amb el seu nom i el que ha fet bé aquest any és d'aquelles coses que no s'obliden. La pots preparar aquí mateix: tries què ha aconseguit i un petit repte per a l'any que ve, i la descarregues signada per en Melcior, en Gaspar i en Baltasar."
+          ]
+        }
+      ],
+      "ages": [
+        {
+          "band": "De 2 a 4 anys",
+          "text": "Tria la versió per dibuixar: en lloc de línies té tres requadres per dibuixar els regals. També hi pot enganxar retalls d'un catàleg de joguines, i tu hi escrius al costat el que et digui."
+        },
+        {
+          "band": "5 i 6 anys",
+          "text": "Comença a escriure paraules soltes. Escriu-li en un paper a part el que vol dir i que ho copiï al seu ritme. L'important és que la lletra sigui seva, no que quedi perfecta."
+        },
+        {
+          "band": "De 7 a 9 anys",
+          "text": "Ja la pot escriure sense ajuda. Anima'l a explicar per què vol cada regal i a contar una cosa que hagi après aquest any: és un bon exercici d'escriptura sense que ho sembli."
+        },
+        {
+          "band": "De 10 a 12 anys",
+          "text": "Si ja és dels grans de casa, pot ajudar els germans petits a escriure la seva. Se sentirà part de la màgia, i la il·lusió continua a casa."
+        }
+      ],
+      "faq": [
+        {
+          "q": "És gratuït? M'he de registrar?",
+          "a": "Sí, és gratuït i no cal registrar-se ni deixar el correu. Escrius el seu nom, tries el seu retrat i descarregues el PDF al moment."
+        },
+        {
+          "q": "Deseu el nom o el retrat del meu fill?",
+          "a": "No. La carta es crea al moment al nostre servidor i no desem ni el nom ni el retrat que tries. Els retrats són il·lustracions a l'aquarel·la de la nostra biblioteca: no cal pujar cap foto."
+        },
+        {
+          "q": "Com la imprimeixo perquè quedi bé?",
+          "a": "Està pensada per a A4 i una impressora de casa: fons blanc i poca tinta. Imprimeix-la al 100 % (mida real), en color si pots perquè es vegi el retrat. Un paper una mica més gruixut, de 120 a 160 g, aguanta millor els colors i les ceres."
+        },
+        {
+          "q": "Quan s'ha de lliurar la carta als Reis?",
+          "a": "Normalment s'escriu al desembre i es lliura al Carter Reial o al Patge Reial, en una bústia reial o a la Cavalcada del 5 de gener. I si a més li vols regalar un conte amb el seu nom, el llibre imprès s'ha de demanar abans del {reyesDate} perquè arribi abans de Reis."
+        }
+      ]
+    },
+    "reply": {
+      "metaTitle": "Carta dels Reis als nens, personalitzada i per imprimir",
+      "metaDescription": "Crea gratis la resposta dels Reis d'Orient amb el seu nom, el seu retrat i el que ha fet bé aquest any. Signada per Melcior, Gaspar i Baltasar.",
+      "eyebrow": "Carta dels Reis",
+      "h1": "La carta dels Reis als nens, personalitzada amb el seu nom",
+      "intro": "Tria què ha fet bé aquest any, un petit repte per al que ve i quan la llegirà. Escrivim la carta amb la veu d'en Melcior, en Gaspar i en Baltasar, amb el seu nom i el seu retrat, a punt per imprimir.",
+      "download": "Descarregar la resposta en PDF",
+      "achievementsLabel": "Què ha fet bé aquest any?",
+      "achievementsHint": "Tria'n fins a 3.",
+      "maxReached": "Ja n'has triat 3. Treu-ne un per canviar-lo.",
+      "achievements": {
+        "reading": "Ha après a llegir",
+        "schoolStart": "Ha començat l'escola",
+        "schoolEffort": "S'ha esforçat a l'escola",
+        "helpingHome": "Ha ajudat a casa",
+        "sibling": "Ha cuidat els seus germans",
+        "sharing": "Ha compartit les joguines",
+        "brave": "Ha plantat cara a les pors",
+        "newSkills": "Ha après coses noves",
+        "friends": "Ha fet amics nous",
+        "kindness": "Ha estat amable amb tothom",
+        "ownBed": "Dorm al seu llit sense por",
+        "pet": "Ha cuidat la seva mascota"
+      },
+      "customLabel": "Alguna cosa més que hagi fet (opcional)",
+      "customHint": "Escriu-ho com si li parlessis: «has après a anar amb bici».",
+      "customPlaceholder": "has après a…",
+      "challengeLabel": "Un petit repte per a l'any que ve (opcional)",
+      "challengeNone": "Sense repte",
+      "challenges": {
+        "tidyToys": "Endreçar les joguines",
+        "bedtime": "Anar a dormir sense protestar",
+        "veggies": "Tastar la verdura",
+        "patience": "Tenir més paciència",
+        "siblingPeace": "Fer les paus amb els germans",
+        "teeth": "Rentar-se les dents",
+        "homework": "Fer els deures amb calma",
+        "noShouting": "Parlar sense cridar",
+        "screens": "Deixar la pantalla",
+        "listening": "Fer cas a la primera"
+      },
+      "momentLabel": "Quan la llegirà?",
+      "momentBefore": "La tarda del 5 de gener",
+      "momentMorning": "El matí de Reis, amb els regals",
+      "psLabel": "Postdata (opcional)",
+      "psHint": "Una pista, un encàrrec o una sorpresa.",
+      "psPlaceholder": "mira darrere la cortina del menjador",
+      "previewHeading": "Així quedarà la carta",
+      "previewHint": "Escriu el seu nom per veure la carta sencera.",
+      "anotherVersion": "Una altra versió del text",
+      "sections": [
+        {
+          "heading": "Per què una resposta dels Reis",
+          "paragraphs": [
+            "Escriure la carta és la meitat de la il·lusió. L'altra meitat arriba quan els Reis contesten: algú molt important ha llegit el que demanava, sap com es diu i s'ha fixat en el que ha fet bé aquest any.",
+            "Una resposta també és una manera suau de dir coses que costen. Els Reis poden reconèixer un esforç, proposar un petit repte o recordar que no sempre ho poden portar tot, i el missatge arriba sense sermons."
+          ]
+        },
+        {
+          "heading": "Com escrivim la carta",
+          "paragraphs": [
+            "Cada carta es compon a partir de textos que hem escrit nosaltres, en català, amb la veu dels Reis: càlids, senzills i pensats per llegir-los en veu alta a nens i nenes de 3 a 12 anys. Hi surten el Carter Reial, el Patge Reial i els camells, com a casa.",
+            "Si un paràgraf no et convenç, prem «Una altra versió del text» i canvia sense perdre el que has triat. La llegeixes sencera abans de descarregar-la."
+          ]
+        },
+        {
+          "heading": "Consells perquè sigui màgica",
+          "paragraphs": [
+            "Imprimeix-la en un paper una mica més gruixut o de color crema i, si t'hi animes, enrotlla-la amb un llaç o posa-la en un sobre amb el seu nom.",
+            "Tria bé el moment: la tarda del 5 de gener, després de la Cavalcada, o el matí del 6, al costat dels regals. Al formulari pots indicar quan la llegirà i el text s'hi adapta.",
+            "Que el que marquis a «Què ha fet bé aquest any?» sigui concret i veritat. «Has après a llegir» emociona més que «t'has portat bé», perquè sap que és seu.",
+            "Fes servir la postdata per a una pista: on hi ha un regal amagat, una sorpresa per esmorzar o un encàrrec del Patge Reial."
+          ]
+        },
+        {
+          "heading": "Tradicions de la nit de Reis a Catalunya",
+          "paragraphs": [
+            "La tarda del 5 de gener, els Reis arriben a cada poble i ciutat amb la Cavalcada: carrosses, patges, caramels i les últimes cartes. Abans d'anar a dormir, els infants deixen les sabates a la vista, sovint amb aigua i menjar per als camells, i se'n van a dormir d'hora, que els Reis només passen quan tothom dorm.",
+            "Al matí arriben els regals, i a qui no s'ha portat del tot bé potser li toca una mica de carbó, que per sort és de sucre. Per esmorzar, el tortell de Reis amb la figureta i la fava: qui troba la figureta és el rei o la reina del dia, i qui troba la fava paga el tortell."
+          ]
+        }
+      ],
+      "faq": [
+        {
+          "q": "Qui escriu el text de la carta?",
+          "a": "L'hem escrit nosaltres, amb temps: diverses versions de cada paràgraf amb la veu dels Reis, en català i no traduïdes. La carta es compon amb el que tries tu i la pots llegir sencera abans de descarregar-la."
+        },
+        {
+          "q": "Què hi poso si aquest any no s'ha portat gaire bé?",
+          "a": "Els Reis no renyen. Tria alguna cosa que sí que hagi fet bé, encara que sigui petita, i fes servir el repte per al que voleu millorar: «fer les paus de pressa amb els teus germans» sona a repte, no a càstig. I si cal carbó, que sigui de sucre."
+        },
+        {
+          "q": "Deseu les dades que escric?",
+          "a": "No. La carta es crea al moment i no desem ni el nom, ni el retrat, ni el que escrius."
+        },
+        {
+          "q": "I si vull que els Reis li portin un conte amb el seu nom?",
+          "a": "A Meapica fem contes personalitzats amb el seu nom a la portada i el seu retrat a cada escena. Perquè el llibre imprès arribi abans de Reis, demana'l abans del {reyesDate}; si se't passa la data, el PDF està a punt en menys d'una hora."
+        }
+      ]
+    }
   }
 }

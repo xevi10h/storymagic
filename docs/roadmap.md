@@ -469,7 +469,8 @@ Replaced the old "mode → template → 3 decision knobs" with a single vertical
 - **Phase 3 — sales:** analytics (GA4 + Meta pixel + funnel events); guarantee; −20% on 2+ books; Reyes positioning (cutoff ~29 Dec) + gift card; "Pedir a los abuelos" WhatsApp payment link; AMPA/school class orders; 3 real orders for photos.
 
 ## SEO/GEO wave 2 (from the 2026-10-01 audit)
-- Free Reyes tools live by 25 Oct (es/ca): printable "Carta a los Reyes" with the child drawn in, "Respuesta de los Reyes", colouring page; pitch to "plantillas carta Reyes" roundups early Nov.
+- ~~Free Reyes tools (es/ca): printable "Carta a los Reyes" with the child's portrait, "Respuesta de los Reyes"~~ BUILT 2026-10-02 on `local` (`/tools`, docs/product-spec.md › Free Reyes printables); deploy before 25 Oct + IndexNow ping.
+- Next for the tools: **colouring page** (the child's portrait as line art from the avatar matrix, A4); the **Reyes reminder email** to `newsletter_subscribers.source = 'reyes_reminder'` a few days before the printed cut-off (check `email_suppressions`, one-click unsubscribe, LSSI); add a link to `/tools` inside the Reyes blog posts (es/ca, DB content); pitch to "plantillas carta Reyes" roundups early Nov.
 - Merchant Center product feed + ChatGPT merchant feed; Bing Webmaster (owner OAuth) + run `node scripts/indexnow-ping.mjs` after each deploy.
 - New pages: `/personalized-books/with-photo`, per-age pages 2–10, `/themes/castle|chef|inventor|candy`, `/gifts/grandchildren`, honest dated `/compare` vs Mumablue/Wonderbly/Hurra Héroes, Catalan-native landing "conte personalitzat en català".
 - Server-render `/examples/[id]` story text and make it indexable; name pages only for names with a real book.

@@ -3,6 +3,7 @@ import { routing } from "@/i18n/routing";
 import { allSeoPaths } from "@/lib/seo-landing";
 import { getAllPublishedPostRefs } from "@/lib/blog";
 import { CHRISTMAS_DELIVERY_PATH } from "@/lib/shipping";
+import { TOOL_IDS, TOOL_LOCALES, TOOLS_CONTENT_UPDATED, TOOLS_HUB_PATH, toolAlternates, toolPath } from "@/lib/tools/registry";
 
 const BASE_URL = "https://meapica.shop";
 
@@ -56,6 +57,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         alternates: {
           languages: buildAlternates(path),
         },
+      });
+    }
+  }
+
+  // ── Free Reyes printables: es + ca only (en/fr 404), lastmod = content date ──
+  for (const path of [TOOLS_HUB_PATH, ...TOOL_IDS.map(toolPath)]) {
+    for (const locale of TOOL_LOCALES) {
+      entries.push({
+        url: `${BASE_URL}/${locale}${path}`,
+        lastModified: new Date(`${TOOLS_CONTENT_UPDATED}T00:00:00Z`),
+        changeFrequency: "monthly",
+        priority: 0.8,
+        alternates: { languages: toolAlternates(BASE_URL, path) },
       });
     }
   }

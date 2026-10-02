@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
+import { toolsFallbackPath } from "@/lib/tools/registry";
 
 const LOCALE_LABELS: Record<Locale, string> = {
   es: "Español",
@@ -40,7 +41,9 @@ export default function LocaleSwitcher() {
   function handleChange(newLocale: Locale) {
     setOpen(false);
     // Keep the query (e.g. the login screen's ?next= and ?email=) across the switch.
-    router.replace(`${pathname}${window.location.search}`, { locale: newLocale });
+    // The free Reyes printables exist in es + ca only: en/fr go to the Reyes gift page.
+    const fallback = toolsFallbackPath(pathname, newLocale);
+    router.replace(fallback ?? `${pathname}${window.location.search}`, { locale: newLocale });
   }
 
   return (

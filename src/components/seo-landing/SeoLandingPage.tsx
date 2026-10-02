@@ -25,6 +25,7 @@ import {
 } from "@/lib/seo-landing";
 import { CHRISTMAS_DELIVERY_PATH, earliestPrintedCutoff, spainToday } from "@/lib/shipping";
 import { factParams } from "@/lib/product-facts";
+import { isToolLocale, toolPath } from "@/lib/tools/registry";
 import { Breadcrumbs, PageHero, kicker, marketingH1, marketingLead } from "./MarketingHeader";
 
 const BASE_URL = "https://meapica.shop";
@@ -97,6 +98,8 @@ export default async function SeoLandingPage({ type, slug, locale }: Props) {
       ? pageFaq
       : FALLBACK_FAQ_ORDER.map((n) => ({ question: tf(`faq.section${n}Title`), answer: tf(`faq.section${n}Text`, faqValues) }));
   const isSeasonal = type === "gifts" && SEASONAL_GIFT_SLUGS.has(slug);
+  // Reyes page → the free printable letter (es + ca only).
+  const toolsLink = type === "gifts" && slug === "three-kings" && isToolLocale(locale) ? (await getTranslations({ locale, namespace: "tools.common" }))("seoLink") : null;
 
   const related = relatedSeoPages(type, slug);
   const pageUrl = `${BASE_URL}/${locale}${seoPath(type, slug)}`;
@@ -198,6 +201,20 @@ export default async function SeoLandingPage({ type, slug, locale }: Props) {
                     local_shipping
                   </span>
                   {tcd("seoCallout")}
+                </Link>
+              )}
+              {toolsLink && (
+                <Link
+                  href={toolPath("letter")}
+                  className={cx(
+                    "mt-1 flex min-h-11 w-fit items-center gap-2 rounded-md text-sm font-semibold text-ink-soft underline decoration-brand/30 underline-offset-4 transition-colors hover:text-brand-text",
+                    focusRing,
+                  )}
+                >
+                  <span aria-hidden className="material-symbols-outlined !text-xl text-brand-text">
+                    draw
+                  </span>
+                  {toolsLink}
                 </Link>
               )}
             </div>

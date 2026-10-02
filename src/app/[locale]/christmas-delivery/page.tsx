@@ -12,6 +12,7 @@ import { Breadcrumbs, PageHero, kicker, marketingH1, marketingLead } from "@/com
 import DeliveryCountdown from "@/components/seasonal/DeliveryCountdown";
 import DeadlineCards from "@/components/seasonal/DeadlineCards";
 import { PRICING, formatPrice } from "@/lib/pricing";
+import { isToolLocale, toolPath } from "@/lib/tools/registry";
 import { COPY_PARAMS, DELIVERY_BUSINESS_DAYS } from "@/lib/product-facts";
 import {
   CHRISTMAS_DELIVERY_PATH,
@@ -65,6 +66,8 @@ export default async function Page({ params }: PageProps) {
   const years = seasonYears();
   const pageUrl = `${BASE_URL}/${locale}${PATH}`;
   const ctaLabel = th("cta");
+  // Free Reyes printables (es + ca only).
+  const toolsLink = isToolLocale(locale) ? (await getTranslations({ locale, namespace: "tools.common" }))("seoLink") : null;
 
   // FAQ answers quote the earliest cut-off across printed formats/regions (valid for all).
   const earliestCutoff = (occasion: "christmas" | "reyes") =>
@@ -173,6 +176,17 @@ export default async function Page({ params }: PageProps) {
                   arrow_forward
                 </span>
               </Link>
+              {toolsLink && (
+                <Link
+                  href={toolPath("letter")}
+                  className="mt-4 flex min-h-11 items-center gap-2 rounded-md text-sm font-semibold text-ink-soft underline decoration-brand/30 underline-offset-4 transition-colors hover:text-brand-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+                >
+                  <span aria-hidden className="material-symbols-outlined !text-xl text-brand-text">
+                    draw
+                  </span>
+                  {toolsLink}
+                </Link>
+              )}
             </aside>
           </div>
         </section>

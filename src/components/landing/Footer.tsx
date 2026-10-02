@@ -1,11 +1,12 @@
 import type { ReactNode } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import BrandLogo from "@/components/BrandLogo";
 import NewsletterForm from "@/components/landing/NewsletterForm";
 import { cx } from "@/components/ui";
 import { SEO_HUB_HEADING_KEY, SEO_SLUGS, seoHubPath, seoPath, type SeoPageType } from "@/lib/seo-landing";
 import { CHRISTMAS_DELIVERY_PATH } from "@/lib/shipping";
+import { isToolLocale, toolPath } from "@/lib/tools/registry";
 import { SUPPORT_EMAIL } from "@/lib/pricing";
 import { CookieSettingsButton } from "@/components/tracking/Tracking";
 
@@ -37,6 +38,10 @@ export default function Footer() {
   const ts = useTranslations("seo");
   const tsc = useTranslations("showcase");
   const tcd = useTranslations("christmasDelivery");
+  const locale = useLocale();
+  // Free Reyes printables exist in es + ca only (src/lib/tools/registry.ts).
+  const tRoot = useTranslations();
+  const toolsLabel = isToolLocale(locale) ? tRoot("tools.common.footerLink") : null;
 
   return (
     <footer className="bg-brand-deep pt-14 pb-[calc(7rem+env(safe-area-inset-bottom))] text-white/80 sm:pt-20 lg:pb-10">
@@ -69,6 +74,13 @@ export default function Footer() {
                 {tcd("footerLink")}
               </Link>
             </li>
+            {toolsLabel && (
+              <li>
+                <Link className={linkClass} href={toolPath("letter")}>
+                  {toolsLabel}
+                </Link>
+              </li>
+            )}
           </FooterColumn>
 
           <FooterColumn title={t("support")}>
