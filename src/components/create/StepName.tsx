@@ -35,7 +35,7 @@ export default function StepName({ character, selectedTemplate, onUpdateCharacte
     <>
       <main className="step-in mx-auto flex w-full max-w-[1120px] flex-1 flex-col gap-6 px-4 pb-8 pt-5 sm:px-6 lg:flex-row lg:items-center lg:gap-16 lg:pt-10">
         <div className="mx-auto w-[min(56vw,230px)] shrink-0 sm:w-[300px] lg:mx-0 lg:w-[440px]">
-          <LiveCover name={character.name} templateId={selectedTemplate} priority />
+          <LiveCover name={character.name} gender={character.gender} templateId={selectedTemplate} priority />
         </div>
 
         <form

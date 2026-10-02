@@ -161,7 +161,7 @@ export default function StepAdventure({
         {/* Desktop: the cover follows the parent's choices */}
         <aside className="hidden lg:block lg:w-[360px] lg:shrink-0">
           <div className="sticky" style={{ top: "calc(var(--creation-header-h, 0px) + 2rem)" }}>
-            <LiveCover name={name} templateId={selectedTemplate} sizes="360px" />
+            <LiveCover name={name} gender={character.gender} templateId={selectedTemplate} sizes="360px" />
             <ol className="mt-5 flex flex-col gap-2 text-sm" aria-label={t("summaryLabel")}>
               <li className="flex items-center gap-2">
                 <span aria-hidden className={`material-symbols-outlined text-lg ${selectedTemplate ? "text-brand-text" : "text-create-text-sub/50"}`}>
@@ -191,7 +191,7 @@ export default function StepAdventure({
           {/* Heading (+ mini cover on mobile) */}
           <div className="flex items-center gap-4">
             <div className="w-[84px] shrink-0 lg:hidden">
-              <LiveCover name={name} templateId={selectedTemplate} sizes="84px" />
+              <LiveCover name={name} gender={character.gender} templateId={selectedTemplate} sizes="84px" />
             </div>
             <div className="min-w-0">
               <h1 className="font-display text-[24px] font-bold leading-tight text-create-text-dark sm:text-4xl">

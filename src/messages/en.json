@@ -23,7 +23,7 @@
         "benefitsHeading": "What makes this Three Kings' gift different",
         "benefits": [
           "Their name on the cover and a portrait that looks like them",
-          "You see their book before paying",
+          "You see the first pages before paying",
           "Order by {reyesDate} to have it home before the Kings"
         ],
         "sections": [
@@ -66,7 +66,7 @@
       },
       "sant-jordi": {
         "metaTitle": "Personalised Sant Jordi Book for Kids | Meapica",
-        "metaDescription": "This Sant Jordi, give a book starring your child: their name, a watercolour portrait and the story you choose. See it before paying. Free shipping.",
+        "metaDescription": "This Sant Jordi, give a book starring your child: their name, a watercolour portrait and the story you choose. Free preview before you pay. Free shipping.",
         "h1": "The most personal book to give this Sant Jordi",
         "heroIntro": "On April 23, Catalonia trades roses and books. The rose will wilt by the weekend. The book, if you choose the right one, can last a lifetime.",
         "bodyHeading": "A book no other family owns",
@@ -91,12 +91,12 @@
       },
       "birthday": {
         "metaTitle": "Personalised Birthday Book for Kids | Meapica",
-        "metaDescription": "A birthday book where the birthday child is the hero: their name on the cover, a watercolour portrait and the story you choose. See it before paying.",
+        "metaDescription": "A birthday book where the birthday child is the hero: their name on the cover, a watercolour portrait and the story you choose. Free preview before you pay.",
         "h1": "A birthday book where the birthday child is the star",
         "heroIntro": "Every birthday brings another pile of toys. This year, give the one present that puts your child's name on the cover and their face on every page.",
         "bodyHeading": "The gift they remember the candle by",
         "bodyParagraphs": [
-          "Toys come and go, but few children forget the year they opened a book and found themselves inside it. We build a one-of-a-kind story around your child, their age, their look and the things they love, so the hero turning each page is unmistakably them on the day they grow a year older.",
+          "Toys come and go, but few children forget the year they opened a book and found themselves inside it. We build a one-of-a-kind story around your child, their age and their look, in the world you choose, so the hero turning each page is unmistakably them on the day they grow a year older.",
           "It is printed on {paper} g silk coated paper to survive bedtime after bedtime. Write a birthday dedication they will reread as a teenager, see the cover, their portrait and the first scenes before paying, and give a present that still means something long after the cake is gone."
         ],
         "benefitsHeading": "Better than another toy",
@@ -116,7 +116,7 @@
       },
       "communion": {
         "metaTitle": "Personalised First Communion Book | Meapica",
-        "metaDescription": "Mark a First Communion with a printed book starring the child, with your dedication from the day. See it before paying. Free shipping in Spain.",
+        "metaDescription": "Mark a First Communion with a printed book starring the child, with your dedication from the day. Free preview before you pay. Free shipping in Spain.",
         "h1": "An elegant First Communion keepsake, made for one child",
         "heroIntro": "A First Communion is a day of meaning, not of plastic. It calls for a gift with the same weight: a printed book the child will keep into adulthood.",
         "bodyHeading": "A milestone deserves a milestone gift",
@@ -141,7 +141,7 @@
       },
       "christmas": {
         "metaTitle": "Personalised Christmas Book for Kids | Meapica",
-        "metaDescription": "A Christmas book starring your child: their name on the cover, a watercolour portrait and the story you choose. See it before paying. Free shipping.",
+        "metaDescription": "A Christmas book starring your child: their name on the cover, a watercolour portrait and the story you choose. Free preview before you pay. Free shipping.",
         "h1": "A personalised Christmas book for children, to open on Christmas morning",
         "heroIntro": "On 25 December, between the stockings and the batteries, one present asks only for your voice and a lap: a book with their name on the cover, where they are the hero of every page.",
         "bodyHeading": "The quiet moment of Christmas morning",
@@ -213,12 +213,12 @@
       },
       "end-of-school": {
         "metaTitle": "End-of-School Gift Book for Kids | Meapica",
-        "metaDescription": "Celebrate the school year with a book starring your child: their name, a watercolour portrait and the story you choose. See it before paying.",
+        "metaDescription": "Celebrate the school year with a book starring your child: their name, a watercolour portrait and the story you choose. Free preview before you pay.",
         "h1": "Close the school year with an adventure of their own",
         "heroIntro": "A personalized book to mark the end of term, where the child who worked all year becomes the hero of the summer ahead. From parents who are proud, or a teacher who noticed.",
         "bodyHeading": "The reward that keeps them reading",
         "bodyParagraphs": [
-          "The last day of school deserves more than a certificate. We write an original story with the child at its centre, weaving in their name, their looks and the things they love, so the reward for a year of reading is a book they actually want to open. Twelve illustrated scenes carry them from the classroom into a summer of their own making.",
+          "The last day of school deserves more than a certificate. We write an original story with the child at its centre, weaving in their name, their looks and the chapters you choose, so the reward for a year of reading is a book they actually want to open. Twelve illustrated scenes carry them from the classroom into a summer of their own making.",
           "It is the gift a teacher gives the class reader, or parents leave on the bed the morning term ends. You see the cover, their portrait and the first scenes before paying, then it arrives printed on {paper} g silk coated paper. A screen-free way to keep a child turning pages through the long holiday."
         ],
         "benefitsHeading": "Why it works as an end-of-term gift",
@@ -238,7 +238,7 @@
       },
       "name-day": {
         "metaTitle": "Personalised Name Day Gift Book | Meapica",
-        "metaDescription": "Celebrate their name day with a book that carries their name on the cover and every page, and a portrait that looks like them. See it before paying.",
+        "metaDescription": "Celebrate their name day with a book that carries their name on the cover and every page, and a portrait that looks like them. Free preview before you pay.",
         "h1": "A book that carries their name, for the day that does too",
         "heroIntro": "The saint's day is a second birthday in everything but cake. This is the gift that makes the day truly personal, with the child written in as the hero of their own story.",
         "bodyHeading": "A gift as personal as the day itself",
@@ -255,7 +255,7 @@
         "faq": {
           "q1": "Does the name appear on every page?",
           "a1": "Yes: on the cover and throughout the story. Names with accents and special letters are supported.",
-          "q2": "Can I add things they love?",
+          "q2": "What can I personalise?",
           "a2": "Yes: you choose their look, the world and the three chapters, and the dedication is yours.",
           "q3": "How long does it take?",
           "a3": "Printed: {minDays}-{maxDays} business days, free shipping. PDF: by email after payment, {pdf} VAT included."
@@ -263,12 +263,12 @@
       },
       "graduation": {
         "metaTitle": "Graduation Keepsake Book for Kids 8-12 | Meapica",
-        "metaDescription": "Mark a milestone with a book starring the child, for ages 8-12, with your dedication printed. See it before paying. Free shipping in Spain.",
+        "metaDescription": "Mark a milestone with a book starring the child, for ages 8-12, with your dedication printed. Free preview before you pay. Free shipping in Spain.",
         "h1": "A milestone kept, for the child who reached it",
         "heroIntro": "For the older child crossing a threshold, a book that holds who they were at this moment, and the values you hope they carry forward. A keepsake, not a trophy.",
         "bodyHeading": "Who they were, kept in print",
         "bodyParagraphs": [
-          "Children of eight to twelve are old enough to feel a milestone, and old enough to keep one. We write an original story with the child as its protagonist, shaping the adventure around their name, their likeness and the dream they are reaching toward, so the book reads as a portrait of them at this turning point rather than a story for someone much younger.",
+          "Children of eight to twelve are old enough to feel a milestone, and old enough to keep one. We write an original story with the child as its protagonist, shaping the adventure around their name, their likeness and the chapters you choose, so the book reads as a portrait of them at this turning point rather than a story for someone much younger.",
           "It is a gift with weight: a book written for them alone, carrying a dedication in your own words. 170 g coated silk paper and an optional hardcover, made to sit on a grown child's shelf for years. The kind of present they understand the value of now, and understand differently when they are older."
         ],
         "benefitsHeading": "Why it fits a graduation",
@@ -315,7 +315,7 @@
     "ages": {
       "2-4": {
         "metaTitle": "Personalised Books for Ages 2-4 | Meapica",
-        "metaDescription": "First books for toddlers, with their name on the cover and a portrait that looks like them. Short scenes, big illustrations. See it before paying.",
+        "metaDescription": "First books for toddlers, with their name on the cover and a portrait that looks like them. Short scenes, big illustrations. Free preview before you pay.",
         "h1": "First personalized books for ages 2 to 4",
         "heroIntro": "At this age, a book is something to point at, name and hold close. When the child on the page is your child, every reading turns into a little moment of recognition.",
         "bodyHeading": "Where the love of books begins",
@@ -340,13 +340,13 @@
       },
       "5-7": {
         "metaTitle": "Personalised Books for Ages 5-7 | Meapica",
-        "metaDescription": "Early readers light up when they find their own name and become the hero. A printed book to build reading confidence. See it before paying.",
+        "metaDescription": "Early readers light up when they find their own name and become the hero. A printed book to build reading confidence. Free preview before you pay.",
         "h1": "Personalized books for early readers, ages 5 to 7",
         "heroIntro": "This is the age when reading clicks. There is no stronger motivation than turning a page and finding your own name, written like it belongs there.",
         "bodyHeading": "The book that makes reading their idea",
         "bodyParagraphs": [
           "At five to seven, children are sounding out words and deciding whether reading is for them. Putting their own name on the page changes the answer. Suddenly the story is about them, the hero is them, and finishing it matters in a way no assigned book ever could.",
-          "We write an adventure shaped around your child's name, age, look and the things they love, illustrated so they recognize themselves on every spread. Printed on 170 g coated silk paper and made to last, it becomes the book they want to read to you, building confidence one proud sentence at a time."
+          "We write an adventure shaped around your child's name, age and look, illustrated so they recognize themselves on every spread. Printed on 170 g coated silk paper and made to last, it becomes the book they want to read to you, building confidence one proud sentence at a time."
         ],
         "benefitsHeading": "Why it builds readers",
         "benefits": [
@@ -365,18 +365,18 @@
       },
       "8-12": {
         "metaTitle": "Personalised Books for Ages 8-12 | Meapica",
-        "metaDescription": "Bigger adventures for confident readers, with your child as the protagonist. Their name, their portrait, the chapters you choose. See it before paying.",
+        "metaDescription": "Bigger adventures for confident readers, with your child as the protagonist. Their name, their portrait, the chapters you choose. Free preview before you pay.",
         "h1": "Personalized adventures for confident readers, ages 8 to 12",
         "heroIntro": "Older readers want a real story, not a picture book. They also still want, secretly, to be the hero. This book gives them both.",
         "bodyHeading": "A bigger story, built around them",
         "bodyParagraphs": [
-          "Eight- to twelve-year-olds are ready for adventures with stakes, choices and values woven through them. We craft a richer narrative around your child, letting their name, look, dreams and the things they love drive a plot that respects how much they have grown as readers.",
+          "Eight- to twelve-year-olds are ready for adventures with stakes, choices and values woven through them. We craft a richer narrative around your child, letting their name, their look and the chapters you choose drive a plot that respects how much they have grown as readers.",
           "The magic of being the protagonist never quite wears off, and seeing yourself face down the story's challenge lands differently at this age. Printed on 170 g coated silk paper, with a hardcover option for the long haul, it is the kind of book they reread quietly, then keep on the shelf well past the age it was made for."
         ],
         "benefitsHeading": "Made for bigger readers",
         "benefits": [
           "Richer adventures with real stakes and values",
-          "Their dreams and traits drive the plot",
+          "You choose the three chapters of the plot",
           "A keepsake they keep long past childhood"
         ],
         "faq": {
@@ -392,13 +392,13 @@
     "themes": {
       "dinosaurs": {
         "metaTitle": "Personalised Dinosaur Book for Kids | Meapica",
-        "metaDescription": "Send your child back to the age of dinosaurs as the brave hero of the story. A printed adventure built around them. See it before paying.",
+        "metaDescription": "Send your child back to the age of dinosaurs as the brave hero of the story. A printed adventure built around them. Free preview before you pay.",
         "h1": "A personalized dinosaur adventure starring your child",
         "heroIntro": "Long before there were cities, there were giants. In this story your child travels back to walk among them, as the curious, brave hero of the age of dinosaurs.",
         "bodyHeading": "Back to the age of giants",
         "bodyParagraphs": [
           "Few things capture a child's imagination like dinosaurs. We turn that fascination into an adventure where your child time-travels to the prehistoric world, named and illustrated as the hero who meets the giants face to face and learns what real curiosity and courage feel like.",
-          "Their name, age, features and the things they love are woven into the journey and the illustrations across twelve double-page scenes. Printed on 170 g coated silk paper and made to last, it is the dinosaur book they will want under the pillow, because this time the explorer crossing the prehistoric world is unmistakably them."
+          "Their name, age and features are woven into the journey and the illustrations across twelve double-page scenes. Printed on 170 g coated silk paper and made to last, it is the dinosaur book they will want under the pillow, because this time the explorer crossing the prehistoric world is unmistakably them."
         ],
         "benefitsHeading": "Why young explorers love it",
         "benefits": [
@@ -423,7 +423,7 @@
         "bodyHeading": "A journey beyond the stars",
         "bodyParagraphs": [
           "The night sky is a child's first taste of the truly vast, and this adventure carries them straight into it. Your child becomes the explorer who leaves Earth behind, drifts past unknown planets and discovers wonders waiting in the quiet dark, named and illustrated as the hero throughout.",
-          "We shape the voyage around your child's name, age, look and the things they love, across twelve double-page scenes printed on 170 g coated silk paper and made to last. It is the kind of bedtime book that sends imaginations into orbit, because the astronaut crossing the galaxy is finally them."
+          "We shape the voyage around your child's name, age and look, across twelve double-page scenes printed on 170 g coated silk paper and made to last. It is the kind of bedtime book that sends imaginations into orbit, because the astronaut crossing the galaxy is finally them."
         ],
         "benefitsHeading": "Why it sparks wonder",
         "benefits": [
@@ -448,7 +448,7 @@
         "bodyHeading": "Treasure across the seven seas",
         "bodyParagraphs": [
           "Every child has dreamed of following a treasure map to its X. This adventure makes them the one holding it: your child becomes the daring captain who sails the seven seas, reads the stars and outwits the waves on the way to a hidden fortune, named and illustrated as the hero of every scene.",
-          "We weave your child's name, age, features and the things they love into the voyage across twelve double-page illustrations, printed on 170 g coated silk paper and made to last. It is a swashbuckling story they will demand again and again, because the captain at the wheel is unmistakably them."
+          "We weave your child's name, age and features into the voyage across twelve double-page illustrations, printed on 170 g coated silk paper and made to last. It is a swashbuckling story they will demand again and again, because the captain at the wheel is unmistakably them."
         ],
         "benefitsHeading": "Why young captains love it",
         "benefits": [
@@ -473,7 +473,7 @@
         "bodyHeading": "Hidden powers, a city to save",
         "bodyParagraphs": [
           "Children love superheroes because they dream of being capable, brave and needed. This adventure hands them all three: your child uncovers a hidden superpower and rises to save the city, named and illustrated as the hero, while the story quietly shows that true strength lies in helping the people around you.",
-          "Their name, age, look and the things they love shape the powers and the plot across twelve double-page scenes, printed on 170 g coated silk paper and made to last. It is the kind of book that makes a child stand a little taller, because the hero saving the day is unmistakably them."
+          "Their name, age and look, and the chapters you choose, shape the hero and the plot across twelve double-page scenes, printed on 170 g coated silk paper and made to last. It is the kind of book that makes a child stand a little taller, because the hero saving the day is unmistakably them."
         ],
         "benefitsHeading": "Why little heroes love it",
         "benefits": [
@@ -498,7 +498,7 @@
         "bodyHeading": "Secrets among ancient trees",
         "bodyParagraphs": [
           "An enchanted forest is a place of whispered secrets and gentle wonder, and this adventure lets your child wander deep into it. They become the hero who befriends fantastic creatures, listens to ancient trees and uncovers the quiet magic hidden among the leaves, named and illustrated on every spread.",
-          "We weave your child's name, age, features and the things they love into the journey across twelve double-page illustrations, printed on 170 g coated silk paper and made to last. It is a softly magical story made for slow bedtimes, because the explorer wandering the enchanted wood is unmistakably them."
+          "We weave your child's name, age and features into the journey across twelve double-page illustrations, printed on 170 g coated silk paper and made to last. It is a softly magical story made for slow bedtimes, because the explorer wandering the enchanted wood is unmistakably them."
         ],
         "benefitsHeading": "Why it enchants children",
         "benefits": [
@@ -523,7 +523,7 @@
         "bodyHeading": "Across the African savanna",
         "bodyParagraphs": [
           "The savanna is a child's gateway to the wild, full of lions, elephants and creatures that fill any imagination. This adventure makes your child the explorer at its heart, named and illustrated as the hero who tracks the great herds, meets the animals up close and learns to move gently through their world.",
-          "Their name, age, features and the things they love are woven into the expedition across twelve double-page illustrations, printed on 170 g coated silk paper and made to last. It is a vivid, sun-warmed story they will return to often, because the explorer crossing the savanna is unmistakably them."
+          "Their name, age and features are woven into the expedition across twelve double-page illustrations, printed on 170 g coated silk paper and made to last. It is a vivid, sun-warmed story they will return to often, because the explorer crossing the savanna is unmistakably them."
         ],
         "benefitsHeading": "Why young explorers love it",
         "benefits": [
@@ -580,7 +580,7 @@
       },
       "ages": {
         "metaTitle": "Personalised Children's Books by Age | Meapica",
-        "metaDescription": "Personalised books for ages 2 to 12: each story is written for its age range, with your child as the hero. See it before paying. Free shipping in Spain.",
+        "metaDescription": "Personalised books for ages 2 to 12: each story is written for its age range, with your child as the hero. Free preview before you pay. Free shipping in Spain.",
         "h1": "Personalized books by age",
         "intro": "Every age calls for its own story. Choose your child’s range and discover books made for their reading stage, always with them as the hero.",
         "guideHeading": "How to choose a personalised book by age",
@@ -626,7 +626,7 @@
   },
   "metadata": {
     "title": "Personalised children's book with their name | Meapica",
-    "description": "Their name on the cover, their face in watercolour and the adventure you choose. See their book before paying. Hardcover or softcover, free shipping.",
+    "description": "Their name on the cover, their face in watercolour and the adventure you choose. Free preview before you pay. Hardcover or softcover, free shipping.",
     "keywords": "personalized children's books, custom story books, unique kids gift, personalized storybook, illustrated children's book, printed book for kids",
     "pages": {
       "create": "Create their book",
@@ -666,7 +666,7 @@
     "ctaWithName": "Create {deName}’s book",
     "priceFrom": "From {price}",
     "freeShipping": "Free shipping",
-    "trustPreview": "See their book before you pay",
+    "trustPreview": "See the first pages before you pay",
     "trustFormats": "Hardcover or softcover, PDF included",
     "sampleCta": "Look inside a book",
     "coverCaption": "How they'll see their name for the first time · 20 × 20 cm",
@@ -675,7 +675,7 @@
   "howItWorks": {
     "eyebrow": "How it works",
     "title": "From their name to their book, in minutes",
-    "subtitle": "From the sofa, on your phone. And you see their book before you pay.",
+    "subtitle": "From the sofa, on your phone. And you see the first pages before you pay.",
     "stepsLabel": "Steps to create their book",
     "stepNumber": "Step {n}:",
     "steps": {
@@ -1158,7 +1158,11 @@
     "cover": {
       "titlePrefix": "The adventure of",
       "titlePrefixElided": "The adventure of",
-      "namePlaceholder": "their name"
+      "titlePrefixMasc": "The adventure of",
+      "titlePrefixFem": "The adventure of",
+      "titlePrefixVowel": "The adventure of",
+      "titleSuffix": "and their adventure",
+      "titleEmpty": "Their adventure"
     },
     "name": {
       "title": "What's their name?",
@@ -1319,7 +1323,7 @@
       "digitalDelivery": "Download it as soon as we finish illustrating it",
       "ctaNotePhysical": "VAT and shipping included",
       "ctaNoteDigital": "VAT included",
-      "trustPreview": "You've seen the book before paying",
+      "trustPreview": "You've seen the cover and the first scenes",
       "trustPayment": "Secure payment with Stripe",
       "trustMadeIn": "Made in Barcelona, printed in Europe",
       "trustReprint": "Arrived damaged or with a printing defect? We replace it free of charge",

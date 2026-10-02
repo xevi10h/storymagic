@@ -40,7 +40,7 @@ export default function HowItWorks() {
           <span className="ml-0.5 h-5 w-0.5 animate-pulse bg-brand motion-reduce:animate-none" />
         </div>
         <div className="w-[112px]">
-          <LiveCover name={name} templateId={LANDING_EXAMPLE.templateId} sizes="112px" />
+          <LiveCover name={name} gender={gender} templateId={LANDING_EXAMPLE.templateId} sizes="112px" />
         </div>
       </div>
     ),

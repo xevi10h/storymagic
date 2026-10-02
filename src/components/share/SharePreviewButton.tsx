@@ -8,6 +8,8 @@ import { Spinner } from "@/components/ui/Spinner";
 export interface SharePreviewButtonProps {
   storyId: string;
   childName: string;
+  /** Drives the Catalan personal article in the share title. */
+  childGender?: string;
   /** Classes for the button (defaults to a small outlined pill). */
   className?: string;
   /** Show the "anyone with the link…" hint under the button. */
@@ -66,7 +68,7 @@ function requestShareUrl(storyId: string, locale: string): Promise<string> {
  * (POST /api/stories/[storyId]/share) and hands it to the OS share sheet on
  * mobile or copies it on desktop. The link shows only the preview pages.
  */
-export default function SharePreviewButton({ storyId, childName, className, showHint = false, fullWidth = false, onShared }: SharePreviewButtonProps) {
+export default function SharePreviewButton({ storyId, childName, childGender, className, showHint = false, fullWidth = false, onShared }: SharePreviewButtonProps) {
   const t = useTranslations("sharePreview.share");
   const locale = useLocale();
   const [status, setStatus] = useState<Status>("idle");
@@ -114,7 +116,7 @@ export default function SharePreviewButton({ storyId, childName, className, show
     if (prefersNativeShare()) {
       try {
         await navigator.share({
-          title: t("shareTitle", { name: childName, deName: deName(childName, locale) }),
+          title: t("shareTitle", { name: childName, deName: deName(childName, locale, childGender) }),
           text: t("shareText", { name: childName }),
           url,
         });
@@ -139,7 +141,7 @@ export default function SharePreviewButton({ storyId, childName, className, show
       setManualUrl(url);
       setStatus("manual");
     }
-  }, [getUrl, flash, t, childName, locale, onShared]);
+  }, [getUrl, flash, t, childName, childGender, locale, onShared]);
 
   return (
     <div className={fullWidth ? "flex w-full flex-col items-stretch" : "inline-flex flex-col items-center"} data-testid="share-preview">

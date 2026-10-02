@@ -15,7 +15,7 @@ export type CatalanGuideCopy = GuideBaseCopy & { hubCrumb: string; exampleCaptio
 const ca = (f: GuideFacts): CatalanGuideCopy => ({
   metaTitle: "Conte personalitzat en català amb el seu nom | Meapica",
   metaDescription:
-    "Llibre personalitzat per a nens escrit directament en català: el seu nom a la portada i el seu retrat a l'aquarel·la. El veus abans de pagar.",
+    "Llibre personalitzat per a nens escrit directament en català: el seu nom a la portada i el seu retrat a l'aquarel·la. Vista prèvia gratuïta.",
   breadcrumb: "En català",
   hubCrumb: "Contes personalitzats",
   exampleCaption: "és un dels nostres llibres d'exemple en català.",
@@ -24,7 +24,7 @@ const ca = (f: GuideFacts): CatalanGuideCopy => ({
   lead:
     "No és un conte en castellà passat pel traductor. La història s'escriu en català des de la primera frase, amb el seu nom i el seu article (en Pol, la Martina, l'Arnau), el seu retrat pintat a l'aquarel·la i l'aventura que tries tu.",
   cta: "Crear el seu conte",
-  trust: ["Veus el seu llibre abans de pagar", "Tapa dura o tova, amb PDF inclòs", "Fet a Barcelona"],
+  trust: ["Veus les primeres pàgines abans de pagar", "Tapa dura o tova, amb PDF inclòs", "Fet a Barcelona"],
   sections: [
     {
       heading: "Escrit en català, no traduït",
@@ -89,14 +89,14 @@ const ca = (f: GuideFacts): CatalanGuideCopy => ({
   closing: {
     eyebrow: "En català, de la primera a l'última pàgina",
     heading: "El seu conte, en la llengua en què aprèn a llegir",
-    text: "Escriu el seu nom, tria com és i quina aventura viurà, i mira el seu llibre abans de pagar.",
+    text: "Escriu el seu nom, tria com és i quina aventura viurà, i mira'n les primeres pàgines abans de pagar.",
   },
 });
 
 const es = (f: GuideFacts): CatalanGuideCopy => ({
   metaTitle: "Cuento personalizado en catalán con su nombre | Meapica",
   metaDescription:
-    "Un cuento escrito directamente en catalán, no traducido: su nombre en la portada y su retrato en acuarela. Lo ves antes de pagar. Envío gratis.",
+    "Un cuento escrito directamente en catalán, no traducido: su nombre en la portada y su retrato en acuarela. Vista previa gratis. Envío gratis.",
   breadcrumb: "En catalán",
   hubCrumb: "Cuentos personalizados",
   exampleCaption: "es uno de nuestros libros de ejemplo en catalán.",
@@ -106,7 +106,7 @@ const es = (f: GuideFacts): CatalanGuideCopy => ({
     "No es un cuento en castellano pasado por un traductor. La historia se escribe en catalán desde la primera frase, con su nombre y su artículo, como se dice allí (en Pol, la Martina), su retrato pintado en acuarela y la aventura que eliges tú.",
   cta: "Crear su cuento en catalán",
   ctaNote: "Se abre la web en catalán: el cuento se escribe en el idioma en el que lo creas.",
-  trust: ["Ves su libro antes de pagar", "Tapa dura o blanda, con PDF incluido", "Hecho en Barcelona"],
+  trust: ["Ves las primeras páginas antes de pagar", "Tapa dura o blanda, con PDF incluido", "Hecho en Barcelona"],
   sections: [
     {
       heading: "En catalán desde la primera frase, no traducido",
@@ -163,7 +163,7 @@ const es = (f: GuideFacts): CatalanGuideCopy => ({
   closing: {
     eyebrow: "En catalán, de la primera a la última página",
     heading: "Su cuento, en la lengua en la que aprende a leer",
-    text: "Escribe su nombre, elige cómo es y qué aventura vivirá, y mira su libro antes de pagar.",
+    text: "Escribe su nombre, elige cómo es y qué aventura vivirá, y mira sus primeras páginas antes de pagar.",
   },
 });
 

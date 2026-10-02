@@ -4,7 +4,7 @@
  * current production pipeline (showcase v2, 2026-09-30). Its art is copied from the book's final
  * renders to /public/images/landing/noa as right-sized webp (≤ ~95 KB each; the originals are 2–4 MB).
  * If that story ever stops being a showcase, swap the id + art here; `gender` drives the Catalan
- * personal article in the landing strings ("de la Noa" / "d'en Hugo").
+ * personal article in the landing strings ("de la Noa" / "d'en Pau").
  */
 export const LANDING_EXAMPLE = {
   childName: "Noa",

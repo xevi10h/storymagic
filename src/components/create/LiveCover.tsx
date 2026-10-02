@@ -5,11 +5,13 @@ import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import BrandLogo from "@/components/BrandLogo";
 import { getTemplateConfig } from "@/lib/create-store";
-import { DEFAULT_COVER_TEMPLATE, coverNameFontSize, elidesDe } from "@/lib/creation-flow";
+import { DEFAULT_COVER_TEMPLATE, coverNameFontSize, coverTitleKind, type CoverTitleKind, type NameGender } from "@/lib/creation-flow";
 
 interface LiveCoverProps {
   /** Child's name exactly as typed (any Unicode letters, accents, l·l, apostrophes). */
   name: string;
+  /** Gender from the avatar choice; drives the Catalan personal article ("de la Noa", "d'en Pau"). */
+  gender?: NameGender;
   /** Chosen world; null = default art, no world kicker. */
   templateId: string | null;
   /** Real painted cover (replaces the template art once it exists). */
@@ -25,8 +27,17 @@ interface LiveCoverProps {
  * The book cover rendered live from the template art + the child's name.
  * Pure client render (no network) so it updates on every keystroke.
  */
+const PREFIX_KEY: Record<Exclude<CoverTitleKind, "empty" | "nameFirst">, "titlePrefix" | "titlePrefixElided" | "titlePrefixMasc" | "titlePrefixFem" | "titlePrefixVowel"> = {
+  plain: "titlePrefix",
+  elided: "titlePrefixElided",
+  masc: "titlePrefixMasc",
+  fem: "titlePrefixFem",
+  vowel: "titlePrefixVowel",
+};
+
 export default function LiveCover({
   name,
+  gender,
   templateId,
   imageUrl,
   priority,
@@ -40,8 +51,12 @@ export default function LiveCover({
   const painted = !!imageUrl;
   const art = imageUrl || template?.image || "/images/templates/space.jpg";
   const trimmed = name.trim();
-  const displayName = trimmed || t("namePlaceholder");
-  const prefix = elidesDe(trimmed, locale) ? t("titlePrefixElided") : t("titlePrefix");
+  // Empty name → a name-less title ("La seva aventura"), never "L'aventura de el seu nom".
+  // Catalan with an unknown article → the name leads ("Noa / i la seva aventura").
+  const kind = coverTitleKind(trimmed, locale, gender);
+  const displayName = kind === "empty" ? t("titleEmpty") : trimmed;
+  const prefix = kind === "empty" || kind === "nameFirst" ? null : t(PREFIX_KEY[kind]);
+  const suffix = kind === "nameFirst" ? t("titleSuffix") : null;
   const kicker = templateId ? td(`templates.${templateId}.title`) : null;
   const accent = templateId && template ? template.themeColor : "#3a2418";
 
@@ -71,8 +86,8 @@ export default function LiveCover({
 
   const w = width || 300;
   const nameSize = coverNameFontSize(displayName, w);
-  const joiner = prefix.endsWith("'") || prefix.endsWith("’") ? "" : " ";
-  const fullTitle = `${prefix}${joiner}${displayName}`;
+  const joiner = prefix && (prefix.endsWith("'") || prefix.endsWith("’")) ? "" : " ";
+  const fullTitle = prefix ? `${prefix}${joiner}${displayName}` : suffix ? `${displayName} ${suffix}` : displayName;
 
   return (
     <div
@@ -143,12 +158,14 @@ export default function LiveCover({
             {kicker}
           </span>
         )}
-        <span
-          className={`font-display font-medium leading-tight ${painted ? "text-white/90" : "text-create-text"}`}
-          style={{ fontSize: Math.max(12, w * 0.062) }}
-        >
-          {prefix}
-        </span>
+        {prefix && (
+          <span
+            className={`font-display font-medium leading-tight ${painted ? "text-white/90" : "text-create-text"}`}
+            style={{ fontSize: Math.max(12, w * 0.062) }}
+          >
+            {prefix}
+          </span>
+        )}
         <span
           data-testid="live-cover-name"
           lang={locale}
@@ -159,6 +176,14 @@ export default function LiveCover({
         >
           {displayName}
         </span>
+        {suffix && (
+          <span
+            className={`font-display font-medium leading-tight ${painted ? "text-white/90" : "text-create-text"}`}
+            style={{ fontSize: Math.max(12, w * 0.062), marginTop: w * 0.012 }}
+          >
+            {suffix}
+          </span>
+        )}
       </div>
 
       {painted ? (

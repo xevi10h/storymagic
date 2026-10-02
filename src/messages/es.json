@@ -283,12 +283,12 @@
         "bodyHeading": "Celebra su graduación con un recuerdo a su altura",
         "bodyParagraphs": [
           "Pasar de primaria a la ESO, o cerrar un ciclo, es un momento de orgullo que merece más que un diploma. Meapica escribe una aventura única protagonizada por el chico o la chica, con su nombre, su aspecto y aquello que le hace ilusión, una historia pensada para edades entre 8 y 12 años.",
-          "Más que un regalo, es una cápsula del tiempo: dentro quedan sus rasgos, sus sueños y sus valores tal como eran en este momento. Impreso en papel estucado seda de 170 g, con tapa dura si lo quieres más resistente, es un recuerdo que querrá conservar y releer cuando sea mayor."
+          "Más que un regalo, es una cápsula del tiempo: dentro quedan su cara y su nombre tal como eran en este momento. Impreso en papel estucado seda de 170 g, con tapa dura si lo quieres más resistente, es un recuerdo que querrá conservar y releer cuando sea mayor."
         ],
         "benefitsHeading": "Por qué deja huella",
         "benefits": [
           "Pensado para chicos y chicas de 8 a 12 años",
-          "Guarda sus sueños y su forma de ser de hoy",
+          "Guarda cómo es hoy, en un libro suyo",
           "Una edición única para conservar"
         ],
         "faq": {
@@ -649,7 +649,7 @@
   },
   "metadata": {
     "title": "Cuento personalizado para niños con su nombre | Meapica",
-    "description": "Su nombre en la portada, su cara pintada en acuarela y la aventura que eliges tú. Ves su libro antes de pagar. Tapa dura o blanda, envío gratis.",
+    "description": "Su nombre en la portada, su cara pintada en acuarela y la aventura que eliges tú. Vista previa gratis. Tapa dura o blanda, envío gratis.",
     "keywords": "cuentos personalizados, libros infantiles personalizados, regalo original niños, cuentos con nombre, libros con ilustraciones, regalo personalizado, libro impreso niños",
     "pages": {
       "create": "Crea su cuento",
@@ -689,7 +689,7 @@
     "ctaWithName": "Crear el libro {deName}",
     "priceFrom": "Desde {price}",
     "freeShipping": "Envío gratis",
-    "trustPreview": "Ves su libro antes de pagar",
+    "trustPreview": "Ves las primeras páginas antes de pagar",
     "trustFormats": "Tapa dura o blanda, con PDF incluido",
     "sampleCta": "Ver un cuento por dentro",
     "coverCaption": "Así verá su nombre por primera vez · 20 × 20 cm",
@@ -698,7 +698,7 @@
   "howItWorks": {
     "eyebrow": "Cómo funciona",
     "title": "De su nombre a su libro, en unos minutos",
-    "subtitle": "Desde el sofá, con el móvil. Y ves su libro antes de pagar.",
+    "subtitle": "Desde el sofá, con el móvil. Y ves sus primeras páginas antes de pagar.",
     "stepsLabel": "Pasos para crear su libro",
     "stepNumber": "Paso {n}:",
     "steps": {
@@ -1181,7 +1181,11 @@
     "cover": {
       "titlePrefix": "La aventura de",
       "titlePrefixElided": "La aventura de",
-      "namePlaceholder": "su nombre"
+      "titlePrefixMasc": "La aventura de",
+      "titlePrefixFem": "La aventura de",
+      "titlePrefixVowel": "La aventura de",
+      "titleSuffix": "y su aventura",
+      "titleEmpty": "Su aventura"
     },
     "name": {
       "title": "¿Cómo se llama?",
@@ -1342,7 +1346,7 @@
       "digitalDelivery": "Lo descargas en cuanto terminemos de ilustrarlo",
       "ctaNotePhysical": "IVA y envío incluidos",
       "ctaNoteDigital": "IVA incluido",
-      "trustPreview": "Has visto su libro antes de pagar",
+      "trustPreview": "Has visto la portada y las primeras escenas",
       "trustPayment": "Pago seguro con Stripe",
       "trustMadeIn": "Hecho en Barcelona, impreso en Europa",
       "trustReprint": "¿Llega dañado o con un defecto de impresión? Te lo reponemos sin coste",

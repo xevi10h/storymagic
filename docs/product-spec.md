@@ -85,10 +85,10 @@ Each template is identified by an English slug and is backed by a branching stor
 | `hair_color` | string | Yes | Hair color/style |
 | `skin_tone` | string | Yes | Skin tone |
 | `eye_color` | string | Yes | Eye color |
-| `interests` | string[] (up to 4) | Yes | Child's interests (space, animals, sports, castles, dinosaurs, music) |
-| `city` | string | Yes | City where the child lives |
+| `interests` | string[] (up to 4) | No | Legacy field: the current create flow does not ask for it (always `[]`). Public copy must not claim the story uses interests, dreams, pets or favourite food (claims sweep 2026-10-02). |
+| `city` | string | No | Legacy field: not asked by the current create flow. |
 | `favorite_color` | string | No | Favourite colour (hex of `FAVORITE_COLORS`, asked on screen 2, optional). Leads the whole book palette — accents, titles, ornaments, tinted text pages, endpapers, cover/spine deep tone — in print and web (`src/lib/template-colors.ts`), plus the Character Bible jacket. Null → neutral warm palette. |
-| `favorite_companion` | string | No | Best friend / companion |
+| `favorite_companion` | string | No | Legacy field: not asked by the current create flow (`future_dream` likewise). |
 | `sender_name` | string | No | Gift sender's name (if it's a gift) |
 | `custom_dedication` | string | No | Custom dedication message |
 | `template_id` | string (slug) | Yes | Selected story template (space / forest / pirates / dinosaurs / superhero / chef / castle / safari / inventor / candy) |

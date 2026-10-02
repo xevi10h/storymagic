@@ -242,21 +242,9 @@ export function storyInputSnapshot(state: CreateBookState, locale: string): stri
 
 // ── Typography helpers ───────────────────────────────────────────────────────
 
-const VOWEL_START = /^[aeiouàáâäèéêëìíîïòóôöùúûüæœy]/i;
-const H_VOWEL_START = /^h[aeiouàáâäèéêëìíîïòóôöùúûü]/i;
-
-/**
- * Catalan and French elide "de" before a vowel sound: "L'aventura d'Olívia",
- * "L'aventure d'Émile". Spanish and English never elide.
- * (Catalan exceptions like "de Ió" are rare enough to accept.)
- */
-export function elidesDe(name: string, locale: string): boolean {
-  if (locale !== "ca" && locale !== "fr") return false;
-  const n = name.trim();
-  if (!n) return false;
-  if (locale === "ca" && /^[iu][aeiouàáèéíòóú]/i.test(n)) return false; // "de Iolanda", "de Uàlid" (semi-vowel)
-  return VOWEL_START.test(n) || H_VOWEL_START.test(n);
-}
+// Name grammar (de/d', Catalan personal article, cover title layout) lives in a
+// dependency-free module so its .check.mjs runs under plain node.
+export { catalanArticle, coverTitleKind, deName, elidesDe, type CoverTitleKind, type NameGender } from "@/lib/name-grammar";
 
 /**
  * Cover name font size (px) for a given container width: long or compound names
@@ -280,14 +268,4 @@ export function coverNameFontSize(name: string, width: number): number {
  */
 export function firstName(name: string): string {
   return name.trim().split(/\s+/)[0] ?? "";
-}
-
-/**
- * "de Lucía" / "d'Olívia" (ca, fr elide) for strings like "el libro {deName}".
- * English strings use the bare {name}; this returns it unchanged there.
- */
-export function deName(name: string, locale: string): string {
-  const n = name.trim();
-  if (locale === "en") return n;
-  return elidesDe(n, locale) ? `d'${n}` : `de ${n}`;
 }

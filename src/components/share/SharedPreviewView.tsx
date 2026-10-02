@@ -67,7 +67,7 @@ export default function SharedPreviewView({ storyId, title, childName, templateI
             </span>
           </div>
         </div>
-        <p className="mt-1 text-sm text-text-muted">{t("intro", { name: childName, deName: deName(childName, locale) })}</p>
+        <p className="mt-1 text-sm text-text-muted">{t("intro", { name: childName, deName: deName(childName, locale, gender) })}</p>
       </div>
 
       <section className="mx-auto max-w-4xl px-4 py-6 sm:py-8">

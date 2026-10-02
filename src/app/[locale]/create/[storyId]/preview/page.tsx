@@ -623,6 +623,7 @@ export default function PreviewPage() {
                       <SharePreviewButton
                         storyId={storyId}
                         childName={childName}
+                        childGender={story.characters.gender}
                         className="inline-flex items-center justify-center gap-1.5 rounded-full border border-border-light bg-white px-4 py-1.5 text-xs font-semibold text-create-text-dark transition-colors hover:border-create-primary hover:text-brand-text disabled:opacity-60"
                       />
                     ) : undefined
@@ -648,6 +649,7 @@ export default function PreviewPage() {
               <PurchasePanel
                 ref={mainCtaRef}
                 childName={childName}
+                childGender={story.characters.gender}
                 title={currentTitle}
                 coverUrl={story.cover_image_url}
                 spineColor={spineColor}
@@ -781,7 +783,7 @@ export default function PreviewPage() {
                   </Link>
                 </LaterOption>
                 <LaterOption icon="ios_share" title={tPurchase("later.shareTitle")} body={tPurchase("later.shareBody")}>
-                  <SharePreviewButton storyId={storyId} childName={childName} fullWidth className={LATER_BUTTON} />
+                  <SharePreviewButton storyId={storyId} childName={childName} childGender={story.characters.gender} fullWidth className={LATER_BUTTON} />
                 </LaterOption>
                 <LaterOption icon="mail" title={tPurchase("later.emailTitle")} body={tPurchase("later.emailBody")}>
                   <SendPreviewEmail

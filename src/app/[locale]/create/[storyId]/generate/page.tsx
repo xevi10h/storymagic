@@ -9,7 +9,7 @@ import CreationFooterNav from "@/components/create/CreationFooterNav";
 import LiveCover from "@/components/create/LiveCover";
 import DedicationEditor from "@/components/create/DedicationEditor";
 import { useDedicationAutosave } from "@/hooks/useDedicationAutosave";
-import { deName, patchStoredDraft } from "@/lib/creation-flow";
+import { deName, patchStoredDraft, type NameGender } from "@/lib/creation-flow";
 import { Spinner } from "@/components/ui/Spinner";
 
 // Screen 4 — "Mientras se pinta": real preview progress (cover first, then
@@ -110,6 +110,7 @@ export default function GenerarPage() {
   const [now, setNow] = useState(() => Date.now());
   const [retrying, setRetrying] = useState(false);
   const [childName, setChildName] = useState("");
+  const [childGender, setChildGender] = useState<NameGender>(null);
   const [templateId, setTemplateId] = useState<string | null>(null);
   const [finalCover, setFinalCover] = useState<string | null>(null);
   const [leaving, setLeaving] = useState(false);
@@ -131,6 +132,7 @@ export default function GenerarPage() {
       const data = await res.json();
       if (!mountedRef.current) return;
       setChildName(data.characters?.name ?? "");
+      setChildGender(data.characters?.gender ?? null);
       setTemplateId(data.template_id ?? null);
       if (data.cover_image_url && DONE_STATUSES.has(data.status)) setFinalCover(data.cover_image_url);
       initDedication({ dedication: data.dedication_text ?? "", senderName: data.sender_name ?? "" });
@@ -336,7 +338,7 @@ export default function GenerarPage() {
   const completed = (coverUrl ? 1 : 0) + Math.min(scenesDone, total);
   const pct = known ? Math.round((completed / (total + 1)) * 100) : null;
   const name = childName;
-  const nameArgs = { name, deName: deName(name, locale) };
+  const nameArgs = { name, deName: deName(name, locale, childGender) };
 
   // ── Error state ─────────────────────────────────────────────────────────────
 
@@ -431,7 +433,7 @@ export default function GenerarPage() {
         <section aria-labelledby="painting-title" className="flex flex-col gap-4">
           <div className="flex items-center gap-4 lg:flex-col lg:items-stretch lg:gap-5">
             <div className="relative w-[112px] shrink-0 sm:w-[150px] lg:mx-auto lg:w-[340px]" data-testid="progress-cover">
-              <LiveCover name={name} templateId={templateId} imageUrl={heroUrl} sizes="(max-width:1024px) 150px, 340px" />
+              <LiveCover name={name} gender={childGender} templateId={templateId} imageUrl={heroUrl} sizes="(max-width:1024px) 150px, 340px" />
               {!coverUrl && (
                 // Over template art the title sits on top (badge at the bottom); over a painted
                 // first scene the title sits at the bottom (badge at the top).

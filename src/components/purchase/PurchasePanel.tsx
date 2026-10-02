@@ -33,6 +33,8 @@ export type ConsentState = "idle" | "missing" | "nudge";
 
 interface PurchasePanelProps {
   childName: string;
+  /** Drives the Catalan personal article ("el llibre de la Noa"). */
+  childGender?: string;
   title: string;
   coverUrl: string | null;
   /** Board / spine colour from the book palette (getBookColors(...).gradientStart). */
@@ -73,6 +75,7 @@ function mockupFormat(format: BookFormat): BookMockupFormat {
 const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function PurchasePanel(
   {
     childName,
+    childGender,
     title,
     coverUrl,
     spineColor,
@@ -100,7 +103,7 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
   const tPricing = useTranslations("pricing");
   const locale = useLocale();
   const price = (cents: number) => formatPrice(cents, locale);
-  const names = { name: childName, deName: deName(childName, locale) };
+  const names = { name: childName, deName: deName(childName, locale, childGender) };
 
   const isDigital = format === "digital_pdf";
   const delivery = useDeliveryLine(format);

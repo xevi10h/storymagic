@@ -196,7 +196,7 @@ const es = (f: GuideFacts, n: number): CompareGuideCopy => ({
     catalan: "En catalán",
     languages: "Idiomas",
     shipping: "Envío en España",
-    preview: "Ves el libro antes de pagar",
+    preview: "Vista previa antes de pagar",
     personalisation: "Cómo se personaliza",
   },
   meapica: {
@@ -305,7 +305,7 @@ const ca = (f: GuideFacts, n: number): CompareGuideCopy => ({
     catalan: "En català",
     languages: "Idiomes",
     shipping: "Enviament a Espanya",
-    preview: "Veus el llibre abans de pagar",
+    preview: "Vista prèvia abans de pagar",
     personalisation: "Com es personalitza",
   },
   meapica: {

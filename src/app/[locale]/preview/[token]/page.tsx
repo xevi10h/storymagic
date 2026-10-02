@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
   if (!result.ok) return { ...base, title: t("notFound.title") };
   const name = result.preview.childName;
-  return { ...base, title: t("view.metaTitle", { name, deName: deName(name, locale) }) };
+  return { ...base, title: t("view.metaTitle", { name, deName: deName(name, locale, result.preview.gender) }) };
 }
 
 export default async function SharedPreviewPage({ params }: Props) {

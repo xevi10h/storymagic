@@ -45,6 +45,7 @@ export default function Moments() {
           ) : (
             <LiveCover
               name={name}
+              gender={LANDING_EXAMPLE.gender}
               // No world kicker: on the painted cover it would sit over the child's face.
               templateId={null}
               imageUrl={LANDING_EXAMPLE.coverSrc}

@@ -56,8 +56,9 @@ Rules:
 - **"IA" is not a selling word.** Say what the parent gets: "ilustrado a acuarela", "escrito para su edad".
 - **Prices (B2C) always show VAT next to the number:** `49,90 € IVA incluido`, also in CTAs and
   sticky bars ("desde 34,90 € · IVA incluido · Envío gratis"). Source of truth: `src/lib/pricing.ts`.
-- Catalan/French/English follow the same tone; Catalan and French elide "de" before vowels
-  ("L'aventura d'Àlex"), already handled in `LiveCover`.
+- Catalan/French/English follow the same tone; French elides "de" before vowels ("L'aventure
+  d'Émile"); Catalan uses the personal article ("L'aventura de la Noa", "d'en Pau", "de l'Àlex"),
+  handled in `src/lib/name-grammar.ts` (`LiveCover`, `deName`).
 - Spanish typography: `¿…?`, `¡…!`, thin separators with `·`, numbers `1.500`, `49,90 €`.
 
 ## 3. Logo

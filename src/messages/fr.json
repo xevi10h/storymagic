@@ -12,7 +12,7 @@
     "gifts": {
       "three-kings": {
         "metaTitle": "Cadeau des Rois personnalisé : conte enfant | Meapica",
-        "metaDescription": "Pour la fête des Rois, un livre personnalisé où votre enfant est le héros : son prénom, son portrait à l'aquarelle. Vous voyez son livre avant de payer.",
+        "metaDescription": "Pour la fête des Rois, un livre personnalisé où votre enfant est le héros : son prénom, son portrait à l'aquarelle. Aperçu gratuit avant de payer.",
         "h1": "Cadeau des Rois personnalisé : le conte dont votre enfant est le héros",
         "heroIntro": "Le matin du 6 janvier, entre les paquets déposés près des chaussures, il y a un livre avec son prénom sur la couverture. Il le reconnaît avant même de l'ouvrir.",
         "bodyHeading": "Pourquoi un livre personnalisé pour la fête des Rois",
@@ -45,7 +45,7 @@
         "benefitsHeading": "Ce qui rend ce cadeau des Rois unique",
         "benefits": [
           "Son prénom et son portrait à chaque page",
-          "Vous voyez son livre avant de payer",
+          "Vous voyez les premières pages avant de payer",
           "Livraison offerte avant les Rois en commandant au plus tard le {reyesDate}"
         ],
         "faq": {
@@ -66,7 +66,7 @@
         "heroIntro": "Le 23 avril, on offre un livre et une rose. Cette année, offrez le livre le plus personnel de tous : celui dont votre enfant est le héros.",
         "bodyHeading": "La tradition du livre, rendue inoubliable",
         "bodyParagraphs": [
-          "La Sant Jordi célèbre les histoires et l'amour des mots. Mais un livre acheté en librairie se retrouve dans des milliers de foyers. Un conte personnalisé n'existe qu'en un seul exemplaire : avec le prénom de votre enfant, ses cheveux, ses yeux, et son rêve glissé dans le récit comme dans les illustrations.",
+          "La Sant Jordi célèbre les histoires et l'amour des mots. Mais un livre acheté en librairie se retrouve dans des milliers de foyers. Un conte personnalisé n'existe qu'en un seul exemplaire : avec le prénom de votre enfant, ses cheveux et ses yeux, dans le récit comme dans les illustrations.",
           "La rose de Sant Jordi se fanera en quelques jours. Ce livre, lui, traverse les années. Imprimé sur papier couché satiné 170 g, avec couverture pelliculée mate, 30 pages et douze scènes en double page. Une dédicace de votre main pour signer le plus beau des 23 avril."
         ],
         "benefitsHeading": "Le cadeau parfait de Sant Jordi",
@@ -86,12 +86,12 @@
       },
       "birthday": {
         "metaTitle": "Cadeau anniversaire : conte personnalisé enfant | Meapica",
-        "metaDescription": "Pour son anniversaire, offrez un conte personnalisé où votre enfant devient la star de sa propre aventure. Édition unique, à voir avant de payer.",
+        "metaDescription": "Pour son anniversaire, offrez un conte personnalisé où votre enfant devient la star de sa propre aventure. Édition unique, aperçu gratuit avant de payer.",
         "h1": "Un conte personnalisé pour son anniversaire",
         "heroIntro": "Le jour de son anniversaire, votre enfant mérite d'être au centre de l'attention. Et au centre de sa propre histoire.",
         "bodyHeading": "Le jour où il devient la star de son histoire",
         "bodyParagraphs": [
-          "Un anniversaire, c'est la fête de l'enfant. Alors offrez-lui un cadeau qui le célèbre vraiment : un conte dont il est le héros, avec son prénom sur la couverture, son visage dans chaque illustration et son rêve tissé dans l'intrigue. Il ne reçoit pas un livre, il reçoit son livre.",
+          "Un anniversaire, c'est la fête de l'enfant. Alors offrez-lui un cadeau qui le célèbre vraiment : un conte dont il est le héros, avec son prénom sur la couverture, son visage dans chaque illustration et les chapitres que vous choisissez. Il ne reçoit pas un livre, il reçoit son livre.",
           "Format carré de 20×20 cm, 30 pages, douze doubles pages illustrées et une dédicace que vous écrivez pour l'occasion. Imprimé sur papier couché satiné 170 g, c'est un souvenir d'anniversaire qu'il relira longtemps après avoir soufflé ses bougies."
         ],
         "benefitsHeading": "Le cadeau qui le rend héros",
@@ -203,7 +203,7 @@
       },
       "end-of-school": {
         "metaTitle": "Cadeau de fin d'année scolaire personnalisé | Meapica",
-        "metaDescription": "Récompensez l'année avec un conte personnalisé où votre enfant est le héros. Un livre à lire tout l'été, loin des écrans. À voir avant de payer.",
+        "metaDescription": "Récompensez l'année avec un conte personnalisé où votre enfant est le héros. Un livre à lire tout l'été, loin des écrans. Aperçu gratuit avant de payer.",
         "h1": "Un conte personnalisé pour célébrer la fin de l'année scolaire",
         "heroIntro": "L'école est finie. Offrez à votre enfant un livre dont il est le héros, rien qu'à lui, à lire tout l'été pour récompenser le chemin parcouru.",
         "bodyHeading": "Récompenser une année et ouvrir l'été en lecture",
@@ -230,7 +230,7 @@
       },
       "name-day": {
         "metaTitle": "Cadeau de fête du prénom personnalisé | Meapica",
-        "metaDescription": "Pour la fête du saint, un conte personnalisé où votre enfant est le héros. Son prénom célébré sur chaque page, en édition unique. À voir avant de payer.",
+        "metaDescription": "Pour la fête du saint, un conte personnalisé où votre enfant est le héros. Son prénom célébré sur chaque page, en édition unique. Aperçu gratuit avant de payer.",
         "h1": "Un conte personnalisé pour célébrer la fête du prénom",
         "heroIntro": "Le jour de sa fête, faites de son prénom le cœur d'une histoire. Un conte unique où votre enfant tient le premier rôle, du début à la fin.",
         "bodyHeading": "Quand le prénom de l'enfant devient une histoire",
@@ -257,19 +257,19 @@
       },
       "graduation": {
         "metaTitle": "Cadeau de remise de diplômes personnalisé | Meapica",
-        "metaDescription": "Un conte personnalisé pour marquer une étape. Votre enfant en héros d'une histoire de fierté, idéal de 8 à 12 ans. À voir avant de payer.",
+        "metaDescription": "Un conte personnalisé pour marquer une étape. Votre enfant en héros d'une histoire de fierté, idéal de 8 à 12 ans. Aperçu gratuit avant de payer.",
         "h1": "Un conte personnalisé pour une remise de diplômes",
         "heroIntro": "Une étape se franchit, une fierté se célèbre. Offrez un conte unique où votre enfant est le héros d'une histoire qui lui ressemble et qu'il gardera.",
         "bodyHeading": "Marquer une étape, transmettre des valeurs",
         "bodyParagraphs": [
-          "Une remise de diplômes marque un passage. À cet âge, entre huit et douze ans, l'enfant aime se reconnaître dans des récits où il joue le premier rôle. Notre conte le place au centre d'une aventure construite autour de son prénom, de son apparence et même de ses rêves d'avenir, glissés dans l'histoire et dans les illustrations. Une façon belle et personnelle de dire bravo.",
+          "Une remise de diplômes marque un passage. À cet âge, entre huit et douze ans, l'enfant aime se reconnaître dans des récits où il joue le premier rôle. Notre conte le place au centre d'une aventure construite autour de son prénom et de son apparence, dans l'histoire comme dans les illustrations, avec les trois chapitres que vous choisissez. Une façon belle et personnelle de dire bravo.",
           "Au-delà de la fierté du jour, c'est un objet qui reste. {pages} pages, {scenes} scènes illustrées, une dédicace que vous signez, le tout sur papier couché satiné de {paper} g. Un livre qui célèbre le chemin accompli et porte, en filigrane, les valeurs que l'on souhaite transmettre. Le genre de cadeau qui se relit, des années plus tard, avec émotion."
         ],
         "benefitsHeading": "Pourquoi ce conte marque l'étape",
         "benefits": [
           "Pensé pour les enfants de 8 à 12 ans",
           "Votre enfant, héros d'une histoire de fierté",
-          "Ses rêves d'avenir glissés dans le récit",
+          "Les trois chapitres, choisis par vous",
           "Un souvenir relu des années plus tard",
           "Papier couché satiné et couverture rigide en option"
         ],
@@ -342,7 +342,7 @@
         "bodyHeading": "Quand lire devient une aventure personnelle",
         "bodyParagraphs": [
           "Entre 5 et 7 ans, l'enfant commence à déchiffrer les mots et à lire seul. Reconnaître son prénom au fil des pages décuple sa motivation : il n'apprend plus à lire une histoire abstraite, il suit sa propre aventure. C'est un puissant moteur de confiance pour ces premières lectures parfois intimidantes.",
-          "Le récit met en scène ses traits, ses couleurs et son rêve, dans douze doubles pages richement illustrées. Format 20×20 cm, 30 pages, papier couché satiné 170 g et couverture pelliculée mate : un livre solide pour les lectures répétées, et une dédicace qui rend l'objet vraiment unique."
+          "Le récit met en scène ses traits et sa couleur préférée, dans douze doubles pages richement illustrées. Format 20×20 cm, 30 pages, papier couché satiné 170 g et couverture pelliculée mate : un livre solide pour les lectures répétées, et une dédicace qui rend l'objet vraiment unique."
         ],
         "benefitsHeading": "Pensé pour les jeunes lecteurs",
         "benefits": [
@@ -366,7 +366,7 @@
         "heroIntro": "Les lecteurs confirmés veulent des aventures à leur mesure. Une histoire plus riche, plus profonde, dont ils sont toujours le héros.",
         "bodyHeading": "Des aventures à la hauteur des lecteurs confirmés",
         "bodyParagraphs": [
-          "Entre 8 et 12 ans, l'enfant lit avec aisance et cherche des histoires plus consistantes. Le conte personnalisé lui offre une aventure plus développée, traversée de valeurs comme le courage, l'amitié ou la curiosité, dans laquelle il se reconnaît : son prénom, son apparence et son rêve nourrissent un récit qui le valorise vraiment.",
+          "Entre 8 et 12 ans, l'enfant lit avec aisance et cherche des histoires plus consistantes. Le conte personnalisé lui offre une aventure plus développée, traversée de valeurs comme le courage, l'amitié ou la curiosité, dans laquelle il se reconnaît : son prénom, son apparence et les chapitres que vous choisissez nourrissent un récit qui le valorise vraiment.",
           "Cette tranche d'âge apprécie d'autant plus la qualité de l'objet : format carré 20×20 cm, 30 pages, douze doubles pages illustrées, papier couché satiné 170 g et couverture pelliculée mate. Un livre dont on est fier, avec une dédicace qui en fait un repère à garder bien après l'enfance."
         ],
         "benefitsHeading": "Conçu pour les grands lecteurs",
@@ -388,13 +388,13 @@
     "themes": {
       "dinosaurs": {
         "metaTitle": "Conte personnalisé dinosaures : enfant héros | Meapica",
-        "metaDescription": "Un conte personnalisé sur les dinosaures où votre enfant remonte le temps. Courage et curiosité au cœur d'une aventure à son image. À voir avant de payer.",
+        "metaDescription": "Un conte personnalisé sur les dinosaures où votre enfant remonte le temps. Courage et curiosité au cœur d'une aventure à son image. Aperçu gratuit avant de payer.",
         "h1": "Un conte personnalisé sur les dinosaures",
         "heroIntro": "Direction l'ère des dinosaures, des millions d'années en arrière. Et cette fois, l'explorateur intrépide, c'est votre enfant.",
         "bodyHeading": "Un voyage dans le temps à l'ère des géants",
         "bodyParagraphs": [
           "Quel enfant n'a jamais rêvé de marcher parmi les dinosaures ? Dans ce conte, votre enfant remonte le temps et arpente un monde de fougères géantes et de créatures fabuleuses. À travers l'aventure, il apprend le courage face à l'inconnu et la curiosité qui pousse à comprendre ce qui l'entoure.",
-          "Son prénom, ses cheveux, ses yeux et son rêve apparaissent dans le récit comme dans les illustrations : il est le véritable héros de l'expédition. Douze doubles pages illustrées, format 20×20 cm, papier couché satiné 170 g et couverture pelliculée mate, avec votre dédicace en ouverture du voyage."
+          "Son prénom, ses cheveux et ses yeux apparaissent dans le récit comme dans les illustrations : il est le véritable héros de l'expédition. Douze doubles pages illustrées, format 20×20 cm, papier couché satiné 170 g et couverture pelliculée mate, avec votre dédicace en ouverture du voyage."
         ],
         "benefitsHeading": "Au cœur de l'aventure préhistorique",
         "benefits": [
@@ -419,7 +419,7 @@
         "bodyHeading": "Un voyage vers les étoiles et les planètes inconnues",
         "bodyParagraphs": [
           "L'univers fascine les enfants par son immensité et ses mystères. Dans ce conte, votre enfant quitte la Terre pour explorer des planètes inconnues, croiser des constellations et percer les secrets du cosmos. Une aventure qui éveille l'émerveillement et donne envie de toujours regarder plus loin, vers l'inconnu.",
-          "Le héros de cette odyssée porte son prénom, son visage et son rêve, présents dans le récit comme dans chaque illustration. Douze doubles pages spectaculaires, format carré 20×20 cm, papier couché satiné 170 g et couverture pelliculée mate, ouvertes par la dédicace que vous écrivez avant le grand départ."
+          "Le héros de cette odyssée porte son prénom et son visage, présents dans le récit comme dans chaque illustration. Douze doubles pages spectaculaires, format carré 20×20 cm, papier couché satiné 170 g et couverture pelliculée mate, ouvertes par la dédicace que vous écrivez avant le grand départ."
         ],
         "benefitsHeading": "Cap sur les étoiles",
         "benefits": [
@@ -444,7 +444,7 @@
         "bodyHeading": "Une chasse au trésor sur les sept mers",
         "bodyParagraphs": [
           "Une carte mystérieuse, un navire prêt à appareiller et l'horizon des sept mers : ce conte embarque votre enfant dans une chasse au trésor pleine de rebondissements. Entre îles secrètes et tempêtes à franchir, il apprend l'audace, le sens de l'équipage et la persévérance qu'exige toute grande quête.",
-          "Le capitaine de cette aventure, c'est lui : son prénom, son apparence et son rêve s'invitent dans le texte comme dans les illustrations. Douze doubles pages illustrées, format 20×20 cm, papier couché satiné 170 g et couverture pelliculée mate, ouvertes par votre dédicace, juste avant de lever l'ancre."
+          "Le capitaine de cette aventure, c'est lui : son prénom et son apparence s'invitent dans le texte comme dans les illustrations. Douze doubles pages illustrées, format 20×20 cm, papier couché satiné 170 g et couverture pelliculée mate, ouvertes par votre dédicace, juste avant de lever l'ancre."
         ],
         "benefitsHeading": "À l'abordage de l'aventure",
         "benefits": [
@@ -469,7 +469,7 @@
         "bodyHeading": "Des super-pouvoirs cachés pour sauver la ville",
         "bodyParagraphs": [
           "Chaque enfant rêve un jour de devenir un héros. Dans ce conte, votre enfant découvre des super-pouvoirs insoupçonnés et doit s'en servir pour protéger sa ville. Au fil de l'aventure, il apprend que la véritable force réside dans le courage, l'entraide et le choix de faire ce qui est juste.",
-          "Le super-héros de l'histoire, c'est vraiment lui : son prénom, ses cheveux, ses yeux et son rêve apparaissent dans le récit comme dans les illustrations. Douze doubles pages dynamiques, format carré 20×20 cm, papier couché satiné 170 g et couverture pelliculée mate, précédées de la dédicace que vous écrivez."
+          "Le super-héros de l'histoire, c'est vraiment lui : son prénom, ses cheveux et ses yeux apparaissent dans le récit comme dans les illustrations. Douze doubles pages dynamiques, format carré 20×20 cm, papier couché satiné 170 g et couverture pelliculée mate, précédées de la dédicace que vous écrivez."
         ],
         "benefitsHeading": "Un héros à son image",
         "benefits": [
@@ -494,7 +494,7 @@
         "bodyHeading": "Des secrets parmi les arbres anciens",
         "bodyParagraphs": [
           "La forêt magique est un monde de mystères : arbres centenaires, clairières baignées de lumière et créatures fantastiques tapies dans l'ombre. Dans ce conte, votre enfant s'y aventure et découvre des secrets bien gardés. Une histoire douce et merveilleuse qui éveille l'imaginaire et le respect du vivant.",
-          "L'explorateur de cette forêt enchantée porte son prénom, son visage et son rêve, présents dans le texte comme dans les illustrations. Douze doubles pages aux couleurs profondes, format 20×20 cm, papier couché satiné 170 g et couverture pelliculée mate, ouvertes par la dédicace que vous lui écrivez."
+          "L'explorateur de cette forêt enchantée porte son prénom et son visage, présents dans le texte comme dans les illustrations. Douze doubles pages aux couleurs profondes, format 20×20 cm, papier couché satiné 170 g et couverture pelliculée mate, ouvertes par la dédicace que vous lui écrivez."
         ],
         "benefitsHeading": "Au cœur de la forêt enchantée",
         "benefits": [
@@ -519,7 +519,7 @@
         "bodyHeading": "La savane africaine parmi lions et éléphants",
         "bodyParagraphs": [
           "La savane africaine déploie ses paysages immenses, ses couchers de soleil dorés et ses animaux fascinants. Dans ce conte, votre enfant part en safari à la rencontre des lions, des éléphants et des girafes. Une aventure qui éveille l'émerveillement devant la nature et l'envie de protéger la vie sauvage.",
-          "L'explorateur de cette expédition, c'est lui : son prénom, ses traits et son rêve apparaissent dans le récit comme dans les illustrations. Douze doubles pages aux couleurs chaudes, format carré 20×20 cm, papier couché satiné 170 g et couverture pelliculée mate, précédées de la dédicace que vous écrivez avant le départ."
+          "L'explorateur de cette expédition, c'est lui : son prénom et ses traits apparaissent dans le récit comme dans les illustrations. Douze doubles pages aux couleurs chaudes, format carré 20×20 cm, papier couché satiné 170 g et couverture pelliculée mate, précédées de la dédicace que vous écrivez avant le départ."
         ],
         "benefitsHeading": "Au cœur de la savane",
         "benefits": [
@@ -628,7 +628,7 @@
   },
   "metadata": {
     "title": "Livre personnalisé enfant avec son prénom | Meapica",
-    "description": "Son prénom sur la couverture, son visage peint à l'aquarelle et l'aventure que vous choisissez. Vous voyez son livre avant de payer. Livraison offerte.",
+    "description": "Son prénom sur la couverture, son visage peint à l'aquarelle et l'aventure que vous choisissez. Aperçu gratuit avant de payer. Livraison offerte.",
     "keywords": "livres personnalisés enfants, contes personnalisés, cadeau original enfants, livre avec prénom, livre illustré enfants, livre imprimé personnalisé",
     "pages": {
       "create": "Créez son livre",
@@ -668,7 +668,7 @@
     "ctaWithName": "Créer le livre {deName}",
     "priceFrom": "À partir de {price}",
     "freeShipping": "Livraison offerte",
-    "trustPreview": "Vous voyez son livre avant de payer",
+    "trustPreview": "Vous voyez les premières pages avant de payer",
     "trustFormats": "Couverture rigide ou souple, PDF inclus",
     "sampleCta": "Feuilleter un exemple",
     "coverCaption": "Son prénom, comme au premier regard · 20 × 20 cm",
@@ -677,7 +677,7 @@
   "howItWorks": {
     "eyebrow": "Comment ça marche",
     "title": "De son prénom à son livre, en quelques minutes",
-    "subtitle": "Depuis le canapé, sur votre téléphone. Et vous voyez son livre avant de payer.",
+    "subtitle": "Depuis le canapé, sur votre téléphone. Et vous voyez les premières pages avant de payer.",
     "stepsLabel": "Étapes pour créer son livre",
     "stepNumber": "Étape {n} :",
     "steps": {
@@ -1160,7 +1160,11 @@
     "cover": {
       "titlePrefix": "L'aventure de",
       "titlePrefixElided": "L'aventure d'",
-      "namePlaceholder": "son prénom"
+      "titlePrefixMasc": "L'aventure de",
+      "titlePrefixFem": "L'aventure de",
+      "titlePrefixVowel": "L'aventure d'",
+      "titleSuffix": "et son aventure",
+      "titleEmpty": "Son aventure"
     },
     "name": {
       "title": "Quel est son prénom ?",
@@ -1321,7 +1325,7 @@
       "digitalDelivery": "Téléchargeable dès que nous avons fini de l'illustrer",
       "ctaNotePhysical": "TVA et livraison incluses",
       "ctaNoteDigital": "TVA incluse",
-      "trustPreview": "Vous avez vu le livre avant de payer",
+      "trustPreview": "Vous avez vu la couverture et les premières scènes",
       "trustPayment": "Paiement sécurisé avec Stripe",
       "trustMadeIn": "Fait à Barcelone, imprimé en Europe",
       "trustReprint": "Arrivé abîmé ou avec un défaut d'impression ? Nous le remplaçons sans frais",

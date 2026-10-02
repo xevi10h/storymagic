@@ -174,7 +174,7 @@ function TeaserPage({ page, templateId, gender, favoriteColor, onOrder }: { page
               ))}
             </ol>
             <p className="mt-[4%] font-display text-[clamp(0.7rem,3.4cqi,0.95rem)] italic text-create-text-sub">
-              {tp("teaserComingMore", { name: page.characterName, deName: deName(page.characterName, locale) })}
+              {tp("teaserComingMore", { name: page.characterName, deName: deName(page.characterName, locale, gender) })}
             </p>
           </div>
         </div>
@@ -183,7 +183,7 @@ function TeaserPage({ page, templateId, gender, favoriteColor, onOrder }: { page
 
     case "teaser_order": {
       const colors = getBookColors(templateId, gender, favoriteColor);
-      const names = { name: page.characterName, deName: deName(page.characterName, locale) };
+      const names = { name: page.characterName, deName: deName(page.characterName, locale, gender) };
       return (
         <div className="absolute inset-0 flex flex-col items-center overflow-hidden bg-cream px-[7%] pt-[3%] pb-[7%] text-center">
           <div className="w-[82%]">
