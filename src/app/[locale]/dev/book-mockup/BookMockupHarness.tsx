@@ -19,26 +19,34 @@ export function BookMockupHarness(props: {
   noCover: boolean;
   longTitle: boolean;
   pair: boolean;
+  coverOverride?: string;
+  titleOverride?: string;
+  nameOverride?: string;
+  spineOverride?: string;
+  panoramaOverride?: string;
+  showScale?: boolean;
 }) {
   const [format, setFormat] = useState(props.initialFormat);
   const [variant, setVariant] = useState(props.initialVariant);
   const [pose, setPose] = useState(props.initialPose);
-  const title = props.longTitle
+  const title = props.titleOverride ?? (props.longTitle
     ? "La increíble aventura de Maximiliano entre las estrellas del sur"
-    : "Teo y el Viaje a las Estrellas";
-  const name = props.longTitle ? "Maximiliano" : "Teo";
+    : "Teo y el Viaje a las Estrellas");
+  const name = props.nameOverride ?? (props.longTitle ? "Maximiliano" : "Teo");
 
   const mockup = (
     <BookMockup
-      coverUrl={props.noCover ? null : COVER}
+      coverUrl={props.noCover ? null : props.coverOverride ?? COVER}
       title={title}
       childName={name}
       subtitle="Una historia personalizada para"
       format={format}
       variant={variant}
       pose={pose}
-      spread={props.pair ? PAIR : PANORAMA}
-      spineColor="#1a1a4e"
+      spread={props.panoramaOverride ? { panorama: props.panoramaOverride } : props.pair ? PAIR : PANORAMA}
+      spineColor={props.spineOverride ?? "#1a1a4e"}
+      showScale={props.showScale ?? true}
+      interactive={!props.solo}
       alt={`Libro ${format === "pdf" ? "digital" : format === "hardcover" ? "de tapa dura" : "de tapa blanda"} de 20 × 20 cm: ${title}`}
       priority
     />

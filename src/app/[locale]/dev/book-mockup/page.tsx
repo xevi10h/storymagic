@@ -5,6 +5,8 @@ import { BookMockupHarness } from "./BookMockupHarness";
  * DEV-ONLY visual harness for src/components/book-mockup (404 in production builds).
  * /es/dev/book-mockup                     → interactive playground
  * /es/dev/book-mockup?format=softcover&variant=open&pose=pages&solo=1 → one clean instance (screenshots)
+ * Optional overrides for product shots (scripts/build-merchant-feed-images.mts):
+ * &cover=<url>&title=<text>&name=<text>&spine=<hex>&panorama=<url>&scale=0 (no dimension lines)
  */
 export default async function BookMockupDevPage({
   searchParams,
@@ -22,6 +24,12 @@ export default async function BookMockupDevPage({
       noCover={q.nocover === "1"}
       longTitle={q.long === "1"}
       pair={q.spread === "pair"}
+      coverOverride={q.cover}
+      titleOverride={q.title}
+      nameOverride={q.name}
+      spineOverride={q.spine}
+      panoramaOverride={q.panorama}
+      showScale={q.scale !== "0"}
     />
   );
 }
