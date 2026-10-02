@@ -310,6 +310,13 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   `DigitalSourceType = trainedAlgorithmicMedia` XMP tag Google requires on AI-generated images. Rebuild (dev server on 3013):
   `npx tsx --tsconfig tsconfig.json scripts/build-merchant-feed-images.mts` (uses `/es/dev/book-mockup` with `cover/title/name/spine/panorama/scale` params).
 
+**Status 2026-10-02: LIVE.** Account `5865149718` "Meapica", domain claimed, free listings ENABLED (ES). Data source
+`10756117518` (daily fetch 06:00 Madrid), return policy `9351866615` (NO_RETURNS), customer service hola@meapica.shop.
+API access: service account `cana-agent@casmar-analytics.iam.gserviceaccount.com` is Admin in Merchant Center, Merchant API
+enabled in GCP `casmar-analytics` and registered (`developerRegistration:registerGcp`); token with scope
+`https://www.googleapis.com/auth/content` WITHOUT `sub` (no DWD). Item-level `postal_code` is rejected for ES
+(`region_not_allowed`), so printed items ship country-wide in the feed; Canarias/Ceuta/Melilla are blocked at checkout.
+
 ### Merchant Center setup — OWNER (merchants.google.com, signed in as admin@casmar.tech)
 1. Create the account: business name **Meapica**, country **Spain**, time zone Europe/Madrid, website `https://meapica.shop`;
    "Where do customers buy" = on your website.
