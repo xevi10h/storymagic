@@ -2,6 +2,8 @@
 // strictly necessary (Meta/TikTok pixels, Google Analytics, UTM attribution) runs before "Aceptar".
 // Shared by client and server — no server-only imports here.
 
+import { POSTHOG_KEY, capturePosthog } from "./posthog";
+
 export const CONSENT_COOKIE = "meapica_consent";
 export const UTM_COOKIE = "meapica_utm";
 export const CONSENT_OPEN_EVENT = "meapica:consent-open";
@@ -15,8 +17,8 @@ const MAX_AGE_S = 60 * 60 * 24 * 365;
 export const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID ?? "";
 export const TIKTOK_PIXEL_ID = process.env.NEXT_PUBLIC_TIKTOK_PIXEL_ID ?? "";
 export const GA4_ID = process.env.NEXT_PUBLIC_GA4_ID ?? "";
-/** A pixel / GA4 id configured = non-essential tracking exists = the banner is needed at all. */
-export const ADS_TRACKING_ENABLED = META_PIXEL_ID !== "" || TIKTOK_PIXEL_ID !== "" || GA4_ID !== "";
+/** A pixel / GA4 / PostHog id configured = non-essential tracking exists = the banner is needed at all. */
+export const ADS_TRACKING_ENABLED = META_PIXEL_ID !== "" || TIKTOK_PIXEL_ID !== "" || GA4_ID !== "" || POSTHOG_KEY !== "";
 
 /** GA4 cookie names: `_ga` (client id) and `_ga_<stream suffix>` (session). */
 export const GA_SESSION_COOKIE = GA4_ID ? `_ga_${GA4_ID.replace(/^G-/, "")}` : "";
@@ -113,11 +115,12 @@ function toTikTokParams(params: Record<string, unknown> = {}): Record<string, un
 }
 
 /**
- * Browser event for the Meta and TikTok pixels and GA4. No-op without consent (the
+ * Browser event for the Meta and TikTok pixels, GA4 and PostHog. No-op without consent (the
  * pixels aren't loaded). `eventId` must match the server event for deduplication.
  */
 export function trackEvent(name: string, params?: Record<string, unknown>, eventId?: string) {
   if (!ADS_TRACKING_ENABLED || getConsent() !== "granted") return;
+  if (POSTHOG_KEY) capturePosthog(name, params);
   if (META_PIXEL_ID) {
     whenLoaded("fbq", (fbq: Fbq) => fbq(META_STANDARD.has(name) ? "track" : "trackCustom", name, params ?? {}, eventId ? { eventID: eventId } : undefined));
   }

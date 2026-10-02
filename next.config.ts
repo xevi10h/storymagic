@@ -21,6 +21,17 @@ const LEGACY_SLUG_REDIRECTS: Array<[from: string, to: string]> = [
 ];
 
 const nextConfig: NextConfig = {
+  // PostHog EU through our own domain (ad blockers drop *.posthog.com). Keep in sync
+  // with api_host "/ingest" in src/lib/tracking/posthog.ts and the middleware matcher.
+  async rewrites() {
+    return [
+      { source: "/ingest/static/:path*", destination: "https://eu-assets.i.posthog.com/static/:path*" },
+      { source: "/ingest/array/:path*", destination: "https://eu-assets.i.posthog.com/array/:path*" },
+      { source: "/ingest/:path*", destination: "https://eu.i.posthog.com/:path*" },
+    ];
+  },
+  // PostHog API paths end in "/": no trailing-slash redirect on them.
+  skipTrailingSlashRedirect: true,
   async redirects() {
     return LEGACY_SLUG_REDIRECTS.flatMap(([from, to]) => [
       { source: `/${LOCALE_PARAM}${from}`, destination: `/:locale${to}`, permanent: true },

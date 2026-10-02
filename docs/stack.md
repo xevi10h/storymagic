@@ -262,6 +262,17 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   dedup with the browser purchase via `transaction_id = purchase_<checkout session id>`. Check: `npx tsx scripts/check-ga4-mp.mts`.
 - **Env (Vercel production):** `NEXT_PUBLIC_GA4_ID` (build-time; unset = GA4 off), `GA4_API_SECRET` (MP secret "stripe-webhook",
   copy at `~/.config/meapica/ga4_api_secret`).
+- **PostHog (2026-10-02):** EU cloud, project `291845` "Meapica" (Europe/Madrid), https://eu.posthog.com/project/291845. Product
+  analytics + session replay, loaded only after the same cookie consent (`src/lib/tracking/posthog.ts`, started/stopped by
+  `Tracking.tsx`). Ingestion through our own proxy `/ingest/*` → `eu.i.posthog.com` / `eu-assets.i.posthog.com` (rewrites in
+  `next.config.ts`, `/ingest` excluded from the middleware matcher; `skipTrailingSlashRedirect` is on, so the middleware does
+  the `/x/` → `/x` 308 itself). Events: autocapture, `$pageview` on history change, `create_step` (step 1-3 of `/create`) and
+  every `trackEvent()` name (ViewContent, AddToCart, InitiateCheckout, Purchase, Lead, ToolDownload). Privacy: on
+  `/create|dashboard|profile|checkout|preview|auth` replay masks all text, text attributes and inputs and autocapture drops
+  element text; signed/blob/data images are blocked; `/preview/<token>` sends nothing. Withdrawal: opt-out, persistence off,
+  every `ph_*` cookie/storage key deleted. Headless browsers are dropped as bots (test with real Chrome). Project settings:
+  replay on, console logs off, min duration 2 s. Env: `NEXT_PUBLIC_POSTHOG_KEY` (phc_…, build-time; unset = PostHog off).
+  Personal API key (phx_, owner's) for the PostHog API is not stored in the repo.
 - **cana:** project key `meapica` in `~/.config/casmar-analytics/sites.json` (`cana gsc …` / `cana ga4 …` from this repo).
 - **IndexNow:** key file `public/2ecdea1c8139eed8afa1e608880f24f7.txt`; after a deploy run `node scripts/indexnow-ping.mjs`
   (pings api.indexnow.org with every sitemap URL; `--dry-run` to count). Bing Webmaster Tools import from GSC: owner, pending.

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useSyncExternalStore } from "react";
 import Script from "next/script";
+import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { buttonClass } from "@/components/ui/Button";
@@ -17,6 +18,7 @@ import {
   setConsent,
   type Consent,
 } from "@/lib/tracking/consent";
+import { POSTHOG_KEY, startPosthog, stopPosthog, syncPosthogPath } from "@/lib/tracking/posthog";
 
 type Fbq = (...args: unknown[]) => void;
 type TtqConsent = { grantConsent?: () => void; revokeConsent?: () => void };
@@ -46,7 +48,7 @@ gtag('consent','default',${JSON.stringify(ga4Consent("denied"))});gtag('consent'
 gtag('js',new Date());gtag('config',${JSON.stringify(GA4_ID)});`;
 
 /**
- * Cookie banner + Meta and TikTok pixels + GA4. Renders nothing while no pixel id is
+ * Cookie banner + Meta and TikTok pixels + GA4 + PostHog. Renders nothing while no pixel id is
  * set (no non-essential cookies exist then). Consent is read on the client:
  * marketing pages are ISR, so the server can't know it.
  */
@@ -62,6 +64,7 @@ export default function Tracking() {
   const t = useTranslations("cookieConsent");
   const consent = useSyncExternalStore(subscribe, readConsent, serverConsent);
   const [reopened, setReopened] = useState(false);
+  const pathname = usePathname();
   const open = ADS_TRACKING_ENABLED && (consent === "unset" || reopened);
 
   useEffect(() => {
@@ -77,7 +80,15 @@ export default function Tracking() {
     if (w.fbq) w.fbq("consent", consent === "granted" ? "grant" : "revoke");
     if (w.gtag) w.gtag("consent", "update", ga4Consent(consent === "granted" ? "granted" : "denied"));
     if (w.ttq) (consent === "granted" ? w.ttq.grantConsent : w.ttq.revokeConsent)?.();
+    if (POSTHOG_KEY) {
+      if (consent === "granted") startPosthog();
+      else if (consent === "denied") stopPosthog();
+    }
   }, [consent]);
+
+  useEffect(() => {
+    if (POSTHOG_KEY && consent === "granted") syncPosthogPath(pathname);
+  }, [pathname, consent]);
 
   if (!ADS_TRACKING_ENABLED) return null;
 

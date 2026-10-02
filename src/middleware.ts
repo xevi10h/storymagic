@@ -29,6 +29,13 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(target, 308);
   }
 
+  // next.config's skipTrailingSlashRedirect (needed by the PostHog /ingest proxy) turns
+  // off Next's own "/x/" → "/x" redirect: keep page URLs canonical here instead.
+  const slashPath = request.nextUrl.pathname;
+  if (slashPath.length > 1 && slashPath.endsWith("/")) {
+    return NextResponse.redirect(new URL(`${slashPath.replace(/\/+$/, "")}${request.nextUrl.search}`, request.url), 308);
+  }
+
   // Operator panel: English, unlocalized, outside the waitlist gate. Access is
   // decided server-side (ADMIN_EMAILS → otherwise 404); never indexed or cached.
   if (request.nextUrl.pathname === "/admin" || request.nextUrl.pathname.startsWith("/admin/")) {
@@ -184,6 +191,6 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     // Match all request paths except API routes, static files, and images
-    "/((?!api|_next/static|_next/image|favicon.ico|manifest\\.json|robots\\.txt|sitemap\\.xml|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|ico|mp3|wav|ogg|mp4|webm|woff2?|ttf|otf|pdf|txt|xml|json|jsonl|js|css|map)$).*)",
+    "/((?!api|ingest|_next/static|_next/image|favicon.ico|manifest\\.json|robots\\.txt|sitemap\\.xml|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|ico|mp3|wav|ogg|mp4|webm|woff2?|ttf|otf|pdf|txt|xml|json|jsonl|js|css|map)$).*)",
   ],
 };
