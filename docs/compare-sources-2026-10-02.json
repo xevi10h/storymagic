@@ -1,0 +1,199 @@
+{
+  "_meta": {
+    "checked_on": "2026-10-02",
+    "method": "Official sites rendered with Playwright (es-ES locale); hidden FAQ answers read from the sites' own JSON/DOM. No third-party sources used for facts.",
+    "notes": "Prices are list prices as shown on 2026-10-02 and change with promotions. Shipping costs for Mumablue and Wonderbly are only shown in the cart/checkout."
+  },
+  "mumablue": {
+    "name": "Mumablue",
+    "homepage": "https://www.mumablue.com/esp/inicio",
+    "facts": {
+      "price_from": {
+        "value": "Story books from 24,99 EUR (Tu peque aprende los números); most single-child stories 28,99-31,90 EUR; family books 34,99 EUR. A colouring book (19,99 EUR) and a calendar (16,90 EUR) are cheaper but are not story books. Hardcover only. VAT treatment not stated next to prices.",
+        "source": "https://www.mumablue.com/esp/inicio",
+        "quote": "Tu peque aprende los números ... 24,99€ | Burbujas - Cómo superar los miedos ... 31,90€ | Juntos ... 34,99€"
+      },
+      "formats": {
+        "value": "Hardcover only, 22x22 cm, 44 pages",
+        "source": "https://www.mumablue.com/esp/preguntas-frecuentes",
+        "quote": "El cuento mide 22x22 cm ... Son 44 páginas con 22 ilustraciones a doble cara ... cubiertas con tapa dura de larga duración."
+      },
+      "languages": {
+        "value": "Spanish, Catalan, Galician, Basque, English (US and UK), French, German, Italian, Portuguese, Dutch. Catalan: yes. (A product page says 'Disponible en 14 idiomas', while the FAQ lists 11.)",
+        "source": "https://www.mumablue.com/esp/preguntas-frecuentes",
+        "quote": "Nuestros libros están disponibles en los siguientes idiomas: Español, Catalán, Gallego, Euskera, Inglés (EE.UU), Inglés (Reino Unido), Francés, Alemán, Italiano, Portugués y Neerlandés."
+      },
+      "catalan": {
+        "value": "yes",
+        "source": "https://www.mumablue.com/esp/preguntas-frecuentes",
+        "quote": "Español, Catalán, Gallego, Euskera..."
+      },
+      "shipping_to_spain": {
+        "value": "Yes. Spain store; shipping cost not published (shown in the cart once you choose a country); express options for some countries. Minimum delivery time 6 working days. Canary Islands 12-15 working days.",
+        "source": "https://www.mumablue.com/esp/nuestros-cuentos-personalizados/burbujas",
+        "quote": "Tiempo mínimo de entrega: 6 días laborables | FAQ: 'Podrás ver el coste de envío una vez hayas añadido un cuento al carrito.' | cart text: 'Envíos a Canarias 12-15 días hábiles.'"
+      },
+      "preview_before_buying": {
+        "value": "Yes, a preview of the personalised book before adding it to the cart (the page does not say whether it shows every page)",
+        "source": "https://www.mumablue.com/esp/como-funciona",
+        "quote": "Si tras la previsualización está tal y como lo deseas, añádelo al carrito, selecciona el método de envío y completa el pago."
+      },
+      "personalisation_type": {
+        "value": "Avatar built from options (hair, hairstyle, eyes, build, clothes, accessories) + name; optional photo of the child and a dedication printed in the book. The story itself cannot be changed.",
+        "source": "https://www.mumablue.com/esp/como-funciona",
+        "quote": "Escribe su nombre y define su apariencia. ¡Hay más de 300.000 combinaciones posibles! ... Añade una foto del niño o la niña y una dedicatoria"
+      }
+    },
+    "strengths": [
+      {"text": "Catalan, Galician and Basque editions (besides Spanish and 7 other languages)", "source": "https://www.mumablue.com/esp/preguntas-frecuentes"},
+      {"text": "Licensed stories: Disney Frozen, Toy Story (Disney Pixar), FC Barcelona, Miraculous", "source": "https://www.mumablue.com/esp/inicio"},
+      {"text": "Big catalogue with many reviews shown, e.g. Juntos 2394 reviews, Chucheritis 1667, Burbujas 1216 (4.92)", "source": "https://www.mumablue.com/esp/inicio"},
+      {"text": "Family books with up to 2 adults + 3 children; pet book", "source": "https://www.mumablue.com/esp/inicio"},
+      {"text": "Highly detailed avatar: 'más de un millón de combinaciones' on the homepage (the how-it-works page says 'más de 300.000')", "source": "https://www.mumablue.com/esp/inicio"},
+      {"text": "Founded in 2015 (text served in the site's own Spanish text file, about-us section)", "source": "https://www.mumablue.com/assets/i18n/es.json"},
+      {"text": "24-month guarantee covering manufacturing defects", "source": "https://www.mumablue.com/assets/i18n/es.json"}
+    ]
+  },
+  "wonderbly": {
+    "name": "Wonderbly",
+    "homepage": "https://www.wonderbly.com/es",
+    "facts": {
+      "price_from": {
+        "value": "From 29,99 EUR (softcover). Bestseller 'El niño/La niña que perdió su nombre' in Spanish: softcover 29,99 EUR, hardcover 36,99 EUR, premium layflat hardcover 54,99 EUR. VAT treatment unclear: the help centre says the cart shows the total 'antes de impuestos y costes de envío'.",
+        "source": "https://www.wonderbly.com/es/personalized-products/lost-my-name-book",
+        "quote": "€29,99 (shown on page); page data for locale es: softback 29.99, hardback 36.99, layflat 54.99 | Kids list: 'Desde €29,99' | Help: 'También podrás ver el coste total (antes de impuestos y costes de envío) en el carrito de la compra.'"
+      },
+      "formats": {
+        "value": "Softcover, hardcover, premium layflat hardcover ('Tapa dura plana prémium'); A4 (30 x 21 cm) for this title",
+        "source": "https://www.wonderbly.com/es/personalized-products/lost-my-name-book",
+        "quote": "tienen un tamaño A4 (30 x 21 cm) ... Tapa blanda y dura. | 'Tapa dura plana prémium'"
+      },
+      "languages": {
+        "value": "Varies by book. Wide range in French, German, Spanish, Italian, Dutch, Japanese, Korean; bestseller also in Swedish, Danish, Portuguese. The bestseller's language picker shows Español, Inglés, Francés, Italiano, Holandés, Alemán, Portugués (Portugal), Danés, Sueco. Catalan: not offered (not in any list).",
+        "source": "https://www.wonderbly.com/es/help?a=Vuestros-libros-estan-disponibles-en-varios-idiomas---id--hQFUsLC0QSeZdEmIv0TUBw",
+        "quote": "sí ofrecemos una amplia gama de libros en francés, alemán, español, italiano, holandés, japonés y coreano. Nuestro superventas ... se puede comprar incluso en sueco, danés y portugués."
+      },
+      "catalan": {
+        "value": "no (not in the language lists on the site)",
+        "source": "https://www.wonderbly.com/es/personalized-products/lost-my-name-book",
+        "quote": "Español Inglés Francés Italiano Holandés Alemán Portugués (Portugal) Danés Sueco"
+      },
+      "shipping_to_spain": {
+        "value": "Yes. Made and shipped from Europe; printing 2-4 working days, then delivery (express 3-5 days available). Shipping is always charged extra; cost only shown at checkout. The delivery calculator showed an express estimate of 14 October when checked on 2 October 2026.",
+        "source": "https://www.wonderbly.com/es/pages/delivery-info",
+        "quote": "Fecha aproximada con la entrega urgente 14 de octubre | Product page: 'Fabricado en Europa y enviado desde Europa - Impreso y listo para enviar en 2-4 días laborables' | Help: 'optamos por incluir un cargo extra por el envío de todos nuestros pedidos'"
+      },
+      "preview_before_buying": {
+        "value": "Yes, full personalised preview before adding to cart",
+        "source": "https://www.wonderbly.com/es/help?a=Como-puedo-crear-mi-libro---id--vBaWPMS0SrC_caVKrpqGDA",
+        "quote": "¡Asegúrate de leer la vista previa completa y personalizada de tu historia!"
+      },
+      "personalisation_type": {
+        "value": "Name-driven story (each letter becomes a character in the bestseller) + choice of character/avatar from preset options (750 combinations in '¿Dónde estás?', up to 11.000 in newer books) + free dedication. No photo upload mentioned.",
+        "source": "https://www.wonderbly.com/es/help?a=Los-personajes-disponibles-no-se-me-parecen-podeis-anadir-mas-opciones---id--Z7T1X5KoT7eA7PkvoxIGhA",
+        "quote": "nuestra popular serie del universo ¿Dónde estás? ofrece 750 cominaciones posibles para construir tu avatar y algunos libros más recientes tienen hasta 11.000 combinaciones posibles"
+      }
+    },
+    "strengths": [
+      {"text": "Since 2013; more than 8 million books sold", "source": "https://www.wonderbly.com/es"},
+      {"text": "More than 200 books in 12 languages, published in more than 40 countries; part of Penguin Random House", "source": "https://www.wonderbly.com/es/pages/our-story"},
+      {"text": "64 children's books in the Spanish catalogue", "source": "https://www.wonderbly.com/es/personalized-books/kids"},
+      {"text": "Fast production: printed and ready to ship in 2-4 working days; express delivery 3-5 days", "source": "https://www.wonderbly.com/es/help?a=Necesito-que-el-pedido-llegue-antes-se-puede-acelerar-la-entrega---id--7eXS3l1bQ8qAndXo_sJchw"},
+      {"text": "Three formats including a premium layflat hardcover", "source": "https://www.wonderbly.com/es/personalized-products/lost-my-name-book"},
+      {"text": "Printers in the EU, so no customs charges for Spain", "source": "https://www.wonderbly.com/es/help?a=Tendre-que-pagar-impuestos-o-costes-aduaneros---id--QyrQr4BBTbSRdAikTcEW5g"}
+    ]
+  },
+  "hurra_heroes": {
+    "name": "Hurra Héroes (Hooray Heroes)",
+    "homepage": "https://hurraheroes.es/",
+    "facts": {
+      "price_from": {
+        "value": "From 29,99 EUR (struck-through 49,99 EUR) for the 'Mini Héroes' 0-5 range (21x21 cm, pages say hardcover). Classic books such as 'Te quiero, Mamá': softcover 39,99 EUR / hardcover 49,99 EUR. Terms say prices include VAT. Note: the 0-5 product pages showed 'Próximamente' / 'Sorry, this product is not currently available' and the site carries a 'we are renovating' banner.",
+        "source": "https://hurraheroes.es/collections/libros-para-un-nino",
+        "quote": "El príncipe Daniel y el coraje perdido ... €49,99€29,99 | Terms: 'Todos los precios son en euros e incluyen el impuesto sobre el valor agregado legal.' (https://hurraheroes.es/pages/terms-and-conditions) | Shopify product data for te-quiero-mama: Soft Cover 39.99, Hard Cover 49.99"
+      },
+      "formats": {
+        "value": "Softcover or hardcover (classic range A4 landscape: softcover 297x210 mm, hardcover 320x215 mm); 0-5 range 21x21 cm",
+        "source": "https://hurraheroes.es/pages/faq-merchandise",
+        "quote": "Puedes elegir entre tapa dura y tapa blanda ... el libro con tapa blanda tiene un tamaño de 297 x 210 mm ... y el libro con tapa dura un tamaño de 320 x 215 mm"
+      },
+      "languages": {
+        "value": "Spanish on the .es site; also English, German, French, Portuguese, Italian, Swedish, Finnish, Slovenian on request or via other country sites. Catalan: not offered (not listed).",
+        "source": "https://hurraheroes.es/pages/faq-merchandise",
+        "quote": "En este momento también puedes practicar inglés, alemán, francés, portugués, italiano, sueco, finés o esloveno con nuestros libros."
+      },
+      "catalan": {
+        "value": "no (not in the language list)",
+        "source": "https://hurraheroes.es/pages/faq-merchandise",
+        "quote": "inglés, alemán, francés, portugués, italiano, sueco, finés o esloveno"
+      },
+      "shipping_to_spain": {
+        "value": "Yes, mainland Spain only (no Canary Islands, Ceuta or Melilla). Standard 6,99 EUR per order; tracked (from 2 books) 7,99 EUR; 4 delivery options; express up to 6 working days. Ships with DHL and Correos.",
+        "source": "https://hurraheroes.es/pages/shipping-payment-and-return",
+        "quote": "Envío estándar 6,99 € | Envío con seguimiento (a partir de 2 libros) 7,99 € | Home: '¡Si tienes prisa ... pueden entregártelo en 6 días laborables!' | FAQ: 'no nos es posible realizar envíos a las Islas Canarias, Ceuta ni Melilla.'"
+      },
+      "preview_before_buying": {
+        "value": "Yes, the full book can be read while personalising, before adding to cart",
+        "source": "https://hurraheroes.es/pages/faq-book-order",
+        "quote": "¿Puedo ver el libro antes de encargarlo? ¡Por supuesto que sí! Incluso puedes leer el libro en su totalidad y jugar con la personalización y el aspecto de los personajes antes de colocarlo en la cesta de la compra."
+      },
+      "personalisation_type": {
+        "value": "Avatar built from options (skin tone, eye colour and shape, hair and beard, freckles, glasses) + names (max 19 characters) + choose 10 or 15 stories + dedication. No photo upload mentioned.",
+        "source": "https://hurraheroes.es/pages/faq-book-order",
+        "quote": "Diseña la apariencia de tus personajes (tono de piel, color y forma de ojos, cabello y barba, pecas, lentes). • Selecciona a los demás compañeros ... • Elige las 10 o 15 historias que más te gusten."
+      }
+    },
+    "strengths": [
+      {"text": "More than 3 million books sold", "source": "https://hurraheroes.es/"},
+      {"text": "Published, low shipping cost for mainland Spain (6,99 EUR standard)", "source": "https://hurraheroes.es/pages/shipping-payment-and-return"},
+      {"text": "Pick which stories go in the book (10 or 15); books with up to 5 characters (max 3 children)", "source": "https://hurraheroes.es/pages/faq-book-order"},
+      {"text": "Choice of softcover or hardcover on most books", "source": "https://hurraheroes.es/pages/faq-merchandise"},
+      {"text": "Free personalised printable colouring books", "source": "https://hurraheroes.es/"}
+    ]
+  },
+  "micuento": {
+    "name": "MiCuento",
+    "homepage": "https://micuento.com",
+    "status": "OFFLINE on 2026-10-02: micuento.com has no DNS A record (Cloudflare nameservers, no records); help centre ayuda.micuento.com returns Cloudflare Error 1034. The last Wayback Machine capture with HTTP 200 is from 2026-04-23. The facts below come ONLY from that archived official page and are marked as such; they cannot be checked on the live site.",
+    "facts": {
+      "price_from": {
+        "value": "no indicado (live site offline). Archived 2026-04-23: 'desde 33,99 €' on every book listed on the homepage. VAT not stated.",
+        "source": "https://web.archive.org/web/20260423103537/https://micuento.com/",
+        "quote": "El Principito y yo Personaliza desde 33,99 €"
+      },
+      "formats": {
+        "value": "no indicado (live site offline). Archived: hardcover.",
+        "source": "https://web.archive.org/web/20260423103537/https://micuento.com/",
+        "quote": "Preciosos cuentos en tapa dura, ilustrados a todo color"
+      },
+      "languages": {
+        "value": "no indicado (live site offline). The archived country picker listed 'Espanya (Català)' plus Spanish, German, Portuguese, French, Italian, English and other country sites.",
+        "source": "https://web.archive.org/web/20260423103537/https://micuento.com/",
+        "quote": "País: Deutschland, Espanya (Català), España, Latam, ... France, Italia, ... United Kingdom, United States"
+      },
+      "catalan": {
+        "value": "no indicado (live site offline); archived April 2026 site had a Catalan store ('Espanya (Català)')",
+        "source": "https://web.archive.org/web/20260423103537/https://micuento.com/",
+        "quote": "Espanya (Català)"
+      },
+      "shipping_to_spain": {
+        "value": "no indicado (live site offline). Archived: 5-7 working days within Europe; no shipping to the Canary Islands, Ceuta or Melilla; cost not stated.",
+        "source": "https://web.archive.org/web/20260423103537/https://micuento.com/",
+        "quote": "el tiempo de entrega oscila entre los 5 y los 7 días hábiles para destinos dentro de Europa | (No enviamos a Islas Canarias, Ceuta y Melilla)."
+      },
+      "preview_before_buying": {
+        "value": "no indicado",
+        "source": "https://web.archive.org/web/20260423103537/https://micuento.com/",
+        "quote": ""
+      },
+      "personalisation_type": {
+        "value": "no indicado (live site offline). Archived: child's details + dedication + a photo of the child.",
+        "source": "https://web.archive.org/web/20260423103537/https://micuento.com/",
+        "quote": "Personaliza el cuento con los datos, una dedicatoria y una bonita foto del niño/a."
+      }
+    },
+    "strengths": [
+      {"text": "(Archived April 2026) Licensed 'El Principito' titles", "source": "https://web.archive.org/web/20260423103537/https://micuento.com/"}
+    ]
+  }
+}

@@ -80,3 +80,55 @@ export async function getShowcaseStories(
   }
   return rows.map(mapStory).filter((s) => s.coverImage);
 }
+
+export interface ShowcaseLikenessBook extends ShowcaseStory {
+  /** The child's painted portrait (print hero, else the character portrait). */
+  portraitImage: string | null;
+  /** The first scenes, in reading order: what a parent sees in the free preview. */
+  scenes: string[];
+}
+
+/**
+ * Flagged books with their portrait and first scenes (the likeness page shows
+ * "cover + portrait + first scenes", exactly what the free preview shows). Same
+ * filters and public-mirror mapping as /api/showcase/[storyId].
+ */
+export async function getShowcaseLikenessBooks(locale: string, sceneCount: number, limit = 8): Promise<ShowcaseLikenessBook[]> {
+  const supabase = showcaseReadClient();
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const { data, error } = await supabase
+    .from("stories")
+    .select(`${SELECT}, character_portrait_url`)
+    .eq("is_showcase", true)
+    .in("status", SHOWCASE_STATUSES)
+    .eq("locale", locale)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (error || !data) return [];
+  return data
+    .map((row: any) => {
+      const base = mapStory(row);
+      const generated = typeof row.generated_text === "string" ? safeJson(row.generated_text) : row.generated_text;
+      const hero = (generated as { imageAssets?: { finalHero?: { url?: string } } } | null)?.imageAssets?.finalHero?.url ?? null;
+      const scenes = ((row.story_illustrations as any[]) ?? [])
+        .slice()
+        .sort((a, b) => a.scene_number - b.scene_number)
+        .map((ill) => toShowcaseUrl(ill.image_url, supabaseUrl))
+        .filter((url): url is string => Boolean(url))
+        .slice(0, sceneCount);
+      return {
+        ...base,
+        portraitImage: toShowcaseUrl(hero, supabaseUrl) ?? toShowcaseUrl(row.character_portrait_url, supabaseUrl),
+        scenes,
+      };
+    })
+    .filter((b) => b.coverImage && b.portraitImage && b.scenes.length === sceneCount);
+}
+
+function safeJson(value: string): unknown {
+  try {
+    return JSON.parse(value);
+  } catch {
+    return null;
+  }
+}

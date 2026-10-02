@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import HubPage from "@/components/seo-landing/HubPage";
+import { GUIDES, GUIDE_LINK_LABELS, guidesForLocale } from "@/lib/guides";
 
 const BASE_URL = "https://meapica.shop";
 const PATH = "/personalized-books";
@@ -28,5 +29,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function Page({ params }: PageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
-  return <HubPage type="ages" locale={locale} />;
+  const guideLinks = guidesForLocale(locale).map((id) => ({ href: GUIDES[id].path, label: GUIDE_LINK_LABELS[id][locale] }));
+  return <HubPage type="ages" locale={locale} extraLinks={guideLinks} />;
 }

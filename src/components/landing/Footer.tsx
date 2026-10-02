@@ -7,6 +7,7 @@ import { cx } from "@/components/ui";
 import { SEO_HUB_HEADING_KEY, SEO_SLUGS, seoHubPath, seoPath, type SeoPageType } from "@/lib/seo-landing";
 import { CHRISTMAS_DELIVERY_PATH } from "@/lib/shipping";
 import { isToolLocale, toolPath } from "@/lib/tools/registry";
+import { GUIDES, GUIDES_HEADING, GUIDE_LINK_LABELS, guidesForLocale } from "@/lib/guides";
 import { SUPPORT_EMAIL } from "@/lib/pricing";
 import { CookieSettingsButton } from "@/components/tracking/Tracking";
 
@@ -135,6 +136,19 @@ export default function Footer() {
               </ul>
             </div>
           ))}
+          {/* Guides (Catalan, likeness, comparison): only the ones that exist in this locale. */}
+          <div>
+            <h2 className="mb-1 text-xs font-bold uppercase tracking-wide text-white">{GUIDES_HEADING[locale] ?? GUIDES_HEADING.es}</h2>
+            <ul className="flex flex-wrap gap-x-5 text-sm">
+              {guidesForLocale(locale).map((id) => (
+                <li key={id}>
+                  <Link className={linkClass} href={GUIDES[id].path}>
+                    {GUIDE_LINK_LABELS[id][locale]}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
         <div className="mt-10 flex flex-col gap-2 border-t border-white/15 pt-6 text-sm sm:flex-row sm:items-center sm:justify-between">

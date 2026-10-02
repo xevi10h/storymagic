@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { toolsFallbackPath } from "@/lib/tools/registry";
+import { guidesFallbackPath } from "@/lib/guides";
 
 const LOCALE_LABELS: Record<Locale, string> = {
   es: "Español",
@@ -42,7 +43,8 @@ export default function LocaleSwitcher() {
     setOpen(false);
     // Keep the query (e.g. the login screen's ?next= and ?email=) across the switch.
     // The free Reyes printables exist in es + ca only: en/fr go to the Reyes gift page.
-    const fallback = toolsFallbackPath(pathname, newLocale);
+    // Guides missing in the target locale (lib/guides.ts) go to the personalised-books hub.
+    const fallback = toolsFallbackPath(pathname, newLocale) ?? guidesFallbackPath(pathname, newLocale);
     router.replace(fallback ?? `${pathname}${window.location.search}`, { locale: newLocale });
   }
 

@@ -265,3 +265,61 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
 - **cana:** project key `meapica` in `~/.config/casmar-analytics/sites.json` (`cana gsc …` / `cana ga4 …` from this repo).
 - **IndexNow:** key file `public/2ecdea1c8139eed8afa1e608880f24f7.txt`; after a deploy run `node scripts/indexnow-ping.mjs`
   (pings api.indexnow.org with every sitemap URL; `--dry-run` to count). Bing Webmaster Tools import from GSC: owner, pending.
+- **Weekly SEO report (2026-10-02):** `scripts/seo-weekly-report.mjs` emails a short Spanish HTML report to admin@casmar.tech
+  every **Monday 09:00 Europe/Madrid**: GSC clicks/impressions/CTR/position, top 5 queries + pages, sitemap status and per-URL
+  index status (URL Inspection API over every sitemap URL), GA4 users/sessions/organic sessions/key events (purchase,
+  begin_checkout, generate_lead, tool_download), flags (drops >30 %, new queries, non-indexed URLs) and 3 recommended actions.
+  Window: 7 days ending 3 days ago (GSC final data lags) vs the 7 days before. Auth: the cana Service Account + DWD
+  (`~/.config/casmar-analytics/sa-key.json`, project from `sites.json`) for GSC/GA4 and for Gmail (sends as admin@casmar.tech
+  through `gws` with `GOOGLE_WORKSPACE_CLI_TOKEN`, so no gws profile/OAuth dependency). No npm deps.
+  Manual: `node scripts/seo-weekly-report.mjs --dry-run` (prints HTML), `--no-inspect` (skip URL Inspection, faster),
+  `--to <addr>`, `--subject-prefix "[TEST]"`. A full run takes ~2-3 min (URL Inspection).
+  Schedule: launchd agent `~/Library/LaunchAgents/com.casmar.meapica-seo-weekly.plist` (label `com.casmar.meapica-seo-weekly`,
+  absolute node path from nvm v22.22.2: update the plist if node is upgraded), log `~/Library/Logs/meapica-seo-weekly.log`.
+  Runs only on the owner's laptop: a run missed while asleep fires at next wake; if the Mac is powered off at 09:00 that week is skipped.
+  Run now: `launchctl kickstart gui/$(id -u)/com.casmar.meapica-seo-weekly`.
+  Disable: `launchctl bootout gui/$(id -u)/com.casmar.meapica-seo-weekly` (and delete the plist to make it permanent;
+  re-enable with `launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.casmar.meapica-seo-weekly.plist`).
+
+## Product feeds — Google Merchant Center + ChatGPT (2026-10-02)
+
+- **URLs (static, rebuilt each deploy):** `https://meapica.shop/feeds/google-merchant.xml` (RSS 2.0 + `g:` namespace) and
+  `https://meapica.shop/feeds/openai-products.jsonl` (ChatGPT product feed spec, same data). Not in the sitemap, `X-Robots-Tag: noindex`,
+  allowed by robots, outside the locale middleware (matcher skips `.xml` / `.jsonl`).
+- **Code:** `src/lib/merchant-feed.ts` (builders, all facts from pricing / product-facts / shipping), routes in `src/app/feeds/*/route.ts`.
+  Check: `npx tsx --tsconfig tsconfig.json scripts/check-merchant-feed.mts [http://localhost:3034]` (spec fields, prices = PRICING /
+  STRIPE_CATALOG, postcode coverage, images; with a base URL also the served bytes).
+- **Items:** 3, one per format, ids = the home Product JSON-LD skus (`meapica-hardcover` 49.90 EUR, `meapica-softcover` 34.90 EUR,
+  `meapica-digital-pdf` 9.90 EUR, VAT included), all linking to `/es` (shows every price). `identifier_exists=no` (made to order),
+  brand Meapica, `google_product_category` 543543 Print Books / 543542 E-books, age_group kids, is_bundle no. Shipping in the feed:
+  free, ES postcodes 01000-34999, 36000-37999, 39000-50999 (no Canarias/Ceuta/Melilla), handling 2-4 + transit 5-6 business days
+  (= the 7-10 day promise; the split is an estimate). Because the feed sends a shipping price, Merchant Center ignores account
+  shipping settings for these items. Story worlds are not items: `/themes/*` only shows the "desde" price.
+- **Images:** `public/images/feed/*.jpg` 1500 × 1500, the Noa showcase book in the site's own mockup + its cover art, with the IPTC
+  `DigitalSourceType = trainedAlgorithmicMedia` XMP tag Google requires on AI-generated images. Rebuild (dev server on 3013):
+  `npx tsx --tsconfig tsconfig.json scripts/build-merchant-feed-images.mts` (uses `/es/dev/book-mockup` with `cover/title/name/spine/panorama/scale` params).
+
+### Merchant Center setup — OWNER (merchants.google.com, signed in as admin@casmar.tech)
+1. Create the account: business name **Meapica**, country **Spain**, time zone Europe/Madrid, website `https://meapica.shop`;
+   "Where do customers buy" = on your website.
+2. **Business info:** legal name Xavier Huix Trenco, address Carrer Aribau 140, 5º, 08036 Barcelona, customer service email
+   admin@casmar.tech; logo `public/images/icon-512.png`.
+3. **Verify + claim** `meapica.shop` (Business info → Website): choose the **Search Console** method (property
+   `sc-domain:meapica.shop` is already verified under admin@casmar.tech), then **Claim**.
+4. **Shipping** (Settings → Shipping and returns → Shipping services → Add): name "Envío estándar", country Spain, currency EUR,
+   areas = postcodes 01000-34999, 36000-37999, 39000-50999; order cut-off 23:59 Europe/Madrid; handling 2-4 business days, transit
+   5-6 business days, Mon-Fri; rate **free**. (Backup only: the feed already carries the same shipping.)
+5. **Returns** (Settings → Shipping and returns → Return policies → Add, country Spain): **No returns** ("doesn't accept returns",
+   personalised goods, art. 103 c LGDCU); policy URL `https://meapica.shop/es/legal`. Note in the policy text: defects or transit
+   damage reported within 30 days of delivery are reprinted free.
+6. **Tax:** nothing to set (only US/CA have tax settings); prices are submitted VAT-inclusive as Spain requires.
+7. **Feed** (Products → Add products → Add products from a file → **Add a file link**): URL
+   `https://meapica.shop/feeds/google-merchant.xml`, no username/password, frequency **Daily**, 06:00 Europe/Madrid, country Spain,
+   language Spanish, name "meapica-xml". Click "Fetch now" once, then check Products → Needs attention.
+8. **Free listings** (Growth / Marketing → Manage programs, or Settings → Apps & services): enable **Free listings**. Shopping ads
+   only when paid search starts (link Google Ads from the same screen).
+9. Optional: link GA4 property 556936860 (Settings → Linked accounts) for conversion reporting.
+
+### ChatGPT (OpenAI) — OWNER
+Merchant onboarding is by application (chatgpt.com/merchants). When accepted, give them the JSONL URL above (or their SFTP upload);
+`is_eligible_checkout` is false (no Instant Checkout integration).

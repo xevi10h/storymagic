@@ -26,6 +26,8 @@ const BASE_URL = "https://meapica.shop";
 type Props = {
   type: SeoPageType;
   locale: string;
+  /** Extra internal links under the cards (e.g. the guides of lib/guides.ts). */
+  extraLinks?: { href: string; label: string }[];
 };
 
 /** Cover art per card: the theme's own world; per age, the first world of that range not already shown. */
@@ -43,7 +45,7 @@ function cardArt(type: SeoPageType, slugs: readonly string[]): Record<string, st
   return art;
 }
 
-export default async function HubPage({ type, locale }: Props) {
+export default async function HubPage({ type, locale, extraLinks = [] }: Props) {
   const t = await getTranslations({ locale, namespace: "seo" });
   const th = await getTranslations({ locale, namespace: "hero" });
   const tp = await getTranslations({ locale, namespace: "pricing" });
@@ -168,6 +170,29 @@ export default async function HubPage({ type, locale }: Props) {
             ))}
           </ul>
         </section>
+
+        {extraLinks.length > 0 && (
+          <nav aria-label={t(`hubs.${type}.h1`)} className="bg-paper px-4 pt-6 sm:px-6">
+            <ul className="mx-auto flex max-w-[1200px] flex-wrap gap-x-6 gap-y-1 text-sm">
+              {extraLinks.map((l) => (
+                <li key={l.href}>
+                  <Link
+                    href={l.href}
+                    className={cx(
+                      "inline-flex min-h-11 items-center gap-1 rounded-md font-semibold text-ink-soft underline decoration-brand/30 underline-offset-4 transition-colors hover:text-brand-text",
+                      focusRing,
+                    )}
+                  >
+                    {l.label}
+                    <span aria-hidden className="material-symbols-outlined !text-lg">
+                      arrow_forward
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
 
         {sections.length > 0 && (
           <section aria-labelledby="hub-guide-title" className="mt-16 border-y border-line bg-surface px-4 py-16 sm:mt-24 sm:px-6 sm:py-24">
