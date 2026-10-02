@@ -271,7 +271,7 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   `/create|dashboard|profile|checkout|preview|auth` replay masks all text, text attributes and inputs and autocapture drops
   element text; signed/blob/data images are blocked; `/preview/<token>` sends nothing. Withdrawal: opt-out, persistence off,
   every `ph_*` cookie/storage key deleted. Headless browsers are dropped as bots (test with real Chrome). Project settings:
-  replay on, console logs off, min duration 2 s. Env: `NEXT_PUBLIC_POSTHOG_KEY` (phc_…, build-time; unset = PostHog off).
+  replay on, console logs off, network timings off (request URLs carry signed image links), min duration 2 s. Env: `NEXT_PUBLIC_POSTHOG_KEY` (phc_…, build-time; unset = PostHog off).
   Personal API key (phx_, owner's) for the PostHog API is not stored in the repo.
 - **cana:** project key `meapica` in `~/.config/casmar-analytics/sites.json` (`cana gsc …` / `cana ga4 …` from this repo).
 - **IndexNow:** key file `public/2ecdea1c8139eed8afa1e608880f24f7.txt`; after a deploy run `node scripts/indexnow-ping.mjs`

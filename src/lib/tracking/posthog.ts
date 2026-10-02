@@ -46,6 +46,8 @@ export function startPosthog(): void {
       // No identify() calls: anonymous events only, no person profiles.
       person_profiles: "identified_only",
       mask_personal_data_properties: true,
+      // No network timings in replays: request URLs include signed child-image links.
+      capture_performance: { network_timing: false, web_vitals: true },
       before_send: (event) => (event && isNoTrackPath(location.pathname) ? null : event),
       session_recording: {
         maskAllInputs: true,
