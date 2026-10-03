@@ -128,3 +128,14 @@ export function factParams(formatPrice: (cents: number) => string) {
     priceFrom: formatPrice(PRINTED_FROM_CENTS),
   };
 }
+
+/**
+ * Door-to-door promise (7-10 business days) split into handling (Gelato prints the book)
+ * and carrier transit, as Merchant Center asks for both. The split is an estimate; the
+ * sum is the customer promise. Used by the Merchant feed and the Product JSON-LD.
+ */
+export const HANDLING_BUSINESS_DAYS = { min: 2, max: 4 };
+export const TRANSIT_BUSINESS_DAYS = {
+  min: DELIVERY_BUSINESS_DAYS.min - HANDLING_BUSINESS_DAYS.min,
+  max: DELIVERY_BUSINESS_DAYS.max - HANDLING_BUSINESS_DAYS.max,
+};

@@ -20,6 +20,8 @@ import {
   BRAND_NAME,
   DEFECT_CLAIM_DAYS,
   DELIVERY_BUSINESS_DAYS,
+  HANDLING_BUSINESS_DAYS,
+  TRANSIT_BUSINESS_DAYS,
   PDF_DELIVERY_MAX_MINUTES,
   RETURNS_ACCEPTED,
   SHIPPING_COST_CENTS,
@@ -46,17 +48,6 @@ export const FEED_RETURN_POLICY_URL = `${SITE_URL}/es/legal`;
 /** Google product taxonomy (taxonomy-with-ids.en-US.txt). */
 const GOOGLE_CATEGORY = { printed: "543543", digital: "543542" } as const; // Media > Books > Print Books / E-books
 const OPENAI_CATEGORY = { printed: "Media > Books > Print Books", digital: "Media > Books > E-books" } as const;
-
-/**
- * Door-to-door promise (7-10 business days) split into handling (Gelato prints the book)
- * and carrier transit, as Merchant Center asks for both. The split is an estimate; the
- * sum is the customer promise. The owner enters the same values in Merchant Center.
- */
-export const HANDLING_BUSINESS_DAYS = { min: 2, max: 4 };
-export const TRANSIT_BUSINESS_DAYS = {
-  min: DELIVERY_BUSINESS_DAYS.min - HANDLING_BUSINESS_DAYS.min,
-  max: DELIVERY_BUSINESS_DAYS.max - HANDLING_BUSINESS_DAYS.max,
-};
 
 export interface FeedShipping {
   country: "ES";

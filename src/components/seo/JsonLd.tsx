@@ -12,10 +12,12 @@ import {
   CONTACT_EMAIL,
   DEFECT_CLAIM_DAYS,
   DELIVERY_BUSINESS_DAYS,
+  HANDLING_BUSINESS_DAYS,
   SHIPPING_COST_CENTS,
   SHIPPING_POSTCODE_RANGES,
   SITE_URL,
   SOCIAL_PROFILES,
+  TRANSIT_BUSINESS_DAYS,
 } from "@/lib/product-facts";
 import { getShowcaseStories } from "@/lib/showcase";
 
@@ -42,34 +44,39 @@ function returnPolicy(locale: string) {
   };
 }
 
-/** Free shipping to Spain (peninsula + Balearics; postcode ranges exclude Canarias, Ceuta, Melilla). */
-const SHIPPING_DETAILS = {
-  "@type": "OfferShippingDetails",
-  shippingRate: { "@type": "MonetaryAmount", value: SHIPPING_COST_CENTS / 100, currency: "EUR" },
-  shippingDestination: {
-    "@type": "DefinedRegion",
-    addressCountry: "ES",
-    postalCodeRange: SHIPPING_POSTCODE_RANGES.map((r) => ({
-      "@type": "PostalCodeRangeSpecification",
-      postalCodeBegin: r.begin,
-      postalCodeEnd: r.end,
-    })),
-  },
-  deliveryTime: {
-    "@type": "ShippingDeliveryTime",
-    // The customer promise is door to door (print + carrier): no separate handling split is measured.
-    transitTime: {
-      "@type": "QuantitativeValue",
-      minValue: DELIVERY_BUSINESS_DAYS.min,
-      maxValue: DELIVERY_BUSINESS_DAYS.max,
-      unitCode: "DAY",
-    },
-    businessDays: {
-      "@type": "OpeningHoursSpecification",
-      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map((d) => `https://schema.org/${d}`),
-    },
-  },
+const qv = (r: { min: number; max: number }) => ({ "@type": "QuantitativeValue", minValue: r.min, maxValue: r.max, unitCode: "DAY" });
+const BUSINESS_DAYS = {
+  "@type": "OpeningHoursSpecification",
+  dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map((d) => `https://schema.org/${d}`),
 };
+
+/** Free shipping to Spain. Printed: handling (Gelato print) + carrier transit = the 7-10 day promise. Digital: instant. */
+function shippingDetails(printed: boolean) {
+  return {
+    "@type": "OfferShippingDetails",
+    shippingRate: { "@type": "MonetaryAmount", value: printed ? SHIPPING_COST_CENTS / 100 : 0, currency: "EUR" },
+    shippingDestination: {
+      "@type": "DefinedRegion",
+      addressCountry: "ES",
+      ...(printed
+        ? {
+            // Peninsula + Balearics (excludes Canarias, Ceuta, Melilla).
+            postalCodeRange: SHIPPING_POSTCODE_RANGES.map((r) => ({
+              "@type": "PostalCodeRangeSpecification",
+              postalCodeBegin: r.begin,
+              postalCodeEnd: r.end,
+            })),
+          }
+        : {}),
+    },
+    deliveryTime: {
+      "@type": "ShippingDeliveryTime",
+      handlingTime: qv(printed ? HANDLING_BUSINESS_DAYS : { min: 0, max: 0 }),
+      transitTime: qv(printed ? TRANSIT_BUSINESS_DAYS : { min: 0, max: 0 }),
+      businessDays: BUSINESS_DAYS,
+    },
+  };
+}
 
 /**
  * Organization + WebSite structured data for the landing page.
@@ -239,7 +246,7 @@ export async function ProductJsonLd({
       itemCondition: "https://schema.org/NewCondition",
       url: offerUrl,
       seller: { "@id": ORG_ID },
-      ...(printed ? { shippingDetails: SHIPPING_DETAILS } : {}),
+      shippingDetails: shippingDetails(printed),
       hasMerchantReturnPolicy: policy,
     };
   });
