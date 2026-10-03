@@ -62,3 +62,7 @@ playwright-report/
 # ad creatives / stock media (large binaries, kept local)
 docs/ads/creatives/
 docs/ads/stock/
+
+# social post builds (rasterised example PDF, Zernio upload cache)
+docs/social/*/.build/
+docs/social/*/.zernio-uploads.json
