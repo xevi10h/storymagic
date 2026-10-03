@@ -10,7 +10,7 @@ The roadmap is divided into 6 phases, from foundation to scale. Each phase has c
 
 State measured 2026-10-03: 14 of 132 sitemap URLs indexed, 1 impression, 0 organic sessions, 0 orders; 9 social posts live, only the Facebook Reel got reach (223 views), 0 followers.
 
-- [ ] **Deploy Phase 0** (SEO + conversion + funnel/preview reminders). Owner approved shipping the reminders migration `20261003120000_funnel_and_preview_reminders.sql` with it: apply the migration BEFORE the deploy, or the 15-min cron 500s and the "remind me" consent is lost.
+- [x] **Phase 0 deployed 2026-10-03** (SEO + conversion + funnel/preview reminders); migration `20261003200655_funnel_and_preview_reminders.sql` applied to production the same day.
 - [ ] **Right after the deploy:** `node scripts/indexnow-ping.mjs`, then owner requests indexing in Search Console for ~15 money URLs (`/es/gifts`, christmas, birthday, `/es/christmas-delivery`, `/es/examples` + slugs, the three `/es` age pages, `/es/themes`, `/ca/gifts/sant-jordi`).
 - [ ] **Daily social runner** (Zernio): one post a day, ES + CA, short video first, hourly inbox check. Today only the one-off `scripts/social/publish-first-posts.mjs` exists and nothing is scheduled.
 - [ ] **First external links / citations:** pitch the free Reyes letter tool and `/compare` to parenting sites and gift guides; open a Trustpilot or Google profile. Nothing off-site exists for search or AI engines to cite.
@@ -66,7 +66,7 @@ character lock; per-stage resolution. (commits 5ebc2f1 → a883d60)
 
 ## Next steps from funnel + preview reminders (2026-10-03)
 
-- Owner: apply migration `20261003120000_funnel_and_preview_reminders.sql` to prod, deploy, then `?dry_run=1` the cron.
+- Owner: apply migration `20261003200655_funnel_and_preview_reminders.sql` to prod, deploy, then `?dry_run=1` the cron.
 - Guest previews: the reminder link opens the full preview only in the same browser (guest session). Link the guest to the
   given address (magic link "guarda tu libro") so the reminder CTA works on any device.
 - Weekly growth report: email `scripts/growth-funnel.mjs --json` next to the SEO report (Monday launchd job) with week-over-week deltas.

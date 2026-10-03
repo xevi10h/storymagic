@@ -35,12 +35,12 @@ export type StoryFulfilmentColumns = {
   final_qa_pass: number;
   final_qa_done_at: string | null;
   final_generated_at: string | null;
-  // 20261003120000_funnel_and_preview_reminders.sql (set by a trigger; the app only reads them)
+  // 20261003200655_funnel_and_preview_reminders.sql (set by a trigger; the app only reads them)
   generation_started_at: string | null;
   preview_ready_at: string | null;
 };
 
-// 20261003120000_funnel_and_preview_reminders.sql
+// 20261003200655_funnel_and_preview_reminders.sql
 export type PreviewReminderRow = {
   id: string;
   story_id: string;

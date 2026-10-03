@@ -317,7 +317,7 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
 
 | Version | File | When |
 |---|---|---|
-| 20261003120000 | `funnel_and_preview_reminders.sql` (stories funnel columns + trigger + backfill, `preview_reminders`) | **before** the deploy (additive; the send-preview route degrades gracefully without it, the cron would fail) |
+| 20261003200655 | `funnel_and_preview_reminders.sql` (stories funnel columns + trigger + backfill, `preview_reminders`) | **before** the deploy (additive; the send-preview route degrades gracefully without it, the cron would fail) |
 
 ## Product feeds — Google Merchant Center + ChatGPT (2026-10-02)
 
