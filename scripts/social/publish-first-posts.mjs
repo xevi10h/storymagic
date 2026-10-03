@@ -306,7 +306,7 @@ if (!PUBLISH) {
 
 for (const p of posts) {
   const body = buildBody(p, accounts, urls);
-  console.log(`\n── Post ${p.n} (${p.id}) ── POST ${API}/posts  Idempotency-Key: ${idemKey(`meapica-${p.id}-2026-10-03`)}`);
+  console.log(`\n── Post ${p.n} (${p.id}) ── POST ${API}/posts  Idempotency-Key: ${idemKey(`meapica-${p.id}-2026-10-03-${Object.keys(accounts).sort().join("+")}`)}`);
   console.log(JSON.stringify(body, null, 2));
   if (!PUBLISH) {
     const v = await api("POST", "/tools/validate/post", body);
@@ -323,7 +323,7 @@ for (const p of posts) {
     }
     continue;
   }
-  const r = await api("POST", "/posts", body, { "Idempotency-Key": idemKey(`meapica-${p.id}-2026-10-03`) });
+  const r = await api("POST", "/posts", body, { "Idempotency-Key": idemKey(`meapica-${p.id}-2026-10-03-${Object.keys(accounts).sort().join("+")}`) });
   const post = r.json.post;
   console.log(`  HTTP ${r.status} status=${post?.status ?? "?"} ${r.status >= 400 ? JSON.stringify(r.json) : ""}`);
   for (const x of post?.platforms ?? []) console.log(`   ${x.platform}: ${x.status} ${x.platformPostUrl ?? ""} ${x.errorMessage ?? ""}`);
