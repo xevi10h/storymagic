@@ -57,6 +57,12 @@ export interface CreateBookState {
   version: 2;
   /** Screen on /create: 1 name, 2 protagonist, 3 adventure. */
   currentStep: number;
+  /**
+   * Age and gender were picked by the parent on screen 1 (never preselected: the story's
+   * grammatical gender and reading level depend on them). Until both are true, screen 1
+   * shows them unselected and the flow can't move on.
+   */
+  basicsConfirmed: { age: boolean; gender: boolean };
   mode: CreationMode;
   character: CharacterData;
   /** "avatar" = built from traits (default); "photo" = the parent uploaded a photo. */
@@ -165,6 +171,7 @@ export interface StoryTemplateConfig {
 export const INITIAL_STATE: CreateBookState = {
   version: 2,
   currentStep: 1,
+  basicsConfirmed: { age: false, gender: false },
   mode: "solo", // mode selection removed; default keeps generation payload valid
   character: {
     name: "",

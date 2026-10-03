@@ -1,19 +1,19 @@
-import { getTranslations } from "next-intl/server";
-import { seoOgImage, SEO_OG_SIZE, SEO_OG_CONTENT_TYPE } from "@/lib/seo-og";
+import { ogImageMetadata, ogTranslator, seoOgImage } from "@/lib/seo-og";
 
-export const alt = "Meapica — Personalized Children's Books";
-export const size = SEO_OG_SIZE;
-export const contentType = SEO_OG_CONTENT_TYPE;
-
-export default async function Image({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "seo" });
-  return seoOgImage({
+/** What the image says (also its localized alt text). */
+async function content(params: { locale: string }) {
+  const { locale } = params;
+  const t = await ogTranslator(locale, "seo");
+  return {
     eyebrow: t("nav.themeHeading"),
     headline: t("hubs.themes.h1"),
-  });
+  };
+}
+
+export async function generateImageMetadata({ params }: { params: { locale: string } }) {
+  return ogImageMetadata((await content(params)).headline);
+}
+
+export default async function Image({ params }: { params: Promise<{ locale: string }> }) {
+  return seoOgImage(await content(await params));
 }

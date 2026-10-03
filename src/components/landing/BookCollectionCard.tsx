@@ -5,6 +5,8 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Card, cx, focusRing } from "@/components/ui";
 import type { CatalogWorld } from "./BookCollectionData";
+import type { Locale } from "@/i18n/routing";
+import { showcasePath } from "@/lib/showcase-slug";
 
 interface BookCollectionCardProps {
   world: CatalogWorld;
@@ -43,7 +45,8 @@ export default function BookCollectionCard({ world, fromPrice, className }: Book
         </span>
         {example && (
           <Link
-            href={`/examples/${example.id}`}
+            href={showcasePath(example.slug)}
+            locale={example.locale as Locale}
             className={cx(
               "absolute bottom-2.5 left-2.5 z-10 inline-flex min-h-11 items-center gap-1.5 rounded-full bg-white/95 px-3.5 text-[13px] font-bold text-ink-soft shadow-sm transition-colors hover:text-brand-text",
               focusRing,

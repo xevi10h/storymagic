@@ -35,6 +35,27 @@ export type StoryFulfilmentColumns = {
   final_qa_pass: number;
   final_qa_done_at: string | null;
   final_generated_at: string | null;
+  // 20261003120000_funnel_and_preview_reminders.sql (set by a trigger; the app only reads them)
+  generation_started_at: string | null;
+  preview_ready_at: string | null;
+};
+
+// 20261003120000_funnel_and_preview_reminders.sql
+export type PreviewReminderRow = {
+  id: string;
+  story_id: string;
+  email: string;
+  locale: string;
+  consent_at: string;
+  consent_version: string;
+  consent_source: string;
+  /** Last reminder sent: 0 none, 1 = 1 h, 2 = 24 h, 3 = 72 h. */
+  stage: number;
+  last_sent_at: string | null;
+  stopped_at: string | null;
+  stop_reason: "purchased" | "unsubscribed" | "expired" | "story_unavailable" | null;
+  created_at: string;
+  updated_at: string;
 };
 
 export type OrderFulfilmentColumns = {
@@ -88,6 +109,12 @@ export type FulfilmentDatabase = Omit<Database, "public"> & {
         Row: { day: string; count: number; updated_at: string };
         Insert: { day: string; count?: number; updated_at?: string };
         Update: { day?: string; count?: number; updated_at?: string };
+        Relationships: [];
+      };
+      preview_reminders: {
+        Row: PreviewReminderRow;
+        Insert: Pick<PreviewReminderRow, "story_id" | "email" | "consent_version"> & Partial<PreviewReminderRow>;
+        Update: Partial<PreviewReminderRow>;
         Relationships: [];
       };
       // 20260930156000_marketing_email.sql

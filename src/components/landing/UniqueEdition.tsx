@@ -4,6 +4,7 @@ import { Link } from "@/i18n/navigation";
 import { Heading, buttonClass } from "@/components/ui";
 import { COPY_PARAMS } from "@/lib/product-facts";
 import { LANDING_EXAMPLE, landingExampleBook } from "./HowItWorksExample";
+import { showcasePath } from "@/lib/showcase-slug";
 
 const POINTS = ["written", "painted", "colour", "dedication"] as const;
 
@@ -80,7 +81,7 @@ export default function UniqueEdition() {
               </span>
             </Link>
             <Link
-              href={`/examples/${book.storyId}`}
+              href={showcasePath(book.slug)}
               className="inline-flex min-h-11 items-center text-sm font-semibold text-ink-soft underline decoration-ink-soft/30 underline-offset-2 hover:text-brand-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
             >
               {t("seeInside", { name, gender: LANDING_EXAMPLE.gender })}

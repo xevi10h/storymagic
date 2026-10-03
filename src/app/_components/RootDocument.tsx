@@ -28,6 +28,10 @@ const materialSymbols = localFont({
   display: "block",
   adjustFontFallback: false,
   fallback: [],
+  // Not preloaded: a high-priority 90 KB preload on every page competed with the
+  // hero image (mobile LCP). The font is still requested as soon as the CSS that
+  // uses it is applied; icons are never the LCP element.
+  preload: false,
 });
 
 /**

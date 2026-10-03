@@ -17,6 +17,7 @@ import { CATALAN_GUIDE_COPY } from "@/lib/guide-copy/catalan";
 import { guideFacts } from "@/lib/guide-copy/facts";
 import { toolPath } from "@/lib/tools/registry";
 import { LANDING_EXAMPLE, landingExampleBook } from "@/components/landing/HowItWorksExample";
+import { showcasePath } from "@/lib/showcase-slug";
 import { cx, focusRing } from "@/components/ui";
 
 // The copy quotes this season's Reyes cut-off: refresh daily.
@@ -80,14 +81,14 @@ export default async function Page({ params }: PageProps) {
           secondary={{ href: "/examples", label: th("sampleCta") }}
           trust={copy.trust}
           aside={
-            // A real book of the showcase, in its Catalan edition (/examples/{id} on the ca site).
+            // A real book of the showcase, in its Catalan edition (/examples/{slug} on the ca site).
             <figure className="mx-auto w-[60vw] max-w-[240px] lg:w-full lg:max-w-[400px]">
               <div className="relative aspect-square overflow-hidden rounded-xl border border-line bg-line shadow-sm">
                 <Image src={LANDING_EXAMPLE.coverSrc} alt="" fill priority sizes="(max-width: 1024px) 240px, 400px" className="object-cover" />
               </div>
               <figcaption className="mt-3 text-center text-sm leading-snug text-ink-muted">
                 <Link
-                  href={`/examples/${caExample.storyId}`}
+                  href={showcasePath(caExample.slug)}
                   locale="ca"
                   className={cx("font-semibold text-ink-soft underline decoration-brand/30 underline-offset-4 hover:text-brand-text", focusRing)}
                 >

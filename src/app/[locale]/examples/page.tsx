@@ -11,6 +11,8 @@ import { BreadcrumbJsonLd } from "@/components/seo/JsonLd";
 import { buttonClass, cx, focusRing } from "@/components/ui";
 import { Breadcrumbs, PageHero, kicker, marketingH1, marketingLead } from "@/components/seo-landing/MarketingHeader";
 import { getShowcaseStories } from "@/lib/showcase";
+import { showcasePath } from "@/lib/showcase-slug";
+import type { Locale } from "@/i18n/routing";
 
 const BASE_URL = "https://meapica.shop";
 const PATH = "/examples";
@@ -60,7 +62,7 @@ export default async function ShowcaseIndex({ params }: PageProps) {
         "@type": "ListItem",
         position: i + 1,
         name: s.title,
-        url: `${BASE_URL}/${locale}/examples/${s.id}`,
+        url: `${BASE_URL}/${s.locale}${showcasePath(s.slug)}`,
       })),
     },
   };
@@ -111,7 +113,8 @@ export default async function ShowcaseIndex({ params }: PageProps) {
                 {stories.map((s, i) => (
                   <li key={s.id}>
                     <Link
-                      href={`/examples/${s.id}`}
+                      href={showcasePath(s.slug)}
+                      locale={s.locale as Locale}
                       className={cx(
                         "group flex h-full flex-col overflow-hidden rounded-2xl border-2 border-line bg-surface transition-colors hover:border-brand/40",
                         focusRing,

@@ -26,6 +26,8 @@ export interface EmailLayoutParams {
   kicker?: string;
   /** Optional greeting line (e.g. "Hola Marc,") */
   greeting?: string;
+  /** Optional picture between the greeting and the body (e.g. the book cover); `url` and `href` are escaped here, `alt` by the caller */
+  image?: { url: string; alt: string; href?: string; width?: number };
   /** Body paragraphs — each string becomes its own <p> */
   paragraphs: string[];
   /** Optional call-to-action button */
@@ -55,7 +57,7 @@ export function escapeHtml(value: string): string {
 /** Render the branded HTML shell. Returns a full HTML document string. */
 export function renderEmailLayout(params: EmailLayoutParams): string {
   const site = getSiteUrl();
-  const { heading, kicker, greeting, paragraphs, cta, detailsHtml, infoHtml, signoff, lang, footerNoteHtml } = params;
+  const { heading, kicker, greeting, image, paragraphs, cta, detailsHtml, infoHtml, signoff, lang, footerNoteHtml } = params;
 
   const kickerHtml = kicker
     ? `<p style="margin:0 0 6px;font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:${COLORS.primaryText};">${kicker}</p>`
@@ -66,6 +68,14 @@ export function renderEmailLayout(params: EmailLayoutParams): string {
 
   const greetingHtml = greeting
     ? `<p style="margin:0 0 20px;font-size:16px;color:${COLORS.body};">${greeting}</p>`
+    : "";
+
+  const imageWidth = image?.width ?? 220;
+  const imageTag = image
+    ? `<img src="${escapeHtml(image.url)}" alt="${image.alt}" width="${imageWidth}" style="display:block;width:${imageWidth}px;max-width:100%;height:auto;border-radius:10px;border:1px solid ${COLORS.border};" />`
+    : "";
+  const imageHtml = image
+    ? `<div style="margin:16px 0 24px;">${image.href ? `<a href="${escapeHtml(image.href)}" style="text-decoration:none;">${imageTag}</a>` : imageTag}</div>`
     : "";
 
   const paragraphsHtml = paragraphs
@@ -100,6 +110,7 @@ export function renderEmailLayout(params: EmailLayoutParams): string {
         <tr><td style="background-color:${COLORS.card};border-radius:16px;padding:40px 36px;box-shadow:0 2px 12px rgba(44,24,16,0.06);">
           ${kickerHtml}<h1 style="margin:0 0 8px;font-size:26px;color:${COLORS.heading};font-weight:700;">${heading}</h1>
           ${greetingHtml}
+          ${imageHtml}
           ${paragraphsHtml}
           ${ctaHtml}
           ${detailsHtml ?? ""}

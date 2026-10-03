@@ -157,17 +157,21 @@ async function productImages(locale: string): Promise<string[]> {
 }
 
 /**
- * Product structured data (home page only: one canonical product page, so the SEO
- * landings do not repeat an identical Product). Offers for every format with the
+ * Product structured data: the home and every programmatic SEO landing (gifts /
+ * ages / themes) sell the same book, so they emit the same Product; only the
+ * offers' `url` changes (the page carrying it). Offers for every format with the
  * final VAT-inclusive price (B2C), free shipping to Spain and the return policy.
  */
 export type ProductReview = { author: string; text: string; rating?: number };
 
 export async function ProductJsonLd({
   locale,
+  url,
   reviews,
 }: {
   locale: string;
+  /** Indexable page that sells the book and carries this markup (default: the home). */
+  url?: string;
   /**
    * Real customer reviews. ONLY pass genuine, verifiable reviews — emitting
    * Review/AggregateRating markup with fabricated testimonials violates Google's
@@ -225,7 +229,7 @@ export async function ProductJsonLd({
     : undefined;
 
   // The indexable page that sells the book (/create is noindex).
-  const offerUrl = `${BASE_URL}/${locale}`;
+  const offerUrl = url ?? `${BASE_URL}/${locale}`;
   const policy = returnPolicy(locale);
   const offers = (Object.keys(BOOK_FORMATS) as (keyof typeof BOOK_FORMATS)[]).map((format) => {
     const { priceCents, printed } = BOOK_FORMATS[format];

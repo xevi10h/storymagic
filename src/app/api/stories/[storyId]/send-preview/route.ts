@@ -4,29 +4,20 @@ import { createClient } from "@/lib/supabase/server";
 import { checkMemoryRateLimit, checkRateLimit, rateLimitSubject } from "@/lib/rate-limit";
 import { sendEmail, getSiteUrl } from "@/lib/email/send";
 import { escapeHtml, renderEmailLayout } from "@/lib/email/layout";
+import { mailSafeName } from "@/lib/email/mail-safe-name";
 import { SHAREABLE_STORY_STATUSES, createPreviewShareToken, previewShareUrl } from "@/lib/share/preview-share-token";
+import { createFulfilmentClient } from "@/lib/fulfilment/db";
+import { recordPreviewReminderConsent } from "@/lib/marketing/preview-reminders";
+import { isSuppressed, unsubscribeLinks } from "@/lib/marketing/suppression";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const bodySchema = z.object({
   email: z.string().trim().toLowerCase().email().max(254),
   locale: z.enum(["es", "ca", "en", "fr"]).default("es"),
+  /** The "recordádmelo por email" box (never pre-ticked) was ticked: consent to the reminders. */
+  remind: z.literal(true).optional(),
 });
-
-/**
- * The child's name as it may appear in a mail we send to an arbitrary address:
- * letters, combining marks, spaces, hyphens and apostrophes only (no dots, slashes,
- * digits or symbols, so it cannot carry a URL or a spam message), max 40 chars.
- */
-function mailSafeName(raw: string): string {
-  return raw
-    .normalize("NFC")
-    .replace(/[^\p{L}\p{M}\s'’-]/gu, "")
-    .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, 40)
-    .trim();
-}
 
 const COPY = {
   es: {
@@ -35,6 +26,9 @@ const COPY = {
     body: "Aquí tienes el enlace a la vista previa de su libro para verlo con calma. Funciona en cualquier móvil u ordenador, y puedes reenviarlo a quien quieras. Caduca en 30 días.",
     cta: "Ver su libro",
     signoff: "Un abrazo,\nMeapica",
+    reminderNote: (unsubscribe: string) =>
+      `Nos has pedido que te recordemos este cuento: te escribiremos como mucho 3 veces en los próximos 3 días. Si prefieres que no, ${unsubscribe}.`,
+    unsubscribe: "date de baja aquí",
   },
   ca: {
     subject: (n: string) => `La vista prèvia del llibre de ${n}`,
@@ -42,6 +36,9 @@ const COPY = {
     body: "Aquí tens l'enllaç a la vista prèvia del seu llibre per mirar-lo amb calma. Funciona a qualsevol mòbil o ordinador, i el pots reenviar a qui vulguis. Caduca d'aquí a 30 dies.",
     cta: "Veure el seu llibre",
     signoff: "Una abraçada,\nMeapica",
+    reminderNote: (unsubscribe: string) =>
+      `Ens has demanat que et recordem aquest conte: t'escriurem com a màxim 3 vegades els pròxims 3 dies. Si prefereixes que no, ${unsubscribe}.`,
+    unsubscribe: "dona't de baixa aquí",
   },
   en: {
     subject: (n: string) => `${n}'s book preview`,
@@ -49,6 +46,9 @@ const COPY = {
     body: "Here is the link to the book preview so you can look at it calmly. It works on any phone or computer, and you can forward it to anyone you like. It expires in 30 days.",
     cta: "See the book",
     signoff: "Warmly,\nMeapica",
+    reminderNote: (unsubscribe: string) =>
+      `You asked us to remind you about this story: we'll write at most 3 times over the next 3 days. If you'd rather we didn't, ${unsubscribe}.`,
+    unsubscribe: "unsubscribe here",
   },
   fr: {
     subject: (n: string) => `L'aperçu du livre de ${n}`,
@@ -56,14 +56,22 @@ const COPY = {
     body: "Voici le lien vers l'aperçu du livre, pour le regarder tranquillement. Il fonctionne sur n'importe quel téléphone ou ordinateur, et vous pouvez le transférer à qui vous voulez. Il expire dans 30 jours.",
     cta: "Voir le livre",
     signoff: "Bien à vous,\nMeapica",
+    reminderNote: (unsubscribe: string) =>
+      `Vous nous avez demandé de vous rappeler cette histoire : nous vous écrirons au maximum 3 fois dans les 3 prochains jours. Si vous préférez que non, ${unsubscribe}.`,
+    unsubscribe: "désabonnez-vous ici",
   },
 } as const;
 
 /**
  * "Envíame la vista previa" — optional, offered only after the parent has seen the
- * book (never a gate). Sends the preview link to the given address; the address
- * is not stored or subscribed to anything. The link is the read-only share link
- * (/[locale]/preview/[token]): it opens in any browser, incl. mail apps' in-app ones.
+ * book (never a gate). Sends the preview link to the given address. The link is the
+ * read-only share link (/[locale]/preview/[token]): it opens in any browser, incl.
+ * mail apps' in-app ones.
+ *
+ * The address is stored only when the parent also ticked "recordádmelo" (`remind`):
+ * that express consent (LSSI 21.1 / RGPD 6.1.a) is recorded in preview_reminders and
+ * starts the abandoned-preview reminders (src/lib/marketing/preview-reminders.ts).
+ * Without the tick nothing is stored and nothing else is ever sent.
  */
 export async function POST(request: Request, { params }: { params: Promise<{ storyId: string }> }) {
   const { storyId } = await params;
@@ -89,7 +97,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ sto
   if (!parsed.success) {
     return NextResponse.json({ error: "invalid_email" }, { status: 400 });
   }
-  const { email, locale } = parsed.data;
+  const { email, locale, remind } = parsed.data;
 
   const { data: story } = await supabase
     .from("stories")
@@ -126,6 +134,21 @@ export async function POST(request: Request, { params }: { params: Promise<{ sto
   const copy = COPY[locale];
   const url = previewShareUrl(getSiteUrl(), locale, createPreviewShareToken(story.id).token);
 
+  // Reminders: only for a preview that can still be bought, with a working unsubscribe
+  // link, to an address that has not unsubscribed. Any doubt = no reminders (the preview
+  // itself is still sent).
+  const links = remind && story.status === "preview" ? unsubscribeLinks(email, locale) : null;
+  let reminder = false;
+  if (links) {
+    try {
+      const db = createFulfilmentClient();
+      reminder = !(await isSuppressed(db, email)) && (await recordPreviewReminderConsent(db, { storyId: story.id, email, locale }));
+    } catch (err) {
+      console.error(`[send-preview] Reminder consent not recorded for story ${story.id}: ${err instanceof Error ? err.message : "unknown"}`);
+    }
+  }
+  const noteLink = links ? `<a href="${escapeHtml(links.pageUrl)}" style="color:inherit;text-decoration:underline;">${escapeHtml(copy.unsubscribe)}</a>` : "";
+
   const ok = await sendEmail({
     to: email,
     subject: copy.subject(rawName),
@@ -135,12 +158,20 @@ export async function POST(request: Request, { params }: { params: Promise<{ sto
       cta: { label: copy.cta, url },
       signoff: copy.signoff,
       lang: locale,
+      footerNoteHtml: reminder && links ? copy.reminderNote(noteLink) : undefined,
     }),
-    text: `${copy.heading(rawName)}\n\n${copy.body}\n\n${url}\n\n${copy.signoff}`,
+    text: [
+      copy.heading(rawName),
+      copy.body,
+      url,
+      copy.signoff,
+      ...(reminder && links ? [copy.reminderNote(`${copy.unsubscribe} (${links.pageUrl})`)] : []),
+    ].join("\n\n"),
+    headers: reminder && links ? links.headers : undefined,
   });
 
   if (!ok) {
     return NextResponse.json({ error: "send_failed" }, { status: 502 });
   }
-  return NextResponse.json({ sent: true });
+  return NextResponse.json({ sent: true, reminder });
 }

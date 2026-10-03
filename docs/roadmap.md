@@ -6,6 +6,22 @@ The roadmap is divided into 6 phases, from foundation to scale. Each phase has c
 
 ---
 
+## Next up (2026-10-03, after the Phase 0 QA + SEO/GEO/social review)
+
+State measured 2026-10-03: 14 of 132 sitemap URLs indexed, 1 impression, 0 organic sessions, 0 orders; 9 social posts live, only the Facebook Reel got reach (223 views), 0 followers.
+
+- [ ] **Deploy Phase 0** (SEO + conversion + funnel/preview reminders). Owner approved shipping the reminders migration `20261003120000_funnel_and_preview_reminders.sql` with it: apply the migration BEFORE the deploy, or the 15-min cron 500s and the "remind me" consent is lost.
+- [ ] **Right after the deploy:** `node scripts/indexnow-ping.mjs`, then owner requests indexing in Search Console for ~15 money URLs (`/es/gifts`, christmas, birthday, `/es/christmas-delivery`, `/es/examples` + slugs, the three `/es` age pages, `/es/themes`, `/ca/gifts/sant-jordi`).
+- [ ] **Daily social runner** (Zernio): one post a day, ES + CA, short video first, hourly inbox check. Today only the one-off `scripts/social/publish-first-posts.mjs` exists and nothing is scheduled.
+- [ ] **First external links / citations:** pitch the free Reyes letter tool and `/compare` to parenting sites and gift guides; open a Trustpilot or Google profile. Nothing off-site exists for search or AI engines to cite.
+- [ ] **Lead with Catalan in SEO** (only query set with no commercial competitor): link in-catalan from Sant Jordi + Catalan posts, pitch Catalan parenting media.
+- [ ] Re-add en/fr to the sitemap (`SITEMAP_LOCALES`) once es/ca are indexed.
+- [ ] Hero cover: source is 640 px, soft on desktop retina (shown at 440–480 CSS px). Re-export at 1080+ from the print render.
+- [ ] Small QA findings: Product JSON-LD missing on the 3 hubs + 2 guide pages (76 of 94 have it); legacy `/ejemplo/<uuid>` takes two redirects; Catalan hero CTA "Crear el llibre de Martina" lacks the personal article; examples index has 5 cards in a 4-column grid; "Envío gratis" vs "Envío incluido" copy.
+- [ ] Owner: TikTok business registration (rejected: needs the AEAT census certificate, not the DNI), UTM link in the Instagram bio, live test purchase + refund, rotate the Meta token, 4 photos of the printed Teo book.
+
+---
+
 ## 🔥 Active priorities (2026-06-15) — generation pipeline & launch
 
 See **`docs/generation-pipeline.md`** and **`docs/launch-checklist.md`** for full detail.
@@ -47,6 +63,16 @@ preview-timeout fix; cover ref anchoring; QA-skipped flag; two-speed model split
 character lock; per-stage resolution. (commits 5ebc2f1 → a883d60)
 
 ---
+
+## Next steps from funnel + preview reminders (2026-10-03)
+
+- Owner: apply migration `20261003120000_funnel_and_preview_reminders.sql` to prod, deploy, then `?dry_run=1` the cron.
+- Guest previews: the reminder link opens the full preview only in the same browser (guest session). Link the guest to the
+  given address (magic link "guarda tu libro") so the reminder CTA works on any device.
+- Weekly growth report: email `scripts/growth-funnel.mjs --json` next to the SEO report (Monday launchd job) with week-over-week deltas.
+- Meta: optimise campaigns on `preview_ready` (custom conversion) while purchase volume is below ~50/week.
+- Measure reminder impact: orders whose story has a `preview_reminders` row with stage ≥ 1 vs. those without (funnel script column).
+- Optional double opt-in if a third-party address ever complains (today: single opt-in + unsubscribe in the first email).
 
 ## Next steps from accounts & orders block (2026-09-30)
 - **Retention for guests who paid** (never auto-purged today): e.g. anonymise child data N months after delivery.
@@ -255,6 +281,7 @@ Replaced Recraft V3 with **FLUX.2 [flex]** + a whole-world consistency system. D
 
 **Launch:**
 - [ ] Professional photos of printed books (for landing + ads)
+  - 2026-10-03: no real photo of a printed book exists in the repo/docs (the `docs/ads/creatives/lifestyle-*` images are AI composites on stock photos, never to be shown as "the real book"). Owner: photograph Teo's printed book (Gelato order 34d619c2: cover, open spread, spine/thickness, in hand) → then add a "Así es el libro impreso" block near the hero and the checkout.
 - [ ] Instagram account setup + 10 initial posts
 - [ ] 10 beta sales to family/friends (discounted, for feedback)
 - [ ] Collect and address feedback
@@ -476,7 +503,9 @@ Replaced the old "mode → template → 3 decision knobs" with a single vertical
 - Guide follow-ups: re-check every `/compare` fact each quarter and before Black Friday (prices move with promos; Hurra Héroes was mid-renovation, Micuento offline on 2026-10-02 — re-add it if it comes back); en/fr `/compare` only if we ever ship outside Spain; link `/personalized-books/in-catalan` from the Sant Jordi page body and the Catalan blog posts.
 - Catalan cover placeholder: with no name typed, `LiveCover` / `FinalCta` render "L'aventura de el seu nom" on every ca page (should read e.g. "L'aventura del teu fill" or show a sample name with its article, "la Noa"); also `LiveCover` has no Catalan personal article for real names ("L'aventura de Noa" → "de la Noa").
 - New pages still open: `/personalized-books/with-photo` (only once photo upload is on), per-age pages 2–10, `/themes/castle|chef|inventor|candy`, `/gifts/grandchildren`.
-- Server-render `/examples/[id]` story text and make it indexable; name pages only for names with a real book.
+- ~~Server-render `/examples/[id]` story text and make it indexable~~ DONE 2026-10-03 on `local` (`/examples/{slug}`, 308 from UUID URLs, sitemap + hreflang, Book JSON-LD). Still open: name pages only for names with a real book.
+- SEO audit fixes 2026-10-03 on `local` (deploy + IndexNow ping, then GSC: request indexing of the 20 example URLs): Product JSON-LD on every gifts/ages/themes landing, root `/` 308 → `/es`, localized og:image:alt, `/legal` og:image, blog index Blog JSON-LD, robots `Host:` removed, fr meta descriptions ≤ 160, client messages −46 KB, icon font no longer preloaded.
+- Mobile LCP follow-up (lab 4–7 s, field unknown): the LCP is the hero cover, already preloaded with high priority; Lighthouse attributes the delay to JS hydration CPU (react-dom + the landing's client components, ~300 KB JS). Next lever: fewer/lighter client components on the home (Hero, BookCollection, HowItWorks are all client), not more preload hints. Also: the home loads the Noa cover three times (`w=384` preload, `w=640`, and the raw `cover.webp`), worth deduplicating.
 - Off-site GEO: Christmas gift-guide pitches (Webedia, El País Escaparate, Ara Criatures, Serpadres), Trustpilot/Google profile with honest post-delivery review request, YouTube flip-throughs, Pinterest; Awin affiliate programme.
 - ~~Vercel › Domains: www.meapica.shop → apex 308~~ DONE 2026-10-01. Deployed wave 1 (main e7670ee+), IndexNow pinged (118 URLs), GA4 verified live after consent.
 - Sant Jordi (23 Apr) Catalan push: classroom kit in Jan, school/AMPA outreach Feb–Mar.

@@ -1,5 +1,6 @@
-// Advertising consent (LSSI art. 22.2 + AEPD cookie guide): nothing that is not
-// strictly necessary (Meta/TikTok pixels, Google Analytics, UTM attribution) runs before "Aceptar".
+// Cookie consent (LSSI art. 22.2 + AEPD cookie guide): nothing that is not strictly necessary
+// runs before the visitor says so. Two purposes, chosen together ("Aceptar" / "Rechazar") or one
+// by one ("Configurar"): analytics (Google Analytics, PostHog) and ads (Meta/TikTok pixels, UTMs).
 // Shared by client and server — no server-only imports here.
 
 import { POSTHOG_KEY, capturePosthog } from "./posthog";
@@ -9,7 +10,20 @@ export const UTM_COOKIE = "meapica_utm";
 export const CONSENT_OPEN_EVENT = "meapica:consent-open";
 export const CONSENT_CHANGE_EVENT = "meapica:consent-change";
 
-export type Consent = "granted" | "denied";
+/** "granted" = both purposes, "denied" = none, "analytics" / "ads" = only that purpose. */
+export type Consent = "granted" | "denied" | "analytics" | "ads";
+export type ConsentCategory = "analytics" | "ads";
+
+/** Whether a stored choice covers a purpose. No choice yet = nothing allowed. */
+export function consentAllows(consent: Consent | null | undefined, category: ConsentCategory): boolean {
+  return consent === "granted" || consent === category;
+}
+
+/** The stored value for a per-purpose choice (second layer of the banner). */
+export function consentFromChoices(choices: Record<ConsentCategory, boolean>): Consent {
+  if (choices.analytics && choices.ads) return "granted";
+  return choices.analytics ? "analytics" : choices.ads ? "ads" : "denied";
+}
 
 // AEPD: re-ask at most every 24 months; 12 is the common practice.
 const MAX_AGE_S = 60 * 60 * 24 * 365;
@@ -24,7 +38,7 @@ export const ADS_TRACKING_ENABLED = META_PIXEL_ID !== "" || TIKTOK_PIXEL_ID !== 
 export const GA_SESSION_COOKIE = GA4_ID ? `_ga_${GA4_ID.replace(/^G-/, "")}` : "";
 
 export function parseConsent(value: string | undefined | null): Consent | null {
-  return value === "granted" || value === "denied" ? value : null;
+  return value === "granted" || value === "denied" || value === "analytics" || value === "ads" ? value : null;
 }
 
 function readCookie(name: string): string | null {
@@ -43,13 +57,15 @@ export function getConsent(): Consent | null {
 
 export function setConsent(consent: Consent) {
   writeCookie(CONSENT_COOKIE, consent, MAX_AGE_S);
-  if (consent === "denied") {
-    // Withdrawal: drop what was stored under the previous "granted".
-    // ponytail: host-only + apex domain covers how the pixels set their cookies.
-    for (const name of ["_fbp", "_fbc", "_ttp", "ttclid", "_tt_enable_cookie", "_ga", GA_SESSION_COOKIE, UTM_COOKIE].filter(Boolean)) {
-      document.cookie = `${name}=; Path=/; Max-Age=0`;
-      document.cookie = `${name}=; Path=/; Max-Age=0; Domain=.${location.hostname.replace(/^www\./, "")}`;
-    }
+  // Withdrawal: drop what was stored under a previous, wider choice.
+  // ponytail: host-only + apex domain covers how the pixels set their cookies.
+  const stale = [
+    ...(consentAllows(consent, "ads") ? [] : ["_fbp", "_fbc", "_ttp", "ttclid", "_tt_enable_cookie", UTM_COOKIE]),
+    ...(consentAllows(consent, "analytics") ? [] : ["_ga", GA_SESSION_COOKIE]),
+  ].filter(Boolean);
+  for (const name of stale) {
+    document.cookie = `${name}=; Path=/; Max-Age=0`;
+    document.cookie = `${name}=; Path=/; Max-Age=0; Domain=.${location.hostname.replace(/^www\./, "")}`;
   }
   window.dispatchEvent(new CustomEvent(CONSENT_CHANGE_EVENT, { detail: consent }));
 }
@@ -90,6 +106,9 @@ const GA4_EVENT: Record<string, string> = {
   Purchase: "purchase",
   // Custom: a free Reyes printable downloaded (/tools/*), params { tool }.
   ToolDownload: "tool_download",
+  // Custom funnel steps of /create/<id>/generate: the book starts being painted / its preview is ready.
+  generation_start: "generation_start",
+  preview_ready: "preview_ready",
 };
 
 /** Our events that are Meta standard events (fbq "track"); anything else goes through "trackCustom". */
@@ -119,17 +138,20 @@ function toTikTokParams(params: Record<string, unknown> = {}): Record<string, un
  * pixels aren't loaded). `eventId` must match the server event for deduplication.
  */
 export function trackEvent(name: string, params?: Record<string, unknown>, eventId?: string) {
-  if (!ADS_TRACKING_ENABLED || getConsent() !== "granted") return;
-  if (POSTHOG_KEY) capturePosthog(name, params);
-  if (META_PIXEL_ID) {
+  if (!ADS_TRACKING_ENABLED) return;
+  const consent = getConsent();
+  const analytics = consentAllows(consent, "analytics");
+  const ads = consentAllows(consent, "ads");
+  if (POSTHOG_KEY && analytics) capturePosthog(name, params);
+  if (META_PIXEL_ID && ads) {
     whenLoaded("fbq", (fbq: Fbq) => fbq(META_STANDARD.has(name) ? "track" : "trackCustom", name, params ?? {}, eventId ? { eventID: eventId } : undefined));
   }
   const tiktokEvent = TIKTOK_EVENT[name];
-  if (TIKTOK_PIXEL_ID && tiktokEvent) {
+  if (TIKTOK_PIXEL_ID && ads && tiktokEvent) {
     whenLoaded("ttq", (ttq: Ttq) => ttq.track(tiktokEvent, toTikTokParams(params), eventId ? { event_id: eventId } : undefined));
   }
   const ga4Event = GA4_EVENT[name];
-  if (GA4_ID && ga4Event) {
+  if (GA4_ID && analytics && ga4Event) {
     whenLoaded("gtag", (gtag: Gtag) => gtag("event", ga4Event, toGa4Params(params, ga4Event === "purchase" ? eventId : undefined)));
   }
 }

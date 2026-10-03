@@ -4,6 +4,9 @@ import { AGE_BANDS, type AgeBandSlug } from "@/lib/product-facts";
 /** Real book made on the platform (GET /api/showcase). */
 export interface ShowcaseBook {
   id: string;
+  /** /examples/{slug} in the book's own locale. */
+  slug: string;
+  locale: string;
   templateId: string;
   title: string;
   coverImage: string | null;

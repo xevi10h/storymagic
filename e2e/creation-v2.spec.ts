@@ -28,7 +28,7 @@ const VIEWPORTS = {
 
 const COPY = {
   es: { next: /Siguiente/, create: /Crear su libro/, back: "Atrás", world: /Espacial/i, painting: /Pintando el libro de Lucía/, see: /Ver su libro/ },
-  ca: { next: /Següent/, create: /Crear el seu llibre/, back: "Enrere", world: /Espacial/i, painting: /Pintant el llibre de Lucía/, see: /Veure el llibre/ },
+  ca: { next: /Següent/, create: /Crear el seu llibre/, back: "Enrere", world: /Espacial/i, painting: /Pintant el llibre de la Lucía/, see: /Veure el llibre/ },
 } as const;
 type Locale = keyof typeof COPY;
 
@@ -212,6 +212,12 @@ async function freshStart(page: Page, locale: Locale) {
 async function fillName(page: Page) {
   await page.locator("#child-name").fill(NAME);
   await expect(page.getByTestId("live-cover-name")).toHaveText(NAME);
+}
+
+/** Age and gender start unselected (never defaulted): pick both explicitly. */
+async function pickBasics(page: Page, age = 6, gender: RegExp = /^(Una niña|Una nena|A girl|Une fille)$/) {
+  await page.getByRole("radio", { name: new RegExp(`^${age}\\b`) }).click();
+  await page.getByRole("radio", { name: gender }).click();
 }
 
 async function next(page: Page, locale: Locale) {
@@ -401,7 +407,7 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
         await shot(page, `${tag}-6-format`);
         const checkoutText = await page.locator("#checkout-section").innerText();
         expect(checkoutText).toMatch(locale === "es" ? /IVA incl/ : /IVA incl/);
-        await page.getByTestId("send-preview").locator("input").fill("familia@example.com");
+        await page.getByTestId("send-preview").locator("input[type=email]").fill("familia@example.com");
         await page.getByTestId("send-preview").getByRole("button").click();
         await expect(page.getByTestId("send-preview-sent")).toBeVisible();
         await page.getByTestId("send-preview-sent").scrollIntoViewIfNeeded();
@@ -478,7 +484,7 @@ test.describe("state", () => {
     const mock = await installMocks(page);
     await freshStart(page, "es");
     await fillName(page);
-    await page.getByRole("radio", { name: /^8/ }).click();
+    await pickBasics(page, 8);
     await next(page, "es");
     await page.locator('[aria-labelledby="lbl-glasses"]').getByRole("radio").nth(2).click();
     await next(page, "es");
@@ -515,6 +521,22 @@ test.describe("state", () => {
     expect(errors).toEqual([]);
   });
 
+  test("age and gender are never preselected and are required", async ({ page }) => {
+    test.skip(PHOTO_FLAG, "flag-off suite");
+    await installMocks(page);
+    await freshStart(page, "es");
+    await fillName(page);
+    await expect(page.locator("[role=radio][aria-checked=true]")).toHaveCount(0);
+    await next(page, "es");
+    await expect(page.locator("#age-error")).toHaveText("Elige su edad para continuar.");
+    await expect(page.locator("#gender-error")).toHaveText("Elige una opción para continuar.");
+    await expect(page.locator("#child-name")).toBeVisible(); // still on screen 1
+    await pickBasics(page, 4);
+    await expect(page.locator("#age-error, #gender-error")).toHaveCount(0);
+    await next(page, "es");
+    await expect(page.getByTestId("protagonist-portrait")).toBeVisible();
+  });
+
   test("an old v1 draft migrates gracefully", async ({ page }) => {
     test.skip(PHOTO_FLAG, "flag-off suite");
     await installMocks(page);
@@ -540,8 +562,8 @@ test.describe("state", () => {
     );
     await page.goto("/ca/create");
     await expect(page.getByRole("heading", { name: /Quina aventura viurà Àlex/ })).toBeVisible();
-    // Catalan elision on the cover: "L'aventura d'Àlex"
-    await expect(page.getByTestId("live-cover").first()).toHaveAttribute("aria-label", /L'aventura d'Àlex/);
+    // Catalan elision on the cover: "L'aventura de l'Àlex" (personal article)
+    await expect(page.getByTestId("live-cover").first()).toHaveAttribute("aria-label", /L'aventura de l'Àlex/);
   });
 });
 
@@ -556,6 +578,7 @@ test.describe("en/fr smoke", () => {
       await page.evaluate(() => localStorage.clear());
       await page.goto(`/${locale}/create`);
       await fillName(page);
+      await pickBasics(page);
       await page.getByRole("button", { name: locale === "en" ? /^Next$/ : /^Suivant$/ }).click();
       await expect(page.getByTestId("protagonist-portrait")).toBeVisible();
       await page.getByRole("button", { name: locale === "en" ? /^Next$/ : /^Suivant$/ }).click();
@@ -574,6 +597,7 @@ test.describe("photo tab", () => {
     await installMocks(page);
     await freshStart(page, "es");
     await fillName(page);
+    await pickBasics(page);
     await next(page, "es");
     await expect(page.getByTestId("protagonist-portrait")).toBeVisible();
     await expect(page.getByRole("tab")).toHaveCount(0);
@@ -586,6 +610,7 @@ test.describe("photo tab", () => {
     const mock = await installMocks(page);
     await freshStart(page, "es");
     await fillName(page);
+    await pickBasics(page);
     await next(page, "es");
     await page.getByRole("tab", { name: /Sube una foto/ }).click();
     const choose = page.getByRole("button", { name: /Elegir una foto/ });
@@ -636,6 +661,7 @@ test.describe("child name display form", () => {
     await input.fill("  maría   josé d'artagnan ");
     await page.locator("h1").first().click(); // blur
     await expect(input).toHaveValue("María José d'Artagnan");
+    await pickBasics(page);
     await input.fill("pau-joan");
     await input.press("Enter");
     await expect(page.getByRole("heading", { level: 1 })).toContainText("Pau-Joan");

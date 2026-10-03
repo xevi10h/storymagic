@@ -8,6 +8,7 @@ import Footer from "@/components/landing/Footer";
 import MobileStickyCta from "@/components/landing/MobileStickyCta";
 import FinalCta from "@/components/landing/FinalCta";
 import { cx, focusRing } from "@/components/ui";
+import { BreadcrumbJsonLd } from "@/components/seo/JsonLd";
 import { Breadcrumbs, PageHero, kicker, marketingH1, marketingLead } from "@/components/seo-landing/MarketingHeader";
 import { getPublishedPosts, getBlogLocales } from "@/lib/blog";
 
@@ -46,9 +47,46 @@ export default async function BlogIndex({ params }: PageProps) {
   const t = await getTranslations({ locale, namespace: "blog" });
   const ts = await getTranslations({ locale, namespace: "seo" });
   const posts = await getPublishedPosts(locale);
+  const pageUrl = `${BASE_URL}/${locale}${PATH}`;
+
+  // Blog (CollectionPage of BlogPostings): only once the locale has posts (an
+  // empty index is noindex, nothing to describe).
+  const blogJsonLd =
+    posts.length > 0
+      ? {
+          "@context": "https://schema.org",
+          "@type": ["Blog", "CollectionPage"],
+          "@id": `${pageUrl}#blog`,
+          name: t("title"),
+          description: t("subtitle"),
+          url: pageUrl,
+          inLanguage: locale,
+          isPartOf: { "@id": `${BASE_URL}/#website` },
+          publisher: { "@id": `${BASE_URL}/#organization` },
+          blogPost: posts.map((post) => ({
+            "@type": "BlogPosting",
+            headline: post.title,
+            description: post.excerpt,
+            url: `${pageUrl}/${post.slug}`,
+            inLanguage: locale,
+            author: { "@type": "Organization", name: post.author },
+            ...(post.publishedAt ? { datePublished: post.publishedAt } : {}),
+            ...(post.coverImageUrl ? { image: post.coverImageUrl } : {}),
+          })),
+        }
+      : null;
 
   return (
     <>
+      {blogJsonLd && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(blogJsonLd) }} />
+      )}
+      <BreadcrumbJsonLd
+        items={[
+          { name: ts("common.breadcrumbHome"), url: `${BASE_URL}/${locale}` },
+          { name: "Blog", url: pageUrl },
+        ]}
+      />
       <Navbar />
       <main>
         <PageHero className="pb-8! sm:pb-10!">

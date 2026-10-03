@@ -21,15 +21,17 @@ export function gaSessionId(cookie: string | undefined): string {
 
 /**
  * Send one purchase for a paid Checkout Session, attributed to the buyer's GA4
- * session. Only when the buyer accepted cookies (metadata.ads_consent, set by
- * /api/checkout) and gtag had set its client id. Never throws: tracking must
+ * session. Only when the buyer accepted analytics cookies (metadata.analytics_consent,
+ * set by /api/checkout; ga_cid is stored only then) and gtag had set its client id. Never throws: tracking must
  * not fail a payment webhook.
  */
 export async function sendGa4Purchase(session: Stripe.Checkout.Session): Promise<void> {
   const measurementId = process.env.NEXT_PUBLIC_GA4_ID;
   const apiSecret = process.env.GA4_API_SECRET;
   const meta = session.metadata ?? {};
-  if (meta.ads_consent !== "1") return; // no consent: nothing to send, by design
+  // No consent: nothing to send, by design. (Sessions created before the per-purpose banner
+  // carry only ads_consent, which then meant "everything accepted".)
+  if (meta.analytics_consent !== "1" && meta.ads_consent !== "1") return;
   if (!measurementId || !apiSecret) {
     // Consented purchase that can't be reported: say so instead of failing silently.
     console.warn(`[ga4-mp] purchase ${session.id} not sent: missing NEXT_PUBLIC_GA4_ID / GA4_API_SECRET`);
@@ -45,7 +47,11 @@ export async function sendGa4Purchase(session: Stripe.Checkout.Session): Promise
   const body = {
     client_id: meta.ga_cid,
     timestamp_micros: Date.now() * 1000,
-    consent: { ad_user_data: "GRANTED", ad_personalization: "GRANTED" },
+    // Ad signals only when the buyer also accepted advertising cookies.
+    consent:
+      meta.ads_consent === "1"
+        ? { ad_user_data: "GRANTED", ad_personalization: "GRANTED" }
+        : { ad_user_data: "DENIED", ad_personalization: "DENIED" },
     events: [
       {
         name: "purchase",

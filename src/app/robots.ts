@@ -17,6 +17,7 @@ export default function robots(): MetadataRoute.Robots {
       },
     ],
     sitemap: "https://meapica.shop/sitemap.xml",
-    host: "https://meapica.shop",
+    // No `Host:` line: Yandex-only and non-standard (Google ignores it); the
+    // canonical host is enforced by the middleware 308s and <link rel="canonical">.
   };
 }

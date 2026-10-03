@@ -6,7 +6,7 @@ import { getStripe, getStripeCatalog, PRICING, type BookFormat } from "@/lib/str
 import { routing, type Locale } from "@/i18n/routing";
 import { purchaseEligibility } from "@/lib/fulfilment/logic";
 import { buildCheckoutSession, checkoutOffer } from "@/lib/checkout/session";
-import { CONSENT_COOKIE, GA_SESSION_COOKIE, UTM_COOKIE } from "@/lib/tracking/consent";
+import { CONSENT_COOKIE, GA_SESSION_COOKIE, UTM_COOKIE, consentAllows, parseConsent } from "@/lib/tracking/consent";
 import { gaClientId, gaSessionId } from "@/lib/tracking/ga4-mp";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -28,22 +28,34 @@ function attributionMetadata(request: Request): Record<string, string> {
       }
     }),
   );
-  if (cookies.get(CONSENT_COOKIE) !== "granted") return {};
-  const meta: Record<string, string> = {
-    ads_consent: "1",
-    fbp: cookies.get("_fbp") ?? "",
-    fbc: cookies.get("_fbc") ?? "",
-    ttp: cookies.get("_ttp") ?? "",
-    ga_cid: gaClientId(cookies.get("_ga")),
-    ga_sid: GA_SESSION_COOKIE ? gaSessionId(cookies.get(GA_SESSION_COOKIE)) : "",
-    client_ip: (request.headers.get("x-forwarded-for") ?? "").split(",")[0].trim(),
-    client_ua: request.headers.get("user-agent") ?? "",
-    source_url: request.headers.get("referer") ?? "",
-  };
-  try {
-    Object.assign(meta, JSON.parse(cookies.get(UTM_COOKIE) ?? "{}"));
-  } catch {
-    // malformed cookie: no UTMs
+  // Per purpose (banner "Configurar"): ads → Meta/TikTok server events + UTMs; analytics → GA4.
+  const consent = parseConsent(cookies.get(CONSENT_COOKIE));
+  const ads = consentAllows(consent, "ads");
+  const analytics = consentAllows(consent, "analytics");
+  if (!ads && !analytics) return {};
+  const meta: Record<string, string> = {};
+  if (analytics) {
+    Object.assign(meta, {
+      analytics_consent: "1",
+      ga_cid: gaClientId(cookies.get("_ga")),
+      ga_sid: GA_SESSION_COOKIE ? gaSessionId(cookies.get(GA_SESSION_COOKIE)) : "",
+    });
+  }
+  if (ads) {
+    Object.assign(meta, {
+      ads_consent: "1",
+      fbp: cookies.get("_fbp") ?? "",
+      fbc: cookies.get("_fbc") ?? "",
+      ttp: cookies.get("_ttp") ?? "",
+      client_ip: (request.headers.get("x-forwarded-for") ?? "").split(",")[0].trim(),
+      client_ua: request.headers.get("user-agent") ?? "",
+      source_url: request.headers.get("referer") ?? "",
+    });
+    try {
+      Object.assign(meta, JSON.parse(cookies.get(UTM_COOKIE) ?? "{}"));
+    } catch {
+      // malformed cookie: no UTMs
+    }
   }
   return Object.fromEntries(
     Object.entries(meta)

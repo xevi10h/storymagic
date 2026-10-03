@@ -669,7 +669,7 @@
     "trustPreview": "See the first pages before you pay",
     "trustFormats": "Hardcover or softcover, PDF included",
     "sampleCta": "Look inside a book",
-    "coverCaption": "How they'll see their name for the first time · 20 × 20 cm",
+    "coverCaptionExample": "Example: {name}'s book, age {age} · 20 × 20 cm",
     "coverCaptionWithName": "How {name} will see their name for the first time · 20 × 20 cm"
   },
   "howItWorks": {
@@ -908,9 +908,9 @@
       "section3Title": "3. Purpose of processing",
       "section3Text": "We use your data only to: create the personalised story and its illustrated character, process payment and shipping, and contact you about your order. We never sell data to third parties.",
       "section4Title": "4. Legal basis",
-      "section4Text": "Creating, previewing and printing your book, managing your account, payment and shipping: performance of the contract you request (Art. 6(1)(b) GDPR). The child's photo: explicit consent of the child's parent or legal guardian (Art. 6(1)(a) GDPR and Art. 7 of Spain's LOPDGDD), which you can withdraw at any time. Newsletter and waitlist: your consent (Art. 6(1)(a) GDPR), which you can withdraw whenever you like. Keeping invoices and accounting records: legal obligation (Art. 6(1)(c) GDPR). Service security and abuse prevention (for example, usage limits): legitimate interest (Art. 6(1)(f) GDPR). Measuring our ads with Meta and TikTok and site and usage statistics with Google Analytics and PostHog (advertising and analytics cookies, and purchase event): your consent (Art. 6(1)(a) GDPR), which you can withdraw from \"Cookie settings\".",
+      "section4Text": "Creating, previewing and printing your book, managing your account, payment and shipping: performance of the contract you request (Art. 6(1)(b) GDPR). The child's photo: explicit consent of the child's parent or legal guardian (Art. 6(1)(a) GDPR and Art. 7 of Spain's LOPDGDD), which you can withdraw at any time. Newsletter and waitlist: your consent (Art. 6(1)(a) GDPR), which you can withdraw whenever you like. Keeping invoices and accounting records: legal obligation (Art. 6(1)(c) GDPR). Service security and abuse prevention (for example, usage limits): legitimate interest (Art. 6(1)(f) GDPR). Measuring our ads with Meta and TikTok and site and usage statistics with Google Analytics and PostHog (advertising and analytics cookies, and purchase event): your consent (Art. 6(1)(a) GDPR), which you can withdraw from \"Cookie settings\". Email reminders about your preview (3 at most, over 3 days, only if you tick the box when asking for the preview): your consent (Art. 6(1)(a) GDPR and Art. 21.1 LSSI), which you can withdraw by unsubscribing from any of those emails. We keep the date, the language and the version of the text you accepted as proof of consent.",
       "section5Title": "5. Processors and international transfers",
-      "section5Text": "To provide the service we work with providers that process data only on our instructions: OpenAI Ireland Ltd. (generating the story text and illustrations and, if you upload one, the character from the photo), Supabase (database and storage), Vercel (web hosting), Stripe Payments Europe Ltd. (payments), Gelato (printing and shipping), Resend (order emails), Cloudflare, Inc. (Turnstile, anti-bot verification at sign-in and when starting as a guest) and, only if you accept advertising and analytics cookies, Meta Platforms Ireland Ltd., TikTok Technology Limited (measuring our ads) Google Ireland Limited (Google Analytics, visit and purchase statistics) and PostHog, Inc. (site-usage statistics and anonymous session recordings, hosted in the EU). OpenAI does not use the data we send it to train its models and may keep it for up to 30 days to detect abuse. When a provider or its sub-processors process data outside the European Economic Area (for example, in the United States), the transfer relies on the European Commission's Standard Contractual Clauses or the EU-US Data Privacy Framework.",
+      "section5Text": "To provide the service we work with providers that process data only on our instructions: OpenAI Ireland Ltd. (generating the story text and illustrations and, if you upload one, the character from the photo), Supabase (database and storage), Vercel (web hosting), Stripe Payments Europe Ltd. (payments), Gelato (printing and shipping), Resend (order emails and the reminders you asked for), Cloudflare, Inc. (Turnstile, anti-bot verification at sign-in and when starting as a guest) and, only if you accept advertising and analytics cookies, Meta Platforms Ireland Ltd., TikTok Technology Limited (measuring our ads) Google Ireland Limited (Google Analytics, visit and purchase statistics) and PostHog, Inc. (site-usage statistics and anonymous session recordings, hosted in the EU). OpenAI does not use the data we send it to train its models and may keep it for up to 30 days to detect abuse. When a provider or its sub-processors process data outside the European Economic Area (for example, in the United States), the transfer relies on the European Commission's Standard Contractual Clauses or the EU-US Data Privacy Framework.",
       "section6Title": "6. Your rights",
       "section6Text": "You can exercise your rights of access, rectification, erasure, objection, restriction of processing and portability, and withdraw your consent at any time, by writing to hola@meapica.shop. We will reply within one month at the latest. If you believe we have not handled your data properly, you can lodge a complaint with the Spanish Data Protection Agency (AEPD, www.aepd.es).",
       "section7Title": "7. Children's data protection",
@@ -936,15 +936,15 @@
     },
     "cookies": {
       "title": "Cookie Policy",
-      "intro": "Meapica uses technical cookies the service needs to work and, only if you accept them, advertising cookies from Meta and TikTok , Google Analytics and PostHog analytics cookies.",
+      "intro": "Meapica uses technical cookies the service needs to work and, only if you accept them, advertising cookies from Meta and TikTok and analytics cookies from Google Analytics and PostHog.",
       "section1Title": "1. What are cookies?",
       "section1Text": "Cookies are small text files stored in your browser when visiting a website.",
       "section2Title": "2. Cookies we use",
-      "section2Text": "Technical (always on): keeping you signed in, remembering your language, handling the purchase and storing your cookie choice (meapica_consent, 12 months). Advertising (only with your consent): the Meta Pixel (_fbp and _fbc, 90 days) measures which Instagram and Facebook ads lead to a purchase and helps show them to people who may be interested; the TikTok pixel (_ttp, ttclid and _tt_enable_cookie, up to 13 months) does the same for TikTok ads; Google Analytics (_ga and _ga_*, up to 14 months) measures in aggregate how many people visit the site, where they come from and how many end up buying; PostHog (ph_*_posthog, 12 months) measures how the site is used (book creator steps, clicks) and records anonymous browsing sessions without the story's text or images or anything you type; meapica_utm (30 days) remembers which ad or post brought you here so it can be linked to your order.",
+      "section2Text": "Technical (always on): keeping you signed in, remembering your language, handling the purchase and storing your cookie choice (meapica_consent, 12 months). Analytics (only with your consent): Google Analytics (_ga and _ga_*, up to 14 months) measures in aggregate how many people visit the site, where they come from and how many end up buying; PostHog (ph_*_posthog, 12 months) measures how the site is used (book creator steps, clicks) and records anonymous browsing sessions without the story's text or images or anything you type. Advertising (only with your consent): the Meta Pixel (_fbp and _fbc, 90 days) measures which Instagram and Facebook ads lead to a purchase and helps show them to people who may be interested; the TikTok pixel (_ttp, ttclid and _tt_enable_cookie, up to 13 months) does the same for TikTok ads; meapica_utm (30 days) remembers which ad or post brought you here so it can be linked to your order.",
       "section3Title": "3. Third-party cookies",
-      "section3Text": "Meta Platforms Ireland Ltd., only if you accept advertising cookies: receives browsing data and, if you buy, the order amount and your hashed email and phone number to measure our ads. Meta may process data in the US under the EU-US Data Privacy Framework. TikTok Technology Limited (Ireland), only with the same consent: receives the same data to measure our TikTok ads and may process it outside the EEA under the European Commission's Standard Contractual Clauses. Google Ireland Limited (Google Analytics), only with the same consent: receives browsing data and, if you buy, the order amount and format (never your name, email or phone) to compile statistics; it may process data in the US under the EU-US Data Privacy Framework. PostHog, Inc. (EU servers, Frankfurt), only with the same consent: receives browsing and site-usage data and anonymous session recordings in which the child's name, the dedication, the story, its images and everything you type are hidden. Stripe (payment processor) may set its own cookies during payment.",
+      "section3Text": "Meta Platforms Ireland Ltd., only if you accept advertising cookies: receives browsing data and, if you buy, the order amount and your hashed email and phone number to measure our ads. Meta may process data in the US under the EU-US Data Privacy Framework. TikTok Technology Limited (Ireland), only with the same consent: receives the same data to measure our TikTok ads and may process it outside the EEA under the European Commission's Standard Contractual Clauses. Google Ireland Limited (Google Analytics), only if you accept analytics cookies: receives browsing data and, if you buy, the order amount and format (never your name, email or phone) to compile statistics; it may process data in the US under the EU-US Data Privacy Framework. PostHog, Inc. (EU servers, Frankfurt), only if you accept analytics cookies: receives browsing and site-usage data and anonymous session recordings in which the child's name, the dedication, the story, its images and everything you type are hidden. Stripe (payment processor) may set its own cookies during payment.",
       "section4Title": "4. Cookie management",
-      "section4Text": "You can accept or reject advertising cookies in the notice shown on your first visit and change your mind at any time from \"Cookie settings\" at the bottom of every page. If you reject them, the site works just the same. You can also delete them from your browser."
+      "section4Text": "You can accept, reject or configure by purpose (analytics and advertising) the non-essential cookies in the notice shown on your first visit and change your mind at any time from \"Cookie settings\" at the bottom of every page. If you reject them, the site works just the same. You can also delete them from your browser."
     },
     "faq": {
       "title": "Frequently Asked Questions",
@@ -1176,7 +1176,10 @@
       "genderBoy": "A boy",
       "genderNeutral": "Rather not say",
       "genderHint": "We only use it to write the story in feminine, masculine or neutral form.",
-      "nameRequired": "Type their name to continue"
+      "nameRequired": "Type their name to continue",
+      "ageHint": "We adapt the story and the type size to their age.",
+      "ageRequired": "Choose their age to continue.",
+      "genderRequired": "Choose an option to continue."
     },
     "protagonist": {
       "title": "What does {name} look like?",
@@ -1274,6 +1277,9 @@
       "send": "Email it to me",
       "sending": "Sending…",
       "sent": "Sent to {email}.",
+      "sentReminder": "Sent to {email}. We'll remind you by email, 3 times at most.",
+      "remindLabel": "Remind me by email: up to 3 reminders about this story over 3 days, with the order deadlines when Christmas or Three Kings' Day is near. You can unsubscribe in every email.",
+      "remindPrivacy": "Privacy",
       "invalid": "Check the email address.",
       "rateLimited": "We've already sent it several times. Try again later.",
       "error": "We couldn't send it. Please try again."
@@ -2711,9 +2717,21 @@
   },
   "cookieConsent": {
     "title": "Cookies",
-    "text": "We use cookies the site needs to work and, if you accept, Meta, TikTok, Google and PostHog cookies to measure our ads on Instagram, Facebook and TikTok, visits to the site and how it is used.",
+    "text": "We use our own and third-party cookies (Google, PostHog, Meta and TikTok) to analyse how the site is used and to measure and show you our ads based on your browsing. You can accept, reject or configure them.",
     "policy": "Learn more",
     "accept": "Accept",
-    "reject": "Reject"
+    "reject": "Reject",
+    "configure": "Settings",
+    "settingsTitle": "Cookie settings",
+    "necessaryTitle": "Necessary",
+    "necessaryText": "Sign-in, language, checkout and your cookie choice.",
+    "alwaysOn": "Always on",
+    "analyticsTitle": "Analytics",
+    "analyticsText": "Google Analytics and PostHog: how many visits we get and how the site is used.",
+    "adsTitle": "Advertising",
+    "adsText": "Meta and TikTok: measuring our ads and showing them to people who may be interested.",
+    "rejectAll": "Reject all",
+    "acceptAll": "Accept all",
+    "save": "Save selection"
   }
 }

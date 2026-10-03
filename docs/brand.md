@@ -319,7 +319,7 @@ styles in `BrandLoader.module.css`; `import { BrandLoader, PageLoader, Spinner }
   `common.loading` ("Cargando…"). All instances are phase-locked to the document timeline, so a
   route `loading.tsx` handing over to the page's own loader continues the same stroke.
 - **`PageLoader`**: full-viewport centred `BrandLoader size="lg"`. Used by the route `loading.tsx`
-  of `dashboard`, `profile`, `checkout/success`, `create/[storyId]`, `examples/[storyId]`.
+  of `dashboard`, `profile`, `checkout/success`, `create/[storyId]`, `examples/[slug]`.
 - **`Spinner`**: buttons and tiny inline waits (1em arc on a 22 % track, `currentColor`, 0.9 s).
   The drawn mark is legible down to ~24 px when static, but at 18–20 px a 2.4 s draw reads as a
   scribble and is slower than most button waits, so buttons keep a quiet spinner. `Button loading`

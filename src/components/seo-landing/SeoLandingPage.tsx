@@ -8,7 +8,7 @@ import FinalCta from "@/components/landing/FinalCta";
 import BookCollectionCard from "@/components/landing/BookCollectionCard";
 import type { CatalogWorld } from "@/components/landing/BookCollectionData";
 import LiveCover from "@/components/create/LiveCover";
-import { BreadcrumbJsonLd, FAQJsonLd } from "@/components/seo/JsonLd";
+import { BreadcrumbJsonLd, FAQJsonLd, ProductJsonLd } from "@/components/seo/JsonLd";
 import DeadlineCards from "@/components/seasonal/DeadlineCards";
 import { Heading, buttonClass, cx, focusRing } from "@/components/ui";
 import { STORY_TEMPLATES } from "@/lib/create-store";
@@ -74,7 +74,7 @@ export default async function SeoLandingPage({ type, slug, locale }: Props) {
     const book = showcase.find((s) => s.templateId === template.id && s.coverImage);
     return {
       template,
-      example: book ? { id: book.id, templateId: book.templateId, title: book.title, coverImage: book.coverImage } : null,
+      example: book ? { id: book.id, slug: book.slug, locale: book.locale, templateId: book.templateId, title: book.title, coverImage: book.coverImage } : null,
     };
   });
 
@@ -130,6 +130,7 @@ export default async function SeoLandingPage({ type, slug, locale }: Props) {
         ]}
       />
       <FAQJsonLd questions={faqs} />
+      <ProductJsonLd locale={locale} url={pageUrl} />
       <Navbar />
 
       <main>

@@ -1,9 +1,35 @@
 import { ImageResponse } from "next/og";
+import { createTranslator, hasLocale } from "next-intl";
+import { routing } from "@/i18n/routing";
+
+/**
+ * Translator for share images. `generateImageMetadata` runs outside a request scope
+ * (build-time page-data collection), where next-intl's `getTranslations` cannot run
+ * (its request config reads `headers()`), so the messages are loaded directly.
+ */
+export async function ogTranslator(locale: string, namespace: string) {
+  const loc = hasLocale(routing.locales, locale) ? locale : routing.defaultLocale;
+  const messages = (await import(`../messages/${loc}.json`)).default as Record<string, unknown>;
+  // Message keys are not statically typed in this project (dynamic keys everywhere).
+  return createTranslator({ locale: loc, messages, namespace } as Parameters<typeof createTranslator>[0]) as unknown as (
+    key: string,
+    values?: Record<string, string | number | Date>,
+  ) => string;
+}
 
 // Shared Open Graph image renderer for programmatic-SEO pages.
 // Matches the brand OG style (cream bg, warm gradient bar, Meapica mark).
 export const SEO_OG_SIZE = { width: 1200, height: 630 };
 export const SEO_OG_CONTENT_TYPE = "image/png";
+
+/**
+ * `generateImageMetadata` result of a share image: one image whose alt text is in
+ * the page's language ("Meapica — {headline}", the words drawn on it). A static
+ * `export const alt` cannot depend on the locale.
+ */
+export function ogImageMetadata(headline: string) {
+  return [{ id: "og", alt: `Meapica — ${headline}`, size: SEO_OG_SIZE, contentType: SEO_OG_CONTENT_TYPE }];
+}
 
 export function seoOgImage({
   eyebrow,

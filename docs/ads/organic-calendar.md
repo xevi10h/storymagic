@@ -1,6 +1,6 @@
 # Meapica · Organic calendar IG + TikTok · 5 Oct → 1 Nov 2026
 
-4 posts a week (Mon · Wed · Fri · Sun), alternating ES / CA. Videos are 9:16 and go to **Instagram Reels and TikTok**
+**Cadence (owner decision 2026-10-03): one post a day, in Spanish and Catalan** (both languages, alternating; Catalan is the least contested niche). The tables below are the original 4-a-week plan (Mon · Wed · Fri · Sun) and stay as the backbone; the daily runner fills the other days with short video first (the only format with reach in the first posts). The runner is not built yet: see `docs/roadmap.md`. Videos are 9:16 and go to **Instagram Reels and TikTok**
 (upload natively to each, no cross-watermarks); carousels go to **IG carousel + TikTok photo mode**.
 Assets reuse the kit in `docs/ads/creative-pack.md` (V = video script, S = static, example-book ids in §0).
 

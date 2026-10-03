@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
+import { clientMessages } from "@/i18n/client-messages";
 import Tracking from "@/components/tracking/Tracking";
 import RootDocument from "@/app/_components/RootDocument";
 
@@ -113,7 +114,8 @@ export default async function LocaleLayout({ children, params }: Props) {
   // and nested layout that should be static calls it too (Next renders them apart).
   setRequestLocale(locale);
 
-  const messages = await getMessages();
+  // Client components get every namespace except the server-only long-form copy.
+  const messages = clientMessages(await getMessages());
 
   return (
     <RootDocument lang={locale}>

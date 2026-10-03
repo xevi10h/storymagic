@@ -10,6 +10,7 @@ import { PRICING, formatPrice } from "@/lib/pricing";
 import { MAX_NAME_LENGTH, deName, firstName } from "@/lib/creation-flow";
 import { formatChildName } from "@/lib/child-name";
 import { createPageHref, setHeroName, useHeroName } from "./HeroNameStore";
+import { LANDING_EXAMPLE } from "./HowItWorksExample";
 
 /** Material Symbols glyph with a fixed box, so the late icon font never shifts the text. */
 function Icon({ name, className = "" }: { name: string; className?: string }) {
@@ -24,9 +25,9 @@ function Icon({ name, className = "" }: { name: string; className?: string }) {
 }
 
 /**
- * Landing hero: the child is the protagonist. The parent types the name, the real
- * cover from the creation flow (LiveCover) updates on every keystroke, and the CTA
- * opens /create with the name already filled in (?name=, read by the create-page prefill).
+ * Landing hero: the child is the protagonist. The cover is a real example book (Noa's painted
+ * front, printed-cover layout); the parent types the name, the title updates on every keystroke,
+ * and the CTA opens /create with the name already filled in (?name=, read by the create-page prefill).
  */
 export default function Hero() {
   const t = useTranslations("hero");
@@ -40,6 +41,8 @@ export default function Hero() {
   const priceFrom = formatPrice(PRICING.softcover.price, locale);
   const first = firstName(formatChildName(name));
   const ctaLabel = first ? t("ctaWithName", { deName: deName(first, locale) }) : t("cta");
+  // Until a name is typed the cover is the example child's own book ("La aventura de Noa").
+  const typed = name.trim().length > 0;
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     // Without JS the form still works: GET /{locale}/create?name=… (same prefill).
@@ -74,8 +77,9 @@ export default function Hero() {
           </p>
         </div>
 
-        {/* Live cover: the one priority image of the page */}
-        <div className="relative mx-auto mt-5 w-[min(50vw,220px)] sm:mt-8 sm:w-[280px] lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:mt-0 lg:w-full lg:self-center">
+        {/* Live cover: the one priority image of the page. Phones: sized so the price line
+            under the CTA still fits the first screen (iPhone 14 Safari, 390 × 664 visible). */}
+        <div className="relative mx-auto mt-4 w-[min(44vw,176px)] sm:mt-8 sm:w-[280px] lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:mt-0 lg:w-full lg:self-center">
           <div
             aria-hidden
             className="absolute left-1/2 top-1/2 -z-0 hidden aspect-square w-[118%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand/[0.06] sm:block"
@@ -87,19 +91,26 @@ export default function Hero() {
               className="absolute inset-0 translate-x-[3%] translate-y-[2.2%] rounded-[4px_14px_14px_4px] bg-surface shadow-book ring-1 ring-line-warm"
             />
             <LiveCover
-              name={name}
+              name={typed ? name : LANDING_EXAMPLE.childName}
+              gender={typed ? undefined : LANDING_EXAMPLE.gender}
               templateId={null}
+              imageUrl={LANDING_EXAMPLE.coverSrc}
+              titleAt="top"
               priority
-              sizes="(min-width: 1280px) 480px, (min-width: 1024px) 440px, (min-width: 640px) 280px, 50vw"
+              // Phones: the cover is ~172 CSS px wide, but a true 44vw hint makes 3x screens fetch the
+              // 640w file (~95 KB) for the LCP image. 128px picks the 384w one (~37 KB), still > 2x sharp.
+              sizes="(min-width: 1280px) 480px, (min-width: 1024px) 440px, (min-width: 640px) 280px, 128px"
             />
           </div>
           <p className="mt-5 hidden text-center text-xs font-medium text-ink-muted lg:block">
-            {first ? t("coverCaptionWithName", { name: first }) : t("coverCaption")}
+            {first
+              ? t("coverCaptionWithName", { name: first })
+              : t("coverCaptionExample", { name: LANDING_EXAMPLE.childName, age: LANDING_EXAMPLE.age })}
           </p>
         </div>
 
         {/* Name → CTA */}
-        <div className="mx-auto mt-5 w-full max-w-xl sm:mt-8 lg:col-start-1 lg:row-start-2 lg:mx-0 lg:mt-9 lg:self-start">
+        <div className="mx-auto mt-4 w-full max-w-xl sm:mt-8 lg:col-start-1 lg:row-start-2 lg:mx-0 lg:mt-9 lg:self-start">
           <form action={`/${locale}/create`} method="get" onSubmit={onSubmit} noValidate>
             <label
               htmlFor="hero-name"

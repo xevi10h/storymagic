@@ -54,6 +54,11 @@ assert.equal(ev.params.currency, "EUR");
 assert.equal(ev.params.session_id, "1700000123");
 assert.deepEqual(ev.params.items, [{ item_id: "softcover", item_name: "softcover", price: 34.9, quantity: 1 }]);
 
+// Analytics accepted, advertising rejected (banner "Configurar"): sent, with the ad signals denied.
+await sendGa4Purchase(session({ analytics_consent: "1", ga_cid: "123.456" }));
+assert.equal(calls.length, 2);
+assert.deepEqual(calls[1].body.consent, { ad_user_data: "DENIED", ad_personalization: "DENIED" });
+
 globalThis.fetch = (async () => {
   throw new Error("network down (expected in this check)");
 }) as typeof fetch;

@@ -79,6 +79,21 @@ export async function middleware(request: NextRequest) {
   // Step 1: Apply locale routing (redirects, rewrites)
   const response = intlMiddleware(request);
 
+  // Root "/" → "/es" is permanent (308) for crawlers and every visitor next-intl
+  // sends to the default locale (no cookie / Accept-Language → es): "/" has no
+  // content of its own and x-default is /es. A visitor detected as ca/en/fr keeps
+  // next-intl's 307 (the target depends on who asks). `no-store` stops browsers
+  // pinning the 308, so a later language choice (NEXT_LOCALE cookie) still wins.
+  if (request.nextUrl.pathname === "/" && response.status === 307) {
+    const location = response.headers.get("location");
+    if (location && new URL(location, request.url).pathname === `/${routing.defaultLocale}`) {
+      const permanent = NextResponse.redirect(new URL(location, request.url), 308);
+      response.cookies.getAll().forEach((cookie) => permanent.cookies.set(cookie));
+      permanent.headers.set("Cache-Control", "private, no-store");
+      return permanent;
+    }
+  }
+
   // ─── Waitlist gate ───
   const waitlistMode = process.env.WAITLIST_MODE === "true";
   if (waitlistMode) {

@@ -5,8 +5,15 @@ import { getAllPublishedPostRefs } from "@/lib/blog";
 import { CHRISTMAS_DELIVERY_PATH } from "@/lib/shipping";
 import { TOOL_IDS, TOOL_LOCALES, TOOLS_CONTENT_UPDATED, TOOLS_HUB_PATH, toolAlternates, toolPath } from "@/lib/tools/registry";
 import { GUIDES, GUIDE_IDS, GUIDES_CONTENT_UPDATED, guideAlternates } from "@/lib/guides";
+import { getShowcaseRefs } from "@/lib/showcase";
+import { showcasePath } from "@/lib/showcase-slug";
 
 const BASE_URL = "https://meapica.shop";
+
+// We only ship to Spain: until the es/ca pages are indexed, en/fr stay out of the sitemap so the
+// crawl budget of a young domain is not spent on them. The pages still exist, stay indexable and
+// keep their hreflang; add the locales back here once es/ca coverage is healthy.
+const SITEMAP_LOCALES: readonly string[] = ["es", "ca"];
 
 function buildAlternates(path: string): Record<string, string> {
   const languages: Record<string, string> = {};
@@ -145,9 +152,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("[Sitemap] Failed to fetch blog posts:", error);
   }
 
-  // Individual showcase stories (/examples/[storyId]) are deliberately NOT
-  // listed: they are client-rendered shells (the viewer is ssr:false, no story
-  // text in the HTML), so Google sees thin pages. Re-add once the text is SSR'd.
+  // ── Example books (/examples/{slug}): server-rendered, one URL per locale
+  // edition, hreflang between the editions of the same book ──────────────
+  try {
+    const refs = await getShowcaseRefs();
+    for (const ref of refs) {
+      if (!routing.locales.includes(ref.locale as (typeof routing.locales)[number])) continue;
+      const languages: Record<string, string> = {};
+      for (const edition of refs.filter((r) => r.groupId === ref.groupId)) {
+        languages[edition.locale] = `${BASE_URL}/${edition.locale}${showcasePath(edition.slug)}`;
+      }
+      // Same x-default rule as the page's HTML hreflang.
+      if (languages[routing.defaultLocale]) languages["x-default"] = languages[routing.defaultLocale];
+      entries.push({
+        url: `${BASE_URL}/${ref.locale}${showcasePath(ref.slug)}`,
+        changeFrequency: "monthly",
+        priority: 0.6,
+        alternates: { languages },
+      });
+    }
+  } catch (error) {
+    console.error("[Sitemap] Failed to fetch example books:", error);
+  }
 
-  return entries;
+  return entries.filter((entry) => SITEMAP_LOCALES.includes(entry.url.slice(BASE_URL.length + 1).split("/")[0]));
 }

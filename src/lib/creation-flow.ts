@@ -94,10 +94,21 @@ export function migrateCreateState(raw: unknown): CreateBookState {
       ? { id: raw.createdStory.id, snapshot: raw.createdStory.snapshot }
       : null;
 
+  // Drafts saved before the explicit age/gender choice: a parent who already moved past
+  // screen 1 (or created the book) made it; a draft still on screen 1 asks again.
+  const rawConfirmed = isRecord(raw.basicsConfirmed) ? raw.basicsConfirmed : null;
+  const legacyConfirmed = !rawConfirmed && (rawStep >= 2 || createdStory !== null);
+  const basicsConfirmed = {
+    age: rawConfirmed ? rawConfirmed.age === true : legacyConfirmed,
+    gender: rawConfirmed ? rawConfirmed.gender === true : legacyConfirmed,
+  };
+  if (!basicsConfirmed.age || !basicsConfirmed.gender) currentStep = 1;
+
   return {
     ...base,
     version: 2,
     currentStep,
+    basicsConfirmed,
     mode: raw.mode === "juntos" ? "juntos" : "solo",
     character,
     protagonistMode: isV2 && raw.protagonistMode === "photo" ? "photo" : "avatar",

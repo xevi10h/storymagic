@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { illustrationPath, toShowcaseUrl } from "@/lib/storage/illustration-refs";
-import { SHOWCASE_STATUSES, showcaseReadClient } from "@/lib/showcase";
+import { SHOWCASE_STATUSES, getShowcaseRefs, showcaseReadClient } from "@/lib/showcase";
+import { showcaseSlug } from "@/lib/showcase-slug";
 
 export async function GET(request: Request) {
   const supabase = showcaseReadClient();
@@ -13,6 +14,7 @@ export async function GET(request: Request) {
     .from("stories")
     .select(`
       id,
+      title,
       template_id,
       generated_text,
       locale,
@@ -38,6 +40,9 @@ export async function GET(request: Request) {
       { status: 500 },
     );
   }
+
+  // Readable /examples/{slug} links (an outage there degrades to the title's slug).
+  const slugs = new Map((await getShowcaseRefs().catch(() => [])).map((r) => [r.id, r.slug]));
 
   // Transform data to only expose what the landing page needs
   const showcase = (stories ?? []).map((story) => {
@@ -71,10 +76,13 @@ export async function GET(request: Request) {
       gender: string;
     };
 
+    const title = story.title || generated?.bookTitle || "Untitled";
     return {
       id: story.id,
+      slug: slugs.get(story.id) ?? showcaseSlug(title),
+      locale: story.locale ?? "es",
       templateId: story.template_id,
-      title: generated?.bookTitle ?? "Untitled",
+      title,
       coverImage,
       characterName: character?.name ?? "",
       characterAge: character?.age ?? 0,

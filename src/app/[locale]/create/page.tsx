@@ -10,6 +10,7 @@ import {
   INITIAL_STATE,
   type CharacterData,
   type CreateBookState,
+  type Gender,
   type ProtagonistMode,
   type TreeChoice,
 } from "@/lib/create-store";
@@ -97,11 +98,15 @@ function CrearPageContent() {
 
     void (async () => {
       let character: CharacterData = nameParam ? { ...INITIAL_STATE.character, name: nameParam } : INITIAL_STATE.character;
+      // A saved character carries its own age/gender; anything else asks for them on screen 1.
+      const basicsConfirmed = { ...INITIAL_STATE.basicsConfirmed };
       if (characterIdParam) {
         try {
           const res = await fetch(`/api/characters/${characterIdParam}`);
           if (res.ok) {
             const { character: ch } = await res.json();
+            basicsConfirmed.age = typeof ch.age === "number";
+            basicsConfirmed.gender = ch.gender === "boy" || ch.gender === "girl" || ch.gender === "neutral";
             character = {
               ...INITIAL_STATE.character,
               name: formatChildName(ch.name ?? ""),
@@ -125,9 +130,10 @@ function CrearPageContent() {
       setState({
         ...INITIAL_STATE,
         character,
+        basicsConfirmed,
         selectedTemplate: templateParam ?? null,
         // A saved character is complete (skip to step 2); a typed name still needs age + gender.
-        currentStep: characterIdParam && character.name.trim() ? 2 : 1,
+        currentStep: characterIdParam && character.name.trim() && basicsConfirmed.age && basicsConfirmed.gender ? 2 : 1,
       });
       // Clean URL so a reload resumes the draft instead of re-applying the prefill
       router.replace("/create");
@@ -151,14 +157,16 @@ function CrearPageContent() {
   }, [state.currentStep, router, setStep]);
 
   const hasName = state.character.name.trim().length > 0;
+  // Screen 1 is complete only with a name and an explicit age + gender (never defaults).
+  const basicsDone = hasName && state.basicsConfirmed.age && state.basicsConfirmed.gender;
   const canNavigate = useCallback(
     (step: number) => {
       if (step === 1) return true;
-      if (step === 2 || step === 3) return hasName;
+      if (step === 2 || step === 3) return basicsDone;
       // Screens 4–6 exist once the book was created from this exact draft
       return !!state.createdStory && state.createdStory.snapshot === storyInputSnapshot(state, locale);
     },
-    [hasName, state, locale],
+    [basicsDone, state, locale],
   );
   const onStepClick = useCallback(
     (step: number) => {
@@ -197,6 +205,21 @@ function CrearPageContent() {
       });
     },
     [setState],
+  );
+
+  const pickAge = useCallback(
+    (age: number) => {
+      updateCharacter({ age });
+      setState((prev) => ({ ...prev, basicsConfirmed: { ...prev.basicsConfirmed, age: true } }));
+    },
+    [updateCharacter, setState],
+  );
+  const pickGender = useCallback(
+    (gender: Gender) => {
+      updateCharacter({ gender });
+      setState((prev) => ({ ...prev, basicsConfirmed: { ...prev.basicsConfirmed, gender: true } }));
+    },
+    [updateCharacter, setState],
   );
 
   const setMode = useCallback(
@@ -344,7 +367,7 @@ function CrearPageContent() {
     );
   }
 
-  const step = hasName ? state.currentStep : 1;
+  const step = basicsDone ? state.currentStep : 1;
 
   return (
     <div className="flex min-h-[100dvh] flex-col bg-create-bg font-sans text-create-text">
@@ -358,10 +381,13 @@ function CrearPageContent() {
       {step === 1 && (
         <StepName
           character={state.character}
+          basicsConfirmed={state.basicsConfirmed}
           selectedTemplate={state.selectedTemplate}
           onUpdateCharacter={updateCharacter}
+          onPickAge={pickAge}
+          onPickGender={pickGender}
           onNext={() => {
-            if (!hasName) return;
+            if (!basicsDone) return;
             // Enter submits without a blur: normalise here too (lib/child-name)
             updateCharacter({ name: formatChildName(state.character.name) });
             setStep(2);

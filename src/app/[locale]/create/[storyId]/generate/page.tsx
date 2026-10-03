@@ -11,6 +11,7 @@ import DedicationEditor from "@/components/create/DedicationEditor";
 import { useDedicationAutosave } from "@/hooks/useDedicationAutosave";
 import { deName, patchStoredDraft, type NameGender } from "@/lib/creation-flow";
 import { Spinner } from "@/components/ui/Spinner";
+import { trackEvent } from "@/lib/tracking/consent";
 
 // Screen 4 — "Mientras se pinta": real preview progress (cover first, then
 // scenes as they are painted) while the parent writes the dedication.
@@ -169,6 +170,14 @@ export default function GenerarPage() {
   const finish = useCallback(() => {
     stopPolling();
     if (!mountedRef.current) return;
+    // Funnel: the preview this browser was waiting for is ready (once per generation: the
+    // marker is cleared right below; a revisit of a finished book has none). The server
+    // records the same moment in stories.preview_ready_at, whatever the cookie choice.
+    const started = readStartedAt(storyId);
+    if (started != null) {
+      const seconds = Math.round((Date.now() - started) / 1000);
+      trackEvent("preview_ready", seconds >= 0 && seconds <= 900 ? { seconds } : undefined);
+    }
     writeStartedAt(storyId, null);
     setPhase("done");
     void loadDetails(); // real cover for the ready state
@@ -254,6 +263,8 @@ export default function GenerarPage() {
           startPolling();
           if (isRetry || !autoPostFired.current) {
             autoPostFired.current = true;
+            // Funnel: the parent asked for the book to be painted (server: stories.generation_started_at).
+            trackEvent("generation_start", { retry: isRetry });
             void firePost();
           }
           return;

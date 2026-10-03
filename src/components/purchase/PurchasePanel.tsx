@@ -328,12 +328,22 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
         </p>
       )}
 
+      {/* Print guarantee right under the pay button (terms section 5), printed formats only */}
+      {SHOW_REPRINT_GUARANTEE && !isDigital && (
+        <p
+          data-testid="reprint-guarantee"
+          className="mt-2.5 flex items-start justify-center gap-1.5 rounded-xl bg-success/[0.08] px-3 py-2 text-[12.5px] font-semibold leading-snug text-create-text-dark"
+        >
+          <span aria-hidden className="material-symbols-outlined mt-px text-[17px] text-success">verified</span>
+          <span>{t("trustReprint")}</span>
+        </p>
+      )}
+
       {/* Verifiable trust only (no ratings, no counts) */}
       <ul className="mt-4 space-y-1.5 border-t border-create-neutral pt-4 text-[13px] text-create-text">
         <TrustLine icon="auto_stories">{t("trustPreview")}</TrustLine>
         <TrustLine icon="lock">{t("trustPayment")}</TrustLine>
         <TrustLine icon="home_pin">{t("trustMadeIn")}</TrustLine>
-        {SHOW_REPRINT_GUARANTEE && <TrustLine icon="verified">{t("trustReprint")}</TrustLine>}
       </ul>
     </div>
   );

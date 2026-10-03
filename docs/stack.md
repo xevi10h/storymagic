@@ -81,7 +81,7 @@ which records the version, or the SQL editor followed by
 6. **Apply** 140400 (flip `illustrations` to private + owner read policies).
 7. **Apply** 140500 whenever convenient.
 8. Smoke test: preview of an existing story, dashboard avatar, a new book's generating screen and
-   preview, `/examples/[id]`, an old public illustrations URL → 400. `GET /api/cron/purge-photos`
+   preview, `/examples/[slug]`, an old public illustrations URL → 400. `GET /api/cron/purge-photos`
    with the bearer secret → 200.
 
 **Rollback:** `update storage.buckets set public = true where id = 'illustrations';` (code keeps working).
@@ -267,7 +267,9 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   `Tracking.tsx`). Ingestion through our own proxy `/ingest/*` → `eu.i.posthog.com` / `eu-assets.i.posthog.com` (rewrites in
   `next.config.ts`, `/ingest` excluded from the middleware matcher; `skipTrailingSlashRedirect` is on, so the middleware does
   the `/x/` → `/x` 308 itself). Events: autocapture, `$pageview` on history change, `create_step` (step 1-3 of `/create`) and
-  every `trackEvent()` name (ViewContent, AddToCart, InitiateCheckout, Purchase, Lead, ToolDownload). Privacy: on
+  every `trackEvent()` name (ViewContent, AddToCart, InitiateCheckout, Purchase, Lead, ToolDownload, and since 2026-10-03
+  `generation_start` {retry} / `preview_ready` {seconds} from `/create/<id>/generate`, also sent to GA4 under the same names and to
+  Meta as custom events). Privacy: on
   `/create|dashboard|profile|checkout|preview|auth` replay masks all text, text attributes and inputs and autocapture drops
   element text; signed/blob/data images are blocked; `/preview/<token>` sends nothing. Withdrawal: opt-out, persistence off,
   every `ph_*` cookie/storage key deleted. Headless browsers are dropped as bots (test with real Chrome). Project settings:
@@ -291,6 +293,31 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   Run now: `launchctl kickstart gui/$(id -u)/com.casmar.meapica-seo-weekly`.
   Disable: `launchctl bootout gui/$(id -u)/com.casmar.meapica-seo-weekly` (and delete the plist to make it permanent;
   re-enable with `launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.casmar.meapica-seo-weekly.plist`).
+
+## Growth funnel + abandoned-preview reminders (2026-10-03)
+
+- **Consent-independent funnel:** `stories.generation_started_at` / `stories.preview_ready_at` are set by the DB trigger
+  `stories_funnel_timestamps` (first draft → generating, first preview-or-later status; the app never writes them).
+  `node scripts/growth-funnel.mjs [--days N | --from YYYY-MM-DD --to YYYY-MM-DD] [--json] [--exclude-email X]` prints stories
+  created → generation started → preview ready → order created → paid by Madrid day of story creation, with refunds, revenue
+  (IVA incluido) and a per-locale split. Read-only through the Management API (`/database/query/read-only`, token `SUPABASE_PAT`
+  from env/.env.local or `~/.config/supabase-profiles/meapica`). Excludes showcase stories, test/e2e/admin users
+  (`TEST_EMAIL_PATTERNS` in the script + `ADMIN_EMAILS` + `--exclude-email`) and 0 € paid orders. Falls back to story status
+  until the migration is applied. `--json` feeds the weekly growth report.
+- **Abandoned-preview reminders:** cron `/api/cron/preview-reminders` (vercel.json, every 15 min, `CRON_SECRET`; `?dry_run=1`,
+  `?limit=N`, `?ignore_quiet=1`). Table `preview_reminders` (service role only). No new env vars: uses `RESEND_API_KEY`,
+  `EMAIL_FROM`, `NEXT_PUBLIC_SITE_URL`, `SUPABASE_SERVICE_ROLE_KEY` (unsubscribe + share-token keys). Cover images in the email
+  go through `GET /api/preview-image/<share token>` (302 to a 10-min signed URL of the private bucket). Checks:
+  `npx tsx scripts/check-preview-reminders.mts`.
+- **Meta CAPI logging (2026-10-03):** `sendMetaPurchase()` logs one line per outcome (`sent (live|test:CODE): events_received=1
+  fbtrace_id=…`, `REJECTED …`, `NOT confirmed`, `FAILED`) and every skip reason. Vercel prod env vars are `sensitive`: `vercel env
+  pull` returns them EMPTY, so an empty pulled value is not evidence of an empty secret.
+
+### Deploy order — funnel + reminders (2026-10-03)
+
+| Version | File | When |
+|---|---|---|
+| 20261003120000 | `funnel_and_preview_reminders.sql` (stories funnel columns + trigger + backfill, `preview_reminders`) | **before** the deploy (additive; the send-preview route degrades gracefully without it, the cron would fail) |
 
 ## Product feeds — Google Merchant Center + ChatGPT (2026-10-02)
 

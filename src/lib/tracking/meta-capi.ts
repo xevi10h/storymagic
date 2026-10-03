@@ -8,6 +8,13 @@ import { purchaseEventId } from "./consent";
 
 const GRAPH_VERSION = "v26.0";
 
+/** POST /{dataset}/events response: success fields, or Graph's error envelope. */
+type MetaEventsResponse = {
+  events_received?: number;
+  fbtrace_id?: string;
+  error?: { message?: string; type?: string; code?: number; error_subcode?: number; error_user_msg?: string; fbtrace_id?: string };
+};
+
 const sha256 = (v: string) => createHash("sha256").update(v.trim().toLowerCase()).digest("hex");
 
 /** Spanish numbers without country code get 34; Meta wants digits only, with country code. */
@@ -23,17 +30,25 @@ function normalizePhone(phone: string): string {
  */
 export async function sendMetaPurchase(session: Stripe.Checkout.Session): Promise<void> {
   const pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
-  const token = process.env.META_CAPI_TOKEN;
+  // .trim(): a stray newline in the env value would make Meta reject the token.
+  const token = process.env.META_CAPI_TOKEN?.trim();
   const testCode = process.env.META_CAPI_TEST_EVENT_CODE;
   const meta = session.metadata ?? {};
-  if (meta.ads_consent !== "1") return; // no ads consent: nothing to send, by design
+  if (meta.ads_consent !== "1") {
+    console.info(`[meta-capi] Purchase ${session.id} skipped: no ads consent`); // by design
+    return;
+  }
   if (!pixelId || !token) {
-    // Consented purchase that can't be reported: say so instead of failing silently.
-    console.warn(`[meta-capi] Purchase ${session.id} not sent: missing NEXT_PUBLIC_META_PIXEL_ID / META_CAPI_TOKEN`);
+    // Consented purchase that can't be reported. Names which one is missing (never the value).
+    const missing = [!pixelId && "NEXT_PUBLIC_META_PIXEL_ID", !token && "META_CAPI_TOKEN"].filter(Boolean).join(", ");
+    console.error(`[meta-capi] Purchase ${session.id} NOT sent: missing ${missing}`);
     return;
   }
   // Test-mode payments only reach Meta as test events (Events Manager › Test events).
-  if (!session.livemode && !testCode) return;
+  if (!session.livemode && !testCode) {
+    console.info(`[meta-capi] Purchase ${session.id} skipped: test-mode payment and no META_CAPI_TEST_EVENT_CODE`);
+    return;
+  }
 
   const email = session.customer_details?.email ?? session.customer_email;
   const phone = session.customer_details?.phone;
@@ -70,6 +85,8 @@ export async function sendMetaPurchase(session: Stripe.Checkout.Session): Promis
     ...(session.livemode ? {} : { test_event_code: testCode }),
   };
 
+  // Every outcome is logged: a 200 with nothing in the logs is indistinguishable from "never ran".
+  const mode = session.livemode ? "live" : `test:${testCode}`;
   try {
     const res = await fetch(`https://graph.facebook.com/${GRAPH_VERSION}/${pixelId}/events?access_token=${encodeURIComponent(token)}`, {
       method: "POST",
@@ -77,8 +94,26 @@ export async function sendMetaPurchase(session: Stripe.Checkout.Session): Promis
       body: JSON.stringify(body),
       signal: AbortSignal.timeout(5000),
     });
-    if (!res.ok) console.error(`[meta-capi] Purchase ${session.id} rejected: ${res.status} ${await res.text()}`);
+    const text = await res.text();
+    let json: MetaEventsResponse = {};
+    try {
+      json = JSON.parse(text) as MetaEventsResponse;
+    } catch {
+      // non-JSON body (proxy/HTML error): logged raw below
+    }
+    if (res.ok && json.events_received === 1) {
+      console.info(`[meta-capi] Purchase ${session.id} sent (${mode}): events_received=1 fbtrace_id=${json.fbtrace_id ?? "-"}`);
+    } else if (json.error) {
+      const e = json.error;
+      console.error(
+        `[meta-capi] Purchase ${session.id} REJECTED (${mode}): http=${res.status} code=${e.code ?? "-"} subcode=${e.error_subcode ?? "-"} type=${e.type ?? "-"} fbtrace_id=${e.fbtrace_id ?? "-"} message=${e.message ?? "-"}${e.error_user_msg ? ` detail=${e.error_user_msg}` : ""}`,
+      );
+    } else {
+      // 2xx without events_received=1, or an unparseable body.
+      console.error(`[meta-capi] Purchase ${session.id} NOT confirmed (${mode}): http=${res.status} body=${text.slice(0, 500)}`);
+    }
   } catch (err) {
-    console.error(`[meta-capi] Purchase ${session.id} failed:`, err);
+    const reason = err instanceof Error ? `${err.name}: ${err.message}` : String(err);
+    console.error(`[meta-capi] Purchase ${session.id} FAILED (${mode}): ${reason}`);
   }
 }

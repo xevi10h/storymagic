@@ -701,7 +701,7 @@
     "trustPreview": "Veus les primeres pàgines abans de pagar",
     "trustFormats": "Tapa dura o tova, amb PDF inclòs",
     "sampleCta": "Veure un conte per dins",
-    "coverCaption": "Així veurà el seu nom per primer cop · 20 × 20 cm",
+    "coverCaptionExample": "Exemple: el conte de la {name}, {age} anys · 20 × 20 cm",
     "coverCaptionWithName": "Així veurà {name} el seu nom per primer cop · 20 × 20 cm"
   },
   "howItWorks": {
@@ -940,9 +940,9 @@
       "section3Title": "3. Finalitat del tractament",
       "section3Text": "Utilitzem les teves dades exclusivament per: generar el conte personalitzat i el seu personatge il·lustrat, processar el pagament i l'enviament, i comunicar-nos amb tu sobre la teva comanda. Mai no venem dades a tercers.",
       "section4Title": "4. Base legal",
-      "section4Text": "Crear, previsualitzar i imprimir el teu llibre, gestionar el teu compte, el pagament i l'enviament: execució del contracte que ens demanes (art. 6.1.b RGPD). Foto de l'infant: consentiment explícit de la seva mare, pare o tutor legal (art. 6.1.a RGPD i art. 7 LOPDGDD), que pots retirar en qualsevol moment. Butlletí i llista d'espera: el teu consentiment (art. 6.1.a RGPD), que pots retirar quan vulguis. Conservació de factures i registres comptables: obligació legal (art. 6.1.c RGPD). Seguretat del servei i prevenció d'abusos (per exemple, límits d'ús): interès legítim (art. 6.1.f RGPD). Mesura dels nostres anuncis amb Meta i TikTok i estadístiques de visites i d'ús amb Google Analytics i PostHog (cookies publicitàries i d'anàlisi, i esdeveniment de compra): el teu consentiment (art. 6.1.a RGPD), que pots retirar des de «Configurar cookies».",
+      "section4Text": "Crear, previsualitzar i imprimir el teu llibre, gestionar el teu compte, el pagament i l'enviament: execució del contracte que ens demanes (art. 6.1.b RGPD). Foto de l'infant: consentiment explícit de la seva mare, pare o tutor legal (art. 6.1.a RGPD i art. 7 LOPDGDD), que pots retirar en qualsevol moment. Butlletí i llista d'espera: el teu consentiment (art. 6.1.a RGPD), que pots retirar quan vulguis. Conservació de factures i registres comptables: obligació legal (art. 6.1.c RGPD). Seguretat del servei i prevenció d'abusos (per exemple, límits d'ús): interès legítim (art. 6.1.f RGPD). Mesura dels nostres anuncis amb Meta i TikTok i estadístiques de visites i d'ús amb Google Analytics i PostHog (cookies publicitàries i d'anàlisi, i esdeveniment de compra): el teu consentiment (art. 6.1.a RGPD), que pots retirar des de «Configurar cookies». Recordatoris de la teva vista prèvia per correu (com a màxim 3, durant 3 dies, només si marques la casella quan ens demanes la vista prèvia): el teu consentiment (art. 6.1.a RGPD i art. 21.1 LSSI), que pots retirar donant-te de baixa des de qualsevol d'aquests correus. Desem la data, l'idioma i la versió del text que vas acceptar com a prova del consentiment.",
       "section5Title": "5. Encarregats del tractament i transferències internacionals",
-      "section5Text": "Per prestar el servei treballem amb proveïdors que tracten les dades només seguint les nostres instruccions: OpenAI Ireland Ltd. (generació del text i les il·lustracions del conte i, si la puges, del personatge a partir de la foto), Supabase (base de dades i emmagatzematge), Vercel (allotjament web), Stripe Payments Europe Ltd. (pagaments), Gelato (impressió i enviament), Resend (correus de la comanda), Cloudflare, Inc. (Turnstile, verificació antibots en iniciar sessió i en començar com a convidat) i, només si acceptes les cookies publicitàries i d'anàlisi, Meta Platforms Ireland Ltd., TikTok Technology Limited (mesura dels nostres anuncis) Google Ireland Limited (Google Analytics, estadístiques de visites i compres) i PostHog, Inc. (estadístiques d'ús de la web i enregistraments anònims de sessió, allotjats a la UE). OpenAI no fa servir les dades que li enviem per entrenar els seus models i les pot conservar fins a 30 dies per detectar abusos. Quan un proveïdor o els seus subencarregats tracten dades fora de l'Espai Econòmic Europeu (per exemple, als Estats Units), la transferència s'empara en les clàusules contractuals tipus aprovades per la Comissió Europea o en el Marc de Privadesa de Dades UE-EUA.",
+      "section5Text": "Per prestar el servei treballem amb proveïdors que tracten les dades només seguint les nostres instruccions: OpenAI Ireland Ltd. (generació del text i les il·lustracions del conte i, si la puges, del personatge a partir de la foto), Supabase (base de dades i emmagatzematge), Vercel (allotjament web), Stripe Payments Europe Ltd. (pagaments), Gelato (impressió i enviament), Resend (correus de la comanda i recordatoris que hagis demanat), Cloudflare, Inc. (Turnstile, verificació antibots en iniciar sessió i en començar com a convidat) i, només si acceptes les cookies publicitàries i d'anàlisi, Meta Platforms Ireland Ltd., TikTok Technology Limited (mesura dels nostres anuncis) Google Ireland Limited (Google Analytics, estadístiques de visites i compres) i PostHog, Inc. (estadístiques d'ús de la web i enregistraments anònims de sessió, allotjats a la UE). OpenAI no fa servir les dades que li enviem per entrenar els seus models i les pot conservar fins a 30 dies per detectar abusos. Quan un proveïdor o els seus subencarregats tracten dades fora de l'Espai Econòmic Europeu (per exemple, als Estats Units), la transferència s'empara en les clàusules contractuals tipus aprovades per la Comissió Europea o en el Marc de Privadesa de Dades UE-EUA.",
       "section6Title": "6. Els teus drets",
       "section6Text": "Pots exercir els teus drets d'accés, rectificació, supressió, oposició, limitació del tractament i portabilitat, i retirar el teu consentiment en qualsevol moment, escrivint a hola@meapica.shop. Et respondrem en el termini màxim d'un mes. Si consideres que no hem tractat les teves dades correctament, pots presentar una reclamació davant l'Agència Espanyola de Protecció de Dades (www.aepd.es).",
       "section7Title": "7. Protecció de dades de menors",
@@ -972,11 +972,11 @@
       "section1Title": "1. Què són les cookies?",
       "section1Text": "Les cookies són petits arxius de text que s'emmagatzemen al teu navegador en visitar un lloc web.",
       "section2Title": "2. Cookies que utilitzem",
-      "section2Text": "Tècniques (sempre actives): mantenir la teva sessió, recordar l'idioma, gestionar la compra i desar la teva elecció sobre cookies (meapica_consent, 12 mesos). Publicitàries (només amb el teu consentiment): el píxel de Meta (_fbp i _fbc, 90 dies) mesura quins anuncis d'Instagram i Facebook acaben en una compra i ajuda a mostrar-los a qui li poden interessar; el píxel de TikTok (_ttp, ttclid i _tt_enable_cookie, fins a 13 mesos) fa el mateix amb els anuncis de TikTok; Google Analytics (_ga i _ga_*, fins a 14 mesos) mesura de manera agregada quantes persones visiten la web, d'on arriben i quantes acaben comprant; PostHog (ph_*_posthog, 12 mesos) mesura com es fa servir la web (passos del creador del llibre, clics) i enregistra sessions anònimes de navegació sense els textos ni les imatges del conte ni el que escrius; meapica_utm (30 dies) recorda des de quin anunci o publicació has arribat per associar-ho a la teva comanda.",
+      "section2Text": "Tècniques (sempre actives): mantenir la teva sessió, recordar l'idioma, gestionar la compra i desar la teva elecció sobre cookies (meapica_consent, 12 mesos). D'anàlisi (només amb el teu consentiment): Google Analytics (_ga i _ga_*, fins a 14 mesos) mesura de manera agregada quantes persones visiten la web, d'on arriben i quantes acaben comprant; PostHog (ph_*_posthog, 12 mesos) mesura com es fa servir la web (passos del creador del llibre, clics) i enregistra sessions anònimes de navegació sense els textos ni les imatges del conte ni el que escrius. Publicitàries (només amb el teu consentiment): el píxel de Meta (_fbp i _fbc, 90 dies) mesura quins anuncis d'Instagram i Facebook acaben en una compra i ajuda a mostrar-los a qui li poden interessar; el píxel de TikTok (_ttp, ttclid i _tt_enable_cookie, fins a 13 mesos) fa el mateix amb els anuncis de TikTok; meapica_utm (30 dies) recorda des de quin anunci o publicació has arribat per associar-ho a la teva comanda.",
       "section3Title": "3. Cookies de tercers",
-      "section3Text": "Meta Platforms Ireland Ltd., només si acceptes les cookies publicitàries: rep dades de navegació i, si compres, l'import de la comanda i el teu correu i telèfon xifrats (hash) per mesurar els nostres anuncis. Meta pot tractar dades als EUA a l'empara del Marc de Privadesa de Dades UE-EUA. TikTok Technology Limited (Irlanda), només amb el mateix consentiment: rep les mateixes dades per mesurar els nostres anuncis a TikTok i les pot tractar fora de l'EEE a l'empara de clàusules contractuals tipus de la Comissió Europea. Google Ireland Limited (Google Analytics), només amb el mateix consentiment: rep dades de navegació i, si compres, l'import i el format de la comanda (mai el teu nom, correu ni telèfon) per elaborar estadístiques; les pot tractar als EUA a l'empara del Marc de Privadesa de Dades UE-EUA. PostHog, Inc. (servidors a la UE, Frankfurt), només amb el mateix consentiment: rep dades de navegació i d'ús de la web i enregistraments anònims de la sessió en què s'amaguen el nom de l'infant, la dedicatòria, el conte, les seves imatges i tot el que escrius. Stripe (processador de pagaments) pot establir les seves pròpies cookies durant el pagament.",
+      "section3Text": "Meta Platforms Ireland Ltd., només si acceptes les cookies publicitàries: rep dades de navegació i, si compres, l'import de la comanda i el teu correu i telèfon xifrats (hash) per mesurar els nostres anuncis. Meta pot tractar dades als EUA a l'empara del Marc de Privadesa de Dades UE-EUA. TikTok Technology Limited (Irlanda), només amb el mateix consentiment: rep les mateixes dades per mesurar els nostres anuncis a TikTok i les pot tractar fora de l'EEE a l'empara de clàusules contractuals tipus de la Comissió Europea. Google Ireland Limited (Google Analytics), només si acceptes les cookies d'anàlisi: rep dades de navegació i, si compres, l'import i el format de la comanda (mai el teu nom, correu ni telèfon) per elaborar estadístiques; les pot tractar als EUA a l'empara del Marc de Privadesa de Dades UE-EUA. PostHog, Inc. (servidors a la UE, Frankfurt), només si acceptes les cookies d'anàlisi: rep dades de navegació i d'ús de la web i enregistraments anònims de la sessió en què s'amaguen el nom de l'infant, la dedicatòria, el conte, les seves imatges i tot el que escrius. Stripe (processador de pagaments) pot establir les seves pròpies cookies durant el pagament.",
       "section4Title": "4. Gestió de cookies",
-      "section4Text": "Pots acceptar o rebutjar les cookies publicitàries a l'avís de la primera visita i canviar d'opinió quan vulguis des de «Configurar cookies», al peu de cada pàgina. Si les rebutges, la web funciona igual. També les pots esborrar des del teu navegador."
+      "section4Text": "Pots acceptar, rebutjar o configurar per finalitat (anàlisi i publicitat) les cookies no necessàries a l'avís de la primera visita i canviar d'opinió quan vulguis des de «Configurar cookies», al peu de cada pàgina. Si les rebutges, la web funciona igual. També les pots esborrar des del teu navegador."
     },
     "faq": {
       "title": "Preguntes Freqüents",
@@ -1208,7 +1208,10 @@
       "genderBoy": "Un nen",
       "genderNeutral": "Prefereixo no dir-ho",
       "genderHint": "Només ho fem servir per escriure el conte en femení, masculí o neutre.",
-      "nameRequired": "Escriu el seu nom per continuar"
+      "nameRequired": "Escriu el seu nom per continuar",
+      "ageHint": "Adaptem la història i la mida de la lletra a la seva edat.",
+      "ageRequired": "Tria la seva edat per continuar.",
+      "genderRequired": "Tria una opció per continuar."
     },
     "protagonist": {
       "title": "Com és {name}?",
@@ -1306,6 +1309,9 @@
       "send": "Envia-me-la",
       "sending": "Enviant…",
       "sent": "Enviada a {email}.",
+      "sentReminder": "Enviada a {email}. Te la recordarem per correu, com a màxim 3 vegades.",
+      "remindLabel": "Recorda-m'ho per correu: com a màxim 3 avisos sobre aquest conte en 3 dies, amb les dates límit de comanda si s'acosten Nadal o Reis. Et pots donar de baixa a cada correu.",
+      "remindPrivacy": "Privacitat",
       "invalid": "Revisa el correu.",
       "rateLimited": "Ja te l'hem enviada diverses vegades. Prova-ho més tard.",
       "error": "No s'ha pogut enviar. Torna-ho a provar."
@@ -2743,10 +2749,22 @@
   },
   "cookieConsent": {
     "title": "Cookies",
-    "text": "Fem servir cookies necessàries perquè la web funcioni i, si ho acceptes, cookies de Meta, TikTok, Google i PostHog per mesurar els nostres anuncis a Instagram, Facebook i TikTok, les visites a la web i com es fa servir.",
+    "text": "Fem servir cookies pròpies i de tercers (Google, PostHog, Meta i TikTok) per analitzar l'ús de la web i mesurar i mostrar-te els nostres anuncis segons la teva navegació. Pots acceptar-les, rebutjar-les o configurar-les.",
     "policy": "Més informació",
     "accept": "Acceptar",
-    "reject": "Rebutjar"
+    "reject": "Rebutjar",
+    "configure": "Configurar",
+    "settingsTitle": "Configura les cookies",
+    "necessaryTitle": "Necessàries",
+    "necessaryText": "Sessió, idioma, compra i la teva elecció sobre cookies.",
+    "alwaysOn": "Sempre actives",
+    "analyticsTitle": "Anàlisi",
+    "analyticsText": "Google Analytics i PostHog: quantes visites tenim i com es fa servir la web.",
+    "adsTitle": "Publicitat",
+    "adsText": "Meta i TikTok: mesurar els nostres anuncis i mostrar-los a qui li poden interessar.",
+    "rejectAll": "Rebutjar-les totes",
+    "acceptAll": "Acceptar-les totes",
+    "save": "Desar la selecció"
   },
   "tools": {
     "common": {

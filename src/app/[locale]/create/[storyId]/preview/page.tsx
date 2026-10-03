@@ -790,6 +790,8 @@ export default function PreviewPage() {
                     storyId={storyId}
                     childName={childName}
                     variant="inline"
+                    defaultEmail={needsAccount ? null : user?.email}
+                    offerReminder={isPreviewMode && !isOutdatedPreview}
                     sendLabel={tPurchase("later.emailSend")}
                     buttonClassName={LATER_BUTTON_INLINE}
                   />

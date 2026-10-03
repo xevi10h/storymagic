@@ -1,8 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Meapica — Personalized Children's Books";
-export const size = { width: 1200, height: 630 };
-export const contentType = "image/png";
+const size = { width: 1200, height: 630 };
 
 const taglines: Record<string, string> = {
   es: "Historias Reales para Tocar",
@@ -17,6 +15,18 @@ const subtitles: Record<string, string> = {
   en: "Personalized stories printed on premium paper",
   fr: "Contes personnalises imprimes sur du papier de haute qualite",
 };
+
+// Alt text in the page's language (a static `export const alt` cannot be localized).
+const alts: Record<string, string> = {
+  es: "Meapica — Cuentos infantiles personalizados e impresos",
+  ca: "Meapica — Contes infantils personalitzats i impresos",
+  en: "Meapica — Personalised printed children's books",
+  fr: "Meapica — Livres pour enfants personnalisés et imprimés",
+};
+
+export function generateImageMetadata({ params }: { params: { locale: string } }) {
+  return [{ id: "og", alt: alts[params.locale] || alts.es, size, contentType: "image/png" }];
+}
 
 export default async function OgImage({
   params,

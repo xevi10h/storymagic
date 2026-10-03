@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import type { CharacterData, Gender } from "@/lib/create-store";
 import { MAX_NAME_LENGTH } from "@/lib/creation-flow";
@@ -9,8 +10,12 @@ import CreationFooterNav from "./CreationFooterNav";
 
 interface StepNameProps {
   character: CharacterData;
+  /** Age / gender explicitly picked by the parent (never preselected). */
+  basicsConfirmed: { age: boolean; gender: boolean };
   selectedTemplate: string | null;
   onUpdateCharacter: (updates: Partial<CharacterData>) => void;
+  onPickAge: (age: number) => void;
+  onPickGender: (gender: Gender) => void;
   onNext: () => void;
 }
 
@@ -23,10 +28,41 @@ const GENDERS: { id: Gender; key: "genderBoy" | "genderGirl" | "genderNeutral" }
   { id: "neutral", key: "genderNeutral" },
 ];
 
-/** Screen 1 — the name, with the cover rendered live on every keystroke. */
-export default function StepName({ character, selectedTemplate, onUpdateCharacter, onNext }: StepNameProps) {
+/**
+ * Screen 1 — the name, with the cover rendered live on every keystroke, plus age and gender.
+ * Age and gender start unselected: the story is written in the child's grammatical gender and
+ * for their age, so a silent default ("un niño", 5) would print the wrong book.
+ */
+export default function StepName({
+  character,
+  basicsConfirmed,
+  selectedTemplate,
+  onUpdateCharacter,
+  onPickAge,
+  onPickGender,
+  onNext,
+}: StepNameProps) {
   const t = useTranslations("crear.name");
-  const canContinue = character.name.trim().length > 0;
+  const hasName = character.name.trim().length > 0;
+  // Errors show only after the parent tried to continue (no red on arrival).
+  const [attempted, setAttempted] = useState(false);
+  const ageRef = useRef<HTMLFieldSetElement>(null);
+  const genderRef = useRef<HTMLFieldSetElement>(null);
+  const ageMissing = attempted && !basicsConfirmed.age;
+  const genderMissing = attempted && !basicsConfirmed.gender;
+
+  const tryNext = () => {
+    if (!hasName) return;
+    if (basicsConfirmed.age && basicsConfirmed.gender) {
+      onNext();
+      return;
+    }
+    setAttempted(true);
+    // Bring the first missing question into view and put focus on its first option.
+    const target = !basicsConfirmed.age ? ageRef.current : genderRef.current;
+    target?.scrollIntoView({ behavior: "smooth", block: "center" });
+    target?.querySelector<HTMLButtonElement>("[role=radio]")?.focus({ preventScroll: true });
+  };
 
   const chipBase =
     "flex items-center justify-center rounded-xl border-2 font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-create-primary";
@@ -35,14 +71,19 @@ export default function StepName({ character, selectedTemplate, onUpdateCharacte
     <>
       <main className="step-in mx-auto flex w-full max-w-[1120px] flex-1 flex-col gap-6 px-4 pb-8 pt-5 sm:px-6 lg:flex-row lg:items-center lg:gap-16 lg:pt-10">
         <div className="mx-auto w-[min(56vw,230px)] shrink-0 sm:w-[300px] lg:mx-0 lg:w-[440px]">
-          <LiveCover name={character.name} gender={character.gender} templateId={selectedTemplate} priority />
+          <LiveCover
+            name={character.name}
+            gender={basicsConfirmed.gender ? character.gender : undefined}
+            templateId={selectedTemplate}
+            priority
+          />
         </div>
 
         <form
           className="flex w-full min-w-0 flex-1 flex-col gap-6"
           onSubmit={(e) => {
             e.preventDefault();
-            if (canContinue) onNext();
+            tryNext();
           }}
         >
           <div className="text-center lg:text-left">
@@ -77,11 +118,18 @@ export default function StepName({ character, selectedTemplate, onUpdateCharacte
             />
           </div>
 
-          <fieldset className="flex flex-col gap-2">
+          <fieldset ref={ageRef} className="flex scroll-mt-24 flex-col gap-2">
             <legend className="mb-2 text-xs font-bold uppercase tracking-wide text-create-text">{t("ageLabel")}</legend>
-            <div role="radiogroup" aria-label={t("ageLabel")} className="grid grid-cols-6 gap-2">
+            <div
+              role="radiogroup"
+              aria-label={t("ageLabel")}
+              aria-required
+              aria-invalid={ageMissing || undefined}
+              aria-describedby={ageMissing ? "age-error" : "age-hint"}
+              className={`grid grid-cols-6 gap-2 rounded-2xl transition-shadow ${ageMissing ? "ring-2 ring-red-300 ring-offset-4 ring-offset-create-bg" : ""}`}
+            >
               {AGES.map((age) => {
-                const selected = character.age === age;
+                const selected = basicsConfirmed.age && character.age === age;
                 return (
                   <button
                     key={age}
@@ -89,7 +137,7 @@ export default function StepName({ character, selectedTemplate, onUpdateCharacte
                     role="radio"
                     aria-checked={selected}
                     aria-label={t("ageOption", { age })}
-                    onClick={() => onUpdateCharacter({ age })}
+                    onClick={() => onPickAge(age)}
                     className={`${chipBase} h-11 text-base tabular-nums ${
                       selected
                         ? "border-brand bg-brand-tint text-brand-text"
@@ -101,20 +149,34 @@ export default function StepName({ character, selectedTemplate, onUpdateCharacte
                 );
               })}
             </div>
+            {ageMissing ? (
+              <p id="age-error" role="alert" className="text-xs font-semibold text-red-700">
+                {t("ageRequired")}
+              </p>
+            ) : (
+              <p id="age-hint" className="text-xs text-create-text-sub">{t("ageHint")}</p>
+            )}
           </fieldset>
 
-          <fieldset className="flex flex-col gap-2">
+          <fieldset ref={genderRef} className="flex scroll-mt-24 flex-col gap-2">
             <legend className="mb-2 text-xs font-bold uppercase tracking-wide text-create-text">{t("genderLabel")}</legend>
-            <div role="radiogroup" aria-label={t("genderLabel")} className="grid grid-cols-3 gap-2">
+            <div
+              role="radiogroup"
+              aria-label={t("genderLabel")}
+              aria-required
+              aria-invalid={genderMissing || undefined}
+              aria-describedby={genderMissing ? "gender-error" : "gender-hint"}
+              className={`grid grid-cols-3 gap-2 rounded-2xl transition-shadow ${genderMissing ? "ring-2 ring-red-300 ring-offset-4 ring-offset-create-bg" : ""}`}
+            >
               {GENDERS.map((g) => {
-                const selected = character.gender === g.id;
+                const selected = basicsConfirmed.gender && character.gender === g.id;
                 return (
                   <button
                     key={g.id}
                     type="button"
                     role="radio"
                     aria-checked={selected}
-                    onClick={() => onUpdateCharacter({ gender: g.id })}
+                    onClick={() => onPickGender(g.id)}
                     className={`${chipBase} min-h-11 px-2 py-2 text-sm leading-tight ${
                       selected
                         ? "border-create-primary bg-brand-tint text-brand-text"
@@ -126,7 +188,13 @@ export default function StepName({ character, selectedTemplate, onUpdateCharacte
                 );
               })}
             </div>
-            <p className="text-xs text-create-text-sub">{t("genderHint")}</p>
+            {genderMissing ? (
+              <p id="gender-error" role="alert" className="text-xs font-semibold text-red-700">
+                {t("genderRequired")}
+              </p>
+            ) : (
+              <p id="gender-hint" className="text-xs text-create-text-sub">{t("genderHint")}</p>
+            )}
           </fieldset>
           {/* Enter in the name field submits the form */}
           <button type="submit" hidden aria-hidden tabIndex={-1} />
@@ -134,8 +202,8 @@ export default function StepName({ character, selectedTemplate, onUpdateCharacte
       </main>
 
       <CreationFooterNav
-        onNext={onNext}
-        nextDisabled={!canContinue}
+        onNext={tryNext}
+        nextDisabled={!hasName}
         nextDisabledTooltip={t("nameRequired")}
       />
     </>

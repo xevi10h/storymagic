@@ -2,6 +2,7 @@
 
 import { useId, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { trackEvent } from "@/lib/tracking/consent";
 
 interface SendPreviewEmailProps {
@@ -15,6 +16,14 @@ interface SendPreviewEmailProps {
   variant?: "card" | "inline";
   sendLabel?: string;
   buttonClassName?: string;
+  /** The signed-in account's address, prefilled (the parent can change it). */
+  defaultEmail?: string | null;
+  /**
+   * Offer the "recuérdamelo por email" box (abandoned-preview reminders). Only where
+   * the book can still be bought. The box is never pre-ticked: ticking it is the
+   * consent (LSSI 21.1 / RGPD 6.1.a) the server records with the address.
+   */
+  offerReminder?: boolean;
 }
 
 type Status = "idle" | "sending" | "sent" | "error" | "invalid" | "rate_limited";
@@ -22,12 +31,25 @@ type Status = "idle" | "sending" | "sent" | "error" | "invalid" | "rate_limited"
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /** "Envíame la vista previa" — optional, after the wow, never a gate. */
-export default function SendPreviewEmail({ storyId, childName, variant = "card", sendLabel, buttonClassName }: SendPreviewEmailProps) {
+export default function SendPreviewEmail({
+  storyId,
+  childName,
+  variant = "card",
+  sendLabel,
+  buttonClassName,
+  defaultEmail,
+  offerReminder = false,
+}: SendPreviewEmailProps) {
   const t = useTranslations("crear.sendPreview");
   const locale = useLocale();
   const uid = useId();
-  const [email, setEmail] = useState("");
+  // null = untouched: shows the account address once it is known (auth loads after mount).
+  const [typedEmail, setTypedEmail] = useState<string | null>(null);
+  const email = typedEmail ?? defaultEmail ?? "";
   const [status, setStatus] = useState<Status>("idle");
+  const [remind, setRemind] = useState(false);
+  /** The server stored the reminder consent (false: not asked, already unsubscribed, or it could not be stored). */
+  const [reminderOn, setReminderOn] = useState(false);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,12 +60,15 @@ export default function SendPreviewEmail({ storyId, childName, variant = "card",
       const res = await fetch(`/api/stories/${storyId}/send-preview`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: value, locale }),
+        body: JSON.stringify({ email: value, locale, ...(offerReminder && remind ? { remind: true } : {}) }),
       });
       if (res.status === 429) return setStatus("rate_limited");
       if (res.status === 400) return setStatus("invalid");
       if (!res.ok) throw new Error(`send_preview_${res.status}`);
-      trackEvent("Lead", { content_name: "send_preview" });
+      const data = (await res.json().catch(() => null)) as { reminder?: boolean } | null;
+      const reminder = data?.reminder === true;
+      setReminderOn(reminder);
+      trackEvent("Lead", { content_name: reminder ? "preview_reminder" : "send_preview" });
       setStatus("sent");
     } catch (err) {
       console.warn("[preview] send preview email failed:", err);
@@ -65,7 +90,7 @@ export default function SendPreviewEmail({ storyId, childName, variant = "card",
         data-testid="send-preview-sent"
       >
         <span aria-hidden className="material-symbols-outlined shrink-0 text-lg text-brand-text">mark_email_read</span>
-        <span className="min-w-0 break-words">{t("sent", { email: email.trim() })}</span>
+        <span className="min-w-0 break-words">{t(reminderOn ? "sentReminder" : "sent", { email: email.trim() })}</span>
       </p>
     );
   }
@@ -78,7 +103,7 @@ export default function SendPreviewEmail({ storyId, childName, variant = "card",
       autoComplete="email"
       value={email}
       onChange={(e) => {
-        setEmail(e.target.value);
+        setTypedEmail(e.target.value);
         if (status !== "idle" && status !== "sending") setStatus("idle");
       }}
       placeholder={t("placeholder")}
@@ -104,6 +129,22 @@ export default function SendPreviewEmail({ storyId, childName, variant = "card",
       {status === "sending" ? t("sending") : (sendLabel ?? t("send"))}
     </button>
   );
+  const reminderBox = offerReminder && (
+    <label className="mt-3 flex cursor-pointer items-start gap-2.5 text-xs leading-snug text-create-text-sub" data-testid="send-preview-remind">
+      <input
+        type="checkbox"
+        checked={remind}
+        onChange={(e) => setRemind(e.target.checked)}
+        className="mt-0.5 h-[18px] w-[18px] shrink-0 accent-brand"
+      />
+      <span>
+        {t("remindLabel")}{" "}
+        <Link href="/legal#privacy" target="_blank" className="font-semibold text-brand-text underline underline-offset-2">
+          {t("remindPrivacy")}
+        </Link>
+      </span>
+    </label>
+  );
   const message = (status === "invalid" || status === "error" || status === "rate_limited") && (
     <p role="alert" className="mt-2 text-xs text-red-700">
       {status === "invalid" ? t("invalid") : status === "rate_limited" ? t("rateLimited") : t("error")}
@@ -117,6 +158,7 @@ export default function SendPreviewEmail({ storyId, childName, variant = "card",
           {field}
           {button}
         </div>
+        {reminderBox}
         {message}
       </form>
     );
@@ -132,6 +174,7 @@ export default function SendPreviewEmail({ storyId, childName, variant = "card",
         {field}
         {button}
       </div>
+      {reminderBox}
       {message}
     </form>
   );

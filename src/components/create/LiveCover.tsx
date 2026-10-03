@@ -16,6 +16,11 @@ interface LiveCoverProps {
   templateId: string | null;
   /** Real painted cover (replaces the template art once it exists). */
   imageUrl?: string | null;
+  /**
+   * Painted covers only: where the title sits. "bottom" (default) = creation-flow look;
+   * "top" = the printed book's front (title at the top, no front logo).
+   */
+  titleAt?: "top" | "bottom";
   /** Load the art eagerly (above-the-fold hero cover). */
   priority?: boolean;
   /** `sizes` hint for the art image. */
@@ -40,6 +45,7 @@ export default function LiveCover({
   gender,
   templateId,
   imageUrl,
+  titleAt = "bottom",
   priority,
   sizes = "(max-width: 640px) 70vw, 420px",
   className = "",
@@ -49,6 +55,7 @@ export default function LiveCover({
   const locale = useLocale();
   const template = getTemplateConfig(templateId ?? DEFAULT_COVER_TEMPLATE);
   const painted = !!imageUrl;
+  const printTop = painted && titleAt === "top";
   const art = imageUrl || template?.image || "/images/templates/space.jpg";
   const trimmed = name.trim();
   // Empty name → a name-less title ("La seva aventura"), never "L'aventura de el seu nom".
@@ -81,8 +88,9 @@ export default function LiveCover({
   const [firstArt] = useState(art);
   const artClass = art === firstArt ? "" : "cover-art-in ";
   // Local static art (the landing's painted example) can go through the optimizer;
-  // signed/remote URLs of children's covers must not.
-  const localArt = art.startsWith("/");
+  // signed/remote URLs of children's covers must not. A query string (a signature or
+  // cache-buster) also rules the optimizer out: next/image rejects unconfigured queries.
+  const localArt = art.startsWith("/") && !art.includes("?");
 
   const w = width || 300;
   const nameSize = coverNameFontSize(displayName, w);
@@ -123,7 +131,10 @@ export default function LiveCover({
           className={`${artClass}object-cover`}
         />
       )}
-      {painted ? (
+      {printTop ? (
+        // Printed-front look: a soft shade behind the top title only
+        <div aria-hidden className="absolute inset-x-0 top-0 h-[48%] bg-gradient-to-b from-black/45 via-black/15 to-transparent" />
+      ) : painted ? (
         // Real painted cover: same treatment as the book viewer's cover page
         <div aria-hidden className="absolute inset-0 bg-gradient-to-b from-black/15 via-transparent to-black/70" />
       ) : (
@@ -142,8 +153,8 @@ export default function LiveCover({
       <div aria-hidden className="absolute inset-y-0 left-[4.5%] w-px bg-white/40" />
 
       <div
-        className={`absolute inset-x-0 flex flex-col items-center px-[9%] text-center ${painted ? "bottom-0" : "top-0"}`}
-        style={painted ? { paddingBottom: w * 0.08 } : { paddingTop: w * 0.075 }}
+        className={`absolute inset-x-0 flex flex-col items-center px-[9%] text-center ${painted && !printTop ? "bottom-0" : "top-0"}`}
+        style={painted && !printTop ? { paddingBottom: w * 0.08 } : { paddingTop: w * 0.075 }}
       >
         {kicker && w >= 180 && (
           <span
@@ -186,7 +197,7 @@ export default function LiveCover({
         )}
       </div>
 
-      {painted ? (
+      {printTop ? null : painted ? (
         <BrandLogo className="absolute left-1/2 top-[5%] h-[5.5%] -translate-x-1/2 text-white/90" />
       ) : (
         <BrandLogo className="absolute bottom-[5%] right-[6%] h-[5.5%] text-create-text/55" />

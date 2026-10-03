@@ -17,6 +17,7 @@ import type { AvatarTraits } from "@/lib/avatar/manifest";
 import { SITE_URL } from "@/lib/product-facts";
 import { PREVIEW_ILLUSTRATION_COUNT } from "@/lib/pricing";
 import { getShowcaseLikenessBooks } from "@/lib/showcase";
+import { showcasePath } from "@/lib/showcase-slug";
 import { isPhotoUploadEnabled } from "@/lib/privacy/child-photo-policy";
 import { GUIDES, GUIDE_LINK_LABELS, isGuideLocale } from "@/lib/guides";
 import { guideMetadata } from "@/lib/guides-metadata";
@@ -173,7 +174,7 @@ export default async function Page({ params }: PageProps) {
                         <span className="font-sans text-base font-medium text-ink-muted"> · {book.title}</span>
                       </h3>
                       <Link
-                        href={`/examples/${book.id}`}
+                        href={showcasePath(book.slug)}
                         className={cx(
                           "inline-flex min-h-11 items-center gap-1 rounded-md text-sm font-semibold text-brand-text underline decoration-brand/30 underline-offset-4",
                           focusRing,
