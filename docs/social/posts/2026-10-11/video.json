@@ -1,0 +1,144 @@
+{
+  "lang": "ca",
+  "out": "video.mp4",
+  "music": "calm-piano-1.mp3",
+  "outro": true,
+  "beats": [
+    {
+      "img": {
+        "pdf": "fd5512f6-527e-4f2b-b344-749b8e0d3cfe",
+        "page": 4
+      },
+      "title": "Conte per anar a dormir<br><em>en 1 minut</em>",
+      "say": "Al poble, en Leo corria pel parc com si les lloses fossin illes.",
+      "zoom": [
+        1.25,
+        1.1
+      ],
+      "focus": [
+        0.4,
+        0.45
+      ]
+    },
+    {
+      "img": {
+        "pdf": "fd5512f6-527e-4f2b-b344-749b8e0d3cfe",
+        "page": 6
+      },
+      "say": "Aquella nit va xiuxiuejar: tant de bo conegués un dinosaure de veritat.",
+      "zoom": [
+        1.05,
+        1.2
+      ],
+      "focus": [
+        0.5,
+        0.45
+      ]
+    },
+    {
+      "img": {
+        "pdf": "fd5512f6-527e-4f2b-b344-749b8e0d3cfe",
+        "page": 9
+      },
+      "say": "El portal del temps es va obrir amb un sospir daurat.",
+      "zoom": [
+        1.3,
+        1.45
+      ],
+      "focus": [
+        0.5,
+        0.1
+      ]
+    },
+    {
+      "img": {
+        "pdf": "fd5512f6-527e-4f2b-b344-749b8e0d3cfe",
+        "page": 10
+      },
+      "say": "Crac! D'un ou va treure el cap un bebè de coll llarg.",
+      "zoom": [
+        1.2,
+        1.05
+      ],
+      "focus": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "img": {
+        "pdf": "fd5512f6-527e-4f2b-b344-749b8e0d3cfe",
+        "page": 12
+      },
+      "say": "Em dic Lulo, va dir. Jo soc en Leo. T'acompanyo.",
+      "zoom": [
+        1.05,
+        1.2
+      ],
+      "focus": [
+        0.4,
+        0.45
+      ]
+    },
+    {
+      "img": {
+        "pdf": "fd5512f6-527e-4f2b-b344-749b8e0d3cfe",
+        "page": 16
+      },
+      "say": "Però la família d'en Lulo era lluny, a l'altra banda de la vall.",
+      "zoom": [
+        1.2,
+        1.05
+      ],
+      "focus": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "img": {
+        "pdf": "fd5512f6-527e-4f2b-b344-749b8e0d3cfe",
+        "page": 20
+      },
+      "say": "Van respirar ben fondo tots dos, i van cridar ben fort.",
+      "zoom": [
+        1.3,
+        1.12
+      ],
+      "focus": [
+        0.4,
+        0.4
+      ]
+    },
+    {
+      "img": {
+        "pdf": "fd5512f6-527e-4f2b-b344-749b8e0d3cfe",
+        "page": 24
+      },
+      "say": "La família va aixecar el cap, i va arribar a poc a poc, fent tremolar la terra.",
+      "zoom": [
+        1.05,
+        1.2
+      ],
+      "focus": [
+        0.5,
+        0.45
+      ]
+    },
+    {
+      "img": {
+        "pdf": "fd5512f6-527e-4f2b-b344-749b8e0d3cfe",
+        "page": 26
+      },
+      "say": "I en Leo ho va entendre: ser valent és ajudar qui és diferent.",
+      "zoom": [
+        1.2,
+        1.08
+      ],
+      "focus": [
+        0.5,
+        0.45
+      ]
+    }
+  ]
+}

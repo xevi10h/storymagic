@@ -1,0 +1,24 @@
+{
+  "storyId": "5dfc4f5e-9a42-4ae5-a42b-a821d36c2f01",
+  "lang": "ca",
+  "prefix": "post2-slide",
+  "example": "Exemple · El llibre de la Noa, 4 anys",
+  "pages": { "cover": 1, "dedication": 3, "home": 4, "homeText": 5, "forest": 10, "forestText": 11, "playL": 18, "playR": 19, "care": 22, "careText": 23, "hero": 29 },
+  "slides": [
+    { "kind": "cover", "kicker": "Exemple real", "title": "Així és un llibre<br><em>Meapica per dins</em>", "sub": "Llisca i passa les pàgines" },
+    { "kind": "single", "img": "dedication", "kicker": "La dedicatòria", "title": "La primera pàgina<br><em>l'escrius tu</em>", "sub": "S'imprimeix tal com l'escrius, amb el seu nom." },
+    { "kind": "spread", "l": "home", "r": "homeText", "kicker": "Capítol 1", "title": "La història comença<br><em>a casa seva</em>", "sub": "Cada escena, pintada a l'aquarel·la, amb el seu text al costat." },
+    { "kind": "spread", "l": "forest", "r": "forestText", "kicker": "Escrit per a la seva edat", "title": "Frases curtes<br><em>i lletra gran</em>", "sub": "Als 4 anys, així. Als 11, gairebé una novel·la." },
+    { "kind": "spread", "l": "playL", "r": "playR", "kicker": "Doble pàgina", "title": "Algunes escenes<br><em>ocupen tot el llibre obert</em>", "sub": "20 × 20 cm per pàgina. Obert, 40 cm de bosc." },
+    { "kind": "spread", "l": "care", "r": "careText", "kicker": "Tu tries l'aventura", "title": "Tu decideixes<br><em>els tres capítols</em>", "sub": "Cada tria canvia la història i les pàgines pintades." },
+    { "kind": "single", "img": "hero", "kicker": "Al final del llibre", "title": "El seu retrat,<br><em>pintat a l'aquarel·la</em>", "sub": "Amb el seu nom, l'edat i el seu color preferit." },
+    { "kind": "cta" }
+  ],
+  "cta": {
+    "title": "Ara, <em>el seu</em> llibre.",
+    "lines": ["El seu nom a la portada, la seva cara a cada pàgina i l'aventura que tries tu."],
+    "preview": "Abans de pagar en veus la portada i les primeres pàgines, sense registrar-te.",
+    "price": "Des de 34,90 € IVA inclòs · Enviament gratuït",
+    "url": "meapica.shop"
+  }
+}

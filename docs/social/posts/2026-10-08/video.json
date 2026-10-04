@@ -1,0 +1,84 @@
+{
+  "lang": "es",
+  "out": "video.mp4",
+  "music": "calm-guitar-1.mp3",
+  "outro": true,
+  "beats": [
+    {
+      "img": {
+        "pdf": "461c6578-404b-4362-8dff-afcae81f6141",
+        "page": 4
+      },
+      "title": "¿Por qué pide el mismo<br><em>cuento 20 veces?</em>",
+      "say": "¿Por qué tu peque pide el mismo cuento veinte veces?",
+      "zoom": [
+        1.3,
+        1.12
+      ],
+      "focus": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "img": {
+        "pdf": "461c6578-404b-4362-8dff-afcae81f6141",
+        "page": 6
+      },
+      "say": "Porque ya sabe lo que va a pasar. Y eso le da calma.",
+      "zoom": [
+        1.05,
+        1.2
+      ],
+      "focus": [
+        0.45,
+        0.4
+      ]
+    },
+    {
+      "img": {
+        "pdf": "461c6578-404b-4362-8dff-afcae81f6141",
+        "page": 12
+      },
+      "say": "Y porque en cada lectura descubre una palabra nueva.",
+      "zoom": [
+        1.2,
+        1.05
+      ],
+      "focus": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "img": {
+        "pdf": "461c6578-404b-4362-8dff-afcae81f6141",
+        "page": 10
+      },
+      "say": "Así que tranquilidad: repetir también es leer.",
+      "zoom": [
+        1.05,
+        1.2
+      ],
+      "focus": [
+        0.5,
+        0.6
+      ]
+    },
+    {
+      "img": {
+        "pdf": "461c6578-404b-4362-8dff-afcae81f6141",
+        "page": 14
+      },
+      "say": "Y si encima la protagonista es ella, prepárate para la vez veintiuna.",
+      "zoom": [
+        1.2,
+        1.08
+      ],
+      "focus": [
+        0.4,
+        0.45
+      ]
+    }
+  ]
+}

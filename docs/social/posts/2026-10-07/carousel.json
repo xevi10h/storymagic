@@ -1,0 +1,16 @@
+{
+  "storyId": "fd5512f6-527e-4f2b-b344-749b8e0d3cfe",
+  "lang": "ca",
+  "prefix": "slide",
+  "example": "Per guardar · Idees de dedicatòria",
+  "pages": { "cover": 3, "dedication": 3, "bookCover": 1 },
+  "slides": [
+    { "kind": "cover", "kicker": "Per guardar", "title": "5 idees per escriure<br><em>la dedicatòria d'un conte</em>", "sub": "Llisca" },
+    { "kind": "text", "n": "1", "title": "Un record<br><em>només vostre</em>", "quote": "«Per a en Leo, que un dia va voler portar un cargol a dormir a casa.»" },
+    { "kind": "text", "n": "2", "title": "Una cosa<br><em>que us fa riure</em>", "quote": "«Per a la Noa, que riu abans que s'acabi l'acudit.»" },
+    { "kind": "text", "n": "3", "title": "El que<br><em>li desitges</em>", "quote": "«Que mai et faltin preguntes ni ganes de buscar-ne la resposta.»" },
+    { "kind": "text", "n": "4", "title": "Qui<br><em>li regala</em>", "quote": "«Amb tot l'amor dels avis, la Carme i en Josep.»" },
+    { "kind": "text", "n": "5", "title": "La data,<br><em>perquè la recordi</em>", "quote": "«Pel teu cinquè aniversari. Octubre de 2026.»" },
+    { "kind": "single", "img": "dedication", "kicker": "Exemple real", "title": "Així queda<br><em>impresa al llibre</em>", "sub": "La dedicatòria del llibre d'exemple d'en Leo." }
+  ]
+}

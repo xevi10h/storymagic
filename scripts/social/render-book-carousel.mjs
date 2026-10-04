@@ -1,38 +1,33 @@
-// Builds the media of the first organic posts (3 Oct 2026) into docs/social/2026-10-03-first-posts/:
-//   post1.mp4            ES story video (copied from the ad, already 9:16 H.264/AAC, price card with VAT)
-//   post2-slide{1..8}.png CA carousel "Així és un llibre Meapica per dins" (1080×1350) from the REAL
-//                         Noa CA example book: pages rasterised from the public example PDF
-//                         (/api/showcase/{id}/pdf, the same pages a customer gets printed)
-//   post3.png            ES static "Su nombre, en la portada" (copied, already 1080×1350)
+// Renders a "the book from the inside" carousel (1080×1350 PNGs) from a REAL example book: its pages are
+// rasterised from the public example PDF (/api/showcase/{id}/pdf, the same pages a customer gets printed).
 // Run from the repo root (needs pdftoppm from poppler):
-//   node scripts/social/render-first-posts.mjs
+//   node scripts/social/render-book-carousel.mjs docs/social/posts/2026-10-07/carousel.json
+// carousel.json (next to the output): { storyId, lang, prefix, example, pages: { key: pdfPageNumber },
+//   slides: [{ kind: "cover" | "single" | "spread" | "text" | "cta", ... }], cta: { title, lines, preview, price, url } }
+// PDF pages (34): 1 cover, 2 endpaper, 3 title + dedication, 4-28 story, 29 portrait, 30-31 map game, 34 back cover.
 import { chromium } from "@playwright/test";
 import sharp from "sharp";
 import { execFileSync } from "node:child_process";
-import { copyFileSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
 
+const configPath = resolve(process.argv[2] ?? "");
+if (!existsSync(configPath)) throw new Error("usage: node scripts/social/render-book-carousel.mjs <carousel.json>");
+const T = JSON.parse(readFileSync(configPath, "utf8"));
 const ROOT = process.cwd();
-const OUT = `${ROOT}/docs/social/2026-10-03-first-posts`;
+const OUT = dirname(configPath);
 const TMP = `${OUT}/.build`;
-const NOA_CA_ID = "5dfc4f5e-9a42-4ae5-a42b-a821d36c2f01";
 const LOGO = `${ROOT}/docs/ads/creatives/assets/logo-brown.png`;
 mkdirSync(TMP, { recursive: true });
 
-// ── Post 1 + 3: existing creatives, checked and copied ─────────────────────────
-copyFileSync(`${ROOT}/docs/ads/creatives/story/ad-story-es-sound.mp4`, `${OUT}/post1.mp4`);
-copyFileSync(`${ROOT}/docs/ads/creatives/static-name-es.png`, `${OUT}/post3.png`);
-
-// ── Post 2: real pages of the Noa CA example book ──────────────────────────────
-// PDF page numbers (34 pages: cover, endpaper, 30 inner pages, endpaper, back cover).
-const PAGES = { cover: 1, dedication: 3, home: 4, homeText: 5, forest: 10, forestText: 11, playL: 18, playR: 19, care: 22, careText: 23, hero: 29 };
-const pdf = `${TMP}/noa-ca.pdf`;
+const pdf = `${TMP}/${T.storyId}.pdf`;
 if (!existsSync(pdf)) {
-  const res = await fetch(`https://meapica.shop/api/showcase/${NOA_CA_ID}/pdf`);
+  const res = await fetch(`https://meapica.shop/api/showcase/${T.storyId}/pdf`);
   if (!res.ok) throw new Error(`example PDF: HTTP ${res.status}`);
   writeFileSync(pdf, Buffer.from(await res.arrayBuffer()));
 }
 const page = {};
-for (const [key, n] of Object.entries(PAGES)) {
+for (const [key, n] of Object.entries(T.pages)) {
   const base = `${TMP}/p${n}`;
   if (!existsSync(`${base}.png`)) execFileSync("pdftoppm", ["-r", "200", "-png", "-f", String(n), "-l", String(n), "-singlefile", pdf, base]);
   // 1575 px square at 200 dpi → 1100 px JPEG keeps the slide crisp at the largest use (~880 px).
@@ -40,28 +35,6 @@ for (const [key, n] of Object.entries(PAGES)) {
   await sharp(`${base}.png`).resize(1100, 1100).jpeg({ quality: 90 }).toFile(jpg);
   page[key] = `file://${jpg}`;
 }
-// The paper-coloured text pages carry their own thin frame; the book needs a page edge on paper bg.
-
-const T = {
-  example: "Exemple · El llibre de la Noa, 4 anys",
-  slides: [
-    { kind: "cover", kicker: "Exemple real", title: "Així és un llibre<br><em>Meapica per dins</em>", sub: "Llisca i passa les pàgines" },
-    { kind: "single", img: "dedication", kicker: "La dedicatòria", title: "La primera pàgina<br><em>l'escrius tu</em>", sub: "S'imprimeix tal com l'escrius, amb el seu nom." },
-    { kind: "spread", l: "home", r: "homeText", kicker: "Capítol 1", title: "La història comença<br><em>a casa seva</em>", sub: "Cada escena, pintada a l'aquarel·la, amb el seu text al costat." },
-    { kind: "spread", l: "forest", r: "forestText", kicker: "Escrit per a la seva edat", title: "Frases curtes<br><em>i lletra gran</em>", sub: "Als 4 anys, així. Als 11, gairebé una novel·la." },
-    { kind: "spread", l: "playL", r: "playR", kicker: "Doble pàgina", title: "Algunes escenes<br><em>ocupen tot el llibre obert</em>", sub: "20 × 20 cm per pàgina. Obert, 40 cm de bosc." },
-    { kind: "spread", l: "care", r: "careText", kicker: "Tu tries l'aventura", title: "Tu decideixes<br><em>els tres capítols</em>", sub: "Cada tria canvia la història i les pàgines pintades." },
-    { kind: "single", img: "hero", kicker: "Al final del llibre", title: "El seu retrat,<br><em>pintat a l'aquarel·la</em>", sub: "Amb el seu nom, l'edat i el seu color preferit." },
-    { kind: "cta" },
-  ],
-  cta: {
-    title: "Ara, <em>el seu</em> llibre.",
-    lines: ["El seu nom a la portada, la seva cara a cada pàgina i l'aventura que tries tu."],
-    preview: "Abans de pagar en veus la portada i les primeres pàgines, sense registrar-te.",
-    price: "Des de 34,90 € IVA inclòs · Enviament gratuït",
-    url: "meapica.shop",
-  },
-};
 
 const CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700&display=block');
@@ -84,6 +57,10 @@ h1 em{font-style:normal;color:#E86C3A}
 .cover-logo{position:absolute;right:80px;top:70px;height:46px}
 .swipe{display:inline-flex;align-items:center;gap:12px}
 .swipe b{font-family:Fredoka;font-weight:600;color:#b94f1f;font-size:34px}
+/* idea card */
+.num{position:absolute;left:80px;top:150px;font-family:Fredoka;font-weight:700;font-size:260px;line-height:1;color:#E86C3A}
+.quote{position:absolute;left:80px;right:80px;top:720px;font-size:44px;line-height:1.4;font-weight:500;color:#5D4037;font-style:italic;
+  border-left:6px solid #E86C3A;padding-left:36px}
 /* CTA */
 .cta .logo{position:absolute;left:50%;transform:translateX(-50%);top:150px;height:80px}
 .cta h1{top:300px;text-align:center;font-size:84px}
@@ -94,7 +71,7 @@ h1 em{font-style:normal;color:#E86C3A}
   border:3px solid #E86C3A;background:#fdf1ea;border-radius:999px;padding:10px 46px;white-space:nowrap}
 `;
 
-const doc = (body, cls = "") => `<!doctype html><html lang="ca"><head><meta charset="utf-8"><style>${CSS}</style></head><body class="${cls}">${body}</body></html>`;
+const doc = (body, cls = "") => `<!doctype html><html lang="${T.lang}"><head><meta charset="utf-8"><style>${CSS}</style></head><body class="${cls}">${body}</body></html>`;
 const total = T.slides.length;
 const foot = (i) => `<div class="foot"><span>${T.example}</span><span class="n">${i + 1}/${total}</span></div>`;
 
@@ -108,6 +85,11 @@ function slideHtml(s, i) {
     return doc(`<div class="kicker">${s.kicker}</div><h1>${s.title}</h1>
       <div class="page" style="left:170px;top:340px;width:740px;height:740px;background-image:url('${page[s.img]}')"></div>
       <div class="sub" style="top:1130px;text-align:center">${s.sub}</div>${foot(i)}`);
+  }
+  if (s.kind === "text") {
+    // A save-worthy idea card: big number, the idea and an example line.
+    return doc(`<div class="num">${s.n}</div><h1 style="top:470px;font-size:76px">${s.title}</h1>
+      <div class="quote">${s.quote}</div>${foot(i)}`);
   }
   if (s.kind === "spread") {
     return doc(`<div class="kicker">${s.kicker}</div><h1>${s.title}</h1>
@@ -130,7 +112,7 @@ for (const [i, s] of T.slides.entries()) {
   await tab.evaluate(() => document.fonts.ready);
   const png = await tab.screenshot({ type: "png" });
   // Flatten to sRGB PNG without alpha (Instagram rejects some alpha PNGs in carousels).
-  await sharp(png).flatten({ background: "#FFF8F0" }).png({ compressionLevel: 9 }).toFile(`${OUT}/post2-slide${i + 1}.png`);
+  await sharp(png).flatten({ background: "#FFF8F0" }).png({ compressionLevel: 9 }).toFile(`${OUT}/${T.prefix}${i + 1}.png`);
 }
 await browser.close();
-console.log(`built ${total} slides + post1.mp4 + post3.png in ${OUT}`);
+console.log(`built ${total} slides in ${OUT}`);

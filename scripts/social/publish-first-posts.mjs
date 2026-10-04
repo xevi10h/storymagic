@@ -1,6 +1,6 @@
 // First organic posts (3 Oct 2026) on Instagram + TikTok + Facebook through Zernio.
-// Media: docs/social/2026-10-03-first-posts/ (built by scripts/social/render-first-posts.mjs).
-// API: https://zernio.com/api/v1 (OpenAPI v1.210.1, read 2026-10-03). Key: ~/.config/zernio/api_key (never printed).
+// Media: docs/social/2026-10-03-first-posts/ (carousel built by scripts/social/render-book-carousel.mjs from carousel.json).
+// One-off, already published: new posts go through scripts/social/schedule.mjs. Zernio helpers: ./zernio.mjs.
 //
 //   node scripts/social/publish-first-posts.mjs                 # --dry-run (default): accounts + health, upload media to
 //                                                               #   Zernio temp storage (expires in 7 days, not public on any
@@ -11,12 +11,9 @@
 //            --docs  rewrite captions.md + preview.html from the definitions below (no network)
 //
 // Post order: 1 → 2 → 3, so the Instagram grid row reads (left → right) static · carousel · video.
-import { createHash } from "node:crypto";
 import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
-import { homedir } from "node:os";
-import { basename, extname } from "node:path";
+import { API, api, buildPostBody, idemKey, uploadMedia } from "./zernio.mjs";
 
-const API = "https://zernio.com/api/v1";
 const DIR = `${process.cwd()}/docs/social/2026-10-03-first-posts`;
 const CACHE = `${DIR}/.zernio-uploads.json`;
 const args = process.argv.slice(2);
@@ -115,70 +112,11 @@ const fbCaption = (p) =>
     .replace("Crea el seu: enllaç a la bio.", `Crea el seu: ${p.fbLink}`)
     .replace("Prueba con su nombre: link en la bio.", `Prueba con su nombre: ${p.fbLink}`);
 
-// ── Request bodies (checked against POST /v1/posts in the OpenAPI spec) ──────
-function buildBody(p, accounts, urls) {
-  const isVideo = p.media[0].type === "video";
-  const mediaItems = p.media.map((m, i) => ({ type: m.type, url: urls[m.file], ...(p.alt?.[i] ? { altText: p.alt[i] } : {}) }));
-  const platforms = [];
-  if (accounts.instagram) {
-    platforms.push({
-      platform: "instagram",
-      accountId: accounts.instagram._id,
-      // 1 video = Reel, 2-10 items = carousel, 1 image = feed post (Zernio infers it; contentType only takes "story").
-      platformSpecificData: isVideo ? { shareToFeed: true, thumbOffset: p.coverMs, isAiGenerated: !!p.aiVideo } : {},
-    });
-  }
-  if (accounts.facebook) {
-    platforms.push({
-      platform: "facebook",
-      accountId: accounts.facebook._id,
-      customContent: fbCaption(p),
-      // Video as a Page Reel (9:16, ≤ 60 s); images as a multi-image feed post (≤ 10).
-      platformSpecificData: isVideo ? { contentType: "reel" } : {},
-    });
-  }
-  if (accounts.tiktok) {
-    const tt = {
-      privacyLevel: "PUBLIC_TO_EVERYONE", // creator-info: the only level for Business-lane videos
-      allowComment: true,
-      commercialContentType: "brand_organic", // our own brand promoting its product ("Your brand")
-      contentPreviewConfirmed: true,
-      expressConsentGiven: true,
-    };
-    if (isVideo) Object.assign(tt, { mediaType: "video", allowDuet: true, allowStitch: true, videoCoverTimestampMs: p.coverMs, videoMadeWithAi: !!p.aiVideo });
-    else Object.assign(tt, { mediaType: "photo", photoCoverIndex: 0, description: p.tiktok });
-    platforms.push({
-      platform: "tiktok",
-      accountId: accounts.tiktok._id,
-      // Photo posts: content becomes the ≤ 90-char title (hashtags/URLs stripped), the caption goes in description.
-      customContent: isVideo ? p.tiktok : p.tiktokTitle,
-      platformSpecificData: tt,
-    });
-  }
-  return { content: p.ig, mediaItems, platforms, publishNow: true, timezone: "Europe/Madrid" };
-}
-
-// ── HTTP helpers ──────────────────────────────────────────────────────────────
-const KEY_FILE = `${homedir()}/.config/zernio/api_key`;
-let KEY = null;
-async function api(method, path, body, extraHeaders = {}) {
-  KEY ??= readFileSync(KEY_FILE, "utf8").trim();
-  const res = await fetch(`${API}${path}`, {
-    method,
-    headers: { Authorization: `Bearer ${KEY}`, ...(body ? { "Content-Type": "application/json" } : {}), ...extraHeaders },
-    body: body ? JSON.stringify(body) : undefined,
-  });
-  const text = await res.text();
-  let json;
-  try { json = JSON.parse(text); } catch { json = { raw: text.slice(0, 500) }; }
-  return { status: res.status, json };
-}
-/** Deterministic UUID from a string: re-running --publish never double-posts within Zernio's 24 h window. */
-function idemKey(s) {
-  const h = createHash("sha1").update(s).digest("hex");
-  return `${h.slice(0, 8)}-${h.slice(8, 12)}-5${h.slice(13, 16)}-a${h.slice(17, 20)}-${h.slice(20, 32)}`;
-}
-const MIME = { ".mp4": "video/mp4", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg" };
+// ── Request bodies (shared builder in zernio.mjs) ─────────────────────────────
+const buildBody = (p, accounts, urls) => ({
+  ...buildPostBody({ ...p, media: p.media.map((m, i) => ({ ...m, alt: p.alt?.[i] })), fb: fbCaption(p) }, accounts, urls),
+  publishNow: true,
+});
 
 async function uploadAll(files) {
   const cache = existsSync(CACHE) ? JSON.parse(readFileSync(CACHE, "utf8")) : {};
@@ -193,15 +131,10 @@ async function uploadAll(files) {
       console.log(`  media ${file}: cached ${hit.publicUrl}`);
       continue;
     }
-    const contentType = MIME[extname(file).toLowerCase()];
-    const pre = await api("POST", "/media/presign", { filename: basename(file), contentType, size });
-    if (pre.status !== 200 || !pre.json.uploadUrl) throw new Error(`presign ${file}: HTTP ${pre.status} ${JSON.stringify(pre.json)}`);
-    const put = await fetch(pre.json.uploadUrl, { method: "PUT", headers: { "Content-Type": contentType }, body: readFileSync(path) });
-    if (!put.ok) throw new Error(`upload ${file}: HTTP ${put.status}`);
-    urls[file] = pre.json.publicUrl;
-    cache[file] = { publicUrl: pre.json.publicUrl, size, mtimeMs, uploadedAt: Date.now() };
+    urls[file] = await uploadMedia(path);
+    cache[file] = { publicUrl: urls[file], size, mtimeMs, uploadedAt: Date.now() };
     writeFileSync(CACHE, JSON.stringify(cache, null, 2));
-    console.log(`  media ${file}: uploaded ${pre.json.publicUrl}`);
+    console.log(`  media ${file}: uploaded ${urls[file]}`);
   }
   return urls;
 }

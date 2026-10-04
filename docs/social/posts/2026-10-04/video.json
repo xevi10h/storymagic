@@ -1,0 +1,159 @@
+{
+  "lang": "es",
+  "out": "video.mp4",
+  "music": "calm-guitar-1.mp3",
+  "outro": true,
+  "beats": [
+    {
+      "img": {
+        "pdf": "5f4ace1a-0f90-4e2c-bf72-9f2a15ff84a6",
+        "page": 4
+      },
+      "title": "Cuento para dormir<br><em>en 1 minuto</em>",
+      "say": "En su cuarto, Aitana guardaba una caracola turquesa. Si la acercaba al oído, sonaba a mar.",
+      "zoom": [
+        1.2,
+        1.08
+      ],
+      "focus": [
+        0.4,
+        0.05
+      ]
+    },
+    {
+      "img": {
+        "pdf": "5f4ace1a-0f90-4e2c-bf72-9f2a15ff84a6",
+        "page": 6
+      },
+      "say": "Aquella noche puso la caracola bajo la almohada y pidió al mar una misión.",
+      "zoom": [
+        1.05,
+        1.2
+      ],
+      "focus": [
+        0.45,
+        0.45
+      ]
+    },
+    {
+      "img": {
+        "pdf": "5f4ace1a-0f90-4e2c-bf72-9f2a15ff84a6",
+        "page": 9
+      },
+      "say": "La caracola abrió una puerta de espuma.",
+      "zoom": [
+        1.3,
+        1.45
+      ],
+      "focus": [
+        0.5,
+        0.1
+      ]
+    },
+    {
+      "img": {
+        "pdf": "5f4ace1a-0f90-4e2c-bf72-9f2a15ff84a6",
+        "page": 10
+      },
+      "say": "¡Un barco pirata! Y entre las olas saltó un delfín plateado. Hola, me llamo Coral.",
+      "zoom": [
+        1.2,
+        1.05
+      ],
+      "focus": [
+        0.45,
+        0.45
+      ]
+    },
+    {
+      "img": {
+        "pdf": "5f4ace1a-0f90-4e2c-bf72-9f2a15ff84a6",
+        "page": 14
+      },
+      "say": "La Perla Cantarina se ha perdido. Canta nanas a los peces pequeños.",
+      "zoom": [
+        1.05,
+        1.2
+      ],
+      "focus": [
+        0.5,
+        0.45
+      ]
+    },
+    {
+      "img": {
+        "pdf": "5f4ace1a-0f90-4e2c-bf72-9f2a15ff84a6",
+        "page": 16
+      },
+      "say": "La encontraron en una bahía tranquila, sobre el lomo de Bruma, que dormía profundamente.",
+      "zoom": [
+        1.2,
+        1.05
+      ],
+      "focus": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "img": {
+        "pdf": "5f4ace1a-0f90-4e2c-bf72-9f2a15ff84a6",
+        "page": 20
+      },
+      "say": "Aitana no gritó. Cantó bajito su canción marinera.",
+      "zoom": [
+        1.05,
+        1.2
+      ],
+      "focus": [
+        0.45,
+        0.4
+      ]
+    },
+    {
+      "img": {
+        "pdf": "5f4ace1a-0f90-4e2c-bf72-9f2a15ff84a6",
+        "page": 22
+      },
+      "say": "Bruma abrió un ojo enorme y le acercó la perla con su aleta.",
+      "zoom": [
+        1.2,
+        1.05
+      ],
+      "focus": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "img": {
+        "pdf": "5f4ace1a-0f90-4e2c-bf72-9f2a15ff84a6",
+        "page": 24
+      },
+      "say": "El mejor tesoro son los amigos, dijo Aitana.",
+      "zoom": [
+        1.05,
+        1.2
+      ],
+      "focus": [
+        0.5,
+        0.45
+      ]
+    },
+    {
+      "img": {
+        "pdf": "5f4ace1a-0f90-4e2c-bf72-9f2a15ff84a6",
+        "page": 26
+      },
+      "say": "Con maña y marea, se llega donde sea.",
+      "zoom": [
+        1.2,
+        1.08
+      ],
+      "focus": [
+        0.5,
+        0.45
+      ]
+    }
+  ]
+}

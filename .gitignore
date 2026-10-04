@@ -64,5 +64,8 @@ docs/ads/creatives/
 docs/ads/stock/
 
 # social post builds (rasterised example PDF, Zernio upload cache)
-docs/social/*/.build/
+docs/social/**/.build/
 docs/social/*/.zernio-uploads.json
+docs/social/.tts-cache/
+videos/*/renders/
+videos/*/snapshots/

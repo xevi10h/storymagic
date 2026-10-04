@@ -11,8 +11,14 @@ The roadmap is divided into 6 phases, from foundation to scale. Each phase has c
 State measured 2026-10-03: 14 of 132 sitemap URLs indexed, 1 impression, 0 organic sessions, 0 orders; 9 social posts live, only the Facebook Reel got reach (223 views), 0 followers.
 
 - [x] **Phase 0 deployed 2026-10-03** (SEO + conversion + funnel/preview reminders); migration `20261003200655_funnel_and_preview_reminders.sql` applied to production the same day.
-- [ ] **Right after the deploy:** `node scripts/indexnow-ping.mjs`, then owner requests indexing in Search Console for ~15 money URLs (`/es/gifts`, christmas, birthday, `/es/christmas-delivery`, `/es/examples` + slugs, the three `/es` age pages, `/es/themes`, `/ca/gifts/sant-jordi`).
-- [ ] **Daily social runner** (Zernio): one post a day, ES + CA, short video first, hourly inbox check. Today only the one-off `scripts/social/publish-first-posts.mjs` exists and nothing is scheduled.
+- [ ] **Right after the deploy:** IndexNow pinged 2026-10-04 (88 URLs, HTTP 200). Still open: owner requests indexing in Search Console for ~15 money URLs (`/es/gifts`, christmas, birthday, `/es/christmas-delivery`, `/es/examples` + slugs, the three `/es` age pages, `/es/themes`, `/ca/gifts/sant-jordi`).
+- [ ] **Daily social runner** (Zernio): built 2026-10-04 (`scripts/social/schedule.mjs`, content in `docs/social/posts/<date>/`, see `docs/stack.md` › Social). Content ready for 5–11 Oct. Open:
+  - Owner: run `node scripts/social/schedule.mjs --schedule` once (the agent is not allowed to publish) and decide whether the daily launchd job may run it unattended.
+  - Content for 12 Oct onward follows `docs/social/playbook.md` (week 1 was redone on 2026-10-04: narrated stories, search-led answers, a saveable carousel). `docs/ads/organic-calendar.md` is the older ad-like plan: reuse its topics, not its formats.
+  - Next formats: name reveal series (one cover per popular name), Pinterest-native pins (2:3 images per SEO landing, seasonal boards: Reyes, cumpleaños) now that Pinterest and YouTube are connected (2026-10-04), nano-creator programme (gift printed books for content rights) for real reaction video.
+  - Owner: listen to the narrator samples (`docs/social/audio/voice-samples/`) and the 5 music tracks, none was checked by ear; confirm or swap the voice (default "maria").
+  - Hourly inbox check: `scripts/social/inbox.mjs` lists unanswered comments and unread DMs (0 today). Replies + the scheduled routine are not built: add them with the first real comment.
+  - `docs/ads/creatives/static-preview-{es,ca}.png` say "Míralo entero antes de pagar" but the free preview shows the cover, the portrait and the first 3 scenes: fix the headline before using them again.
 - [ ] **First external links / citations:** pitch the free Reyes letter tool and `/compare` to parenting sites and gift guides; open a Trustpilot or Google profile. Nothing off-site exists for search or AI engines to cite.
 - [ ] **Lead with Catalan in SEO** (only query set with no commercial competitor): link in-catalan from Sant Jordi + Catalan posts, pitch Catalan parenting media.
 - [ ] Re-add en/fr to the sitemap (`SITEMAP_LOCALES`) once es/ca are indexed.

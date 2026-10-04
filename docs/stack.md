@@ -294,6 +294,33 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   Disable: `launchctl bootout gui/$(id -u)/com.casmar.meapica-seo-weekly` (and delete the plist to make it permanent;
   re-enable with `launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.casmar.meapica-seo-weekly.plist`).
 
+## Social (organic posts through Zernio, 2026-10-04)
+
+- **Accounts:** Instagram + TikTok `@meapica_books`, Facebook page "Meapica", YouTube channel + Pinterest `meapica` (connected 2026-10-04;
+  videos go to YouTube as Shorts, every post goes to Pinterest as a pin linking to the site, on the default board
+  "Cuentos personalizados para niños"), all in Zernio (`https://zernio.com/api/v1`,
+  OpenAPI at `https://zernio.com/openapi.json`). Key: `ZERNIO_API_KEY` or `~/.config/zernio/api_key`. Shared helpers: `scripts/social/zernio.mjs`.
+- **One post = one folder:** `docs/social/posts/<YYYY-MM-DD>/post.json` + its media. Fields: `id`, `time` (Europe/Madrid), `lang`, `title` (YouTube + Pinterest), `madeForKids` (videos, YouTube COPPA flag: true for stories a child watches),
+  `media[]` (`file`, `type`, `alt` for images), `ig`, `fb` (same caption with the UTM link instead of "link en la bio"), `tiktok`,
+  `tiktokTitle` (image posts), `coverMs`, `aiVideo` (dramatised people: platform disclosure).
+- **Runner:** `node scripts/social/schedule.mjs` (dry run: checks every upcoming post and prints the plan) / `--schedule` (uploads the media
+  and creates the scheduled posts; Zernio publishes at `time`). Idempotent: a post already in Zernio for that day with the same caption is
+  skipped. Only the next 6 days are scheduled (Zernio media uploads expire after 7), so it has to run at least every few days; a time already
+  past today is published at once. Local checks block a post with a price lacking "IVA incluido / IVA inclòs", "IA", an em-dash, missing alt
+  text or media. It warns when fewer than 3 days of content are left. Not scheduled yet (no launchd job): owner decision pending.
+- **Renderers** (real example books, pages rasterised from `/api/showcase/{id}/pdf`; need `pdftoppm` + `ffmpeg`; `.build/` is git-ignored):
+  `node scripts/social/render-book-carousel.mjs <dir>/carousel.json` (1080×1350 slides: book pages, idea cards) and
+  `node scripts/social/render-video.mjs <dir>/video.json` (1080×1920: full-screen art with slow zoom or pan, narrator, burned-in
+  captions timed from the voice, music bed; the brand shows only at the end: `"outro": true` appends the animated logo `docs/social/brand/outro.mp4`, built by
+  the HyperFrames project `videos/outro-libro/` (3.6 s, chosen by the owner 2026-10-04: the spine of the book "M" stands up, its two pages swing open, the loose leaves flick out and the name flows out of the open book with a warm light; sting mixed from the bundled Pixabay SFX in `assets/sting.wav`; the music bed ends before it). Other candidates kept for reference: `videos/outro-pluma/` (the name written with a pen), `videos/outro-acuarela/` (watercolour wash) and `videos/meapica-outro/` (line then ink). Rebuild: `cd videos/outro-libro && npx hyperframes render . -q high -o renders/video.mp4`, then re-encode to `docs/social/brand/outro.mp4` at 30 fps H.264 + AAC 44.1 kHz stereo (the format `render-video.mjs` concatenates), or `brand: true` puts a `meapica.shop` pill on the last beat of short loops).
+- **Narrator:** ElevenLabs `eleven_v4`, one fixed voice (`VOICE_ID` in `render-video.mjs`, "María Díaz") for Spanish and Catalan;
+  `ELEVENLABS_API_KEY` in `.env.local`. Lines are cached in `docs/social/.tts-cache/` (git-ignored), so a re-render costs nothing.
+  Candidate samples: `docs/social/audio/voice-samples/`. **Music:** `docs/social/audio/*.mp3` (Pixabay Content License, see `CREDITS.md`).
+- **Content rules and weekly formats:** `docs/social/playbook.md`. Marketing skills in `.claude/skills/` (see the playbook).
+  Page numbers differ per book and per locale: check the PDF before picking pages.
+- **Inbox:** `node scripts/social/inbox.mjs` prints unanswered comments and unread DMs as JSON (read-only).
+- `scripts/social/publish-first-posts.mjs` is the one-off of 3 Oct (already published).
+
 ## Growth funnel + abandoned-preview reminders (2026-10-03)
 
 - **Consent-independent funnel:** `stories.generation_started_at` / `stories.preview_ready_at` are set by the DB trigger

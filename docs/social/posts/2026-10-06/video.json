@@ -1,0 +1,84 @@
+{
+  "lang": "ca",
+  "out": "video.mp4",
+  "music": "calm-guitar-1.mp3",
+  "outro": true,
+  "beats": [
+    {
+      "img": {
+        "pdf": "fd5512f6-527e-4f2b-b344-749b8e0d3cfe",
+        "page": 20
+      },
+      "title": "Què regalar a un nen<br><em>de 5 anys?</em>",
+      "say": "Què li regales a un nen de cinc anys que ja ho té tot?",
+      "zoom": [
+        1.3,
+        1.12
+      ],
+      "focus": [
+        0.4,
+        0.4
+      ]
+    },
+    {
+      "img": {
+        "pdf": "fd5512f6-527e-4f2b-b344-749b8e0d3cfe",
+        "page": 4
+      },
+      "say": "Un conte on el protagonista és ell.",
+      "zoom": [
+        1.05,
+        1.2
+      ],
+      "focus": [
+        0.4,
+        0.45
+      ]
+    },
+    {
+      "img": {
+        "pdf": "fd5512f6-527e-4f2b-b344-749b8e0d3cfe",
+        "page": 12
+      },
+      "say": "Amb la seva cara pintada a l'aquarel·la a cada pàgina.",
+      "zoom": [
+        1.2,
+        1.05
+      ],
+      "focus": [
+        0.35,
+        0.45
+      ]
+    },
+    {
+      "img": {
+        "pdf": "fd5512f6-527e-4f2b-b344-749b8e0d3cfe",
+        "page": 16
+      },
+      "say": "I l'aventura, la tries tu: dinosaures, pirates, l'espai o un bosc màgic.",
+      "zoom": [
+        1.05,
+        1.2
+      ],
+      "focus": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "img": {
+        "pdf": "fd5512f6-527e-4f2b-b344-749b8e0d3cfe",
+        "page": 29
+      },
+      "say": "Abans de pagar, en veus la portada i les primeres pàgines.",
+      "zoom": [
+        1.15,
+        1.05
+      ],
+      "focus": [
+        0.6,
+        0.35
+      ]
+    }
+  ]
+}
