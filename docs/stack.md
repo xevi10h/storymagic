@@ -318,7 +318,11 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   Candidate samples: `docs/social/audio/voice-samples/`. **Music:** `docs/social/audio/*.mp3` (Pixabay Content License, see `CREDITS.md`).
 - **Content rules and weekly formats:** `docs/social/playbook.md`. Marketing skills in `.claude/skills/` (see the playbook).
   Page numbers differ per book and per locale: check the PDF before picking pages.
-- **Where it runs (2026-10-04):** on the owner's Mac. Nothing is scheduled in the cloud yet. A read-only check of the Claude cloud
+- **Where it runs (2026-10-04):** content is generated on the owner's Mac (Claude session) and pushed to `main`. Two Claude cloud routines
+  exist in the environment "Default" (https://claude.ai/code/routines): **"Meapica · publicar posts del día"** (`trig_01JFk1tnPtn6BR8nxieyRdkA`,
+  daily 07:00 UTC, runs `schedule.mjs --schedule`, push notification on failure or when under 3 days of content remain) and
+  **"Meapica · revisar comentarios y mensajes"** (`trig_01HmZCvtGrXGpGZhL9v7ZnL4`, hourly 06-20 UTC, read-only `inbox.mjs`, push notification when
+  something is waiting; created disabled until the environment is configured). Neither works until the owner configures the environment. A read-only check of the Claude cloud
   environment "Default" found Node 22, ffmpeg, pdftoppm and Chromium present, and three blockers only the owner can lift:
   no secrets (`ZERNIO_API_KEY`, `ELEVENLABS_API_KEY`), the network policy blocks `zernio.com`, `media.zernio.com`, `api.elevenlabs.io`,
   `meapica.shop` and `cdn.jsdelivr.net`, and Claude has no GitHub push access to the repo (Claude GitHub App not installed).
