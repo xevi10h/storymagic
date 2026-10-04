@@ -6,6 +6,8 @@
 //   node scripts/social/schedule.mjs               # dry run: check every upcoming post, print the plan. Creates nothing.
 //   node scripts/social/schedule.mjs --schedule    # upload media + schedule every post due in the next 6 days
 //   options: --date=2026-10-05  only that day
+//            --force (with --date)  post that day again even though Zernio already holds it (a replaced video:
+//            unpublish or delete the old one first)
 //
 // post.json: { id, time: "20:30" (Europe/Madrid), lang, title (YouTube + Pinterest, ≤ 100 chars),
 //              media: [{ file, type: "video" | "image", alt? }], ig, fb, tiktok, tiktokTitle (image posts, ≤ 90 chars),
@@ -19,6 +21,7 @@ const WINDOW_DAYS = 6;
 const args = process.argv.slice(2);
 const SCHEDULE = args.includes("--schedule");
 const ONLY_DATE = args.find((a) => a.startsWith("--date="))?.split("=")[1];
+const FORCE = args.includes("--force") && !!ONLY_DATE;
 
 const madrid = (d) => new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Madrid", dateStyle: "short", timeStyle: "short" }).format(d); // "2026-10-04 09:12"
 const addDays = (date, n) => new Date(Date.parse(`${date}T12:00:00Z`) + n * 864e5).toISOString().slice(0, 10);
@@ -108,7 +111,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       failed++;
       continue;
     }
-    if (existing.has(`${x.date}|${x.post.ig}`)) { console.log(`= ${head}: already in Zernio`); continue; }
+    if (!FORCE && existing.has(`${x.date}|${x.post.ig}`)) { console.log(`= ${head}: already in Zernio`); continue; }
     if (!due.includes(x)) { console.log(`· ${head}: outside the ${WINDOW_DAYS}-day window, a later run schedules it`); continue; }
     if (!SCHEDULE) { console.log(`→ ${head}: would schedule (${x.post.media.length} ${x.post.media[0].type})`); continue; }
 
@@ -123,7 +126,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       const body = { ...buildPostBody(x.post, accounts, urls), scheduledFor: `${x.date}T${x.post.time}:00` };
       const v = await api("POST", "/tools/validate/post", body);
       if (v.json.valid === false) throw new Error(`validate: ${JSON.stringify(v.json.errors)}`);
-      const r = await api("POST", "/posts", body, { "Idempotency-Key": idemKey(`meapica-${x.post.id}-${x.date}`) });
+      const r = await api("POST", "/posts", body, { "Idempotency-Key": idemKey(`meapica-${x.post.id}-${x.date}${FORCE ? `-${Date.now()}` : ""}`) });
       if (r.status >= 300 || !r.json.post?._id) throw new Error(`HTTP ${r.status} ${JSON.stringify(r.json).slice(0, 400)}`);
       console.log(`✓ ${head}: ${r.json.post.status} for ${r.json.post.scheduledFor} (${r.json.post._id}) warnings=${JSON.stringify(v.json.warnings ?? [])}`);
     } catch (e) {

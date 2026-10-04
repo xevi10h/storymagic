@@ -1,0 +1,72 @@
+{
+  "lang": "es",
+  "out": "video.mp4",
+  "music": "calm-guitar-1.mp3",
+  "outro": true,
+  "beats": [
+    {
+      "img": {
+        "video": "clips/p04.mp4"
+      },
+      "title": "Cuento para dormir<br><em>en 1 minuto</em>",
+      "say": "En su cuarto, Aitana guardaba una caracola turquesa. Si la acercaba al oído, sonaba a mar.",
+      "titleTop": 1010
+    },
+    {
+      "img": {
+        "video": "clips/p06.mp4",
+        "fit": true
+      },
+      "say": "Aquella noche puso la caracola bajo la almohada y pidió al mar una misión."
+    },
+    {
+      "img": {
+        "video": "clips/t06-10.mp4",
+        "full": true
+      },
+      "say": "La caracola abrió una puerta de espuma."
+    },
+    {
+      "img": {
+        "video": "clips/p10.mp4"
+      },
+      "say": "¡Un barco pirata! Y entre las olas saltó un delfín plateado. Hola, me llamo Coral."
+    },
+    {
+      "img": {
+        "video": "clips/p14.mp4"
+      },
+      "say": "La Perla Cantarina se ha perdido. Canta nanas a los peces pequeños."
+    },
+    {
+      "img": {
+        "video": "clips/p16.mp4"
+      },
+      "say": "La encontraron en una bahía tranquila, sobre el lomo de Bruma, que dormía profundamente."
+    },
+    {
+      "img": {
+        "video": "clips/p20.mp4"
+      },
+      "say": "Aitana no gritó. Cantó bajito su canción marinera."
+    },
+    {
+      "img": {
+        "video": "clips/p22.mp4"
+      },
+      "say": "Bruma abrió un ojo enorme y le acercó la perla con su aleta."
+    },
+    {
+      "img": {
+        "video": "clips/p24.mp4"
+      },
+      "say": "El mejor tesoro son los amigos, dijo Aitana."
+    },
+    {
+      "img": {
+        "video": "clips/p26.mp4"
+      },
+      "say": "Con maña y marea, se llega donde sea."
+    }
+  ]
+}

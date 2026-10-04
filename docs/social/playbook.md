@@ -21,7 +21,9 @@ also a pin linking to the site); videos also go to YouTube as Shorts (bedtime st
    really searches or asks.
 4. **Works muted**: captions burned in from the first word. **Works with sound**: the same narrator in every video
    (ElevenLabs, voice fixed in `scripts/social/render-video.mjs`) over a soft music bed (`docs/social/audio/`).
-5. **A visual change every 2 to 4 seconds.** One book and one idea per video. 15 to 60 seconds.
+5. **Scenes move.** The opening scene, the transitions between places and the most magical moment are animated with
+   an image-to-video model (paid); every other scene gets free layered motion; all beats dissolve into each other.
+   **A visual change every 2 to 4 seconds.** One book and one idea per video. 15 to 60 seconds.
 6. **Caption**: first line is the search phrase, then 1 or 2 lines, then 3 to 5 specific hashtags.
    The call to action is "guárdalo" or "envíaselo a…", not "compra". Price only in product-first posts.
 7. **Series beat one-offs**: the same formats come back every week so people know what to expect.

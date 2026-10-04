@@ -6,19 +6,11 @@
   "beats": [
     {
       "img": {
-        "pdf": "fd5512f6-527e-4f2b-b344-749b8e0d3cfe",
-        "page": 20
+        "video": "clips/p20.mp4"
       },
       "title": "Què regalar a un nen<br><em>de 5 anys?</em>",
       "say": "Què li regales a un nen de cinc anys que ja ho té tot?",
-      "zoom": [
-        1.3,
-        1.12
-      ],
-      "focus": [
-        0.4,
-        0.4
-      ]
+      "titleTop": 1010
     },
     {
       "img": {
@@ -37,18 +29,9 @@
     },
     {
       "img": {
-        "pdf": "fd5512f6-527e-4f2b-b344-749b8e0d3cfe",
-        "page": 12
+        "video": "clips/p12.mp4"
       },
-      "say": "Amb la seva cara pintada a l'aquarel·la a cada pàgina.",
-      "zoom": [
-        1.2,
-        1.05
-      ],
-      "focus": [
-        0.35,
-        0.45
-      ]
+      "say": "Amb la seva cara pintada a l'aquarel·la a cada pàgina."
     },
     {
       "img": {
@@ -80,5 +63,6 @@
         0.35
       ]
     }
-  ]
+  ],
+  "ambient": "day"
 }

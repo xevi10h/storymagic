@@ -69,3 +69,5 @@ docs/social/*/.zernio-uploads.json
 docs/social/.tts-cache/
 videos/*/renders/
 videos/*/snapshots/
+docs/social/tests/*/clips/
+docs/social/posts/*/clips/

@@ -327,6 +327,15 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   no secrets (`ZERNIO_API_KEY`, `ELEVENLABS_API_KEY`), the network policy blocks `zernio.com`, `media.zernio.com`, `api.elevenlabs.io`,
   `meapica.shop` and `cdn.jsdelivr.net`, and Claude has no GitHub push access to the repo (Claude GitHub App not installed).
   The agent session is also not allowed to publish (`schedule.mjs --schedule` is denied by the permission classifier): the owner runs it.
+- **Moving scenes (2026-10-04, owner's choice):** each video mixes paid and free motion, joined with 0.35 s dissolves.
+  Paid: `node scripts/social/animate-scene.mjs <out.mp4> "<prompt>" <start> [<end>]` (MiniMax H3 image-to-video through the Higgsfield API,
+  key in `~/.config/higgsfield/credentials`, 10 credits per 5 s clip; with an `<end>` frame it renders a scene-to-scene transition).
+  Used for the opening scene, the changes of place the story tells and the most magical moment (2 to 5 clips per video).
+  Free: `scripts/social/render-ambient.mjs` (HyperFrames: character cut out with a local model, depth drift, light, particles),
+  applied automatically by `render-video.mjs` to still beats when `video.json` has `"ambient": "forest|sea|night|day"`.
+  In `video.json`: `img.video` = a clip in `clips/` (git-ignored, only the final `video.mp4` is committed), `full: true` plays a
+  transition to its last frame, `ambientMode: "out"` on the beat before a transition, `titleTop` moves the hook label off a face.
+  Zernio cannot delete Instagram or TikTok posts; replacing a published video means deleting those by hand.
 - **Video encode:** H.264 CRF 25 (about 12 MB per minute). Page art is cut 9 % from the bottom (page-number badge) and the slow zoom runs
   on a 4x oversampled frame so it does not tremble.
 - **Inbox:** `node scripts/social/inbox.mjs` prints unanswered comments and unread DMs as JSON (read-only).

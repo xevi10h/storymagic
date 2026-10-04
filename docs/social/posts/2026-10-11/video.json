@@ -6,19 +6,11 @@
   "beats": [
     {
       "img": {
-        "pdf": "fd5512f6-527e-4f2b-b344-749b8e0d3cfe",
-        "page": 4
+        "video": "clips/p04.mp4"
       },
       "title": "Conte per anar a dormir<br><em>en 1 minut</em>",
       "say": "Al poble, en Leo corria pel parc com si les lloses fossin illes.",
-      "zoom": [
-        1.25,
-        1.1
-      ],
-      "focus": [
-        0.4,
-        0.45
-      ]
+      "titleTop": 1010
     },
     {
       "img": {
@@ -33,22 +25,16 @@
       "focus": [
         0.5,
         0.45
-      ]
+      ],
+      "ambient": "night",
+      "ambientMode": "out"
     },
     {
       "img": {
-        "pdf": "fd5512f6-527e-4f2b-b344-749b8e0d3cfe",
-        "page": 9
+        "video": "clips/t06-10.mp4",
+        "full": true
       },
-      "say": "El portal del temps es va obrir amb un sospir daurat.",
-      "zoom": [
-        1.3,
-        1.45
-      ],
-      "focus": [
-        0.5,
-        0.1
-      ]
+      "say": "El portal del temps es va obrir amb un sospir daurat."
     },
     {
       "img": {
@@ -67,18 +53,9 @@
     },
     {
       "img": {
-        "pdf": "fd5512f6-527e-4f2b-b344-749b8e0d3cfe",
-        "page": 12
+        "video": "../2026-10-06/clips/p12.mp4"
       },
-      "say": "Em dic Lulo, va dir. Jo soc en Leo. T'acompanyo.",
-      "zoom": [
-        1.05,
-        1.2
-      ],
-      "focus": [
-        0.4,
-        0.45
-      ]
+      "say": "Em dic Lulo, va dir. Jo soc en Leo. T'acompanyo."
     },
     {
       "img": {
@@ -97,33 +74,15 @@
     },
     {
       "img": {
-        "pdf": "fd5512f6-527e-4f2b-b344-749b8e0d3cfe",
-        "page": 20
+        "video": "../2026-10-06/clips/p20.mp4"
       },
-      "say": "Van respirar ben fondo tots dos, i van cridar ben fort.",
-      "zoom": [
-        1.3,
-        1.12
-      ],
-      "focus": [
-        0.4,
-        0.4
-      ]
+      "say": "Van respirar ben fondo tots dos, i van cridar ben fort."
     },
     {
       "img": {
-        "pdf": "fd5512f6-527e-4f2b-b344-749b8e0d3cfe",
-        "page": 24
+        "video": "clips/p24.mp4"
       },
-      "say": "La família va aixecar el cap, i va arribar a poc a poc, fent tremolar la terra.",
-      "zoom": [
-        1.05,
-        1.2
-      ],
-      "focus": [
-        0.5,
-        0.45
-      ]
+      "say": "La família va aixecar el cap, i va arribar a poc a poc, fent tremolar la terra."
     },
     {
       "img": {
@@ -138,7 +97,9 @@
       "focus": [
         0.5,
         0.45
-      ]
+      ],
+      "ambient": "night"
     }
-  ]
+  ],
+  "ambient": "day"
 }

@@ -4,11 +4,16 @@
 // Run from the repo root (needs ffmpeg + pdftoppm; ELEVENLABS_API_KEY in the env or .env.local for narration):
 //   node scripts/social/render-video.mjs docs/social/posts/2026-10-05/video.json
 // video.json (next to the output): { lang, out, music?: <file in docs/social/audio>, beats: [{
-//     img: { pdf: <showcase story id>, page: <n> | [<left>, <right>] } | { file: <repo path> },
+//     img: { pdf: <showcase story id>, page: <n> | [<left>, <right>] } | { file: <repo path> }
+//          | { video: <clip next to this file>, full?: true, fit?: true } (an animated scene or a free ambient clip; `full` plays a
+//            scene-to-scene transition to its last frame even when the line is shorter),
 //     say?: narration (the beat lasts as long as the audio) | seconds: fixed length,
-//     title?: text pinned at the top for the whole beat (the hook),
+//     title?: text pinned at the top for the whole beat (the hook), titleTop?: px from the top when a face is there,
 //     pan?: [x0, x1] (0-1, slides the 9:16 window across the art) | zoom?: [from, to] + focus?: [x, y],
+//     ambient?: forest | sea | night | day (free layered motion for this still, see render-ambient.mjs),
+//     ambientMode?: "out" (end on the plain page, for the beat before a transition clip),
 //     brand?: true (shows meapica.shop: last beat only) }],
+//   ambient?: preset applied to every still beat of the video,
 //   outro?: true (appends the animated logo, docs/social/brand/outro.mp4, rendered from the HyperFrames project videos/outro-libro; use it instead of
 //     `brand` on narrated videos, not on short loops) }
 // Safe zones: text stays out of the top 220 px and the bottom 420 px (platform UI).
@@ -141,70 +146,110 @@ async function overlay(name, body) {
 }
 
 // ── Beats ─────────────────────────────────────────────────────────────────────────────────────────────
+const XF = 0.35; // dissolve between beats, in seconds
 const parts = [];
+const lengths = [];
 let narrated = false;
 for (const [i, b] of T.beats.entries()) {
   const voice = b.say ? await narrate(b.say) : null;
   narrated ||= !!voice;
-  const seconds = voice ? Math.round((voice.duration + 0.35) * FPS) / FPS : b.seconds;
+  // A moving clip (animate-scene.mjs or render-ambient.mjs, path relative to this video.json) or a still to zoom on.
+  let clip = b.img.video ? resolve(OUT, b.img.video) : null;
+  let fit = !!b.img.fit;
+  let seconds = voice ? Math.round((voice.duration + 0.35) * FPS) / FPS : b.seconds;
+  // A transition between two scenes must play to its last frame, even when the line spoken over it is shorter.
+  if (clip && b.img.full) seconds = Math.max(seconds, Math.floor(probe(clip) * FPS) / FPS - XF);
   const frames = Math.round(seconds * FPS);
-  const src = await art(b.img, `b${i}`);
+  const shown = seconds + XF; // each beat keeps running under the dissolve into the next one
+  // `ambient` (per beat, or for the whole video): a still page gets free layered motion instead of a plain zoom.
+  // The clip is rendered once and kept in clips/ next to the video.
+  const ambient = b.ambient ?? T.ambient;
+  if (!clip && ambient && b.img.pdf && !Array.isArray(b.img.page)) {
+    const mode = b.ambientMode ?? "in";
+    clip = `${OUT}/clips/amb-${b.img.pdf.slice(0, 8)}-p${b.img.page}-${ambient}-${mode}-${shown.toFixed(2)}.mp4`;
+    if (!existsSync(clip)) {
+      mkdirSync(`${OUT}/clips`, { recursive: true });
+      execFileSync("node", [`${ROOT}/scripts/social/render-ambient.mjs`, clip, `pdf:${b.img.pdf}:${b.img.page}:${(b.focus ?? [0.5])[0]}`, ambient, shown.toFixed(2), mode], { stdio: "inherit" });
+    }
+    fit = true;
+  }
+  const src = clip ? null : await art(b.img, `b${i}`);
   const cropW = Math.round((SRC_H * W) / H / 2) * 2; // the 9:16 window on the source
 
   let motion;
-  if (b.pan) {
+  if (clip) {
+    // Slowed down only when the narration outlasts the clip; otherwise it is simply cut at the end of the line.
+    // `fit` stretches or squeezes the clip to the beat exactly (an ambient clip that must end on its last frame).
+    const slow = fit ? shown / probe(clip) : Math.max(1, (shown + 0.05) / probe(clip));
+    // Blended frames keep a slowed clip from stuttering.
+    const smooth = slow > 1.02 ? `minterpolate=fps=${FPS}:mi_mode=blend,` : "";
+    motion = `scale=${W}:${H}:force_original_aspect_ratio=increase,crop=${W}:${H},setpts=${slow.toFixed(4)}*PTS,${smooth}fps=${FPS},tpad=stop_mode=clone:stop_duration=1`;
+  } else if (b.pan) {
     const [p0, p1] = b.pan;
-    motion = `crop=${cropW}:${SRC_H}:'(iw-${cropW})*(${p0}+(${p1 - p0})*t/${seconds})':0,scale=${W}:${H},fps=${FPS}`;
+    motion = `crop=${cropW}:${SRC_H}:'(iw-${cropW})*(${p0}+(${p1 - p0})*t/${shown})':0,scale=${W}:${H},fps=${FPS}`;
   } else {
     const [z0, z1] = b.zoom ?? [1, 1.08];
     const [fx, fy] = b.focus ?? [0.5, 0.5];
     const x0 = Math.round(Math.min(Math.max(fx * src.width - cropW / 2, 0), src.width - cropW));
     // zoompan places its window on whole pixels, which makes a slow zoom tremble. Zooming on a 4x oversampled
     // frame makes each step a quarter of an output pixel: smooth to the eye.
-    motion = `crop=${cropW}:${SRC_H}:${x0}:0,scale=${W * 4}:${H * 4}:flags=lanczos,zoompan=z='${z0}+(${z1 - z0})*on/${frames}':x='(iw-iw/zoom)/2':y='(ih-ih/zoom)*${fy}':d=${frames}:s=${W}x${H}:fps=${FPS}`;
+    motion = `crop=${cropW}:${SRC_H}:${x0}:0,scale=${W * 4}:${H * 4}:flags=lanczos,zoompan=z='${z0}+(${z1 - z0})*on/${frames}':x='(iw-iw/zoom)/2':y='(ih-ih/zoom)*${fy}':d=${Math.round(shown * FPS)}:s=${W}x${H}:fps=${FPS}`;
   }
 
   // Overlays: [file, from, to] in seconds within the beat.
   const layers = [];
-  if (b.title) layers.push([await overlay(`b${i}-title`, `<div class="pill title">${b.title}</div>`), 0, seconds]);
-  if (b.brand) layers.push([await overlay(`b${i}-brand`, `<div class="pill brand">meapica.shop</div>`), 0, seconds]);
+  if (b.title) layers.push([await overlay(`b${i}-title`, `<div class="pill title"${b.titleTop ? ` style="top:${b.titleTop}px"` : ""}>${b.title}</div>`), 0, shown]);
+  if (b.brand) layers.push([await overlay(`b${i}-brand`, `<div class="pill brand">meapica.shop</div>`), 0, shown]);
   if (voice) {
     const chunks = captionChunks(voice.alignment);
     for (const [j, c] of chunks.entries()) {
-      layers.push([await overlay(`b${i}-cap${j}`, `<div class="pill cap">${esc(c.text)}</div>`), j === 0 ? 0 : c.start, chunks[j + 1]?.start ?? seconds]);
+      layers.push([await overlay(`b${i}-cap${j}`, `<div class="pill cap">${esc(c.text)}</div>`), j === 0 ? 0 : c.start, chunks[j + 1]?.start ?? Math.min(shown, voice.duration + 0.4)]); // the last caption leaves with the voice
     }
   }
 
-  const inputs = [...(b.pan ? ["-loop", "1", "-t", String(seconds)] : []), "-i", src.file];
+  const inputs = clip ? ["-i", clip] : [...(b.pan ? ["-loop", "1", "-t", String(shown)] : []), "-i", src.file];
   for (const [file] of layers) inputs.push("-i", file);
-  inputs.push(...(voice ? ["-i", voice.mp3] : ["-f", "lavfi", "-t", String(seconds), "-i", "anullsrc=r=44100:cl=stereo"]));
+  inputs.push(...(voice ? ["-i", voice.mp3] : ["-f", "lavfi", "-t", String(shown), "-i", "anullsrc=r=44100:cl=stereo"]));
   let chain = `[0:v]${motion}[v0]`;
   layers.forEach(([, from, to], j) => {
     chain += `;[v${j}][${j + 1}:v]overlay=0:0:enable='between(t,${from.toFixed(3)},${to.toFixed(3)})'[v${j + 1}]`;
   });
   const audioIn = layers.length + 1;
   chain += `;[${audioIn}:a]aresample=44100,aformat=channel_layouts=stereo,apad[a]`;
-  ff([...inputs, "-filter_complex", chain, "-map", `[v${layers.length}]`, "-map", "[a]", "-frames:v", String(frames), "-t", String(seconds),
-    "-c:v", "libx264", "-pix_fmt", "yuv420p", "-r", String(FPS), "-preset", "slow", "-crf", "25", "-c:a", "aac", "-b:a", "160k", "-ar", "44100", `${TMP}/b${i}.mp4`]);
+  ff([...inputs, "-filter_complex", chain, "-map", `[v${layers.length}]`, "-map", "[a]", "-frames:v", String(Math.round(shown * FPS)), "-t", String(shown),
+    "-c:v", "libx264", "-pix_fmt", "yuv420p", "-r", String(FPS), "-preset", "fast", "-crf", "16", "-c:a", "aac", "-b:a", "192k", "-ar", "44100", `${TMP}/b${i}.mp4`]);
   parts.push(`${TMP}/b${i}.mp4`);
+  lengths.push(seconds);
 }
 await browser.close();
 const OUTRO = `${ROOT}/docs/social/brand/outro.mp4`;
+const outroLength = T.outro ? probe(OUTRO) : 0;
 if (T.outro) parts.push(OUTRO);
 
-writeFileSync(`${TMP}/list.txt`, parts.map((p) => `file '${p}'`).join("\n"));
-ff(["-f", "concat", "-safe", "0", "-i", `${TMP}/list.txt`, "-c", "copy", `${TMP}/joined.mp4`]);
-const total = probe(`${TMP}/joined.mp4`);
-if (T.music) {
-  // Music sits under the narrator, or carries the video when nobody speaks. Library tracks differ in
-  // loudness, so the bed is normalised first.
-  const vol = narrated ? 0.16 : 0.6;
-  // The bed is gone before the outro: the logo has its own sting.
-  const musicEnd = T.outro ? total - probe(OUTRO) : total;
-  ff(["-i", `${TMP}/joined.mp4`, "-stream_loop", "-1", "-i", `${AUDIO}/${T.music}`, "-filter_complex",
-    `[1:a]aresample=44100,loudnorm=I=-16:TP=-1.5:LRA=11,aresample=44100,volume=${vol},afade=t=in:d=0.4,afade=t=out:st=${(musicEnd - 1).toFixed(2)}:d=1[m];[0:a][m]amix=inputs=2:duration=first:normalize=0[a]`,
-    "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "160k", "-t", String(total), "-movflags", "+faststart", `${OUT}/${T.out}`]);
-} else {
-  ff(["-i", `${TMP}/joined.mp4`, "-c", "copy", "-movflags", "+faststart", `${OUT}/${T.out}`]);
+// Assembly: every beat dissolves into the next (and the last one into the outro) while the sound runs straight
+// through, so narration and captions stay in sync. One final encode.
+const starts = lengths.map((_, i) => lengths.slice(0, i).reduce((sum, n) => sum + n, 0));
+const spoken = lengths.reduce((sum, n) => sum + n, 0);
+if (T.outro) starts.push(spoken);
+const total = T.outro ? spoken + outroLength : spoken + XF;
+const inputs = parts.flatMap((p) => ["-i", p]);
+let graph = parts.map((_, i) => `[${i}:v]settb=AVTB,fps=${FPS},format=yuv420p[s${i}]`).join(";");
+let last = "s0";
+for (let i = 1; i < parts.length; i++) {
+  graph += `;[${last}][s${i}]xfade=transition=fade:duration=${XF}:offset=${starts[i].toFixed(3)}[x${i}]`;
+  last = `x${i}`;
 }
+graph += ";" + parts.map((_, i) => `[${i}:a]${i < lengths.length ? `atrim=0:${lengths[i].toFixed(3)},` : ""}asetpts=PTS-STARTPTS,aresample=44100,aformat=channel_layouts=stereo[a${i}]`).join(";");
+graph += `;${parts.map((_, i) => `[a${i}]`).join("")}concat=n=${parts.length}:v=0:a=1[voice]`;
+if (T.music) {
+  // Music sits under the narrator, or carries the video when nobody speaks. Library tracks differ in loudness,
+  // so the bed is normalised first. It is gone before the outro: the logo has its own sting.
+  const vol = narrated ? 0.16 : 0.6;
+  const musicEnd = total - outroLength;
+  inputs.push("-stream_loop", "-1", "-i", `${AUDIO}/${T.music}`);
+  graph += `;[${parts.length}:a]aresample=44100,loudnorm=I=-16:TP=-1.5:LRA=11,aresample=44100,volume=${vol},afade=t=in:d=0.4,afade=t=out:st=${(musicEnd - 1).toFixed(2)}:d=1[m];[voice][m]amix=inputs=2:duration=first:normalize=0[a]`;
+}
+ff([...inputs, "-filter_complex", graph, "-map", `[${last}]`, "-map", T.music ? "[a]" : "[voice]", "-t", total.toFixed(3),
+  "-c:v", "libx264", "-pix_fmt", "yuv420p", "-r", String(FPS), "-preset", "slow", "-crf", "25", "-c:a", "aac", "-b:a", "160k", "-ar", "44100",
+  "-movflags", "+faststart", `${OUT}/${T.out}`]);
 console.log(`built ${OUT}/${T.out} (${total.toFixed(1)} s)`);
