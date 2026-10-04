@@ -39,7 +39,10 @@ mkdirSync(TTS_CACHE, { recursive: true });
 const ff = (args) => execFileSync("ffmpeg", ["-v", "error", "-y", ...args], { stdio: "inherit" });
 const probe = (file) => Number(execFileSync("ffprobe", ["-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", file]).toString());
 
-// ── Art: any source → a 3000 px tall PNG (square page, or two pages side by side) ─────────────────────
+// ── Art: any source → a PNG SRC_H px tall (one page, or two pages side by side) ───────────────────────
+// Book pages carry their page number in a small badge near the bottom edge: the bottom 9 % is cut off so it
+// can never show in a video.
+const SRC_H = 2730;
 async function pdfPage(id, n) {
   const pdf = `${TMP}/${id}.pdf`;
   if (!existsSync(pdf)) {
@@ -54,8 +57,8 @@ async function pdfPage(id, n) {
 async function art(img, key) {
   const out = `${TMP}/${key}-art.png`;
   const sources = img.file ? [`${ROOT}/${img.file}`] : await Promise.all([img.page].flat().map((n) => pdfPage(img.pdf, n)));
-  const tiles = await Promise.all(sources.map((s) => sharp(s).resize(3000, 3000, { fit: "cover" }).toBuffer()));
-  await sharp({ create: { width: 3000 * tiles.length, height: 3000, channels: 3, background: "#fff" } })
+  const tiles = await Promise.all(sources.map((s) => sharp(s).resize(3000, 3000, { fit: "cover" }).extract({ left: 0, top: 0, width: 3000, height: SRC_H }).toBuffer()));
+  await sharp({ create: { width: 3000 * tiles.length, height: SRC_H, channels: 3, background: "#fff" } })
     .composite(tiles.map((input, i) => ({ input, left: i * 3000, top: 0 })))
     .png()
     .toFile(out);
@@ -146,17 +149,19 @@ for (const [i, b] of T.beats.entries()) {
   const seconds = voice ? Math.round((voice.duration + 0.35) * FPS) / FPS : b.seconds;
   const frames = Math.round(seconds * FPS);
   const src = await art(b.img, `b${i}`);
-  const cropW = Math.round((3000 * W) / H); // the 9:16 window on a 3000 px tall source
+  const cropW = Math.round((SRC_H * W) / H / 2) * 2; // the 9:16 window on the source
 
   let motion;
   if (b.pan) {
     const [p0, p1] = b.pan;
-    motion = `crop=${cropW}:3000:'(iw-${cropW})*(${p0}+(${p1 - p0})*t/${seconds})':0,scale=${W}:${H},fps=${FPS}`;
+    motion = `crop=${cropW}:${SRC_H}:'(iw-${cropW})*(${p0}+(${p1 - p0})*t/${seconds})':0,scale=${W}:${H},fps=${FPS}`;
   } else {
     const [z0, z1] = b.zoom ?? [1, 1.08];
     const [fx, fy] = b.focus ?? [0.5, 0.5];
     const x0 = Math.round(Math.min(Math.max(fx * src.width - cropW / 2, 0), src.width - cropW));
-    motion = `crop=${cropW}:3000:${x0}:0,zoompan=z='${z0}+(${z1 - z0})*on/${frames}':x='(iw-iw/zoom)/2':y='(ih-ih/zoom)*${fy}':d=${frames}:s=${W}x${H}:fps=${FPS}`;
+    // zoompan places its window on whole pixels, which makes a slow zoom tremble. Zooming on a 4x oversampled
+    // frame makes each step a quarter of an output pixel: smooth to the eye.
+    motion = `crop=${cropW}:${SRC_H}:${x0}:0,scale=${W * 4}:${H * 4}:flags=lanczos,zoompan=z='${z0}+(${z1 - z0})*on/${frames}':x='(iw-iw/zoom)/2':y='(ih-ih/zoom)*${fy}':d=${frames}:s=${W}x${H}:fps=${FPS}`;
   }
 
   // Overlays: [file, from, to] in seconds within the beat.

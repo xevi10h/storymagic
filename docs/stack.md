@@ -318,6 +318,13 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   Candidate samples: `docs/social/audio/voice-samples/`. **Music:** `docs/social/audio/*.mp3` (Pixabay Content License, see `CREDITS.md`).
 - **Content rules and weekly formats:** `docs/social/playbook.md`. Marketing skills in `.claude/skills/` (see the playbook).
   Page numbers differ per book and per locale: check the PDF before picking pages.
+- **Where it runs (2026-10-04):** on the owner's Mac. Nothing is scheduled in the cloud yet. A read-only check of the Claude cloud
+  environment "Default" found Node 22, ffmpeg, pdftoppm and Chromium present, and three blockers only the owner can lift:
+  no secrets (`ZERNIO_API_KEY`, `ELEVENLABS_API_KEY`), the network policy blocks `zernio.com`, `media.zernio.com`, `api.elevenlabs.io`,
+  `meapica.shop` and `cdn.jsdelivr.net`, and Claude has no GitHub push access to the repo (Claude GitHub App not installed).
+  The agent session is also not allowed to publish (`schedule.mjs --schedule` is denied by the permission classifier): the owner runs it.
+- **Video encode:** H.264 CRF 25 (about 12 MB per minute). Page art is cut 9 % from the bottom (page-number badge) and the slow zoom runs
+  on a 4x oversampled frame so it does not tremble.
 - **Inbox:** `node scripts/social/inbox.mjs` prints unanswered comments and unread DMs as JSON (read-only).
 - `scripts/social/publish-first-posts.mjs` is the one-off of 3 Oct (already published).
 
