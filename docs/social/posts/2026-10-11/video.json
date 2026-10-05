@@ -3,6 +3,9 @@
   "out": "video.mp4",
   "music": "calm-piano-1.mp3",
   "outro": true,
+  "ambient": "day",
+  "web": true,
+  "outroSay": "Crea el seu, amb el seu nom, a meapica punt shop.",
   "beats": [
     {
       "img": {
@@ -100,6 +103,5 @@
       ],
       "ambient": "night"
     }
-  ],
-  "ambient": "day"
+  ]
 }

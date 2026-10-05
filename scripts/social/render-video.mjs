@@ -14,6 +14,7 @@
 //     ambientMode?: "out" (end on the plain page, for the beat before a transition clip),
 //     brand?: true (shows meapica.shop: last beat only) }],
 //   ambient?: preset applied to every still beat of the video,
+//   web?: true (a small meapica.shop label from the third beat on), outroSay?: line the narrator says over the outro,
 //   outro?: true (appends the animated logo, docs/social/brand/outro.mp4, rendered from the HyperFrames project videos/outro-libro; use it instead of
 //     `brand` on narrated videos, not on short loops) }
 // Safe zones: text stays out of the top 220 px and the bottom 420 px (platform UI).
@@ -132,6 +133,7 @@ body{font-family:Fredoka,sans-serif;position:relative}
 .title{top:250px;background:#FFF8F0;color:#1b120e;font-weight:700;font-size:70px;line-height:1.1;padding:24px 40px}
 .title em{font-style:normal;color:#E86C3A}
 .cap{top:1280px;background:rgba(27,18,14,.86);color:#FFF8F0;font-weight:600;font-size:64px;line-height:1.15;padding:18px 36px}
+.web{top:236px;background:#FFF8F0;color:#b94f1f;font-weight:600;font-size:40px;padding:10px 30px;border-radius:999px}
 .brand{top:1100px;background:#E86C3A;color:#fff;font-weight:600;font-size:64px;padding:18px 48px;border-radius:999px}
 `;
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
@@ -199,6 +201,8 @@ for (const [i, b] of T.beats.entries()) {
   // Overlays: [file, from, to] in seconds within the beat.
   const layers = [];
   if (b.title) layers.push([await overlay(`b${i}-title`, `<div class="pill title"${b.titleTop ? ` style="top:${b.titleTop}px"` : ""}>${b.title}</div>`), 0, shown]);
+  // Most viewers leave long before the outro: the address sits on screen from the third beat on.
+  if (T.web && i >= 2 && !b.title && !b.brand) layers.push([await overlay("web", `<div class="pill web">meapica.shop</div>`), 0, shown]);
   if (b.brand) layers.push([await overlay(`b${i}-brand`, `<div class="pill brand">meapica.shop</div>`), 0, shown]);
   if (voice) {
     const chunks = captionChunks(voice.alignment);
@@ -233,6 +237,7 @@ const spoken = lengths.reduce((sum, n) => sum + n, 0);
 if (T.outro) starts.push(spoken);
 const total = T.outro ? spoken + outroLength : spoken + XF;
 const inputs = parts.flatMap((p) => ["-i", p]);
+let voiceLabel = "voice";
 let graph = parts.map((_, i) => `[${i}:v]settb=AVTB,fps=${FPS},format=yuv420p[s${i}]`).join(";");
 let last = "s0";
 for (let i = 1; i < parts.length; i++) {
@@ -241,15 +246,22 @@ for (let i = 1; i < parts.length; i++) {
 }
 graph += ";" + parts.map((_, i) => `[${i}:a]${i < lengths.length ? `atrim=0:${lengths[i].toFixed(3)},` : ""}asetpts=PTS-STARTPTS,aresample=44100,aformat=channel_layouts=stereo[a${i}]`).join(";");
 graph += `;${parts.map((_, i) => `[a${i}]`).join("")}concat=n=${parts.length}:v=0:a=1[voice]`;
+if (T.outro && T.outroSay) {
+  // The narrator says where to make one, over the logo.
+  const line = await narrate(T.outroSay);
+  inputs.push("-i", line.mp3);
+  graph += `;[${inputs.filter((x) => x === "-i").length - 1}:a]aresample=44100,aformat=channel_layouts=stereo,adelay=${Math.round((spoken + 0.3) * 1000)}:all=1[say];[voice][say]amix=inputs=2:duration=first:normalize=0[voiced]`;
+  voiceLabel = "voiced";
+}
 if (T.music) {
   // Music sits under the narrator, or carries the video when nobody speaks. Library tracks differ in loudness,
   // so the bed is normalised first. It is gone before the outro: the logo has its own sting.
   const vol = narrated ? 0.16 : 0.6;
   const musicEnd = total - outroLength;
   inputs.push("-stream_loop", "-1", "-i", `${AUDIO}/${T.music}`);
-  graph += `;[${parts.length}:a]aresample=44100,loudnorm=I=-16:TP=-1.5:LRA=11,aresample=44100,volume=${vol},afade=t=in:d=0.4,afade=t=out:st=${(musicEnd - 1).toFixed(2)}:d=1[m];[voice][m]amix=inputs=2:duration=first:normalize=0[a]`;
+  graph += `;[${inputs.filter((x) => x === "-i").length - 1}:a]aresample=44100,loudnorm=I=-16:TP=-1.5:LRA=11,aresample=44100,volume=${vol},afade=t=in:d=0.4,afade=t=out:st=${(musicEnd - 1).toFixed(2)}:d=1[m];[${voiceLabel}][m]amix=inputs=2:duration=first:normalize=0[a]`;
 }
-ff([...inputs, "-filter_complex", graph, "-map", `[${last}]`, "-map", T.music ? "[a]" : "[voice]", "-t", total.toFixed(3),
+ff([...inputs, "-filter_complex", graph, "-map", `[${last}]`, "-map", T.music ? "[a]" : `[${voiceLabel}]`, "-t", total.toFixed(3),
   "-c:v", "libx264", "-pix_fmt", "yuv420p", "-r", String(FPS), "-preset", "slow", "-crf", "25", "-c:a", "aac", "-b:a", "160k", "-ar", "44100",
   "-movflags", "+faststart", `${OUT}/${T.out}`]);
 console.log(`built ${OUT}/${T.out} (${total.toFixed(1)} s)`);

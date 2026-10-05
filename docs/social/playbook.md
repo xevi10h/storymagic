@@ -24,7 +24,11 @@ also a pin linking to the site); videos also go to YouTube as Shorts (bedtime st
 5. **Scenes move.** The opening scene, the transitions between places and the most magical moment are animated with
    an image-to-video model (paid); every other scene gets free layered motion; all beats dissolve into each other.
    **A visual change every 2 to 4 seconds.** One book and one idea per video. 15 to 60 seconds.
-6. **Caption**: first line is the search phrase, then 1 or 2 lines, then 3 to 5 specific hashtags.
+6. **The site is said and shown before people leave**: a small `meapica.shop` label from the third beat on (`"web": true`),
+   the narrator says it over the outro (`outroSay`), and Facebook and YouTube get the link as a first comment
+   (automatic; not on YouTube videos declared as made for kids, which have no comments). Reason: on 2026-10-05 about
+   1,400 social views had produced one visit to the site.
+7. **Caption**: first line is the search phrase, then 1 or 2 lines, then 3 to 5 specific hashtags.
    The call to action is "guárdalo" or "envíaselo a…", not "compra". Price only in product-first posts.
 7. **Series beat one-offs**: the same formats come back every week so people know what to expect.
 8. **Narrated videos carry the platform AI label** (`aiVideo: true`): the voice is synthetic.

@@ -3,6 +3,9 @@
   "out": "video.mp4",
   "music": "magic-wonder-1.mp3",
   "outro": true,
+  "ambient": "night",
+  "web": true,
+  "outroSay": "Crea el suyo, con su nombre, en meapica punto shop.",
   "beats": [
     {
       "img": {
@@ -80,6 +83,5 @@
       },
       "say": "Y aún quedaba un poco más allá."
     }
-  ],
-  "ambient": "night"
+  ]
 }

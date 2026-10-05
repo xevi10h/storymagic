@@ -3,6 +3,9 @@
   "out": "video.mp4",
   "music": "calm-guitar-1.mp3",
   "outro": true,
+  "ambient": "night",
+  "web": true,
+  "outroSay": "Crea el suyo, con su nombre, en meapica punto shop.",
   "beats": [
     {
       "img": {
@@ -63,6 +66,5 @@
         0.45
       ]
     }
-  ],
-  "ambient": "night"
+  ]
 }

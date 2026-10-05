@@ -3,6 +3,9 @@
   "out": "video.mp4",
   "music": "calm-piano-1.mp3",
   "outro": true,
+  "ambient": "forest",
+  "web": true,
+  "outroSay": "Crea el suyo, con su nombre, en meapica punto shop.",
   "beats": [
     {
       "img": {
@@ -130,6 +133,5 @@
       },
       "say": "Pasito, pasito, el mundo suena bonito."
     }
-  ],
-  "ambient": "forest"
+  ]
 }

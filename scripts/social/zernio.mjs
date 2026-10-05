@@ -66,13 +66,19 @@ export async function meapicaAccounts() {
 
 /**
  * Body of POST /v1/posts for one post on the given accounts (checked against the OpenAPI spec).
- * p: { media: [{ file, type: "video" | "image", alt? }], title, ig, fb, tiktok, tiktokTitle?, coverMs?, aiVideo?, madeForKids? }
+ * p: { lang, media: [{ file, type: "video" | "image", alt? }], title, ig, fb, tiktok, tiktokTitle?, coverMs?, aiVideo?, madeForKids? }
  * YouTube takes videos only (under 3 min = Short); Pinterest takes the video or the first image, linked to the site.
  * urls: { [file]: public media URL }. The caller adds publishNow or scheduledFor.
  */
 export function buildPostBody(p, accounts, urls) {
   const isVideo = p.media[0].type === "video";
   const mediaItems = p.media.map((m) => ({ type: m.type, url: urls[m.file], ...(m.alt ? { altText: m.alt } : {}) }));
+  // Captions rarely get a click: the link also goes in the first comment where the platform allows one.
+  const comment = (source) => {
+    const link = p.fb.match(/https:\/\/meapica\.shop\S+/)?.[0]?.replace("utm_source=facebook", `utm_source=${source}`).replace("org_fb_", `org_${source.slice(0, 2)}c_`);
+    if (!link) return {};
+    return { firstComment: p.lang === "ca" ? `Crea el seu conte amb el seu nom i mira'l abans de pagar: ${link}` : `Crea su cuento con su nombre y míralo antes de pagar: ${link}` };
+  };
   const platforms = [];
   if (accounts.instagram) {
     platforms.push({
@@ -88,7 +94,7 @@ export function buildPostBody(p, accounts, urls) {
       accountId: accounts.facebook._id,
       customContent: p.fb,
       // Video as a Page Reel (9:16, ≤ 60 s); images as a multi-image feed post (≤ 10).
-      platformSpecificData: isVideo ? { contentType: "reel" } : {},
+      platformSpecificData: { ...(isVideo ? { contentType: "reel" } : {}), ...comment("facebook") },
     });
   }
   if (accounts.tiktok) {
@@ -117,7 +123,8 @@ export function buildPostBody(p, accounts, urls) {
       accountId: accounts.youtube._id,
       customContent: linked("youtube"),
       // madeForKids is a legal declaration (COPPA): true for stories a child watches, false for content aimed at parents.
-      platformSpecificData: { title: p.title, visibility: "public", madeForKids: !!p.madeForKids, containsSyntheticMedia: !!p.aiVideo, categoryId: "27" },
+      // Videos declared as made for kids have comments switched off by YouTube.
+      platformSpecificData: { title: p.title, visibility: "public", madeForKids: !!p.madeForKids, containsSyntheticMedia: !!p.aiVideo, categoryId: "27", ...(p.madeForKids ? {} : comment("youtube")) },
     });
   }
   if (accounts.pinterest) {

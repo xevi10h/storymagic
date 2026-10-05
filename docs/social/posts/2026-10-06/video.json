@@ -3,6 +3,9 @@
   "out": "video.mp4",
   "music": "calm-guitar-1.mp3",
   "outro": true,
+  "ambient": "day",
+  "web": true,
+  "outroSay": "Crea el seu, amb el seu nom, a meapica punt shop.",
   "beats": [
     {
       "img": {
@@ -63,6 +66,5 @@
         0.35
       ]
     }
-  ],
-  "ambient": "day"
+  ]
 }
