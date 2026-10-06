@@ -322,11 +322,10 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   exist in the environment "Default" (https://claude.ai/code/routines): **"Meapica · publicar posts del día"** (`trig_01JFk1tnPtn6BR8nxieyRdkA`,
   daily 07:00 UTC, runs `schedule.mjs --schedule`, push notification on failure or when under 3 days of content remain) and
   **"Meapica · revisar comentarios y mensajes"** (`trig_01HmZCvtGrXGpGZhL9v7ZnL4`, hourly 06-20 UTC, read-only `inbox.mjs`, push notification when
-  something is waiting; created disabled until the environment is configured). Neither works until the owner configures the environment. A read-only check of the Claude cloud
-  environment "Default" found Node 22, ffmpeg, pdftoppm and Chromium present, and three blockers only the owner can lift:
-  no secrets (`ZERNIO_API_KEY`, `ELEVENLABS_API_KEY`), the network policy blocks `zernio.com`, `media.zernio.com`, `api.elevenlabs.io`,
-  `meapica.shop` and `cdn.jsdelivr.net`, and Claude has no GitHub push access to the repo (Claude GitHub App not installed).
-  The agent session is also not allowed to publish (`schedule.mjs --schedule` is denied by the permission classifier): the owner runs it.
+  something is waiting). Both work since 2026-10-06: the owner added `ZERNIO_API_KEY` to the environment variables and opened the network to
+  the Zernio hosts; verified with a manual run of each (exit 0). Post media must be in git for the cloud to upload it: `.gitignore` ignores
+  `*.png` except `docs/social/posts/**/*.png`. Still missing for generating content in the cloud: `ELEVENLABS_API_KEY`, its host, and GitHub
+  push access (Claude GitHub App not installed on the repo).
 - **Moving scenes (2026-10-04, owner's choice):** each video mixes paid and free motion, joined with 0.35 s dissolves.
   Paid: `node scripts/social/animate-scene.mjs <out.mp4> "<prompt>" <start> [<end>]` (MiniMax H3 image-to-video through the Higgsfield API,
   key in `~/.config/higgsfield/credentials`, 10 credits per 5 s clip; with an `<end>` frame it renders a scene-to-scene transition).
