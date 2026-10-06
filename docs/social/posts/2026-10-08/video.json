@@ -9,11 +9,10 @@
   "beats": [
     {
       "img": {
-        "video": "clips/p04.mp4"
+        "video": "clips/p12.mp4"
       },
       "title": "¿Por qué pide el mismo<br><em>cuento 20 veces?</em>",
-      "say": "¿Por qué tu peque pide el mismo cuento veinte veces?",
-      "titleTop": 960
+      "say": "¿Por qué tu peque pide el mismo cuento veinte veces?"
     },
     {
       "img": {
@@ -32,7 +31,7 @@
     },
     {
       "img": {
-        "video": "clips/p12.mp4"
+        "video": "clips/p04.mp4"
       },
       "say": "Y porque en cada lectura descubre una palabra nueva."
     },

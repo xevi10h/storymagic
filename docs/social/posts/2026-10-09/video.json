@@ -9,11 +9,17 @@
   "beats": [
     {
       "img": {
-        "video": "clips/p04.mp4"
+        "video": "clips/p12.mp4"
       },
       "title": "Así empieza<br><em>el cuento de Martí</em>",
-      "say": "Aquella tarde, Martí volvió del colegio pisando solo las baldosas claras.",
-      "titleTop": 1010
+      "titleTop": 860,
+      "say": "Una noche, la ventana de Martí se hizo cielo."
+    },
+    {
+      "img": {
+        "video": "clips/p04.mp4"
+      },
+      "say": "Aquella tarde, Martí volvió del colegio pisando solo las baldosas claras."
     },
     {
       "img": {

@@ -9,11 +9,16 @@
   "beats": [
     {
       "img": {
-        "video": "clips/p04.mp4"
+        "video": "clips/p24.mp4"
       },
       "title": "Conte per anar a dormir<br><em>en 1 minut</em>",
-      "say": "Al poble, en Leo corria pel parc com si les lloses fossin illes.",
-      "titleTop": 1010
+      "say": "Aquesta nit, en Leo coneixerà un dinosaure de veritat."
+    },
+    {
+      "img": {
+        "video": "clips/p04.mp4"
+      },
+      "say": "Al poble, en Leo corria pel parc com si les lloses fossin illes."
     },
     {
       "img": {
