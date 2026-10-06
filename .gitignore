@@ -39,6 +39,7 @@ yarn-error.log*
 # screenshots & playwright
 *.png
 !public/images/**/*.png
+!docs/social/posts/**/*.png
 !public/favicon.ico
 .playwright-mcp/
 
