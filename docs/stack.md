@@ -338,6 +338,12 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   Zernio cannot delete Instagram or TikTok posts; replacing a published video means deleting those by hand.
 - **Video encode:** H.264 CRF 25 (about 12 MB per minute). Page art is cut 9 % from the bottom (page-number badge) and the slow zoom runs
   on a 4x oversampled frame so it does not tremble.
+- **Keyword → private message (2026-10-06):** `node scripts/social/setup-automations.mjs [--create]`. Four Zernio comment automations,
+  account-wide on Instagram and Facebook: commenting or messaging `CUENTO` (ES) or `CONTE` (CA) sends a DM with a tracked button to the
+  site and a short public reply. Captions of Instagram and Facebook posts end with the call to comment the keyword. Stats (triggered,
+  delivered, link clicks) come back from the same script. Not available on TikTok, YouTube or Pinterest.
+- **Ads:** Meta ad account "Meapica Ads" (`act_2479938985822992`) is connected in Zernio and active, but has **no payment method**
+  (billingStatus `missing`, checked 2026-10-06): no campaign can run until the owner adds one in Meta.
 - **Inbox:** `node scripts/social/inbox.mjs` prints unanswered comments and unread DMs as JSON (read-only).
 - `scripts/social/publish-first-posts.mjs` is the one-off of 3 Oct (already published).
 
