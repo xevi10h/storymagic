@@ -1,0 +1,39 @@
+{
+  "lang": "es",
+  "out": "video.mp4",
+  "music": "magic-wonder-1.mp3",
+  "beats": [
+    {
+      "img": {
+        "video": "clips/c1.mp4"
+      },
+      "seconds": 3.4,
+      "title": "No sabe quién sale<br><em>en su cuento</em>",
+      "titleTop": 1180
+    },
+    {
+      "img": {
+        "video": "clips/c2.mp4"
+      },
+      "seconds": 3.8,
+      "title": "Primero ve<br><em>su nombre</em>",
+      "titleTop": 1220
+    },
+    {
+      "img": {
+        "video": "clips/c3.mp4"
+      },
+      "seconds": 4.2,
+      "title": "Luego<br><em>se reconoce</em>",
+      "titleTop": 300
+    },
+    {
+      "img": {
+        "video": "clips/c4.mp4"
+      },
+      "seconds": 4.0,
+      "title": "El protagonista<br><em>es él</em><br><span style=\"font-size:.55em;opacity:.75\">meapica.shop</span>",
+      "titleTop": 250
+    }
+  ]
+}

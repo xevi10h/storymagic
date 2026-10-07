@@ -101,6 +101,22 @@ a name is typed and lands letter by letter on the real cover of that child's exa
 Aitana), ending on an empty field and "¿Y el suyo?". Draft in `docs/social/tests/2026-10-07-name-reveal/`, not
 scheduled. No synthetic voice or generated people, so it needs no AI label: it can also serve as B of test 6.
 
+**"Se reconoce" reel, 2026-10-07 (owner: the lifestyle reel "se puede mejorar mucho", make reels that can spread).**
+Draft in `docs/social/tests/2026-10-07-reveal/`, not scheduled. What changed against the lifestyle reel, and why
+(`tiktok-script`, `hook-writer`, `storytelling-and-narrative`, `viral-reverse-engineering`):
+- It was an advert (a gift question, four product claims, narrator, logo). Now it is one small story with an open
+  question: "No sabe quién sale en su cuento" → he sees his name → he recognises himself → "El protagonista es él".
+- The reason to send it is the moment of recognition, the same one the category's real reaction videos live on.
+  The boy wears the clothes of the painted boy, a detail that rewards a second look.
+- 15.7 s instead of 25 s, no narrator (no synthetic voice), hands tearing paper from the first frame.
+- Made by the rules: four start photos (`gen.mjs`, flux-2 edit with the real Spanish cover and spread as
+  references; telling the model the exact title text fixed the garbled titles of the first try), four Higgsfield
+  clips (40 credits). Re-projecting the real pages made these shots worse and was not used: the model's own copy
+  reads correctly.
+- Honest limits: it is a staged scene with generated people, so brand imagery with the AI label on, never worded
+  as a real child's reaction; the boy's cheek shows in profile in the third shot; nobody can promise it spreads.
+  The measure is completion and sends against the other reels.
+
 Not tests (no pair): 8 Oct parent question and 10 Oct poll. They are read as formats, against the bedtime stories.
 
 **Review of the week's posts, 2026-10-07** (with `tiktok-script`, `storytelling-and-narrative`, `hook-writer`):
