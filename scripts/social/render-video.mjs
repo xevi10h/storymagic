@@ -3,6 +3,8 @@
 // burned in for sound-off viewing and a music bed. No logo or brand card until the last beat.
 // Run from the repo root (needs ffmpeg + pdftoppm; ELEVENLABS_API_KEY in the env or .env.local for narration):
 //   node scripts/social/render-video.mjs docs/social/posts/2026-10-05/video.json
+//   add --storyboard to get storyboard.jpg next to it instead: the first frame of every beat with its title and its
+//   whole line, in seconds and without narration or encoding. Look at it before paying for a full render.
 // video.json (next to the output): { lang, out, music?: <file in docs/social/audio>, beats: [{
 //     img: { pdf: <showcase story id>, page: <n> | [<left>, <right>] } | { file: <repo path> }
 //          | { video: <clip next to this file>, full?: true, fit?: true } (an animated scene or a free ambient clip; `full` plays a
@@ -32,6 +34,7 @@ const VOICE_MODEL = "eleven_v4";
 const configPath = resolve(process.argv[2] ?? "");
 if (!existsSync(configPath)) throw new Error("usage: node scripts/social/render-video.mjs <video.json>");
 const T = JSON.parse(readFileSync(configPath, "utf8"));
+const STORYBOARD = process.argv.includes("--storyboard");
 const ROOT = process.cwd();
 const OUT = dirname(configPath);
 const TMP = `${OUT}/.build`;
@@ -153,6 +156,19 @@ const parts = [];
 const lengths = [];
 let narrated = false;
 for (const [i, b] of T.beats.entries()) {
+  if (STORYBOARD) {
+    const still = `${TMP}/sb-still${i}.png`;
+    if (b.img.video) ff(["-i", resolve(OUT, b.img.video), "-frames:v", "1", "-vf", `scale=${W}:${H}:force_original_aspect_ratio=increase,crop=${W}:${H}`, still]);
+    else {
+      const src = await art(b.img, `b${i}`);
+      const cropW = Math.round((SRC_H * W) / H / 2) * 2;
+      const x0 = Math.round(Math.min(Math.max((b.focus ?? [0.5])[0] * src.width - cropW / 2, 0), src.width - cropW));
+      ff(["-i", src.file, "-frames:v", "1", "-vf", `crop=${cropW}:${SRC_H}:${x0}:0,scale=${W}:${H}`, still]);
+    }
+    const text = await overlay(`sb-text${i}`, `${b.title ? `<div class="pill title"${b.titleTop ? ` style="top:${b.titleTop}px"` : ""}>${b.title}</div>` : ""}${b.say ? `<div class="pill cap">${esc(b.say)}</div>` : ""}`);
+    ff(["-i", still, "-i", text, "-filter_complex", "overlay", "-frames:v", "1", `${TMP}/sb${String(i).padStart(2, "0")}.png`]);
+    continue;
+  }
   const voice = b.say ? await narrate(b.say) : null;
   narrated ||= !!voice;
   // A moving clip (animate-scene.mjs or render-ambient.mjs, path relative to this video.json) or a still to zoom on.
@@ -224,6 +240,13 @@ for (const [i, b] of T.beats.entries()) {
     "-c:v", "libx264", "-pix_fmt", "yuv420p", "-r", String(FPS), "-preset", "fast", "-crf", "16", "-c:a", "aac", "-b:a", "192k", "-ar", "44100", `${TMP}/b${i}.mp4`]);
   parts.push(`${TMP}/b${i}.mp4`);
   lengths.push(seconds);
+}
+
+if (STORYBOARD) {
+  await browser.close();
+  ff(["-i", `${TMP}/sb%02d.png`, "-vf", `scale=360:-1,tile=${T.beats.length}x1`, "-frames:v", "1", "-update", "1", `${OUT}/storyboard.jpg`]);
+  console.log(`storyboard: ${OUT}/storyboard.jpg (${T.beats.length} beats)`);
+  process.exit(0);
 }
 await browser.close();
 const OUTRO = `${ROOT}/docs/social/brand/outro.mp4`;

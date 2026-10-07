@@ -68,6 +68,30 @@ Never upload both variants to Instagram on the same day (duplicate uploads on 4 
 | 6 | Voice | narrator (carries the AI label) | music and captions only, no label | set when built | queued; also tests the Instagram drop |
 | 7 | Footage | illustrated pages | a real printed book in real hands | set when built | when a printed copy or a creator video exists |
 
+**Lifestyle photos test, 2026-10-07 (owner's idea: people enjoying the book, as a clothing brand would shoot it).**
+Draft in `docs/social/tests/2026-10-07-lifestyle/`, not scheduled. Four photos generated with `fal-ai/flux-2/edit`
+from the real cover and spreads of Leo's example book (`gen.mjs`); on the two open-book photos the real pages are
+re-projected over the generated ones (`composite.py`, feature matching), so the printed text is ours and readable.
+On the two closed-book photos the cover is the model's reproduction (faithful on inspection, title correct): the
+re-projection spilled over the book edge there and was not used. `video.mp4` is the 6 Oct gift video with the same
+script, title, voice and music and only the pictures changed: it is ready to be B of test 7 (footage).
+Rules if it is published: brand imagery, never worded as a customer or a review; platform AI label on; adults and
+children seen from behind or as hands. Known flaw: the child in the gift photo has different hair from the others.
+
+**Video by code (owner sent a YouTube video, 2026-10-07; transcript in `docs/social/research/`).** Its method is
+frames drawn by JavaScript in a headless browser, stitched with ffmpeg, narration from ElevenLabs, and a contact
+sheet to check the result. `render-video.mjs` and the HyperFrames outro already work this way. What it adds for us:
+(1) a storyboard of stills approved before rendering, since a render takes minutes; (2) scenes that are pure
+motion graphics instead of a zoom on a page (the name writing itself on the cover, the world picker, animated
+text for parent questions), at no cost per clip, unlike the image-to-video clips; (3) taking the composition of a
+video that worked as the reference. Its limit is ours too: it draws, it does not film.
+Built the same day: (1) `render-video.mjs <video.json> --storyboard` writes `storyboard.jpg`, the first frame of
+every beat with its title and whole line, in about 40 s instead of a render of several minutes; (2) the first
+code-drawn format, "Escribe su nombre" (`videos/name-reveal`, HyperFrames, 13 s loop, music only, renders in 18 s):
+a name is typed and lands letter by letter on the real cover of that child's example book (Leo, Noa, Lucía, Martí,
+Aitana), ending on an empty field and "¿Y el suyo?". Draft in `docs/social/tests/2026-10-07-name-reveal/`, not
+scheduled. No synthetic voice or generated people, so it needs no AI label: it can also serve as B of test 6.
+
 Not tests (no pair): 8 Oct parent question and 10 Oct poll. They are read as formats, against the bedtime stories.
 
 **Review of the week's posts, 2026-10-07** (with `tiktok-script`, `storytelling-and-narrative`, `hook-writer`):
