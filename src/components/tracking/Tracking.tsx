@@ -163,11 +163,12 @@ export default function Tracking() {
           aria-live="polite"
           aria-label={t("title")}
           data-testid="cookie-banner"
-          // Phones: a compact bar flush with the bottom edge (about a fifth of the screen), so the
-          // hero stays readable behind it. From sm: a small card in the corner.
+          // Phones: a compact bar flush with the bottom edge (two lines of text + one row of buttons,
+          // about an eighth of the screen), so the page stays usable behind it. The third parties are
+          // named in the settings layer and in the cookie policy. From sm: a small card in the corner.
           className="fixed inset-x-0 bottom-0 z-[60] sm:bottom-4 sm:left-4 sm:right-auto sm:w-[26rem]"
         >
-          <div className="max-h-[85dvh] overflow-y-auto rounded-t-2xl border border-b-0 border-line bg-surface px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 shadow-[0_-8px_30px_-12px_rgba(58,36,24,.35)] sm:rounded-2xl sm:border-b sm:p-4 sm:shadow-xl">
+          <div className="max-h-[85dvh] overflow-y-auto rounded-t-2xl border border-b-0 border-line bg-surface px-4 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2.5 shadow-[0_-8px_30px_-12px_rgba(58,36,24,.35)] sm:rounded-2xl sm:border-b sm:p-4 sm:shadow-xl">
             {configuring ? (
               <>
                 <p className="font-display text-base font-semibold text-ink">{t("settingsTitle")}</p>
@@ -236,7 +237,7 @@ export default function Tracking() {
                     {t("policy")}
                   </Link>
                 </p>
-                <div className="mt-2.5 flex items-center gap-2">
+                <div className="mt-1.5 flex items-center gap-2 sm:mt-2.5">
                   <button
                     type="button"
                     data-testid="cookie-configure"

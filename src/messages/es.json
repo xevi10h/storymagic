@@ -2740,7 +2740,7 @@
   },
   "cookieConsent": {
     "title": "Cookies",
-    "text": "Usamos cookies propias y de terceros (Google, PostHog, Meta y TikTok) para analizar el uso de la web y medir y mostrarte nuestros anuncios según tu navegación. Puedes aceptarlas, rechazarlas o configurarlas.",
+    "text": "Usamos cookies propias y de terceros para analizar el uso de la web y medir y mostrarte anuncios según tu navegación.",
     "policy": "Más información",
     "accept": "Aceptar",
     "reject": "Rechazar",

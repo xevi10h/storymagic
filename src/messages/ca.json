@@ -2749,7 +2749,7 @@
   },
   "cookieConsent": {
     "title": "Cookies",
-    "text": "Fem servir cookies pròpies i de tercers (Google, PostHog, Meta i TikTok) per analitzar l'ús de la web i mesurar i mostrar-te els nostres anuncis segons la teva navegació. Pots acceptar-les, rebutjar-les o configurar-les.",
+    "text": "Fem servir cookies pròpies i de tercers per analitzar l'ús de la web i mesurar i mostrar-te anuncis segons la teva navegació.",
     "policy": "Més informació",
     "accept": "Acceptar",
     "reject": "Rebutjar",

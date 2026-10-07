@@ -2719,7 +2719,7 @@
   },
   "cookieConsent": {
     "title": "Cookies",
-    "text": "Nous utilisons des cookies internes et tiers (Google, PostHog, Meta et TikTok) pour analyser l'utilisation du site et mesurer et vous montrer nos publicités selon votre navigation. Vous pouvez les accepter, les refuser ou les configurer.",
+    "text": "Nous utilisons des cookies internes et tiers pour analyser l'utilisation du site et mesurer et vous montrer des publicités selon votre navigation.",
     "policy": "En savoir plus",
     "accept": "Accepter",
     "reject": "Refuser",

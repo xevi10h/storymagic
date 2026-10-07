@@ -2717,7 +2717,7 @@
   },
   "cookieConsent": {
     "title": "Cookies",
-    "text": "We use our own and third-party cookies (Google, PostHog, Meta and TikTok) to analyse how the site is used and to measure and show you our ads based on your browsing. You can accept, reject or configure them.",
+    "text": "We use our own and third-party cookies to analyse how the site is used and to measure and show you ads based on your browsing.",
     "policy": "Learn more",
     "accept": "Accept",
     "reject": "Reject",
