@@ -41,6 +41,10 @@ also a pin linking to the site); videos also go to YouTube as Shorts (bedtime st
 2. **Scenes from a book we have as PDF**: the illustration animated with Higgsfield (`animate-scene.mjs`).
 3. **No reference images** (a name typed on a cover, a question in moving type): our own animation in code, a
    HyperFrames project under `videos/`.
+**Every video ends with the corporate closing** (owner, 2026-10-07; skill `product-video-closing`). Short reels
+use the compact one (3.2 s: the logo builds, "El cuento que te pedirá otra vez", "Crear su libro", meapica.shop;
+`"outro": "short"`, source `videos/closing-short/`). Narrated stories keep the logo outro with the address spoken
+until the full closing exists. This replaces the earlier rule that short loops only carried a `meapica.shop` pill.
 A still with a zoom is the fallback, not the plan. Cost: 10 Higgsfield credits per 5 s clip; code animation is free.
 
 ## Formats (weekly skeleton)

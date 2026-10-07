@@ -19,6 +19,7 @@
 //   web?: true (a small meapica.shop label from the third beat on), outroSay?: line the narrator says over the outro,
 //   outro?: true (appends the animated logo, docs/social/brand/outro.mp4, rendered from the HyperFrames project videos/outro-libro; use it instead of
 //     `brand` on narrated videos, not on short loops) }
+//   outro: "short" appends the 3.2 s corporate closing instead (docs/social/brand/closing-short-<lang>.mp4): every short reel ends with it.
 // Safe zones: text stays out of the top 220 px and the bottom 420 px (platform UI).
 import { chromium } from "@playwright/test";
 import sharp from "sharp";
@@ -249,7 +250,8 @@ if (STORYBOARD) {
   process.exit(0);
 }
 await browser.close();
-const OUTRO = `${ROOT}/docs/social/brand/outro.mp4`;
+// outro: "short" = the compact corporate closing for short reels (logo, tagline, button, address; videos/closing-short).
+const OUTRO = T.outro === "short" ? `${ROOT}/docs/social/brand/closing-short-${T.lang}.mp4` : `${ROOT}/docs/social/brand/outro.mp4`;
 const outroLength = T.outro ? probe(OUTRO) : 0;
 if (T.outro) parts.push(OUTRO);
 
