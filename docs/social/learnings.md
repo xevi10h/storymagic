@@ -75,6 +75,11 @@ re-projected over the generated ones (`composite.py`, feature matching), so the 
 On the two closed-book photos the cover is the model's reproduction (faithful on inspection, title correct): the
 re-projection spilled over the book edge there and was not used. `video.mp4` is the 6 Oct gift video with the same
 script, title, voice and music and only the pictures changed: it is ready to be B of test 7 (footage).
+Second pass the same day (owner: "these are still images, animate them"): every scene is now a moving clip made by
+code, no video model. The camera pushes in, and in the two open-book scenes the pages turn through three real
+spreads each: `pages.py` finds where the photo shows a known page and prints any other real page in that exact
+place, with the photo's light and the fingers kept in front. Hands and people still do not move; that would need an
+image-to-video model, which redraws the book.
 Rules if it is published: brand imagery, never worded as a customer or a review; platform AI label on; adults and
 children seen from behind or as hands. Known flaw: the child in the gift photo has different hair from the others.
 

@@ -8,80 +8,40 @@
   "beats": [
     {
       "img": {
-        "file": "docs/social/tests/2026-10-07-lifestyle/photo-gift.jpg"
+        "video": "clips/gift.mp4",
+        "fit": true
       },
       "say": "Què li regales a un nen de cinc anys que ja ho té tot?",
-      "zoom": [
-        1.0,
-        1.12
-      ],
-      "focus": [
-        0.5,
-        0.5
-      ],
-      "ambient": false,
       "title": "Què regalar a un nen<br><em>de 5 anys?</em>",
       "titleTop": 240
     },
     {
       "img": {
-        "file": "docs/social/tests/2026-10-07-lifestyle/photo-cover.jpg"
+        "video": "clips/cover.mp4",
+        "fit": true
       },
-      "say": "Un conte on el protagonista és ell.",
-      "zoom": [
-        1.12,
-        1.0
-      ],
-      "focus": [
-        0.5,
-        0.5
-      ],
-      "ambient": false
+      "say": "Un conte on el protagonista és ell."
     },
     {
       "img": {
-        "file": "docs/social/tests/2026-10-07-lifestyle/photo-bedtime.jpg"
+        "video": "clips/bedtime.mp4",
+        "fit": true
       },
-      "say": "Amb la seva cara pintada a l'aquarel·la a cada pàgina.",
-      "zoom": [
-        1.0,
-        1.15
-      ],
-      "focus": [
-        0.5,
-        0.55
-      ],
-      "ambient": false
+      "say": "Amb la seva cara pintada a l'aquarel·la a cada pàgina."
     },
     {
       "img": {
-        "file": "docs/social/tests/2026-10-07-lifestyle/photo-floor.jpg"
+        "video": "clips/floor.mp4",
+        "fit": true
       },
-      "say": "I l'aventura, la tries tu: dinosaures, pirates, l'espai o un bosc màgic.",
-      "zoom": [
-        1.1,
-        1.0
-      ],
-      "focus": [
-        0.5,
-        0.6
-      ],
-      "ambient": false
+      "say": "I l'aventura, la tries tu: dinosaures, pirates, l'espai o un bosc màgic."
     },
     {
       "img": {
-        "file": "docs/social/tests/2026-10-07-lifestyle/photo-cover.jpg"
+        "video": "clips/cover-end.mp4",
+        "fit": true
       },
-      "say": "Abans de pagar, en veus la portada i les primeres pàgines.",
-      "zoom": [
-        1.0,
-        1.1
-      ],
-      "focus": [
-        0.5,
-        0.5
-      ],
-      "ambient": false
+      "say": "Abans de pagar, en veus la portada i les primeres pàgines."
     }
   ]
 }
