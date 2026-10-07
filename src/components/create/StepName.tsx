@@ -44,7 +44,16 @@ export default function StepName({
 }: StepNameProps) {
   const t = useTranslations("crear.name");
   const hasName = character.name.trim().length > 0;
-  // Errors show only after the parent tried to continue (no red on arrival).
+  // Same rule as the other screens: "next" stays disabled until every required answer is in,
+  // and the footer says which one is missing.
+  const missingHint = !hasName
+    ? t("nameRequired")
+    : !basicsConfirmed.age
+      ? t("ageRequired")
+      : !basicsConfirmed.gender
+        ? t("genderRequired")
+        : undefined;
+  // Errors show only after Enter in the name field with answers missing (no red on arrival).
   const [attempted, setAttempted] = useState(false);
   const ageRef = useRef<HTMLFieldSetElement>(null);
   const genderRef = useRef<HTMLFieldSetElement>(null);
@@ -137,7 +146,12 @@ export default function StepName({
                     role="radio"
                     aria-checked={selected}
                     aria-label={t("ageOption", { age })}
-                    onClick={() => onPickAge(age)}
+                    onClick={() => {
+                      onPickAge(age);
+                      // On a phone the last question sits under the footer: bring it up,
+                      // since "next" stays disabled until it is answered.
+                      if (!basicsConfirmed.gender) genderRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+                    }}
                     className={`${chipBase} h-11 text-base tabular-nums ${
                       selected
                         ? "border-brand bg-brand-tint text-brand-text"
@@ -203,8 +217,8 @@ export default function StepName({
 
       <CreationFooterNav
         onNext={tryNext}
-        nextDisabled={!hasName}
-        nextDisabledTooltip={t("nameRequired")}
+        nextDisabled={!!missingHint}
+        nextDisabledTooltip={missingHint}
       />
     </>
   );

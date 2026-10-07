@@ -527,12 +527,16 @@ test.describe("state", () => {
     await freshStart(page, "es");
     await fillName(page);
     await expect(page.locator("[role=radio][aria-checked=true]")).toHaveCount(0);
-    await next(page, "es");
+    // "Next" stays disabled until name, age and gender are all in; Enter in the name
+    // field points at what is missing.
+    await expect(page.getByRole("button", { name: /Siguiente/ })).toBeDisabled();
+    await page.locator("#child-name").press("Enter");
     await expect(page.locator("#age-error")).toHaveText("Elige su edad para continuar.");
     await expect(page.locator("#gender-error")).toHaveText("Elige una opción para continuar.");
     await expect(page.locator("#child-name")).toBeVisible(); // still on screen 1
     await pickBasics(page, 4);
     await expect(page.locator("#age-error, #gender-error")).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /Siguiente/ })).toBeEnabled();
     await next(page, "es");
     await expect(page.getByTestId("protagonist-portrait")).toBeVisible();
   });
