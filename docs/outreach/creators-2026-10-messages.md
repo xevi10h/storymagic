@@ -1,6 +1,9 @@
 # Messages to creators: gifted book (first wave, 12)
 
-Prepared 2026-10-06. Not sent. Shortlist and how it was checked: `creators-2026-10.md`.
+Prepared 2026-10-06. **Emails 1 to 6 sent on 2026-10-06 (evening, at the owner's request)** from
+`hola@meapica.shop` through Resend (account that owns the domain, key `~/.config/resend/meapica`), copy to
+admin@casmar.tech. Email 7 (@littleehappymom, reserve) and the Instagram messages are not sent: the owner sends
+#8, 9, 11 and 12 by hand. Shortlist and how it was checked: `creators-2026-10.md`.
 Before sending each one: look at the creator's last three posts and adjust the personal line if needed.
 Emails go from `hola@meapica.shop` (replies arrive at the owner's inbox). Instagram messages are sent by hand from
 @meapica_books: the API cannot start a conversation with someone who has not written first.

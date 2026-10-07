@@ -8,6 +8,19 @@ Catalan accounts were cross-checked with Llista (llista.cat, snapshot 2026-09-01
 Whether each creator films their own child, and whether they accept gifted products, is inferred from bios, highlights and
 ambassador tags. Check the last three posts before writing to anyone. Nobody has been contacted.
 
+## Approved by the owner on 2026-10-06: ten creators
+
+#1, 2, 3, 4, 5, 7, 8, 9, 11 and 12 of the first wave (six Catalan, four Spanish). Reserves: #10 and #6.
+Six go by email (#1, 2, 3, 7, 8, 9), four by Instagram message (#4, 5, 11, 12). The six emails were sent on 2026-10-06; the four Instagram messages are the owner's to send.
+
+- Ask for a video of the child opening the book (not a mention), labelled as a collaboration, with permission to
+  repost it and use it in ads.
+- Each creator gets two Stripe promotion codes: `REGALO-<NAME>-<4 chars>` (one use, free book, add-ons paid, expires
+  2026-12-15) and `<NAME>10` (10 % for their audience until 2027-01-06, which is how we attribute sales).
+  Created 2026-10-06 with `scripts/social/create-creator-codes.sh` (coupons `BAUY3d6s` gift, `pUqYq48o` audience); the codes are listed in Stripe › Promotion codes, filter by metadata `creator`. Do not run the script again.
+- Timing: about three weeks from a yes to a delivered book; messages should go out the week of 6 Oct for videos in
+  mid-November.
+
 ## First wave (recommended 12)
 
 | # | Account | Lang | Followers | Where | Why | Contact |
