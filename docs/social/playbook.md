@@ -33,6 +33,16 @@ also a pin linking to the site); videos also go to YouTube as Shorts (bedtime st
 7. **Series beat one-offs**: the same formats come back every week so people know what to expect.
 8. **Narrated videos carry the platform AI label** (`aiVideo: true`): the voice is synthetic.
 
+## How each kind of video is made (owner, 2026-10-07)
+
+1. **People or real settings** (the printed book in hands, a bedtime scene): a start photo generated from the real
+   cover or spread (`fal-ai/flux-2/edit`), then animated with Higgsfield (`SCENE_STYLE=photo animate-scene.mjs`).
+   Brand imagery, never worded as a customer or a review; platform AI label on; people from behind or as hands.
+2. **Scenes from a book we have as PDF**: the illustration animated with Higgsfield (`animate-scene.mjs`).
+3. **No reference images** (a name typed on a cover, a question in moving type): our own animation in code, a
+   HyperFrames project under `videos/`.
+A still with a zoom is the fallback, not the plan. Cost: 10 Higgsfield credits per 5 s clip; code animation is free.
+
 ## Formats (weekly skeleton)
 
 | Slot | Format | Why it earns reach | Why it sells |

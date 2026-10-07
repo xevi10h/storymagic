@@ -8,8 +8,7 @@
   "beats": [
     {
       "img": {
-        "video": "clips/gift.mp4",
-        "fit": true
+        "video": "clips/gift.mp4"
       },
       "say": "Què li regales a un nen de cinc anys que ja ho té tot?",
       "title": "Què regalar a un nen<br><em>de 5 anys?</em>",
@@ -17,29 +16,25 @@
     },
     {
       "img": {
-        "video": "clips/cover.mp4",
-        "fit": true
+        "video": "clips/cover.mp4"
       },
       "say": "Un conte on el protagonista és ell."
     },
     {
       "img": {
-        "video": "clips/bedtime.mp4",
-        "fit": true
+        "video": "clips/bedtime.mp4"
       },
       "say": "Amb la seva cara pintada a l'aquarel·la a cada pàgina."
     },
     {
       "img": {
-        "video": "clips/floor.mp4",
-        "fit": true
+        "video": "clips/floor.mp4"
       },
       "say": "I l'aventura, la tries tu: dinosaures, pirates, l'espai o un bosc màgic."
     },
     {
       "img": {
-        "video": "clips/cover-end.mp4",
-        "fit": true
+        "video": "clips/cover-end.mp4"
       },
       "say": "Abans de pagar, en veus la portada i les primeres pàgines."
     }

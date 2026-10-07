@@ -2,6 +2,7 @@
 // either one scene coming alive, or a continuous transition from one scene to the next (start + end frame).
 // Paid: 10 Higgsfield credits per 5 s clip (price list read 2026-10-04). Key: ~/.config/higgsfield/credentials.
 //   node scripts/social/animate-scene.mjs <out.mp4> "<prompt>" <start> [<end>]
+//   SCENE_STYLE=photo before the command: the start frame is a photograph (people, the printed book), not an illustration.
 // <start> / <end>: a 1080×1920 JPEG, or `pdf:<showcase story id>:<page>:<focus x 0-1>` to cut the frame from the
 // public example PDF (same 9:16 window render-video.mjs uses, page-number strip removed).
 // The prompt describes only the motion; the style guard below is always appended.
@@ -16,7 +17,10 @@ const OUT = resolve(outArg);
 const TMP = `${dirname(OUT)}/.build`;
 mkdirSync(TMP, { recursive: true });
 
-const STYLE = endArg
+// SCENE_STYLE=photo: a lifestyle photograph of the printed book instead of a book illustration (brand imagery, AI label on).
+const STYLE = process.env.SCENE_STYLE === "photo"
+  ? "Photorealistic, natural home video look. Keep the book exactly as it is: same cover or pages, same artwork and text, nothing redrawn. Small natural movements only, slight handheld camera, one continuous shot, no cuts, no new people or objects, no added text."
+  : endArg
   ? "Keep the exact hand-painted watercolour storybook style and the same child (face, hair, clothes) the whole time. One smooth continuous magical transition, no cuts, no text. End exactly on the final illustration."
   : "Preserve the exact hand-painted watercolour storybook style, the paper texture and the child's face and clothes. Gentle, calm motion for a bedtime story. Very slow push-in, one continuous shot, no cuts, no new characters or objects, no text.";
 

@@ -80,6 +80,10 @@ code, no video model. The camera pushes in, and in the two open-book scenes the 
 spreads each: `pages.py` finds where the photo shows a known page and prints any other real page in that exact
 place, with the photo's light and the fingers kept in front. Hands and people still do not move; that would need an
 image-to-video model, which redraws the book.
+Third pass (owner: the code-only version "no se ve nada bien"): all five scenes animated with Higgsfield from the
+same photos. The people move (unwrapping, leaning in, pointing, lifting the book) and the cover and pages hold;
+only the small print of a text page garbles slightly. My earlier prediction that a video model would deform the
+book was wrong for these shots. This became the rule in `playbook.md` › How each kind of video is made. 50 credits.
 Rules if it is published: brand imagery, never worded as a customer or a review; platform AI label on; adults and
 children seen from behind or as hands. Known flaw: the child in the gift photo has different hair from the others.
 
