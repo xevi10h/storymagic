@@ -70,5 +70,6 @@ lengths and cadence above are our inference from the platform signals, to be cor
 - https://business.pinterest.com/blog/festive-gifting-pinterest/
 
 Skills installed for this work (project `.claude/skills/`): `social`, `copywriting` (coreyhaines31/marketingskills),
-`short-form-video-script`, `reels-script`, `hook-writer` (social-media-skills/skills; ignore its WoopSocial
-routing, we publish through Zernio).
+`short-form-video-script`, `reels-script`, `hook-writer`, and since 2026-10-07 `tiktok-script`,
+`storytelling-and-narrative`, `experimentation-and-ab-testing`, `viral-reverse-engineering`
+(social-media-skills/skills; ignore its WoopSocial routing, we publish through Zernio).

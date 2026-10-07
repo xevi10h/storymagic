@@ -7,6 +7,12 @@
       "skillPath": "skills/copywriting/SKILL.md",
       "computedHash": "34095dc1ba236967c7515c62568591008f8ec795e1a5fd4b018f2b127a36b32c"
     },
+    "experimentation-and-ab-testing": {
+      "source": "social-media-skills/skills",
+      "sourceType": "github",
+      "skillPath": "skills/experimentation-and-ab-testing/SKILL.md",
+      "computedHash": "27ae1913ac78455d57e10d6af502bc216fd5bed189b5e80f21a014b3a9a8f8b4"
+    },
     "hook-writer": {
       "source": "social-media-skills/skills",
       "sourceType": "github",
@@ -30,6 +36,24 @@
       "sourceType": "github",
       "skillPath": "skills/social/SKILL.md",
       "computedHash": "7eeedd17a4d59d75281ecd7ff6cb6e2992b1095459550e8d97ef1cae522ea389"
+    },
+    "storytelling-and-narrative": {
+      "source": "social-media-skills/skills",
+      "sourceType": "github",
+      "skillPath": "skills/storytelling-and-narrative/SKILL.md",
+      "computedHash": "49f13a2f41c5fd32eaee2655b5c983bee39364271e56461e9fad1ef7977ab25e"
+    },
+    "tiktok-script": {
+      "source": "social-media-skills/skills",
+      "sourceType": "github",
+      "skillPath": "skills/tiktok-script/SKILL.md",
+      "computedHash": "1f5aa570fb39050a8e25084be57df6d6b6aa9225e5e32ca1547203eee8b9d072"
+    },
+    "viral-reverse-engineering": {
+      "source": "social-media-skills/skills",
+      "sourceType": "github",
+      "skillPath": "skills/viral-reverse-engineering/SKILL.md",
+      "computedHash": "5ebe4ed1f1100ba2b4e3d0c9ecbab4d6a35c046df65e322acc97691814dc0f87"
     }
   }
 }
