@@ -14,5 +14,7 @@
   "madeForKids": false,
   "coverMs": 1000,
   "aiVideo": true,
-  "tiktok": "¿Por qué tu peque pide el mismo cuento veinte veces? Saber lo que viene le da calma. Repetir también es leer. Ilustraciones de un libro de ejemplo de meapica.shop\n\n#cuentosinfantiles #animacionalalectura #crianza"
+  "tiktok": "¿Por qué tu peque pide el mismo cuento veinte veces? Saber lo que viene le da calma. Repetir también es leer. Ilustraciones de un libro de ejemplo de meapica.shop\n\n#cuentosinfantiles #animacionalalectura #crianza",
+  "strategy": "open-loop-question",
+  "people": false
 }

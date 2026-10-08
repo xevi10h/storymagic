@@ -1,0 +1,35 @@
+{
+  "lang": "es",
+  "out": "video.mp4",
+  "music": "calm-piano-1.mp3",
+  "outro": "short",
+  "beats": [
+    {
+      "img": {
+        "video": "../../tests/week-2026-10-12/fri-teddy/clips/c1.mp4"
+      },
+      "title": "Tiene 4 años<br><em>y aún no sabe leer</em>",
+      "titleTop": 300,
+      "say": "Tiene cuatro años y todavía no sabe leer."
+    },
+    {
+      "img": {
+        "video": "../../tests/week-2026-10-12/fri-teddy/clips/c2.mp4"
+      },
+      "say": "Pero este cuento se lo cuenta ella a su oso."
+    },
+    {
+      "img": {
+        "video": "../../tests/week-2026-10-12/fri-teddy/clips/c3.mp4"
+      },
+      "say": "Porque la protagonista es ella. Lo pone en la portada: Noa."
+    },
+    {
+      "img": {
+        "video": "../../tests/week-2026-10-12/fri-teddy/clips/c4.mp4"
+      },
+      "say": "Y así cada noche. Otra vez."
+    }
+  ],
+  "outroSay": "Crea el suyo en meapica punto shop."
+}

@@ -1,0 +1,48 @@
+{
+  "lang": "es",
+  "out": "video.mp4",
+  "music": "playful-guitar-1.mp3",
+  "outro": "short",
+  "beats": [
+    {
+      "img": {
+        "video": "../2026-10-08/clips/p04.mp4"
+      },
+      "seconds": 2.4,
+      "title": "No le regales<br><em>otro juguete</em>",
+      "titleTop": 1040
+    },
+    {
+      "img": {
+        "video": "../2026-10-05/clips/p20.mp4"
+      },
+      "seconds": 2.8,
+      "title": "A los 5 años<br><em>ya tiene de todo</em>",
+      "titleTop": 260
+    },
+    {
+      "img": {
+        "video": "../2026-10-06/clips/p12.mp4"
+      },
+      "seconds": 3.0,
+      "title": "Lo que no tiene:<br><em>un cuento donde sale él</em>",
+      "titleTop": 260
+    },
+    {
+      "img": {
+        "video": "../2026-10-04/clips/p20.mp4"
+      },
+      "seconds": 3.0,
+      "title": "Con su nombre<br><em>y su cara en cada página</em>",
+      "titleTop": 260
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/p04.mp4"
+      },
+      "seconds": 2.8,
+      "title": "¿Juguete o cuento?<br><em>Te leo en comentarios</em>",
+      "titleTop": 260
+    }
+  ]
+}

@@ -10,6 +10,7 @@
 //            unpublish or delete the old one first)
 //
 // post.json: { id, time: "20:30" (Europe/Madrid), lang, title (YouTube + Pinterest, ≤ 100 chars),
+//              strategy (short slug of the spreading strategy, e.g. "open-loop-question"), people?: true (generated people on screen),
 //              media: [{ file, type: "video" | "image", alt? }], ig, fb, tiktok, tiktokTitle (image posts, ≤ 90 chars),
 //              coverMs?, aiVideo? (synthetic voice or people: platform AI label), madeForKids (videos: YouTube COPPA flag) }
 import { existsSync, readdirSync, readFileSync } from "node:fs";
@@ -34,6 +35,8 @@ export function checkPost(p, dir) {
   for (const k of ["id", "time", "lang", "title", "ig", "fb", "tiktok"]) if (typeof p[k] !== "string" || !p[k].trim()) errors.push(`missing "${k}"`);
   if (p.time && !/^([01]\d|2[0-3]):[0-5]\d$/.test(p.time)) errors.push(`time "${p.time}" is not HH:MM`);
   if (p.title?.length > 100) errors.push("title over 100 chars");
+  // Named before it is built (playbook rule 0); learn.mjs groups results by it.
+  if (typeof p.strategy !== "string" || !p.strategy.trim()) errors.push('missing "strategy" (the spreading strategy this post tests)');
   if (!/https:\/\/meapica\.shop\S*utm_source=facebook\S*org_fb_/.test(p.fb ?? "")) errors.push("fb caption needs the UTM link (utm_source=facebook, utm_content=org_fb_…)");
   if (!Array.isArray(p.media) || p.media.length === 0) errors.push("no media");
   else {

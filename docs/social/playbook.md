@@ -51,6 +51,16 @@ use the compact one (3.2 s: the logo builds, "El cuento que te pedirá otra vez"
 until the full closing exists. This replaces the earlier rule that short loops only carried a `meapica.shop` pill.
 A still with a zoom is the fallback, not the plan. Cost: 10 Higgsfield credits per 5 s clip; code animation is free.
 
+## The learning loop (owner, 2026-10-08: the system must learn from what works)
+
+1. **Before creating anything:** run `node scripts/social/learn.mjs` and read `scoreboard.md`: every post with its
+   strategy, voice, length and people next to its results, and the averages by each of those choices.
+2. **Decide from it:** repeat what leads on a cut marked "comparable", stop what trails there, and keep testing
+   whatever is still "too few posts" (fewer than three posts a side). Never treat one post as proof.
+3. **Every post declares its `strategy`** (and `people`) in `post.json`; the scheduler refuses a post without it.
+4. **Every Monday:** write what changed in `learnings.md` (finding, decision, what to compare next) and move a
+   rule here only when the scoreboard supports it.
+
 ## Improvement pass (owner, 2026-10-08: every video, before it is shown)
 
 1. First second: something already happening, the hook on screen and, if voiced, spoken at once.
