@@ -1,6 +1,6 @@
 // Animates a real book illustration with an image-to-video model (MiniMax H3 through the Higgsfield API):
 // either one scene coming alive, or a continuous transition from one scene to the next (start + end frame).
-// Paid: 10 Higgsfield credits per 5 s clip (price list read 2026-10-04). Key: ~/.config/higgsfield/credentials.
+// Paid: about $0.55 per 5 s clip, from the prepaid API balance (console open.higgsfield.ai, read 2026-10-08). Key: ~/.config/higgsfield/credentials.
 //   node scripts/social/animate-scene.mjs <out.mp4> "<prompt>" <start> [<end>]
 //   SCENE_STYLE=photo before the command: the start frame is a photograph (people, the printed book), not an illustration.
 // <start> / <end>: a 1080×1920 JPEG, or `pdf:<showcase story id>:<page>:<focus x 0-1>` to cut the frame from the

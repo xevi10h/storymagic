@@ -49,7 +49,7 @@ also a pin linking to the site); videos also go to YouTube as Shorts (bedtime st
 use the compact one (3.2 s: the logo builds, "El cuento que te pedirá otra vez", "Crear su libro", meapica.shop;
 `"outro": "short"`, source `videos/closing-short/`). Narrated stories keep the logo outro with the address spoken
 until the full closing exists. This replaces the earlier rule that short loops only carried a `meapica.shop` pill.
-A still with a zoom is the fallback, not the plan. Cost: 10 Higgsfield credits per 5 s clip; code animation is free.
+A still with a zoom is the fallback, not the plan. Cost: about $0.55 per 5 s Higgsfield clip (a four-shot reel is about $2.20), paid from the API balance; code animation is free.
 
 ## The learning loop (owner, 2026-10-08: the system must learn from what works)
 
