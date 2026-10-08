@@ -156,6 +156,20 @@ Hola, soy Xavi, de Meapica. Hacemos cuentos impresos donde el protagonista es el
 
 ## When they say yes
 
-1. Create a single-use 100 % promo code in Stripe (one per creator, hardcover, expires in 30 days).
-2. Reply with the code and the link `https://meapica.shop/<lang>?utm_source=creator&utm_medium=gift&utm_campaign=creators_q4-26&utm_content=<handle>`.
+1. Do not create a code: each of the ten creators already has one (`REGALO-<NAME>-<4 chars>`, live, one use, printed
+   book free with shipping, add-ons paid, expires 2026-12-15). Look it up in Stripe › Promotion codes by metadata `creator`.
+2. Reply from `hola@meapica.shop` (send-as alias of admin@casmar.tech in Gmail) with the code and the link
+   `https://meapica.shop/<lang>?utm_source=creator&utm_medium=gift&utm_campaign=creators_q4-26&utm_content=<handle>`.
+   They enter the code on the Stripe page ("Añadir código promocional"); the total drops to 0 € and no card is asked.
 3. Note the order date here; ask for the video about a week after delivery and for permission to repost it.
+
+Free printed order checked end to end in the Stripe sandbox on 2026-10-08 (hardcover, 100 % code, no card: session
+`complete` / `paid`, 0 €, shipping address and phone collected, invoice issued, no PaymentIntent).
+
+## Replies
+
+| Creator | Reply | Status |
+|---|---|---|
+| @onanemdema (Cristina) | 2026-10-07: yes | Code not sent yet |
+| @familiacaricu (Òscar and Marta) | 2026-10-07: interested, asks format, platforms, dates and an audience code; they do not show the children's faces | Not answered yet |
+| @myfamilytime.es (lidi.nieto@gmail.com) | 2026-10-08: yes, with her daughter | Reply with her code drafted in Gmail on 2026-10-08, the owner sends it |
