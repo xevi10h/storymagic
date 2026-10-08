@@ -51,6 +51,18 @@ use the compact one (3.2 s: the logo builds, "El cuento que te pedirá otra vez"
 until the full closing exists. This replaces the earlier rule that short loops only carried a `meapica.shop` pill.
 A still with a zoom is the fallback, not the plan. Cost: 10 Higgsfield credits per 5 s clip; code animation is free.
 
+## Improvement pass (owner, 2026-10-08: every video, before it is shown)
+
+1. First second: something already happening, the hook on screen and, if voiced, spoken at once.
+2. A reason to stay: a question left open, a number of items, or a payoff kept for the end.
+3. Voice: build the narrated variant unless the idea only works silent; captions carry it muted either way.
+4. Length: as long as every beat adds something new, no longer. Lists and stories can run 30 to 60 s; a single
+   gag or reveal stays under 20 s.
+5. A reason to send or save it, said in the caption and visible in the video.
+6. The last frame before the closing leads back to the first.
+Say in one or two lines what the pass changed. Voice against silence and long against short are still open tests
+(`learnings.md`): the owner leans to voiced and longer.
+
 ## Formats (weekly skeleton)
 
 | Slot | Format | Why it earns reach | Why it sells |

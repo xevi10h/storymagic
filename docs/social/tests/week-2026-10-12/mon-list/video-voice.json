@@ -1,0 +1,65 @@
+{
+  "lang": "es",
+  "out": "video-voice.mp4",
+  "music": "calm-guitar-1.mp3",
+  "outro": "short",
+  "beats": [
+    {
+      "img": {
+        "video": "../../../posts/2026-10-06/clips/p20.mp4"
+      },
+      "title": "5 dedicatorias para<br><em>su primer cuento</em>",
+      "titleTop": 260,
+      "say": "Cinco ideas para la dedicatoria de su primer cuento. Guárdalo."
+    },
+    {
+      "img": {
+        "video": "../../../posts/2026-10-05/clips/p04.mp4"
+      },
+      "title": "1 · <em>Un recuerdo vuestro</em><br><span style=\"font-size:.8em;font-weight:500\">«Para Noa, que quiso traer<br>un caracol a dormir a casa.»</span>",
+      "titleTop": 260,
+      "say": "Una: un recuerdo solo vuestro. Para Noa, que quiso traer un caracol a dormir a casa."
+    },
+    {
+      "img": {
+        "video": "../../../posts/2026-10-04/clips/p10.mp4"
+      },
+      "title": "2 · <em>Algo que os hace reír</em><br><span style=\"font-size:.8em;font-weight:500\">«Para Aitana, que se ríe<br>antes de que acabe el chiste.»</span>",
+      "titleTop": 260,
+      "say": "Dos: algo que os hace reír. Para Aitana, que se ríe antes de que acabe el chiste."
+    },
+    {
+      "img": {
+        "video": "../../../posts/2026-10-09/clips/p12.mp4"
+      },
+      "title": "3 · <em>Lo que le deseas</em><br><span style=\"font-size:.8em;font-weight:500\">«Que nunca te falten<br>preguntas, Martín.»</span>",
+      "titleTop": 260,
+      "say": "Tres: lo que le deseas. Que nunca te falten preguntas, Martín."
+    },
+    {
+      "img": {
+        "video": "../../../posts/2026-10-08/clips/p12.mp4"
+      },
+      "title": "4 · <em>Quién se lo regala</em><br><span style=\"font-size:.8em;font-weight:500\">«Con todo el cariño<br>de tus abuelos.»</span>",
+      "titleTop": 260,
+      "say": "Cuatro: quién se lo regala. Con todo el cariño de tus abuelos."
+    },
+    {
+      "img": {
+        "video": "../../../posts/2026-10-04/clips/p22.mp4"
+      },
+      "title": "5 · <em>La fecha</em><br><span style=\"font-size:.8em;font-weight:500\">«Por tu quinto cumpleaños.<br>Octubre de 2026.»</span>",
+      "titleTop": 260,
+      "say": "Y cinco: la fecha. Por tu quinto cumpleaños, octubre de dos mil veintiséis."
+    },
+    {
+      "img": {
+        "video": "../../../posts/2026-10-04/clips/p26.mp4"
+      },
+      "title": "Se imprime en la<br><em>primera página de su cuento</em>",
+      "titleTop": 260,
+      "say": "Se imprime tal cual en la primera página de su cuento."
+    }
+  ],
+  "outroSay": "Crea el suyo en meapica punto shop."
+}
