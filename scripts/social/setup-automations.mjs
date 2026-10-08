@@ -40,7 +40,8 @@ for (const source of ["instagram", "facebook"]) {
       keywords: [t.keyword],
       matchMode: "word", // "contains" would fire on "cuentos" inside any sentence
       typoTolerance: true,
-      alsoMatchInDms: true,
+      // Comments only: matching in private messages sent the canned link to a creator mid-conversation (2026-10-08).
+      alsoMatchInDms: false,
       dmMessage: t.dm,
       buttons: [{ type: "url", title: t.button, url: link(source, lang) }],
       commentReply: t.replies[0],

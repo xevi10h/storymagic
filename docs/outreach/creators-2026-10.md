@@ -24,6 +24,14 @@ Six go by email (#1, 2, 3, 7, 8, 9), four by Instagram message (#4, 5, 11, 12). 
 - Timing: about three weeks from a yes to a delivered book; messages should go out the week of 6 Oct for videos in
   mid-November.
 
+### Replies
+
+- **@lara_mamaestra, 2026-10-08 (Instagram): yes**, on condition that her child's portrait is not shown (name, cover text and
+  story pages are fine), which our offer already allows. She also asked whether we publish other people's stories
+  (no: each book is created by the family). Code `REGALO-LARA-PU5E` sent the same day with both answers. The
+  "CUENTO" keyword automation had answered her first message with the canned link: automations now match comments only.
+- @bocinsdemi and @maestraprimariaypt: no reply yet (checked 2026-10-08, inbox and message requests).
+
 ## First wave (recommended 12)
 
 | # | Account | Lang | Followers | Where | Why | Contact |
