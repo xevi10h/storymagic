@@ -630,3 +630,11 @@ h1, h2, h3, h4 {
 body {
   padding-bottom: var(--cookie-banner-h);
 }
+
+/* Desktop cookie card (bottom-left): on screens with the creation footer it would cover "back",
+   so it sits just above that bar (4.5625rem = its 73px height from sm up). */
+@media (min-width: 1024px) {
+  body:has([data-bottom-bar]) .cookie-banner {
+    bottom: calc(4.5625rem + 1rem);
+  }
+}

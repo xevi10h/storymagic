@@ -87,12 +87,12 @@ export default function Tracking() {
   const bannerRef = useRef<HTMLDivElement>(null);
   // Phones: the first layer is a full-width bar over the bottom edge, exactly where the "next" and
   // buy bars live. Publish its height so those bars sit on top of it (--cookie-banner-h, globals.css).
-  // Not for the settings layer (a tall sheet) nor from sm up (a corner card that covers no button).
+  // Not for the settings layer (a tall sheet) nor from lg up (a corner card, see .cookie-banner).
   useEffect(() => {
     const el = bannerRef.current;
     const root = document.documentElement;
     if (!open || configuring || !el) return;
-    const phone = window.matchMedia("(max-width: 639.98px)");
+    const phone = window.matchMedia("(max-width: 1023.98px)");
     const sync = () => root.style.setProperty("--cookie-banner-h", phone.matches ? `${el.offsetHeight}px` : "0px");
     const observer = new ResizeObserver(sync);
     observer.observe(el);
@@ -187,10 +187,12 @@ export default function Tracking() {
           data-testid="cookie-banner"
           // Phones: a compact bar flush with the bottom edge (two lines of text + one row of buttons,
           // about an eighth of the screen), so the page stays usable behind it. The third parties are
-          // named in the settings layer and in the cookie policy. From sm: a small card in the corner.
-          className="fixed inset-x-0 bottom-0 z-[60] sm:bottom-4 sm:left-4 sm:right-auto sm:w-[26rem]"
+          // named in the settings layer and in the cookie policy. From lg: a small card in the corner, lifted
+          // above the creation footer where there is one (.cookie-banner in globals.css).
+          className="cookie-banner fixed inset-x-0 bottom-0 z-[60] lg:bottom-4 lg:left-4 lg:right-auto lg:w-[26rem]"
         >
-          <div className="max-h-[85dvh] overflow-y-auto rounded-t-2xl border border-b-0 border-line bg-surface px-4 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2.5 shadow-[0_-8px_30px_-12px_rgba(58,36,24,.35)] sm:rounded-2xl sm:border-b sm:p-4 sm:shadow-xl">
+          <div className="max-h-[85dvh] overflow-y-auto rounded-t-2xl border border-b-0 border-line bg-surface px-4 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2.5 shadow-[0_-8px_30px_-12px_rgba(58,36,24,.35)] lg:rounded-2xl lg:border-b lg:p-4 lg:shadow-xl">
+            <div className="mx-auto max-w-xl lg:max-w-none">
             {configuring ? (
               <>
                 <p className="font-display text-base font-semibold text-ink">{t("settingsTitle")}</p>
@@ -253,13 +255,13 @@ export default function Tracking() {
               </>
             ) : (
               <>
-                <p className="text-[12.5px] leading-snug text-ink-soft sm:text-[13px]">
+                <p className="text-[12.5px] leading-snug text-ink-soft lg:text-[13px]">
                   {t("text")}{" "}
                   <Link href="/legal#cookies" className="font-semibold text-brand-text underline underline-offset-2">
                     {t("policy")}
                   </Link>
                 </p>
-                <div className="mt-1.5 flex items-center gap-2 sm:mt-2.5">
+                <div className="mt-1.5 flex items-center gap-2 lg:mt-2.5">
                   <button
                     type="button"
                     data-testid="cookie-configure"
@@ -277,6 +279,7 @@ export default function Tracking() {
                 </div>
               </>
             )}
+            </div>
           </div>
         </div>
       )}

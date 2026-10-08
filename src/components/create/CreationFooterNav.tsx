@@ -24,7 +24,7 @@ export default function CreationFooterNav({
   const resolvedNextLabel = nextLabel ?? t("next");
 
   return (
-    <div className="sticky bottom-(--cookie-banner-h) z-30 border-t border-create-primary/10 bg-create-bg pb-[env(safe-area-inset-bottom)]">
+    <div data-bottom-bar className="sticky bottom-(--cookie-banner-h) z-30 border-t border-create-primary/10 bg-create-bg pb-[env(safe-area-inset-bottom)]">
       {nextDisabled && nextDisabledTooltip && (
         <p className="px-5 pt-2 text-center text-xs font-medium text-create-text-sub sm:hidden" data-testid="footer-hint">
           {nextDisabledTooltip}

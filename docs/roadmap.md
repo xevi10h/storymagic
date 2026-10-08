@@ -72,8 +72,6 @@ character lock; per-stage resolution. (commits 5ebc2f1 → a883d60)
 
 ## Next steps from creation flow + cookie bar pass (2026-10-08)
 
-- [ ] `e2e/creation-v2.spec.ts`: 4 happy-path tests fail when the cookie bar is on (`getByRole("dialog")` matches the bar and the dedication sheet). Name the dialog, and run the suite once with a tracking id set.
-- [ ] Desktop: the cookie card (bottom-left) covers the creation "Atrás" button while it is open.
 - [ ] Generate one full book in production before the first creator redeems a gift code (last successful generation: 2026-10-01).
 - [ ] Collect real reviews from the first buyers and creators (clears the Search Console `review` / `aggregateRating` warnings; `ProductJsonLd` already takes a `reviews` prop).
 - [ ] Search Console › Merchant listings: press "Validate fix" (handlingTime / shippingDetails were fixed in `9438c38`).

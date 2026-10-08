@@ -8,6 +8,9 @@ import { test, expect, type Page, type Route, type Request } from "@playwright/t
 //   npx playwright test e2e/creation-v2.spec.ts                     (flag off)
 //   PHOTO_FLAG=1 npx playwright test e2e/creation-v2.spec.ts -g photo  (server started with
 //   NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED=true)
+//
+// The cookie notice only renders with a tracking id. To cover the flow with it on screen, start the
+// server with NEXT_PUBLIC_GA4_ID=G-LOCALTEST (nothing loads until consent) and run the suite again.
 
 const SHOTS = process.env.SHOTS_DIR ?? "test-results/flow-v2";
 const PHOTO_FLAG = process.env.PHOTO_FLAG === "1";
@@ -393,8 +396,10 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
         await page.waitForTimeout(3500); // one-shot reveal overlay
         await shot(page, `${tag}-5-book`);
         await page.getByTestId("edit-link-dedication").click();
-        await expect(page.getByRole("dialog")).toBeVisible();
-        await expect(page.getByRole("dialog").locator("textarea")).toHaveValue(custom);
+        // The modal sheet, not the cookie notice (also a dialog when a tracking id is set).
+        const sheet = page.locator('[role=dialog][aria-modal="true"]');
+        await expect(sheet).toBeVisible();
+        await expect(sheet.locator("textarea")).toHaveValue(custom);
         await shot(page, `${tag}-5-dedication-sheet`);
         await page.keyboard.press("Escape");
         await page.getByTestId("edit-link-cover").click();
