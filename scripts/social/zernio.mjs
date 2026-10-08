@@ -140,3 +140,15 @@ export function buildPostBody(p, accounts, urls) {
   }
   return { content: p.ig, mediaItems, platforms, timezone: "Europe/Madrid" };
 }
+
+/** Deletes scheduled (never published) posts by id, e.g. before scheduling a replaced video with `schedule.mjs --date=… --force`. */
+export async function unschedule(ids) {
+  for (const id of ids) {
+    const p = (await api("GET", `/posts/${id}`)).json;
+    const post = p.post ?? p;
+    if (post.status !== "scheduled") { console.log(`${id}: ${post.status ?? "not found"}, skipped`); continue; }
+    console.log(`${id} ${post.scheduledFor}: delete → HTTP ${(await api("DELETE", `/posts/${id}`)).status}`);
+  }
+}
+// node scripts/social/zernio.mjs unschedule <id> <id> …   (ids as separate arguments)
+if (import.meta.url === `file://${process.argv[1]}` && process.argv[2] === "unschedule") await unschedule(process.argv.slice(3));

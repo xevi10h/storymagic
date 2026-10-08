@@ -72,3 +72,6 @@ videos/*/renders/
 videos/*/snapshots/
 docs/social/tests/*/clips/
 docs/social/posts/*/clips/
+
+# per-campaign message texts for scripts/social/browser/instagram-dm.mjs
+scripts/social/browser/dms.json

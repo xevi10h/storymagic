@@ -521,3 +521,11 @@ Replaced the old "mode → template → 3 decision knobs" with a single vertical
 - Off-site GEO: Christmas gift-guide pitches (Webedia, El País Escaparate, Ara Criatures, Serpadres), Trustpilot/Google profile with honest post-delivery review request, YouTube flip-throughs, Pinterest; Awin affiliate programme.
 - ~~Vercel › Domains: www.meapica.shop → apex 308~~ DONE 2026-10-01. Deployed wave 1 (main e7670ee+), IndexNow pinged (118 URLs), GA4 verified live after consent.
 - Sant Jordi (23 Apr) Catalan push: classroom kit in Jan, school/AMPA outreach Feb–Mar.
+
+## Social and creators: next steps (added 2026-10-08)
+
+- Monday 12 Oct: read `docs/social/scoreboard.md` (opening test 9 Oct against 5 Oct; voiced against silent reels) and decide Sunday 18.
+- Creators: all ten contacted on 6 to 8 Oct; on a yes, send their `REGALO-…` code and ask for the video of the child opening the book with permission to repost.
+- Halloween reel ("un cuento sin sustos") for the last week of October; a full 4 to 6 s corporate closing for sales and ad videos.
+- English and French example editions still call the hero Martí (decide: Martin); Higgsfield console offers up to 75 % off on three models (not activated).
+- Investigate why Instagram and Facebook reach collapsed (first reading after the Spanish-only week).
