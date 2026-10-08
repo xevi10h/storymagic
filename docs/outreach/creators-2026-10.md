@@ -18,6 +18,9 @@ Six go by email (#1, 2, 3, 7, 8, 9), four by Instagram message (#4, 5, 11, 12). 
 - Each creator gets two Stripe promotion codes: `REGALO-<NAME>-<4 chars>` (one use, free book, add-ons paid, expires
   2026-12-15) and `<NAME>10` (10 % for their audience until 2027-01-06, which is how we attribute sales).
   Created 2026-10-06 with `scripts/social/create-creator-codes.sh` (coupons `BAUY3d6s` gift, `pUqYq48o` audience); the codes are listed in Stripe › Promotion codes, filter by metadata `creator`. Do not run the script again.
+- Replies so far: @myfamilytime.es said yes on 2026-10-08 and the reply with her code (`REGALO-FAMILYTIME-…`) was SENT the
+  same day from `hola@meapica.shop`; @onanemdema (yes) and @familiacaricu (questions) answered on 2026-10-07 and their
+  replies are drafted in Gmail, not sent. Log: `creators-2026-10-messages.md` › Replies.
 - Timing: about three weeks from a yes to a delivered book; messages should go out the week of 6 Oct for videos in
   mid-November.
 

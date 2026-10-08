@@ -170,6 +170,6 @@ Free printed order checked end to end in the Stripe sandbox on 2026-10-08 (hardc
 
 | Creator | Reply | Status |
 |---|---|---|
-| @onanemdema (Cristina) | 2026-10-07: yes | Code not sent yet |
-| @familiacaricu (Òscar and Marta) | 2026-10-07: interested, asks format, platforms, dates and an audience code; they do not show the children's faces | Not answered yet |
-| @myfamilytime.es (lidi.nieto@gmail.com) | 2026-10-08: yes, with her daughter | Reply with her code drafted in Gmail on 2026-10-08, the owner sends it |
+| @onanemdema (Cristina) | 2026-10-07: yes | Reply with her code drafted in Gmail on 2026-10-08, the owner sends it |
+| @familiacaricu (Òscar and Marta) | 2026-10-07: interested, asks format, platforms, dates and an audience code; they do not show the children's faces | Reply drafted in Gmail on 2026-10-08 (answers, `CARICU10`, gift code), the owner sends it |
+| @myfamilytime.es (lidi.nieto@gmail.com) | 2026-10-08: yes, with her daughter | Reply with her code SENT 2026-10-08 14:50; waiting for her order |
