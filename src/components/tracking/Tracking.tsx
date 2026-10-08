@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Script from "next/script";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -84,6 +84,27 @@ export default function Tracking() {
   const analyticsAllowed = consentAllows(stored, "analytics");
   const adsAllowed = consentAllows(stored, "ads");
 
+  const bannerRef = useRef<HTMLDivElement>(null);
+  // Phones: the first layer is a full-width bar over the bottom edge, exactly where the "next" and
+  // buy bars live. Publish its height so those bars sit on top of it (--cookie-banner-h, globals.css).
+  // Not for the settings layer (a tall sheet) nor from sm up (a corner card that covers no button).
+  useEffect(() => {
+    const el = bannerRef.current;
+    const root = document.documentElement;
+    if (!open || configuring || !el) return;
+    const phone = window.matchMedia("(max-width: 639.98px)");
+    const sync = () => root.style.setProperty("--cookie-banner-h", phone.matches ? `${el.offsetHeight}px` : "0px");
+    const observer = new ResizeObserver(sync);
+    observer.observe(el);
+    phone.addEventListener("change", sync);
+    sync();
+    return () => {
+      observer.disconnect();
+      phone.removeEventListener("change", sync);
+      root.style.removeProperty("--cookie-banner-h");
+    };
+  }, [open, configuring]);
+
   const openSettings = () => {
     // Re-opened or "Configurar": the switches show what is stored (all off before any choice).
     const current = getConsent();
@@ -159,6 +180,7 @@ export default function Tracking() {
       )}
       {open && (
         <div
+          ref={bannerRef}
           role="dialog"
           aria-live="polite"
           aria-label={t("title")}

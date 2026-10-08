@@ -25,6 +25,9 @@ button, [role="button"] {
    in new work. */
 
 :root {
+  /* Height of the phone cookie bar while it is open (set by Tracking.tsx, 0 otherwise): bottom
+     bars sit on top of it instead of under it, and the page keeps that much room at the end. */
+  --cookie-banner-h: 0px;
   /* --- Brand --- */
   --brand: #E86C3A;            /* primary actions, active/selected state, kickers */
   --brand-hover: #d15a2b;      /* hover/pressed of --brand */
@@ -622,4 +625,8 @@ h1, h2, h3, h4 {
 @media (prefers-reduced-motion: reduce){
   .step-in,.chapter-in,.cover-art-in,.sheet-backdrop,.sheet-panel{animation:none}
   .progress-indeterminate{animation:none;width:100%;opacity:.35}
+}
+
+body {
+  padding-bottom: var(--cookie-banner-h);
 }

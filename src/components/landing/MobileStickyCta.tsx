@@ -77,7 +77,7 @@ export default function MobileStickyCta() {
       inert={!visible}
       data-testid="mobile-sticky-cta"
       data-visible={visible}
-      className={`fixed inset-x-0 bottom-0 z-40 border-t border-brand/10 bg-paper/90 backdrop-blur-md transition-[transform,opacity] duration-300 ease-[cubic-bezier(.2,.9,.3,1)] motion-reduce:transition-none lg:hidden ${
+      className={`fixed inset-x-0 bottom-(--cookie-banner-h) z-40 border-t border-brand/10 bg-paper/90 backdrop-blur-md transition-[transform,opacity] duration-300 ease-[cubic-bezier(.2,.9,.3,1)] motion-reduce:transition-none lg:hidden ${
         visible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-full opacity-0"
       }`}
     >

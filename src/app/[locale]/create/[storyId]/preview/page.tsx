@@ -807,7 +807,7 @@ export default function PreviewPage() {
       {showBuy && !mainCtaVisible && (
         <div
           data-testid="sticky-buy"
-          className="fixed inset-x-0 bottom-0 z-40 border-t border-create-neutral bg-white/95 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-4px_20px_rgba(0,0,0,0.08)] backdrop-blur sm:hidden"
+          className="fixed inset-x-0 bottom-(--cookie-banner-h) z-40 border-t border-create-neutral bg-white/95 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-4px_20px_rgba(0,0,0,0.08)] backdrop-blur sm:hidden"
         >
           <div className="flex items-center gap-3">
             <div className="min-w-0 flex-1 leading-tight">
