@@ -1,0 +1,40 @@
+{
+  "lang": "es",
+  "out": "video.mp4",
+  "music": "calm-piano-1.mp3",
+  "outro": "short",
+  "beats": [
+    {
+      "img": {
+        "video": "clips/c1.mp4"
+      },
+      "seconds": 3.4,
+      "title": "Tiene 4 años<br><em>y aún no sabe leer</em>",
+      "titleTop": 1150
+    },
+    {
+      "img": {
+        "video": "clips/c2.mp4"
+      },
+      "seconds": 3.6,
+      "title": "Pero este cuento<br><em>se lo cuenta a su oso</em>",
+      "titleTop": 1180
+    },
+    {
+      "img": {
+        "video": "clips/c3.mp4"
+      },
+      "seconds": 4.2,
+      "title": "Porque la protagonista<br><em>es ella</em>",
+      "titleTop": 1120
+    },
+    {
+      "img": {
+        "video": "clips/c4.mp4"
+      },
+      "seconds": 3.8,
+      "title": "Cada noche.<br><em>Otra vez.</em>",
+      "titleTop": 260
+    }
+  ]
+}

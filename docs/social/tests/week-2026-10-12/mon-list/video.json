@@ -1,0 +1,64 @@
+{
+  "lang": "es",
+  "out": "video.mp4",
+  "music": "calm-guitar-1.mp3",
+  "outro": "short",
+  "beats": [
+    {
+      "img": {
+        "video": "../../../posts/2026-10-06/clips/p20.mp4"
+      },
+      "seconds": 2.6,
+      "title": "5 dedicatorias para<br><em>su primer cuento</em>",
+      "titleTop": 1040
+    },
+    {
+      "img": {
+        "video": "../../../posts/2026-10-05/clips/p04.mp4"
+      },
+      "seconds": 3.0,
+      "title": "1 · <em>Un recuerdo vuestro</em><br><span style=\"font-size:.8em;font-weight:500\">«Para Noa, que quiso traer<br>un caracol a dormir a casa.»</span>",
+      "titleTop": 260
+    },
+    {
+      "img": {
+        "video": "../../../posts/2026-10-04/clips/p10.mp4"
+      },
+      "seconds": 3.0,
+      "title": "2 · <em>Algo que os hace reír</em><br><span style=\"font-size:.8em;font-weight:500\">«Para Aitana, que se ríe<br>antes de que acabe el chiste.»</span>",
+      "titleTop": 260
+    },
+    {
+      "img": {
+        "video": "../../../posts/2026-10-09/clips/p12.mp4"
+      },
+      "seconds": 3.0,
+      "title": "3 · <em>Lo que le deseas</em><br><span style=\"font-size:.8em;font-weight:500\">«Que nunca te falten<br>preguntas, Martín.»</span>",
+      "titleTop": 260
+    },
+    {
+      "img": {
+        "video": "../../../posts/2026-10-08/clips/p12.mp4"
+      },
+      "seconds": 3.0,
+      "title": "4 · <em>Quién se lo regala</em><br><span style=\"font-size:.8em;font-weight:500\">«Con todo el cariño<br>de tus abuelos.»</span>",
+      "titleTop": 260
+    },
+    {
+      "img": {
+        "video": "../../../posts/2026-10-04/clips/p22.mp4"
+      },
+      "seconds": 3.0,
+      "title": "5 · <em>La fecha</em><br><span style=\"font-size:.8em;font-weight:500\">«Por tu quinto cumpleaños.<br>Octubre de 2026.»</span>",
+      "titleTop": 260
+    },
+    {
+      "img": {
+        "video": "../../../posts/2026-10-04/clips/p26.mp4"
+      },
+      "seconds": 2.8,
+      "title": "Se imprime en la<br><em>primera página de su cuento</em>",
+      "titleTop": 260
+    }
+  ]
+}

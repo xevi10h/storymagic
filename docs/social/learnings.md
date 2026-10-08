@@ -35,6 +35,21 @@ compared against it. Rules that survive go into `playbook.md`.
   Not used yet, for the week of 12 Oct: a list worth saving, a contrarian opinion, a trend or seasonal moment
   (Halloween), a reply to a comment, a "which one are you" choice between two covers.
 
+## Week of 12 Oct: drafts, not scheduled (`docs/social/tests/week-2026-10-12/`)
+
+| Day | Draft | Strategy | Made with |
+|---|---|---|---|
+| Mon | `mon-list`: 5 dedicatorias para su primer cuento (24 s) | a list worth saving | scenes already animated, no new cost |
+| Tue | `tue-contrarian`: No le regales otro juguete (17 s) | an opinion people answer | scenes already animated |
+| Wed | `wed-choice`: ¿Dónde empezaría su aventura? (18 s) | a choice to vote in comments | scenes already animated |
+| Fri | `fri-teddy`: Tiene 4 años y aún no sabe leer, pero este cuento se lo cuenta a su oso (18 s) | tenderness and humour, a staged scene | 4 photos (flux-2 edit) + 4 Higgsfield clips |
+| Sun | open: decided after reading 9 Oct against 5 Oct | | |
+
+"Reply to a comment" was dropped: the only viewer comment so far is an emoji. Halloween waits for the last week
+of October. Higgsfield: the key in `~/.config/higgsfield/credentials` is not the account the MCP server sees (that
+one is on the free plan with 0 credits and shows none of the 17 clips made on 7 and 8 Oct), and the API offers no
+balance call, so its balance is unknown until the owner looks at the dashboard of the account that issued the key.
+
 ## Findings
 
 - **2026-10-06 · The drop happens between second 2 and second 3, on the title and the slow first line.** Facebook
