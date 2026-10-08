@@ -345,6 +345,10 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   delivered, link clicks) come back from the same script. Not available on TikTok, YouTube or Pinterest.
 - **Ads:** Meta ad account "Meapica Ads" (`act_2479938985822992`) is connected in Zernio and active, but has **no payment method**
   (billingStatus `missing`, checked 2026-10-06): no campaign can run until the owner adds one in Meta.
+- **TikTok Ads through Zernio (checked 2026-10-08):** the ad account is connected as a `tiktokads` account (Zernio id
+  `6abe76003d9fcab2182a1c5a`, advertiser `7691596144782180404`, Business Center `7691596115342442502`, identity "Meapica").
+  `GET /v1/ads/accounts?accountId=…` returns status and balances: `STATUS_CONTRACT_PENDING`, cash 0, grant 0, no campaigns, so
+  nothing can run until TikTok approves the account (business verification pending, see roadmap).
 - **Inbox:** `node scripts/social/inbox.mjs` prints unanswered comments and unread DMs as JSON (read-only).
 - `scripts/social/publish-first-posts.mjs` is the one-off of 3 Oct (already published).
 
