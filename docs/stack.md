@@ -352,6 +352,12 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   submitted 2026-10-08 (VAT ES41649433K, Carrer Aribau 140 5º, 08036 Barcelona, Catalonia): Business Center now shows the ad
   account as "Approved"; what is missing is payments step 2 (add balance or a payment method, owner). The Business Center itself
   is "Unverified", which does not block ads. Headless: `ads.tiktok.com` answers 403, `business.tiktok.com/manage/*` works.
+- **First TikTok paid test (live since 2026-10-08):** campaign `mpc_tiktok_traffic_es_q4-26` (TikTok campaign `1878487066110225`,
+  ad group `1878487067234561`, ad `1878487071246434`, Zernio ad `6ac795af07c676baefcfd13b`), created with `POST /v1/ads/create`:
+  goal traffic, 20 €/day (TikTok's minimum) until 2026-10-11, Spain 25-44 Spanish, video `noa-short-9x16-es.mp4`, landing `/es`
+  with the TikTok UTM template. Real cap = the 10 € prepaid balance (auto recharge off). Identity must be `BC_AUTH_TT`
+  (@meapica_books linked in Business Center): TikTok rejects `CUSTOMIZED_USER`. The AI-content label cannot be set through
+  Zernio. Pause: `PUT /v1/ads/campaigns/1878487066110225/status` `{ "status": "paused", "platform": "tiktok" }`.
 - **Inbox:** `node scripts/social/inbox.mjs` prints unanswered comments and unread DMs as JSON (read-only).
 - `scripts/social/publish-first-posts.mjs` is the one-off of 3 Oct (already published).
 
