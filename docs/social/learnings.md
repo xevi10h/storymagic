@@ -13,6 +13,28 @@ compared against it. Rules that survive go into `playbook.md`.
 | 4 Oct 23:27, Aitana story | animated scenes and transition | 1,069 | 247 | 14 | 4.3-5.8 s | 0 |
 | 5 Oct 20:30, Noa story | animated + site label + first comment | 317 (12 h) | 187 (12 h) | 5 (12 h) | 4.7-4.9 s | 0 |
 
+## Decisions of 2026-10-08 (owner)
+
+- **Spanish only on these accounts.** With no followers, two languages split the signal; the two Catalan posts are
+  the ones that got 8 and 0 views on Facebook (not proof: the format changed too). Catalan goes through the Catalan
+  creators and, later, its own account. Tests 2 (language) is dropped. The Catalan posts of 10 and 11 Oct were
+  unscheduled and kept in `docs/social/tests/`.
+- **The Spanish example book's hero is Martín, not Martí** (a Catalan name that reads as a typo in Spanish). Renamed
+  in the production database (title, text, dedication, its own character row); the Catalan, English and French
+  editions still say Martí. `/es/examples/marti-y-la-luz-guardada` redirects to the new address.
+- **Every reel follows a different spreading strategy**, named before it is built, so the week compares strategies
+  and not five copies of one idea:
+
+| Day | Reel | Strategy | What the viewer is asked to do |
+|---|---|---|---|
+| Thu 8 | ¿Por qué pide el mismo cuento 20 veces? | open loop: two reasons promised, the better one held back, both on screen | send it to another parent |
+| Fri 9 | Cuento para dormir: Martín y la luz guardada | a story with something at stake from the first line | save it for tonight |
+| Sat 10 | Escribe su nombre | participation and a seamless loop | write a name in the comments |
+| Sun 11 | No sabe quién sale en su cuento | the moment of recognition (emotion) | send it to someone with a child |
+
+  Not used yet, for the week of 12 Oct: a list worth saving, a contrarian opinion, a trend or seasonal moment
+  (Halloween), a reply to a comment, a "which one are you" choice between two covers.
+
 ## Findings
 
 - **2026-10-06 · The drop happens between second 2 and second 3, on the title and the slow first line.** Facebook

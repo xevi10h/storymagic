@@ -13,6 +13,10 @@ also a pin linking to the site); videos also go to YouTube as Shorts (bedtime st
 
 ## Rules
 
+0. **Spanish only, and one named spreading strategy per reel** (owner, 2026-10-08): open loop, story with stakes,
+   participation, emotional reveal, saveable list, contrarian opinion, seasonal moment, reply to a comment. No two
+   reels in a week use the same one. Details and the current week: `learnings.md` › Decisions of 2026-10-08.
+
 1. **5 of 7 posts are useful or entertaining without buying anything.** At most 2 a week are product-first.
 2. **First frame = the art, full screen, already moving.** Never a logo, a brand card or a price. **No intro, ever**:
    the first 3 seconds decide whether the video is watched. The brand signature is the **outro** (3.6 s: the book of the logo opens

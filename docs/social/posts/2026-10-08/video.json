@@ -27,13 +27,17 @@
       "focus": [
         0.45,
         0.4
-      ]
+      ],
+      "title": "Son dos cosas<br><em>y la 2.ª te va a gustar</em>",
+      "titleTop": 260
     },
     {
       "img": {
         "video": "clips/p04.mp4"
       },
-      "say": "Una: ya sabe lo que va a pasar, y eso le da calma."
+      "say": "Una: ya sabe lo que va a pasar, y eso le da calma.",
+      "title": "1 · <em>Le da calma</em>",
+      "titleTop": 260
     },
     {
       "img": {
@@ -48,7 +52,9 @@
       "focus": [
         0.5,
         0.6
-      ]
+      ],
+      "title": "2 · <em>Aprende palabras nuevas</em>",
+      "titleTop": 260
     },
     {
       "img": {

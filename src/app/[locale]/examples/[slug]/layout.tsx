@@ -15,6 +15,9 @@ type Props = {
 // hreflang are in the HTML. Examples flagged later render on first request.
 export const revalidate = 3600;
 
+/** Old → new slug of renamed example books. 2026-10-08: the Spanish edition's hero became Martín (Martí is the Catalan name). */
+const RENAMED_SLUGS: Record<string, string> = { "es/marti-y-la-luz-guardada": "martin-y-la-luz-guardada" };
+
 export async function generateStaticParams() {
   try {
     return (await getShowcaseRefs()).map(({ locale, slug }) => ({ locale, slug }));
@@ -84,7 +87,12 @@ export default async function ShowcaseStoryLayout({ children, params }: Props) {
     permanentRedirect(`/${target.locale}${showcasePath(target.slug)}`);
   }
 
-  // Unknown / unpublished slug → a real 404 (not a 200 "not found" shell).
-  if (!(await findShowcaseRef(locale, slug))) notFound();
+  if (!(await findShowcaseRef(locale, slug))) {
+    // A renamed example keeps its indexed URL alive with a 308.
+    const renamed = RENAMED_SLUGS[`${locale}/${slug}`];
+    if (renamed) permanentRedirect(`/${locale}${showcasePath(renamed)}`);
+    // Unknown / unpublished slug → a real 404 (not a 200 "not found" shell).
+    notFound();
+  }
   return children;
 }
