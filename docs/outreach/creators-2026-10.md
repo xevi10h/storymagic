@@ -11,7 +11,7 @@ ambassador tags. Check the last three posts before writing to anyone. Nobody has
 ## Approved by the owner on 2026-10-06: ten creators
 
 #1, 2, 3, 4, 5, 7, 8, 9, 11 and 12 of the first wave (six Catalan, four Spanish). Reserves: #10 and #6.
-Six go by email (#1, 2, 3, 7, 8, 9), four by Instagram message (#4, 5, 11, 12). The six emails were sent on 2026-10-06; @myfamilytime.es was emailed on 2026-10-08 (lidi.nieto@gmail.com, public on myfamilytime.es); three Instagram messages remain (@lara_mamaestra, @bocinsdemi, @maestraprimariaypt: no public email found), which the API cannot send.
+Six go by email (#1, 2, 3, 7, 8, 9), four by Instagram message (#4, 5, 11, 12). The six emails were sent on 2026-10-06; @myfamilytime.es was emailed on 2026-10-08 (lidi.nieto@gmail.com, public on myfamilytime.es); @lara_mamaestra, @bocinsdemi and @maestraprimariaypt were messaged on Instagram on 2026-10-08 from @meapica_books (logged-in browser session, `browser-session` skill, service `instagram`; the API cannot start a conversation). All ten contacted; replies to Instagram messages arrive in the Zernio inbox, email replies at hola@meapica.shop.
 
 - Ask for a video of the child opening the book (not a mention), labelled as a collaboration, with permission to
   repost it and use it in ads.
