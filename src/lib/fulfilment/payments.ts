@@ -160,6 +160,20 @@ export async function recordPaidSession(
   // email: a failing email makes Stripe retry, and a retry is no longer processedHere.
   // Neither sender throws.
   if (processedHere) await Promise.all([sendMetaPurchase(session), sendTikTokPurchase(session), sendGa4Purchase(session)]);
+  // Operator heads-up for every new order (free gift codes included), once per order.
+  if (processedHere) {
+    const total = ((session.amount_total ?? 0) / 100).toFixed(2);
+    await alertOperator(supabase, {
+      key: `new-order:${order.id}`,
+      subject: `New order: ${order.format} · ${total} ${(session.currency ?? "eur").toUpperCase()}`,
+      lines: [
+        `Customer: ${shipping?.name ?? session.customer_details?.name ?? "-"} (${customerEmail ?? "no email"})`,
+        `Ships to: ${shippingAddress ? `${shippingAddress.postal_code} ${shippingAddress.city}, ${shippingAddress.country}` : "digital, no shipping"}`,
+        `Order: ${adminOrderUrl(order.id)}`,
+      ],
+      dedupeSeconds: 30 * 86_400,
+    });
+  }
   // Checkout opt-out ("No quiero recibir ofertas…"): the order flag already keeps offers
   // out of this order's emails; the suppression list extends it to the address (other
   // orders, the reminder). Idempotent. A failure is logged, never blocks the payment.
