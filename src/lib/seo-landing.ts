@@ -42,6 +42,11 @@ export const THEME_TEMPLATE: Record<string, string> = {
 };
 export const SEO_THEME_SLUGS = Object.keys(THEME_TEMPLATE);
 
+/** Theme landing of a story template ("forest" → "magic-forest"), or null when the world has no theme page yet. */
+export function themeSlugForTemplate(templateId: string): string | null {
+  return SEO_THEME_SLUGS.find((slug) => THEME_TEMPLATE[slug] === templateId) ?? null;
+}
+
 export const SEO_SLUGS: Record<SeoPageType, readonly string[]> = {
   gifts: SEO_GIFT_SLUGS,
   ages: SEO_AGE_SLUGS,

@@ -594,10 +594,10 @@
         "intro": "Un cuento donde tu hijo es el héroe es el regalo que se recuerda. Elige la ocasión y crea una edición única, impresa y pensada para guardar toda la vida."
       },
       "ages": {
-        "metaTitle": "Cuentos personalizados por edad | Meapica",
-        "metaDescription": "Cuentos personalizados para cada edad, de 2 a 12 años: qué aventura elegir, cómo cambia el texto y qué formato aguanta más. Envío gratis.",
-        "h1": "Cuentos personalizados por edad",
-        "intro": "Cada edad pide su historia. Elige la franja de tu hijo y descubre cuentos pensados para su momento lector, siempre con él como protagonista.",
+        "metaTitle": "Libro personalizado para niños: cuentos por edad | Meapica",
+        "metaDescription": "Libro personalizado para niños de 2 a 12 años: cuentos personalizados para cada edad, con su nombre y su cara en acuarela. Vista previa y envío gratis.",
+        "h1": "Libro personalizado para niños: elige su cuento por edad",
+        "intro": "Un libro personalizado para niños funciona cuando la historia está escrita para su edad. Elige la franja de tu hijo y descubre cuentos personalizados pensados para su momento lector, siempre con él como protagonista.",
         "guideHeading": "Cómo elegir su cuento según la edad",
         "sections": [
           {
@@ -649,7 +649,7 @@
   },
   "metadata": {
     "title": "Cuento personalizado para niños con su nombre | Meapica",
-    "description": "Su nombre en la portada, su cara pintada en acuarela y la aventura que eliges tú. Vista previa gratis. Tapa dura o blanda, envío gratis.",
+    "description": "Libro personalizado para niños: su nombre en la portada, su cara pintada en acuarela y la aventura que eliges tú. Vista previa y envío gratis.",
     "keywords": "cuentos personalizados, libros infantiles personalizados, regalo original niños, cuentos con nombre, libros con ilustraciones, regalo personalizado, libro impreso niños",
     "pages": {
       "create": "Crea su cuento",
@@ -692,6 +692,7 @@
     "trustPreview": "Ves las primeras páginas antes de pagar",
     "trustFormats": "Tapa dura o blanda, con PDF incluido",
     "sampleCta": "Ver un cuento por dentro",
+    "coverAlt": "Portada de un cuento personalizado para niños, pintada en acuarela",
     "coverCaptionExample": "Ejemplo: el cuento de {name}, {age} años · 20 × 20 cm",
     "coverCaptionWithName": "Así verá {name} su nombre por primera vez · 20 × 20 cm"
   },
@@ -801,7 +802,7 @@
   "quality": {
     "eyebrow": "El libro impreso",
     "title": "Para leerlo cada noche y guardarlo siempre",
-    "subtitle": "Hecho para aguantar mil lecturas y quedarse en su estantería cuando crezca. Y con su PDF incluido, para los viajes.",
+    "subtitle": "Un libro personalizado para niños hecho para aguantar mil lecturas y quedarse en su estantería cuando crezca. Y con su PDF incluido, para los viajes.",
     "mockupAlt": "El libro de {name} en tapa dura, de 20 × 20 cm",
     "specs": {
       "size": {
@@ -2561,6 +2562,7 @@
     "subtitle": "Mira cuentos personalizados que ya hemos creado. Cada uno es único: imagina el de tu hijo.",
     "cta": "Crear el de mi hijo",
     "sampleBadge": "Ejemplo",
+    "coverAlt": "Portada del cuento personalizado «{title}»",
     "loading": "Cargando el cuento...",
     "downloadPdf": "Descargar PDF de ejemplo",
     "generatingPdf": "Generando PDF...",

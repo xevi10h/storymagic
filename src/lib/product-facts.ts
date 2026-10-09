@@ -72,6 +72,11 @@ export const AGE_BANDS = [
 ] as const;
 export type AgeBandSlug = (typeof AGE_BANDS)[number]["slug"];
 
+/** Band of a child's age ("2-4" / "5-7" / "8-12"); ages outside the range fall into the nearest band. */
+export function ageBandSlug(age: number): AgeBandSlug {
+  return (AGE_BANDS.find((b) => age <= b.max) ?? AGE_BANDS[AGE_BANDS.length - 1]).slug;
+}
+
 // ── Delivery ────────────────────────────────────────────────────────────────
 
 /** Customer promise for printed books, door to door, in business days (all formats). */

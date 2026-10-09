@@ -671,6 +671,7 @@
     "trustPreview": "Vous voyez les premières pages avant de payer",
     "trustFormats": "Couverture rigide ou souple, PDF inclus",
     "sampleCta": "Feuilleter un exemple",
+    "coverAlt": "Couverture à l'aquarelle d'un livre personnalisé pour enfant",
     "coverCaptionExample": "Exemple : le livre de {name}, {age} ans · 20 × 20 cm",
     "coverCaptionWithName": "La couverture que {name} découvrira · 20 × 20 cm"
   },
@@ -2540,6 +2541,7 @@
     "subtitle": "Découvrez des contes personnalisés que nous avons déjà créés. Chacun est unique — imaginez celui de votre enfant.",
     "cta": "Créer celui de mon enfant",
     "sampleBadge": "Exemple",
+    "coverAlt": "Couverture du livre personnalisé « {title} »",
     "loading": "Chargement du conte...",
     "downloadPdf": "Télécharger le PDF d'exemple",
     "generatingPdf": "Génération du PDF...",

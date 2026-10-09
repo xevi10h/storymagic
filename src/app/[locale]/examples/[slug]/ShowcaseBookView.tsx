@@ -18,15 +18,22 @@ export interface ShowcaseBookViewProps {
   favoriteColor: string | null;
   /** The printed book's pages, built on the server (lib/book-pages.ts). */
   pages: BookPage[];
-  /** Server-rendered story text, shown under the viewer (crawlable, readable without JS). */
+  /** Server-rendered breadcrumb trail, above the title. */
+  breadcrumbs?: ReactNode;
+  /** Server-rendered illustrations + story text, shown under the viewer (crawlable, readable without JS). */
   children?: ReactNode;
+  /** Server-rendered blocks after the "create your own" close (related links, more examples). */
+  after?: ReactNode;
 }
 
 /**
  * Interactive part of an example book: header, page-flip viewer, sample PDF and the
- * "create your own" close. The page itself (and the story text) is server-rendered.
+ * "create your own" close. The page itself (illustrations, story text, related links,
+ * footer) is server-rendered around it. The compact reader header replaces the marketing
+ * Navbar on purpose: the book needs the height, and the Navbar's language switcher keeps
+ * the path, which 404s here (each locale edition has its own slug).
  */
-export default function ShowcaseBookView({ storyId, title, templateId, gender, favoriteColor, pages, children }: ShowcaseBookViewProps) {
+export default function ShowcaseBookView({ storyId, title, templateId, gender, favoriteColor, pages, breadcrumbs, children, after }: ShowcaseBookViewProps) {
   const t = useTranslations("showcase");
   const tPricing = useTranslations("pricing");
   const tHero = useTranslations("hero");
@@ -89,8 +96,9 @@ export default function ShowcaseBookView({ storyId, title, templateId, gender, f
       </header>
 
       <main>
+        {breadcrumbs && <div className="mx-auto max-w-3xl px-4 pt-1 sm:px-6">{breadcrumbs}</div>}
         {/* ── Title bar ──────────────────────────────────────────────────── */}
-        <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 pt-5 sm:px-6">
+        <div className={cx("mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 sm:px-6", breadcrumbs ? "pt-1" : "pt-5")}>
           <h1 className="min-w-0 truncate font-display text-lg font-bold text-ink sm:text-xl">{title}</h1>
           <div className="flex shrink-0 items-center gap-2">
             <span className="rounded-full bg-brand-tint px-2.5 py-0.5 text-xs font-bold uppercase tracking-wide text-brand-text">
@@ -154,6 +162,8 @@ export default function ShowcaseBookView({ storyId, title, templateId, gender, f
             </p>
           </div>
         </section>
+
+        {after}
       </main>
     </div>
   );

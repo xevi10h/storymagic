@@ -208,7 +208,9 @@ No Gelato sandbox: orders are `draft` unless `STRIPE_ENVIRONMENT=live`.
 `https://meapica.shop/api/webhooks/gelato?secret=<GELATO_WEBHOOK_SECRET>` (Gelato sends no signature
 or custom headers) for `order_status_updated` and `order_item_tracking_code_updated`. Gelato retries
 a failed delivery only 3×, so the fulfilment cron also reconciles every hour via `GET /v4/orders/{id}`.
-**2026-09-28: the registered URL returns 401 (no/incorrect secret) — must be fixed in the dashboard.**
+Registered on `meapica.shop` with the secret since 2026-10-01 (see Domains below).
+**First real print order 2026-10-09** (gift code, hardcover, Sabadell): Gelato `orderType: order`, files `passed`,
+shipped direct to the customer with `package_48_72`, cost 16,56 € (11,76 book + 4,80 shipping), delivery estimate 10-11 days.
 
 **Shipping:** Spain only, península + Baleares; Canarias/Ceuta/Melilla excluded (postcode guard
 before print). Standard shipping included in the price; at submit a live quote picks the cheapest

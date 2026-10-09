@@ -4,7 +4,7 @@ import { allSeoPaths } from "@/lib/seo-landing";
 import { getAllPublishedPostRefs } from "@/lib/blog";
 import { CHRISTMAS_DELIVERY_PATH } from "@/lib/shipping";
 import { TOOL_IDS, TOOL_LOCALES, TOOLS_CONTENT_UPDATED, TOOLS_HUB_PATH, toolAlternates, toolPath } from "@/lib/tools/registry";
-import { GUIDES, GUIDE_IDS, GUIDES_CONTENT_UPDATED, guideAlternates } from "@/lib/guides";
+import { GUIDES, GUIDE_IDS, guideAlternates, guideUpdated } from "@/lib/guides";
 import { getShowcaseRefs } from "@/lib/showcase";
 import { showcasePath } from "@/lib/showcase-slug";
 
@@ -82,12 +82,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   }
 
-  // ── Guides (Catalan, likeness, comparison): only their own locales, lastmod = content date ──
+  // ── Guides (Catalan, likeness, comparison, tió, Catalan by age): only their own locales, lastmod = content date ──
   for (const id of GUIDE_IDS) {
     for (const locale of GUIDES[id].locales) {
       entries.push({
         url: `${BASE_URL}/${locale}${GUIDES[id].path}`,
-        lastModified: new Date(`${GUIDES_CONTENT_UPDATED}T00:00:00Z`),
+        lastModified: new Date(`${guideUpdated(id)}T00:00:00Z`),
         changeFrequency: "monthly",
         priority: 0.8,
         alternates: { languages: guideAlternates(BASE_URL, id) },

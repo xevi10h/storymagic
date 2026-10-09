@@ -76,6 +76,20 @@ character lock; per-stage resolution. (commits 5ebc2f1 → a883d60)
 - [ ] Collect real reviews from the first buyers and creators (clears the Search Console `review` / `aggregateRating` warnings; `ProductJsonLd` already takes a `reviews` prop).
 - [ ] Search Console › Merchant listings: press "Validate fix" (handlingTime / shippingDetails were fixed in `9438c38`).
 
+## Next steps from the SEO + GEO audit (2026-10-09)
+
+Measured: 15 of 88 sitemap URLs indexed (28 "discovered, not indexed", 45 "unknown to Google", none "crawled, not indexed"):
+crawl demand on a zero-authority domain, no technical blocker. Head terms are out of reach before Reyes.
+
+- [ ] Owner: request indexing for the ~15 money URLs; verify Bing Webmaster (import from Search Console); chase the Merchant Center review if still pending on 2026-10-14.
+- [ ] Owner: 5-10 real links (Reyes letter tool + Catalan books → Ara Criatures, Sortir amb Nens, Bebés y Más, Serpadres); Trustpilot + Google Business Profile once the first books arrive.
+- [x] Code (2026-10-09, not deployed yet): Catalan cluster. New Catalan-only guides `/ca/gifts/tio-de-nadal` and `/ca/personalized-books/in-catalan/by-age`; `/ca/gifts/three-kings` deepened (Patge Reial, cavalcada, tortell) instead of a second Reis page; contextual links to in-catalan / tió / by-age from the Christmas, Reyes, Sant Jordi and age landings, the Reyes tools, in-catalan and every example page. "Libro personalizado para niños" / "llibre personalitzat per a nens" in the `/personalized-books` hub title, H1 and intro, the home meta description and the home "El libro impreso" section (hero subtitle untouched: it is sized to the first phone screen).
+- [x] Code (2026-10-09): example pages server-render the cover + every scene as `<img>` with localised alt, plus breadcrumbs, "more examples", related links and the site footer (the compact reader header stays, see product-spec).
+- [ ] Code: de-template `/gifts/*` and `/themes/*` (~55 % shared text between siblings). Not started.
+- [ ] Code (GEO): named Person author + `dateModified` on articles, `llms-full.txt`, explicit AI-bot entries in `robots.ts`, a "Qué es Meapica" facts page, wire real reviews into `ProductJsonLd`. (Product JSON-LD on `/compare` and in-catalan: done 2026-10-09.)
+- [x] Hygiene (2026-10-09): home hero cover has an alt; `/legal` opens with the legal notice, so the H1 matches the title in all four locales.
+- [ ] After deploy: request indexing for the two new Catalan URLs; in 3-4 weeks check in Search Console whether `/ca/personalized-books/in-catalan/by-age` competes with `/ca/personalized-books/{band}` (if so, fold it into the hub). Ideas: an es page "regalos para el tió" for Spanish speakers in Catalonia, a `castle` theme page (examples of that world link to the themes hub today), per-example alt texts on the hub card art.
+
 ## Next steps from funnel + preview reminders (2026-10-03)
 
 - Owner: apply migration `20261003200655_funnel_and_preview_reminders.sql` to prod, deploy, then `?dry_run=1` the cron.

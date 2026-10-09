@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
@@ -8,22 +7,16 @@ import Footer from "@/components/landing/Footer";
 import MobileStickyCta from "@/components/landing/MobileStickyCta";
 import FinalCta from "@/components/landing/FinalCta";
 import { BreadcrumbJsonLd } from "@/components/seo/JsonLd";
-import { buttonClass, cx, focusRing } from "@/components/ui";
+import { buttonClass, cx } from "@/components/ui";
 import { Breadcrumbs, PageHero, kicker, marketingH1, marketingLead } from "@/components/seo-landing/MarketingHeader";
 import { getShowcaseStories } from "@/lib/showcase";
 import { showcasePath } from "@/lib/showcase-slug";
-import type { Locale } from "@/i18n/routing";
+import ExampleBookCard from "@/components/seo-landing/ExampleBookCard";
 
 const BASE_URL = "https://meapica.shop";
 const PATH = "/examples";
 
 type PageProps = { params: Promise<{ locale: string }> };
-
-function ageBucket(age: number): string {
-  if (age <= 4) return "2-4";
-  if (age <= 7) return "5-7";
-  return "8-12";
-}
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale } = await params;
@@ -44,7 +37,6 @@ export default async function ShowcaseIndex({ params }: PageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "showcase" });
-  const tc = await getTranslations({ locale, namespace: "bookCollection" });
   const ts = await getTranslations({ locale, namespace: "seo" });
   const th = await getTranslations({ locale, namespace: "hero" });
   const stories = await getShowcaseStories(locale);
@@ -112,42 +104,7 @@ export default async function ShowcaseIndex({ params }: PageProps) {
               <ul className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
                 {stories.map((s, i) => (
                   <li key={s.id}>
-                    <Link
-                      href={showcasePath(s.slug)}
-                      locale={s.locale as Locale}
-                      className={cx(
-                        "group flex h-full flex-col overflow-hidden rounded-2xl border-2 border-line bg-surface transition-colors hover:border-brand/40",
-                        focusRing,
-                      )}
-                    >
-                      {/* Pages are square (20 × 20 cm book): no cropping. */}
-                      <div className="relative aspect-square bg-line">
-                        {s.coverImage && (
-                          <Image
-                            src={s.coverImage}
-                            alt=""
-                            fill
-                            sizes="(max-width: 768px) 46vw, (max-width: 1024px) 31vw, 280px"
-                            priority={i < 2}
-                            className="object-cover"
-                          />
-                        )}
-                        <span className="absolute left-2 top-2 rounded-full bg-white/95 px-2.5 py-1 text-xs font-bold text-ink-soft shadow-sm tabular-nums">
-                          {ageBucket(s.characterAge)} {tc("years")}
-                        </span>
-                      </div>
-                      <div className="flex flex-1 flex-col gap-2 p-3 sm:p-4">
-                        <h2 className="font-display text-base font-semibold leading-tight text-ink text-balance sm:text-lg">
-                          {s.title}
-                        </h2>
-                        <span className="mt-auto inline-flex items-center gap-1 text-sm font-bold text-brand-text">
-                          <span aria-hidden className="material-symbols-outlined !text-lg">
-                            menu_book
-                          </span>
-                          {tc("viewSample")}
-                        </span>
-                      </div>
-                    </Link>
+                    <ExampleBookCard story={s} priority={i < 2} />
                   </li>
                 ))}
               </ul>

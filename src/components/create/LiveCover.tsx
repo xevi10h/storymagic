@@ -25,6 +25,11 @@ interface LiveCoverProps {
   priority?: boolean;
   /** `sizes` hint for the art image. */
   sizes?: string;
+  /**
+   * alt of the art image, for search engines (marketing covers). Assistive tech reads the
+   * wrapper instead (role="img" + the live title), so the default "" stays right elsewhere.
+   */
+  alt?: string;
   className?: string;
 }
 
@@ -48,6 +53,7 @@ export default function LiveCover({
   titleAt = "bottom",
   priority,
   sizes = "(max-width: 640px) 70vw, 420px",
+  alt = "",
   className = "",
 }: LiveCoverProps) {
   const t = useTranslations("crear.cover");
@@ -112,7 +118,7 @@ export default function LiveCover({
         <img
           key={art}
           src={art}
-          alt=""
+          alt={alt}
           loading={priority ? "eager" : "lazy"}
           fetchPriority={priority ? "high" : "auto"}
           decoding="async"
@@ -122,7 +128,7 @@ export default function LiveCover({
         <Image
           key={art}
           src={art}
-          alt=""
+          alt={alt}
           fill
           preload={priority}
           loading={priority ? "eager" : "lazy"}

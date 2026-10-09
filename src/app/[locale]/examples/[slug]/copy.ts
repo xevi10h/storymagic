@@ -21,6 +21,16 @@ interface ExampleCopy {
   textToggle: string;
   /** JSON-LD: what kind of work this is. */
   genre: string;
+  /** Server-rendered gallery of the book's real illustrations. */
+  galleryHeading: string;
+  galleryIntro: (scenes: number) => string;
+  /** alt of one illustration; `sceneTitle` is the chapter title printed in the book (may be empty). */
+  sceneAlt: (title: string, n: number, sceneTitle: string) => string;
+  coverCaption: string;
+  sceneCaption: (n: number) => string;
+  moreHeading: string;
+  relatedHeading: string;
+  allExamples: string;
 }
 
 export const EXAMPLE_COPY: Record<Loc, ExampleCopy> = {
@@ -33,6 +43,14 @@ export const EXAMPLE_COPY: Record<Loc, ExampleCopy> = {
       `Este es un libro de ejemplo, creado para ${name} (${age} años). En el tuyo, el nombre, el retrato y la aventura son los de tu hijo.`,
     textToggle: "Leer el cuento completo",
     genre: "Cuento infantil personalizado (ejemplo)",
+    galleryHeading: "Las ilustraciones de este cuento",
+    galleryIntro: (n) => `La portada y las ${n} escenas pintadas en acuarela para este libro, en el orden en que se leen.`,
+    sceneAlt: (title, n, sceneTitle) => `Ilustración en acuarela del cuento personalizado «${title}», escena ${n}${sceneTitle ? `: ${sceneTitle}` : ""}`,
+    coverCaption: "Portada",
+    sceneCaption: (n) => `Escena ${n}`,
+    moreHeading: "Otros cuentos de ejemplo",
+    relatedHeading: "Sigue mirando",
+    allExamples: "Todos los cuentos de ejemplo",
   },
   ca: {
     seoTitle: (title) => `${title}: exemple de conte personalitzat`,
@@ -43,6 +61,14 @@ export const EXAMPLE_COPY: Record<Loc, ExampleCopy> = {
       `Aquest és un llibre d'exemple, creat per a ${caArticle(name, gender).bare} (${age} anys). En el teu, el nom, el retrat i l'aventura són els del teu fill.`,
     textToggle: "Llegir el conte complet",
     genre: "Conte infantil personalitzat (exemple)",
+    galleryHeading: "Les il·lustracions d'aquest conte",
+    galleryIntro: (n) => `La portada i les ${n} escenes pintades a l'aquarel·la per a aquest llibre, en l'ordre en què es llegeixen.`,
+    sceneAlt: (title, n, sceneTitle) => `Il·lustració a l'aquarel·la del conte personalitzat «${title}», escena ${n}${sceneTitle ? `: ${sceneTitle}` : ""}`,
+    coverCaption: "Portada",
+    sceneCaption: (n) => `Escena ${n}`,
+    moreHeading: "Altres contes d'exemple",
+    relatedHeading: "Continua mirant",
+    allExamples: "Tots els contes d'exemple",
   },
   en: {
     seoTitle: (title) => `${title}: personalised book sample`,
@@ -53,6 +79,14 @@ export const EXAMPLE_COPY: Record<Loc, ExampleCopy> = {
       `This is a sample book, made for ${name} (age ${age}). In yours, the name, the portrait and the adventure are your child's.`,
     textToggle: "Read the whole story",
     genre: "Personalised children's book (sample)",
+    galleryHeading: "The illustrations of this book",
+    galleryIntro: (n) => `The cover and the ${n} watercolour scenes painted for this book, in reading order.`,
+    sceneAlt: (title, n, sceneTitle) => `Watercolour illustration from the personalised book “${title}”, scene ${n}${sceneTitle ? `: ${sceneTitle}` : ""}`,
+    coverCaption: "Cover",
+    sceneCaption: (n) => `Scene ${n}`,
+    moreHeading: "More sample books",
+    relatedHeading: "Keep looking",
+    allExamples: "All sample books",
   },
   fr: {
     seoTitle: (title) => `${title} : exemple de livre personnalisé`,
@@ -63,5 +97,13 @@ export const EXAMPLE_COPY: Record<Loc, ExampleCopy> = {
       `Ceci est un livre d'exemple, créé pour ${name} (${age} ans). Dans le vôtre, le prénom, le portrait et l'aventure sont ceux de votre enfant.`,
     textToggle: "Lire l'histoire complète",
     genre: "Livre personnalisé pour enfant (exemple)",
+    galleryHeading: "Les illustrations de ce livre",
+    galleryIntro: (n) => `La couverture et les ${n} scènes peintes à l'aquarelle pour ce livre, dans l'ordre de lecture.`,
+    sceneAlt: (title, n, sceneTitle) => `Illustration à l'aquarelle du livre personnalisé « ${title} », scène ${n}${sceneTitle ? ` : ${sceneTitle}` : ""}`,
+    coverCaption: "Couverture",
+    sceneCaption: (n) => `Scène ${n}`,
+    moreHeading: "D'autres livres d'exemple",
+    relatedHeading: "À voir aussi",
+    allExamples: "Tous les livres d'exemple",
   },
 };

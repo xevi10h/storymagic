@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
@@ -43,6 +44,44 @@ export function GuideCtaLink({ cta, id, className }: { cta: GuideCta; id?: strin
         arrow_forward
       </span>
     </Link>
+  );
+}
+
+/**
+ * Hero visual of a guide: the real cover of an example book, with its title linking to
+ * the book (/examples/{slug} in the book's own locale).
+ */
+export function ExampleCoverFigure({
+  src,
+  alt,
+  href,
+  locale,
+  title,
+  caption,
+}: {
+  src: string;
+  alt: string;
+  href: string;
+  locale?: Locale;
+  title: string;
+  caption: string;
+}) {
+  return (
+    <figure className="mx-auto w-[60vw] max-w-[240px] lg:w-full lg:max-w-[400px]">
+      <div className="relative aspect-square overflow-hidden rounded-xl border border-line bg-line shadow-sm">
+        <Image src={src} alt={alt} fill priority sizes="(max-width: 1024px) 240px, 400px" className="object-cover" />
+      </div>
+      <figcaption className="mt-3 text-center text-sm leading-snug text-ink-muted">
+        <Link
+          href={href}
+          locale={locale}
+          className={cx("font-semibold text-ink-soft underline decoration-brand/30 underline-offset-4 hover:text-brand-text", focusRing)}
+        >
+          «{title}»
+        </Link>{" "}
+        {caption}
+      </figcaption>
+    </figure>
   );
 }
 

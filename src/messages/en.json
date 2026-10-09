@@ -669,6 +669,7 @@
     "trustPreview": "See the first pages before you pay",
     "trustFormats": "Hardcover or softcover, PDF included",
     "sampleCta": "Look inside a book",
+    "coverAlt": "Watercolour cover of a personalised children's book",
     "coverCaptionExample": "Example: {name}'s book, age {age} · 20 × 20 cm",
     "coverCaptionWithName": "How {name} will see their name for the first time · 20 × 20 cm"
   },
@@ -2538,6 +2539,7 @@
     "subtitle": "Browse personalized books we have already created. Each one is unique — imagine your child’s.",
     "cta": "Create my child’s book",
     "sampleBadge": "Sample",
+    "coverAlt": "Cover of the personalised book “{title}”",
     "loading": "Loading story...",
     "downloadPdf": "Download sample PDF",
     "generatingPdf": "Generating PDF...",

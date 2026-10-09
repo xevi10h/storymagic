@@ -8,11 +8,15 @@ import type { factParams } from "@/lib/product-facts";
 export type GuideFacts = ReturnType<typeof factParams> & {
   /** This season's printed-book Reyes cut-off, e.g. "22 de diciembre". */
   reyesDate: string;
+  /** This season's printed-book cut-off to have it home on 24 December. */
+  christmasDate: string;
 };
 
 export interface GuideSection {
   heading: string;
   paragraphs: string[];
+  /** Optional internal link under the paragraphs (locale-less path). */
+  link?: { href: string; label: string };
 }
 
 export interface GuideFaq {

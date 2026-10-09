@@ -1,11 +1,19 @@
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import Footer from "@/components/landing/Footer";
 import { BreadcrumbJsonLd } from "@/components/seo/JsonLd";
+import ExampleBookCard from "@/components/seo-landing/ExampleBookCard";
+import { Breadcrumbs } from "@/components/seo-landing/MarketingHeader";
+import { RelatedLinks } from "@/components/tools/ToolLanding";
+import { Heading } from "@/components/ui";
 import { buildBookPages } from "@/lib/book-pages";
 import { printedStory } from "@/lib/book/book-plan";
 import { sanitizePrintText } from "@/lib/book/print-text";
-import { BRAND_NAME, SITE_URL } from "@/lib/product-facts";
-import { findShowcaseRef, getShowcaseBook } from "@/lib/showcase";
+import { GUIDES, GUIDE_LINK_LABELS, isGuideLocale } from "@/lib/guides";
+import { BRAND_NAME, SITE_URL, ageBandSlug } from "@/lib/product-facts";
+import { seoHubPath, seoPath, themeSlugForTemplate } from "@/lib/seo-landing";
+import { findShowcaseRef, getShowcaseBook, getShowcaseStories } from "@/lib/showcase";
 import { showcasePath } from "@/lib/showcase-slug";
 import ShowcaseBookView from "./ShowcaseBookView";
 import { EXAMPLE_COPY, asLoc } from "./copy";
@@ -39,6 +47,40 @@ export default async function ShowcaseBookPage({ params }: PageProps) {
     .sort((a, b) => a.sceneNumber - b.sceneNumber)
     .map((s) => ({ sceneNumber: s.sceneNumber, text: sanitizePrintText(s.text ?? "").trim() }))
     .filter((s) => s.text.length > 0);
+
+  // The book's real art, server-rendered as <img> (the page-flip viewer above is client-only):
+  // every ready illustration in reading order; panoramas (a spread in the print plan) stay 2:1.
+  const panoramas = new Set(story.book_plan.interior.flatMap((p) => (p.kind === "spread" ? [p.image.sceneNumber] : [])));
+  const sceneTitles = new Map(printed.scenes.map((s) => [s.sceneNumber, sanitizePrintText(s.title ?? "").trim()]));
+  const art = story.story_illustrations
+    .filter((i) => i.status === "ready" && !!i.image_url)
+    .sort((a, b) => a.scene_number - b.scene_number)
+    .map((i) => ({
+      n: i.scene_number,
+      src: i.image_url as string,
+      wide: panoramas.has(i.scene_number),
+      title: sceneTitles.get(i.scene_number) ?? "",
+    }));
+
+  // Internal links: this world's theme page, the child's age page, the gifts hub and other examples.
+  const themeSlug = themeSlugForTemplate(story.template_id);
+  const ageSlug = ageBandSlug(age);
+  let others: Awaited<ReturnType<typeof getShowcaseStories>> = [];
+  try {
+    others = (await getShowcaseStories(locale)).filter((s) => s.id !== story.id && s.locale === locale).slice(0, 3);
+  } catch {
+    // The related block must never break the book page.
+  }
+  const relatedLinks = [
+    themeSlug
+      ? { href: seoPath("themes", themeSlug), label: ts(`themes.${themeSlug}.h1`) }
+      : { href: seoHubPath("themes"), label: ts("hubs.themes.h1") },
+    { href: seoPath("ages", ageSlug), label: ts(`ages.${ageSlug}.h1`) },
+    { href: seoHubPath("gifts"), label: ts("hubs.gifts.h1") },
+    ...(isGuideLocale("catalan", locale) ? [{ href: GUIDES.catalan.path, label: GUIDE_LINK_LABELS.catalan[locale] }] : []),
+    { href: GUIDES.likeness.path, label: GUIDE_LINK_LABELS.likeness[locale] },
+    { href: "/examples", label: copy.allExamples },
+  ];
 
   const pageUrl = `${SITE_URL}/${locale}${showcasePath(ref.slug)}`;
   const examplesUrl = `${SITE_URL}/${locale}/examples`;
@@ -79,7 +121,80 @@ export default async function ShowcaseBookPage({ params }: PageProps) {
         gender={story.characters.gender}
         favoriteColor={story.characters.favorite_color}
         pages={pages}
+        breadcrumbs={
+          <Breadcrumbs
+            label={ts("common.breadcrumbLabel")}
+            items={[{ label: ts("common.breadcrumbHome"), href: "/" }, { label: t("title"), href: "/examples" }, { label: title }]}
+          />
+        }
+        after={
+          <>
+            {others.length > 0 && (
+              <section aria-labelledby="more-examples-title" className="border-t border-line bg-paper px-4 py-14 sm:px-6 sm:py-20">
+                <div className="mx-auto max-w-[1200px]">
+                  <Heading id="more-examples-title" as="h2" size="section" className="mb-5">
+                    {copy.moreHeading}
+                  </Heading>
+                  <ul className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 lg:max-w-[900px]">
+                    {others.map((s) => (
+                      <li key={s.id} className="[&:nth-child(3)]:hidden md:[&:nth-child(3)]:block">
+                        <ExampleBookCard story={s} headingLevel="h3" />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </section>
+            )}
+            <RelatedLinks heading={copy.relatedHeading} links={relatedLinks} />
+          </>
+        }
       >
+        {(story.cover_image_url || art.length > 0) && (
+          <section aria-labelledby="story-art-title" className="border-t border-line bg-surface px-4 py-12 sm:px-6 sm:py-16">
+            <div className="mx-auto max-w-[1200px]">
+              <Heading id="story-art-title" as="h2" size="section" subtitle={copy.galleryIntro(art.length)} className="mb-6 max-w-2xl text-balance">
+                {copy.galleryHeading}
+              </Heading>
+              <ul className="grid grid-flow-dense grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
+                {story.cover_image_url && (
+                  <li>
+                    <figure>
+                      <div className="relative aspect-square overflow-hidden rounded-xl border border-line bg-line">
+                        <Image
+                          src={story.cover_image_url}
+                          alt={t("coverAlt", { title })}
+                          fill
+                          sizes="(max-width: 768px) 46vw, 280px"
+                          className="object-cover"
+                        />
+                      </div>
+                      <figcaption className="mt-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">{copy.coverCaption}</figcaption>
+                    </figure>
+                  </li>
+                )}
+                {art.map((a) => (
+                  <li key={a.n} className={a.wide ? "col-span-2" : undefined}>
+                    <figure>
+                      <div className={`relative overflow-hidden rounded-xl border border-line bg-line ${a.wide ? "aspect-[2/1]" : "aspect-square"}`}>
+                        <Image
+                          src={a.src}
+                          alt={copy.sceneAlt(title, a.n, a.title)}
+                          fill
+                          sizes={a.wide ? "(max-width: 768px) 92vw, 580px" : "(max-width: 768px) 46vw, 280px"}
+                          className="object-cover"
+                        />
+                      </div>
+                      <figcaption className="mt-2 text-xs font-semibold uppercase tracking-wide text-ink-muted">
+                        {copy.sceneCaption(a.n)}
+                        {a.title && <span className="font-medium normal-case tracking-normal"> · {a.title}</span>}
+                      </figcaption>
+                    </figure>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+        )}
         {scenes.length > 0 && (
           <section aria-labelledby="story-text-title" className="border-t border-line bg-paper">
             <div className="mx-auto max-w-[680px] px-4 py-12 sm:px-6 sm:py-16">
@@ -110,6 +225,7 @@ export default async function ShowcaseBookPage({ params }: PageProps) {
           </section>
         )}
       </ShowcaseBookView>
+      <Footer />
     </>
   );
 }

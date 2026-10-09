@@ -79,9 +79,10 @@ export default async function LegalPage({ params }: PageProps) {
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "legal" });
 
+  // The legal notice comes first: its title is the page's <title>, so it is also the <h1>.
   const pages = [
-    { id: "privacy", sectionCount: 8 },
     { id: "terms", sectionCount: 6 },
+    { id: "privacy", sectionCount: 8 },
     { id: "cookies", sectionCount: 4 },
     { id: "faq", sectionCount: 6 },
     { id: "shipping", sectionCount: 4 },
@@ -108,7 +109,7 @@ export default async function LegalPage({ params }: PageProps) {
           </Link>
 
           {pages.map(({ id, sectionCount }, index) => {
-            // One <h1> per page (the first policy); the others are h2, same look.
+            // One <h1> per page (the legal notice, same as <title>); the others are h2, same look.
             const Heading = index === 0 ? "h1" : "h2";
             return (
             <article key={id} id={id} className={index > 0 ? "mt-16 pt-16 border-t border-border-light" : ""}>

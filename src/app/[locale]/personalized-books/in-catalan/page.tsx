@@ -5,11 +5,9 @@ import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import FinalCta from "@/components/landing/FinalCta";
 import MobileStickyCta from "@/components/landing/MobileStickyCta";
-import Image from "next/image";
-import { Link } from "@/i18n/navigation";
-import { BreadcrumbJsonLd, FAQJsonLd } from "@/components/seo/JsonLd";
+import { BreadcrumbJsonLd, FAQJsonLd, ProductJsonLd } from "@/components/seo/JsonLd";
 import { FaqSection, GuideSections, RelatedLinks } from "@/components/tools/ToolLanding";
-import { GuideCtaBand, GuideHero, type GuideCta } from "@/components/seo-guides/GuideParts";
+import { ExampleCoverFigure, GuideCtaBand, GuideHero, type GuideCta } from "@/components/seo-guides/GuideParts";
 import { SITE_URL } from "@/lib/product-facts";
 import { GUIDES, GUIDE_LINK_LABELS, isGuideLocale } from "@/lib/guides";
 import { guideMetadata } from "@/lib/guides-metadata";
@@ -18,7 +16,6 @@ import { guideFacts } from "@/lib/guide-copy/facts";
 import { toolPath } from "@/lib/tools/registry";
 import { LANDING_EXAMPLE, landingExampleBook } from "@/components/landing/HowItWorksExample";
 import { showcasePath } from "@/lib/showcase-slug";
-import { cx, focusRing } from "@/components/ui";
 
 // The copy quotes this season's Reyes cut-off: refresh daily.
 export const revalidate = 86400;
@@ -63,6 +60,7 @@ export default async function Page({ params }: PageProps) {
         ]}
       />
       <FAQJsonLd questions={copy.faq} />
+      <ProductJsonLd locale={locale} url={pageUrl} />
       <Navbar />
 
       <main>
@@ -82,22 +80,14 @@ export default async function Page({ params }: PageProps) {
           trust={copy.trust}
           aside={
             // A real book of the showcase, in its Catalan edition (/examples/{slug} on the ca site).
-            <figure className="mx-auto w-[60vw] max-w-[240px] lg:w-full lg:max-w-[400px]">
-              <div className="relative aspect-square overflow-hidden rounded-xl border border-line bg-line shadow-sm">
-                <Image src={LANDING_EXAMPLE.coverSrc} alt="" fill priority sizes="(max-width: 1024px) 240px, 400px" className="object-cover" />
-              </div>
-              <figcaption className="mt-3 text-center text-sm leading-snug text-ink-muted">
-                <Link
-                  href={showcasePath(caExample.slug)}
-                  locale="ca"
-                  className={cx("font-semibold text-ink-soft underline decoration-brand/30 underline-offset-4 hover:text-brand-text", focusRing)}
-                >
-                  «{caExample.title}»
-                </Link>
-                {" "}
-                {copy.exampleCaption}
-              </figcaption>
-            </figure>
+            <ExampleCoverFigure
+              src={LANDING_EXAMPLE.coverSrc}
+              alt={tsc("coverAlt", { title: caExample.title })}
+              href={showcasePath(caExample.slug)}
+              locale="ca"
+              title={caExample.title}
+              caption={copy.exampleCaption}
+            />
           }
         />
 
@@ -110,6 +100,8 @@ export default async function Page({ params }: PageProps) {
         <RelatedLinks
           heading={copy.relatedHeading}
           links={[
+            // Catalan cluster (pages that exist in Catalan only).
+            ...(["catalanAges", "tio"] as const).filter((id) => isGuideLocale(id, locale)).map((id) => ({ href: GUIDES[id].path, label: GUIDE_LINK_LABELS[id][locale] })),
             { href: "/gifts/sant-jordi", label: ts("gifts.sant-jordi.h1") },
             { href: "/gifts/three-kings", label: ts("gifts.three-kings.h1") },
             { href: toolPath("letter"), label: tt("footerLink") },

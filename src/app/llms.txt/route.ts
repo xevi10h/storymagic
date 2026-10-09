@@ -76,6 +76,7 @@ function body(): string {
 - Delivery deadlines for Christmas and Reyes: ${es(CHRISTMAS_DELIVERY_PATH)}
 - Free printables, Spanish and Catalan only (A4 PDF, no sign-up, nothing stored): letter to the Three Kings with the child's name and portrait ${es(toolPath("letter"))}, reply from the Three Kings ${es(toolPath("reply"))}; Catalan: ${SITE_URL}/ca${TOOLS_HUB_PATH}
 - Books written natively in Catalan (not translated): ${SITE_URL}/ca${GUIDES.catalan.path} (Spanish page: ${es(GUIDES.catalan.path)})
+- Catalan only: a personalised book as the Tió de Nadal gift ${SITE_URL}/ca${GUIDES.tio.path}; Catalan books by age and reading stage ${SITE_URL}/ca${GUIDES.catalanAges.path}
 - How the watercolour portrait is built from the traits the parent picks: ${es(GUIDES.likeness.path)}
 - Dated, sourced comparison with other personalised-book brands sold in Spain: ${es(GUIDES.compare.path)}
 - Terms, shipping, returns and FAQ: ${es("/legal")}

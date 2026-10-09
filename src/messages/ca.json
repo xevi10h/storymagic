@@ -43,6 +43,14 @@
             ]
           },
           {
+            "heading": "Del fanalet a les sabates: on encaixa el conte",
+            "paragraphs": [
+              "La carta lliurada al Patge Reial, el fanalet a la cavalcada, l'aigua per als camells i les sabates ben posades al balcó o al menjador. El matí del 6, el conte hi és al costat; a la tarda, amb el tortell a taula, ja l'haureu llegit un parell de cops.",
+              "Si a casa parleu català, el conte s'escriu en català des de la primera frase, amb el seu nom i l'article com el dieu vosaltres: en Pol, la Martina, l'Arnau. No és una traducció del castellà.",
+              "I si el tió ja li ha cagat un conte, els Reis n'hi poden portar un altre: cada llibre és una història nova, en el món que triïs."
+            ]
+          },
+          {
             "heading": "Quan demanar-lo perquè arribi abans de Reis",
             "paragraphs": [
               "L'imprimim sota demanda a Europa i arriba en {minDays}-{maxDays} dies laborables, amb l'enviament inclòs, a l'Espanya peninsular i les Balears. Per tenir el llibre imprès a casa abans de la nit de Reis, demana'l com a tard el {reyesDate}. És una estimació amb marge pels festius i la saturació de missatgeria de desembre, no una garantia.",
@@ -599,10 +607,10 @@
         "intro": "Un conte on el teu fill és l’heroi és el regal que es recorda. Tria l’ocasió i crea una edició única, impresa i pensada per guardar tota la vida."
       },
       "ages": {
-        "metaTitle": "Contes personalitzats per edat | Meapica",
-        "metaDescription": "Contes personalitzats adaptats a cada edat, dels 2 als 12 anys. Històries i il·lustracions on el teu fill és el protagonista.",
-        "h1": "Contes personalitzats per edat",
-        "intro": "Cada edat demana la seva història. Tria la franja del teu fill i descobreix contes pensats per al seu moment lector, sempre amb ell com a protagonista.",
+        "metaTitle": "Llibre personalitzat per a nens: contes per edat | Meapica",
+        "metaDescription": "Llibre personalitzat per a nens de 2 a 12 anys: contes personalitzats per a cada edat, amb el seu nom i la seva cara a l'aquarel·la. Vista prèvia gratuïta.",
+        "h1": "Llibre personalitzat per a nens: tria el seu conte per edat",
+        "intro": "Un llibre personalitzat per a nens funciona quan la història està escrita per a la seva edat. Tria la franja del teu fill i descobreix contes personalitzats pensats per al seu moment lector, sempre amb ell com a protagonista.",
         "guideHeading": "Com triar el conte segons l'edat",
         "sections": [
           {
@@ -658,7 +666,7 @@
   },
   "metadata": {
     "title": "Conte personalitzat per a nens amb el seu nom | Meapica",
-    "description": "Escrit en català, amb el seu nom a la portada i la seva cara pintada a l'aquarel·la. Vista prèvia gratuïta. Tapa dura o tova, enviament gratuït.",
+    "description": "Escrit en català: un llibre personalitzat per a nens amb el seu nom a la portada i la seva cara pintada a l'aquarel·la. Vista prèvia i enviament gratuïts.",
     "keywords": "conte personalitzat en català, contes personalitzats,llibres infantils personalitzats, regal original nens, contes amb nom, llibres amb il·lustracions, regal personalitzat, llibre imprès nens",
     "pages": {
       "create": "Crea el seu conte",
@@ -701,6 +709,7 @@
     "trustPreview": "Veus les primeres pàgines abans de pagar",
     "trustFormats": "Tapa dura o tova, amb PDF inclòs",
     "sampleCta": "Veure un conte per dins",
+    "coverAlt": "Portada d'un conte personalitzat per a nens, pintada a l'aquarel·la",
     "coverCaptionExample": "Exemple: el conte de la {name}, {age} anys · 20 × 20 cm",
     "coverCaptionWithName": "Així veurà {name} el seu nom per primer cop · 20 × 20 cm"
   },
@@ -810,7 +819,7 @@
   "quality": {
     "eyebrow": "El llibre imprès",
     "title": "Per llegir-lo cada nit i guardar-lo sempre",
-    "subtitle": "Fet per aguantar mil lectures i quedar-se al seu prestatge quan es faci gran. I amb el seu PDF inclòs, per als viatges.",
+    "subtitle": "Un llibre personalitzat per a nens fet per aguantar mil lectures i quedar-se al seu prestatge quan es faci gran. I amb el seu PDF inclòs, per als viatges.",
     "mockupAlt": "El llibre {gender, select, girl {de la} other {d'en}} {name} en tapa dura, de 20 × 20 cm",
     "specs": {
       "size": {
@@ -2570,6 +2579,7 @@
     "subtitle": "Mira contes personalitzats que ja hem creat. Cada un és únic: imagina el del teu fill.",
     "cta": "Crear el del meu fill",
     "sampleBadge": "Exemple",
+    "coverAlt": "Portada del conte personalitzat «{title}»",
     "loading": "Carregant el conte...",
     "downloadPdf": "Descarregar PDF d'exemple",
     "generatingPdf": "Generant PDF...",

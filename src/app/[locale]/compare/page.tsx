@@ -5,7 +5,7 @@ import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import FinalCta from "@/components/landing/FinalCta";
 import MobileStickyCta from "@/components/landing/MobileStickyCta";
-import { BreadcrumbJsonLd, FAQJsonLd } from "@/components/seo/JsonLd";
+import { BreadcrumbJsonLd, FAQJsonLd, ProductJsonLd } from "@/components/seo/JsonLd";
 import { FaqSection, GuideSections, RelatedLinks } from "@/components/tools/ToolLanding";
 import { GuideHero } from "@/components/seo-guides/GuideParts";
 import CompareTable, { type CompareTableCell } from "@/components/seo-guides/CompareTable";
@@ -67,6 +67,7 @@ export default async function Page({ params }: PageProps) {
         ]}
       />
       <FAQJsonLd questions={copy.faq} />
+      <ProductJsonLd locale={locale} url={pageUrl} />
       <Navbar />
 
       <main>

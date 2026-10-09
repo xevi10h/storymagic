@@ -96,6 +96,7 @@ export default function Hero() {
               templateId={null}
               imageUrl={LANDING_EXAMPLE.coverSrc}
               titleAt="top"
+              alt={t("coverAlt")}
               priority
               // Phones: the cover is ~172 CSS px wide, but a true 44vw hint makes 3x screens fetch the
               // 640w file (~95 KB) for the LCP image. 128px picks the 384w one (~37 KB), still > 2x sharp.

@@ -11,11 +11,12 @@ import { PRICING, formatPrice } from "@/lib/pricing";
 import { COPY_PARAMS, SITE_URL } from "@/lib/product-facts";
 import { CHRISTMAS_DELIVERY_PATH, earliestPrintedCutoff, spainToday } from "@/lib/shipping";
 import { REYES_BLOG_PATH, TOOLS_HUB_PATH, toolPath, type ToolId, type ToolLocale } from "@/lib/tools/registry";
+import { GUIDES, GUIDE_LINK_LABELS, isGuideLocale, type GuideId } from "@/lib/guides";
 import BookCta from "./BookCta";
 
 const INTL_LOCALE: Record<ToolLocale, string> = { es: "es-ES", ca: "ca-ES" };
 
-type Section = { heading: string; paragraphs: string[] };
+type Section = { heading: string; paragraphs: string[]; link?: { href: string; label: string } };
 type Faq = { q: string; a: string };
 
 /**
@@ -42,6 +43,20 @@ export function GuideSections({ sections }: { sections: Section[] }) {
               </p>
             ))}
           </div>
+          {s.link && (
+            <Link
+              href={s.link.href}
+              className={cx(
+                "mt-3 inline-flex min-h-11 items-center gap-1 rounded-md text-base font-semibold text-brand-text underline decoration-brand/30 underline-offset-4",
+                focusRing,
+              )}
+            >
+              {s.link.label}
+              <span aria-hidden className="material-symbols-outlined !text-lg">
+                arrow_forward
+              </span>
+            </Link>
+          )}
         </div>
       ))}
     </div>
@@ -234,6 +249,10 @@ export default async function ToolLanding({ tool, locale, children }: { tool: To
             { href: CHRISTMAS_DELIVERY_PATH, label: tcd("footerLink") },
             { href: REYES_BLOG_PATH, label: tc("relatedBlog") },
             { href: TOOLS_HUB_PATH, label: tc("hubLink") },
+            // Catalan cluster: the books written in Catalan and the tió gift page (where they exist).
+            ...(["catalan", "tio"] satisfies GuideId[])
+              .filter((id) => isGuideLocale(id, locale))
+              .map((id) => ({ href: GUIDES[id].path, label: GUIDE_LINK_LABELS[id][locale] })),
           ]}
         />
       </main>

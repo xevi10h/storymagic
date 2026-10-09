@@ -26,6 +26,7 @@ import {
 import { CHRISTMAS_DELIVERY_PATH, earliestPrintedCutoff, spainToday } from "@/lib/shipping";
 import { factParams } from "@/lib/product-facts";
 import { isToolLocale, toolPath } from "@/lib/tools/registry";
+import { GUIDES, GUIDE_LINK_LABELS, contextGuides } from "@/lib/guides";
 import { Breadcrumbs, PageHero, kicker, marketingH1, marketingLead } from "./MarketingHeader";
 
 const BASE_URL = "https://meapica.shop";
@@ -101,7 +102,11 @@ export default async function SeoLandingPage({ type, slug, locale }: Props) {
   // Reyes page → the free printable letter (es + ca only).
   const toolsLink = type === "gifts" && slug === "three-kings" && isToolLocale(locale) ? (await getTranslations({ locale, namespace: "tools.common" }))("seoLink") : null;
 
-  const related = relatedSeoPages(type, slug);
+  // Internal links: the Catalan-cluster guides this page leads to (lib/guides.ts), then sibling landings.
+  const related = [
+    ...contextGuides(type, slug, locale).map((id) => ({ key: id, href: GUIDES[id].path, label: GUIDE_LINK_LABELS[id][locale] })),
+    ...relatedSeoPages(type, slug).map((p) => ({ key: `${p.type}-${p.slug}`, href: seoPath(p.type, p.slug), label: t(`${p.type}.${p.slug}.h1`) })),
+  ];
   const pageUrl = `${BASE_URL}/${locale}${seoPath(type, slug)}`;
   const hubPath = seoHubPath(type);
   const hubLabel = t(SEO_HUB_HEADING_KEY[type]);
@@ -334,15 +339,15 @@ export default async function SeoLandingPage({ type, slug, locale }: Props) {
             </Heading>
             <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {related.map((p) => (
-                <li key={`${p.type}-${p.slug}`}>
+                <li key={p.key}>
                   <Link
-                    href={seoPath(p.type, p.slug)}
+                    href={p.href}
                     className={cx(
                       "group flex min-h-14 items-center justify-between gap-3 rounded-2xl border-2 border-line bg-paper px-5 py-3 font-display text-base font-semibold leading-snug text-ink transition-colors hover:border-brand/40",
                       focusRing,
                     )}
                   >
-                    <span className="min-w-0">{t(`${p.type}.${p.slug}.h1`)}</span>
+                    <span className="min-w-0">{p.label}</span>
                     <span
                       aria-hidden
                       className="material-symbols-outlined !text-xl shrink-0 text-ink-muted transition-transform group-hover:translate-x-1 group-hover:text-brand-text"
