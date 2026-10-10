@@ -72,7 +72,7 @@ character lock; per-stage resolution. (commits 5ebc2f1 → a883d60)
 
 ## Next steps from referral + gift vouchers (2026-10-09)
 
-- [ ] Run `scripts/stripe-setup-catalog.mts` with the LIVE key and apply `20261009120000_referrals_and_gift_vouchers.sql` (see stack.md).
+- [x] 2026-10-10: migration `20261009120000` applied to production before deploy `3253e7e`; `scripts/stripe-setup-catalog.mts` run with the LIVE key (3 voucher Prices + 4 coupons created, re-run dry is clean).
 - [ ] One real voucher purchase + redemption in live (owner), then refund the voucher to test the withdrawal path.
 - [ ] Revoke a referral reward automatically when the referred order is fully refunded (today: manual).
 - [ ] Gift voucher as a physical card/envelope option, and a "send on date" email to the recipient.
