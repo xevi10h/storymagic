@@ -81,7 +81,7 @@ export default async function LegalPage({ params }: PageProps) {
 
   // The legal notice comes first: its title is the page's <title>, so it is also the <h1>.
   const pages = [
-    { id: "terms", sectionCount: 6 },
+    { id: "terms", sectionCount: 8 },
     { id: "privacy", sectionCount: 8 },
     { id: "cookies", sectionCount: 4 },
     { id: "faq", sectionCount: 6 },
@@ -117,7 +117,7 @@ export default async function LegalPage({ params }: PageProps) {
                 {t(`${id}.title`)}
               </Heading>
               <p className="text-xs text-text-muted mb-8">
-                {t("lastUpdated", { date: "2026-10-03" })}
+                {t("lastUpdated", { date: "2026-10-09" })}
               </p>
               <LegalSection t={t} sectionKey={id} sectionCount={sectionCount} />
             </article>

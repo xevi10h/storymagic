@@ -5,6 +5,7 @@ import { PAID_ORDER_STATUSES } from "@/lib/preview-access";
 import { ILLUSTRATION_URL_TTL, signIllustrationRefs, userAccess } from "@/lib/storage/illustration-urls";
 import { isPdfUpgradeAvailable } from "@/lib/stripe";
 import { upsellForStory, type StoryUpsell, type UpsellOrderRow } from "@/lib/upsell";
+import { referralCodesForOrders } from "@/lib/growth/referrals";
 
 const LIVE_ORDER_STATUSES = new Set<string>(PAID_ORDER_STATUSES);
 
@@ -126,6 +127,15 @@ export async function GET() {
   const offers: Record<string, StoryUpsell> = {};
   for (const [id, u] of offersByStory) if (u) offers[id] = u;
 
+  // Referral code of each live order ("10 € y 10 €"). Best-effort: the library works without it.
+  let referralCodes = new Map<string, string>();
+  try {
+    const liveIds = orderRows.filter((o) => LIVE_ORDER_STATUSES.has(o.status) && !o.refunded_at).map((o) => o.id as string);
+    referralCodes = await referralCodesForOrders(db, liveIds);
+  } catch (err) {
+    console.warn("[dashboard] Referral codes unavailable:", err instanceof Error ? err.message : err);
+  }
+
   return NextResponse.json(
     {
       stories: (storiesResult.data ?? []).map(withStorySummary),
@@ -136,6 +146,7 @@ export async function GET() {
           ...o,
           stories: o.stories ? withStorySummary(o.stories) : null,
           upsell: upsell && upsell.sourceOrderId === id ? upsell : null,
+          referral_code: referralCodes.get(id) ?? null,
         };
       }),
       offers,

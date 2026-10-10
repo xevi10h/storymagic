@@ -38,7 +38,11 @@ export interface CatalogWorld {
   example: ShowcaseBook | null;
 }
 
-/** Worlds with a real example first (proof), then the rest in catalog order. */
+/**
+ * Only worlds with a real example book (owner decision 2026-10-09: the template-only art reads as
+ * a different, flatter product). The other worlds stay creatable in /create and keep their SEO pages.
+ * If the showcase is empty (fetch failed), every world is shown so the catalog never renders blank.
+ */
 export function buildCatalog(showcase: ShowcaseBook[]): CatalogWorld[] {
   const exampleByTemplate = new Map<string, ShowcaseBook>();
   for (const book of showcase) {
@@ -46,5 +50,6 @@ export function buildCatalog(showcase: ShowcaseBook[]): CatalogWorld[] {
     if (book.coverImage && !exampleByTemplate.has(book.templateId)) exampleByTemplate.set(book.templateId, book);
   }
   const worlds = STORY_TEMPLATES.map((template) => ({ template, example: exampleByTemplate.get(template.id) ?? null }));
-  return [...worlds.filter((w) => w.example), ...worlds.filter((w) => !w.example)];
+  const withExample = worlds.filter((w) => w.example);
+  return withExample.length > 0 ? withExample : worlds;
 }

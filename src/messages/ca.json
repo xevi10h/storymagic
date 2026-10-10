@@ -973,7 +973,11 @@
       "section5Title": "5. Enviaments i devolucions",
       "section5Text": "Els llibres s'imprimeixen sota demanda a Europa i, de moment, només fem enviaments a adreces d'Espanya. Espanya peninsular: {minDays}-{maxDays} dies laborables. Balears: {minDays}-{maxDays} dies laborables. De moment no enviem a Canàries, Ceuta ni Melilla. En ser productes personalitzats, els llibres estan exclosos del dret de desistiment (art. 103 c) del text refós de la Llei general per a la defensa dels consumidors i usuaris) i no admeten devolucions. Si un llibre arriba amb qualsevol defecte d'impressió o de fabricació, o es malmet durant l'enviament, escriu-nos en els 30 dies següents a rebre'l, amb una foto del llibre i de l'embalatge, i t'enviem un altre de nou sense cost. Això no limita els drets de garantia que et reconeix la llei.",
       "section6Title": "6. Limitació de responsabilitat",
-      "section6Text": "Meapica no garanteix la disponibilitat ininterrompuda del servei. Les il·lustracions poden variar i no es garanteix un resultat específic."
+      "section6Text": "Meapica no garanteix la disponibilitat ininterrompuda del servei. Les il·lustracions poden variar i no es garanteix un resultat específic.",
+      "section7Title": "7. Targetes regal",
+      "section7Text": "La targeta regal dona dret a un conte personalitzat en el format triat en comprar-la (tapa dura, tapa tova o PDF), amb l'enviament a l'Espanya peninsular i les Balears inclòs en els formats impresos. Es paga en comprar-la, amb l'IVA del llibre inclòs. No caduca, es bescanvia una sola vegada escrivint el seu codi en pagar el conte a meapica.shop i no es pot canviar per diners ni fer servir per a un altre format; els extres (per exemple, un exemplar addicional) es paguen a part. En comprar-la per internet tens 14 dies naturals des de la compra per desistir sense donar explicacions, sempre que no s'hagi bescanviat: escriu-nos a hola@meapica.shop i et retornem l'import pel mateix mitjà de pagament en un màxim de 14 dies. Un cop bescanviada, el llibre es crea a mida i queda exclòs del dret de desistiment (art. 103 c) del text refós de la LGDCU). Guarda bé el codi: qualsevol persona que el tingui el pot bescanviar. Si el perds, te'l reenviem al correu de la compra.",
+      "section8Title": "8. Programa de recomanació «10 € i 10 €»",
+      "section8Text": "Cada comanda pagada d'un conte inclou un codi personal de recomanació, imprès a l'última pàgina del llibre i visible als correus de la comanda i a «Les meves comandes». Qui el faci servir en comprar un llibre imprès (tapa dura o tapa tova) té 10 € de descompte; no val per al PDF ni es combina amb altres codis. Quan aquesta comanda es paga, i si és la primera comanda d'aquella família, enviem a qui l'ha recomanat un codi de 10 € d'un sol ús per al seu proper llibre imprès, vàlid 12 mesos. No hi ha recompensa per comandes pròpies (mateix correu, mateix compte o mateix client de pagament). Cada codi personal admet fins a 20 usos. Els descomptes no es poden canviar per diners. Podem acabar el programa avisant-ho en aquesta pàgina; els codis de recompensa ja enviats es respecten fins a la seva data."
     },
     "cookies": {
       "title": "Política de Cookies",
@@ -981,7 +985,7 @@
       "section1Title": "1. Què són les cookies?",
       "section1Text": "Les cookies són petits arxius de text que s'emmagatzemen al teu navegador en visitar un lloc web.",
       "section2Title": "2. Cookies que utilitzem",
-      "section2Text": "Tècniques (sempre actives): mantenir la teva sessió, recordar l'idioma, gestionar la compra i desar la teva elecció sobre cookies (meapica_consent, 12 mesos). D'anàlisi (només amb el teu consentiment): Google Analytics (_ga i _ga_*, fins a 14 mesos) mesura de manera agregada quantes persones visiten la web, d'on arriben i quantes acaben comprant; PostHog (ph_*_posthog, 12 mesos) mesura com es fa servir la web (passos del creador del llibre, clics) i enregistra sessions anònimes de navegació sense els textos ni les imatges del conte ni el que escrius. Publicitàries (només amb el teu consentiment): el píxel de Meta (_fbp i _fbc, 90 dies) mesura quins anuncis d'Instagram i Facebook acaben en una compra i ajuda a mostrar-los a qui li poden interessar; el píxel de TikTok (_ttp, ttclid i _tt_enable_cookie, fins a 13 mesos) fa el mateix amb els anuncis de TikTok; meapica_utm (30 dies) recorda des de quin anunci o publicació has arribat per associar-ho a la teva comanda.",
+      "section2Text": "Tècniques (sempre actives): mantenir la teva sessió, recordar l'idioma, gestionar la compra i desar la teva elecció sobre cookies (meapica_consent, 12 mesos). D'anàlisi (només amb el teu consentiment): Google Analytics (_ga i _ga_*, fins a 14 mesos) mesura de manera agregada quantes persones visiten la web, d'on arriben i quantes acaben comprant; PostHog (ph_*_posthog, 12 mesos) mesura com es fa servir la web (passos del creador del llibre, clics) i enregistra sessions anònimes de navegació sense els textos ni les imatges del conte ni el que escrius. Publicitàries (només amb el teu consentiment): el píxel de Meta (_fbp i _fbc, 90 dies) mesura quins anuncis d'Instagram i Facebook acaben en una compra i ajuda a mostrar-los a qui li poden interessar; el píxel de TikTok (_ttp, ttclid i _tt_enable_cookie, fins a 13 mesos) fa el mateix amb els anuncis de TikTok; meapica_utm (30 dies) recorda des de quin anunci o publicació has arribat per associar-ho a la teva comanda. Si arribes des de l'enllaç de recomanació d'una altra família, una galeta tècnica (meapica_ref, 30 dies) en guarda el codi per aplicar-te el descompte en pagar.",
       "section3Title": "3. Cookies de tercers",
       "section3Text": "Meta Platforms Ireland Ltd., només si acceptes les cookies publicitàries: rep dades de navegació i, si compres, l'import de la comanda i el teu correu i telèfon xifrats (hash) per mesurar els nostres anuncis. Meta pot tractar dades als EUA a l'empara del Marc de Privadesa de Dades UE-EUA. TikTok Technology Limited (Irlanda), només amb el mateix consentiment: rep les mateixes dades per mesurar els nostres anuncis a TikTok i les pot tractar fora de l'EEE a l'empara de clàusules contractuals tipus de la Comissió Europea. Google Ireland Limited (Google Analytics), només si acceptes les cookies d'anàlisi: rep dades de navegació i, si compres, l'import i el format de la comanda (mai el teu nom, correu ni telèfon) per elaborar estadístiques; les pot tractar als EUA a l'empara del Marc de Privadesa de Dades UE-EUA. PostHog, Inc. (servidors a la UE, Frankfurt), només si acceptes les cookies d'anàlisi: rep dades de navegació i d'ús de la web i enregistraments anònims de la sessió en què s'amaguen el nom de l'infant, la dedicatòria, el conte, les seves imatges i tot el que escrius. Stripe (processador de pagaments) pot establir les seves pròpies cookies durant el pagament.",
       "section4Title": "4. Gestió de cookies",
@@ -1620,7 +1624,14 @@
     "newAdventuresHint": "Basant-nos en la seva edat i interessos, aquestes històries li encantaran.",
     "recommendedFor": "Perfecta per a {name}",
     "allAdventuresDone": "{name} ja ha viscut totes les aventures disponibles! Pots crear un nou llibre repetint una que li hagi encantat.",
-    "pdfNotReady": "El teu PDF encara s'està preparant. T'avisarem per correu."
+    "pdfNotReady": "El teu PDF encara s'està preparant. T'avisarem per correu.",
+    "referral": {
+      "title": "{amount} per a tu i {amount} per a una altra família",
+      "line": "Comparteix el teu codi: qui el faci servir té {amount} de descompte en el seu llibre imprès i, quan el demani, et regalem uns altres {amount} per al teu.",
+      "codeLabel": "El teu codi",
+      "copy": "Copiar l'enllaç",
+      "copied": "Enllaç copiat"
+    }
   },
   "profile": {
     "title": "El meu perfil",
@@ -3057,5 +3068,112 @@
         }
       ]
     }
+  },
+  "giftVoucher": {
+    "metaTitle": "Targeta regal de conte personalitzat | Meapica",
+    "metaDescription": "Regala un conte personalitzat amb el seu nom i la seva aventura. La targeta regal arriba a l'instant per email, a punt per imprimir. Tapa dura, tapa tova o PDF, IVA inclòs.",
+    "breadcrumb": "Targeta regal",
+    "footerLink": "Targeta regal",
+    "eyebrow": "Targeta regal",
+    "h1": "Regala el seu propi conte, encara que vagis just",
+    "intro": "Tries el llibre i el pagues ara. La família el crea quan vulgui, amb el nom i l'aventura de la canalla. La targeta t'arriba a l'instant per email, a punt per imprimir i deixar sota l'arbre.",
+    "points": [
+      "Arriba a l'instant per email, també el 24 de desembre",
+      "Enviament inclòs en tapa dura i tapa tova",
+      "No caduca"
+    ],
+    "formLegend": "Tria el llibre que regales",
+    "formats": {
+      "hardcover": {
+        "label": "Tapa dura",
+        "note": "El més especial per regalar · enviament inclòs"
+      },
+      "softcover": {
+        "label": "Tapa tova",
+        "note": "Lleuger i resistent · enviament inclòs"
+      },
+      "digital_pdf": {
+        "label": "PDF digital",
+        "note": "Per llegir en pantalla o imprimir a casa"
+      }
+    },
+    "recipientLabel": "Per a (opcional)",
+    "recipientPlaceholder": "Nom de qui el rep",
+    "messageLabel": "Missatge a la targeta (opcional)",
+    "messagePlaceholder": "Perquè visquis la teva pròpia aventura. Amb molt d'amor, els avis",
+    "messageCount": "{count} de {max}",
+    "buy": "Comprar targeta regal · {price}",
+    "secure": "Pagament segur amb Stripe. Te l'enviem a l'instant per email.",
+    "terms": "No caduca. Pots desistir en 14 dies si no s'ha bescanviat.",
+    "termsLink": "Condicions",
+    "error": "No hem pogut obrir el pagament. Torna-ho a provar d'aquí a un moment.",
+    "unavailableTitle": "Les targetes regal arriben molt aviat",
+    "unavailableText": "Les estem acabant de preparar. Mentrestant, pots crear el conte tu mateix i regalar el PDF a l'instant.",
+    "unavailableCta": "Crear un conte",
+    "howHeading": "Com funciona",
+    "howSteps": [
+      "Tries el llibre i el pagues. Si vols, hi poses el nom de qui el rep i un missatge.",
+      "T'arriba la targeta per email a l'instant, a punt per imprimir o reenviar.",
+      "Qui la rep crea el conte i escriu el codi en pagar: li surt gratis, amb l'enviament inclòs."
+    ],
+    "christmasHeading": "Per a Nadal i Reis",
+    "christmasOpen": "Encara hi arribes: l'últim dia per demanar el llibre imprès a temps per {occasion} és el {date}. Si prefereixes que el creï la família, la targeta regal és la millor opció.",
+    "christmasClosed": "Ja no arriba un llibre imprès a temps, però la targeta sí: la imprimeixes, la poses sota l'arbre i el conte arriba després, fet a mida.",
+    "occasion": {
+      "christmas": "Nadal",
+      "reyes": "Reis"
+    },
+    "christmasLink": "Veure les dates d'entrega",
+    "faqHeading": "Preguntes sobre la targeta regal",
+    "faq": [
+      {
+        "q": "Quant de temps és vàlida?",
+        "a": "No caduca: es pot bescanviar quan la família vulgui. Només deixa de valer si es retorna."
+      },
+      {
+        "q": "La puc tornar?",
+        "a": "Sí. Tens 14 dies naturals des de la compra per desistir, sempre que no s'hagi bescanviat: escriu-nos a hola@meapica.shop i et retornem l'import. Un cop bescanviada, el llibre es crea a mida i ja no té dret de desistiment."
+      },
+      {
+        "q": "Com es bescanvia?",
+        "a": "Es crea el conte a meapica.shop, es tria el mateix format de la targeta i s'escriu el codi a «Afegeix un codi promocional» en pagar. El total queda a 0 €."
+      },
+      {
+        "q": "Pot triar un altre format?",
+        "a": "La targeta val per al format que triïs en comprar-la. Si qui la rep vol afegir un exemplar extra, el paga a part."
+      },
+      {
+        "q": "Hi ha despeses d'enviament?",
+        "a": "No. En tapa dura i tapa tova l'enviament a la península i les Balears és inclòs. De moment no enviem a Canàries, Ceuta ni Melilla."
+      }
+    ],
+    "thanks": {
+      "metaTitle": "La teva targeta regal | Meapica",
+      "h1": "Ja tens la teva targeta regal!",
+      "intro": "També te l'hem enviada per email. La pots imprimir ara mateix.",
+      "codeLabel": "Codi de la targeta regal",
+      "validUntil": "No caduca",
+      "printCta": "Veure i imprimir la targeta",
+      "pendingTitle": "Estem preparant la teva targeta",
+      "pendingText": "El pagament està fet. T'arribarà per email d'aquí a uns minuts. Si no la veus, mira a la carpeta de promocions o escriu-nos a hola@meapica.shop.",
+      "backHome": "Tornar a l'inici"
+    },
+    "card": {
+      "metaTitle": "Targeta regal Meapica",
+      "kicker": "Targeta regal",
+      "title": "Un conte fet per a tu",
+      "forName": "Per a {name}",
+      "product": {
+        "hardcover": "Un conte personalitzat en tapa dura",
+        "softcover": "Un conte personalitzat en tapa tova",
+        "digital_pdf": "Un conte personalitzat en PDF"
+      },
+      "codeLabel": "El teu codi",
+      "validUntil": "No caduca",
+      "howTo": "Entra a meapica.shop, crea el teu conte amb el teu nom i la teva aventura, i escriu aquest codi en pagar.",
+      "print": "Imprimir",
+      "notFound": "No trobem aquesta targeta. Revisa l'enllaç de l'email o escriu-nos a hola@meapica.shop."
+    },
+    "fromChristmas": "Prefereixes que el creï la família? Regala una targeta regal"
   }
 }

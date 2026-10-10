@@ -6,6 +6,7 @@ import NewsletterForm from "@/components/landing/NewsletterForm";
 import { cx } from "@/components/ui";
 import { SEO_HUB_HEADING_KEY, SEO_SLUGS, seoHubPath, seoPath, type SeoPageType } from "@/lib/seo-landing";
 import { CHRISTMAS_DELIVERY_PATH } from "@/lib/shipping";
+import { GIFT_VOUCHER_PATH } from "@/lib/promo-codes";
 import { isToolLocale, toolPath } from "@/lib/tools/registry";
 import { GUIDES, GUIDES_HEADING, GUIDE_LINK_LABELS, guidesForLocale } from "@/lib/guides";
 import { SUPPORT_EMAIL } from "@/lib/pricing";
@@ -39,6 +40,7 @@ export default function Footer() {
   const ts = useTranslations("seo");
   const tsc = useTranslations("showcase");
   const tcd = useTranslations("christmasDelivery");
+  const tgv = useTranslations("giftVoucher");
   const locale = useLocale();
   // Free Reyes printables exist in es + ca only (src/lib/tools/registry.ts).
   const tRoot = useTranslations();
@@ -73,6 +75,11 @@ export default function Footer() {
             <li>
               <Link className={linkClass} href={CHRISTMAS_DELIVERY_PATH}>
                 {tcd("footerLink")}
+              </Link>
+            </li>
+            <li>
+              <Link className={linkClass} href={GIFT_VOUCHER_PATH}>
+                {tgv("footerLink")}
               </Link>
             </li>
             {toolsLabel && (

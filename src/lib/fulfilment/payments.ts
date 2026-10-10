@@ -15,6 +15,8 @@ import { suppressEmail } from "@/lib/marketing/suppression";
 import { sendMetaPurchase } from "@/lib/tracking/meta-capi";
 import { sendTikTokPurchase } from "@/lib/tracking/tiktok-events";
 import { sendGa4Purchase } from "@/lib/tracking/ga4-mp";
+import { ensureReferralCode, processPromotionRedemptions } from "@/lib/growth/referrals";
+import { recordGiftVoucherRefund, voucherByPayment } from "@/lib/growth/gift-vouchers";
 import type { FulfilmentClient, FulfilmentDatabase } from "./db";
 
 type OrderRow = FulfilmentDatabase["public"]["Tables"]["orders"]["Row"];
@@ -26,7 +28,13 @@ export type PaidSessionResult =
   | { state: "not_paid" }
   | { state: "not_found" }
   | { state: "closed"; status: string } // cancelled / refunded
-  | { state: "paid"; order: Pick<OrderRow, "id" | "story_id" | "user_id" | "format">; processedHere: boolean };
+  | {
+      state: "paid";
+      order: Pick<OrderRow, "id" | "story_id" | "user_id" | "format">;
+      processedHere: boolean;
+      /** A promotion-code follow-up (voucher redemption / referral reward) failed: the webhook retries. */
+      followUpError?: string;
+    };
 
 /**
  * Record a settled Checkout Session on its order (idempotent). Throws on DB/Stripe
@@ -185,6 +193,16 @@ export async function recordPaidSession(
     }
   }
 
+  // Referral code of this order (printed in the book, shown in the emails below). Best-effort:
+  // never retried from here (a missing table/coupon must not make Stripe disable the
+  // endpoint); the pipeline asks again before rendering the book.
+  const stripeCustomerId = typeof session.customer === "string" ? session.customer : (session.customer?.id ?? null);
+  try {
+    await ensureReferralCode(supabase, order, { email: customerEmail, locale: session.metadata?.locale, stripeCustomerId });
+  } catch (err) {
+    console.error(`[payments] Referral code for order ${order.id} not created:`, err instanceof Error ? err.message : err);
+  }
+
   // Confirmation email (with receipt) for EVERY format, exactly once across webhook + verify.
   const physical = PHYSICAL_FORMATS.has(order.format);
   const receipt: OrderReceipt = {
@@ -220,7 +238,16 @@ export async function recordPaidSession(
     buyerName: session.customer_details?.name ?? null,
     receipt,
   });
-  return { state: "paid", order, processedHere };
+
+  // Codes used on this order: gift voucher → redeemed; referral code → reward the referrer.
+  let followUpError: string | undefined;
+  try {
+    await processPromotionRedemptions(supabase, { order, session, buyerEmail: customerEmail });
+  } catch (err) {
+    followUpError = err instanceof Error ? err.message : String(err);
+    console.error(`[payments] Promotion follow-up for order ${order.id} failed:`, followUpError);
+  }
+  return { state: "paid", order, processedHere, followUpError };
 }
 
 /** checkout.session.expired → cancel the order if it never got paid. */
@@ -254,6 +281,13 @@ export async function recordRefund(supabase: FulfilmentClient, charge: Stripe.Ch
     .maybeSingle();
   if (error) throw new Error(`Failed to read order for payment ${paymentId}: ${error.message}`);
   if (!order) {
+    // A gift voucher sale (withdrawal within 14 days): deactivate its code + credit note.
+    const voucher = await voucherByPayment(supabase, paymentId);
+    if (voucher) {
+      await recordGiftVoucherRefund(supabase, voucher, charge);
+      if (charge.refunded) await issueCreditNote(supabase, { id: voucher.id, stripe_invoice_id: voucher.stripe_invoice_id }, charge);
+      return;
+    }
     console.warn(`[payments] charge.refunded for unknown payment ${paymentId}`);
     return;
   }

@@ -22,14 +22,23 @@ export type CatalogItemId =
   | "extra_copy_softcover"
   | "extra_copy_hardcover"
   | "upgrade_softcover"
-  | "upgrade_hardcover";
+  | "upgrade_hardcover"
+  | "voucher_digital_pdf"
+  | "voucher_softcover"
+  | "voucher_hardcover";
 
 /**
  * Items that may be missing on a Stripe account (added after the first live setup):
  * getStripeCatalog does not fail on them, it just leaves them out and the offer that
  * sells them is hidden (fail soft) until scripts/stripe-setup-catalog.mts is re-run.
  */
-export const OPTIONAL_CATALOG_ITEMS = ["upgrade_softcover", "upgrade_hardcover"] as const satisfies readonly CatalogItemId[];
+export const OPTIONAL_CATALOG_ITEMS = [
+  "upgrade_softcover",
+  "upgrade_hardcover",
+  "voucher_digital_pdf",
+  "voucher_softcover",
+  "voucher_hardcover",
+] as const satisfies readonly CatalogItemId[];
 export type OptionalCatalogItemId = (typeof OPTIONAL_CATALOG_ITEMS)[number];
 export type RequiredCatalogItemId = Exclude<CatalogItemId, OptionalCatalogItemId>;
 
@@ -43,6 +52,12 @@ export const STRIPE_CATALOG: Record<CatalogItemId, { lookupKey: string; amount: 
   // PDF → printed upgrade (owner 2026-09-30): the format price minus the 9,90 € PDF.
   upgrade_softcover: { lookupKey: "meapica_upgrade_softcover", amount: 2500, name: "Cuento personalizado Meapica · Tapa blanda (descontado el PDF ya comprado)", taxCode: TAX_CODE_PRINTED_CHILDRENS_BOOK },
   upgrade_hardcover: { lookupKey: "meapica_upgrade_hardcover", amount: 4000, name: "Cuento personalizado Meapica · Tapa dura (descontado el PDF ya comprado)", taxCode: TAX_CODE_PRINTED_CHILDRENS_BOOK },
+  // Gift vouchers (owner 2026-10-09): single-purpose vouchers for one format, so VAT is
+  // charged at sale exactly like the book (same amount, same tax code); redeeming one is
+  // a 0 € order (100 % coupon, src/lib/promo-codes.ts).
+  voucher_digital_pdf: { lookupKey: "meapica_voucher_digital_pdf", amount: 990, name: "Tarjeta regalo Meapica · Cuento personalizado en PDF", taxCode: TAX_CODE_DIGITAL_BOOK },
+  voucher_softcover: { lookupKey: "meapica_voucher_softcover", amount: 3490, name: "Tarjeta regalo Meapica · Cuento personalizado tapa blanda", taxCode: TAX_CODE_PRINTED_CHILDRENS_BOOK },
+  voucher_hardcover: { lookupKey: "meapica_voucher_hardcover", amount: 4990, name: "Tarjeta regalo Meapica · Cuento personalizado tapa dura", taxCode: TAX_CODE_PRINTED_CHILDRENS_BOOK },
 };
 
 /**

@@ -3,6 +3,7 @@ import { routing } from "@/i18n/routing";
 import { allSeoPaths } from "@/lib/seo-landing";
 import { getAllPublishedPostRefs } from "@/lib/blog";
 import { CHRISTMAS_DELIVERY_PATH } from "@/lib/shipping";
+import { GIFT_VOUCHER_PATH } from "@/lib/promo-codes";
 import { TOOL_IDS, TOOL_LOCALES, TOOLS_CONTENT_UPDATED, TOOLS_HUB_PATH, toolAlternates, toolPath } from "@/lib/tools/registry";
 import { GUIDES, GUIDE_IDS, guideAlternates, guideUpdated } from "@/lib/guides";
 import { getShowcaseRefs } from "@/lib/showcase";
@@ -36,6 +37,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "", changeFrequency: "weekly", priority: 1.0 },
     { path: "/gifts", changeFrequency: "monthly", priority: 0.9 },
     { path: CHRISTMAS_DELIVERY_PATH, changeFrequency: "weekly", priority: 0.8 },
+    { path: GIFT_VOUCHER_PATH, changeFrequency: "monthly", priority: 0.8 },
     { path: "/personalized-books", changeFrequency: "monthly", priority: 0.9 },
     { path: "/themes", changeFrequency: "monthly", priority: 0.9 },
     { path: "/examples", changeFrequency: "weekly", priority: 0.7 },

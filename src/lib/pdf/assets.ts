@@ -82,12 +82,13 @@ export function hexToRgbTuple(hex: string): [number, number, number] {
 }
 
 /**
- * QR code to the Meapica home page. Deliberately NOT a per-book URL: there is no
- * public book route, and a printed link must never expose a child's book.
+ * QR code to the Meapica home page, or to the buyer's referral link (/r/<code>, see
+ * src/lib/promo-codes.ts). Deliberately NOT a per-book URL: there is no public book
+ * route, and a printed link must never expose a child's book.
  */
-export async function generateQrDataUrl(color: string): Promise<string> {
+export async function generateQrDataUrl(color: string, url = "https://meapica.shop"): Promise<string> {
   try {
-    return await QRCode.toDataURL("https://meapica.shop", {
+    return await QRCode.toDataURL(url, {
       width: 600,
       margin: 0,
       color: { dark: color, light: "#00000000" },

@@ -34,6 +34,8 @@ const LIMITS: Record<string, RateLimitConfig> = {
   delete_account: { maxRequests: 5, windowSeconds: 3600 },      // 5 erasure attempts per hour
   // Free Reyes printables, per hashed IP (subject = rateLimitSubject("tools:<ip>")): free, but CPU-bound.
   tool_pdf: { maxRequests: 40, windowSeconds: 3600 },
+  // Gift voucher Checkout Sessions, per hashed IP (subject = rateLimitSubject("voucher:<ip>")).
+  gift_voucher_checkout: { maxRequests: 10, windowSeconds: 3600 },
 };
 
 /**

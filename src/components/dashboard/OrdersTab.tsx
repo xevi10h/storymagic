@@ -9,6 +9,7 @@ import { formatPrice, offerPrice, PRICING, STRIPE_CATALOG, type PhysicalFormat }
 import { orderReference, orderView, PRINT_STEPS, type OrderView } from "@/lib/order-view";
 import { SUPPORT_EMAIL } from "@/lib/support";
 import type { StoryUpsell } from "@/lib/upsell";
+import { REFERRAL_DISCOUNT_CENTS, REFERRAL_ROUTE } from "@/lib/promo-codes";
 
 // ── Types (shape of /api/dashboard → orders) ────────────────────────────────
 
@@ -41,6 +42,8 @@ export interface DashboardOrder {
   offer?: string | null;
   /** Post-purchase offer this order makes its story eligible for (decided by /api/dashboard). */
   upsell?: StoryUpsell | null;
+  /** The order's personal referral code ("10 € y 10 €"), null when none / not live. */
+  referral_code?: string | null;
   stories: {
     title: string | null;
     status: string;
@@ -140,6 +143,50 @@ export function OfferCallout({
   );
 }
 
+// ── Referral ("10 € y 10 €") ────────────────────────────────────────────────
+
+/** The buyer's referral code: share link → /<locale>/r/<code> (pre-applied at the friend's checkout). */
+export function ReferralCallout({ code, className }: { code: string; className?: string }) {
+  const t = useTranslations("dashboard.referral");
+  const locale = useLocale();
+  const [copied, setCopied] = useState(false);
+  const amount = new Intl.NumberFormat(locale === "en" ? "en-IE" : locale, {
+    style: "currency",
+    currency: "EUR",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  }).format(REFERRAL_DISCOUNT_CENTS / 100);
+
+  async function copy() {
+    const url = `${window.location.origin}/${locale}${REFERRAL_ROUTE}/${code}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2500);
+    } catch {
+      window.prompt(t("copy"), url);
+    }
+  }
+
+  return (
+    <div className={cx("flex flex-col gap-3 rounded-2xl border-2 border-line bg-paper px-4 py-3.5 sm:flex-row sm:items-center", className)} data-testid="order-referral">
+      <span aria-hidden className="hidden sm:block">
+        <span className="material-symbols-outlined !text-[26px] text-brand-text">redeem</span>
+      </span>
+      <div className="min-w-0 flex-1">
+        <p className="font-display text-[15px] font-semibold leading-tight text-ink">{t("title", { amount })}</p>
+        <p className="mt-1 text-[13px] leading-snug text-ink-body">{t("line", { amount })}</p>
+        <p className="mt-1.5 text-[13px] text-ink-soft">
+          {t("codeLabel")}: <span className="select-all font-mono font-bold tracking-wider text-ink">{code}</span>
+        </p>
+      </div>
+      <Button size="sm" variant="secondary" leadingIcon={copied ? "check" : "content_copy"} onClick={copy} className="w-full shrink-0 sm:w-auto" data-testid="order-referral-copy">
+        <span aria-live="polite">{copied ? t("copied") : t("copy")}</span>
+      </Button>
+    </div>
+  );
+}
+
 // ── One order ───────────────────────────────────────────────────────────────
 
 function OrderCard({
@@ -196,6 +243,12 @@ function OrderCard({
       {showOffer && order.upsell && storyId && (
         <div className="border-t border-line px-4 py-3 sm:px-5">
           <OfferCallout offer={order.upsell} onOpen={() => onReorder({ storyId, title })} />
+        </div>
+      )}
+
+      {order.referral_code && !view.refunded && view.phase !== "cancelled" && (
+        <div className="border-t border-line px-4 py-3 sm:px-5">
+          <ReferralCallout code={order.referral_code} />
         </div>
       )}
 

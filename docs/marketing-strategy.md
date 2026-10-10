@@ -1,5 +1,60 @@
 # Marketing Strategy
 
+## Communication plan Q4 2026: borrowed audiences, near-zero cost (written 2026-10-09)
+
+Starting point (2026-10-09): 0 paid orders from strangers, 15 of 90 URLs indexed, 2-6 s average watch time on
+social, ~3 followers per network, no reviews, brand name unknown (Google autocorrects "meapica" to Emapica).
+Gross margin per book before AI cost and acquisition: hardcover ~30 €, softcover ~19 €, PDF ~9 €. Paid
+acquisition cannot be the engine at this margin: every channel below borrows someone else's audience or
+turns a customer into the next ad.
+
+**Deadlines that frame everything** (`src/lib/shipping.ts`): printed book for Christmas, order by 10 Dec;
+for Reyes, by 22 Dec. After that only the PDF, or a gift voucher (not built yet).
+
+**One message per audience, always with the proof:**
+- Parents (es): "Su nombre en la portada y su cara en cada página. Ves las primeras páginas antes de pagar."
+- Catalan families: "Escrit en català, no traduït." This is the one SERP and press space with no big competitor.
+- Grandparents and aunts/uncles: "El regalo que guardará cuando sea mayor."
+- Schools/AFA and companies: "Un regalo de lectura sin pantallas que además financia la clase."
+What sets us apart against Librio, Wonderbly and Mumablue, which have 700-800 reviews and 30-35 € prices: the free
+preview before paying, the child's real likeness in watercolour, and native Catalan.
+
+### Phase 1, now to 31 Oct: proof
+1. Creators, first wave: the replies to @onanemdema and @familiacaricu are still Gmail drafts (owner sends).
+   Every redeemed book: ask for a reaction video plus written permission to reuse it in ads and on the site.
+   Second wave, 10 more creators from `docs/outreach/creators-2026-10.md`, once the first books arrive (Sabadell: 19-20 Oct).
+2. Reviews: open Trustpilot and a Google Business Profile; ask every creator and buyer 5 days after delivery.
+   Wire them into `ProductJsonLd`. Target: 10 real reviews by 15 Nov.
+3. Social: keep one post a day, but double the format that already works (bedtime story in 1 minute: 1,346 views,
+   best watch time). Same video to Reels, TikTok, Shorts and Pinterest at no extra cost.
+
+### Phase 2, 20 Oct to 30 Nov: borrowed audiences
+4. Press for Reyes: 18 pitches in `docs/outreach/reyes-2026-targets.csv` are Gmail drafts, unsent. Roundups of
+   "carta a los Reyes para imprimir" are refreshed in November: send them in the last week of October.
+   Add Catalan media with the tió page (Ara Criatures, Sortir amb Nens, Criatures, Petit Explorador) and gift
+   guides that pay affiliate commission instead of charging for placement.
+5. AFA/AMPA (Catalonia first) and companies: a Stripe promotion code per school (already supported:
+   `allow_promotion_codes`), 10 % off for families plus 5 € per book to the class. Companies: Christmas gift for
+   employees' children. One deal = 50-400 books. Leads via the `lead-research` skill, emails from hola@meapica.shop.
+6. Every book is an ad: last page with a QR "crea el de un amigo" plus a 10 € code for both families
+   (referral, not built), and the grandparents share link from the preview (exists: `src/lib/share/`) pushed in the
+   preview UI and the reminder emails.
+
+### Phase 3, 1 Nov to 22 Dec: urgency
+7. Deadline countdown in banner, social and reminder emails: "último día para que llegue en Navidad / Reyes".
+8. Gift voucher for late buyers (not built): buy now, the family creates the book in January. Turns the dead
+   period after 22 Dec into sales.
+9. Paid, only on proven winners: boost the best creator reaction video, 50-100 € total, Spain 25-44 + grandparents
+   55-70. No cold ads with AI-only creatives. Meta has no payment method yet; TikTok balance is 0.
+
+### Measure weekly (Monday)
+Previews created, paid orders and revenue (`node scripts/growth-funnel.mjs --days 7`), orders per promo code /
+UTM source, reviews count, indexed URLs. Kill a channel after 2 weeks with no previews; double the one that
+brings orders.
+
+Cost of the whole plan: gifted creator books at ~17 € each, plus at most 100 € of ads. Owner time: sending
+emails/DMs drafted by Claude, calls with AFA and companies, opening review profiles.
+
 ## Core Message
 
 **"Convierte a tu hijo en el protagonista de su propia aventura mágica."**

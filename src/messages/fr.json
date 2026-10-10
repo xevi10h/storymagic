@@ -935,7 +935,11 @@
       "section5Title": "5. Livraison et retours",
       "section5Text": "Les livres sont imprimés à la demande en Europe et, pour l'instant, nous livrons uniquement en Espagne. Espagne péninsulaire : {minDays} à {maxDays} jours ouvrés. Baléares : {minDays} à {maxDays} jours ouvrés. Pas encore de livraison aux Canaries, à Ceuta ni à Melilla. S'agissant de produits personnalisés, les livres sont exclus du droit de rétractation (art. 103 c) du texte refondu de la loi espagnole de protection des consommateurs, TRLGDCU) et ne sont pas repris. Si un livre arrive avec un défaut d'impression ou de fabrication, ou s'il est abîmé pendant la livraison, écrivez-nous dans les 30 jours suivant sa réception, avec une photo du livre et de l'emballage, et nous vous en envoyons un nouveau sans frais. Cela ne limite pas vos droits de garantie légale.",
       "section6Title": "6. Limitation de responsabilité",
-      "section6Text": "Meapica ne garantit pas la disponibilité ininterrompue du service. Les illustrations peuvent varier et un résultat spécifique n'est pas garanti."
+      "section6Text": "Meapica ne garantit pas la disponibilité ininterrompue du service. Les illustrations peuvent varier et un résultat spécifique n'est pas garanti.",
+      "section7Title": "7. Cartes cadeaux",
+      "section7Text": "La carte cadeau donne droit à une histoire personnalisée dans le format choisi à l'achat (couverture rigide, couverture souple ou PDF), avec la livraison en Espagne péninsulaire et aux Baléares incluse pour les formats imprimés. Elle est payée à l'achat, TVA du livre incluse. Elle n'expire pas, s'utilise une seule fois en saisissant son code lors du paiement de l'histoire sur meapica.shop et ne peut être ni échangée contre de l'argent ni utilisée pour un autre format ; les extras (par exemple un exemplaire supplémentaire) se paient à part. Comme vous l'achetez en ligne, vous disposez de 14 jours calendaires à partir de l'achat pour vous rétracter sans motif, tant qu'elle n'a pas été utilisée : écrivez-nous à hola@meapica.shop et nous vous remboursons par le même moyen de paiement sous 14 jours maximum. Une fois utilisée, le livre est fait sur mesure et n'ouvre plus droit à la rétractation (art. 103 c de la loi espagnole de protection des consommateurs, LGDCU). Conservez bien le code : toute personne qui le détient peut l'utiliser. Si vous le perdez, nous le renvoyons à l'email de l'achat.",
+      "section8Title": "8. Programme de parrainage « 10 € et 10 € »",
+      "section8Text": "Chaque commande payée d'une histoire comprend un code personnel de parrainage, imprimé sur la dernière page du livre et visible dans les emails de la commande et dans « Mes commandes ». La personne qui l'utilise pour acheter un livre imprimé (couverture rigide ou souple) a 10 € de réduction ; il ne vaut pas pour le PDF et ne se cumule pas avec d'autres codes. Quand cette commande est payée, et s'il s'agit de la première commande de cette famille, nous envoyons au parrain un code de 10 € à usage unique pour son prochain livre imprimé, valable 12 mois. Aucune récompense pour ses propres commandes (même email, même compte ou même client payeur). Chaque code personnel peut être utilisé jusqu'à 20 fois. Les réductions ne sont pas échangeables contre de l'argent. Nous pouvons mettre fin au programme en l'annonçant sur cette page ; les codes de récompense déjà envoyés restent valables jusqu'à leur date."
     },
     "cookies": {
       "title": "Politique de cookies",
@@ -943,7 +947,7 @@
       "section1Title": "1. Que sont les cookies ?",
       "section1Text": "Les cookies sont de petits fichiers texte stockés dans votre navigateur lors de la visite d'un site web.",
       "section2Title": "2. Cookies utilisés",
-      "section2Text": "Techniques (toujours actifs) : maintenir votre session, mémoriser la langue, gérer l'achat et enregistrer votre choix sur les cookies (meapica_consent, 12 mois). De mesure d'audience (uniquement avec votre consentement) : Google Analytics (_ga et _ga_*, jusqu'à 14 mois) mesure de façon agrégée combien de personnes visitent le site, d'où elles viennent et combien finissent par acheter ; PostHog (ph_*_posthog, 12 mois) mesure l'utilisation du site (étapes du créateur de livre, clics) et enregistre des sessions de navigation anonymes sans les textes ni les images de l'histoire ni ce que vous saisissez. Publicitaires (uniquement avec votre consentement) : le pixel Meta (_fbp et _fbc, 90 jours) mesure quelles publicités Instagram et Facebook aboutissent à un achat et aide à les montrer aux personnes susceptibles d'être intéressées ; le pixel TikTok (_ttp, ttclid et _tt_enable_cookie, jusqu'à 13 mois) fait de même pour les publicités TikTok ; meapica_utm (30 jours) mémorise la publicité ou la publication qui vous a amené ici pour l'associer à votre commande.",
+      "section2Text": "Techniques (toujours actifs) : maintenir votre session, mémoriser la langue, gérer l'achat et enregistrer votre choix sur les cookies (meapica_consent, 12 mois). De mesure d'audience (uniquement avec votre consentement) : Google Analytics (_ga et _ga_*, jusqu'à 14 mois) mesure de façon agrégée combien de personnes visitent le site, d'où elles viennent et combien finissent par acheter ; PostHog (ph_*_posthog, 12 mois) mesure l'utilisation du site (étapes du créateur de livre, clics) et enregistre des sessions de navigation anonymes sans les textes ni les images de l'histoire ni ce que vous saisissez. Publicitaires (uniquement avec votre consentement) : le pixel Meta (_fbp et _fbc, 90 jours) mesure quelles publicités Instagram et Facebook aboutissent à un achat et aide à les montrer aux personnes susceptibles d'être intéressées ; le pixel TikTok (_ttp, ttclid et _tt_enable_cookie, jusqu'à 13 mois) fait de même pour les publicités TikTok ; meapica_utm (30 jours) mémorise la publicité ou la publication qui vous a amené ici pour l'associer à votre commande. Si vous arrivez par le lien de parrainage d'une autre famille, un cookie technique (meapica_ref, 30 jours) conserve son code pour appliquer votre réduction au paiement.",
       "section3Title": "3. Cookies tiers",
       "section3Text": "Meta Platforms Ireland Ltd., uniquement si vous acceptez les cookies publicitaires : reçoit des données de navigation et, si vous achetez, le montant de la commande ainsi que votre e-mail et votre téléphone chiffrés (hachage) pour mesurer nos publicités. Meta peut traiter des données aux États-Unis dans le cadre du Data Privacy Framework UE-États-Unis. TikTok Technology Limited (Irlande), uniquement avec le même consentement : reçoit les mêmes données pour mesurer nos publicités TikTok et peut les traiter hors de l'EEE dans le cadre des clauses contractuelles types de la Commission européenne. Google Ireland Limited (Google Analytics), uniquement si vous acceptez les cookies de mesure d'audience : reçoit des données de navigation et, si vous achetez, le montant et le format de la commande (jamais votre nom, e-mail ni téléphone) pour établir des statistiques ; peut traiter des données aux États-Unis dans le cadre du cadre de protection des données UE-États-Unis. PostHog, Inc. (serveurs dans l'UE, Francfort), uniquement si vous acceptez les cookies de mesure d'audience : reçoit des données de navigation et d'utilisation du site et des enregistrements anonymes de session dans lesquels le prénom de l'enfant, la dédicace, l'histoire, ses images et tout ce que vous saisissez sont masqués. Stripe (processeur de paiement) peut définir ses propres cookies pendant le paiement.",
       "section4Title": "4. Gestion des cookies",
@@ -1582,7 +1586,14 @@
     "newAdventuresHint": "En fonction de son âge et de ses intérêts, ces histoires vont l'enchanter.",
     "recommendedFor": "Parfaite pour {name}",
     "allAdventuresDone": "{name} a déjà vécu toutes les aventures disponibles ! Vous pouvez créer un nouveau livre en reprenant une qu'il a adorée.",
-    "pdfNotReady": "Votre PDF est encore en préparation. Nous vous préviendrons par e-mail."
+    "pdfNotReady": "Votre PDF est encore en préparation. Nous vous préviendrons par e-mail.",
+    "referral": {
+      "title": "{amount} pour vous, {amount} pour une autre famille",
+      "line": "Partagez votre code : la personne qui l'utilise a {amount} de réduction sur son livre imprimé et, quand elle commande, nous vous offrons {amount} sur le vôtre.",
+      "codeLabel": "Votre code",
+      "copy": "Copier le lien",
+      "copied": "Lien copié"
+    }
   },
   "profile": {
     "title": "Mon profil",
@@ -2737,5 +2748,112 @@
     "rejectAll": "Tout refuser",
     "acceptAll": "Tout accepter",
     "save": "Enregistrer la sélection"
+  },
+  "giftVoucher": {
+    "metaTitle": "Carte cadeau livre personnalisé | Meapica",
+    "metaDescription": "Offrez une histoire personnalisée avec son prénom et son aventure. La carte cadeau arrive tout de suite par email, prête à imprimer. Couverture rigide, souple ou PDF, TVA incluse.",
+    "breadcrumb": "Carte cadeau",
+    "footerLink": "Carte cadeau",
+    "eyebrow": "Carte cadeau",
+    "h1": "Offrez-lui sa propre histoire, même à la dernière minute",
+    "intro": "Vous choisissez le livre et le payez maintenant. La famille le crée quand elle veut, avec le prénom et l'aventure de l'enfant. La carte arrive tout de suite par email, prête à imprimer et à glisser sous le sapin.",
+    "points": [
+      "Arrive tout de suite par email, même le 24 décembre",
+      "Livraison incluse en couverture rigide et souple",
+      "Sans date d'expiration"
+    ],
+    "formLegend": "Choisissez le livre que vous offrez",
+    "formats": {
+      "hardcover": {
+        "label": "Couverture rigide",
+        "note": "Le plus beau cadeau · livraison incluse"
+      },
+      "softcover": {
+        "label": "Couverture souple",
+        "note": "Léger et résistant · livraison incluse"
+      },
+      "digital_pdf": {
+        "label": "PDF numérique",
+        "note": "À lire sur écran ou à imprimer chez soi"
+      }
+    },
+    "recipientLabel": "Pour (facultatif)",
+    "recipientPlaceholder": "Prénom de la personne qui le reçoit",
+    "messageLabel": "Message sur la carte (facultatif)",
+    "messagePlaceholder": "Pour que tu vives ta propre aventure. Avec tout notre amour, Papi et Mamie",
+    "messageCount": "{count} sur {max}",
+    "buy": "Acheter la carte cadeau · {price}",
+    "secure": "Paiement sécurisé avec Stripe. Nous vous l'envoyons tout de suite par email.",
+    "terms": "Sans date d'expiration. Rétractation possible sous 14 jours si elle n'a pas été utilisée.",
+    "termsLink": "Conditions",
+    "error": "Nous n'avons pas pu ouvrir le paiement. Réessayez dans un instant.",
+    "unavailableTitle": "Les cartes cadeaux arrivent très bientôt",
+    "unavailableText": "Nous les finalisons. En attendant, vous pouvez créer l'histoire vous-même et offrir le PDF tout de suite.",
+    "unavailableCta": "Créer une histoire",
+    "howHeading": "Comment ça marche",
+    "howSteps": [
+      "Vous choisissez le livre et le payez. Si vous voulez, ajoutez le prénom de la personne et un message.",
+      "La carte arrive tout de suite par email, prête à imprimer ou à transférer.",
+      "La personne qui la reçoit crée l'histoire et saisit le code au paiement : c'est offert, livraison comprise."
+    ],
+    "christmasHeading": "Pour Noël et l'Épiphanie",
+    "christmasOpen": "Il est encore temps : le dernier jour pour commander un livre imprimé pour {occasion} est le {date}. Si vous préférez que la famille le crée, la carte cadeau est la meilleure option.",
+    "christmasClosed": "Un livre imprimé n'arrivera plus à temps, mais la carte, si : imprimez-la, posez-la sous le sapin et l'histoire suivra, faite sur mesure.",
+    "occasion": {
+      "christmas": "Noël",
+      "reyes": "l'Épiphanie"
+    },
+    "christmasLink": "Voir les dates de livraison",
+    "faqHeading": "Questions sur la carte cadeau",
+    "faq": [
+      {
+        "q": "Combien de temps est-elle valable ?",
+        "a": "Elle n'expire pas : la famille peut l'utiliser quand elle veut. Elle ne cesse d'être valable que si elle est remboursée."
+      },
+      {
+        "q": "Puis-je la retourner ?",
+        "a": "Oui. Vous avez 14 jours calendaires à partir de l'achat pour vous rétracter, tant qu'elle n'a pas été utilisée : écrivez-nous à hola@meapica.shop et nous vous remboursons. Une fois utilisée, le livre est fait sur mesure et le droit de rétractation ne s'applique plus."
+      },
+      {
+        "q": "Comment l'utiliser ?",
+        "a": "On crée l'histoire sur meapica.shop, on choisit le format de la carte et on saisit le code dans « Ajouter un code promotionnel » au paiement. Le total passe à 0 €."
+      },
+      {
+        "q": "Peut-on choisir un autre format ?",
+        "a": "La carte vaut pour le format choisi à l'achat. Si la personne veut un exemplaire supplémentaire, elle le paie à part."
+      },
+      {
+        "q": "Y a-t-il des frais de livraison ?",
+        "a": "Non. En couverture rigide et souple, la livraison en Espagne péninsulaire et aux Baléares est incluse. Nous ne livrons pas encore aux Canaries, à Ceuta ni à Melilla."
+      }
+    ],
+    "thanks": {
+      "metaTitle": "Votre carte cadeau | Meapica",
+      "h1": "Votre carte cadeau est prête !",
+      "intro": "Nous vous l'avons aussi envoyée par email. Vous pouvez l'imprimer tout de suite.",
+      "codeLabel": "Code de la carte cadeau",
+      "validUntil": "Sans date d'expiration",
+      "printCta": "Voir et imprimer la carte",
+      "pendingTitle": "Nous préparons votre carte",
+      "pendingText": "Le paiement est validé. La carte arrivera par email dans quelques minutes. Si vous ne la voyez pas, regardez dans l'onglet Promotions ou écrivez-nous à hola@meapica.shop.",
+      "backHome": "Retour à l'accueil"
+    },
+    "card": {
+      "metaTitle": "Carte cadeau Meapica",
+      "kicker": "Carte cadeau",
+      "title": "Une histoire faite pour toi",
+      "forName": "Pour {name}",
+      "product": {
+        "hardcover": "Une histoire personnalisée en couverture rigide",
+        "softcover": "Une histoire personnalisée en couverture souple",
+        "digital_pdf": "Une histoire personnalisée en PDF"
+      },
+      "codeLabel": "Ton code",
+      "validUntil": "Sans date d'expiration",
+      "howTo": "Va sur meapica.shop, crée ton histoire avec ton prénom et ton aventure, et saisis ce code au paiement.",
+      "print": "Imprimer",
+      "notFound": "Nous ne trouvons pas cette carte. Vérifiez le lien de l'email ou écrivez-nous à hola@meapica.shop."
+    },
+    "fromChristmas": "Vous préférez que la famille le crée ? Offrez une carte cadeau"
   }
 }

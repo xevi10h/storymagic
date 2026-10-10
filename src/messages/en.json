@@ -933,7 +933,11 @@
       "section5Title": "5. Shipping and returns",
       "section5Text": "Books are printed on demand in Europe, and for now we only ship to addresses in Spain. Mainland Spain: {minDays}-{maxDays} business days. Balearic Islands: {minDays}-{maxDays} business days. We don't ship to the Canary Islands, Ceuta or Melilla yet. As personalized products, books are excluded from the right of withdrawal (Art. 103(c) of the Spanish consolidated consumer protection law, TRLGDCU) and cannot be returned. If a book arrives with any printing or manufacturing defect, or is damaged in transit, write to us within 30 days of receiving it, with a photo of the book and the packaging, and we will send you a new one free of charge. This does not limit your statutory warranty rights.",
       "section6Title": "6. Limitation of liability",
-      "section6Text": "Meapica does not guarantee uninterrupted service availability. Illustrations may vary and a specific result is not guaranteed."
+      "section6Text": "Meapica does not guarantee uninterrupted service availability. Illustrations may vary and a specific result is not guaranteed.",
+      "section7Title": "7. Gift vouchers",
+      "section7Text": "A gift voucher entitles the holder to one personalised story in the format chosen at purchase (hardcover, softcover or PDF), with shipping to mainland Spain and the Balearic Islands included for printed formats. It is paid at purchase, with the book's VAT included. It never expires, can be redeemed once by typing its code when paying for the story on meapica.shop, and cannot be exchanged for cash or used for another format; extras (for example an additional copy) are paid separately. Because you buy it online, you have 14 calendar days from purchase to withdraw without giving a reason, as long as it has not been redeemed: write to hola@meapica.shop and we refund you through the same payment method within 14 days. Once redeemed, the book is made to measure and is excluded from the right of withdrawal (art. 103 c of the Spanish consumer law, LGDCU). Keep the code safe: anyone who has it can redeem it. If you lose it, we resend it to the email used for the purchase.",
+      "section8Title": "8. Referral programme \"€10 and €10\"",
+      "section8Text": "Every paid story order includes a personal referral code, printed on the last page of the book and shown in the order emails and in \"My orders\". Whoever uses it to buy a printed book (hardcover or softcover) gets €10 off; it does not apply to the PDF and cannot be combined with other codes. When that order is paid, and if it is that family's first order, we send the referrer a single-use €10 code for their next printed book, valid for 12 months. There is no reward for one's own orders (same email, same account or same paying customer). Each personal code can be used up to 20 times. Discounts cannot be exchanged for cash. We may end the programme by announcing it on this page; reward codes already sent remain valid until their date."
     },
     "cookies": {
       "title": "Cookie Policy",
@@ -941,7 +945,7 @@
       "section1Title": "1. What are cookies?",
       "section1Text": "Cookies are small text files stored in your browser when visiting a website.",
       "section2Title": "2. Cookies we use",
-      "section2Text": "Technical (always on): keeping you signed in, remembering your language, handling the purchase and storing your cookie choice (meapica_consent, 12 months). Analytics (only with your consent): Google Analytics (_ga and _ga_*, up to 14 months) measures in aggregate how many people visit the site, where they come from and how many end up buying; PostHog (ph_*_posthog, 12 months) measures how the site is used (book creator steps, clicks) and records anonymous browsing sessions without the story's text or images or anything you type. Advertising (only with your consent): the Meta Pixel (_fbp and _fbc, 90 days) measures which Instagram and Facebook ads lead to a purchase and helps show them to people who may be interested; the TikTok pixel (_ttp, ttclid and _tt_enable_cookie, up to 13 months) does the same for TikTok ads; meapica_utm (30 days) remembers which ad or post brought you here so it can be linked to your order.",
+      "section2Text": "Technical (always on): keeping you signed in, remembering your language, handling the purchase and storing your cookie choice (meapica_consent, 12 months). Analytics (only with your consent): Google Analytics (_ga and _ga_*, up to 14 months) measures in aggregate how many people visit the site, where they come from and how many end up buying; PostHog (ph_*_posthog, 12 months) measures how the site is used (book creator steps, clicks) and records anonymous browsing sessions without the story's text or images or anything you type. Advertising (only with your consent): the Meta Pixel (_fbp and _fbc, 90 days) measures which Instagram and Facebook ads lead to a purchase and helps show them to people who may be interested; the TikTok pixel (_ttp, ttclid and _tt_enable_cookie, up to 13 months) does the same for TikTok ads; meapica_utm (30 days) remembers which ad or post brought you here so it can be linked to your order. If you arrive through another family's referral link, a technical cookie (meapica_ref, 30 days) keeps their code to apply your discount at checkout.",
       "section3Title": "3. Third-party cookies",
       "section3Text": "Meta Platforms Ireland Ltd., only if you accept advertising cookies: receives browsing data and, if you buy, the order amount and your hashed email and phone number to measure our ads. Meta may process data in the US under the EU-US Data Privacy Framework. TikTok Technology Limited (Ireland), only with the same consent: receives the same data to measure our TikTok ads and may process it outside the EEA under the European Commission's Standard Contractual Clauses. Google Ireland Limited (Google Analytics), only if you accept analytics cookies: receives browsing data and, if you buy, the order amount and format (never your name, email or phone) to compile statistics; it may process data in the US under the EU-US Data Privacy Framework. PostHog, Inc. (EU servers, Frankfurt), only if you accept analytics cookies: receives browsing and site-usage data and anonymous session recordings in which the child's name, the dedication, the story, its images and everything you type are hidden. Stripe (payment processor) may set its own cookies during payment.",
       "section4Title": "4. Cookie management",
@@ -1580,7 +1584,14 @@
     "newAdventuresHint": "Based on their age and interests, these stories will be a hit.",
     "recommendedFor": "Perfect for {name}",
     "allAdventuresDone": "{name} has already lived all available adventures! You can create a new book by revisiting a favourite.",
-    "pdfNotReady": "Your PDF is still being prepared. We will email you."
+    "pdfNotReady": "Your PDF is still being prepared. We will email you.",
+    "referral": {
+      "title": "{amount} for you, {amount} for another family",
+      "line": "Share your code: whoever uses it gets {amount} off their printed book, and when they order we give you another {amount} off yours.",
+      "codeLabel": "Your code",
+      "copy": "Copy link",
+      "copied": "Link copied"
+    }
   },
   "profile": {
     "title": "My profile",
@@ -2735,5 +2746,112 @@
     "rejectAll": "Reject all",
     "acceptAll": "Accept all",
     "save": "Save selection"
+  },
+  "giftVoucher": {
+    "metaTitle": "Personalised story gift voucher | Meapica",
+    "metaDescription": "Give a personalised story with their name and their adventure. The gift voucher arrives instantly by email, ready to print. Hardcover, softcover or PDF, VAT included.",
+    "breadcrumb": "Gift voucher",
+    "footerLink": "Gift voucher",
+    "eyebrow": "Gift voucher",
+    "h1": "Give them their own story, even at the last minute",
+    "intro": "Choose the book and pay for it now. The family creates it whenever they like, with the child's name and adventure. The voucher arrives instantly by email, ready to print and put under the tree.",
+    "points": [
+      "Arrives instantly by email, even on 24 December",
+      "Shipping included for hardcover and softcover",
+      "Never expires"
+    ],
+    "formLegend": "Choose the book you are giving",
+    "formats": {
+      "hardcover": {
+        "label": "Hardcover",
+        "note": "The most special gift · shipping included"
+      },
+      "softcover": {
+        "label": "Softcover",
+        "note": "Light and sturdy · shipping included"
+      },
+      "digital_pdf": {
+        "label": "Digital PDF",
+        "note": "To read on screen or print at home"
+      }
+    },
+    "recipientLabel": "For (optional)",
+    "recipientPlaceholder": "Name of the person receiving it",
+    "messageLabel": "Message on the voucher (optional)",
+    "messagePlaceholder": "So you can live your very own adventure. With love, Grandma and Grandpa",
+    "messageCount": "{count} of {max}",
+    "buy": "Buy gift voucher · {price}",
+    "secure": "Secure payment with Stripe. We email it to you instantly.",
+    "terms": "Never expires. You can cancel within 14 days if it has not been redeemed.",
+    "termsLink": "Terms",
+    "error": "We couldn't open the payment page. Please try again in a moment.",
+    "unavailableTitle": "Gift vouchers are coming very soon",
+    "unavailableText": "We are putting the finishing touches to them. In the meantime, you can create the story yourself and give the PDF instantly.",
+    "unavailableCta": "Create a story",
+    "howHeading": "How it works",
+    "howSteps": [
+      "Choose the book and pay. If you like, add the recipient's name and a message.",
+      "The voucher arrives by email instantly, ready to print or forward.",
+      "The recipient creates the story and types the code at checkout: it's free, shipping included."
+    ],
+    "christmasHeading": "For Christmas and Three Kings' Day",
+    "christmasOpen": "There's still time: the last day to order a printed book for {occasion} is {date}. If you'd rather the family creates it, the gift voucher is the best option.",
+    "christmasClosed": "A printed book won't arrive in time any more, but the voucher will: print it, put it under the tree and the story follows, made to measure.",
+    "occasion": {
+      "christmas": "Christmas",
+      "reyes": "Three Kings' Day"
+    },
+    "christmasLink": "See delivery dates",
+    "faqHeading": "Gift voucher questions",
+    "faq": [
+      {
+        "q": "How long is it valid?",
+        "a": "It never expires: the family can redeem it whenever they like. It only stops working if it is refunded."
+      },
+      {
+        "q": "Can I return it?",
+        "a": "Yes. You have 14 calendar days from purchase to cancel, as long as it has not been redeemed: write to hola@meapica.shop and we refund you. Once redeemed, the book is made to measure and the right of withdrawal no longer applies."
+      },
+      {
+        "q": "How is it redeemed?",
+        "a": "Create the story on meapica.shop, choose the voucher's format and type the code under \"Add promotion code\" at checkout. The total becomes €0."
+      },
+      {
+        "q": "Can they choose another format?",
+        "a": "The voucher is for the format you choose when buying it. If the recipient wants an extra copy, they pay for it separately."
+      },
+      {
+        "q": "Is there a shipping cost?",
+        "a": "No. Shipping to mainland Spain and the Balearic Islands is included for hardcover and softcover. We don't ship to the Canary Islands, Ceuta or Melilla yet."
+      }
+    ],
+    "thanks": {
+      "metaTitle": "Your gift voucher | Meapica",
+      "h1": "Your gift voucher is ready!",
+      "intro": "We have also emailed it to you. You can print it right now.",
+      "codeLabel": "Gift voucher code",
+      "validUntil": "Never expires",
+      "printCta": "View and print the voucher",
+      "pendingTitle": "We are preparing your voucher",
+      "pendingText": "Your payment went through. The voucher will reach your inbox in a few minutes. If you can't see it, check your promotions folder or write to hola@meapica.shop.",
+      "backHome": "Back to home"
+    },
+    "card": {
+      "metaTitle": "Meapica gift voucher",
+      "kicker": "Gift voucher",
+      "title": "A story made for you",
+      "forName": "For {name}",
+      "product": {
+        "hardcover": "A personalised hardcover story",
+        "softcover": "A personalised softcover story",
+        "digital_pdf": "A personalised PDF story"
+      },
+      "codeLabel": "Your code",
+      "validUntil": "Never expires",
+      "howTo": "Go to meapica.shop, create your story with your name and your adventure, and type this code at checkout.",
+      "print": "Print",
+      "notFound": "We can't find this voucher. Check the link in the email or write to hola@meapica.shop."
+    },
+    "fromChristmas": "Rather let the family create it? Give a gift voucher"
   }
 }

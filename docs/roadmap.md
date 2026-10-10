@@ -70,6 +70,15 @@ character lock; per-stage resolution. (commits 5ebc2f1 → a883d60)
 
 ---
 
+## Next steps from referral + gift vouchers (2026-10-09)
+
+- [ ] Run `scripts/stripe-setup-catalog.mts` with the LIVE key and apply `20261009120000_referrals_and_gift_vouchers.sql` (see stack.md).
+- [ ] One real voucher purchase + redemption in live (owner), then refund the voucher to test the withdrawal path.
+- [ ] Revoke a referral reward automatically when the referred order is fully refunded (today: manual).
+- [ ] Gift voucher as a physical card/envelope option, and a "send on date" email to the recipient.
+- [ ] Referral share card (image) for WhatsApp/Instagram from the library.
+- [ ] Have the gestor confirm the voucher VAT treatment (single-purpose) (vouchers never expire since 2026-10-10, owner decision, so validity is no longer a question).
+
 ## Next steps from creation flow + cookie bar pass (2026-10-08)
 
 - [ ] Generate one full book in production before the first creator redeems a gift code (last successful generation: 2026-10-01).

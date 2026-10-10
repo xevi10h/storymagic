@@ -188,6 +188,18 @@ export default function NavbarClient({ seasonToday }: { seasonToday: string | nu
 
   const close = () => setMobileOpen(false);
 
+  // On the home page Next renders "/#faq" as "/es/#faq", a different URL from "/es": the hash
+  // changes but nothing scrolls. Scroll ourselves there; from other pages the normal navigation works.
+  const onNavLink = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    close();
+    const id = href.split("#")[1];
+    const target = id && pathname === "/" ? document.getElementById(id) : null;
+    if (!target || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    e.preventDefault();
+    target.scrollIntoView();
+    history.pushState(null, "", `#${id}`);
+  };
+
   return (
     <>
       <header ref={navRef} className="fixed inset-x-0 top-0 z-50">
@@ -206,6 +218,7 @@ export default function NavbarClient({ seasonToday }: { seasonToday: string | nu
                 <li key={link.href}>
                   <Link
                     href={link.href}
+                    onClick={(e) => onNavLink(e, link.href)}
                     className={cx(
                       "flex min-h-11 items-center rounded-full px-3.5 text-[15px] font-semibold text-ink-soft transition-colors hover:bg-brand/5 hover:text-ink",
                       focusRing,
@@ -285,7 +298,7 @@ export default function NavbarClient({ seasonToday }: { seasonToday: string | nu
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      onClick={close}
+                      onClick={(e) => onNavLink(e, link.href)}
                       className={cx(
                         "flex min-h-12 items-center justify-between font-display text-lg font-semibold text-ink transition-colors hover:text-brand-text",
                         focusRing,

@@ -23,7 +23,7 @@ import type { Locale } from "@/i18n/routing";
 import { SUPPORT_EMAIL } from "@/lib/support";
 
 // Stripe Checkout has no Catalan: Catalan buyers get the Spanish page.
-const CHECKOUT_LOCALE: Record<Locale, Stripe.Checkout.SessionCreateParams.Locale> = {
+export const CHECKOUT_LOCALE: Record<Locale, Stripe.Checkout.SessionCreateParams.Locale> = {
   es: "es",
   ca: "es",
   en: "en",
@@ -57,7 +57,7 @@ const SHIPPING_AREA_NOTICE: Record<Locale, string> = {
 // Brand on the hosted Checkout page (docs/brand.md). Images by public prod URL: Stripe
 // fetches them, so never `origin` (localhost in dev). Invoices keep Dashboard branding.
 // Button = --brand-text, not --brand: Stripe's 16 px white label needs ≥ 4.5:1.
-const CHECKOUT_BRANDING: Stripe.Checkout.SessionCreateParams.BrandingSettings = {
+export const CHECKOUT_BRANDING: Stripe.Checkout.SessionCreateParams.BrandingSettings = {
   display_name: "Meapica",
   logo: { type: "url", url: "https://meapica.shop/images/meapica-logo.png" },
   icon: { type: "url", url: "https://meapica.shop/images/icon-512.png" },
@@ -67,7 +67,7 @@ const CHECKOUT_BRANDING: Stripe.Checkout.SessionCreateParams.BrandingSettings = 
   font_family: "nunito",
 };
 
-const INVOICE_FOOTER =`${SELLER_IDENTITY} · IVA incluido (4 %, libros) · ${SUPPORT_EMAIL}`;
+export const INVOICE_FOOTER = `${SELLER_IDENTITY} · IVA incluido (4 %, libros) · ${SUPPORT_EMAIL}`;
 
 /**
  * The post-purchase offer that applies to this checkout, decided from the buyer's
@@ -106,6 +106,12 @@ export interface CheckoutSessionInput {
   isReorder: boolean;
   offer: StoryUpsell | null;
   origin: string;
+  /**
+   * Referral promotion code (promo_…) from the /r link, pre-applied to a printed book
+   * (the caller already checked it is not the buyer's own code). Stripe does not allow
+   * `discounts` together with `allow_promotion_codes`, so the code field is hidden then.
+   */
+  referralPromotionCodeId?: string | null;
 }
 
 export interface CheckoutSessionPlan {
@@ -184,6 +190,10 @@ export function buildCheckoutSession(input: CheckoutSessionInput): CheckoutSessi
     // Another copy is bought from the library: back there if they change their mind.
     cancel_url: isReorder ? `${origin}/${locale}/dashboard?tab=orders` : `${origin}/${locale}/create/${storyId}/preview`,
   };
+  if (input.referralPromotionCodeId && requiresShipping && !appliedOffer) {
+    delete params.allow_promotion_codes;
+    params.discounts = [{ promotion_code: input.referralPromotionCodeId }];
+  }
   if (requiresShipping) {
     // Decision 2026-09-28: Spain only (Gelato ships from an EU plant; no customs).
     params.shipping_address_collection = { allowed_countries: ["ES"] };

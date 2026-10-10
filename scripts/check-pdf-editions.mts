@@ -13,6 +13,9 @@
  *      and inside « ») survive in BOTH editions — mapped in the PDF text layer (ToUnicode) and
  *      drawn with real width (every "?", "!", ";", ":", "»" sits after a visible gap on the SAME
  *      line as the word before it; the missing glyph used to print "Oui!" glued with a stray mark).
+ *   4. Referral QR (src/lib/promo-codes.ts): with a referral code the last inner page (colophon)
+ *      prints the QR + code + line, the inside file keeps 32 pages, and every word of that page
+ *      stays inside the 15 mm text safe area. --keep also writes the page as PNG (both editions).
  *
  * Needs poppler (pdftotext, pdftoppm), like scripts/render-test-book.mts. Exit code 1 on failure.
  */
@@ -203,6 +206,36 @@ for (const [edition, buf] of [["print", printPdf], ["digital", digitalPdf]] as c
   }
   check(expected >= 40 && seen === expected, `${edition}: every spaced mark printed apart from its word (${seen} of ${expected})`);
   check(bad.length === 0, `${edition}: each mark sits after a visible gap on the same line${bad.length ? ` — ${bad.slice(0, 4).join(" · ")}` : ""}`);
+}
+
+// ── 4. Referral QR on the last inner page ─────────────────────────────────
+console.log("\n4. Referral QR (last inner page)");
+const REF_CODE = "MEA7K3P9Q";
+for (const locale of ["fr", "es", "ca"] as const) {
+  const refInput: BookPdfInput = { ...input, locale, referral: { code: REF_CODE, url: `https://meapica.shop/${locale}/r/${REF_CODE}` } };
+  const refPrepared = await prepareBookRender(refInput);
+  const refPrint = await renderInteriorPdf(refInput, refPrepared);
+  const refDigital = await renderBookPdf(refInput, refPrepared, { edition: "digital" });
+  const refFiles = { print: join(dir, `referral-${locale}-interior.pdf`), digital: join(dir, `referral-${locale}-book.pdf`) };
+  writeFileSync(refFiles.print, refPrint);
+  writeFileSync(refFiles.digital, refDigital);
+  const sizes = await pageSizesMm(refPrint);
+  check(sizes.length === 32 && sizes.every((x) => x === "208.0×208.0"), `${locale}: inside file still 32 pages of 208×208 mm`);
+  // Inside file: pastedown + 30 inner + pastedown → the colophon is page 31; digital: cover + endpaper + 30 + endpaper + back → 32.
+  for (const [edition, file, pageNo, sizePt, safePt] of [
+    ["print", refFiles.print, 31, 208 * MM, 19 * MM],
+    ["digital", refFiles.digital, 32, 200 * MM, 15 * MM],
+  ] as const) {
+    const words = pagesWords(file)[pageNo - 1] ?? [];
+    const text = words.map((w) => w.text).join(" ");
+    check(text.includes(REF_CODE), `${locale} ${edition}: code printed on the last inner page`);
+    check(/meapica\.shop/.test(text), `${locale} ${edition}: meapica.shop under the QR`);
+    const out = words.filter((w) => w.xMin < safePt || w.yMin < safePt || w.xMax > sizePt - safePt || w.yMax > sizePt - safePt);
+    check(out.length === 0, `${locale} ${edition}: every word inside the safe area${out.length ? ` (${out.map((w) => w.text).join(" ")})` : ""}`);
+    if (process.argv.includes("--keep")) {
+      execFileSync("pdftoppm", ["-f", String(pageNo), "-l", String(pageNo), "-r", "150", "-png", "-singlefile", file, join(dir, `referral-${locale}-${edition}-last-page`)]);
+    }
+  }
 }
 
 if (process.argv.includes("--keep")) console.log(`\nFiles kept in ${dir}`);

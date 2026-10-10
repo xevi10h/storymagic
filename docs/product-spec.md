@@ -232,6 +232,33 @@ este cuento en 3 días…" with a link to the privacy policy. The account email 
   commercial email (also the PDF → papel reminder).
 - Languages: es / ca / en / fr (story locale of the request). Kicker "Recordatorio" + seller identity in the footer (LSSI 20.1).
 
+## Referral programme "10 € y 10 €" + gift vouchers (2026-10-09)
+
+Rules in `src/lib/promo-codes.ts` (pure, checked by `src/lib/promo-codes.check.mjs`); server code in `src/lib/growth/`.
+
+- **Referral:** every paid book order (PDF or printed) gets one personal code (`MEA` + 6 chars), a Stripe promotion
+  code on coupon `meapica_referral_10` (10 € off, applies only to the softcover/hardcover book products, so never the
+  PDF, extra copies or upgrades; max 20 uses per code). Shown: QR + code + one line on the **last inner page**
+  (colophon, replaces the plain meapica.shop QR; book locale), a commercial block in the order confirmation,
+  `book_ready` and `delivered` emails (only with marketing permission + unsubscribe link, LSSI 21.2), and the
+  library order card ("Copiar enlace"). Link `/<locale>/r/<code>` sets cookie `meapica_ref` (30 days, httpOnly) and
+  redirects to `/create`; `/api/checkout` pre-applies it to a printed book (Stripe `discounts`, the code field is then
+  hidden) unless it is the buyer's own code; an unusable code falls back to a normal checkout.
+- **Reward:** when an order paid with a referral code is paid (webhook), the referrer gets a single-use 10 € code
+  (`MEA` + 10, same coupon, 12 months) by email, once per referred order. No reward for own orders (same email,
+  account or Stripe customer) nor when the buyer already had a live order (returning customer).
+  Known gap: a refund after the reward does not revoke it (deactivate by hand in Stripe).
+- **Gift voucher** (`/gift-voucher`, linked from the footer and the Christmas delivery page): buy a voucher for one
+  format (hardcover 49,90 €, softcover 34,90 €, PDF 9,90 €, IVA incluido) with optional recipient name (40) and
+  message (240). Stripe Checkout sells catalog items `voucher_*` (same amount and tax code as the book: single-purpose
+  voucher, VAT at sale). On payment (webhook or thanks page, idempotent): `gift_vouchers` row, single-use code
+  (`MEA` + 10) on the 100 % coupon of that format, no expiry (owner decision 2026-10-10), email to the buyer with a printable card
+  (`/<locale>/gift-voucher/card/<signed token>`) and the invoice link. Redeeming = typing the code at the book
+  checkout → 0 € order → normal fulfilment (Checkout still collects the shipping address). A full refund
+  (withdrawal within 14 days) deactivates the code and issues the credit note. Terms: legal page, terms §7 and §8.
+- **Fail soft:** until `scripts/stripe-setup-catalog.mts` has created the coupons/prices on the active account, no
+  referral codes are minted (plain QR, no email block) and the voucher page shows "coming soon".
+
 ## Waitlist (Pre-Launch Gate)
 
 The entire site is gated behind a pre-launch waiting list when `WAITLIST_MODE=true`. This allows building an audience and collecting leads before the product is publicly available.

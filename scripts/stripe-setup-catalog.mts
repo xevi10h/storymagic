@@ -2,7 +2,8 @@
 //   Stripe Tax (head office Barcelona, ES registration "small_seller": 4 % books,
 //   Spanish VAT on EU digital sales under the 10k € OSS threshold), the seller NIF
 //   for invoices, every STRIPE_CATALOG Product/Price (VAT-inclusive, lookup keys from
-//   src/lib/pricing.ts, incl. the PDF → printed upgrade) and the webhook endpoint.
+//   src/lib/pricing.ts, incl. the PDF → printed upgrade and the gift-voucher Prices), the
+//   referral + gift-voucher coupons (src/lib/promo-codes.ts) and the webhook endpoint.
 //
 //   STRIPE_KEY=sk_test_... npx tsx --tsconfig tsconfig.json scripts/stripe-setup-catalog.mts \
 //     [--webhook-url=https://meapica.shop/api/webhooks/stripe] [--dry-run]
@@ -13,6 +14,7 @@
 
 import Stripe from "stripe";
 import { STRIPE_CATALOG, type CatalogItemId } from "../src/lib/pricing";
+import { REFERRAL_COUPON_ID, REFERRAL_DISCOUNT_CENTS, VOUCHER_COUPON_IDS, VOUCHER_FORMATS } from "../src/lib/promo-codes";
 
 const SELLER = {
   nif: "41649433K", // Xavier Huix Trenco (autónomo), same as the legal pages
@@ -105,6 +107,61 @@ for (const [id, item] of Object.entries(STRIPE_CATALOG) as [CatalogItemId, (type
   );
   if (created && existing) await stripe.prices.update(existing.id, { active: false });
   if (created) log(`${id}: ${created.id} ${item.amount} ✓`);
+}
+
+// ── Coupons (referral "10 € y 10 €" + gift vouchers) ──────────────────────────
+// Fixed ids so the app finds them (src/lib/growth/stripe-promotions.ts; missing = feature
+// hidden). Each is restricted to the BOOK products (applies_to), so a referral code never
+// discounts the PDF / extra copies / upgrades, and a voucher only pays its own format.
+// Coupons are immutable: a wrong one is reported, delete it in the Dashboard and re-run.
+async function bookProductId(item: "digital_pdf" | "softcover" | "hardcover"): Promise<string | null> {
+  const price = (await stripe.prices.list({ lookup_keys: [STRIPE_CATALOG[item].lookupKey], active: true, limit: 1 })).data[0];
+  return price ? (typeof price.product === "string" ? price.product : price.product.id) : null;
+}
+async function ensureCoupon(
+  id: string,
+  products: (string | null)[],
+  params: Omit<Stripe.CouponCreateParams, "id" | "applies_to">,
+  matches: (c: Stripe.Coupon) => boolean,
+): Promise<void> {
+  if (products.some((p) => !p)) {
+    log(`coupon ${id}: book product missing (catalog not created yet${dryRun ? " — dry run" : ""}), skipped`);
+    return;
+  }
+  const wanted = [...(products as string[])].sort();
+  const existing = await stripe.coupons.retrieve(id, { expand: ["applies_to"] }).catch((err: { code?: string }) => {
+    if (err.code === "resource_missing") return null;
+    throw err;
+  });
+  if (existing) {
+    const got = [...(existing.applies_to?.products ?? [])].sort();
+    const ok = existing.valid && matches(existing) && JSON.stringify(got) === JSON.stringify(wanted);
+    if (ok) log(`coupon ${id} ✓`);
+    else log(`WARNING coupon ${id} differs (valid=${existing.valid}, products ${got.join(",")} vs ${wanted.join(",")}): delete it in the Dashboard and re-run`);
+    return;
+  }
+  await act(`create coupon ${id} (${wanted.join(", ")})`, () =>
+    stripe.coupons.create({ id, ...params, applies_to: { products: wanted }, metadata: { meapica: "promo-codes" } }),
+  );
+}
+
+const [pdfProduct, softProduct, hardProduct] = await Promise.all([bookProductId("digital_pdf"), bookProductId("softcover"), bookProductId("hardcover")]);
+await ensureCoupon(
+  REFERRAL_COUPON_ID,
+  [softProduct, hardProduct],
+  { name: "Recomendación · 10 € libro impreso", amount_off: REFERRAL_DISCOUNT_CENTS, currency: "eur", duration: "once" },
+  (c) => c.amount_off === REFERRAL_DISCOUNT_CENTS && c.currency === "eur",
+);
+const bookProducts = { digital_pdf: pdfProduct, softcover: softProduct, hardcover: hardProduct };
+// Customer-facing in Checkout (max 40 characters).
+const VOUCHER_COUPON_NAMES = { hardcover: "Tarjeta regalo · tapa dura", softcover: "Tarjeta regalo · tapa blanda", digital_pdf: "Tarjeta regalo · PDF" };
+for (const format of VOUCHER_FORMATS) {
+  await ensureCoupon(
+    VOUCHER_COUPON_IDS[format],
+    [bookProducts[format]],
+    { name: VOUCHER_COUPON_NAMES[format], percent_off: 100, duration: "once" },
+    (c) => c.percent_off === 100,
+  );
 }
 
 // ── Webhook ───────────────────────────────────────────────────────────────────

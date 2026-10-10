@@ -9,6 +9,8 @@ import {
   recordPaidSession,
   recordRefund,
 } from "@/lib/fulfilment/payments";
+import { recordGiftVoucherPurchase } from "@/lib/growth/gift-vouchers";
+import { VOUCHER_SESSION_KIND } from "@/lib/promo-codes";
 
 // Stripe signs the raw body.
 export const runtime = "nodejs";
@@ -57,6 +59,13 @@ export async function POST(request: Request) {
       case "checkout.session.completed":
       case "checkout.session.async_payment_succeeded": {
         const session = event.data.object;
+        // Gift voucher sale: row + code + email (idempotent; a failed email retries).
+        if (session.metadata?.kind === VOUCHER_SESSION_KIND) {
+          const voucher = await recordGiftVoucherPurchase(supabase, session.id);
+          if (voucher.state === "ready" && voucher.emailError) throw new Error(voucher.emailError);
+          console.log(`[Stripe webhook] ${event.type} ${session.id} (gift voucher): ${voucher.state}`);
+          break;
+        }
         // Not one of ours (e.g. `stripe trigger` fixtures, other integrations on the account).
         if (!session.metadata?.story_id) break;
         const result = await recordPaidSession(supabase, session.id);
@@ -64,6 +73,8 @@ export async function POST(request: Request) {
           // /api/checkout inserts the row right after creating the session: retry.
           throw new Error(`No order row for session ${session.id}`);
         }
+        // Voucher redemption / referral reward failed: Stripe redelivers (all idempotent).
+        if (result.state === "paid" && result.followUpError) throw new Error(result.followUpError);
         console.log(`[Stripe webhook] ${event.type} ${session.id}: ${result.state}`);
         break;
       }

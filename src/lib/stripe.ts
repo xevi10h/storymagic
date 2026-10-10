@@ -92,10 +92,14 @@ export async function getStripeCatalog(): Promise<StripeCatalog> {
 
   const stripe = getStripe();
   const ids = Object.keys(STRIPE_CATALOG) as CatalogItemId[];
-  const [prices, taxIds] = await Promise.all([
-    stripe.prices.list({ lookup_keys: ids.map((id) => STRIPE_CATALOG[id].lookupKey), active: true, limit: 100 }),
+  // Stripe accepts at most 10 lookup_keys per list call: query in chunks.
+  const keys = ids.map((id) => STRIPE_CATALOG[id].lookupKey);
+  const chunks = Array.from({ length: Math.ceil(keys.length / 10) }, (_, i) => keys.slice(i * 10, i * 10 + 10));
+  const [priceLists, taxIds] = await Promise.all([
+    Promise.all(chunks.map((lookup_keys) => stripe.prices.list({ lookup_keys, active: true, limit: 100 }))),
     stripe.taxIds.list({ limit: 100 }),
   ]);
+  const prices = { data: priceLists.flatMap((l) => l.data) };
   const resolved = {} as Record<RequiredCatalogItemId, string>;
   const optionalPrices: Partial<Record<OptionalCatalogItemId, string>> = {};
   for (const id of ids) {

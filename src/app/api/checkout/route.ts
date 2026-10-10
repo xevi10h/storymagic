@@ -8,6 +8,8 @@ import { purchaseEligibility } from "@/lib/fulfilment/logic";
 import { buildCheckoutSession, checkoutOffer } from "@/lib/checkout/session";
 import { CONSENT_COOKIE, GA_SESSION_COOKIE, UTM_COOKIE, consentAllows, parseConsent } from "@/lib/tracking/consent";
 import { gaClientId, gaSessionId } from "@/lib/tracking/ga4-mp";
+import { referralForCheckout } from "@/lib/growth/referrals";
+import { canPreApplyReferral, REFERRAL_COOKIE } from "@/lib/promo-codes";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -163,8 +165,19 @@ export async function POST(request: Request) {
     }
     const offer = checkoutOffer({ orders: offerOrders, userId: user.id, storyId, format, isReorder, catalog, now: Date.now() });
 
+    // Referral link (/r/<code> cookie): pre-apply the friend's 10 € on a printed book,
+    // never the buyer's own code. Unknown / not live codes are simply ignored.
+    const refCookie = request.headers
+      .get("cookie")
+      ?.split(/;\s*/)
+      .find((c) => c.startsWith(`${REFERRAL_COOKIE}=`))
+      ?.slice(REFERRAL_COOKIE.length + 1);
+    const referral = PRICING[format].requiresShipping ? await referralForCheckout(createFulfilmentClient(), refCookie) : null;
+    const referralPromotionCodeId =
+      referral && canPreApplyReferral(referral, { userId: user.id, email: user.email, format }) ? referral.stripe_promotion_code_id : null;
+
     const attribution = attributionMetadata(request);
-    const plan = buildCheckoutSession({
+    const planFor = (referralPromotionCodeId: string | null) => buildCheckoutSession({
       catalog,
       storyId,
       userId: user.id,
@@ -175,23 +188,43 @@ export async function POST(request: Request) {
       isReorder,
       offer,
       origin: new URL(request.url).origin,
+      referralPromotionCodeId,
     });
+    const createSession = (promo: string | null) => {
+      const p = planFor(promo);
+      // Ad attribution for the webhook (Meta CAPI) and UTMs: only with advertising consent.
+      p.params.metadata = { ...p.params.metadata, ...attribution };
+      return {
+        plan: p,
+        request: () =>
+          getStripe().checkout.sessions.create(p.params, {
+            idempotencyKey: idempotencyKey([
+              user.id,
+              storyId,
+              format,
+              [...p.validAddons].sort().join(","),
+              locale,
+              p.offer ? `${p.offer.offer}:${p.offer.sourceOrderId}` : "",
+              // Attribution and the pre-applied code are part of the key: same key + different params is a Stripe error.
+              JSON.stringify(attribution),
+              promo ?? "",
+            ]),
+          }),
+      };
+    };
+    let attempt = createSession(referralPromotionCodeId);
+    let session;
+    try {
+      session = await attempt.request();
+    } catch (err) {
+      // The referral code can't be applied (used up, deactivated…): same checkout without it.
+      if (!referralPromotionCodeId) throw err;
+      console.warn(`[checkout] Referral code ${referral?.code} not applied:`, err instanceof Error ? err.message : err);
+      attempt = createSession(null);
+      session = await attempt.request();
+    }
+    const plan = attempt.plan;
     const { validAddons, totalCents } = plan;
-    // Ad attribution for the webhook (Meta CAPI) and UTMs: only with advertising consent.
-    plan.params.metadata = { ...plan.params.metadata, ...attribution };
-
-    const session = await getStripe().checkout.sessions.create(plan.params, {
-      idempotencyKey: idempotencyKey([
-        user.id,
-        storyId,
-        format,
-        [...validAddons].sort().join(","),
-        locale,
-        plan.offer ? `${plan.offer.offer}:${plan.offer.sourceOrderId}` : "",
-        // Attribution is part of the key: same key + different params is a Stripe error.
-        JSON.stringify(attribution),
-      ]),
-    });
 
     // An idempotent replay of a session that has since completed/expired has no URL.
     if (!session.url) {

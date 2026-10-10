@@ -47,6 +47,7 @@ import { sendOrderEmailOnce } from "./emails";
 import { closeExcludedAreaOrder } from "./excluded-area";
 import { classifyProviderError } from "./provider-errors";
 import { cancelGelatoForRefund } from "./payments";
+import { ensureReferralCode, referralLink, type ReferralLink } from "@/lib/growth/referrals";
 import {
   backoffMs,
   gelatoOrderReference,
@@ -472,8 +473,28 @@ async function buildCustomerPdf(ctx: RunContext): Promise<void> {
   console.log(`[fulfilment] Story ${ctx.storyId}: customer PDF stored (${(pdf.byteLength / 1_048_576).toFixed(1)} MB)`);
 }
 
+/**
+ * Referral code printed on the last inner page: the order's own (print files), else the
+ * story's first paid order's (the customer PDF is one file per story). Created here if
+ * the webhook could not. Best-effort: any problem prints the plain meapica.shop QR.
+ */
+async function referralForPdf(ctx: RunContext, order?: OrderRow): Promise<ReferralLink | null> {
+  const byDate = [...ctx.orders].sort((a, b) => a.created_at.localeCompare(b.created_at));
+  const candidates = (order ? [order, ...byDate.filter((o) => o.id !== order.id)] : byDate).filter((o) => !isMockOrder(o));
+  try {
+    for (const o of candidates) {
+      const row = await ensureReferralCode(ctx.supabase, o, { email: o.customer_email, locale: ctx.story.locale });
+      if (row?.stripe_promotion_code_id) return referralLink(row.code, ctx.story.locale ?? "es");
+      if (!row) return null; // programme not set up on this Stripe account
+    }
+  } catch (err) {
+    console.warn(`[fulfilment] Story ${ctx.storyId}: no referral QR (${errorMessage(err)})`);
+  }
+  return null;
+}
+
 /** Renderer input shared by the customer PDF and the print files (images as data URIs). */
-async function buildPdfInput(ctx: RunContext): Promise<BookPdfInput> {
+async function buildPdfInput(ctx: RunContext, order?: OrderRow): Promise<BookPdfInput> {
   const { supabase, storyId, story } = ctx;
   const character = story.characters;
   if (!character) throw new Error("Story has no character");
@@ -494,7 +515,8 @@ async function buildPdfInput(ctx: RunContext): Promise<BookPdfInput> {
   const heroUrl = assets?.finalHero?.url ?? null;
   // Pages 28–29: the adventure map + its game; books without one print a patterned endpaper.
   const mapUrl = assets?.finalMap && assets.mapGame ? assets.finalMap.url : null;
-  const [prefetched, coverImageUrl, heroImageUrl, mapImageUrl] = await Promise.all([
+  const [referral, prefetched, coverImageUrl, heroImageUrl, mapImageUrl] = await Promise.all([
+    referralForPdf(ctx, order),
     prefetchAllIllustrations((rows ?? []).map((r) => ({ sceneNumber: r.scene_number, imageUrl: r.image_url }))),
     story.cover_image_url ? prefetchImageAsDataUri(story.cover_image_url) : Promise.resolve(null),
     heroUrl ? prefetchImageAsDataUri(heroUrl) : Promise.resolve(null),
@@ -521,6 +543,7 @@ async function buildPdfInput(ctx: RunContext): Promise<BookPdfInput> {
     mapGame: mapUrl ? (assets?.mapGame ?? null) : null,
     illustrations: prefetched,
     locale: story.locale,
+    referral,
   };
 }
 
@@ -600,7 +623,7 @@ async function buildAndValidatePrintFiles(
   });
   if (sourceProblems.length > 0) return { problems: sourceProblems };
 
-  const pdfInput = await buildPdfInput(ctx);
+  const pdfInput = await buildPdfInput(ctx, order);
 
   // Print gate: geometry from Gelato → validate → render → re-validate (DPI,
   // page count/size, cover layout). Throws PrintValidationError instead of

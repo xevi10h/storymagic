@@ -956,7 +956,11 @@
       "section5Title": "5. Envíos y devoluciones",
       "section5Text": "Los libros se imprimen bajo demanda en Europa y, por ahora, solo realizamos envíos a direcciones de España. España peninsular: {minDays}-{maxDays} días laborables. Baleares: {minDays}-{maxDays} días laborables. De momento no enviamos a Canarias, Ceuta ni Melilla. Al ser productos personalizados, los libros están excluidos del derecho de desistimiento (art. 103 c) del texto refundido de la Ley General para la Defensa de los Consumidores y Usuarios) y no admiten devoluciones. Si un libro llega con cualquier defecto de impresión o fabricación, o se daña durante el envío, escríbenos en los 30 días siguientes a recibirlo, con una foto del libro y del embalaje, y te enviamos otro nuevo sin coste. Esto no limita los derechos de garantía que te reconoce la ley.",
       "section6Title": "6. Limitación de responsabilidad",
-      "section6Text": "Meapica no garantiza la disponibilidad ininterrumpida del servicio. Las ilustraciones pueden variar y no se garantiza un resultado específico."
+      "section6Text": "Meapica no garantiza la disponibilidad ininterrumpida del servicio. Las ilustraciones pueden variar y no se garantiza un resultado específico.",
+      "section7Title": "7. Tarjetas regalo",
+      "section7Text": "La tarjeta regalo da derecho a un cuento personalizado en el formato elegido al comprarla (tapa dura, tapa blanda o PDF), con el envío a España peninsular y Baleares incluido en los formatos impresos. Se paga al comprarla, con el IVA del libro incluido. No caduca, se canjea una sola vez escribiendo su código al pagar el cuento en meapica.shop y no se puede cambiar por dinero ni usar para otro formato; los extras (por ejemplo, un ejemplar adicional) se pagan aparte. Al comprarla por internet tienes 14 días naturales desde la compra para desistir sin dar explicaciones, siempre que no se haya canjeado: escríbenos a hola@meapica.shop y te devolvemos el importe por el mismo medio de pago en un máximo de 14 días. Una vez canjeada, el libro se crea a medida y queda excluido del derecho de desistimiento (art. 103 c) del texto refundido de la LGDCU). Guarda bien el código: cualquiera que lo tenga puede canjearlo. Si lo pierdes, te lo reenviamos al correo de la compra.",
+      "section8Title": "8. Programa de recomendación «10 € y 10 €»",
+      "section8Text": "Cada pedido pagado de un cuento incluye un código personal de recomendación, impreso en la última página del libro y visible en los correos del pedido y en «Mis pedidos». Quien lo use al comprar un libro impreso (tapa dura o tapa blanda) tiene 10 € de descuento; no vale para el PDF ni se combina con otros códigos. Cuando ese pedido se paga, y si es el primer pedido de esa familia, enviamos a quien lo recomendó un código de 10 € de un solo uso para su próximo libro impreso, válido 12 meses. No hay recompensa por pedidos propios (mismo correo, misma cuenta o mismo cliente de pago). Cada código personal admite hasta 20 usos. Los descuentos no se pueden cambiar por dinero. Podemos terminar el programa avisándolo en esta página; los códigos de recompensa ya enviados se respetan hasta su fecha."
     },
     "cookies": {
       "title": "Política de Cookies",
@@ -964,7 +968,7 @@
       "section1Title": "1. ¿Qué son las cookies?",
       "section1Text": "Las cookies son pequeños archivos de texto que se almacenan en tu navegador al visitar un sitio web.",
       "section2Title": "2. Cookies que utilizamos",
-      "section2Text": "Técnicas (siempre activas): mantener tu sesión, recordar el idioma, gestionar la compra y guardar tu elección sobre cookies (meapica_consent, 12 meses). De análisis (solo con tu consentimiento): Google Analytics (_ga y _ga_*, hasta 14 meses) mide de forma agregada cuántas personas visitan la web, de dónde llegan y cuántas terminan comprando; PostHog (ph_*_posthog, 12 meses) mide cómo se usa la web (pasos del creador del libro, clics) y graba sesiones anónimas de navegación sin los textos ni las imágenes del cuento ni lo que escribes. Publicitarias (solo con tu consentimiento): el píxel de Meta (_fbp y _fbc, 90 días) mide qué anuncios de Instagram y Facebook terminan en una compra y ayuda a mostrarlos a quien le pueden interesar; el píxel de TikTok (_ttp, ttclid y _tt_enable_cookie, hasta 13 meses) hace lo mismo con los anuncios de TikTok; meapica_utm (30 días) recuerda desde qué anuncio o publicación llegaste para asociarlo a tu pedido.",
+      "section2Text": "Técnicas (siempre activas): mantener tu sesión, recordar el idioma, gestionar la compra y guardar tu elección sobre cookies (meapica_consent, 12 meses). De análisis (solo con tu consentimiento): Google Analytics (_ga y _ga_*, hasta 14 meses) mide de forma agregada cuántas personas visitan la web, de dónde llegan y cuántas terminan comprando; PostHog (ph_*_posthog, 12 meses) mide cómo se usa la web (pasos del creador del libro, clics) y graba sesiones anónimas de navegación sin los textos ni las imágenes del cuento ni lo que escribes. Publicitarias (solo con tu consentimiento): el píxel de Meta (_fbp y _fbc, 90 días) mide qué anuncios de Instagram y Facebook terminan en una compra y ayuda a mostrarlos a quien le pueden interesar; el píxel de TikTok (_ttp, ttclid y _tt_enable_cookie, hasta 13 meses) hace lo mismo con los anuncios de TikTok; meapica_utm (30 días) recuerda desde qué anuncio o publicación llegaste para asociarlo a tu pedido. Si llegas desde el enlace de recomendación de otra familia, una cookie técnica (meapica_ref, 30 días) guarda su código para aplicarte el descuento al pagar.",
       "section3Title": "3. Cookies de terceros",
       "section3Text": "Meta Platforms Ireland Ltd., solo si aceptas las cookies publicitarias: recibe datos de navegación y, si compras, el importe del pedido y tu correo y teléfono cifrados (hash) para medir nuestros anuncios. Meta puede tratar datos en EE. UU. al amparo del Marco de Privacidad de Datos UE-EE. UU. TikTok Technology Limited (Irlanda), solo con el mismo consentimiento: recibe los mismos datos para medir nuestros anuncios en TikTok y puede tratarlos fuera del EEE al amparo de cláusulas contractuales tipo de la Comisión Europea. Google Ireland Limited (Google Analytics), solo si aceptas las cookies de análisis: recibe datos de navegación y, si compras, el importe y el formato del pedido (nunca tu nombre, correo ni teléfono) para elaborar estadísticas; puede tratarlos en EE. UU. al amparo del Marco de Privacidad de Datos UE-EE. UU. PostHog, Inc. (servidores en la UE, Fráncfort), solo si aceptas las cookies de análisis: recibe datos de navegación y de uso de la web y grabaciones anónimas de la sesión en las que se ocultan el nombre del niño/a, la dedicatoria, el cuento, sus imágenes y todo lo que escribes. Stripe (procesador de pagos) puede establecer sus propias cookies durante el pago.",
       "section4Title": "4. Gestión de cookies",
@@ -1603,7 +1607,14 @@
     "newAdventuresHint": "Basado en su edad e intereses, estas historias le encantarán.",
     "recommendedFor": "Perfecta para {name}",
     "allAdventuresDone": "¡{name} ya ha vivido todas las aventuras disponibles! Puedes crear un libro nuevo repitiendo una que le haya encantado.",
-    "pdfNotReady": "Tu PDF aún se está preparando. Te avisaremos por email."
+    "pdfNotReady": "Tu PDF aún se está preparando. Te avisaremos por email.",
+    "referral": {
+      "title": "{amount} para ti y {amount} para otra familia",
+      "line": "Comparte tu código: quien lo use tiene {amount} de descuento en su libro impreso y, cuando lo pida, te regalamos otros {amount} para el tuyo.",
+      "codeLabel": "Tu código",
+      "copy": "Copiar enlace",
+      "copied": "Enlace copiado"
+    }
   },
   "profile": {
     "title": "Mi perfil",
@@ -3040,5 +3051,112 @@
         }
       ]
     }
+  },
+  "giftVoucher": {
+    "metaTitle": "Tarjeta regalo de cuento personalizado | Meapica",
+    "metaDescription": "Regala un cuento personalizado con su nombre y su aventura. La tarjeta regalo llega al momento por email, lista para imprimir. Tapa dura, tapa blanda o PDF, IVA incluido.",
+    "breadcrumb": "Tarjeta regalo",
+    "footerLink": "Tarjeta regalo",
+    "eyebrow": "Tarjeta regalo",
+    "h1": "Regala su propio cuento, aunque llegues justo",
+    "intro": "Eliges el libro y lo pagas ahora. La familia lo crea cuando quiera, con el nombre y la aventura del peque. La tarjeta te llega al momento por email, lista para imprimir y dejar bajo el árbol.",
+    "points": [
+      "Llega al momento por email, también el 24 de diciembre",
+      "Envío incluido en tapa dura y tapa blanda",
+      "No caduca"
+    ],
+    "formLegend": "Elige el libro que regalas",
+    "formats": {
+      "hardcover": {
+        "label": "Tapa dura",
+        "note": "El más especial para regalar · envío incluido"
+      },
+      "softcover": {
+        "label": "Tapa blanda",
+        "note": "Ligero y resistente · envío incluido"
+      },
+      "digital_pdf": {
+        "label": "PDF digital",
+        "note": "Para leer en pantalla o imprimir en casa"
+      }
+    },
+    "recipientLabel": "Para (opcional)",
+    "recipientPlaceholder": "Nombre de quien lo recibe",
+    "messageLabel": "Mensaje en la tarjeta (opcional)",
+    "messagePlaceholder": "Para que vivas tu propia aventura. Con cariño, los abuelos",
+    "messageCount": "{count} de {max}",
+    "buy": "Comprar tarjeta regalo · {price}",
+    "secure": "Pago seguro con Stripe. Te la enviamos al momento por email.",
+    "terms": "No caduca. Puedes desistir en 14 días si no se ha canjeado.",
+    "termsLink": "Condiciones",
+    "error": "No hemos podido abrir el pago. Inténtalo de nuevo en un momento.",
+    "unavailableTitle": "Las tarjetas regalo llegan muy pronto",
+    "unavailableText": "Estamos terminando de prepararlas. Mientras tanto, puedes crear el cuento tú y regalar el PDF al momento.",
+    "unavailableCta": "Crear un cuento",
+    "howHeading": "Cómo funciona",
+    "howSteps": [
+      "Eliges el libro y lo pagas. Si quieres, pones el nombre de quien lo recibe y un mensaje.",
+      "Te llega la tarjeta por email al momento, lista para imprimir o reenviar.",
+      "Quien la recibe crea el cuento y escribe el código al pagar: le sale gratis, con el envío incluido."
+    ],
+    "christmasHeading": "Para Navidad y Reyes",
+    "christmasOpen": "Aún llegas: el último día para pedir el libro impreso a tiempo para {occasion} es el {date}. Si prefieres que lo cree la familia, la tarjeta regalo es la mejor opción.",
+    "christmasClosed": "Ya no llega un libro impreso a tiempo, pero la tarjeta sí: la imprimes, la pones bajo el árbol y el cuento llega después, hecho a medida.",
+    "occasion": {
+      "christmas": "Navidad",
+      "reyes": "Reyes"
+    },
+    "christmasLink": "Ver las fechas de entrega",
+    "faqHeading": "Preguntas sobre la tarjeta regalo",
+    "faq": [
+      {
+        "q": "¿Cuánto tiempo es válida?",
+        "a": "No caduca: se puede canjear cuando la familia quiera. Solo deja de valer si se devuelve."
+      },
+      {
+        "q": "¿Puedo devolverla?",
+        "a": "Sí. Tienes 14 días naturales desde la compra para desistir, siempre que no se haya canjeado: escríbenos a hola@meapica.shop y te devolvemos el importe. Una vez canjeada, el libro se crea a medida y ya no tiene derecho de desistimiento."
+      },
+      {
+        "q": "¿Cómo se canjea?",
+        "a": "Se crea el cuento en meapica.shop, se elige el mismo formato de la tarjeta y se escribe el código en «Añadir código promocional» al pagar. El total queda en 0 €."
+      },
+      {
+        "q": "¿Puede elegir otro formato?",
+        "a": "La tarjeta vale para el formato que elijas al comprarla. Si quien la recibe quiere añadir un ejemplar extra, lo paga aparte."
+      },
+      {
+        "q": "¿Hay gastos de envío?",
+        "a": "No. En tapa dura y tapa blanda el envío a la península y Baleares está incluido. De momento no enviamos a Canarias, Ceuta ni Melilla."
+      }
+    ],
+    "thanks": {
+      "metaTitle": "Tu tarjeta regalo | Meapica",
+      "h1": "¡Ya tienes tu tarjeta regalo!",
+      "intro": "Te la hemos enviado también por email. Puedes imprimirla ahora mismo.",
+      "codeLabel": "Código de la tarjeta regalo",
+      "validUntil": "No caduca",
+      "printCta": "Ver e imprimir la tarjeta",
+      "pendingTitle": "Estamos preparando tu tarjeta",
+      "pendingText": "El pago está hecho. Te llegará por email en unos minutos. Si no la ves, mira en la carpeta de promociones o escríbenos a hola@meapica.shop.",
+      "backHome": "Volver al inicio"
+    },
+    "card": {
+      "metaTitle": "Tarjeta regalo Meapica",
+      "kicker": "Tarjeta regalo",
+      "title": "Un cuento hecho para ti",
+      "forName": "Para {name}",
+      "product": {
+        "hardcover": "Un cuento personalizado en tapa dura",
+        "softcover": "Un cuento personalizado en tapa blanda",
+        "digital_pdf": "Un cuento personalizado en PDF"
+      },
+      "codeLabel": "Tu código",
+      "validUntil": "No caduca",
+      "howTo": "Entra en meapica.shop, crea tu cuento con tu nombre y tu aventura, y escribe este código al pagar.",
+      "print": "Imprimir",
+      "notFound": "No encontramos esta tarjeta. Revisa el enlace del email o escríbenos a hola@meapica.shop."
+    },
+    "fromChristmas": "¿Prefieres que lo cree la familia? Regala una tarjeta regalo"
   }
 }

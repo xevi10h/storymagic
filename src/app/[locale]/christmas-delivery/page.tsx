@@ -13,6 +13,7 @@ import DeliveryCountdown from "@/components/seasonal/DeliveryCountdown";
 import DeadlineCards from "@/components/seasonal/DeadlineCards";
 import { PRICING, formatPrice } from "@/lib/pricing";
 import { isToolLocale, toolPath } from "@/lib/tools/registry";
+import { GIFT_VOUCHER_PATH } from "@/lib/promo-codes";
 import { COPY_PARAMS, DELIVERY_BUSINESS_DAYS } from "@/lib/product-facts";
 import {
   CHRISTMAS_DELIVERY_PATH,
@@ -61,6 +62,7 @@ export default async function Page({ params }: PageProps) {
   const ts = await getTranslations({ locale, namespace: "seo" });
   const tp = await getTranslations({ locale, namespace: "pricing" });
   const th = await getTranslations({ locale, namespace: "hero" });
+  const tgv = await getTranslations({ locale, namespace: "giftVoucher" });
 
   const today = spainToday();
   const years = seasonYears();
@@ -175,6 +177,16 @@ export default async function Page({ params }: PageProps) {
                 <span aria-hidden className="material-symbols-outlined !text-lg transition-transform group-hover:translate-x-1">
                   arrow_forward
                 </span>
+              </Link>
+              <Link
+                href={GIFT_VOUCHER_PATH}
+                className="mt-4 flex min-h-11 items-center gap-2 rounded-md text-sm font-semibold text-ink-soft underline decoration-brand/30 underline-offset-4 transition-colors hover:text-brand-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+                data-testid="christmas-gift-voucher-link"
+              >
+                <span aria-hidden className="material-symbols-outlined !text-xl text-brand-text">
+                  redeem
+                </span>
+                {tgv("fromChristmas")}
               </Link>
               {toolsLink && (
                 <Link

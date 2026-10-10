@@ -121,6 +121,12 @@ Seller on invoices: Xavier Huix Trenco (autónomo), NIF 41649433K, Carrer Aribau
   `txcd_35010001` (children's book). Changing an amount: edit `STRIPE_CATALOG`, re-run the script
   (new Price takes the lookup key, old one archived). The server refuses to sell if a Price's
   amount/tax behaviour drifts from the code (`getStripeCatalog`).
+- Coupons (2026-10-09, `src/lib/promo-codes.ts`): `meapica_referral_10` (10 € amount_off EUR, applies_to the
+  softcover + hardcover products) and `meapica_voucher_{hardcover,softcover,digital_pdf}` (100 %, applies_to that
+  format's product), plus catalog Prices `meapica_voucher_{digital_pdf,softcover,hardcover}` (9,90 / 34,90 / 49,90 €,
+  same tax codes as the books). Created in TEST 2026-10-09; **run the script with the live key at deploy** (until
+  then referral codes and vouchers stay hidden). Coupons are immutable: a wrong one is reported, delete + re-run.
+  Promotion codes are created by the app (one per order / reward / voucher), never by the script.
 - Webhook endpoint (events: `checkout.session.completed`, `checkout.session.async_payment_succeeded`,
   `checkout.session.async_payment_failed`, `checkout.session.expired`, `charge.refunded`,
   `charge.dispute.created`); a NEW endpoint prints its signing secret once. **The last two events are
@@ -381,6 +387,25 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
 - **Meta CAPI logging (2026-10-03):** `sendMetaPurchase()` logs one line per outcome (`sent (live|test:CODE): events_received=1
   fbtrace_id=…`, `REJECTED …`, `NOT confirmed`, `FAILED`) and every skip reason. Vercel prod env vars are `sensitive`: `vercel env
   pull` returns them EMPTY, so an empty pulled value is not evidence of an empty secret.
+
+### Referral + gift vouchers (2026-10-09)
+
+- Webhook: no new event types. `checkout.session.completed` with `metadata.kind = gift_voucher` → voucher row +
+  code + email (`src/lib/growth/gift-vouchers.ts`); book sessions additionally mint the order's referral code
+  (best-effort, never retried from the webhook; the pipeline retries before rendering the PDF) and process the
+  promotion code used (voucher redeemed / referral reward, retried by Stripe on failure). `charge.refunded` on a
+  voucher payment deactivates its code + credit note.
+- No new env vars. Voucher card links are HMAC-signed with a key derived from `SUPABASE_SERVICE_ROLE_KEY`.
+- Rate limit `gift_voucher_checkout` (10 per hour per IP) on `POST /api/gift-voucher/checkout`.
+- Setup (live, owner): `STRIPE_KEY=sk_live_… npx tsx --tsconfig tsconfig.json scripts/stripe-setup-catalog.mts --dry-run`, then without `--dry-run`.
+
+### Deploy order — referral + gift vouchers (2026-10-09)
+
+| Version | File | When |
+|---|---|---|
+| 20261009120000 | `referrals_and_gift_vouchers.sql` (`referral_codes`, `referral_rewards`, `gift_vouchers`, service role only) | **before** the deploy (additive; the webhook writes them) |
+
+Order: apply the migration → deploy → run the setup script with the live key (features appear within 10 min, cache TTL).
 
 ### Deploy order — funnel + reminders (2026-10-03)
 

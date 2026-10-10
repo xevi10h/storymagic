@@ -97,6 +97,11 @@ export interface BookPdfInput {
   favoriteColor?: string | null;
   favoriteCompanion?: string | null;
   futureDream?: string | null;
+  /**
+   * The buyer's referral code ("10 € y 10 €", src/lib/promo-codes.ts): the last inner page
+   * prints its QR + one line instead of the plain meapica.shop QR. Absent = home QR.
+   */
+  referral?: { code: string; url: string } | null;
 }
 
 // ── PDF i18n: pure copy shared with the web viewer (src/lib/book/print-text.ts) ──
@@ -151,7 +156,7 @@ export async function prepareBookRender(input: BookPdfInput): Promise<BookRender
     safe: DIGITAL_COVER_SAFE,
   });
   const [qrDataUrl, logoWhite, logoOrnament, textGradient, titleGradient, coverGradient, creamFade] = await Promise.all([
-    generateQrDataUrl(theme.coverGradientStart),
+    generateQrDataUrl(theme.coverGradientStart, input.referral?.url),
     getBrandLogoPng("#ffffff"),
     getBrandLogoPng(theme.ornamentColor),
     getGradientPng(TEXT_OVERLAY_STOPS),
@@ -765,7 +770,22 @@ function ColophonPage({ ctx }: { ctx: BookRenderContext }) {
       <View style={{ position: "absolute", top: M, bottom: M, left: M, right: M, justifyContent: "center", alignItems: "center" }}>
         <View style={{ alignItems: "center", maxWidth: BOOK.trimWidth * 0.65 }}>
           <Paragraphs text={pdfT(input.locale, "colophonText")} style={{ fontFamily: FONTS.body, fontSize: 10, color: COLORS.textMuted, textAlign: "center", lineHeight: 1.8 }} />
-          {qrDataUrl ? (
+          {qrDataUrl && input.referral ? (
+            // Referral: QR (25 mm, scannable at arm's length) + the code typed out, inside the safe area.
+            <View style={{ marginTop: 22, alignItems: "center" }}>
+              <Text style={{ fontFamily: FONTS.display, fontSize: 12, fontWeight: 600, color: COLORS.textMedium, textAlign: "center" }}>
+                {pdfT(input.locale, "referralTitle")}
+              </Text>
+              <Text style={{ fontFamily: FONTS.body, fontSize: 8.5, lineHeight: 1.4, color: COLORS.textMuted, textAlign: "center", marginTop: 4 }}>
+                {pdfT(input.locale, "referralLine")}
+              </Text>
+              <Image src={qrDataUrl} style={{ width: 72, height: 72, marginTop: 10 }} />
+              <Text style={{ fontFamily: FONTS.body, fontSize: 11, fontWeight: 700, color: COLORS.textMedium, letterSpacing: 1.5, marginTop: 7 }}>
+                {input.referral.code}
+              </Text>
+              <Text style={{ fontFamily: FONTS.body, fontSize: 7, color: COLORS.textMuted, letterSpacing: 0.5, marginTop: 2 }}>meapica.shop</Text>
+            </View>
+          ) : qrDataUrl ? (
             <View style={{ marginTop: 20, alignItems: "center", gap: 6 }}>
               <Image src={qrDataUrl} style={{ width: 72, height: 72 }} />
               <Text style={{ fontFamily: FONTS.body, fontSize: 7, color: COLORS.textMuted, letterSpacing: 0.5 }}>meapica.shop</Text>

@@ -21,6 +21,7 @@ import { orderAccessUrl } from "@/lib/auth/next-path";
 import { formatPrice, offerPrice, SELLER_IDENTITY, STRIPE_CATALOG, type CatalogItemId } from "@/lib/pricing";
 import type { UpsellOffer } from "@/lib/upsell";
 import { ORDER_NOTICES, type NoticeEventStrings, type OrderNoticeEvent } from "./order-notices";
+import { renderReferralBlock } from "./growth-emails";
 
 export type OrderEmailEvent =
   | "order_confirmed"
@@ -90,6 +91,8 @@ export interface OrderEmailContext {
    * upgrade in book_ready of a PDF order, the extra copy in delivered.
    */
   upsell?: { offer: UpsellOffer; expiresAt: string | null } | null;
+  /** The buyer's referral code ("10 € y 10 €"): commercial block, needs unsubscribeUrl too. */
+  referral?: { code: string; url: string } | null;
   /**
    * Unsubscribe page for this recipient. The offer block is commercial content
    * (LSSI 21.2): it is only rendered together with this link, and the caller only
@@ -184,6 +187,9 @@ const CONTENT: Record<Locale, Strings> = {
         extra_copy_hardcover: "Ejemplar extra, tapa dura",
         upgrade_softcover: "Cuento personalizado, tapa blanda (descontado el PDF ya comprado)",
         upgrade_hardcover: "Cuento personalizado, tapa dura (descontado el PDF ya comprado)",
+        voucher_digital_pdf: "Tarjeta regalo, cuento en PDF",
+        voucher_softcover: "Tarjeta regalo, cuento en tapa blanda",
+        voucher_hardcover: "Tarjeta regalo, cuento en tapa dura",
       },
       shipping: "Envío estándar",
       shippingIncluded: "Incluido",
@@ -295,6 +301,9 @@ const CONTENT: Record<Locale, Strings> = {
         extra_copy_hardcover: "Exemplar extra, tapa dura",
         upgrade_softcover: "Conte personalitzat, tapa tova (descomptat el PDF ja comprat)",
         upgrade_hardcover: "Conte personalitzat, tapa dura (descomptat el PDF ja comprat)",
+        voucher_digital_pdf: "Targeta regal, conte en PDF",
+        voucher_softcover: "Targeta regal, conte en tapa tova",
+        voucher_hardcover: "Targeta regal, conte en tapa dura",
       },
       shipping: "Enviament estàndard",
       shippingIncluded: "Inclòs",
@@ -406,6 +415,9 @@ const CONTENT: Record<Locale, Strings> = {
         extra_copy_hardcover: "Extra copy, hardcover",
         upgrade_softcover: "Personalised book, softcover (PDF already paid deducted)",
         upgrade_hardcover: "Personalised book, hardcover (PDF already paid deducted)",
+        voucher_digital_pdf: "Gift voucher, PDF book",
+        voucher_softcover: "Gift voucher, softcover book",
+        voucher_hardcover: "Gift voucher, hardcover book",
       },
       shipping: "Standard shipping",
       shippingIncluded: "Included",
@@ -517,6 +529,9 @@ const CONTENT: Record<Locale, Strings> = {
         extra_copy_hardcover: "Exemplaire supplémentaire, couverture rigide",
         upgrade_softcover: "Livre personnalisé, couverture souple (PDF déjà payé déduit)",
         upgrade_hardcover: "Livre personnalisé, couverture rigide (PDF déjà payé déduit)",
+        voucher_digital_pdf: "Carte cadeau, livre en PDF",
+        voucher_softcover: "Carte cadeau, livre à couverture souple",
+        voucher_hardcover: "Carte cadeau, livre à couverture rigide",
       },
       shipping: "Livraison standard",
       shippingIncluded: "Incluse",
@@ -800,12 +815,17 @@ export function buildOrderEmail(event: OrderEmailEvent, ctx: OrderEmailContext):
 
   const greeting = s.greeting(firstName);
   const upsell = renderUpsell(event, ctx, s, loc, dashboardUrl);
+  // Commercial content never goes out without its unsubscribe link (LSSI 21.2).
+  const referral =
+    ctx.referral && ctx.unsubscribeUrl
+      ? renderReferralBlock(ctx.referral, loc, { ...s.offerOptOut, url: ctx.unsubscribeUrl })
+      : null;
   const html = renderEmailLayout({
     heading: ev.heading,
     greeting: escapeHtml(greeting),
     paragraphs,
     cta: shownCta,
-    detailsHtml: receipt ? renderReceiptHtml(receipt, s.receipt, loc) : upsell?.html,
+    detailsHtml: (receipt ? renderReceiptHtml(receipt, s.receipt, loc) : (upsell?.html ?? "")) + (referral?.html ?? ""),
     infoHtml,
     signoff: s.signoff,
     lang: loc,
@@ -817,6 +837,7 @@ export function buildOrderEmail(event: OrderEmailEvent, ctx: OrderEmailContext):
   const textLines = [greeting, ...paragraphs.map(stripTags), `${shownCta.label}: ${shownCta.url}`];
   if (receipt) textLines.push(renderReceiptText(receipt, s.receipt, loc));
   if (upsell) textLines.push(upsell.text);
+  if (referral) textLines.push(referral.text);
   if (infoText) textLines.push(infoText);
   textLines.push("---", s.signoff);
 
@@ -824,6 +845,6 @@ export function buildOrderEmail(event: OrderEmailEvent, ctx: OrderEmailContext):
     subject: ev.subject(ctx),
     html,
     text: textLines.join("\n\n"),
-    commercial: !!upsell,
+    commercial: !!upsell || !!referral,
   };
 }

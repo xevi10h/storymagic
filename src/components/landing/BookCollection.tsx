@@ -14,6 +14,8 @@ const FILTER_LABEL_KEYS: Record<AgeFilter, "filterAll" | "filter2to4" | "filter5
   "8-12": "filter8to12",
 };
 
+const SKELETON_CARDS = 5;
+
 /** Real books painted on the platform, locale first; any failure falls back to template art. */
 async function fetchShowcase(locale: string): Promise<ShowcaseBook[]> {
   try {
@@ -81,10 +83,11 @@ export default function BookCollection() {
   }, [locale]);
 
   // Skeletons match the final card count, so nothing jumps when the art arrives.
-  const worlds = useMemo(
-    () => buildCatalog(showcase).filter((w) => fitsAgeFilter(w.template, activeFilter)),
-    [showcase, activeFilter],
-  );
+  // Until the showcase arrives, as many skeletons as worlds with a real example (today 5).
+  const worlds = useMemo(() => {
+    const catalog = buildCatalog(showcase).filter((w) => fitsAgeFilter(w.template, activeFilter));
+    return loaded ? catalog : catalog.slice(0, SKELETON_CARDS);
+  }, [showcase, activeFilter, loaded]);
   const contentKey = `${loaded}-${activeFilter}-${worlds.length}`;
   const edges = useScrollEdges(scrollRef, contentKey);
 

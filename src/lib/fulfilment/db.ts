@@ -98,6 +98,54 @@ export type OrderFulfilmentColumns = {
   upsell_reminder_sent_at: string | null;
 };
 
+// 20261009120000_referrals_and_gift_vouchers.sql (rules: src/lib/promo-codes.ts)
+export type ReferralCodeRow = {
+  id: string;
+  order_id: string;
+  user_id: string | null;
+  email: string | null;
+  stripe_customer_id: string | null;
+  code: string;
+  stripe_promotion_code_id: string | null;
+  locale: string;
+  created_at: string;
+};
+
+export type ReferralRewardRow = {
+  id: string;
+  referral_code_id: string;
+  referred_order_id: string;
+  referrer_email: string;
+  code: string;
+  stripe_promotion_code_id: string | null;
+  locale: string;
+  expires_at: string;
+  email_sent_at: string | null;
+  created_at: string;
+};
+
+export type GiftVoucherRow = {
+  id: string;
+  code: string;
+  format: "hardcover" | "softcover" | "digital_pdf";
+  amount_cents: number;
+  buyer_email: string;
+  buyer_name: string | null;
+  stripe_checkout_session_id: string;
+  stripe_payment_id: string | null;
+  stripe_invoice_id: string | null;
+  stripe_promotion_code_id: string | null;
+  locale: string;
+  recipient_name: string | null;
+  message: string | null;
+  expires_at: string | null;
+  redeemed_order_id: string | null;
+  redeemed_at: string | null;
+  refunded_at: string | null;
+  email_sent_at: string | null;
+  created_at: string;
+};
+
 export type FulfilmentDatabase = Omit<Database, "public"> & {
   public: Omit<PublicSchema, "Tables" | "Functions"> & {
     Tables: Omit<Tables, "orders" | "stories" | "story_illustrations"> & {
@@ -115,6 +163,25 @@ export type FulfilmentDatabase = Omit<Database, "public"> & {
         Row: PreviewReminderRow;
         Insert: Pick<PreviewReminderRow, "story_id" | "email" | "consent_version"> & Partial<PreviewReminderRow>;
         Update: Partial<PreviewReminderRow>;
+        Relationships: [];
+      };
+      referral_codes: {
+        Row: ReferralCodeRow;
+        Insert: Pick<ReferralCodeRow, "order_id" | "code"> & Partial<ReferralCodeRow>;
+        Update: Partial<ReferralCodeRow>;
+        Relationships: [];
+      };
+      referral_rewards: {
+        Row: ReferralRewardRow;
+        Insert: Pick<ReferralRewardRow, "referral_code_id" | "referred_order_id" | "referrer_email" | "code" | "expires_at"> & Partial<ReferralRewardRow>;
+        Update: Partial<ReferralRewardRow>;
+        Relationships: [];
+      };
+      gift_vouchers: {
+        Row: GiftVoucherRow;
+        Insert: Pick<GiftVoucherRow, "code" | "format" | "amount_cents" | "buyer_email" | "stripe_checkout_session_id" | "expires_at"> &
+          Partial<GiftVoucherRow>;
+        Update: Partial<GiftVoucherRow>;
         Relationships: [];
       };
       // 20260930156000_marketing_email.sql
