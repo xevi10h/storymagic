@@ -72,6 +72,9 @@ export async function POST(request: Request) {
     const email = await resendGet<ReceivedEmail>(`/emails/receiving/${emailId}`, apiKey);
     // Never forward our own outbound mail back to ourselves (loops).
     if (/@meapica\.shop>?\s*$/i.test(email.from)) return NextResponse.json({ skipped: "own-domain" });
+    // The Resend account is shared with other products and its webhooks fire for every
+    // domain: only mail addressed to ours is ours to forward.
+    if (!email.to.some((to) => /@meapica\.shop>?\s*$/i.test(to))) return NextResponse.json({ skipped: "other-domain" });
 
     const { data: attachments } = await resendGet<{ data: ReceivedAttachment[] }>(
       `/emails/receiving/${emailId}/attachments`,
