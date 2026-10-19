@@ -54,6 +54,7 @@ const es = (f: GuideFacts, ctx: AboutContext): AboutGuideCopy => {
       { term: "Formatos y precios", value: `Tapa dura, ${f.hardcover}. Tapa blanda, ${f.softcover}. Solo PDF, ${f.pdf}. Precios finales, IVA incluido. El libro impreso incluye el envío y el PDF.` },
       { term: "El libro", value: `${f.size} × ${f.size} cm, ${f.pages} páginas, ${f.scenes} escenas ilustradas, papel estucado seda de ${f.paper} g y portada con laminado mate.` },
       { term: "Qué se personaliza", value: "El nombre, el aspecto (piel, pelo, ojos, gafas, pecas), la dedicatoria y los tres capítulos de la aventura." },
+      { term: "Cómo se crea", value: "La historia y las ilustraciones se crean con inteligencia artificial a partir de lo que eliges, y cada libro es único. Antes de pagar ves la portada y las primeras escenas." },
       { term: "Idiomas", value: "Español, catalán, inglés y francés. El cuento en catalán se escribe directamente en catalán, no se traduce." },
       { term: "Vista previa", value: `Gratis y sin cuenta: ves la portada con su nombre, su retrato y las ${PREVIEW_SCENES} primeras escenas ilustradas antes de pagar.` },
       { term: "Fotos del niño", value: photo },
@@ -115,6 +116,10 @@ const es = (f: GuideFacts, ctx: AboutContext): AboutGuideCopy => {
         answer: `Sí. Creas su cuento gratis y sin registrarte y ves la portada, su retrato y las ${PREVIEW_SCENES} primeras escenas ilustradas. Solo pagas si te gusta.`,
       },
       {
+        question: "¿Los cuentos se hacen con inteligencia artificial?",
+        answer: "Sí. La historia y las ilustraciones se crean con inteligencia artificial a partir del nombre, el aspecto, el mundo y los capítulos que eliges, así que cada libro es único. Antes de pagar ves la portada, su retrato y las primeras escenas.",
+      },
+      {
         question: "¿En qué idiomas está?",
         answer: "En español, catalán, inglés y francés. El cuento en catalán se escribe directamente en catalán, no es una traducción.",
       },
@@ -149,6 +154,7 @@ const ca = (f: GuideFacts, ctx: AboutContext): AboutGuideCopy => {
       { term: "Formats i preus", value: `Tapa dura, ${f.hardcover}. Tapa tova, ${f.softcover}. Només PDF, ${f.pdf}. Preus finals, IVA inclòs. El llibre imprès inclou l'enviament i el PDF.` },
       { term: "El llibre", value: `${f.size} × ${f.size} cm, ${f.pages} pàgines, ${f.scenes} escenes il·lustrades, paper estucat setinat de ${f.paper} g i portada amb laminat mat.` },
       { term: "Què es personalitza", value: "El nom, l'aspecte (pell, cabell, ulls, ulleres, pigues), la dedicatòria i els tres capítols de l'aventura." },
+      { term: "Com es crea", value: "La història i les il·lustracions es creen amb intel·ligència artificial a partir del que tries, i cada llibre és únic. Abans de pagar veus la portada i les primeres escenes." },
       { term: "Idiomes", value: "Català, castellà, anglès i francès. El conte en català s'escriu directament en català, no es tradueix." },
       { term: "Vista prèvia", value: `Gratuïta i sense compte: veus la portada amb el seu nom, el seu retrat i les ${PREVIEW_SCENES} primeres escenes il·lustrades abans de pagar.` },
       { term: "Fotos de l'infant", value: photo },
@@ -208,6 +214,10 @@ const ca = (f: GuideFacts, ctx: AboutContext): AboutGuideCopy => {
       {
         question: "Puc veure el llibre abans de pagar?",
         answer: `Sí. Crees el seu conte de franc i sense registrar-te i veus la portada, el seu retrat i les ${PREVIEW_SCENES} primeres escenes il·lustrades. Només pagues si t'agrada.`,
+      },
+      {
+        question: "Els contes es fan amb intel·ligència artificial?",
+        answer: "Sí. La història i les il·lustracions es creen amb intel·ligència artificial a partir del nom, l'aspecte, el món i els capítols que tries, així que cada llibre és únic. Abans de pagar veus la portada, el seu retrat i les primeres escenes.",
       },
       {
         question: "En quins idiomes està?",

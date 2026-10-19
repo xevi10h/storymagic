@@ -59,6 +59,7 @@ export function llmsBrief(): string {
 > Meapica makes personalised printed picture books for children aged ${AGE_MIN} to ${AGE_MAX}: the child's name on the cover and on every page, a watercolour portrait that looks like them, and an adventure whose chapters the parent chooses. You see the cover, the portrait and the first ${PREVIEW_SCENES} illustrated scenes of the child's own book before paying. Run from Barcelona, sold in Spain, printed on demand in Europe.
 
 - Made by: ${FOUNDER.legalName} (${FOUNDER.city}, Spain), the person named in the legal notice. Facts sheet: ${es(GUIDES.about.path)} (Catalan: ${SITE_URL}/ca${GUIDES.about.path})
+- How it is made: the story and the illustrations are generated with AI from the parent's choices, so every book is unique.
 - Full text of the guides, the facts sheet and the blog in one file: ${SITE_URL}/llms-full.txt
 
 ## Prices (final, VAT included / IVA incluido)
