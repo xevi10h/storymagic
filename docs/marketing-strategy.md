@@ -29,8 +29,7 @@ preview before paying, the child's real likeness in watercolour, and native Cata
    best watch time). Same video to Reels, TikTok, Shorts and Pinterest at no extra cost.
 
 ### Phase 2, 20 Oct to 30 Nov: borrowed audiences
-4. Press for Reyes: 18 pitches in `docs/outreach/reyes-2026-targets.csv` (their Gmail drafts were no longer in the
-   mailbox on 2026-10-19: recreate before sending). Roundups of "carta a los Reyes para imprimir" are refreshed in
+4. Press for Reyes: 20 pitches in `docs/outreach/reyes-2026-targets.csv`, Gmail drafts recreated 2026-10-19, unsent. Roundups of "carta a los Reyes para imprimir" are refreshed in
    November: send them in the last week of October. Catalan media, AFA federations and Spanish gift guides:
    20 more pitches in `docs/outreach/media-2026-10.md` (Sortir amb Nens, Time Out, Ara Criatures, aFFaC, FANOC,
    Malasmadres...), Gmail drafts from hola@meapica.shop created 2026-10-19, unsent.
