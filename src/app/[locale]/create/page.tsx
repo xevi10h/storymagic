@@ -27,6 +27,7 @@ import {
 } from "@/lib/creation-flow";
 import { usePersistedState, STORAGE_KEY } from "@/hooks/usePersistedState";
 import { ensureGuestSession } from "@/lib/guest-session";
+import { getFirstTouch } from "@/lib/tracking/attribution";
 import { isCaptchaError } from "@/lib/captcha/turnstile";
 import CreationHeader from "@/components/create/CreationHeader";
 import StepName from "@/components/create/StepName";
@@ -335,6 +336,8 @@ function CrearPageContent() {
               ? state.characterPrepId
               : undefined,
           locale,
+          // First-touch channel of this page load (in memory, no cookie): stored on the story.
+          attribution: getFirstTouch(),
         }),
       });
       if (!res.ok) {

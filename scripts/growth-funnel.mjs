@@ -3,7 +3,9 @@
 //
 // Cohort view by the Europe/Madrid calendar day a story was created:
 //   stories created → generation started → preview ready → order created → paid
-// plus refunded stories, paid revenue (EUR, IVA incluido: B2C prices) and a per-locale split.
+// plus refunded stories, paid revenue (EUR, IVA incluido: B2C prices), a per-locale split and a
+// per-source split (stories.attribution: first-touch UTMs / ad-click id / referrer host, captured
+// without cookies; see src/lib/tracking/attribution.ts). Orders inherit the source of their story.
 // Unlike PostHog / GA4 / pixels it does not depend on cookie consent: it counts our own rows.
 //
 // Data: Supabase Management API, read-only endpoint
@@ -19,6 +21,10 @@
 //                        preview/ready/ordered, or the story has an order
 //   order created      = any orders row for the story (incl. expired checkouts: status cancelled/pending)
 //   paid               = an order in paid/producing/shipped/delivered, not refunded
+// Source = utm_source, else the referring site (instagram, facebook, tiktok, google, pinterest…),
+// else the ad-click id (gclid → google, fbclid → meta, ttclid → tiktok), else "(direct)".
+// "(internal)" = the page that created the story was reached from our own site after a reload /
+// new tab (in-memory capture restarted); "(not captured)" = no stories.attribution (older stories).
 // Excluded: showcase stories and test/e2e/admin traffic (TEST_EMAIL_PATTERNS, ADMIN_EMAILS, --exclude-email,
 // paid orders of 0 € = promo-code tests). A user with ANY excluded email (account, profile or an order's
 // checkout email) or a 0 € paid order is excluded with all their stories. Anonymous guests are kept.
@@ -154,10 +160,11 @@ async function sql(query, parameters = []) {
 
 const cols = await sql(
   `select column_name from information_schema.columns
-   where table_schema = 'public' and table_name = 'stories' and column_name in ('generation_started_at', 'preview_ready_at')`,
+   where table_schema = 'public' and table_name = 'stories' and column_name in ('generation_started_at', 'preview_ready_at', 'attribution')`,
 );
 const hasCol = new Set(cols.map((c) => c.column_name));
 const timestampMode = hasCol.has("generation_started_at") && hasCol.has("preview_ready_at");
+const attrExpr = hasCol.has("attribution") ? "s.attribution" : "null::jsonb";
 
 const previewExpr = `(${hasCol.has("preview_ready_at") ? "s.preview_ready_at is not null or " : ""}s.status = any($4::text[]) or so.order_created)`;
 const startedExpr = `(${hasCol.has("generation_started_at") ? "s.generation_started_at is not null or " : ""}s.status <> 'draft' or ${previewExpr})`;
@@ -198,6 +205,12 @@ story_orders as (
 ),
 flags as (
   select s.day, coalesce(s.locale, '?') as locale, s.excluded,
+         ${attrExpr} is not null as attributed,
+         ${attrExpr}->>'utm_source' as utm_source,
+         ${attrExpr}->>'utm_medium' as utm_medium,
+         ${attrExpr}->>'utm_campaign' as utm_campaign,
+         ${attrExpr}->>'click_id' as click_id,
+         ${attrExpr}->>'referrer_host' as referrer_host,
          ${startedExpr} as started,
          ${previewExpr} as preview,
          coalesce(so.order_created, false) as ordered,
@@ -207,7 +220,7 @@ flags as (
          coalesce(so.paid_orders, 0) as paid_orders
   from cohort s left join story_orders so on so.story_id = s.id
 )
-select day::text, locale, excluded,
+select day::text, locale, excluded, attributed, utm_source, utm_medium, utm_campaign, click_id, referrer_host,
        count(*)::int as created,
        count(*) filter (where started)::int as started,
        count(*) filter (where preview)::int as preview,
@@ -217,10 +230,39 @@ select day::text, locale, excluded,
        sum(paid_orders)::int as paid_orders,
        sum(revenue)::numeric(12,2)::text as revenue
 from flags
-group by 1, 2, 3
+group by 1, 2, 3, 4, 5, 6, 7, 8, 9
 order by 1, 2`;
 
 const rows = await sql(QUERY, [from, to, PATTERNS, PREVIEW_STATUSES, PAID_STATUSES]);
+
+// ───────── source (channel) ─────────
+/** Referring host → channel. Our own domains = "(internal)"; unknown hosts are kept as-is. */
+const HOST_CHANNELS = [
+  [/(^|\.)meapica\.|^localhost$|\.vercel\.app$/, "(internal)"],
+  [/(^|\.)instagram\.com$/, "instagram"],
+  [/(^|\.)(facebook\.com|fb\.com|fb\.me|messenger\.com)$/, "facebook"],
+  [/(^|\.)tiktok\.com$/, "tiktok"],
+  [/(^|\.)(pinterest\.[a-z.]+|pin\.it)$/, "pinterest"],
+  // Webmail before google: mail.google.com is an email click, not search.
+  [/(^|\.)(mail\.google\.com|outlook\.(live|office)\.com|mail\.yahoo\.com)$|^com\.google\.android\.gm$/, "email"],
+  [/(^|\.)google\.[a-z.]+$|^com\.google\.android\.googlequicksearchbox$/, "google"],
+  [/(^|\.)bing\.com$/, "bing"],
+  [/(^|\.)(youtube\.com|youtu\.be)$/, "youtube"],
+  [/(^|\.)(t\.co|twitter\.com|x\.com)$/, "x"],
+  [/(^|\.)(chatgpt\.com|openai\.com)$/, "chatgpt"],
+  [/(^|\.)perplexity\.ai$/, "perplexity"],
+];
+const CLICK_ID_CHANNELS = { gclid: "google", fbclid: "meta", ttclid: "tiktok", msclkid: "bing" };
+function sourceOf(r) {
+  if (!r.attributed) return "(not captured)";
+  if (r.utm_source) return r.utm_source;
+  const host = r.referrer_host;
+  const hostChannel = host ? (HOST_CHANNELS.find(([re]) => re.test(host))?.[1] ?? host) : null;
+  // A paid click (gclid/fbclid/ttclid) arriving through an in-app browser or our own redirect.
+  if ((!hostChannel || hostChannel === "(internal)") && r.click_id) return CLICK_ID_CHANNELS[r.click_id] ?? r.click_id;
+  return hostChannel ?? "(direct)";
+}
+const campaignOf = (r) => (r.utm_campaign ? `${sourceOf(r)} / ${r.utm_medium ?? "-"} / ${r.utm_campaign}` : null);
 
 // ───────── aggregate ─────────
 const STEPS = ["created", "started", "preview", "ordered", "paid"];
@@ -233,6 +275,8 @@ const add = (acc, r) => {
 const byDay = new Map();
 for (let d = from; d <= to; d = addDays(d, 1)) byDay.set(d, empty());
 const byLocale = new Map();
+const bySource = new Map();
+const byCampaign = new Map();
 const totals = empty();
 const excluded = empty();
 for (const r of rows) {
@@ -242,6 +286,10 @@ for (const r of rows) {
   }
   add(byDay.get(r.day) ?? byDay.set(r.day, empty()).get(r.day), r);
   add(byLocale.get(r.locale) ?? byLocale.set(r.locale, empty()).get(r.locale), r);
+  const source = sourceOf(r);
+  add(bySource.get(source) ?? bySource.set(source, empty()).get(source), r);
+  const campaign = campaignOf(r);
+  if (campaign) add(byCampaign.get(campaign) ?? byCampaign.set(campaign, empty()).get(campaign), r);
   add(totals, r);
 }
 const pct = (a, b) => (b ? Math.round((a / b) * 1000) / 10 : null);
@@ -270,6 +318,8 @@ const report = {
   },
   totals: { ...totals, conversion: conversion(totals) },
   by_locale: Object.fromEntries([...byLocale].sort((a, b) => b[1].created - a[1].created).map(([k, v]) => [k, { ...v, conversion: conversion(v) }])),
+  by_source: Object.fromEntries([...bySource].sort((a, b) => b[1].created - a[1].created).map(([k, v]) => [k, { ...v, conversion: conversion(v) }])),
+  by_campaign: Object.fromEntries([...byCampaign].sort((a, b) => b[1].created - a[1].created).map(([k, v]) => [k, { ...v, conversion: conversion(v) }])),
   by_day: [...byDay].map(([day, v]) => ({ day, ...v })),
   excluded: { stories: excluded.created, paid_stories: excluded.paid, revenue: excluded.revenue, patterns: PATTERNS },
 };
@@ -310,4 +360,19 @@ for (const [loc, t] of Object.entries(report.by_locale)) {
       `paid ${String(t.paid).padStart(3)} (${fmtPct(t.conversion.paid_of_preview)} of previews) · ${eur(t.revenue)}`,
   );
 }
+const printGroup = (title, group, limit = 15) => {
+  const entries = Object.entries(group);
+  if (!entries.length) return;
+  const width = Math.min(48, Math.max(...entries.map(([k]) => k.length)));
+  console.log(`\n${title}:`);
+  for (const [key, t] of entries.slice(0, limit)) {
+    console.log(
+      `  ${key.slice(0, width).padEnd(width)} created ${String(t.created).padStart(4)} · preview ${String(t.preview).padStart(4)} · ` +
+        `checkout ${String(t.ordered).padStart(3)} · paid ${String(t.paid).padStart(3)} (${fmtPct(t.conversion.paid_of_preview)} of previews) · ${eur(t.revenue)}`,
+    );
+  }
+  if (entries.length > limit) console.log(`  … ${entries.length - limit} more (--json for all)`);
+};
+printGroup("by source (first touch)", report.by_source);
+printGroup("by campaign (source / medium / campaign)", report.by_campaign, 10);
 console.log(`\nexcluded as test/e2e/admin: ${excluded.created} stories (${excluded.paid} paid, ${eur(excluded.revenue)})`);

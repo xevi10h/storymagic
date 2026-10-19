@@ -22,6 +22,7 @@ import {
   type ConsentCategory,
 } from "@/lib/tracking/consent";
 import { POSTHOG_KEY, startPosthog, stopPosthog, syncPosthogPath } from "@/lib/tracking/posthog";
+import { captureFirstTouch } from "@/lib/tracking/attribution";
 
 type Fbq = (...args: unknown[]) => void;
 type TtqConsent = { grantConsent?: () => void; revokeConsent?: () => void };
@@ -111,6 +112,10 @@ export default function Tracking() {
     setChoices({ analytics: consentAllows(current, "analytics"), ads: consentAllows(current, "ads") });
     setConfiguring(true);
   };
+
+  // First-touch story attribution: in-memory only, no consent needed (see lib/tracking/attribution.ts).
+  // Runs before the ADS_TRACKING_ENABLED early return below, so it works without any pixel too.
+  useEffect(() => captureFirstTouch(), []);
 
   useEffect(() => {
     // Footer "Configurar cookies": straight to the per-purpose layer, with the current choice shown.

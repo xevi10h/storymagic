@@ -401,7 +401,8 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   `stories_funnel_timestamps` (first draft → generating, first preview-or-later status; the app never writes them).
   `node scripts/growth-funnel.mjs [--days N | --from YYYY-MM-DD --to YYYY-MM-DD] [--json] [--exclude-email X]` prints stories
   created → generation started → preview ready → order created → paid by Madrid day of story creation, with refunds, revenue
-  (IVA incluido) and a per-locale split. Read-only through the Management API (`/database/query/read-only`, token `SUPABASE_PAT`
+  (IVA incluido), a per-locale split and a per-source / per-campaign split from `stories.attribution` (first touch, no cookies;
+  `(not captured)` until migration `20261019120000_story_attribution` is applied and for older stories). Read-only through the Management API (`/database/query/read-only`, token `SUPABASE_PAT`
   from env/.env.local or `~/.config/supabase-profiles/meapica`). Excludes showcase stories, test/e2e/admin users
   (`TEST_EMAIL_PATTERNS` in the script + `ADMIN_EMAILS` + `--exclude-email`) and 0 € paid orders. Falls back to story status
   until the migration is applied. `--json` feeds the weekly growth report.

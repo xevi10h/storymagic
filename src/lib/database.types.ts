@@ -388,6 +388,7 @@ export type Database = {
       stories: {
         Row: {
           art_style: string | null
+          attribution: Json | null
           character_id: string
           character_portrait_url: string | null
           character_prep_id: string | null
@@ -415,6 +416,7 @@ export type Database = {
         }
         Insert: {
           art_style?: string | null
+          attribution?: Json | null
           character_id: string
           character_portrait_url?: string | null
           character_prep_id?: string | null
@@ -442,6 +444,7 @@ export type Database = {
         }
         Update: {
           art_style?: string | null
+          attribution?: Json | null
           character_id?: string
           character_portrait_url?: string | null
           character_prep_id?: string | null

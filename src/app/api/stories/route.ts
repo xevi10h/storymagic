@@ -6,10 +6,27 @@ import type { Json } from "@/lib/database.types";
 import { ownedPortraitPath } from "@/lib/storage/illustration-urls";
 import { avatarAssetPathSchema, characterLookShape } from "@/lib/character-look";
 import { formatChildName } from "@/lib/child-name";
+import { ATTRIBUTION_CLICK_IDS, ATTRIBUTION_MAX, type Attribution } from "@/lib/tracking/attribution";
 
 const VALID_TEMPLATE_IDS = ["space", "forest", "superhero", "pirates", "chef", "dinosaurs", "castle", "safari", "inventor", "candy"] as const;
 const VALID_MODES = ["solo", "juntos"] as const;
 const VALID_LOCALES = ["es", "ca", "en", "fr"] as const;
+
+const attrValue = (max: number) => z.string().trim().min(1).max(max).optional().catch(undefined);
+
+/** First-touch channel from lib/tracking/attribution.ts. Best effort: a bad field is dropped, never a 400. */
+const attributionSchema = z
+  .object({
+    utm_source: attrValue(ATTRIBUTION_MAX.value),
+    utm_medium: attrValue(ATTRIBUTION_MAX.value),
+    utm_campaign: attrValue(ATTRIBUTION_MAX.value),
+    utm_content: attrValue(ATTRIBUTION_MAX.value),
+    click_id: z.enum(ATTRIBUTION_CLICK_IDS).optional().catch(undefined),
+    referrer_host: attrValue(ATTRIBUTION_MAX.host),
+    landing_path: attrValue(ATTRIBUTION_MAX.path),
+  })
+  .nullish()
+  .catch(null);
 
 const storyInputSchema = z.object({
   character: z.object({
@@ -35,6 +52,7 @@ const storyInputSchema = z.object({
   locale: z.enum(VALID_LOCALES).optional().default("es"),
   /** From POST /api/characters/prepare: the generate route reuses its child sheet if the traits still match */
   characterPrepId: z.string().uuid().nullish(),
+  attribution: attributionSchema,
 });
 
 /** A retry of the same creation arrives within seconds; a deliberate second identical book later is still a new draft. */
@@ -79,7 +97,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const { character, templateId, creationMode, decisions, dedication, senderName, ending, portraitUrl, avatarAssetPath, recraftStyleId, locale, characterPrepId } = parsed.data;
+  const { character, templateId, creationMode, decisions, dedication, senderName, ending, portraitUrl, avatarAssetPath, recraftStyleId, locale, characterPrepId, attribution } = parsed.data;
 
   // Reads use the caller's RLS client; writes use the service role (clients have no
   // write grants on product tables) with the owner pinned explicitly on every row.
@@ -219,10 +237,19 @@ export async function POST(request: Request) {
     locale,
     status: "draft",
   };
-  let { data: story, error: storyError } = await admin.from("stories").insert(draft).select("id").single();
+  // First touch, written once at creation (a reused draft keeps its own).
+  const firstTouch = attribution && Object.values(attribution).some(Boolean) ? (attribution as Attribution as Json) : null;
+  const insertStory = async (row: typeof draft) => {
+    const res = await admin.from("stories").insert({ ...row, attribution: firstTouch }).select("id").single();
+    // PGRST204 = stories.attribution not in this database yet (code deployed before migration
+    // 20261019120000). Attribution is analytics only: never block the parent's book on it.
+    if (res.error?.code !== "PGRST204") return res;
+    return admin.from("stories").insert(row).select("id").single();
+  };
+  let { data: story, error: storyError } = await insertStory(draft);
   if (storyError?.code === "23503" && draft.character_prep_id) {
     // Unknown prep id (FK): the prep is only an accelerator — create the story without it.
-    ({ data: story, error: storyError } = await admin.from("stories").insert({ ...draft, character_prep_id: null }).select("id").single());
+    ({ data: story, error: storyError } = await insertStory({ ...draft, character_prep_id: null }));
   }
 
   if (storyError || !story) {
