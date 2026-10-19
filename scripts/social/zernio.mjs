@@ -43,6 +43,26 @@ export async function uploadMedia(path) {
   return pre.json.publicUrl;
 }
 
+/**
+ * Uploads a local file to the public Supabase bucket `showcase` under social/<key> and returns its permanent URL.
+ * For posts scheduled more than 6 days ahead (Zernio temp uploads expire after 7 days). Needs
+ * NEXT_PUBLIC_SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY (env or .env.local), so it runs on the owner's Mac only.
+ */
+export async function hostMedia(path, key) {
+  const env = (name) => process.env[name]?.trim() || readFileSync(`${process.cwd()}/.env.local`, "utf8").match(new RegExp(`^${name}=(.+)$`, "m"))?.[1]?.trim().replace(/^["']|["']$/g, "");
+  const base = env("NEXT_PUBLIC_SUPABASE_URL"), service = env("SUPABASE_SERVICE_ROLE_KEY");
+  if (!base || !service) throw new Error("hostMedia: NEXT_PUBLIC_SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY missing");
+  const contentType = MIME[extname(path).toLowerCase()];
+  if (!contentType) throw new Error(`unsupported media type: ${path}`);
+  const res = await fetch(`${base}/storage/v1/object/showcase/social/${key}`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${service}`, apikey: service, "Content-Type": contentType, "x-upsert": "true" },
+    body: readFileSync(path),
+  });
+  if (!res.ok) throw new Error(`hostMedia ${path}: HTTP ${res.status} ${(await res.text()).slice(0, 200)}`);
+  return `${base}/storage/v1/object/public/showcase/social/${key}`;
+}
+
 /** The Meapica accounts with their health: { instagram, tiktok, facebook, youtube, pinterest } → account (+ .health) or undefined. */
 export async function meapicaAccounts() {
   const acc = await api("GET", "/accounts");

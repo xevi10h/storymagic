@@ -1,0 +1,86 @@
+{
+  "lang": "es",
+  "out": "video.mp4",
+  "music": "calm-guitar-1.mp3",
+  "outro": true,
+  "web": true,
+  "outroSay": "Crea el suyo, con su nombre, en meapica punto shop.",
+  "beats": [
+    {
+      "img": {
+        "video": "../../tests/2026-10-11-ca-story/clips/p24.mp4"
+      },
+      "say": "Esta noche, Leo va a conocer un dinosaurio de verdad.",
+      "title": "Cuento para dormir<br><em>en 1 minuto</em>"
+    },
+    {
+      "img": {
+        "pdf": "159f5965-7601-478d-8590-cda0d8253d62",
+        "page": 4
+      },
+      "say": "Leo tenía un dinosaurio de juguete, naranja, su color favorito.",
+      "zoom": [
+        1.05,
+        1.2
+      ]
+    },
+    {
+      "img": {
+        "video": "../../tests/2026-10-11-ca-story/clips/amb-fd5512f6-p6-night-out-5.95.mp4",
+        "fit": true
+      },
+      "say": "Una noche, junto a la cama, susurró: ojalá conociera uno de verdad."
+    },
+    {
+      "img": {
+        "video": "../../tests/2026-10-11-ca-story/clips/t06-10.mp4",
+        "full": true
+      },
+      "say": "El portal del tiempo se abrió con un suspiro dorado."
+    },
+    {
+      "img": {
+        "video": "../../tests/2026-10-11-ca-story/clips/amb-fd5512f6-p10-day-in-4.98.mp4",
+        "fit": true
+      },
+      "say": "Al otro lado, un valle de helechos gigantes. Y un huevo que hacía: ¡crac!"
+    },
+    {
+      "img": {
+        "video": "../2026-10-06/clips/p12.mp4"
+      },
+      "say": "Me llamo Lulo, dijo un bebé de cuello largo. Yo soy Leo. Te acompaño."
+    },
+    {
+      "img": {
+        "video": "../2026-10-06/clips/amb-fd5512f6-p16-day-in-7.05.mp4",
+        "fit": true
+      },
+      "say": "Pero la familia de Lulo estaba lejísimos, al otro lado del valle."
+    },
+    {
+      "img": {
+        "video": "../2026-10-06/clips/p20.mp4"
+      },
+      "say": "Entonces Leo se acordó de su rugido. No hacía falta correr. Hacía falta llamar."
+    },
+    {
+      "img": {
+        "pdf": "159f5965-7601-478d-8590-cda0d8253d62",
+        "page": 24
+      },
+      "say": "¡Uoooo! La llamada cruzó el valle, y la familia llegó.",
+      "zoom": [
+        1.2,
+        1.05
+      ]
+    },
+    {
+      "img": {
+        "video": "../../tests/2026-10-11-ca-story/clips/amb-fd5512f6-p26-night-in-5.62.mp4",
+        "fit": true
+      },
+      "say": "Leo volvió a casa con barro en un zapato. Ser valiente es ayudar a quien es distinto."
+    }
+  ]
+}

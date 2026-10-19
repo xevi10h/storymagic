@@ -78,10 +78,10 @@ GA4 2 Oct-19 Oct: 37 sessions, 6 from social. Funnel 3-19 Oct: 4 real stories, 4
 
 - [ ] Owner: appeal the Pinterest spam block on meapica.shop and claim the domain (meta tag, then deploy); until then no pin can link.
 - [ ] Then schedule the 15 native pins in `docs/social/pinterest/2026-10-19/` (create the 5 boards first), 1-2 a day, Reyes and Christmas first.
-- [ ] Refill the daily post queue (empty since 16 Oct) or pause the publish routine so it stops alerting.
+- [x] 2026-10-19: queue refilled for 20 Oct-2 Nov: 14 narrated example-book stories (53-62 s, Reyes/Navidad gift angle, 9 es + 5 ca) on TikTok, Instagram and Facebook, all scheduled in Zernio (`schedule.mjs --days=14`). Next batch due before 2 Nov. Not pushed yet: the cloud routine does not see these posts until `main` has them (harmless, they are already in Zernio).
 - [x] 2026-10-19: cookieless first-touch attribution on stories (`stories.attribution`, in-memory capture, no device storage) + per-source split in `growth-funnel.mjs`. Pending: apply migration `20261019120000_story_attribution` to production (`docs/pending-prod-migrations.md`), then deploy.
 - [ ] Attribution follow-ups: tag every bio link, post and ad with `utm_source/utm_medium/utm_campaign` (untagged in-app browsers often send no referrer and land as `(direct)`); consider keeping the first touch across reloads only if a clearly exempt way exists (any device storage needs consent, see technical-architecture › Story attribution).
-- [ ] Drop the YouTube leg or keep it only for bedtime stories (21 views in 12 Shorts).
+- [ ] Drop the YouTube leg or keep it only for bedtime stories (21 views in 12 Shorts). Since 2026-10-19 posts can name their `platforms`; the 20 Oct-2 Nov batch leaves out YouTube and Pinterest.
 
 ## Next steps from customer reviews (2026-10-19)
 

@@ -1,0 +1,67 @@
+{
+  "lang": "es",
+  "out": "video.mp4",
+  "music": "calm-guitar-1.mp3",
+  "outro": true,
+  "web": true,
+  "outroSay": "Crea el suyo, con su nombre, en meapica punto shop.",
+  "beats": [
+    {
+      "img": {
+        "video": "../2026-10-04/clips/p20.mp4"
+      },
+      "say": "Para no despertar a una ballena gigante, Aitana no gritó. Hizo otra cosa.",
+      "title": "Una nana pirata<br><em>para esta noche</em>",
+      "titleTop": 1010
+    },
+    {
+      "img": {
+        "video": "../2026-10-04/clips/p04.mp4"
+      },
+      "say": "En su cuarto, Aitana guardaba una caracola turquesa. Si la acercaba al oído, sonaba a mar."
+    },
+    {
+      "img": {
+        "video": "../2026-10-04/clips/t06-10.mp4",
+        "full": true
+      },
+      "say": "La caracola abrió una puerta de espuma."
+    },
+    {
+      "img": {
+        "video": "../2026-10-04/clips/p10.mp4"
+      },
+      "say": "¡Un barco pirata! Y entre las olas saltó un delfín plateado. Hola, me llamo Coral."
+    },
+    {
+      "img": {
+        "video": "../2026-10-04/clips/p14.mp4"
+      },
+      "say": "La Perla Cantarina se ha perdido. Canta nanas a los peces pequeños."
+    },
+    {
+      "img": {
+        "video": "../2026-10-04/clips/p16.mp4"
+      },
+      "say": "La encontraron en una bahía tranquila, sobre el lomo de Bruma, que dormía profundamente."
+    },
+    {
+      "img": {
+        "video": "../../tests/aitana-animado/clips/p20.mp4"
+      },
+      "say": "Si la despertaban con ruido, haría una ola gigante. Así que Aitana cantó bajito."
+    },
+    {
+      "img": {
+        "video": "../2026-10-04/clips/p22.mp4"
+      },
+      "say": "Bruma abrió un ojo enorme y le acercó la perla con su aleta."
+    },
+    {
+      "img": {
+        "video": "../2026-10-04/clips/p26.mp4"
+      },
+      "say": "Y en la primera página del libro, la dedicatoria: para nuestra marinera valiente. Mamá y papá."
+    }
+  ]
+}

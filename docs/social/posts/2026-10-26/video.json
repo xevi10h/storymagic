@@ -1,0 +1,91 @@
+{
+  "lang": "es",
+  "out": "video.mp4",
+  "music": "magic-wonder-1.mp3",
+  "outro": true,
+  "web": true,
+  "outroSay": "Crea el suyo, con su nombre, en meapica punto shop.",
+  "beats": [
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p26-night-in-4.48.mp4",
+        "fit": true
+      },
+      "say": "¿Qué cabe en un frasco vacío? Martín está a punto de descubrirlo.",
+      "title": "¿Qué cabe en<br><em>un frasco vacío?</em>"
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p4-night-in-5.95.mp4",
+        "fit": true
+      },
+      "say": "Lo usaba para guardar tesoros pequeños: una canica, una pluma, una pregunta."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p6-night-out-7.72.mp4",
+        "fit": true
+      },
+      "say": "Esa noche, toc, toc en la ventana: un gorrión y una chispa."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/t06-10.mp4",
+        "full": true
+      },
+      "say": "La ventana no se abrió: se hizo cielo."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p10-night-in-6.65.mp4",
+        "fit": true
+      },
+      "say": "Un cohete pequeño le esperaba. ¿Yo piloto?, susurró Martín."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/p12.mp4"
+      },
+      "say": "En un asteroide, un cristal latía triste: he perdido mi brillo."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p14-night-in-5.85.mp4",
+        "fit": true
+      },
+      "say": "Lo buscaron hasta la Estrella Sonriente."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p20-night-in-3.95.mp4",
+        "fit": true
+      },
+      "say": "Pero su luz quemaba."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p22-night-in-8.75.mp4",
+        "fit": true
+      },
+      "say": "Entonces Martín abrió su frasco, solo un hilo. Y la luz entró, pequeña y tranquila."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p24-night-in-5.95.mp4",
+        "fit": true
+      },
+      "say": "El cristal la bebió a sorbitos. Y amaneció en mil colores."
+    },
+    {
+      "img": {
+        "pdf": "31ada3cf-f98d-40f3-b978-d5f84ee99ef1",
+        "page": 26
+      },
+      "say": "En casa, el frasco parecía vacío. Pero, si lo acercabas al oído, hacía pum.",
+      "zoom": [
+        1.05,
+        1.2
+      ]
+    }
+  ]
+}

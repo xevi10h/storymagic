@@ -314,11 +314,11 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   OpenAPI at `https://zernio.com/openapi.json`). Key: `ZERNIO_API_KEY` or `~/.config/zernio/api_key`. Shared helpers: `scripts/social/zernio.mjs`.
 - **One post = one folder:** `docs/social/posts/<YYYY-MM-DD>/post.json` + its media. Fields: `id`, `time` (Europe/Madrid), `lang`, `title` (YouTube + Pinterest), `madeForKids` (videos, YouTube COPPA flag: true for stories a child watches),
   `media[]` (`file`, `type`, `alt` for images), `ig`, `fb` (same caption with the UTM link instead of "link en la bio"), `tiktok`,
-  `tiktokTitle` (image posts), `coverMs`, `aiVideo` (dramatised people: platform disclosure).
+  `tiktokTitle` (image posts), `coverMs`, `aiVideo` (dramatised people: platform disclosure), `platforms` (optional list, e.g. `["instagram","facebook","tiktok"]`; default every connected account. Since 2026-10-19 posts leave out YouTube (21 views from 12 Shorts) and Pinterest (spam block on the domain)).
 - **Runner:** `node scripts/social/schedule.mjs` (dry run: checks every upcoming post and prints the plan) / `--schedule` (uploads the media
   and creates the scheduled posts; Zernio publishes at `time`). Idempotent: a post already in Zernio for that day with the same caption is
   skipped. Only the next 6 days are scheduled (Zernio media uploads expire after 7), so it has to run at least every few days; a time already
-  past today is published at once. Local checks block a post with a price lacking "IVA incluido / IVA inclòs", "IA", an em-dash, missing alt
+  past today is published at once. `--days=14` (owner's Mac only) schedules up to 14 days ahead: media of posts more than 6 days out is uploaded to the public Supabase bucket `showcase` under `social/<date>/` (permanent URL, needs `SUPABASE_SERVICE_ROLE_KEY` from `.env.local`) instead of Zernio's temp storage. Local checks block a post with a price lacking "IVA incluido / IVA inclòs", "IA", an em-dash, a TikTok caption asking to comment CUENTO/CONTE (the DM automation is Instagram and Facebook only), missing alt
   text or media. It warns when fewer than 3 days of content are left. Not scheduled yet (no launchd job): owner decision pending.
 - **Renderers** (real example books, pages rasterised from `/api/showcase/{id}/pdf`; need `pdftoppm` + `ffmpeg`; `.build/` is git-ignored):
   `node scripts/social/render-book-carousel.mjs <dir>/carousel.json` (1080×1350 slides: book pages, idea cards) and

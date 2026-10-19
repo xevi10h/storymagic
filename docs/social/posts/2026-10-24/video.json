@@ -1,0 +1,77 @@
+{
+  "lang": "es",
+  "out": "video.mp4",
+  "music": "calm-piano-1.mp3",
+  "outro": true,
+  "web": true,
+  "outroSay": "Crea el suyo, con su nombre, en meapica punto shop.",
+  "beats": [
+    {
+      "img": {
+        "video": "../2026-10-05/clips/p04.mp4"
+      },
+      "say": "Este cuento tiene una frase mágica. Cuando la oigas, dila con tu peque: pasito, pasito, el mundo suena bonito.",
+      "title": "Dilo con tu peque:<br><em>pasito, pasito</em>"
+    },
+    {
+      "img": {
+        "video": "../2026-10-05/clips/amb-bc6e2dbd-p6-day-out-6.02.mp4",
+        "fit": true
+      },
+      "say": "En la calle, Noa ve una hoja temblar. Crac, dice una ramita."
+    },
+    {
+      "img": {
+        "video": "../2026-10-05/clips/t06-10.mp4",
+        "full": true
+      },
+      "say": "La hoja abre una puerta verde."
+    },
+    {
+      "img": {
+        "video": "../2026-10-05/clips/amb-bc6e2dbd-p10-forest-in-8.52.mp4",
+        "fit": true
+      },
+      "say": "Noa entra en el Bosque Mágico. El búho Bruno parpadea: mira. Entre raíces brilla un cofre."
+    },
+    {
+      "img": {
+        "video": "../2026-10-05/clips/amb-bc6e2dbd-p12-forest-in-4.42.mp4",
+        "fit": true
+      },
+      "say": "Solo me abre la llave de flor, susurra el cofre."
+    },
+    {
+      "img": {
+        "video": "../2026-10-05/clips/amb-bc6e2dbd-p16-forest-in-6.35.mp4",
+        "fit": true
+      },
+      "say": "Pasito, pasito, el mundo suena bonito."
+    },
+    {
+      "img": {
+        "video": "../2026-10-05/clips/amb-bc6e2dbd-p18-forest-in-5.38.mp4",
+        "fit": true
+      },
+      "say": "¿Jugamos?, dice Noa. Las ardillas ríen: chas, chas."
+    },
+    {
+      "img": {
+        "video": "../2026-10-05/clips/p20.mp4"
+      },
+      "say": "¡La llave de flor canta tin, tin!"
+    },
+    {
+      "img": {
+        "video": "../2026-10-05/clips/p22.mp4"
+      },
+      "say": "Noa abre el cofre: clac. Dentro brillan semillas dormidas. Todos las siembran con mimo."
+    },
+    {
+      "img": {
+        "video": "../2026-10-05/clips/p26.mp4"
+      },
+      "say": "Y ahora, todos juntos: pasito, pasito, el mundo suena bonito."
+    }
+  ]
+}

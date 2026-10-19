@@ -1,0 +1,79 @@
+{
+  "lang": "es",
+  "out": "video.mp4",
+  "music": "calm-piano-1.mp3",
+  "outro": true,
+  "web": true,
+  "outroSay": "Crea el suyo, con su nombre, en meapica punto shop.",
+  "beats": [
+    {
+      "img": {
+        "video": "../2026-10-09/clips/p12.mp4"
+      },
+      "say": "Para la carta de los Reyes: un cuento donde el protagonista es él. Escucha el de Martín.",
+      "title": "Para la carta<br><em>de los Reyes</em>"
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/p04.mp4"
+      },
+      "say": "Martín guardaba tesoros pequeños en un frasco de cristal con tapa roja."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p6-night-out-7.72.mp4",
+        "fit": true
+      },
+      "say": "Una noche, un gorrión llamó a la ventana: toc, toc. Y detrás de él, una chispa."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/t06-10.mp4",
+        "full": true
+      },
+      "say": "La ventana no se abrió: se hizo cielo."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p10-night-in-6.65.mp4",
+        "fit": true
+      },
+      "say": "Un cohete pequeño le esperaba. ¿Yo piloto?"
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p12-night-in-7.62.mp4",
+        "fit": true
+      },
+      "say": "En un asteroide, un cristal de mil colores latía triste: he perdido mi brillo."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p16-night-in-3.55.mp4",
+        "fit": true
+      },
+      "say": "Fueron a pedir luz a la Estrella Sonriente. Pero su luz quemaba."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p22-night-in-8.75.mp4",
+        "fit": true
+      },
+      "say": "Entonces Martín abrió su frasco, solo un hilo."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p24-night-in-5.95.mp4",
+        "fit": true
+      },
+      "say": "El cristal bebió la luz a sorbitos, y amaneció en mil colores."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p26-night-in-4.48.mp4",
+        "fit": true
+      },
+      "say": "Y en la primera página del libro, sus abuelos: ojalá nunca dejes de mirar hacia arriba."
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "lang": "ca",
+  "out": "video.mp4",
+  "music": "calm-piano-1.mp3",
+  "outro": true,
+  "web": true,
+  "outroSay": "Crea el seu, amb el seu nom, a meapica punt shop.",
+  "beats": [
+    {
+      "img": {
+        "video": "../../tests/2026-10-07-lifestyle/clips/gift.mp4"
+      },
+      "say": "Aquest és el regal que obrirà per Reis. I aquesta, la seva aventura.",
+      "title": "El regal que<br><em>obrirà per Reis</em>",
+      "titleTop": 240
+    },
+    {
+      "img": {
+        "video": "../../tests/2026-10-11-ca-story/clips/p24.mp4"
+      },
+      "say": "Aquesta nit, en Leo coneixerà un dinosaure de veritat."
+    },
+    {
+      "img": {
+        "video": "../../tests/2026-10-11-ca-story/clips/amb-fd5512f6-p6-night-out-5.95.mp4",
+        "fit": true
+      },
+      "say": "Aquella nit va xiuxiuejar: tant de bo conegués un dinosaure de veritat."
+    },
+    {
+      "img": {
+        "video": "../../tests/2026-10-11-ca-story/clips/t06-10.mp4",
+        "full": true
+      },
+      "say": "El portal del temps es va obrir amb un sospir daurat."
+    },
+    {
+      "img": {
+        "video": "../../tests/2026-10-11-ca-story/clips/amb-fd5512f6-p10-day-in-4.98.mp4",
+        "fit": true
+      },
+      "say": "Crac! D'un ou va treure el cap un bebè de coll llarg."
+    },
+    {
+      "img": {
+        "video": "../2026-10-06/clips/p12.mp4"
+      },
+      "say": "Em dic Lulo, va dir. Jo soc en Leo. T'acompanyo."
+    },
+    {
+      "img": {
+        "video": "../2026-10-06/clips/amb-fd5512f6-p16-day-in-7.05.mp4",
+        "fit": true
+      },
+      "say": "Però la família d'en Lulo era lluny, a l'altra banda de la vall."
+    },
+    {
+      "img": {
+        "video": "../2026-10-06/clips/p20.mp4"
+      },
+      "say": "Van respirar ben fondo tots dos, i van cridar ben fort."
+    },
+    {
+      "img": {
+        "pdf": "159f5965-7601-478d-8590-cda0d8253d62",
+        "page": 24
+      },
+      "say": "La família va aixecar el cap, i va arribar a poc a poc, fent tremolar la terra.",
+      "zoom": [
+        1.2,
+        1.05
+      ]
+    },
+    {
+      "img": {
+        "video": "../../tests/2026-10-11-ca-story/clips/amb-fd5512f6-p26-night-in-5.62.mp4",
+        "fit": true
+      },
+      "say": "I en Leo ho va entendre: ser valent és ajudar qui és diferent."
+    }
+  ]
+}

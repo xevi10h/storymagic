@@ -1,0 +1,80 @@
+{
+  "lang": "ca",
+  "out": "video.mp4",
+  "music": "calm-piano-1.mp3",
+  "outro": true,
+  "web": true,
+  "outroSay": "Crea el seu, amb el seu nom, a meapica punt shop.",
+  "beats": [
+    {
+      "img": {
+        "video": "../2026-10-09/clips/p12.mp4"
+      },
+      "say": "Per a la carta dels Reis: un conte on el protagonista és ell. Escolta el d'en Martí.",
+      "title": "Per a la carta<br><em>dels Reis</em>"
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p4-night-in-5.95.mp4",
+        "fit": true
+      },
+      "say": "En Martí guardava tresors petits en un pot de vidre amb tapa vermella."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p6-night-out-7.72.mp4",
+        "fit": true
+      },
+      "say": "Una nit, un pardal va trucar al vidre: toc, toc. I darrere seu, una espurna."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/t06-10.mp4",
+        "full": true
+      },
+      "say": "La finestra no es va obrir: es va fer cel."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p10-night-in-6.65.mp4",
+        "fit": true
+      },
+      "say": "Sota els seus peus, un coet petit. Jo piloto?"
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p12-night-in-7.62.mp4",
+        "fit": true
+      },
+      "say": "En un asteroide, un Cristall de mil colors bategava trist: he perdut la brillantor."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p16-night-in-3.55.mp4",
+        "fit": true
+      },
+      "say": "Van anar a demanar llum a l'Estrella Somrient. Però la seva llum cremava."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p22-night-in-8.75.mp4",
+        "fit": true
+      },
+      "say": "Aleshores en Martí va obrir el seu pot, només una escletxa."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p24-night-in-5.95.mp4",
+        "fit": true
+      },
+      "say": "El Cristall va beure la llum a glopets, i va clarejar en mil colors."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p26-night-in-4.48.mp4",
+        "fit": true
+      },
+      "say": "A casa, el pot semblava buit. Però si te l'acostaves a l'orella, feia pum."
+    }
+  ]
+}

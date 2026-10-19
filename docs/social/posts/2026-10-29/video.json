@@ -1,0 +1,89 @@
+{
+  "lang": "ca",
+  "out": "video.mp4",
+  "music": "magic-wonder-1.mp3",
+  "outro": true,
+  "web": true,
+  "outroSay": "Crea el seu, amb el seu nom, a meapica punt shop.",
+  "beats": [
+    {
+      "img": {
+        "video": "../2026-10-08/clips/p04.mp4"
+      },
+      "say": "Per a la Lucía, que converteix qualsevol tarda en una aventura. Ho signa el seu padrí, en Jordi. I l'aventura comença així.",
+      "title": "El seu padrí va escriure<br><em>això a la primera pàgina</em>",
+      "titleTop": 240
+    },
+    {
+      "img": {
+        "video": "../2026-10-08/clips/amb-461c6578-p6-night-in-5.05.mp4",
+        "fit": true
+      },
+      "say": "Una tarda, la cinta morada del seu llibre es va moure sola i va assenyalar la paret."
+    },
+    {
+      "img": {
+        "video": "../2026-10-08/clips/amb-461c6578-p10-night-in-6.88.mp4",
+        "fit": true
+      },
+      "say": "La Lucía va travessar una escletxa de llum i va arribar al Castell dels Somnis."
+    },
+    {
+      "img": {
+        "video": "../2026-10-08/clips/p12.mp4"
+      },
+      "say": "Al costat d'un ou daurat, un dragonet va esternudar espurnes: en Chispa."
+    },
+    {
+      "img": {
+        "video": "../2026-10-08/clips/amb-461c6578-p14-night-in-5.22.mp4",
+        "fit": true
+      },
+      "say": "El meu primer somni se m'ha escapat, va dir."
+    },
+    {
+      "img": {
+        "pdf": "461c6578-404b-4362-8dff-afcae81f6141",
+        "page": 16
+      },
+      "say": "Unes petjades de farina els van portar a la cuina.",
+      "zoom": [
+        1.05,
+        1.2
+      ]
+    },
+    {
+      "img": {
+        "pdf": "461c6578-404b-4362-8dff-afcae81f6141",
+        "page": 20
+      },
+      "say": "El somni s'amagava entre núvols de sucre. Els somnis no es cacen, va xiuxiuejar la Lucía. Es conviden.",
+      "zoom": [
+        1.2,
+        1.05
+      ]
+    },
+    {
+      "img": {
+        "pdf": "461c6578-404b-4362-8dff-afcae81f6141",
+        "page": 24
+      },
+      "say": "Així que va fer un pastís de mel.",
+      "zoom": [
+        1.05,
+        1.2
+      ]
+    },
+    {
+      "img": {
+        "pdf": "461c6578-404b-4362-8dff-afcae81f6141",
+        "page": 26
+      },
+      "say": "El somni va baixar i es va posar a la seva cinta morada. En Chispa ja tenia el seu regal.",
+      "zoom": [
+        1.2,
+        1.05
+      ]
+    }
+  ]
+}

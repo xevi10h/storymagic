@@ -10,6 +10,9 @@ no invented proof, no "IA" angle, VAT next to every price, examples labelled as 
 Reach people who do not follow us, and leave them wanting the book. Organic social builds awareness and branded
 search; Instagram and TikTok do not send clicks (bio link only). Clickable traffic comes from Pinterest (every post is
 also a pin linking to the site); videos also go to YouTube as Shorts (bedtime stories are declared "made for kids").
+Since 2026-10-19 (review in `roadmap.md`): posts go to TikTok, Instagram and Facebook only (`platforms` in `post.json`): YouTube Shorts
+made 21 views from 12 posts and Pinterest blocks the domain. Narrated stories over 45 s lead every cut (848 views, 4.8 s TikTok watch), so the
+batch of 20 Oct-2 Nov is all narrated stories; "Comenta CUENTO/CONTE" goes only in Instagram and Facebook captions.
 
 ## Rules
 

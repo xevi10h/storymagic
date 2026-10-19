@@ -6,15 +6,18 @@
 //   node scripts/social/schedule.mjs               # dry run: check every upcoming post, print the plan. Creates nothing.
 //   node scripts/social/schedule.mjs --schedule    # upload media + schedule every post due in the next 6 days
 //   options: --date=2026-10-05  only that day
+//            --days=14  schedule further ahead than 6 days (max 14): media of posts more than 6 days out goes to the public
+//            Supabase bucket `showcase` (social/<date>/<file>) instead of Zernio's 7-day temp storage (owner's Mac only)
 //            --force (with --date)  post that day again even though Zernio already holds it (a replaced video:
 //            unpublish or delete the old one first)
 //
 // post.json: { id, time: "20:30" (Europe/Madrid), lang, title (YouTube + Pinterest, ≤ 100 chars),
 //              strategy (short slug of the spreading strategy, e.g. "open-loop-question"), people?: true (generated people on screen),
 //              media: [{ file, type: "video" | "image", alt? }], ig, fb, tiktok, tiktokTitle (image posts, ≤ 90 chars),
-//              coverMs?, aiVideo? (synthetic voice or people: platform AI label), madeForKids (videos: YouTube COPPA flag) }
+//              coverMs?, aiVideo? (synthetic voice or people: platform AI label), madeForKids (videos: YouTube COPPA flag),
+//              platforms?: ["instagram", "facebook", "tiktok", "youtube", "pinterest"] (default: all connected) }
 import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { PROFILE_ID, api, buildPostBody, idemKey, meapicaAccounts, uploadMedia } from "./zernio.mjs";
+import { PROFILE_ID, api, buildPostBody, hostMedia, idemKey, meapicaAccounts, uploadMedia } from "./zernio.mjs";
 
 const POSTS_DIR = `${process.cwd()}/docs/social/posts`;
 // Zernio temp uploads expire after 7 days: a post further out is scheduled by a later run.
@@ -23,11 +26,14 @@ const args = process.argv.slice(2);
 const SCHEDULE = args.includes("--schedule");
 const ONLY_DATE = args.find((a) => a.startsWith("--date="))?.split("=")[1];
 const FORCE = args.includes("--force") && !!ONLY_DATE;
+const DAYS = Math.min(14, Math.max(WINDOW_DAYS, Number(args.find((a) => a.startsWith("--days="))?.split("=")[1] ?? WINDOW_DAYS)));
+const PLATFORMS = ["instagram", "facebook", "tiktok", "youtube", "pinterest"];
 
 const madrid = (d) => new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Madrid", dateStyle: "short", timeStyle: "short" }).format(d); // "2026-10-04 09:12"
 const addDays = (date, n) => new Date(Date.parse(`${date}T12:00:00Z`) + n * 864e5).toISOString().slice(0, 10);
 const [today] = madrid(new Date()).split(" ");
-const lastDay = addDays(today, WINDOW_DAYS);
+const tempDay = addDays(today, WINDOW_DAYS); // last day whose media can live in Zernio temp storage
+const lastDay = addDays(today, DAYS);
 
 /** Local checks: everything a post needs before it may go out unattended. Returns a list of problems. */
 export function checkPost(p, dir) {
@@ -58,6 +64,9 @@ export function checkPost(p, dir) {
     if (/\b(IA|AI)\b/.test(text)) errors.push(`${k}: mentions IA/AI (not a selling angle)`);
     if (/—/.test(text)) errors.push(`${k}: em-dash`);
   }
+  if (p.platforms !== undefined && (!Array.isArray(p.platforms) || !p.platforms.length || p.platforms.some((x) => !PLATFORMS.includes(x)))) errors.push(`platforms must be a non-empty list of ${PLATFORMS.join(", ")}`);
+  // The comment-to-DM keyword automation exists only on Instagram and Facebook.
+  if (/\bcoment[ae]\b[^\n]*\b(CUENTO|CONTE)\b/i.test(p.tiktok ?? "")) errors.push('tiktok: asks to comment CUENTO/CONTE (the DM automation is Instagram and Facebook only)');
   if (p.ig?.length > 2200) errors.push("ig caption over 2200 chars");
   if (p.tiktok?.length > 2200) errors.push("tiktok caption over 2200 chars");
   return errors;
@@ -115,18 +124,19 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       continue;
     }
     if (!FORCE && existing.has(`${x.date}|${x.post.ig}`)) { console.log(`= ${head}: already in Zernio`); continue; }
-    if (!due.includes(x)) { console.log(`· ${head}: outside the ${WINDOW_DAYS}-day window, a later run schedules it`); continue; }
-    if (!SCHEDULE) { console.log(`→ ${head}: would schedule (${x.post.media.length} ${x.post.media[0].type})`); continue; }
+    if (!due.includes(x)) { console.log(`· ${head}: outside the ${DAYS}-day window, a later run schedules it`); continue; }
+    if (!SCHEDULE) { console.log(`→ ${head}: would schedule (${x.post.media.length} ${x.post.media[0].type}) on ${(x.post.platforms ?? PLATFORMS).join(", ")}${x.date > tempDay ? ", media on Supabase" : ""}`); continue; }
 
     try {
       const urls = {};
       for (const m of x.post.media) {
-        urls[m.file] = await uploadMedia(`${x.dir}/${m.file}`);
+        urls[m.file] = x.date > tempDay ? await hostMedia(`${x.dir}/${m.file}`, `${x.date}/${m.file}`) : await uploadMedia(`${x.dir}/${m.file}`);
         const v = await api("POST", "/tools/validate/media", { url: urls[m.file] });
         if (v.json.valid === false) throw new Error(`media ${m.file} invalid: ${v.json.error ?? JSON.stringify(v.json)}`);
       }
       // A time already past today is published by Zernio right away (catch-up after a missed run).
-      const body = { ...buildPostBody(x.post, accounts, urls), scheduledFor: `${x.date}T${x.post.time}:00` };
+      const targets = x.post.platforms ? Object.fromEntries(Object.entries(accounts).filter(([k]) => x.post.platforms.includes(k))) : accounts;
+      const body = { ...buildPostBody(x.post, targets, urls), scheduledFor: `${x.date}T${x.post.time}:00` };
       const v = await api("POST", "/tools/validate/post", body);
       if (v.json.valid === false) throw new Error(`validate: ${JSON.stringify(v.json.errors)}`);
       const r = await api("POST", "/posts", body, { "Idempotency-Key": idemKey(`meapica-${x.post.id}-${x.date}${FORCE ? `-${Date.now()}` : ""}`) });

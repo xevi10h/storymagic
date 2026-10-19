@@ -1,0 +1,82 @@
+{
+  "lang": "es",
+  "out": "video.mp4",
+  "music": "magic-wonder-1.mp3",
+  "outro": true,
+  "web": true,
+  "outroSay": "Crea el suyo, con su nombre, en meapica punto shop.",
+  "beats": [
+    {
+      "img": {
+        "pdf": "461c6578-404b-4362-8dff-afcae81f6141",
+        "page": 20
+      },
+      "say": "Si este sueño se queda ahí arriba, dormirá cien años entre telarañas dulces. Lucía tiene una noche para bajarlo.",
+      "zoom": [
+        1.05,
+        1.2
+      ],
+      "title": "Si se queda ahí,<br><em>dormirá cien años</em>"
+    },
+    {
+      "img": {
+        "video": "../2026-10-08/clips/amb-461c6578-p6-night-in-5.05.mp4",
+        "fit": true
+      },
+      "say": "Todo empezó con una cinta morada que se movió sola y señaló la pared."
+    },
+    {
+      "img": {
+        "video": "../2026-10-08/clips/amb-461c6578-p10-night-in-6.88.mp4",
+        "fit": true
+      },
+      "say": "Detrás, el Castillo de los Sueños, con un salón que respiraba despacio."
+    },
+    {
+      "img": {
+        "video": "../2026-10-08/clips/p12.mp4"
+      },
+      "say": "Allí conoció a Chispa, un dragoncito recién nacido que estornudaba flores de humo."
+    },
+    {
+      "img": {
+        "video": "../2026-10-08/clips/amb-461c6578-p14-night-in-5.22.mp4",
+        "fit": true
+      },
+      "say": "Era la Noche de los Sueños, y a Chispa se le había escapado el suyo."
+    },
+    {
+      "img": {
+        "pdf": "461c6578-404b-4362-8dff-afcae81f6141",
+        "page": 22
+      },
+      "say": "Lo siguieron hasta la cocina del castillo, donde las ollas cantaban bajito.",
+      "zoom": [
+        1.2,
+        1.05
+      ]
+    },
+    {
+      "img": {
+        "pdf": "461c6578-404b-4362-8dff-afcae81f6141",
+        "page": 24
+      },
+      "say": "Lucía no lo persiguió. Hizo un pastel de miel, porque los sueños no se cazan: se invitan.",
+      "zoom": [
+        1.05,
+        1.2
+      ]
+    },
+    {
+      "img": {
+        "pdf": "461c6578-404b-4362-8dff-afcae81f6141",
+        "page": 26
+      },
+      "say": "El sueño bajó y se posó en su cinta morada. Y esa noche, antes de dormir, Lucía miró muy bien.",
+      "zoom": [
+        1.2,
+        1.05
+      ]
+    }
+  ]
+}

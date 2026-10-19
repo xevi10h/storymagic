@@ -1,0 +1,89 @@
+{
+  "lang": "es",
+  "out": "video.mp4",
+  "music": "magic-wonder-1.mp3",
+  "outro": true,
+  "web": true,
+  "outroSay": "Crea el suyo, con su nombre, en meapica punto shop.",
+  "beats": [
+    {
+      "img": {
+        "video": "../2026-10-08/clips/p04.mp4"
+      },
+      "say": "Para Lucía, que convierte cualquier tarde en una aventura. Lo firma su padrino, Jordi. Y la aventura empieza así.",
+      "title": "Su padrino escribió esto<br><em>en la primera página</em>",
+      "titleTop": 240
+    },
+    {
+      "img": {
+        "video": "../2026-10-08/clips/amb-461c6578-p6-night-in-5.05.mp4",
+        "fit": true
+      },
+      "say": "Una tarde, la cinta morada de su libro se movió sola y señaló la pared."
+    },
+    {
+      "img": {
+        "video": "../2026-10-08/clips/amb-461c6578-p10-night-in-6.88.mp4",
+        "fit": true
+      },
+      "say": "Lucía cruzó una rendija de luz y llegó al Castillo de los Sueños."
+    },
+    {
+      "img": {
+        "video": "../2026-10-08/clips/p12.mp4"
+      },
+      "say": "Junto a un huevo dorado roto, un dragoncito estornudó chispas. Se llamaba Chispa."
+    },
+    {
+      "img": {
+        "video": "../2026-10-08/clips/amb-461c6578-p14-night-in-5.22.mp4",
+        "fit": true
+      },
+      "say": "Mi primer sueño se me ha escapado, dijo."
+    },
+    {
+      "img": {
+        "pdf": "461c6578-404b-4362-8dff-afcae81f6141",
+        "page": 16
+      },
+      "say": "Unas huellas de harina los llevaron a la cocina.",
+      "zoom": [
+        1.05,
+        1.2
+      ]
+    },
+    {
+      "img": {
+        "pdf": "461c6578-404b-4362-8dff-afcae81f6141",
+        "page": 20
+      },
+      "say": "El sueño se escondía entre nubes de azúcar. Los sueños no se cazan, susurró Lucía. Se invitan.",
+      "zoom": [
+        1.2,
+        1.05
+      ]
+    },
+    {
+      "img": {
+        "pdf": "461c6578-404b-4362-8dff-afcae81f6141",
+        "page": 24
+      },
+      "say": "Así que hizo un pastel de miel.",
+      "zoom": [
+        1.05,
+        1.2
+      ]
+    },
+    {
+      "img": {
+        "pdf": "461c6578-404b-4362-8dff-afcae81f6141",
+        "page": 26
+      },
+      "say": "El sueño bajó atraído por el olor y se posó en su cinta morada. Chispa ya tenía su regalo.",
+      "zoom": [
+        1.2,
+        1.05
+      ]
+    }
+  ]
+}

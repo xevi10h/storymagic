@@ -1,0 +1,74 @@
+{
+  "lang": "ca",
+  "out": "video.mp4",
+  "music": "calm-guitar-1.mp3",
+  "outro": true,
+  "web": true,
+  "outroSay": "Crea el seu, amb el seu nom, a meapica punt shop.",
+  "beats": [
+    {
+      "img": {
+        "video": "../2026-10-04/clips/p04.mp4"
+      },
+      "say": "A la seva habitació, l'Aitana guardava un cargol de mar turquesa. Si se l'acostava a l'orella, sonava a mar.",
+      "title": "Conte per anar a dormir<br><em>en 1 minut</em>",
+      "titleTop": 1010
+    },
+    {
+      "img": {
+        "video": "../2026-10-04/clips/p06.mp4",
+        "fit": true
+      },
+      "say": "Aquella nit el va posar sota el coixí i va demanar al mar una missió."
+    },
+    {
+      "img": {
+        "video": "../2026-10-04/clips/t06-10.mp4",
+        "full": true
+      },
+      "say": "El cargol va obrir una porta d'escuma."
+    },
+    {
+      "img": {
+        "video": "../2026-10-04/clips/p10.mp4"
+      },
+      "say": "Un vaixell pirata! I un dofí platejat: hola, em dic Coral."
+    },
+    {
+      "img": {
+        "video": "../2026-10-04/clips/p14.mp4"
+      },
+      "say": "La Perla Cantarina s'ha perdut. Canta cançons de bressol als peixets."
+    },
+    {
+      "img": {
+        "video": "../2026-10-04/clips/p16.mp4"
+      },
+      "say": "La van trobar en una badia tranquil·la, sobre el llom de la Bruma, que dormia profundament."
+    },
+    {
+      "img": {
+        "video": "../2026-10-04/clips/p20.mp4"
+      },
+      "say": "Si la despertaven, faria una onada gegant. Així que l'Aitana va cantar fluixet."
+    },
+    {
+      "img": {
+        "video": "../2026-10-04/clips/p22.mp4"
+      },
+      "say": "La Bruma va obrir un ull enorme, i li va acostar la perla amb l'aleta."
+    },
+    {
+      "img": {
+        "video": "../2026-10-04/clips/p24.mp4"
+      },
+      "say": "El millor tresor són els amics, va dir l'Aitana."
+    },
+    {
+      "img": {
+        "video": "../2026-10-04/clips/p26.mp4"
+      },
+      "say": "Amb traça i marea, s'arriba arreu."
+    }
+  ]
+}
