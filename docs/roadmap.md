@@ -70,6 +70,18 @@ character lock; per-stage resolution. (commits 5ebc2f1 → a883d60)
 
 ---
 
+## Social performance review (2026-10-19)
+
+Since 3 Oct: TikTok 16 posts 3,847 views (3 followers, avg watch 1.6-5.6 s); Facebook 15 posts 3,836 views, 4 link clicks; Instagram 15 posts
+384 views (4 followers); YouTube 12 Shorts 21 views; Pinterest 6 pins live, 0 impressions, 7 failed (spam block). Paid: TikTok 10 € = 166 clicks.
+GA4 2 Oct-19 Oct: 37 sessions, 6 from social. Funnel 3-19 Oct: 4 real stories, 4 previews, 1 checkout, 0 paid. Last post 16 Oct: nothing queued.
+
+- [ ] Owner: appeal the Pinterest spam block on meapica.shop and claim the domain (meta tag, then deploy); until then no pin can link.
+- [ ] Then schedule the 15 native pins in `docs/social/pinterest/2026-10-19/` (create the 5 boards first), 1-2 a day, Reyes and Christmas first.
+- [ ] Refill the daily post queue (empty since 16 Oct) or pause the publish routine so it stops alerting.
+- [ ] Cookieless first-touch attribution on stories (UTM + referrer saved with the story) so a story or order can be traced to a channel.
+- [ ] Drop the YouTube leg or keep it only for bedtime stories (21 views in 12 Shorts).
+
 ## Next steps from referral + gift vouchers (2026-10-09)
 
 - [x] 2026-10-10: migration `20261009120000` applied to production before deploy `3253e7e`; `scripts/stripe-setup-catalog.mts` run with the LIVE key (3 voucher Prices + 4 coupons created, re-run dry is clean).
