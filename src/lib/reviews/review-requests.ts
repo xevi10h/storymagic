@@ -26,7 +26,7 @@ import { isMissingSchemaError } from "./schema";
 const LIVE_STATUSES = ["paid", "producing", "shipped", "delivered"];
 const SCAN_LIMIT = 500;
 const COLUMNS =
-  "id, user_id, story_id, format, status, customer_email, refunded_at, disputed_at, problem_email_sent_at, offer, marketing_opt_out, ready_email_sent_at, shipped_at, delivered_at, review_request_sent_at, stripe_checkout_session_id";
+  "id, user_id, story_id, format, status, customer_email, refunded_at, disputed_at, problem_email_sent_at, offer, total, marketing_opt_out, ready_email_sent_at, shipped_at, delivered_at, review_request_sent_at, stripe_checkout_session_id";
 
 type CandidateRow = ReviewOrderRow & { user_id: string | null; stripe_checkout_session_id: string | null };
 
@@ -72,6 +72,7 @@ export async function runReviewRequests(
       .is("review_request_sent_at", null)
       .is("refunded_at", null)
       .is("offer", null)
+      .gt("total", 0)
       .in("status", LIVE_STATUSES)
       .not("story_id", "is", null)
       .not("customer_email", "is", null);

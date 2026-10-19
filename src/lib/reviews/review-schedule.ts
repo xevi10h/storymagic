@@ -30,6 +30,8 @@ export interface ReviewOrderRow {
   disputed_at: string | null;
   problem_email_sent_at: string | null;
   offer: string | null;
+  /** numeric from PostgREST (string) or number. */
+  total: number | string | null;
   marketing_opt_out: boolean | null;
   ready_email_sent_at: string | null;
   shipped_at: string | null;
@@ -44,6 +46,7 @@ export type ReviewSkipReason =
   | "disputed"
   | "print_problem"
   | "offer_order"
+  | "free_order"
   | "no_story"
   | "no_email"
   | "opted_out"
@@ -86,6 +89,8 @@ export function reviewRequestDecision(
   if (order.disputed_at) return { send: false, reason: "disputed" };
   if (order.problem_email_sent_at) return { send: false, reason: "print_problem" };
   if (order.offer) return { send: false, reason: "offer_order" };
+  // Gifted books (creator codes, 100 % vouchers): a review of a free product shown as a customer review would mislead.
+  if (!(Number(order.total) > 0)) return { send: false, reason: "free_order" };
   if (!order.story_id) return { send: false, reason: "no_story" };
   if (!order.customer_email?.trim()) return { send: false, reason: "no_email" };
   if (order.marketing_opt_out === true) return { send: false, reason: "opted_out" };

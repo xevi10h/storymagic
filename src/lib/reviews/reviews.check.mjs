@@ -61,6 +61,7 @@ const printed = (over = {}) => ({
   disputed_at: null,
   problem_email_sent_at: null,
   offer: null,
+  total: "34.90",
   marketing_opt_out: false,
   ready_email_sent_at: iso(-5),
   shipped_at: iso(-3),
@@ -95,6 +96,7 @@ assert.equal(reason(decide(printed({ refunded_at: iso(1) }), due)), "refunded");
 assert.equal(reason(decide(printed({ disputed_at: iso(1) }), due)), "disputed");
 assert.equal(reason(decide(printed({ problem_email_sent_at: iso(1) }), due)), "print_problem");
 assert.equal(reason(decide(printed({ offer: "extra_copy_repeat" }), due)), "offer_order");
+assert.equal(reason(decide(printed({ total: "0.00" }), due)), "free_order");
 assert.equal(reason(decide(printed({ story_id: null }), due)), "no_story");
 assert.equal(reason(decide(printed({ customer_email: "  " }), due)), "no_email");
 assert.equal(reason(decide(printed({ marketing_opt_out: true }), due)), "opted_out", "checkout opt-out ticked: never");
