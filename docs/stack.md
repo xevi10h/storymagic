@@ -238,6 +238,10 @@ Code map: `docs/technical-architecture.md` › Ads tracking. No TikTok Pixel (Ti
   All canonical URLs, sitemap, OG, emails, printed books (back cover + QR) and ads use it.
 - **Legacy: `meapica.com`** stays attached to the Vercel project and serves the same site, but its DNS (Spaceship) is no longer
   under our control: nothing critical (Stripe/Gelato webhooks, auth redirects, email sending, Meta domain) may depend on it.
+- **Redirect-only: `meapica.es` + `www.meapica.es`** (2026-10-19), registered at Hostinger, DNS there (same token/API, zone `meapica.es`):
+  `@ A 216.150.1.1` + `216.150.16.1`, `www CNAME fc2bc1c75745d993.vercel-dns-017.com.` (Vercel's recommended values, rank 1). No MX/TXT.
+  Both attached to the Vercel project as **domain-level 301 redirects to `meapica.shop`** (path + query preserved), set with
+  `vercel api /v10/projects/<id>/domains -f name=… -f redirect=meapica.shop -F redirectStatusCode=301`. No code involved.
 - **Host canonicalization (2026-10-01):** `src/middleware.ts` 308-redirects `www.meapica.shop`, `meapica.com` and
   `www.meapica.com` to `https://meapica.shop` + same path/query (explicit alias list: localhost and `*.vercel.app`
   previews untouched). `/api/*` is never redirected (a webhook left on an alias host must not get a 308), and files
@@ -332,8 +336,10 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
 - **Where it runs (2026-10-04):** content is generated on the owner's Mac (Claude session) and pushed to `main`. Two Claude cloud routines
   exist in the environment "Default" (https://claude.ai/code/routines): **"Meapica · publicar posts del día"** (`trig_01JFk1tnPtn6BR8nxieyRdkA`,
   daily 07:00 UTC, runs `schedule.mjs --schedule`, push notification on failure or when under 3 days of content remain) and
-  **"Meapica · revisar comentarios y mensajes"** (`trig_01HmZCvtGrXGpGZhL9v7ZnL4`, hourly 06-20 UTC, read-only `inbox.mjs`, push notification when
-  something is waiting). Both work since 2026-10-06: the owner added `ZERNIO_API_KEY` to the environment variables and opened the network to
+  **"Meapica · revisar comentarios y mensajes"** (`trig_01HmZCvtGrXGpGZhL9v7ZnL4`, hourly 06-20 UTC, read-only `inbox.mjs`; since 2026-10-12 a filter
+  inside the routine prompt pushes each comment or message once, in the run after the clock hour it arrived in, and the 06:00 UTC run pushes
+  a daily summary of everything still waiting. A message stays "waiting" until it is answered through Zernio or marked read there with
+  `POST /inbox/conversations/{id}/read`: reading it in the Instagram app does not clear it). Both work since 2026-10-06: the owner added `ZERNIO_API_KEY` to the environment variables and opened the network to
   the Zernio hosts; verified with a manual run of each (exit 0). Post media must be in git for the cloud to upload it: `.gitignore` ignores
   `*.png` except `docs/social/posts/**/*.png`. Still missing for generating content in the cloud: `ELEVENLABS_API_KEY`, its host, and GitHub
   push access (Claude GitHub App not installed on the repo).
@@ -366,7 +372,18 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   with the TikTok UTM template. Real cap = the 10 € prepaid balance (auto recharge off). Identity must be `BC_AUTH_TT`
   (@meapica_books linked in Business Center): TikTok rejects `CUSTOMIZED_USER`. The AI-content label cannot be set through
   Zernio. Pause: `PUT /v1/ads/campaigns/1878487066110225/status` `{ "status": "paused", "platform": "tiktok" }`.
-- **Inbox:** `node scripts/social/inbox.mjs` prints unanswered comments and unread DMs as JSON (read-only).
+- **Second TikTok ad, free Reyes letter (created PAUSED 2026-10-10, nothing spent):** campaign `mpc_tiktok_traffic_es_reyes-letter_q4-26`
+  (TikTok campaign `1878680561364114`, ad group `1878680561379394`, ad `1878680564590785`, Zernio ad `6aca6682c4957532f2c07385`):
+  goal traffic, 20 €/day, Spain 25-44 Spanish, identity `BC_AUTH_TT` (`identityId` from `GET /v1/ads/tiktok-identities`), video
+  `docs/ads/creatives/reyes-letter/reyes-letter-9x16-es.mp4` (14.8 s, real recording of the tool; folder is git-ignored, rebuild steps
+  in its `video.json` and `src/`), landing `/es/tools/letter-to-the-three-kings` with the TikTok UTM template, no end date.
+  TikTok review: approved. Created with `status: "PAUSED"` on `POST /v1/ads/create`. It cannot deliver until the owner adds balance
+  (cash 0); the real cap is that prepaid balance. Start: `PUT /v1/ads/campaigns/1878680561364114/status`
+  `{ "status": "active", "platform": "tiktok" }`. The first campaign (`1878487066110225`) was paused the same day so new balance
+  does not go to it. What to read: `newsletter_subscribers` with `source = 'reyes_reminder'` (consent-free) against TikTok clicks.
+- **Media upload fallback:** if the presigned upload host (`*.r2.cloudflarestorage.com`) times out, as on 2026-10-10 from the Mac,
+  `POST /v1/media/upload-direct` (multipart `file`, API key, 25 MB max) returns the same kind of public URL.
+- **Inbox:** `node scripts/social/inbox.mjs` prints unanswered comments and unread DMs as JSON (read-only). `node scripts/social/reply.mjs dm <conversationId> "<text>"` answers a DM (adds Meta's human-agent tag when the 24 h window has closed) and marks the conversation read; `reply.mjs comment <postId> <commentId> "<text>"` answers a comment. Texts are approved by the owner first. First real sends 2026-10-12: three Instagram DMs (one four days old) and one TikTok comment reply, all accepted.
 - `scripts/social/publish-first-posts.mjs` is the one-off of 3 Oct (already published).
 
 ## Growth funnel + abandoned-preview reminders (2026-10-03)
