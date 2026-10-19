@@ -1,0 +1,84 @@
+{
+  "lang": "es",
+  "out": "video.mp4",
+  "music": "calm-piano-1.mp3",
+  "outro": true,
+  "web": true,
+  "outroSay": "Crea el suyo, con su nombre, en meapica punto shop.",
+  "beats": [
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p26-night-in-4.48.mp4",
+        "fit": true
+      },
+      "say": "Un cuento de estrellas para las noches que faltan hasta Reyes.",
+      "title": "Un cuento de estrellas<br><em>para esperar a los Reyes</em>"
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p4-night-in-5.95.mp4",
+        "fit": true
+      },
+      "say": "Martín contaba estrellas antes de dormir, y guardaba tesoros en un frasco de tapa roja."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/t06-10.mp4",
+        "full": true
+      },
+      "say": "Una noche, la ventana no se abrió: se hizo cielo."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p10-night-in-6.65.mp4",
+        "fit": true
+      },
+      "say": "Un cohete pequeño le esperaba. ¿Yo piloto?"
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/p12.mp4"
+      },
+      "say": "En un asteroide, un cristal de mil colores había perdido su brillo."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p14-night-in-5.85.mp4",
+        "fit": true
+      },
+      "say": "Lo buscaron hasta la Estrella Sonriente."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p16-night-in-3.55.mp4",
+        "fit": true
+      },
+      "say": "La Estrella Sonriente quería ayudar, pero su luz quemaba."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p22-night-in-8.75.mp4",
+        "fit": true
+      },
+      "say": "Martín abrió el frasco solo un hilo, y dentro cupo una chispa."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p24-night-in-5.95.mp4",
+        "fit": true
+      },
+      "say": "El cristal la bebió a sorbitos. Y amaneció en mil colores."
+    },
+    {
+      "img": {
+        "pdf": "31ada3cf-f98d-40f3-b978-d5f84ee99ef1",
+        "page": 26
+      },
+      "say": "En casa, el frasco parecía vacío. Pero, al oído, hacía pum.",
+      "zoom": [
+        1.05,
+        1.2
+      ]
+    }
+  ]
+}

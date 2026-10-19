@@ -6,7 +6,7 @@
 //   node scripts/social/schedule.mjs               # dry run: check every upcoming post, print the plan. Creates nothing.
 //   node scripts/social/schedule.mjs --schedule    # upload media + schedule every post due in the next 6 days
 //   options: --date=2026-10-05  only that day
-//            --days=14  schedule further ahead than 6 days (max 14): media of posts more than 6 days out goes to the public
+//            --days=28  schedule further ahead than 6 days (max 31): media of posts more than 6 days out goes to the public
 //            Supabase bucket `showcase` (social/<date>/<file>) instead of Zernio's 7-day temp storage (owner's Mac only)
 //            --force (with --date)  post that day again even though Zernio already holds it (a replaced video:
 //            unpublish or delete the old one first)
@@ -26,7 +26,7 @@ const args = process.argv.slice(2);
 const SCHEDULE = args.includes("--schedule");
 const ONLY_DATE = args.find((a) => a.startsWith("--date="))?.split("=")[1];
 const FORCE = args.includes("--force") && !!ONLY_DATE;
-const DAYS = Math.min(14, Math.max(WINDOW_DAYS, Number(args.find((a) => a.startsWith("--days="))?.split("=")[1] ?? WINDOW_DAYS)));
+const DAYS = Math.min(31, Math.max(WINDOW_DAYS, Number(args.find((a) => a.startsWith("--days="))?.split("=")[1] ?? WINDOW_DAYS)));
 const PLATFORMS = ["instagram", "facebook", "tiktok", "youtube", "pinterest"];
 
 const madrid = (d) => new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Madrid", dateStyle: "short", timeStyle: "short" }).format(d); // "2026-10-04 09:12"

@@ -1,0 +1,81 @@
+{
+  "lang": "es",
+  "out": "video.mp4",
+  "music": "magic-wonder-1.mp3",
+  "outro": true,
+  "web": true,
+  "outroSay": "Crea el suyo, con su nombre, en meapica punto shop.",
+  "beats": [
+    {
+      "img": {
+        "video": "../2026-10-08/clips/p12.mp4"
+      },
+      "say": "No le regales otro juguete esta Navidad. Regálale una noche con un dragón.",
+      "title": "No le regales<br><em>otro juguete</em>"
+    },
+    {
+      "img": {
+        "video": "../2026-10-08/clips/p04.mp4"
+      },
+      "say": "Lucía tenía nueve años y una cinta morada que guardaba en su libro."
+    },
+    {
+      "img": {
+        "video": "../2026-10-08/clips/amb-461c6578-p10-night-in-6.88.mp4",
+        "fit": true
+      },
+      "say": "Una noche, la cinta la llevó al Castillo de los Sueños."
+    },
+    {
+      "img": {
+        "video": "../2026-10-08/clips/amb-461c6578-p14-night-in-5.22.mp4",
+        "fit": true
+      },
+      "say": "Allí conoció a Chispa, un dragoncito que acababa de perder su primer sueño."
+    },
+    {
+      "img": {
+        "pdf": "461c6578-404b-4362-8dff-afcae81f6141",
+        "page": 16
+      },
+      "say": "Lo buscaron por la cocina del castillo, entre ollas que cantaban bajito.",
+      "zoom": [
+        1.05,
+        1.2
+      ]
+    },
+    {
+      "img": {
+        "pdf": "461c6578-404b-4362-8dff-afcae81f6141",
+        "page": 20
+      },
+      "say": "El sueño se escondía entre nubes de azúcar. Los sueños no se cazan, susurró Lucía. Se invitan.",
+      "zoom": [
+        1.05,
+        1.2
+      ]
+    },
+    {
+      "img": {
+        "pdf": "461c6578-404b-4362-8dff-afcae81f6141",
+        "page": 24
+      },
+      "say": "Lucía no lo persiguió. Hizo un pastel de miel y esperó.",
+      "zoom": [
+        1.2,
+        1.05
+      ]
+    },
+    {
+      "img": {
+        "pdf": "461c6578-404b-4362-8dff-afcae81f6141",
+        "page": 26
+      },
+      "say": "El sueño bajó solo. Y ella volvió a casa oliendo a miel.",
+      "zoom": [
+        1.05,
+        1.2
+      ]
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "lang": "es",
+  "out": "video.mp4",
+  "music": "calm-guitar-1.mp3",
+  "outro": true,
+  "web": true,
+  "outroSay": "Crea el suyo, con su nombre, en meapica punto shop.",
+  "beats": [
+    {
+      "img": {
+        "video": "../2026-10-04/clips/p10.mp4"
+      },
+      "say": "Me llamo Coral, soy un delfín. Y esta es la noche en que conocí a Aitana.",
+      "title": "Un cuento contado<br><em>por un delfín</em>"
+    },
+    {
+      "img": {
+        "video": "../2026-10-04/clips/t06-10.mp4",
+        "full": true
+      },
+      "say": "Llegó por una puerta de espuma, con una caracola turquesa en la mano."
+    },
+    {
+      "img": {
+        "video": "../2026-10-04/clips/p14.mp4"
+      },
+      "say": "Le conté nuestro problema: la Perla Cantarina se había perdido, y los peces pequeños no podían dormir."
+    },
+    {
+      "img": {
+        "video": "../2026-10-04/clips/p16.mp4"
+      },
+      "say": "La encontramos sobre el lomo de Bruma, una ballena que dormía profundamente."
+    },
+    {
+      "img": {
+        "video": "../2026-10-04/clips/p20.mp4"
+      },
+      "say": "Si la despertábamos con ruido, haría una ola gigante. Pero Aitana no gritó. Cantó bajito."
+    },
+    {
+      "img": {
+        "video": "../2026-10-04/clips/p22.mp4"
+      },
+      "say": "Bruma abrió un ojo enorme y le dio la perla con su aleta."
+    },
+    {
+      "img": {
+        "video": "../2026-10-04/clips/p24.mp4"
+      },
+      "say": "Aquella noche aprendí algo: el mejor tesoro son los amigos."
+    },
+    {
+      "img": {
+        "video": "../2026-10-04/clips/p26.mp4"
+      },
+      "say": "Aitana volvió a casa. Yo, a veces, todavía la oigo cantar."
+    }
+  ]
+}

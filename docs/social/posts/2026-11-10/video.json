@@ -1,0 +1,69 @@
+{
+  "lang": "ca",
+  "out": "video.mp4",
+  "music": "calm-guitar-1.mp3",
+  "outro": true,
+  "web": true,
+  "outroSay": "Crea el seu, amb el seu nom, a meapica punt shop.",
+  "beats": [
+    {
+      "img": {
+        "video": "../../tests/2026-10-07-lifestyle/clips/bedtime.mp4"
+      },
+      "say": "La primera nit que li llegeixes un conte on el protagonista és ell.",
+      "title": "El primer cop que<br><em>surt al seu conte</em>",
+      "titleTop": 240
+    },
+    {
+      "img": {
+        "video": "../../tests/2026-10-07-lifestyle/clips/floor.mp4"
+      },
+      "say": "Comença al parc on juga cada dia, amb el seu dinosaure taronja."
+    },
+    {
+      "img": {
+        "video": "../../tests/2026-10-11-ca-story/clips/t06-10.mp4",
+        "full": true
+      },
+      "say": "Fins que un portal del temps s'obre amb un sospir daurat."
+    },
+    {
+      "img": {
+        "video": "../../tests/2026-10-11-ca-story/clips/amb-fd5512f6-p10-day-in-4.98.mp4",
+        "fit": true
+      },
+      "say": "Crac! D'un ou va treure el cap un bebè de coll llarg."
+    },
+    {
+      "img": {
+        "video": "../2026-10-06/clips/p12.mp4"
+      },
+      "say": "Allà coneix en Lulo, un bebè dinosaure que ha perdut la seva família."
+    },
+    {
+      "img": {
+        "video": "../2026-10-06/clips/amb-fd5512f6-p16-day-in-7.05.mp4",
+        "fit": true
+      },
+      "say": "Però la família d'en Lulo era lluny, a l'altra banda de la vall."
+    },
+    {
+      "img": {
+        "video": "../2026-10-06/clips/p20.mp4"
+      },
+      "say": "I en lloc de córrer, junta les mans i crida ben fort: uooooo!"
+    },
+    {
+      "img": {
+        "video": "../../tests/2026-10-11-ca-story/clips/p24.mp4"
+      },
+      "say": "La família l'escolta, i arriba fent tremolar la terra."
+    },
+    {
+      "img": {
+        "video": "../../tests/2026-10-07-lifestyle/clips/cover-end.mp4"
+      },
+      "say": "Ser valent és ajudar qui és diferent. I el nom de la portada és el seu."
+    }
+  ]
+}

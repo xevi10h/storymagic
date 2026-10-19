@@ -1,0 +1,77 @@
+{
+  "lang": "ca",
+  "out": "video.mp4",
+  "music": "magic-wonder-1.mp3",
+  "outro": true,
+  "web": true,
+  "outroSay": "Crea el seu, amb el seu nom, a meapica punt shop.",
+  "beats": [
+    {
+      "img": {
+        "video": "../2026-10-08/clips/p12.mp4"
+      },
+      "say": "Aquesta nit, un dragonet acabat de néixer ha perdut el seu primer somni.",
+      "title": "Conte per anar a dormir<br><em>en 1 minut</em>"
+    },
+    {
+      "img": {
+        "video": "../2026-10-08/clips/p04.mp4"
+      },
+      "say": "La Lucía tenia una cinta morada que guardava dins del llibre, ben recta."
+    },
+    {
+      "img": {
+        "video": "../2026-10-08/clips/amb-461c6578-p6-night-in-5.05.mp4",
+        "fit": true
+      },
+      "say": "Una tarda, la cinta va sortir sola i va assenyalar la paret."
+    },
+    {
+      "img": {
+        "video": "../2026-10-08/clips/amb-461c6578-p10-night-in-6.88.mp4",
+        "fit": true
+      },
+      "say": "A l'altra banda, el Castell dels Somnis. I un esternut diminut: atxim!"
+    },
+    {
+      "img": {
+        "video": "../2026-10-08/clips/amb-461c6578-p14-night-in-5.22.mp4",
+        "fit": true
+      },
+      "say": "Era en Chispa. El meu somni se m'ha escapat, va dir, i l'havia de regalar."
+    },
+    {
+      "img": {
+        "pdf": "461c6578-404b-4362-8dff-afcae81f6141",
+        "page": 20
+      },
+      "say": "El somni s'havia amagat entre els núvols de sucre de la cuina.",
+      "zoom": [
+        1.05,
+        1.2
+      ]
+    },
+    {
+      "img": {
+        "pdf": "461c6578-404b-4362-8dff-afcae81f6141",
+        "page": 24
+      },
+      "say": "Els somnis no es cacen, va dir la Lucía. Es conviden. I va fer un pastís de mel.",
+      "zoom": [
+        1.2,
+        1.05
+      ]
+    },
+    {
+      "img": {
+        "pdf": "461c6578-404b-4362-8dff-afcae81f6141",
+        "page": 26
+      },
+      "say": "El somni va baixar a la seva cinta morada. I aquella nit, la Lucía va dormir molt bé.",
+      "zoom": [
+        1.05,
+        1.2
+      ]
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "lang": "es",
+  "out": "video.mp4",
+  "music": "calm-piano-1.mp3",
+  "outro": true,
+  "web": true,
+  "outroSay": "Crea el suyo, con su nombre, en meapica punto shop.",
+  "beats": [
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p22-night-in-8.75.mp4",
+        "fit": true
+      },
+      "say": "Esta noche, una chispa de estrella va a caber en un frasco.",
+      "title": "Cuento para dormir<br><em>en 1 minuto</em>"
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/p04.mp4"
+      },
+      "say": "Martín volvía del colegio pisando solo las baldosas claras."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p6-night-out-7.72.mp4",
+        "fit": true
+      },
+      "say": "Por la noche, un gorrión con un hilo rojo llamó al cristal: toc, toc, toc."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/t06-10.mp4",
+        "full": true
+      },
+      "say": "La ventana no se abrió: se hizo cielo."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p10-night-in-6.65.mp4",
+        "fit": true
+      },
+      "say": "Martín pilotó un cohete pequeño hasta un asteroide."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p12-night-in-7.62.mp4",
+        "fit": true
+      },
+      "say": "Allí, un cristal latía triste. Lo buscaremos, dijo Martín."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p14-night-in-5.85.mp4",
+        "fit": true
+      },
+      "say": "Lo buscaron hasta la Estrella Sonriente."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p20-night-in-3.95.mp4",
+        "fit": true
+      },
+      "say": "Pero su luz quemaba."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p24-night-in-5.95.mp4",
+        "fit": true
+      },
+      "say": "Con una chispa de la Estrella Sonriente, el cristal amaneció en mil colores."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p26-night-in-4.48.mp4",
+        "fit": true
+      },
+      "say": "Y Martín volvió a casa con un frasco que, al oído, hacía pum."
+    }
+  ]
+}

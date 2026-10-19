@@ -1,0 +1,73 @@
+{
+  "lang": "ca",
+  "out": "video.mp4",
+  "music": "calm-piano-1.mp3",
+  "outro": true,
+  "web": true,
+  "outroSay": "Crea el seu, amb el seu nom, a meapica punt shop.",
+  "beats": [
+    {
+      "img": {
+        "video": "../2026-10-09/clips/p12.mp4"
+      },
+      "say": "Aquest cristall s'està apagant. I en Martí només té un pot buit per salvar-lo.",
+      "title": "Un cristall que s'apaga<br><em>i un pot buit</em>"
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p6-night-out-7.72.mp4",
+        "fit": true
+      },
+      "say": "Tot va començar amb un pardal que va trucar al vidre: toc, toc."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/t06-10.mp4",
+        "full": true
+      },
+      "say": "La finestra no es va obrir: es va fer cel."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p10-night-in-6.65.mp4",
+        "fit": true
+      },
+      "say": "Un coet petit el va portar fins a un asteroide on bategava el Cristall."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p14-night-in-5.85.mp4",
+        "fit": true
+      },
+      "say": "Van seguir un rastre de cuques de llum fins a l'Estrella Somrient."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p20-night-in-3.95.mp4",
+        "fit": true
+      },
+      "say": "Però la seva llum era massa forta. Cremava."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p22-night-in-8.75.mp4",
+        "fit": true
+      },
+      "say": "En Martí va obrir el pot, només una escletxa. I hi va entrar una espurna."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p24-night-in-5.95.mp4",
+        "fit": true
+      },
+      "say": "El Cristall se la va beure a glopets, i va clarejar en mil colors."
+    },
+    {
+      "img": {
+        "video": "../2026-10-09/clips/amb-31ada3cf-p26-night-in-4.48.mp4",
+        "fit": true
+      },
+      "say": "A casa, el pot semblava buit. Però si te l'acostaves a l'orella, feia pum."
+    }
+  ]
+}

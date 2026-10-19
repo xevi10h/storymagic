@@ -1,0 +1,71 @@
+{
+  "lang": "ca",
+  "out": "video.mp4",
+  "music": "calm-piano-1.mp3",
+  "outro": true,
+  "web": true,
+  "outroSay": "Crea el seu, amb el seu nom, a meapica punt shop.",
+  "beats": [
+    {
+      "img": {
+        "video": "../2026-10-05/clips/amb-bc6e2dbd-p10-forest-in-8.52.mp4",
+        "fit": true
+      },
+      "say": "Em dic Bruno, soc un mussol. I aquesta és la tarda que la Noa va entrar al meu bosc.",
+      "title": "Un conte explicat<br><em>per un mussol</em>"
+    },
+    {
+      "img": {
+        "video": "../2026-10-05/clips/t06-10.mp4",
+        "full": true
+      },
+      "say": "Va arribar per una porta verda, a poc a poc, escoltant-ho tot."
+    },
+    {
+      "img": {
+        "video": "../2026-10-05/clips/amb-bc6e2dbd-p12-forest-in-4.42.mp4",
+        "fit": true
+      },
+      "say": "Li vaig ensenyar el cofre. Només m'obre la clau de flor, xiuxiuejava."
+    },
+    {
+      "img": {
+        "video": "../2026-10-05/clips/amb-bc6e2dbd-p16-forest-in-6.35.mp4",
+        "fit": true
+      },
+      "say": "La Noa es va enfilar a l'arbre. La clau no hi era. No passa res, va dir."
+    },
+    {
+      "img": {
+        "video": "../2026-10-05/clips/amb-bc6e2dbd-p18-forest-in-5.38.mp4",
+        "fit": true
+      },
+      "say": "Va jugar amb els esquirols, i va sentir un crac petit."
+    },
+    {
+      "img": {
+        "video": "../2026-10-05/clips/p20.mp4"
+      },
+      "say": "La clau de flor! Dring, dring!"
+    },
+    {
+      "img": {
+        "video": "../2026-10-05/clips/p22.mp4"
+      },
+      "say": "A dins hi havia llavors adormides. Les vam sembrar entre tots."
+    },
+    {
+      "img": {
+        "video": "../2026-10-05/clips/amb-bc6e2dbd-p24-day-in-4.25.mp4",
+        "fit": true
+      },
+      "say": "La Noa va tornar a casa, calentona i tranquil·la."
+    },
+    {
+      "img": {
+        "video": "../2026-10-05/clips/p26.mp4"
+      },
+      "say": "Passet a passet, el món sona bonic."
+    }
+  ]
+}
