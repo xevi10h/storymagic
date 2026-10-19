@@ -289,7 +289,17 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   Personal API key (phx_, owner's) for the PostHog API is not stored in the repo.
 - **cana:** project key `meapica` in `~/.config/casmar-analytics/sites.json` (`cana gsc …` / `cana ga4 …` from this repo).
 - **IndexNow:** key file `public/2ecdea1c8139eed8afa1e608880f24f7.txt`; after a deploy run `node scripts/indexnow-ping.mjs`
-  (pings api.indexnow.org with every sitemap URL; `--dry-run` to count). Bing Webmaster Tools import from GSC: owner, pending.
+  (pings api.indexnow.org with every sitemap URL; `--dry-run` to count). Bing recognises it (IndexNow page: 90 URLs, source Self, 2026-10-09).
+- **Bing Webmaster Tools (2026-10-19):** `meapica.shop/` is verified in the shared Casmar Bing account (with atalaya.watch, constrack.pro,
+  licita-ia.com…), signed in with Google. Sitemap `https://meapica.shop/sitemap.xml` submitted 2026-10-19 (Processing). Headless access:
+  `pw-session.mjs run bing-webmaster <script>` (browser-session service `bing-webmaster`, profile `google`; the sign-in dialog is shadow
+  DOM, click "Google" by coordinates). Direct pages: `/webmasters/{sitemaps,indexnow}?siteUrl=https://meapica.shop/`.
+- **GSC "Request indexing" (no API):** headless via browser-session (`google-search-console`, ~10 URLs/day); check status first with the
+  URL Inspection API (cana service account). 2026-10-19: 10 requested (`/es/about`, `/ca/about`, `/ca/gifts/christmas`, `/ca/gifts`,
+  `/{es,ca}/christmas-delivery`, `/es/gift-voucher`, `/es/blog/three-kings-gift-ideas`, `/es/personalized-books/in-catalan`, `/es/themes`);
+  sitemap resubmitted. Already indexed then: three-kings (es/ca), es/christmas, tio-de-nadal, in-catalan (+by-age), es/gifts, examples,
+  personalized-books (es/ca). Still unknown to Google (next batches): ca/themes + theme pages, ca/gift-voucher, tools, ca/compare, blog posts,
+  ca/gifts/{birthday,sant-jordi,first-birthday}, es/gifts/{baptism,end-of-school,name-day,graduation,sant-jordi}, 5 example stories, es/legal.
 - **Weekly SEO report (2026-10-02):** `scripts/seo-weekly-report.mjs` emails a short Spanish HTML report to admin@casmar.tech
   every **Monday 09:00 Europe/Madrid**: GSC clicks/impressions/CTR/position, top 5 queries + pages, sitemap status and per-URL
   index status (URL Inspection API over every sitemap URL), GA4 users/sessions/organic sessions/key events (purchase,
