@@ -6,7 +6,8 @@
 //   1. read everything (user, orders, stories, characters, preps)
 //   2. blocker check (paid book not yet shipped → refuse)
 //   3. orders: anonymise the ones we keep, delete the unpaid ones — FIRST, so an
-//      old ON DELETE CASCADE can never take an accounting record with the story
+//      old ON DELETE CASCADE can never take an accounting record with the story;
+//      the reviews of the kept orders are deleted (name + text are personal data)
 //   4. storage objects (all buckets) — before the rows that point to them, so a
 //      failure never leaves unreachable orphans
 //   5. rows: stories (→ illustrations), sagas, characters, character_preps,
@@ -18,6 +19,7 @@
 import { randomUUID } from "node:crypto";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { illustrationPath } from "../storage/illustration-refs";
+import { isMissingSchemaError } from "../reviews/schema";
 import {
   erasureBlocker,
   orderErasureDisposition,
@@ -210,6 +212,12 @@ export async function eraseAccount(
         .eq("id", order.id),
       `anonymise order ${order.id}`,
     );
+  }
+  // Their reviews (name + text) go with the account; kept orders would otherwise keep them.
+  // Deleted orders cascade. A database without the reviews table yet has nothing to erase.
+  if (keep.length > 0) {
+    const reviewDelete = await admin.from("reviews").delete().in("order_id", keep.map((o) => o.id));
+    if (reviewDelete.error && !isMissingSchemaError(reviewDelete.error)) must(reviewDelete, "delete reviews");
   }
   if (drop.length > 0) {
     must(await admin.from("orders").delete().in("id", drop.map((o) => o.id)), "delete unpaid orders");

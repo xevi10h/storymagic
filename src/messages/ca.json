@@ -949,7 +949,7 @@
       "section3Title": "3. Finalitat del tractament",
       "section3Text": "Utilitzem les teves dades exclusivament per: generar el conte personalitzat i el seu personatge il·lustrat, processar el pagament i l'enviament, i comunicar-nos amb tu sobre la teva comanda. Mai no venem dades a tercers.",
       "section4Title": "4. Base legal",
-      "section4Text": "Crear, previsualitzar i imprimir el teu llibre, gestionar el teu compte, el pagament i l'enviament: execució del contracte que ens demanes (art. 6.1.b RGPD). Foto de l'infant: consentiment explícit de la seva mare, pare o tutor legal (art. 6.1.a RGPD i art. 7 LOPDGDD), que pots retirar en qualsevol moment. Butlletí i llista d'espera: el teu consentiment (art. 6.1.a RGPD), que pots retirar quan vulguis. Conservació de factures i registres comptables: obligació legal (art. 6.1.c RGPD). Seguretat del servei i prevenció d'abusos (per exemple, límits d'ús): interès legítim (art. 6.1.f RGPD). Saber quin canal t'ha portat fins a nosaltres quan crees un llibre (la campanya o el lloc web d'origen d'aquella visita, sense cookies ni identificadors del teu dispositiu), per mesurar quins canals funcionen amb estadístiques agregades: interès legítim (art. 6.1.f RGPD); s'esborra amb el llibre. Mesura dels nostres anuncis amb Meta i TikTok i estadístiques de visites i d'ús amb Google Analytics i PostHog (cookies publicitàries i d'anàlisi, i esdeveniment de compra): el teu consentiment (art. 6.1.a RGPD), que pots retirar des de «Configurar cookies». Recordatoris de la teva vista prèvia per correu (com a màxim 3, durant 3 dies, només si marques la casella quan ens demanes la vista prèvia): el teu consentiment (art. 6.1.a RGPD i art. 21.1 LSSI), que pots retirar donant-te de baixa des de qualsevol d'aquests correus. Desem la data, l'idioma i la versió del text que vas acceptar com a prova del consentiment.",
+      "section4Text": "Crear, previsualitzar i imprimir el teu llibre, gestionar el teu compte, el pagament i l'enviament: execució del contracte que ens demanes (art. 6.1.b RGPD). Foto de l'infant: consentiment explícit de la seva mare, pare o tutor legal (art. 6.1.a RGPD i art. 7 LOPDGDD), que pots retirar en qualsevol moment. Butlletí i llista d'espera: el teu consentiment (art. 6.1.a RGPD), que pots retirar quan vulguis. Conservació de factures i registres comptables: obligació legal (art. 6.1.c RGPD). Seguretat del servei i prevenció d'abusos (per exemple, límits d'ús): interès legítim (art. 6.1.f RGPD). Saber quin canal t'ha portat fins a nosaltres quan crees un llibre (la campanya o el lloc web d'origen d'aquella visita, sense cookies ni identificadors del teu dispositiu), per mesurar quins canals funcionen amb estadístiques agregades: interès legítim (art. 6.1.f RGPD); s'esborra amb el llibre. Mesura dels nostres anuncis amb Meta i TikTok i estadístiques de visites i d'ús amb Google Analytics i PostHog (cookies publicitàries i d'anàlisi, i esdeveniment de compra): el teu consentiment (art. 6.1.a RGPD), que pots retirar des de «Configurar cookies». Recordatoris de la teva vista prèvia per correu (com a màxim 3, durant 3 dies, només si marques la casella quan ens demanes la vista prèvia): el teu consentiment (art. 6.1.a RGPD i art. 21.1 LSSI), que pots retirar donant-te de baixa des de qualsevol d'aquests correus. Desem la data, l'idioma i la versió del text que vas acceptar com a prova del consentiment. Una sola petició d'opinió per correu uns dies després de rebre la teva comanda: interès legítim (art. 6.1.f RGPD i art. 21.2 LSSI); no te l'enviem si vas marcar que no vols ofertes en pagar, i et pots donar de baixa des del mateix correu. Si publiques la teva opinió, mostrem al web la puntuació, el text i el nom que triïs, amb el teu consentiment (art. 6.1.a RGPD), que pots retirar escrivint-nos.",
       "section5Title": "5. Encarregats del tractament i transferències internacionals",
       "section5Text": "Per prestar el servei treballem amb proveïdors que tracten les dades només seguint les nostres instruccions: OpenAI Ireland Ltd. (generació del text i les il·lustracions del conte i, si la puges, del personatge a partir de la foto), Supabase (base de dades i emmagatzematge), Vercel (allotjament web), Stripe Payments Europe Ltd. (pagaments), Gelato (impressió i enviament), Resend (correus de la comanda i recordatoris que hagis demanat), Cloudflare, Inc. (Turnstile, verificació antibots en iniciar sessió i en començar com a convidat) i, només si acceptes les cookies publicitàries i d'anàlisi, Meta Platforms Ireland Ltd., TikTok Technology Limited (mesura dels nostres anuncis) Google Ireland Limited (Google Analytics, estadístiques de visites i compres) i PostHog, Inc. (estadístiques d'ús de la web i enregistraments anònims de sessió, allotjats a la UE). OpenAI no fa servir les dades que li enviem per entrenar els seus models i les pot conservar fins a 30 dies per detectar abusos. Quan un proveïdor o els seus subencarregats tracten dades fora de l'Espai Econòmic Europeu (per exemple, als Estats Units), la transferència s'empara en les clàusules contractuals tipus aprovades per la Comissió Europea o en el Marc de Privadesa de Dades UE-EUA.",
       "section6Title": "6. Els teus drets",
@@ -1724,7 +1724,7 @@
     },
     "marketingOptOut": {
       "label": "No vull rebre ofertes sobre els meus llibres per correu",
-      "note": "De tant en tant et podem escriure amb alguna oferta sobre els teus llibres. Et pots donar de baixa quan vulguis."
+      "note": "De tant en tant et podem escriure amb alguna oferta sobre els teus llibres o per demanar-te la teva opinió. Et pots donar de baixa quan vulguis."
     }
   },
   "data": {
@@ -3175,5 +3175,67 @@
       "notFound": "No trobem aquesta targeta. Revisa l'enllaç de l'email o escriu-nos a hola@meapica.shop."
     },
     "fromChristmas": "Prefereixes que el creï la família? Regala una targeta regal"
+  },
+  "review": {
+    "metaTitle": "Valora el teu conte",
+    "form": {
+      "title": "Què us ha semblat el conte?",
+      "titleBook": "Què us ha semblat «{title}»?",
+      "lead": "És qüestió d'un minut i ajuda molt altres famílies que estan pensant a regalar-ne un.",
+      "ratingLabel": "La teva valoració",
+      "stars": {
+        "1": "No ens ha agradat",
+        "2": "Regular",
+        "3": "Està bé",
+        "4": "Ens ha agradat molt",
+        "5": "Ens encanta!"
+      },
+      "bodyLabel": "Explica'ns-en més (opcional)",
+      "bodyPlaceholder": "Què li va semblar al petit o la petita? Què és el que més us va agradar?",
+      "counter": "{count}/{max}",
+      "nameLabel": "El teu nom, tal com el veuran altres famílies",
+      "namePlaceholder": "Marta G.",
+      "nameHint": "El teu nom i la inicial del cognom. No mostrem el teu correu ni les dades de la comanda.",
+      "consentLabel": "Podeu publicar la meva valoració, el meu text i aquest nom a meapica.shop.",
+      "consentNote": "Si no ho marques, la teva opinió només la llegirem nosaltres.",
+      "submit": "Enviar la meva opinió",
+      "privacy": "Si la publiques, ens pots demanar que la retirem quan vulguis.",
+      "privacyLink": "Política de privadesa"
+    },
+    "errors": {
+      "rating": "Tria d'1 a 5 estrelles.",
+      "display_name": "Escriu un nom de 2 a 40 lletres, per exemple «Marta G.».",
+      "body": "El text és massa llarg (màxim 1000 caràcters).",
+      "generic": "No hem pogut desar la teva opinió. Torna-ho a provar o escriu-nos a <mail></mail>."
+    },
+    "done": {
+      "title": "Gràcies per la teva opinió!",
+      "published": "Ja es veu a meapica.shop. Gràcies per ajudar altres famílies a decidir-se.",
+      "pending": "La revisarem i la publicarem aviat.",
+      "private": "L'hem rebuda i la llegirem amb calma. No la publicarem.",
+      "already": "Ja ens vas deixar la teva opinió sobre aquest conte. Gràcies de nou!"
+    },
+    "trustpilot": {
+      "ask": "Ens deixes també una ressenya a Trustpilot?",
+      "note": "Ens ajuda molt perquè altres famílies confiïn en nosaltres.",
+      "cta": "Opinar a Trustpilot"
+    },
+    "invalid": {
+      "title": "Aquest enllaç no funciona",
+      "body": "Potser s'ha tallat en copiar-lo. Escriu-nos a <mail></mail> i t'ajudem."
+    },
+    "unavailable": {
+      "title": "Aquesta comanda no es pot valorar",
+      "body": "Si creus que és un error, escriu-nos a <mail></mail>."
+    },
+    "backHome": "Anar a Meapica"
+  },
+  "reviews": {
+    "eyebrow": "Opinions",
+    "title": "El que diuen les famílies",
+    "average": "{average} de 5",
+    "count": "{count, plural, one {# opinió} other {# opinions}}",
+    "starsLabel": "{rating} de 5 estrelles",
+    "verified": "Compra verificada"
   }
 }

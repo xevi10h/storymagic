@@ -129,8 +129,14 @@ export async function middleware(request: NextRequest) {
 
       // Only allow root page (waitlist itself) and read-only preview share links
       // (/preview/[token]: sent to family who never passed the waitlist) and the unsubscribe
-      // page (a legal right, LSSI 22.1: it must always work) — block everything else
-      if (pathWithoutLocale !== "/" && !pathWithoutLocale.startsWith("/preview/") && pathWithoutLocale !== "/unsubscribe") {
+      // page (a legal right, LSSI 22.1: it must always work) and the review page (signed
+      // link in the review-request email to buyers) — block everything else
+      if (
+        pathWithoutLocale !== "/" &&
+        !pathWithoutLocale.startsWith("/preview/") &&
+        pathWithoutLocale !== "/unsubscribe" &&
+        pathWithoutLocale !== "/review"
+      ) {
         const rootUrl = request.nextUrl.clone();
         rootUrl.pathname = `/${detectedLocale}`;
         rootUrl.search = "";
@@ -195,7 +201,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Share links carry a private token: never index them, never let a shared cache keep them.
-  if (pathWithoutLocale.startsWith("/preview/") || pathWithoutLocale === "/unsubscribe") {
+  if (pathWithoutLocale.startsWith("/preview/") || pathWithoutLocale === "/unsubscribe" || pathWithoutLocale === "/review") {
     response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
     response.headers.set("Referrer-Policy", "no-referrer");
   }

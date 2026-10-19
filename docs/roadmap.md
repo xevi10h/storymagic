@@ -83,6 +83,14 @@ GA4 2 Oct-19 Oct: 37 sessions, 6 from social. Funnel 3-19 Oct: 4 real stories, 4
 - [ ] Attribution follow-ups: tag every bio link, post and ad with `utm_source/utm_medium/utm_campaign` (untagged in-app browsers often send no referrer and land as `(direct)`); consider keeping the first touch across reloads only if a clearly exempt way exists (any device storage needs consent, see technical-architecture › Story attribution).
 - [ ] Drop the YouTube leg or keep it only for bedtime stories (21 views in 12 Shorts).
 
+## Next steps from customer reviews (2026-10-19)
+
+- Create the Trustpilot business profile and set `TRUSTPILOT_REVIEW_URL` in `src/lib/product-facts.ts`.
+- Once there are a few reviews: show the average next to the hero price ("4,8 de 5 · 23 opiniones") and on the
+  Merchant Center feed (product ratings need a reviews feed or a partner).
+- Reply to reviews publicly from the moderation page (owner answer shown under the review).
+- Ask for a photo of the child with the book (separate, explicit consent) for the strongest proof.
+
 ## Next steps from referral + gift vouchers (2026-10-09)
 
 - [x] 2026-10-10: migration `20261009120000` applied to production before deploy `3253e7e`; `scripts/stripe-setup-catalog.mts` run with the LIVE key (3 voucher Prices + 4 coupons created, re-run dry is clean).

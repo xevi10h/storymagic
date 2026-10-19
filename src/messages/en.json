@@ -909,7 +909,7 @@
       "section3Title": "3. Purpose of processing",
       "section3Text": "We use your data only to: create the personalised story and its illustrated character, process payment and shipping, and contact you about your order. We never sell data to third parties.",
       "section4Title": "4. Legal basis",
-      "section4Text": "Creating, previewing and printing your book, managing your account, payment and shipping: performance of the contract you request (Art. 6(1)(b) GDPR). The child's photo: explicit consent of the child's parent or legal guardian (Art. 6(1)(a) GDPR and Art. 7 of Spain's LOPDGDD), which you can withdraw at any time. Newsletter and waitlist: your consent (Art. 6(1)(a) GDPR), which you can withdraw whenever you like. Keeping invoices and accounting records: legal obligation (Art. 6(1)(c) GDPR). Service security and abuse prevention (for example, usage limits): legitimate interest (Art. 6(1)(f) GDPR). Knowing which channel brought you to us when you create a book (the campaign or referring website of that visit, with no cookies or device identifiers), to measure which channels work through aggregate statistics: legitimate interest (Art. 6(1)(f) GDPR); it is deleted with the book. Measuring our ads with Meta and TikTok and site and usage statistics with Google Analytics and PostHog (advertising and analytics cookies, and purchase event): your consent (Art. 6(1)(a) GDPR), which you can withdraw from \"Cookie settings\". Email reminders about your preview (3 at most, over 3 days, only if you tick the box when asking for the preview): your consent (Art. 6(1)(a) GDPR and Art. 21.1 LSSI), which you can withdraw by unsubscribing from any of those emails. We keep the date, the language and the version of the text you accepted as proof of consent.",
+      "section4Text": "Creating, previewing and printing your book, managing your account, payment and shipping: performance of the contract you request (Art. 6(1)(b) GDPR). The child's photo: explicit consent of the child's parent or legal guardian (Art. 6(1)(a) GDPR and Art. 7 of Spain's LOPDGDD), which you can withdraw at any time. Newsletter and waitlist: your consent (Art. 6(1)(a) GDPR), which you can withdraw whenever you like. Keeping invoices and accounting records: legal obligation (Art. 6(1)(c) GDPR). Service security and abuse prevention (for example, usage limits): legitimate interest (Art. 6(1)(f) GDPR). Knowing which channel brought you to us when you create a book (the campaign or referring website of that visit, with no cookies or device identifiers), to measure which channels work through aggregate statistics: legitimate interest (Art. 6(1)(f) GDPR); it is deleted with the book. Measuring our ads with Meta and TikTok and site and usage statistics with Google Analytics and PostHog (advertising and analytics cookies, and purchase event): your consent (Art. 6(1)(a) GDPR), which you can withdraw from \"Cookie settings\". Email reminders about your preview (3 at most, over 3 days, only if you tick the box when asking for the preview): your consent (Art. 6(1)(a) GDPR and Art. 21.1 LSSI), which you can withdraw by unsubscribing from any of those emails. We keep the date, the language and the version of the text you accepted as proof of consent. One review request by email a few days after you receive your order: legitimate interest (Art. 6(1)(f) GDPR and Art. 21.2 LSSI); we don't send it if you ticked that you don't want offers at checkout, and you can unsubscribe from that same email. If you publish your review, we show your rating, your text and the name you choose on the website, with your consent (Art. 6(1)(a) GDPR), which you can withdraw by writing to us.",
       "section5Title": "5. Processors and international transfers",
       "section5Text": "To provide the service we work with providers that process data only on our instructions: OpenAI Ireland Ltd. (generating the story text and illustrations and, if you upload one, the character from the photo), Supabase (database and storage), Vercel (web hosting), Stripe Payments Europe Ltd. (payments), Gelato (printing and shipping), Resend (order emails and the reminders you asked for), Cloudflare, Inc. (Turnstile, anti-bot verification at sign-in and when starting as a guest) and, only if you accept advertising and analytics cookies, Meta Platforms Ireland Ltd., TikTok Technology Limited (measuring our ads) Google Ireland Limited (Google Analytics, visit and purchase statistics) and PostHog, Inc. (site-usage statistics and anonymous session recordings, hosted in the EU). OpenAI does not use the data we send it to train its models and may keep it for up to 30 days to detect abuse. When a provider or its sub-processors process data outside the European Economic Area (for example, in the United States), the transfer relies on the European Commission's Standard Contractual Clauses or the EU-US Data Privacy Framework.",
       "section6Title": "6. Your rights",
@@ -1684,7 +1684,7 @@
     },
     "marketingOptOut": {
       "label": "I don't want offers about my books by email",
-      "note": "Now and then we may email you an offer about your books. You can unsubscribe at any time."
+      "note": "Now and then we may email you an offer about your books or ask for your review. You can unsubscribe at any time."
     }
   },
   "data": {
@@ -2853,5 +2853,67 @@
       "notFound": "We can't find this voucher. Check the link in the email or write to hola@meapica.shop."
     },
     "fromChristmas": "Rather let the family create it? Give a gift voucher"
+  },
+  "review": {
+    "metaTitle": "Rate your story",
+    "form": {
+      "title": "How did you like the story?",
+      "titleBook": "How did you like “{title}”?",
+      "lead": "It takes less than a minute and really helps other families who are thinking of giving one.",
+      "ratingLabel": "Your rating",
+      "stars": {
+        "1": "We didn't like it",
+        "2": "It was OK",
+        "3": "Good",
+        "4": "We liked it a lot",
+        "5": "We love it!"
+      },
+      "bodyLabel": "Tell us more (optional)",
+      "bodyPlaceholder": "What did your little one think? What did you like most?",
+      "counter": "{count}/{max}",
+      "nameLabel": "Your name, as other families will see it",
+      "namePlaceholder": "Marta G.",
+      "nameHint": "Your first name and the initial of your surname. We never show your email or order details.",
+      "consentLabel": "You may publish my rating, my text and this name on meapica.shop.",
+      "consentNote": "If you leave it unticked, only we will read your review.",
+      "submit": "Send my review",
+      "privacy": "If you publish it, you can ask us to take it down at any time.",
+      "privacyLink": "Privacy policy"
+    },
+    "errors": {
+      "rating": "Choose 1 to 5 stars.",
+      "display_name": "Write a name of 2 to 40 letters, for example “Marta G.”.",
+      "body": "The text is too long (1000 characters at most).",
+      "generic": "We couldn't save your review. Try again or write to <mail></mail>."
+    },
+    "done": {
+      "title": "Thank you for your review!",
+      "published": "It's now live on meapica.shop. Thank you for helping other families decide.",
+      "pending": "We'll check it and publish it shortly.",
+      "private": "We've got it and will read it carefully. We won't publish it.",
+      "already": "You already reviewed this story. Thank you again!"
+    },
+    "trustpilot": {
+      "ask": "Would you also leave us a review on Trustpilot?",
+      "note": "It really helps other families trust us.",
+      "cta": "Review us on Trustpilot"
+    },
+    "invalid": {
+      "title": "This link doesn't work",
+      "body": "It may have been cut when copied. Write to <mail></mail> and we'll help."
+    },
+    "unavailable": {
+      "title": "This order can't be reviewed",
+      "body": "If you think this is a mistake, write to <mail></mail>."
+    },
+    "backHome": "Go to Meapica"
+  },
+  "reviews": {
+    "eyebrow": "Reviews",
+    "title": "What families say",
+    "average": "{average} out of 5",
+    "count": "{count, plural, one {# review} other {# reviews}}",
+    "starsLabel": "{rating} out of 5 stars",
+    "verified": "Verified purchase"
   }
 }

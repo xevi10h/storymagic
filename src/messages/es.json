@@ -932,7 +932,7 @@
       "section3Title": "3. Finalidad del tratamiento",
       "section3Text": "Utilizamos tus datos exclusivamente para: generar el cuento personalizado y su personaje ilustrado, procesar el pago y envío, y comunicarnos contigo sobre tu pedido. Nunca vendemos datos a terceros.",
       "section4Title": "4. Base legal",
-      "section4Text": "Crear, previsualizar e imprimir tu libro, gestionar tu cuenta, el pago y el envío: ejecución del contrato que nos pides (art. 6.1.b RGPD). Foto del niño/a: consentimiento explícito de su madre, padre o tutor legal (art. 6.1.a RGPD y art. 7 LOPDGDD), que puedes retirar en cualquier momento. Newsletter y lista de espera: tu consentimiento (art. 6.1.a RGPD), que puedes retirar cuando quieras. Conservación de facturas y registros contables: obligación legal (art. 6.1.c RGPD). Seguridad del servicio y prevención de abusos (por ejemplo, límites de uso): interés legítimo (art. 6.1.f RGPD). Saber qué canal te trajo hasta nosotros cuando creas un libro (la campaña o el sitio web de origen de esa visita, sin cookies ni identificadores de tu dispositivo), para medir qué canales funcionan con estadísticas agregadas: interés legítimo (art. 6.1.f RGPD); se borra con el libro. Medición de nuestros anuncios con Meta y TikTok y estadísticas de visitas y de uso con Google Analytics y PostHog (cookies publicitarias y de análisis, y evento de compra): tu consentimiento (art. 6.1.a RGPD), que puedes retirar desde «Configurar cookies». Recordatorios de tu vista previa por email (como mucho 3, durante 3 días, solo si marcas la casilla al pedirnos la vista previa): tu consentimiento (art. 6.1.a RGPD y art. 21.1 LSSI), que puedes retirar dándote de baja desde cualquiera de esos correos. Guardamos la fecha, el idioma y la versión del texto que aceptaste como prueba del consentimiento.",
+      "section4Text": "Crear, previsualizar e imprimir tu libro, gestionar tu cuenta, el pago y el envío: ejecución del contrato que nos pides (art. 6.1.b RGPD). Foto del niño/a: consentimiento explícito de su madre, padre o tutor legal (art. 6.1.a RGPD y art. 7 LOPDGDD), que puedes retirar en cualquier momento. Newsletter y lista de espera: tu consentimiento (art. 6.1.a RGPD), que puedes retirar cuando quieras. Conservación de facturas y registros contables: obligación legal (art. 6.1.c RGPD). Seguridad del servicio y prevención de abusos (por ejemplo, límites de uso): interés legítimo (art. 6.1.f RGPD). Saber qué canal te trajo hasta nosotros cuando creas un libro (la campaña o el sitio web de origen de esa visita, sin cookies ni identificadores de tu dispositivo), para medir qué canales funcionan con estadísticas agregadas: interés legítimo (art. 6.1.f RGPD); se borra con el libro. Medición de nuestros anuncios con Meta y TikTok y estadísticas de visitas y de uso con Google Analytics y PostHog (cookies publicitarias y de análisis, y evento de compra): tu consentimiento (art. 6.1.a RGPD), que puedes retirar desde «Configurar cookies». Recordatorios de tu vista previa por email (como mucho 3, durante 3 días, solo si marcas la casilla al pedirnos la vista previa): tu consentimiento (art. 6.1.a RGPD y art. 21.1 LSSI), que puedes retirar dándote de baja desde cualquiera de esos correos. Guardamos la fecha, el idioma y la versión del texto que aceptaste como prueba del consentimiento. Una sola petición de opinión por email unos días después de recibir tu pedido: interés legítimo (art. 6.1.f RGPD y art. 21.2 LSSI); no te la enviamos si marcaste que no quieres ofertas al pagar, y puedes darte de baja desde ese mismo correo. Si publicas tu opinión, mostramos en la web tu puntuación, tu texto y el nombre que elijas, con tu consentimiento (art. 6.1.a RGPD), que puedes retirar escribiéndonos.",
       "section5Title": "5. Encargados del tratamiento y transferencias internacionales",
       "section5Text": "Para prestar el servicio trabajamos con proveedores que tratan los datos solo siguiendo nuestras instrucciones: OpenAI Ireland Ltd. (generación del texto y las ilustraciones del cuento y, si la subes, del personaje a partir de la foto), Supabase (base de datos y almacenamiento), Vercel (alojamiento web), Stripe Payments Europe Ltd. (pagos), Gelato (impresión y envío), Resend (correos del pedido y recordatorios que hayas pedido), Cloudflare, Inc. (Turnstile, verificación anti-bots al iniciar sesión y al empezar como invitado) y, solo si aceptas las cookies publicitarias y de análisis, Meta Platforms Ireland Ltd., TikTok Technology Limited (medición de nuestros anuncios) Google Ireland Limited (Google Analytics, estadísticas de visitas y compras) y PostHog, Inc. (estadísticas de uso de la web y grabaciones anónimas de sesión, alojadas en la UE). OpenAI no usa los datos que le enviamos para entrenar sus modelos y puede conservarlos hasta 30 días para detectar abusos. Cuando un proveedor o sus subencargados tratan datos fuera del Espacio Económico Europeo (por ejemplo, en Estados Unidos), la transferencia se ampara en las cláusulas contractuales tipo aprobadas por la Comisión Europea o en el Marco de Privacidad de Datos UE-EE. UU.",
       "section6Title": "6. Tus derechos",
@@ -1707,7 +1707,7 @@
     },
     "marketingOptOut": {
       "label": "No quiero recibir ofertas sobre mis libros por email",
-      "note": "De vez en cuando podemos escribirte con alguna oferta sobre tus libros. Puedes darte de baja cuando quieras."
+      "note": "De vez en cuando podemos escribirte con alguna oferta sobre tus libros o para pedirte tu opinión. Puedes darte de baja cuando quieras."
     }
   },
   "data": {
@@ -3158,5 +3158,67 @@
       "notFound": "No encontramos esta tarjeta. Revisa el enlace del email o escríbenos a hola@meapica.shop."
     },
     "fromChristmas": "¿Prefieres que lo cree la familia? Regala una tarjeta regalo"
+  },
+  "review": {
+    "metaTitle": "Valora tu cuento",
+    "form": {
+      "title": "¿Qué os ha parecido el cuento?",
+      "titleBook": "¿Qué os ha parecido «{title}»?",
+      "lead": "Te lleva menos de un minuto y ayuda mucho a otras familias que están pensando en regalar uno.",
+      "ratingLabel": "Tu valoración",
+      "stars": {
+        "1": "No nos ha gustado",
+        "2": "Regular",
+        "3": "Está bien",
+        "4": "Nos ha gustado mucho",
+        "5": "¡Nos encanta!"
+      },
+      "bodyLabel": "Cuéntanos más (opcional)",
+      "bodyPlaceholder": "¿Qué le pareció al peque? ¿Qué es lo que más os gustó?",
+      "counter": "{count}/{max}",
+      "nameLabel": "Tu nombre, tal como lo verán otras familias",
+      "namePlaceholder": "Marta G.",
+      "nameHint": "Tu nombre y la inicial del apellido. No mostramos tu email ni tus datos del pedido.",
+      "consentLabel": "Podéis publicar mi valoración, mi texto y este nombre en meapica.shop.",
+      "consentNote": "Si no lo marcas, tu opinión solo la leeremos nosotros.",
+      "submit": "Enviar mi opinión",
+      "privacy": "Si la publicas, puedes pedirnos que la retiremos cuando quieras.",
+      "privacyLink": "Política de privacidad"
+    },
+    "errors": {
+      "rating": "Elige de 1 a 5 estrellas.",
+      "display_name": "Escribe un nombre de 2 a 40 letras, por ejemplo «Marta G.».",
+      "body": "El texto es demasiado largo (máximo 1000 caracteres).",
+      "generic": "No hemos podido guardar tu opinión. Prueba otra vez o escríbenos a <mail></mail>."
+    },
+    "done": {
+      "title": "¡Gracias por tu opinión!",
+      "published": "Ya se ve en meapica.shop. Gracias por ayudar a otras familias a decidirse.",
+      "pending": "La revisaremos y la publicaremos en breve.",
+      "private": "La hemos recibido y la leeremos con calma. No la publicaremos.",
+      "already": "Ya nos dejaste tu opinión sobre este cuento. ¡Gracias de nuevo!"
+    },
+    "trustpilot": {
+      "ask": "¿Nos dejas también una reseña en Trustpilot?",
+      "note": "Nos ayuda mucho a que otras familias confíen en nosotros.",
+      "cta": "Opinar en Trustpilot"
+    },
+    "invalid": {
+      "title": "Este enlace no funciona",
+      "body": "Puede que se haya cortado al copiarlo. Escríbenos a <mail></mail> y te ayudamos."
+    },
+    "unavailable": {
+      "title": "Este pedido no se puede valorar",
+      "body": "Si crees que es un error, escríbenos a <mail></mail>."
+    },
+    "backHome": "Ir a Meapica"
+  },
+  "reviews": {
+    "eyebrow": "Opiniones",
+    "title": "Lo que dicen las familias",
+    "average": "{average} de 5",
+    "count": "{count, plural, one {# opinión} other {# opiniones}}",
+    "starsLabel": "{rating} de 5 estrellas",
+    "verified": "Compra verificada"
   }
 }

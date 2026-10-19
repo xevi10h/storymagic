@@ -21,6 +21,7 @@ import {
   TRANSIT_BUSINESS_DAYS,
 } from "@/lib/product-facts";
 import { getShowcaseStories } from "@/lib/showcase";
+import { productReviewMarkup, type ReviewSummary } from "@/lib/reviews/review-content";
 import { GUIDES, guideUpdated, isGuideLocale, type GuideId } from "@/lib/guides";
 
 const BASE_URL = SITE_URL;
@@ -178,8 +179,6 @@ async function productImages(locale: string): Promise<string[]> {
  * offers' `url` changes (the page carrying it). Offers for every format with the
  * final VAT-inclusive price (B2C), free shipping to Spain and the return policy.
  */
-export type ProductReview = { author: string; text: string; rating?: number };
-
 export async function ProductJsonLd({
   locale,
   url,
@@ -189,13 +188,12 @@ export async function ProductJsonLd({
   /** Indexable page that sells the book and carries this markup (default: the home). */
   url?: string;
   /**
-   * Real customer reviews. ONLY pass genuine, verifiable reviews — emitting
-   * Review/AggregateRating markup with fabricated testimonials violates Google's
-   * structured-data policy (manual action) and EU/Spanish consumer law (fake
-   * reviews are illegal). Leave undefined until real reviews exist; the markup
-   * then activates automatically with no further changes.
+   * Published customer reviews (src/lib/reviews/published.ts), passed ONLY by a page that
+   * also renders them visibly (<CustomerReviews>), as Google's review snippet rules
+   * require. AggregateRating/Review are emitted only when at least one exists: never
+   * fabricated (Google manual action + EU/Spanish consumer law on fake reviews).
    */
-  reviews?: ProductReview[];
+  reviews?: ReviewSummary;
 }) {
   const loc = asLoc(locale);
   const localizedNames: Record<Loc, string> = {
@@ -218,31 +216,6 @@ export async function ProductJsonLd({
     en: { hardcover: "Hardcover (PDF included)", softcover: "Softcover (PDF included)", digital_pdf: "Digital PDF" },
     fr: { hardcover: "Couverture rigide (PDF inclus)", softcover: "Couverture souple (PDF inclus)", digital_pdf: "PDF numérique" },
   };
-
-  const hasReviews = Array.isArray(reviews) && reviews.length > 0;
-  const aggregateRating = hasReviews
-    ? {
-        "@type": "AggregateRating",
-        ratingValue: (
-          reviews!.reduce((sum, r) => sum + (r.rating ?? 5), 0) / reviews!.length
-        ).toFixed(1),
-        reviewCount: String(reviews!.length),
-        bestRating: "5",
-        worstRating: "1",
-      }
-    : undefined;
-  const review = hasReviews
-    ? reviews!.map((r) => ({
-        "@type": "Review",
-        author: { "@type": "Person", name: r.author },
-        reviewRating: {
-          "@type": "Rating",
-          ratingValue: String(r.rating ?? 5),
-          bestRating: "5",
-        },
-        reviewBody: r.text,
-      }))
-    : undefined;
 
   // The indexable page that sells the book (/create is noindex).
   const offerUrl = url ?? `${BASE_URL}/${locale}`;
@@ -280,8 +253,7 @@ export async function ProductJsonLd({
     description: localizedDescriptions[loc],
     image: await productImages(locale),
     brand: { "@type": "Brand", name: BRAND_NAME },
-    aggregateRating,
-    review,
+    ...productReviewMarkup(reviews),
     offers,
     size: `${BOOK_SIZE_CM} × ${BOOK_SIZE_CM} cm`,
     additionalProperty: [

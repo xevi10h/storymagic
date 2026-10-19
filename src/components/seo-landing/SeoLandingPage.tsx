@@ -10,6 +10,8 @@ import type { CatalogWorld } from "@/components/landing/BookCollectionData";
 import LiveCover from "@/components/create/LiveCover";
 import { BreadcrumbJsonLd, FAQJsonLd, ProductJsonLd } from "@/components/seo/JsonLd";
 import DeadlineCards from "@/components/seasonal/DeadlineCards";
+import CustomerReviews from "@/components/reviews/CustomerReviews";
+import { getReviewSummary } from "@/lib/reviews/published";
 import { Heading, buttonClass, cx, focusRing } from "@/components/ui";
 import { STORY_TEMPLATES } from "@/lib/create-store";
 import { getShowcaseStories } from "@/lib/showcase";
@@ -71,6 +73,8 @@ export default async function SeoLandingPage({ type, slug, locale }: Props) {
 
   // Real books painted in each world ("Ver por dentro"), newest first — same data as the landing catalog.
   const showcase = await getShowcaseStories(locale);
+  // Real published reviews: rendered below AND in the Product markup (same data).
+  const reviews = await getReviewSummary();
   const worlds: CatalogWorld[] = featured.map((template) => {
     const book = showcase.find((s) => s.templateId === template.id && s.coverImage);
     return {
@@ -135,7 +139,7 @@ export default async function SeoLandingPage({ type, slug, locale }: Props) {
         ]}
       />
       <FAQJsonLd questions={faqs} />
-      <ProductJsonLd locale={locale} url={pageUrl} />
+      <ProductJsonLd locale={locale} url={pageUrl} reviews={reviews} />
       <Navbar />
 
       <main>
@@ -316,6 +320,8 @@ export default async function SeoLandingPage({ type, slug, locale }: Props) {
             </div>
           </div>
         </section>
+
+        <CustomerReviews locale={locale} summary={reviews} className="pb-16 sm:pb-24" />
 
         {/* FAQ */}
         <section aria-labelledby="seo-faq-title" className="bg-paper px-4 pb-16 sm:px-6 sm:pb-24">

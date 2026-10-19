@@ -440,6 +440,25 @@ Order: apply the migration → deploy → run the setup script with the live key
 |---|---|---|
 | 20261003200655 | `funnel_and_preview_reminders.sql` (stories funnel columns + trigger + backfill, `preview_reminders`) | **before** the deploy (additive; the send-preview route degrades gracefully without it, the cron would fail) |
 
+## Customer reviews (2026-10-19)
+
+- Cron `/api/cron/review-requests` (vercel.json, daily 10:00 UTC, `CRON_SECRET`; `?dry_run=1`, `?limit=N`). Answers
+  `{ migrationPending: true }` with 200 until migration `20261019150000_reviews` is applied, so the cron can ship first.
+- No new env vars: `RESEND_API_KEY`, `EMAIL_FROM`, `NEXT_PUBLIC_SITE_URL`, `SUPABASE_SERVICE_ROLE_KEY` (review and
+  moderation link keys), `OPS_ALERT_EMAIL` (owner email per new review, fallback `GELATO_OWNER_EMAIL`).
+- Trustpilot: `TRUSTPILOT_REVIEW_URL` constant in `src/lib/product-facts.ts`, empty until the owner creates the profile
+  (TODO); empty = link hidden.
+- Moderation: link in the owner email (`/api/reviews/moderate?t=…`, confirm page + POST) or SQL in the dashboard:
+  `update public.reviews set status = 'hidden', updated_at = now() where id = '…';`
+
+### Deploy order — customer reviews (2026-10-19)
+
+| Version | File | When |
+|---|---|---|
+| 20261019150000 | `reviews.sql` (`orders.shipped_at/delivered_at` + trigger + backfill, `orders.review_request_sent_at`, `reviews`, service role only) | before or after the deploy: the cron, the review API and the public pages degrade without it (no requests, 503, no reviews) |
+
+Recommended: apply the migration, then deploy, then run `?dry_run=1` once to see how many orders are due.
+
 ## Product feeds — Google Merchant Center + ChatGPT (2026-10-02)
 
 - **URLs (static, rebuilt each deploy):** `https://meapica.shop/feeds/google-merchant.xml` (RSS 2.0 + `g:` namespace) and

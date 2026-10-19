@@ -41,6 +41,14 @@ export const SOCIAL_PROFILES: string[] = [
   "https://www.facebook.com/61595107133823",
 ];
 
+/**
+ * Trustpilot "write a review" page, offered on the thank-you state of /review (to EVERY
+ * reviewer whatever their rating: Trustpilot forbids inviting only happy customers).
+ * TODO(owner): the Trustpilot profile does not exist yet. Create it, then set e.g.
+ * "https://www.trustpilot.com/evaluate/meapica.shop". Empty = the link is hidden.
+ */
+export const TRUSTPILOT_REVIEW_URL = "";
+
 // ── The book ────────────────────────────────────────────────────────────────
 
 /** Square trim size: 20 × 20 cm. */

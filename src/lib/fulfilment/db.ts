@@ -96,6 +96,25 @@ export type OrderFulfilmentColumns = {
   // 20260930156000_marketing_email.sql (null = ordered before the opt-out existed)
   marketing_opt_out: boolean | null;
   upsell_reminder_sent_at: string | null;
+  // 20261019150000_reviews.sql (shipped_at / delivered_at set by a trigger; the app only reads them)
+  shipped_at: string | null;
+  delivered_at: string | null;
+  review_request_sent_at: string | null;
+};
+
+// 20261019150000_reviews.sql (rules: src/lib/reviews/review-content.ts)
+export type ReviewRow = {
+  id: string;
+  order_id: string;
+  rating: number;
+  body: string | null;
+  display_name: string;
+  locale: string;
+  publish_consent: boolean;
+  status: "pending" | "published" | "hidden";
+  published_at: string | null;
+  created_at: string;
+  updated_at: string;
 };
 
 // 20261009120000_referrals_and_gift_vouchers.sql (rules: src/lib/promo-codes.ts)
@@ -182,6 +201,12 @@ export type FulfilmentDatabase = Omit<Database, "public"> & {
         Insert: Pick<GiftVoucherRow, "code" | "format" | "amount_cents" | "buyer_email" | "stripe_checkout_session_id" | "expires_at"> &
           Partial<GiftVoucherRow>;
         Update: Partial<GiftVoucherRow>;
+        Relationships: [];
+      };
+      reviews: {
+        Row: ReviewRow;
+        Insert: Pick<ReviewRow, "order_id" | "rating" | "display_name" | "locale"> & Partial<ReviewRow>;
+        Update: Partial<ReviewRow>;
         Relationships: [];
       };
       // 20260930156000_marketing_email.sql

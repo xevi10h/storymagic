@@ -15,7 +15,9 @@ import MobileStickyCta from "@/components/landing/MobileStickyCta";
 import WaitlistPage from "@/components/waitlist/WaitlistPage";
 import { OrganizationJsonLd, ProductJsonLd } from "@/components/seo/JsonLd";
 import DevResetCreateState from "@/components/dev/DevResetCreateState";
+import CustomerReviews from "@/components/reviews/CustomerReviews";
 import { ADDON_ENABLED } from "@/lib/pricing";
+import { getReviewSummary } from "@/lib/reviews/published";
 
 // The FAQ quotes this season's Christmas/Reyes order cut-offs (depend on "today"):
 // re-render at most hourly, like /christmas-delivery.
@@ -42,11 +44,14 @@ export default async function Home({ params }: Props) {
     }
   }
 
+  // Real published reviews: shown on the page AND in the Product markup (same data).
+  const reviews = await getReviewSummary();
+
   return (
     <>
       <DevResetCreateState />
       <OrganizationJsonLd locale={locale} />
-      <ProductJsonLd locale={locale} />
+      <ProductJsonLd locale={locale} reviews={reviews} />
       <Navbar />
       <main>
         {/* Conversion order: promise → how → what the gift really is → pick a story → proof it is theirs →
@@ -58,6 +63,7 @@ export default async function Home({ params }: Props) {
         <UniqueEdition />
         <QualitySection />
         {ADDON_ENABLED.adventure_pack && <AdventurePack />}
+        <CustomerReviews locale={locale} summary={reviews} />
         <FaqSection />
         <FinalCta />
       </main>

@@ -911,7 +911,7 @@
       "section3Title": "3. Finalité du traitement",
       "section3Text": "Nous utilisons vos données exclusivement pour : créer l'histoire personnalisée et son personnage illustré, traiter le paiement et la livraison, et vous contacter au sujet de votre commande. Nous ne vendons jamais de données à des tiers.",
       "section4Title": "4. Base légale",
-      "section4Text": "Créer, prévisualiser et imprimer votre livre, gérer votre compte, le paiement et la livraison : exécution du contrat que vous nous demandez (art. 6.1.b RGPD). Photo de l'enfant : consentement explicite de sa mère, de son père ou de son tuteur légal (art. 6.1.a RGPD et art. 7 de la LOPDGDD espagnole), que vous pouvez retirer à tout moment. Newsletter et liste d'attente : votre consentement (art. 6.1.a RGPD), que vous pouvez retirer quand vous le souhaitez. Conservation des factures et des registres comptables : obligation légale (art. 6.1.c RGPD). Sécurité du service et prévention des abus (par exemple, limites d'utilisation) : intérêt légitime (art. 6.1.f RGPD). Savoir quel canal vous a amené jusqu'à nous lorsque vous créez un livre (la campagne ou le site web d'origine de cette visite, sans cookies ni identifiants de votre appareil), afin de mesurer quels canaux fonctionnent au moyen de statistiques agrégées : intérêt légitime (art. 6.1.f RGPD) ; ces données sont supprimées avec le livre. Mesure de nos publicités avec Meta et TikTok et statistiques de visite et d'utilisation avec Google Analytics et PostHog (cookies publicitaires et de mesure d'audience, et événement d'achat) : votre consentement (art. 6.1.a RGPD), que vous pouvez retirer via « Paramètres des cookies ». Rappels de votre aperçu par e-mail (3 au maximum, pendant 3 jours, uniquement si vous cochez la case en demandant l'aperçu) : votre consentement (art. 6.1.a RGPD et art. 21.1 LSSI), que vous pouvez retirer en vous désabonnant depuis n'importe lequel de ces e-mails. Nous conservons la date, la langue et la version du texte accepté comme preuve du consentement.",
+      "section4Text": "Créer, prévisualiser et imprimer votre livre, gérer votre compte, le paiement et la livraison : exécution du contrat que vous nous demandez (art. 6.1.b RGPD). Photo de l'enfant : consentement explicite de sa mère, de son père ou de son tuteur légal (art. 6.1.a RGPD et art. 7 de la LOPDGDD espagnole), que vous pouvez retirer à tout moment. Newsletter et liste d'attente : votre consentement (art. 6.1.a RGPD), que vous pouvez retirer quand vous le souhaitez. Conservation des factures et des registres comptables : obligation légale (art. 6.1.c RGPD). Sécurité du service et prévention des abus (par exemple, limites d'utilisation) : intérêt légitime (art. 6.1.f RGPD). Savoir quel canal vous a amené jusqu'à nous lorsque vous créez un livre (la campagne ou le site web d'origine de cette visite, sans cookies ni identifiants de votre appareil), afin de mesurer quels canaux fonctionnent au moyen de statistiques agrégées : intérêt légitime (art. 6.1.f RGPD) ; ces données sont supprimées avec le livre. Mesure de nos publicités avec Meta et TikTok et statistiques de visite et d'utilisation avec Google Analytics et PostHog (cookies publicitaires et de mesure d'audience, et événement d'achat) : votre consentement (art. 6.1.a RGPD), que vous pouvez retirer via « Paramètres des cookies ». Rappels de votre aperçu par e-mail (3 au maximum, pendant 3 jours, uniquement si vous cochez la case en demandant l'aperçu) : votre consentement (art. 6.1.a RGPD et art. 21.1 LSSI), que vous pouvez retirer en vous désabonnant depuis n'importe lequel de ces e-mails. Nous conservons la date, la langue et la version du texte accepté comme preuve du consentement. Une seule demande d'avis par e-mail quelques jours après la réception de votre commande : intérêt légitime (art. 6.1.f RGPD et art. 21.2 LSSI) ; nous ne l'envoyons pas si vous avez coché que vous ne souhaitez pas d'offres lors du paiement, et vous pouvez vous désabonner depuis ce même e-mail. Si vous publiez votre avis, nous affichons sur le site votre note, votre texte et le nom que vous choisissez, avec votre consentement (art. 6.1.a RGPD), que vous pouvez retirer en nous écrivant.",
       "section5Title": "5. Sous-traitants et transferts internationaux",
       "section5Text": "Pour fournir le service, nous travaillons avec des prestataires qui traitent les données uniquement selon nos instructions : OpenAI Ireland Ltd. (génération du texte et des illustrations de l'histoire et, si vous en téléchargez une, du personnage à partir de la photo), Supabase (base de données et stockage), Vercel (hébergement web), Stripe Payments Europe Ltd. (paiements), Gelato (impression et livraison), Resend (e-mails de commande et rappels que vous avez demandés), Cloudflare, Inc. (Turnstile, vérification anti-robots à la connexion et au démarrage en tant qu'invité) et, uniquement si vous acceptez les cookies publicitaires et d'analyse, Meta Platforms Ireland Ltd., TikTok Technology Limited (mesure de nos publicités) Google Ireland Limited (Google Analytics, statistiques de visites et d'achats) et PostHog, Inc. (statistiques d'utilisation du site et enregistrements anonymes de session, hébergés dans l'UE). OpenAI n'utilise pas les données que nous lui envoyons pour entraîner ses modèles et peut les conserver jusqu'à 30 jours pour détecter les abus. Lorsqu'un prestataire ou ses sous-traitants traitent des données en dehors de l'Espace économique européen (par exemple, aux États-Unis), le transfert repose sur les clauses contractuelles types de la Commission européenne ou sur le cadre de protection des données UE-États-Unis.",
       "section6Title": "6. Vos droits",
@@ -1686,7 +1686,7 @@
     },
     "marketingOptOut": {
       "label": "Je ne souhaite pas recevoir d'offres sur mes livres par e-mail",
-      "note": "De temps en temps, nous pouvons vous écrire avec une offre sur vos livres. Vous pouvez vous désabonner à tout moment."
+      "note": "De temps en temps, nous pouvons vous écrire avec une offre sur vos livres ou pour vous demander votre avis. Vous pouvez vous désabonner à tout moment."
     }
   },
   "data": {
@@ -2855,5 +2855,67 @@
       "notFound": "Nous ne trouvons pas cette carte. Vérifiez le lien de l'email ou écrivez-nous à hola@meapica.shop."
     },
     "fromChristmas": "Vous préférez que la famille le crée ? Offrez une carte cadeau"
+  },
+  "review": {
+    "metaTitle": "Notez votre histoire",
+    "form": {
+      "title": "Qu'avez-vous pensé de l'histoire ?",
+      "titleBook": "Qu'avez-vous pensé de « {title} » ?",
+      "lead": "Cela prend moins d'une minute et aide beaucoup les familles qui pensent en offrir une.",
+      "ratingLabel": "Votre note",
+      "stars": {
+        "1": "Nous n'avons pas aimé",
+        "2": "Moyen",
+        "3": "Bien",
+        "4": "Nous avons beaucoup aimé",
+        "5": "Nous adorons !"
+      },
+      "bodyLabel": "Dites-nous en plus (facultatif)",
+      "bodyPlaceholder": "Qu'en a pensé votre enfant ? Qu'avez-vous préféré ?",
+      "counter": "{count}/{max}",
+      "nameLabel": "Votre nom, tel que les autres familles le verront",
+      "namePlaceholder": "Marta G.",
+      "nameHint": "Votre prénom et l'initiale de votre nom. Nous n'affichons jamais votre e-mail ni votre commande.",
+      "consentLabel": "Vous pouvez publier ma note, mon texte et ce nom sur meapica.shop.",
+      "consentNote": "Si vous ne cochez pas la case, nous serons les seuls à lire votre avis.",
+      "submit": "Envoyer mon avis",
+      "privacy": "Si vous le publiez, vous pouvez nous demander de le retirer à tout moment.",
+      "privacyLink": "Politique de confidentialité"
+    },
+    "errors": {
+      "rating": "Choisissez de 1 à 5 étoiles.",
+      "display_name": "Écrivez un nom de 2 à 40 lettres, par exemple « Marta G. ».",
+      "body": "Le texte est trop long (1000 caractères maximum).",
+      "generic": "Nous n'avons pas pu enregistrer votre avis. Réessayez ou écrivez-nous à <mail></mail>."
+    },
+    "done": {
+      "title": "Merci pour votre avis !",
+      "published": "Il est déjà visible sur meapica.shop. Merci d'aider d'autres familles à se décider.",
+      "pending": "Nous allons le vérifier et le publier rapidement.",
+      "private": "Nous l'avons bien reçu et le lirons attentivement. Nous ne le publierons pas.",
+      "already": "Vous avez déjà donné votre avis sur cette histoire. Merci encore !"
+    },
+    "trustpilot": {
+      "ask": "Nous laisseriez-vous aussi un avis sur Trustpilot ?",
+      "note": "Cela aide beaucoup d'autres familles à nous faire confiance.",
+      "cta": "Donner mon avis sur Trustpilot"
+    },
+    "invalid": {
+      "title": "Ce lien ne fonctionne pas",
+      "body": "Il a peut-être été coupé lors de la copie. Écrivez-nous à <mail></mail> et nous vous aiderons."
+    },
+    "unavailable": {
+      "title": "Cette commande ne peut pas être notée",
+      "body": "Si vous pensez que c'est une erreur, écrivez-nous à <mail></mail>."
+    },
+    "backHome": "Aller sur Meapica"
+  },
+  "reviews": {
+    "eyebrow": "Avis",
+    "title": "Ce qu'en disent les familles",
+    "average": "{average} sur 5",
+    "count": "{count, plural, one {# avis} other {# avis}}",
+    "starsLabel": "{rating} étoiles sur 5",
+    "verified": "Achat vérifié"
   }
 }

@@ -268,6 +268,34 @@ Rules in `src/lib/promo-codes.ts` (pure, checked by `src/lib/promo-codes.check.m
 - **Fail soft:** until `scripts/stripe-setup-catalog.mts` has created the coupons/prices on the active account, no
   referral codes are minted (plain QR, no email block) and the voucher page shows "coming soon".
 
+## Customer reviews (2026-10-19)
+
+Reviews live on our own site (owner decision 2026-10-19), with an optional Trustpilot link afterwards.
+
+- **Request:** ONE email per order (es / ca / en / fr, story locale), sent by the daily cron `/api/cron/review-requests`:
+  printed books 4 days after Gelato reports `delivered` (or, if it never does, `shipped` + carrier transit max from
+  `product-facts.ts` as calendar days + 4); PDF orders 5 days after the book_ready email (before the 7-day PDF → papel
+  offer). Only while the due date is at most 14 days old. Never for refunded, disputed, cancelled orders, orders with a
+  print problem, follow-on offer orders (extra copy / PDF upgrade), anonymised orders, buyers who ticked the checkout
+  opt-out ("No quiero recibir ofertas…", whose note now also mentions review requests) or suppressed addresses. Kicker
+  "Tu opinión", seller identity, why we write and an unsubscribe link + List-Unsubscribe headers. Rules:
+  `src/lib/reviews/review-schedule.ts`.
+- **Review page** `/[locale]/review?t=<signed link>` (no login, noindex): 1-5 stars, optional text (1000 chars), display
+  name chosen by the customer (prefilled "Marta G." from the buyer name, 2-40 letters), unticked consent to publish.
+  One review per order (a second submit shows "ya nos dejaste tu opinión"). Thank-you state offers "¿Nos dejas también
+  una reseña en Trustpilot?" to every reviewer whatever the rating (Trustpilot forbids selective invites), only when
+  `TRUSTPILOT_REVIEW_URL` (`src/lib/product-facts.ts`) is set: TODO owner, the profile does not exist yet.
+- **Publish rule:** any rating WITH consent goes live at once; without consent it stays private (`pending`, never shown);
+  a text containing a link is held as `pending` for the owner. The owner gets one email per review (operator alert)
+  with a signed link to hide it (or publish a held one). SQL alternative: `update reviews set status='hidden' where id=…`.
+- **Where they show:** home and the SEO landings (gifts / ages / themes), section "Lo que dicen las familias" above the
+  FAQ: average + count over all published reviews and the 6 newest in full ("Compra verificada", date, original
+  language). Rendered only when at least one review is published (no placeholder, no fake proof). The same data feeds
+  `aggregateRating` + `review` in the Product JSON-LD of those pages only (Google: markup only for reviews visible on
+  the page). Other pages with ProductJsonLd carry no review markup.
+- **Privacy:** legal basis in the privacy policy (§4: legitimate interest for the single request, consent for
+  publishing). Account erasure deletes the account's reviews.
+
 ## Waitlist (Pre-Launch Gate)
 
 The entire site is gated behind a pre-launch waiting list when `WAITLIST_MODE=true`. This allows building an audience and collecting leads before the product is publicly available.
