@@ -6,26 +6,33 @@
 // and out of hreflang (x-default = es, which every page has). Shared by client and
 // server — no server-only imports here.
 
-export type GuideId = "catalan" | "likeness" | "compare" | "tio" | "catalanAges";
+export type GuideId = "catalan" | "likeness" | "compare" | "tio" | "catalanAges" | "about";
 
 interface GuideConfig {
   path: string;
   locales: readonly string[];
+  /** First publication date (Article JSON-LD datePublished). */
+  published: string;
   /** Content date of this page when newer than GUIDES_CONTENT_UPDATED (sitemap lastmod). */
   updated?: string;
   /** Where the language switcher sends a reader to a locale without this page (default: the personalised-books hub). */
   fallback?: string;
+  /** Listed in the footer "Guías" row and the hub guide links (default true). */
+  listed?: boolean;
 }
 
 export const GUIDES: Record<GuideId, GuideConfig> = {
-  catalan: { path: "/personalized-books/in-catalan", locales: ["es", "ca"], updated: "2026-10-09" },
-  likeness: { path: "/personalized-books/looks-like-your-child", locales: ["es", "ca", "en", "fr"] },
+  catalan: { path: "/personalized-books/in-catalan", locales: ["es", "ca"], published: "2026-10-02", updated: "2026-10-09" },
+  likeness: { path: "/personalized-books/looks-like-your-child", locales: ["es", "ca", "en", "fr"], published: "2026-10-02" },
   // Competitor facts are Spain-specific (prices, shipping): es + ca only.
-  compare: { path: "/compare", locales: ["es", "ca"] },
+  compare: { path: "/compare", locales: ["es", "ca"], published: "2026-10-02" },
   // The tió is a Catalan tradition: Catalan only; other locales get the Christmas gift page.
-  tio: { path: "/gifts/tio-de-nadal", locales: ["ca"], updated: "2026-10-09", fallback: "/gifts/christmas" },
+  tio: { path: "/gifts/tio-de-nadal", locales: ["ca"], published: "2026-10-09", updated: "2026-10-09", fallback: "/gifts/christmas" },
   // Reading stages as Catalan schools name them (I3-I5, cicles): Catalan only.
-  catalanAges: { path: "/personalized-books/in-catalan/by-age", locales: ["ca"], updated: "2026-10-09" },
+  catalanAges: { path: "/personalized-books/in-catalan/by-age", locales: ["ca"], published: "2026-10-09", updated: "2026-10-09" },
+  // "Qué es Meapica" facts sheet (GEO, 2026-10-19): es + ca, the Spain-facing locales. Linked from
+  // the footer's support column, not the guides row; en/fr readers fall back to the home.
+  about: { path: "/about", locales: ["es", "ca"], published: "2026-10-19", updated: "2026-10-19", fallback: "/", listed: false },
 };
 
 export const GUIDE_IDS = Object.keys(GUIDES) as GuideId[];
@@ -45,9 +52,9 @@ export function isGuideLocale(id: GuideId, locale: string): boolean {
   return GUIDES[id].locales.includes(locale);
 }
 
-/** Guides available in a locale (footer, hub links). */
+/** Guides listed in a locale (footer "Guías" row, hub links); unlisted pages (about) are linked on their own. */
 export function guidesForLocale(locale: string): GuideId[] {
-  return GUIDE_IDS.filter((id) => isGuideLocale(id, locale));
+  return GUIDE_IDS.filter((id) => GUIDES[id].listed !== false && isGuideLocale(id, locale));
 }
 
 /** hreflang map: only the locales the page exists in; x-default = es, or the page's one locale when it has no es edition. */
@@ -57,6 +64,26 @@ export function guideAlternates(baseUrl: string, id: GuideId): Record<string, st
   for (const loc of locales) languages[loc] = `${baseUrl}/${loc}${path}`;
   languages["x-default"] = `${baseUrl}/${locales.includes("es") ? "es" : locales[0]}${path}`;
   return languages;
+}
+
+const BYLINE: Record<string, { updated: string; by: string; intl: string }> = {
+  es: { updated: "Actualizado el", by: "Por", intl: "es-ES" },
+  ca: { updated: "Actualitzat el", by: "Per", intl: "ca-ES" },
+  en: { updated: "Updated", by: "By", intl: "en-GB" },
+  fr: { updated: "Mis à jour le", by: "Par", intl: "fr-FR" },
+};
+
+/**
+ * Visible byline of a guide page ("Actualizado el 19 de octubre de 2026 · Por Xavier Huix"):
+ * the same content date and author as its Article JSON-LD.
+ */
+export function guideByline(id: GuideId, locale: string, author: string): { date: string; text: string } {
+  const b = BYLINE[locale] ?? BYLINE.es;
+  const date = guideUpdated(id);
+  const label = new Intl.DateTimeFormat(b.intl, { timeZone: "UTC", day: "numeric", month: "long", year: "numeric" }).format(
+    new Date(`${date}T00:00:00Z`),
+  );
+  return { date, text: `${b.updated} ${label} · ${b.by} ${author}` };
 }
 
 /** Footer heading of the guide links. */
@@ -74,6 +101,7 @@ export const GUIDE_LINK_LABELS: Record<GuideId, Record<string, string>> = {
   compare: { es: "Comparativa de cuentos personalizados", ca: "Comparativa de contes personalitzats" },
   tio: { ca: "Regal per al tió de Nadal" },
   catalanAges: { ca: "Contes en català per edats" },
+  about: { es: "Qué es Meapica", ca: "Què és Meapica" },
 };
 
 /**

@@ -7,7 +7,7 @@
 // from the story templates (create-store.ts). Change the fact there, never here.
 
 import { STORY_TEMPLATES } from "./create-store";
-import { PRICING, TOTAL_SCENE_COUNT } from "./pricing";
+import { PREVIEW_ILLUSTRATION_COUNT, PRICING, TOTAL_SCENE_COUNT } from "./pricing";
 import { DELIVERY_PARAMS, SHIPPING_REGIONS } from "./shipping";
 import { SUPPORT_EMAIL } from "./support";
 
@@ -18,6 +18,18 @@ export const BRAND_NAME = "Meapica";
  * Public contact address shown in structured data and /llms.txt.
  */
 export const CONTACT_EMAIL = SUPPORT_EMAIL;
+
+/**
+ * Who makes Meapica: the person named in the legal notice (legal.terms.section1Text /
+ * legal.privacy.section1Text in src/messages quote the same legal name, NIF and address;
+ * change them together). Also the named author of the blog and the guide pages
+ * (schema.org Person in Article JSON-LD) and the founder in the Organization JSON-LD.
+ */
+export const FOUNDER = {
+  name: "Xavier Huix",
+  legalName: "Xavier Huix Trenco",
+  city: "Barcelona",
+} as const;
 
 /**
  * Official social profiles (schema.org sameAs). Only profiles that really exist:
@@ -41,6 +53,8 @@ export const BOOK_SCENES = TOTAL_SCENE_COUNT;
 export const BOOK_PAPER_GSM = 170;
 /** Languages a book can be written in (= site locales). */
 export const BOOK_LANGUAGES = ["es", "ca", "en", "fr"] as const;
+/** Illustrated scenes the free preview shows (after the cover and the portrait). */
+export const PREVIEW_SCENES = PREVIEW_ILLUSTRATION_COUNT;
 /** PDF delivery after payment: "normally in under an hour". */
 export const PDF_DELIVERY_MAX_MINUTES = 60;
 

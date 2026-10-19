@@ -8,7 +8,7 @@ import Footer from "@/components/landing/Footer";
 import MobileStickyCta from "@/components/landing/MobileStickyCta";
 import FinalCta from "@/components/landing/FinalCta";
 import { cx, focusRing } from "@/components/ui";
-import { BreadcrumbJsonLd } from "@/components/seo/JsonLd";
+import { BreadcrumbJsonLd, articleAuthor } from "@/components/seo/JsonLd";
 import { Breadcrumbs, PageHero, kicker, marketingH1, marketingLead } from "@/components/seo-landing/MarketingHeader";
 import { getPublishedPosts, getBlogLocales } from "@/lib/blog";
 
@@ -69,7 +69,7 @@ export default async function BlogIndex({ params }: PageProps) {
             description: post.excerpt,
             url: `${pageUrl}/${post.slug}`,
             inLanguage: locale,
-            author: { "@type": "Organization", name: post.author },
+            author: articleAuthor(locale, post.author),
             ...(post.publishedAt ? { datePublished: post.publishedAt } : {}),
             ...(post.coverImageUrl ? { image: post.coverImageUrl } : {}),
           })),

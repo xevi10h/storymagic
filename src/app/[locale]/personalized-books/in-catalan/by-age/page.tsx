@@ -6,16 +6,16 @@ import Footer from "@/components/landing/Footer";
 import FinalCta from "@/components/landing/FinalCta";
 import MobileStickyCta from "@/components/landing/MobileStickyCta";
 import { Link } from "@/i18n/navigation";
-import { BreadcrumbJsonLd, FAQJsonLd, ProductJsonLd } from "@/components/seo/JsonLd";
+import { BreadcrumbJsonLd, FAQJsonLd, GuideArticleJsonLd, ProductJsonLd } from "@/components/seo/JsonLd";
 import ExampleBookCard from "@/components/seo-landing/ExampleBookCard";
 import { kicker } from "@/components/seo-landing/MarketingHeader";
 import { FaqSection, GuideSections, RelatedLinks } from "@/components/tools/ToolLanding";
 import { GuideHero } from "@/components/seo-guides/GuideParts";
 import { cx, focusRing } from "@/components/ui";
 import { STORY_TEMPLATES } from "@/lib/create-store";
-import { AGE_BANDS, SITE_URL, ageBandSlug } from "@/lib/product-facts";
+import { AGE_BANDS, FOUNDER, SITE_URL, ageBandSlug } from "@/lib/product-facts";
 import { PREVIEW_ILLUSTRATION_COUNT } from "@/lib/pricing";
-import { GUIDES, GUIDE_LINK_LABELS, isGuideLocale } from "@/lib/guides";
+import { GUIDES, GUIDE_LINK_LABELS, isGuideLocale, guideByline } from "@/lib/guides";
 import { guideMetadata } from "@/lib/guides-metadata";
 import { CATALAN_AGES_GUIDE_COPY } from "@/lib/guide-copy/catalan-ages";
 import { guideFacts } from "@/lib/guide-copy/facts";
@@ -85,12 +85,14 @@ export default async function Page({ params }: PageProps) {
         ]}
       />
       <FAQJsonLd questions={copy.faq} />
+      <GuideArticleJsonLd id={ID} locale={locale} headline={copy.h1} description={copy.metaDescription} />
       <ProductJsonLd locale={locale} url={pageUrl} />
       <Navbar />
 
       <main>
         <GuideHero
           locale={locale}
+          byline={guideByline(ID, locale, FOUNDER.name)}
           breadcrumbLabel={ts("common.breadcrumbLabel")}
           crumbs={[
             { label: ts("common.breadcrumbHome"), href: "/" },

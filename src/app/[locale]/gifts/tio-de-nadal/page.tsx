@@ -6,15 +6,15 @@ import Footer from "@/components/landing/Footer";
 import FinalCta from "@/components/landing/FinalCta";
 import MobileStickyCta from "@/components/landing/MobileStickyCta";
 import { Link } from "@/i18n/navigation";
-import { BreadcrumbJsonLd, FAQJsonLd, ProductJsonLd } from "@/components/seo/JsonLd";
+import { BreadcrumbJsonLd, FAQJsonLd, GuideArticleJsonLd, ProductJsonLd } from "@/components/seo/JsonLd";
 import DeadlineCards from "@/components/seasonal/DeadlineCards";
 import ExampleBookCard from "@/components/seo-landing/ExampleBookCard";
 import { FaqSection, GuideSections, RelatedLinks } from "@/components/tools/ToolLanding";
 import { ExampleCoverFigure, GuideHero } from "@/components/seo-guides/GuideParts";
 import { Heading, cx, focusRing } from "@/components/ui";
-import { SITE_URL } from "@/lib/product-facts";
+import { FOUNDER, SITE_URL } from "@/lib/product-facts";
 import { PREVIEW_ILLUSTRATION_COUNT } from "@/lib/pricing";
-import { GUIDES, GUIDE_LINK_LABELS, isGuideLocale } from "@/lib/guides";
+import { GUIDES, GUIDE_LINK_LABELS, isGuideLocale, guideByline } from "@/lib/guides";
 import { guideMetadata } from "@/lib/guides-metadata";
 import { TIO_GUIDE_COPY } from "@/lib/guide-copy/tio";
 import { guideFacts } from "@/lib/guide-copy/facts";
@@ -82,12 +82,14 @@ export default async function Page({ params }: PageProps) {
         ]}
       />
       <FAQJsonLd questions={copy.faq} />
+      <GuideArticleJsonLd id={ID} locale={locale} headline={copy.h1} description={copy.metaDescription} />
       <ProductJsonLd locale={locale} url={pageUrl} />
       <Navbar />
 
       <main>
         <GuideHero
           locale={locale}
+          byline={guideByline(ID, locale, FOUNDER.name)}
           breadcrumbLabel={ts("common.breadcrumbLabel")}
           crumbs={[{ label: ts("common.breadcrumbHome"), href: "/" }, { label: hubLabel, href: hubPath }, { label: copy.breadcrumb }]}
           eyebrow={copy.eyebrow}

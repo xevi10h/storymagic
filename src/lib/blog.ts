@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import type { SeoPageType } from "@/lib/seo-landing";
+import { BRAND_NAME, FOUNDER } from "@/lib/product-facts";
 
 // Blog data access. `blog_posts` is not in the generated Database types, so we
 // use an untyped client and map rows to explicit interfaces here.
@@ -19,6 +20,8 @@ export interface BlogPostMeta {
 
 export interface BlogPost extends BlogPostMeta {
   bodyMarkdown: string;
+  /** Last edit of the row (Article dateModified). */
+  updatedAt: string | null;
   seoTitle: string | null;
   seoDescription: string | null;
   relatedType: SeoPageType | null;
@@ -44,6 +47,14 @@ function publicClient() {
   );
 }
 
+/**
+ * Rows written before 2026-10-19 carry the brand ("Meapica") as author: show the named
+ * writer behind it (FOUNDER) instead, on the byline and in the Article JSON-LD.
+ */
+function bylineName(author: string | null): string {
+  return !author || author === BRAND_NAME ? FOUNDER.name : author;
+}
+
 function readingMinutes(markdown: string): number {
   const words = markdown.trim().split(/\s+/).length;
   return Math.max(1, Math.round(words / 200));
@@ -57,7 +68,7 @@ function toMeta(row: any): BlogPostMeta {
     title: row.title,
     excerpt: row.excerpt,
     coverImageUrl: row.cover_image_url ?? null,
-    author: row.author,
+    author: bylineName(row.author),
     publishedAt: row.published_at ?? null,
     tags: row.tags ?? [],
     readingMinutes: readingMinutes(row.body_markdown ?? ""),
@@ -95,6 +106,7 @@ export async function getPost(
   return {
     ...toMeta(row),
     bodyMarkdown: rewriteLegacyLinks(row.body_markdown ?? ""),
+    updatedAt: row.updated_at ?? null,
     seoTitle: row.seo_title ?? null,
     seoDescription: row.seo_description ?? null,
     relatedType: (row.related_type as SeoPageType | null) ?? null,

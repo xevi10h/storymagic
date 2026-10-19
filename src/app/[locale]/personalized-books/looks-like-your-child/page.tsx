@@ -8,18 +8,18 @@ import Footer from "@/components/landing/Footer";
 import FinalCta from "@/components/landing/FinalCta";
 import MobileStickyCta from "@/components/landing/MobileStickyCta";
 import WatercolorAvatar from "@/components/avatar/WatercolorAvatar";
-import { BreadcrumbJsonLd, FAQJsonLd } from "@/components/seo/JsonLd";
+import { BreadcrumbJsonLd, FAQJsonLd, GuideArticleJsonLd } from "@/components/seo/JsonLd";
 import { FaqSection, GuideSections, RelatedLinks } from "@/components/tools/ToolLanding";
 import { GuideHero } from "@/components/seo-guides/GuideParts";
 import { Heading, cx, focusRing } from "@/components/ui";
 import { LANDING_EXAMPLE } from "@/components/landing/HowItWorksExample";
 import type { AvatarTraits } from "@/lib/avatar/manifest";
-import { SITE_URL } from "@/lib/product-facts";
+import { FOUNDER, SITE_URL } from "@/lib/product-facts";
 import { PREVIEW_ILLUSTRATION_COUNT } from "@/lib/pricing";
 import { getShowcaseLikenessBooks } from "@/lib/showcase";
 import { showcasePath } from "@/lib/showcase-slug";
 import { isPhotoUploadEnabled } from "@/lib/privacy/child-photo-policy";
-import { GUIDES, GUIDE_LINK_LABELS, isGuideLocale } from "@/lib/guides";
+import { GUIDES, GUIDE_LINK_LABELS, isGuideLocale, guideByline } from "@/lib/guides";
 import { guideMetadata } from "@/lib/guides-metadata";
 import { LIKENESS_GUIDE_COPY } from "@/lib/guide-copy/likeness";
 import { guideFacts } from "@/lib/guide-copy/facts";
@@ -99,11 +99,13 @@ export default async function Page({ params }: PageProps) {
         ]}
       />
       <FAQJsonLd questions={copy.faq} />
+      <GuideArticleJsonLd id={ID} locale={locale} headline={copy.h1} description={copy.metaDescription} />
       <Navbar />
 
       <main>
         <GuideHero
           locale={locale}
+          byline={guideByline(ID, locale, FOUNDER.name)}
           breadcrumbLabel={ts("common.breadcrumbLabel")}
           crumbs={[
             { label: ts("common.breadcrumbHome"), href: "/" },

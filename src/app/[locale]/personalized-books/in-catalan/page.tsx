@@ -5,11 +5,11 @@ import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import FinalCta from "@/components/landing/FinalCta";
 import MobileStickyCta from "@/components/landing/MobileStickyCta";
-import { BreadcrumbJsonLd, FAQJsonLd, ProductJsonLd } from "@/components/seo/JsonLd";
+import { BreadcrumbJsonLd, FAQJsonLd, GuideArticleJsonLd, ProductJsonLd } from "@/components/seo/JsonLd";
 import { FaqSection, GuideSections, RelatedLinks } from "@/components/tools/ToolLanding";
 import { ExampleCoverFigure, GuideCtaBand, GuideHero, type GuideCta } from "@/components/seo-guides/GuideParts";
-import { SITE_URL } from "@/lib/product-facts";
-import { GUIDES, GUIDE_LINK_LABELS, isGuideLocale } from "@/lib/guides";
+import { FOUNDER, SITE_URL } from "@/lib/product-facts";
+import { GUIDES, GUIDE_LINK_LABELS, isGuideLocale, guideByline } from "@/lib/guides";
 import { guideMetadata } from "@/lib/guides-metadata";
 import { CATALAN_GUIDE_COPY } from "@/lib/guide-copy/catalan";
 import { guideFacts } from "@/lib/guide-copy/facts";
@@ -60,12 +60,14 @@ export default async function Page({ params }: PageProps) {
         ]}
       />
       <FAQJsonLd questions={copy.faq} />
+      <GuideArticleJsonLd id={ID} locale={locale} headline={copy.h1} description={copy.metaDescription} />
       <ProductJsonLd locale={locale} url={pageUrl} />
       <Navbar />
 
       <main>
         <GuideHero
           locale={locale}
+          byline={guideByline(ID, locale, FOUNDER.name)}
           breadcrumbLabel={ts("common.breadcrumbLabel")}
           crumbs={[
             { label: ts("common.breadcrumbHome"), href: "/" },

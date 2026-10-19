@@ -97,6 +97,7 @@ export async function GuideHero({
   secondary,
   trust,
   aside,
+  byline,
 }: {
   locale: string;
   crumbs: Crumb[];
@@ -108,6 +109,8 @@ export async function GuideHero({
   secondary?: { href: string; label: string };
   trust: string[];
   aside?: ReactNode;
+  /** "Actualizado el … · Por …" (lib/guides.ts guideByline), the date in a <time>. */
+  byline?: { date: string; text: string };
 }) {
   return (
     <PageHero>
@@ -123,6 +126,11 @@ export async function GuideHero({
           <p className={kicker}>{eyebrow}</p>
           <h1 className={cx("mt-2", marketingH1)}>{h1}</h1>
           <p className={cx("mt-4 max-w-2xl", marketingLead)}>{lead}</p>
+          {byline && (
+            <p className="mt-3 text-sm text-ink-muted">
+              <time dateTime={byline.date}>{byline.text}</time>
+            </p>
+          )}
 
           <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
             <GuideCtaLink cta={cta} id="hero-cta" />

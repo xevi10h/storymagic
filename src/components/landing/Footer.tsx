@@ -8,7 +8,7 @@ import { SEO_HUB_HEADING_KEY, SEO_SLUGS, seoHubPath, seoPath, type SeoPageType }
 import { CHRISTMAS_DELIVERY_PATH } from "@/lib/shipping";
 import { GIFT_VOUCHER_PATH } from "@/lib/promo-codes";
 import { isToolLocale, toolPath } from "@/lib/tools/registry";
-import { GUIDES, GUIDES_HEADING, GUIDE_LINK_LABELS, guidesForLocale } from "@/lib/guides";
+import { GUIDES, GUIDES_HEADING, GUIDE_LINK_LABELS, guidesForLocale, isGuideLocale } from "@/lib/guides";
 import { SUPPORT_EMAIL } from "@/lib/pricing";
 import { CookieSettingsButton } from "@/components/tracking/Tracking";
 
@@ -92,6 +92,14 @@ export default function Footer() {
           </FooterColumn>
 
           <FooterColumn title={t("support")}>
+            {/* "Qué es Meapica" facts sheet: es + ca only (lib/guides.ts). */}
+            {isGuideLocale("about", locale) && (
+              <li>
+                <Link className={linkClass} href={GUIDES.about.path}>
+                  {GUIDE_LINK_LABELS.about[locale]}
+                </Link>
+              </li>
+            )}
             <li>
               <Link className={linkClass} href="/#faq">
                 {t("faq")}

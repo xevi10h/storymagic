@@ -12,6 +12,7 @@ import {
   CONTACT_EMAIL,
   DEFECT_CLAIM_DAYS,
   DELIVERY_BUSINESS_DAYS,
+  FOUNDER,
   HANDLING_BUSINESS_DAYS,
   SHIPPING_COST_CENTS,
   SHIPPING_POSTCODE_RANGES,
@@ -20,9 +21,23 @@ import {
   TRANSIT_BUSINESS_DAYS,
 } from "@/lib/product-facts";
 import { getShowcaseStories } from "@/lib/showcase";
+import { GUIDES, guideUpdated, isGuideLocale, type GuideId } from "@/lib/guides";
 
 const BASE_URL = SITE_URL;
 const ORG_ID = `${BASE_URL}/#organization`;
+const FOUNDER_ID = `${BASE_URL}/#founder`;
+
+/** The founder as a schema.org Person: author of the blog and the guides, founder of the Organization. */
+function founderPerson(locale: string) {
+  const aboutLocale = isGuideLocale("about", locale) ? locale : "es";
+  return {
+    "@type": "Person",
+    "@id": FOUNDER_ID,
+    name: FOUNDER.name,
+    url: `${BASE_URL}/${aboutLocale}${GUIDES.about.path}#author`,
+    worksFor: { "@id": ORG_ID },
+  };
+}
 
 type Loc = "es" | "ca" | "en" | "fr";
 const asLoc = (locale: string): Loc => (locale === "ca" || locale === "en" || locale === "fr" ? locale : "es");
@@ -110,7 +125,8 @@ export function OrganizationJsonLd({ locale }: { locale: string }) {
           email: CONTACT_EMAIL,
           availableLanguage: ["es", "ca", "en", "fr"],
         },
-        address: { "@type": "PostalAddress", addressLocality: "Barcelona", addressCountry: "ES" },
+        address: { "@type": "PostalAddress", addressLocality: FOUNDER.city, addressCountry: "ES" },
+        founder: founderPerson(locale),
         areaServed: { "@type": "Country", name: "ES" },
         ...(SOCIAL_PROFILES.length > 0 ? { sameAs: SOCIAL_PROFILES } : {}),
         hasMerchantReturnPolicy: returnPolicy(locale),
@@ -285,6 +301,108 @@ export async function ProductJsonLd({
     <script
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+    />
+  );
+}
+
+/** schema.org author of an article: the founder Person, or another named writer. */
+export function articleAuthor(locale: string, authorName?: string) {
+  return !authorName || authorName === FOUNDER.name ? founderPerson(locale) : { "@type": "Person", name: authorName };
+}
+
+/**
+ * Article structured data for the blog posts and the guide pages: a named Person
+ * author (FOUNDER), the publisher Organization, datePublished and dateModified.
+ * Dates are ISO strings (a date or a timestamp).
+ */
+export function ArticleJsonLd({
+  locale,
+  url,
+  headline,
+  description,
+  datePublished,
+  dateModified,
+  image,
+  type = "Article",
+  authorName,
+}: {
+  locale: string;
+  url: string;
+  headline: string;
+  description: string;
+  datePublished?: string | null;
+  dateModified?: string | null;
+  image?: string | null;
+  /** "AboutPage" for the facts page (a WebPage, not an Article). */
+  type?: "Article" | "AboutPage";
+  /** Byline of the page when it is not the founder (blog rows can name another writer). */
+  authorName?: string;
+}) {
+  const author = articleAuthor(locale, authorName);
+  const modified = dateModified ?? datePublished;
+  const publisher = { "@type": "Organization", "@id": ORG_ID, name: BRAND_NAME, url: BASE_URL };
+  const structuredData =
+    type === "AboutPage"
+      ? {
+          "@context": "https://schema.org",
+          "@type": "AboutPage",
+          "@id": `${url}#webpage`,
+          url,
+          name: headline,
+          description,
+          inLanguage: locale,
+          isPartOf: { "@id": `${BASE_URL}/#website` },
+          about: { "@id": ORG_ID },
+          author,
+          publisher,
+          ...(datePublished ? { datePublished } : {}),
+          ...(modified ? { dateModified: modified } : {}),
+        }
+      : {
+          "@context": "https://schema.org",
+          "@type": "Article",
+          headline,
+          description,
+          inLanguage: locale,
+          author,
+          publisher,
+          ...(datePublished ? { datePublished } : {}),
+          ...(modified ? { dateModified: modified } : {}),
+          ...(image ? { image } : {}),
+          mainEntityOfPage: url,
+        };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+    />
+  );
+}
+
+/** Article JSON-LD of a guide page (lib/guides.ts): its registry dates, the founder as author. */
+export function GuideArticleJsonLd({
+  id,
+  locale,
+  headline,
+  description,
+  type,
+}: {
+  id: GuideId;
+  locale: string;
+  headline: string;
+  description: string;
+  type?: "Article" | "AboutPage";
+}) {
+  return (
+    <ArticleJsonLd
+      type={type}
+      locale={locale}
+      url={`${BASE_URL}/${locale}${GUIDES[id].path}`}
+      headline={headline}
+      description={description}
+      datePublished={GUIDES[id].published}
+      dateModified={guideUpdated(id)}
     />
   );
 }

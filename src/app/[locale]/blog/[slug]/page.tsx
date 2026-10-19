@@ -7,7 +7,7 @@ import { Link } from "@/i18n/navigation";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
 import MobileStickyCta from "@/components/landing/MobileStickyCta";
-import { BreadcrumbJsonLd } from "@/components/seo/JsonLd";
+import { ArticleJsonLd, BreadcrumbJsonLd } from "@/components/seo/JsonLd";
 import { getPost, getLocalesForSlug, blogOgImageUrl, getAllPublishedPostRefs } from "@/lib/blog";
 import { seoPath } from "@/lib/seo-landing";
 import { PRICING, formatPrice } from "@/lib/pricing";
@@ -100,24 +100,17 @@ export default async function BlogPost({ params }: PageProps) {
       ? ts(`nav.${post.relatedType}.${post.relatedSlug}`)
       : null;
 
-  const articleJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: post.title,
-    description: post.excerpt,
-    inLanguage: locale,
-    author: { "@type": "Organization", name: post.author },
-    publisher: { "@type": "Organization", name: "Meapica" },
-    ...(post.publishedAt ? { datePublished: post.publishedAt } : {}),
-    ...(post.coverImageUrl ? { image: post.coverImageUrl } : {}),
-    mainEntityOfPage: pageUrl,
-  };
-
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      <ArticleJsonLd
+        locale={locale}
+        url={pageUrl}
+        headline={post.title}
+        description={post.excerpt}
+        datePublished={post.publishedAt}
+        dateModified={post.updatedAt}
+        image={post.coverImageUrl}
+        authorName={post.author}
       />
       <BreadcrumbJsonLd
         items={[
