@@ -386,14 +386,13 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
 - **Inbox:** `node scripts/social/inbox.mjs` prints unanswered comments and unread DMs as JSON (read-only). `node scripts/social/reply.mjs dm <conversationId> "<text>"` answers a DM (adds Meta's human-agent tag when the 24 h window has closed) and marks the conversation read; `reply.mjs comment <postId> <commentId> "<text>"` answers a comment. Texts are approved by the owner first. First real sends 2026-10-12: three Instagram DMs (one four days old) and one TikTok comment reply, all accepted.
 - `scripts/social/publish-first-posts.mjs` is the one-off of 3 Oct (already published).
 - **Pinterest is blocked (found 2026-10-19):** every pin since 2026-10-10 failed with "Pinterest blocked the destination link as suspected spam"
-  (all `meapica.shop` links; the 6 pins of 4-9 Oct are live, Zernio reports 0 impressions). The domain is not claimed on Pinterest (no
-  `p:domain_verify` tag). Until the owner appeals the block and claims the domain, the Pinterest leg of every post fails (the rest of the post publishes).
+  (all `meapica.shop` links; the 6 pins of 4-9 Oct are live, Zernio reports 0 impressions). Claim + appeal done 2026-10-19 (see Unblock status below); until the block is lifted the Pinterest leg of every post fails (the rest of the post publishes).
 - **Native pins (2026-10-19):** `node scripts/social/render-pins.mjs <pins.json> [id]` renders 1000×1500 JPG pins from the example-book PDFs
   (cover, dedication, spread, portrait, grid, deadline layouts) and from the live free Reyes letter tool, and writes `pins.md` (title, board,
   UTM link, alt, description per pin). First batch: 15 pins (10 es, 5 ca) for the SEO landings in `docs/social/pinterest/2026-10-19/`,
   UTM `utm_campaign=org_q4-26-pins&utm_content=org_pi_pin_<id>`. Not scheduled: `schedule.mjs` does not read this folder.
 - **Boards (created 2026-10-19 through Zernio `POST /v1/accounts/6ac2153cea6362e77f8beb54/pinterest-boards`, all public):** Cuentos personalizados para niños `1150669842234818144` (default), Regalos de Reyes para niños `1150669842234876604`, Regalos de Navidad para niños `1150669842234876606`, Regalos de cumpleaños para niños `1150669842234876607`, Cuentos personalizados por edad `1150669842234876608`, Contes personalitzats en català `1150669842234876609`. A pin targets one with `platformSpecificData.boardId`.
-- **Unblock status (2026-10-19):** domain claim and link-block appeal need the Pinterest web console (not in Zernio or the API we hold). Service `pinterest` registered in browser-session; profile not logged in yet, so both are pending the owner's one-time `login pinterest`.
+- **Unblock status (2026-10-19):** domain `meapica.shop` claimed on the Pinterest account (DNS TXT `pinterest-site-verification=…` added at Hostinger on `@`, nothing else touched; Settings > Enlace a Pinterest shows it connected). Link-block appeal filed through the Help Center form (Appeals > Pinterest blocked my site), Zendesk ticket **17012997**, answer goes to admin@casmar.tech. Until Pinterest lifts the block, pins to `meapica.shop` keep failing. The Help Center and settings work headless with the `pinterest` browser-session profile.
 
 ## Growth funnel + abandoned-preview reminders (2026-10-03)
 
