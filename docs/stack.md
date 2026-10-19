@@ -391,7 +391,9 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
 - **Native pins (2026-10-19):** `node scripts/social/render-pins.mjs <pins.json> [id]` renders 1000×1500 JPG pins from the example-book PDFs
   (cover, dedication, spread, portrait, grid, deadline layouts) and from the live free Reyes letter tool, and writes `pins.md` (title, board,
   UTM link, alt, description per pin). First batch: 15 pins (10 es, 5 ca) for the SEO landings in `docs/social/pinterest/2026-10-19/`,
-  UTM `utm_campaign=org_q4-26-pins&utm_content=org_pi_pin_<id>`. Not scheduled: `schedule.mjs` does not read this folder and the boards named in `pins.json` do not exist yet.
+  UTM `utm_campaign=org_q4-26-pins&utm_content=org_pi_pin_<id>`. Not scheduled: `schedule.mjs` does not read this folder.
+- **Boards (created 2026-10-19 through Zernio `POST /v1/accounts/6ac2153cea6362e77f8beb54/pinterest-boards`, all public):** Cuentos personalizados para niños `1150669842234818144` (default), Regalos de Reyes para niños `1150669842234876604`, Regalos de Navidad para niños `1150669842234876606`, Regalos de cumpleaños para niños `1150669842234876607`, Cuentos personalizados por edad `1150669842234876608`, Contes personalitzats en català `1150669842234876609`. A pin targets one with `platformSpecificData.boardId`.
+- **Unblock status (2026-10-19):** domain claim and link-block appeal need the Pinterest web console (not in Zernio or the API we hold). Service `pinterest` registered in browser-session; profile not logged in yet, so both are pending the owner's one-time `login pinterest`.
 
 ## Growth funnel + abandoned-preview reminders (2026-10-03)
 
