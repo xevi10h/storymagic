@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { createFulfilmentClient, type FulfilmentClient } from "@/lib/fulfilment/db";
 import { checkMemoryRateLimit } from "@/lib/rate-limit";
+import { reyesReminderWindow, spainToday } from "@/lib/shipping";
 
 /**
  * Where a subscription was given (newsletter_subscribers.source): the footer reading
@@ -11,10 +12,7 @@ const SOURCES = ["footer", "reyes_reminder"] as const;
 const LOCALES = ["es", "ca", "en", "fr"] as const;
 
 export async function POST(request: NextRequest) {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  if (!url || !key) {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
     return NextResponse.json({ error: "Server config error" }, { status: 500 });
   }
 
@@ -40,16 +38,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid email" }, { status: 400 });
   }
 
-  const supabase = createClient(url, key);
+  const supabase = createFulfilmentClient();
 
-  // Upsert to avoid duplicates — if email exists, just update subscribed_at
-  // (and the source/locale of this latest consent, when the caller sends them).
-  const { error } = await supabase
-    .from("newsletter_subscribers")
-    .upsert(
-      { email, subscribed_at: new Date().toISOString(), ...(source ? { source } : {}), ...(locale ? { locale } : {}) },
-      { onConflict: "email" },
-    );
+  const { error } = source === "reyes_reminder" ? await recordReyesConsent(supabase, email, locale) : await upsertSubscriber(supabase, email, source, locale);
 
   if (error) {
     console.error("[newsletter] Supabase error:", error.code ?? error.message);
@@ -57,4 +48,35 @@ export async function POST(request: NextRequest) {
   }
 
   return NextResponse.json({ ok: true });
+}
+
+// Upsert to avoid duplicates — if email exists, just update subscribed_at
+// (and the source/locale of this latest consent, when the caller sends them).
+function upsertSubscriber(supabase: FulfilmentClient, email: string, source: string | null, locale: string | null) {
+  return supabase
+    .from("newsletter_subscribers")
+    .upsert(
+      { email, subscribed_at: new Date().toISOString(), ...(source ? { source } : {}), ...(locale ? { locale } : {}) },
+      { onConflict: "email" },
+    );
+}
+
+/**
+ * The Reyes reminder consent has its own column (migration 20261022120000): an existing
+ * row keeps its source (e.g. the footer newsletter consent) and only gains this one. A
+ * reminder already sent for a past Reyes is released so this season's can go out.
+ */
+async function recordReyesConsent(supabase: FulfilmentClient, email: string, locale: string | null) {
+  const now = new Date().toISOString();
+  const inserted = await supabase
+    .from("newsletter_subscribers")
+    .insert({ email, subscribed_at: now, source: "reyes_reminder", reyes_reminder_consent_at: now, ...(locale ? { locale } : {}) });
+  if (inserted.error?.code !== "23505") return inserted;
+  const updated = await supabase.from("newsletter_subscribers").update({ reyes_reminder_consent_at: now }).eq("email", email);
+  if (updated.error) return updated;
+  return supabase
+    .from("newsletter_subscribers")
+    .update({ reyes_reminder_sent_at: null })
+    .eq("email", email)
+    .lt("reyes_reminder_sent_at", reyesReminderWindow(spainToday()).seasonStart);
 }

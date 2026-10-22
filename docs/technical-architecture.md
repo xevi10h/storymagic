@@ -177,8 +177,10 @@ newsletter_subscribers (waitlist, footer reading club, Reyes reminder opt-in)
 ├── name (text)
 ├── email (text, unique)
 ├── locale (text — es/ca/en/fr)
-├── source (text — "waitlist" | "footer" | "reyes_reminder"; latest consent given)
-└── subscribed_at (timestamptz)
+├── source (text — "waitlist" | "footer" | "reyes_reminder"; first/general consent, a Reyes opt-in never overwrites it)
+├── subscribed_at (timestamptz)
+├── reyes_reminder_consent_at (timestamptz — Reyes deadline reminder opt-in, migration 20261022120000)
+└── reyes_reminder_sent_at (timestamptz — exactly-once claim of that one email)
 
 blog_posts (editorial blog — Supabase CMS)
 ├── id (uuid, PK)
@@ -421,7 +423,7 @@ src/
 │   └── checkout/success/page.tsx         — Post-purchase confirmation
 ├── app/api/
 │   ├── waitlist/route.ts                 — POST: subscribe to waitlist (name + email → Supabase + Resend)
-│   ├── newsletter/route.ts               — POST: newsletter subscription (optional source "footer"|"reyes_reminder" + locale; per-IP memory limit 10/h)
+│   ├── newsletter/route.ts               — POST: newsletter subscription (optional source "footer"|"reyes_reminder" + locale; "reyes_reminder" inserts or sets `reyes_reminder_consent_at` only; per-IP memory limit 10/h)
 │   ├── tools/pdf/route.ts                — POST: free Reyes printables PDF (zod ToolInput, in memory, nothing stored/logged; limits 20/10 min per instance + 40/h per hashed IP)
 │   ├── characters/
 │   │   ├── [characterId]/route.ts        — GET: one saved character (prefill ?characterId=)

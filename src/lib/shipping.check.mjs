@@ -80,3 +80,15 @@ console.log("shipping.check: all assertions passed");
   assert.deepEqual(deliveryWindow("2026-12-18", "softcover"), { from: "2026-12-30", to: "2027-01-05" });
 }
 console.log("shipping delivery window ✓");
+
+// ── Reyes "Avísame" reminder: 5 days before the 22 Dec printed cut-off ──
+{
+  const { reyesReminderWindow } = await import("./shipping.ts");
+  const w = { seasonStart: "2026-01-06", sendFrom: "2026-12-17", cutoff: "2026-12-22" };
+  assert.deepEqual(reyesReminderWindow("2026-10-22"), w);
+  assert.deepEqual(reyesReminderWindow("2026-12-22"), w);
+  // Reyes eve still belongs to the running season; 6 Jan rolls over.
+  assert.deepEqual(reyesReminderWindow("2027-01-05"), w);
+  assert.deepEqual(reyesReminderWindow("2027-01-06"), { seasonStart: "2027-01-06", sendFrom: "2027-12-17", cutoff: "2027-12-22" });
+}
+console.log("reyes reminder window ✓");

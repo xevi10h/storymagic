@@ -129,6 +129,27 @@ export function earliestPrintedCutoff(today: string, occasion: SeasonOccasion): 
     .sort()[0];
 }
 
+/** Days before the printed Reyes cut-off that the "Avísame" reminder goes out (src/lib/marketing/reyes-reminders.ts). */
+export const REYES_REMINDER_LEAD_DAYS = 5;
+
+export interface ReyesReminderWindow {
+  /** First consent date that counts for this season (6 Jan); older consents were for a past Reyes. */
+  seasonStart: string;
+  /** First day the reminder may go out. */
+  sendFrom: string;
+  /** Last day to order a printed book for Reyes (earliest cut-off across formats/regions). */
+  cutoff: string;
+}
+
+/** When the Reyes reminder of the season of `today` is sent: from cut-off − lead days until the cut-off itself. */
+export function reyesReminderWindow(today: string): ReyesReminderWindow {
+  const season = giftSeason(today);
+  const cutoff = earliestPrintedCutoff(today, "reyes");
+  const d = new Date(`${cutoff}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() - REYES_REMINDER_LEAD_DAYS);
+  return { seasonStart: `${season.christmasYear}-01-06`, sendFrom: d.toISOString().slice(0, 10), cutoff };
+}
+
 export interface NextCutoff {
   occasion: SeasonOccasion;
   lastOrderDate: string;

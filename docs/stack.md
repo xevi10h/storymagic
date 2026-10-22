@@ -390,7 +390,7 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   TikTok review: approved. Created with `status: "PAUSED"` on `POST /v1/ads/create`. It cannot deliver until the owner adds balance
   (cash 0); the real cap is that prepaid balance. Start: `PUT /v1/ads/campaigns/1878680561364114/status`
   `{ "status": "active", "platform": "tiktok" }`. The first campaign (`1878487066110225`) was paused the same day so new balance
-  does not go to it. What to read: `newsletter_subscribers` with `source = 'reyes_reminder'` (consent-free) against TikTok clicks.
+  does not go to it. What to read: `newsletter_subscribers` with `reyes_reminder_consent_at` set (before migration 20261022120000: `source = 'reyes_reminder'`) against TikTok clicks.
 - **Media upload fallback:** if the presigned upload host (`*.r2.cloudflarestorage.com`) times out, as on 2026-10-10 from the Mac,
   `POST /v1/media/upload-direct` (multipart `file`, API key, 25 MB max) returns the same kind of public URL.
 - **Inbox:** `node scripts/social/inbox.mjs` prints unanswered comments and unread DMs as JSON (read-only). `node scripts/social/reply.mjs dm <conversationId> "<text>"` answers a DM (adds Meta's human-agent tag when the 24 h window has closed) and marks the conversation read; `reply.mjs comment <postId> <commentId> "<text>"` answers a comment. Texts are approved by the owner first. First real sends 2026-10-12: three Instagram DMs (one four days old) and one TikTok comment reply, all accepted.
@@ -448,6 +448,17 @@ Order: apply the migration → deploy → run the setup script with the live key
 | Version | File | When |
 |---|---|---|
 | 20261003200655 | `funnel_and_preview_reminders.sql` (stories funnel columns + trigger + backfill, `preview_reminders`) | **before** the deploy (additive; the send-preview route degrades gracefully without it, the cron would fail) |
+
+## Reyes deadline reminder (2026-10-22)
+
+- Cron `/api/cron/reyes-reminders` (vercel.json, daily 09:00 UTC, `CRON_SECRET`; `?dry_run=1`, `?limit=N`, default 200).
+  Sends only between `sendFrom` and `cutoff` (2026: 17-22 Dec), answers `{ migrationPending: true }` with 200 until
+  migration `20261022120000_reyes_reminder` is applied. No new env vars (`RESEND_API_KEY`, `EMAIL_FROM`, unsubscribe key =
+  service-role HKDF as the other marketing emails).
+- Code: `src/lib/marketing/reyes-reminders.ts` (selection + claim), `src/lib/email/reyes-reminder.ts` (es/ca template),
+  window in `src/lib/shipping.ts` (check: `node --experimental-strip-types src/lib/shipping.check.mjs`).
+- **Order matters:** apply the migration BEFORE deploying the code: the new `/api/newsletter` writes
+  `reyes_reminder_consent_at`, so without the column every Reyes opt-in would fail with a 500.
 
 ## Customer reviews (2026-10-19)
 

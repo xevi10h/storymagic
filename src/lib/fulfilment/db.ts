@@ -165,9 +165,27 @@ export type GiftVoucherRow = {
   created_at: string;
 };
 
+export type NewsletterSubscriberRow = {
+  id: string;
+  email: string;
+  subscribed_at: string | null;
+  name: string | null;
+  locale: string | null;
+  source: string | null;
+  // 20261022120000_reyes_reminder.sql
+  reyes_reminder_consent_at: string | null;
+  reyes_reminder_sent_at: string | null;
+};
+
 export type FulfilmentDatabase = Omit<Database, "public"> & {
   public: Omit<PublicSchema, "Tables" | "Functions"> & {
-    Tables: Omit<Tables, "orders" | "stories" | "story_illustrations"> & {
+    Tables: Omit<Tables, "orders" | "stories" | "story_illustrations" | "newsletter_subscribers"> & {
+      newsletter_subscribers: {
+        Row: NewsletterSubscriberRow;
+        Insert: Pick<NewsletterSubscriberRow, "email"> & Partial<NewsletterSubscriberRow>;
+        Update: Partial<NewsletterSubscriberRow>;
+        Relationships: [];
+      };
       orders: WithColumns<Tables["orders"], OrderFulfilmentColumns>;
       stories: WithColumns<Tables["stories"], StoryFulfilmentColumns>;
       story_illustrations: WithColumns<Tables["story_illustrations"], IllustrationFulfilmentColumns>;
