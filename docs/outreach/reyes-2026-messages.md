@@ -1,6 +1,6 @@
 # Reyes press pitches: email texts (rewritten 2026-10-19)
 
-Targets, sources and Gmail draft ids: `reyes-2026-targets.csv`. Drafts in admin@casmar.tech, From `Xavi de Meapica <hola@meapica.shop>`, text/html, unsent. Send in the last week of October.
+Targets, sources and Gmail draft ids: `reyes-2026-targets.csv`. Drafts in admin@casmar.tech, From `Xavi de Meapica <hola@meapica.shop>`, text/html. SENT 2026-10-22 (all 20 with an email).
 
 ### bebesymas · prensa@bebesymas.com
 
