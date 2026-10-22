@@ -17,7 +17,9 @@ State measured 2026-10-03: 14 of 132 sitemap URLs indexed, 1 impression, 0 organ
   - Content for 12 Oct onward follows `docs/social/playbook.md` (week 1 was redone on 2026-10-04: narrated stories, search-led answers, a saveable carousel). `docs/ads/organic-calendar.md` is the older ad-like plan: reuse its topics, not its formats.
   - Next formats: name reveal series (one cover per popular name), Pinterest-native pins (2:3 images per SEO landing, seasonal boards: Reyes, cumpleaños) now that Pinterest and YouTube are connected (2026-10-04), nano-creator programme (gift printed books for content rights) for real reaction video.
   - Owner: listen to the narrator samples (`docs/social/audio/voice-samples/`) and the 5 music tracks, none was checked by ear; confirm or swap the voice (default "maria").
-  - Hourly inbox check: `scripts/social/inbox.mjs` lists unanswered comments and unread DMs (0 today). Replies + the scheduled routine are not built: add them with the first real comment.
+  - Hourly inbox check: `scripts/social/inbox.mjs` lists unanswered comments and unread DMs (0 today). The hourly routine runs since 2026-10-06 (each item pushed once plus a daily summary since 2026-10-12); `scripts/social/reply.mjs` answers DMs and comments (2026-10-12, used for the first replies).
+  - Funnel review 2026-10-12 (28 days): 0 paid orders. GA4 15 users / 24 sessions (consent-gated); GSC 2 clicks, ~200 impressions, 29 of 92 sitemap URLs indexed; ~4,500 social views in the first week. Only two strangers reached a preview (both 2026-10-09) and one started checkout (TikTok in-app browser, Android, softcover 34,90 €) and left on the Stripe page. Open: no cookieless visitor count (true traffic unknown); checkout is card-only (`payment_method_types: ["card"]` in `src/lib/checkout/session.ts`); a guest who leaves has no email, so the abandoned-preview reminders have never sent one (`preview_reminders` is empty); `growth-funnel.mjs` counts ~20 internal QA guest stories of 27-30 Sep as real.
+  - Idea (2026-10-12): sibling book with two protagonists. Two creators with two children asked for it in one week (@familiabellugueta explicitly); today we give one code per child. Needs two face anchors and Book Plan changes in the generation pipeline: scope before committing.
   - `docs/ads/creatives/static-preview-{es,ca}.png` say "Míralo entero antes de pagar" but the free preview shows the cover, the portrait and the first 3 scenes: fix the headline before using them again.
 - [ ] **First external links / citations:** pitch the free Reyes letter tool and `/compare` to parenting sites and gift guides; open a Trustpilot or Google profile. Nothing off-site exists for search or AI engines to cite.
 - [ ] **Lead with Catalan in SEO** (only query set with no commercial competitor): link in-catalan from Sant Jordi + Catalan posts, pitch Catalan parenting media.
@@ -69,6 +71,23 @@ preview-timeout fix; cover ref anchoring; QA-skipped flag; two-speed model split
 character lock; per-stage resolution. (commits 5ebc2f1 → a883d60)
 
 ---
+
+## Reach review and low-cost campaign ideas (2026-10-10, proposed, not approved)
+
+Numbers on 2026-10-10: 7 organic posts = 4,559 views, TikTok average watch 1.5-6 s, Instagram 2 followers; TikTok paid
+test = 10 € for 38,107 people reached, 166 clicks, 1.56 s average watch, at most 2 stories created that day; site 28 days =
+24 GA4 sessions, 58 Search Console impressions; funnel 28 days = 25 stories, 3 checkouts, 0 paid. Reach is cheap; intent is missing.
+
+- [ ] Creator second wave, approved and launched 2026-10-10: 9 emails sent, 3 of 12 Instagram messages sent; send the other 9
+  over the next days, create codes on each yes (`docs/outreach/creators-2026-10.md` › Second wave).
+- [ ] Paid traffic to the free Reyes letter tool, approved 2026-10-10: TikTok ad created paused and approved by TikTok
+  (`docs/stack.md` › Second TikTok ad). Owner: add balance and choose the start date (letter searches rise from mid-November).
+- [x] Before the letter ad scales: the Reyes reminder email. BUILT 2026-10-22 on `local` (cron `/api/cron/reyes-reminders`, sends
+  17-22 Dec); prod needs migration 20261022120000 first, then the deploy.
+- [ ] Catalan version of the letter ad (`/ca/tools/letter-to-the-three-kings`) once the Spanish one shows opt-ins.
+- [ ] School AFA/AMPA fundraiser: one code per school, a share of each sale to the AFA, spread through class WhatsApp groups.
+- [ ] Giveaway with family-plan accounts where the entry is creating the free preview (not a follow).
+- [ ] Meta test (payment method missing) optimised on `preview_ready`, replacing TikTok traffic spend.
 
 ## Social performance review (2026-10-19)
 
@@ -370,7 +389,7 @@ Replaced Recraft V3 with **FLUX.2 [flex]** + a whole-world consistency system. D
 - [ ] Saga system implementation (linear, episodic, progression)
 - [ ] English version (USA/UK market)
 - [ ] Premium adventure packs with Spanish 3PL
-- [ ] Affiliate/referral program
+- [x] Creator affiliate codes: `<NAME>10` = 10 % off for the audience + 10 % commission ex-VAT to the creator, monthly report `scripts/social/creator-commissions.mjs` (2026-10-22). Next: payouts table + code saved on orders + auto-applied `/r/<code>` link if the channel sells.
 - [ ] SEO blog (10+ articles)
 - [ ] Seasonal and template-specific SEO landing pages for high-intent gift searches
 - [ ] Retargeting campaigns

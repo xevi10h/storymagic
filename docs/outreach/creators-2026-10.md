@@ -18,6 +18,14 @@ Six go by email (#1, 2, 3, 7, 8, 9), four by Instagram message (#4, 5, 11, 12). 
 - Each creator gets two Stripe promotion codes: `REGALO-<NAME>-<4 chars>` (one use, free book, add-ons paid, expires
   2026-12-15) and `<NAME>10` (10 % for their audience until 2027-01-06, which is how we attribute sales).
   Created 2026-10-06 with `scripts/social/create-creator-codes.sh` (coupons `BAUY3d6s` gift, `pUqYq48o` audience); the codes are listed in Stripe › Promotion codes, filter by metadata `creator`. Do not run the script again.
+- **Commission (decided by the owner 2026-10-22):** on top of the 10 % for the audience, the creator earns 10 % of what
+  the buyer paid without VAT (`amount_total - amount_tax`, minus refunds) for every order with their `<NAME>10` code,
+  paid by bank transfer once a month when the balance reaches 20 € (below that it carries over). Posts with the code are
+  labelled as advertising ("Publicitat" / "publicidad"). Monthly report: `node scripts/social/creator-commissions.mjs`
+  (previous month; `--from/--to` to include carried-over months; `--orders` for detail). No payouts table: payouts are
+  tracked by hand. Fiscal treatment of paying individuals (IRPF withholding) is pending with the accountant.
+  Told so far: @totdemare (Instagram, 2026-10-22, `TOTDEMARE10`), @lara_mamaestra (Instagram, 2026-10-22, `LARA10`),
+  @myfamilytime.es (email 2026-10-22, `FAMILYTIME10`, plus her gift code resent: she had lost it).
 - Replies so far: @myfamilytime.es said yes on 2026-10-08 and the reply with her code (`REGALO-FAMILYTIME-…`) was SENT the
   same day from `hola@meapica.shop`; @onanemdema (yes) and @familiacaricu (questions) answered on 2026-10-07 and their
   replies are drafted in Gmail, not sent. Log: `creators-2026-10-messages.md` › Replies.
@@ -31,6 +39,26 @@ Six go by email (#1, 2, 3, 7, 8, 9), four by Instagram message (#4, 5, 11, 12). 
   (no: each book is created by the family). Code `REGALO-LARA-PU5E` sent the same day with both answers. The
   "CUENTO" keyword automation had answered her first message with the canned link: automations now match comments only.
 - @bocinsdemi and @maestraprimariaypt: no reply yet (checked 2026-10-08, inbox and message requests).
+
+## Second wave: launched 2026-10-10 (owner: "lanza la 1")
+
+All 33 second-wave and reserve accounts were re-read logged-out on 2026-10-10 (bio, followers, dates and captions of the
+newest posts). 21 kept, 12 dropped. Same offer and templates as the first wave; texts and send log in
+`creators-2026-10-messages.md` › Second wave. No codes exist yet for these creators: create them on a yes (see there).
+
+- **Emails sent 2026-10-10 (9, all "delivered" in Resend):** @littleehappymom, @sevilla_mama, @mamatieneunplan,
+  @elrincondeinfantilblog (address from a search snippet, not confirmed on her profile), @unmonil.lustrat, @vidaentrellibres,
+  @familiabellugueta, @temps_percompartir, @anna_al_natural.
+- **Instagram messages (12), a few per day from @meapica_books:** day 1 (2026-10-10) @pequeideasinfantil, @totdemare,
+  @aixotannostre. Pending: @vamosalcoleinfantil, @tizascerasytijeras, @maestracris_, @profe_curiosa, @mentes.de.colores,
+  @bichitoslectores, @recursose.infantil, @mimiitcanovas, @valenciaparapeques (texts ready in `scripts/social/browser/dms.json`).
+- **Dropped:** @cuentos_para_mi_peque (last post 2026-07-19) and @elventalldaitana (last post 2026-05-16): inactive;
+  @cuentosenlanube (own posts from 2023-24, paid "Presupuesto"); @mumsenruta (now sells Ringana); @natibergada (now
+  teacher-training content for Docents.cat); @saritatwin (lifestyle, older children); @aliciacuenteando (stage storyteller,
+  no child at home on the account); @planeamoverte (events agenda); @elbolsillodemibabi and @maaestrainfantil (classroom
+  templates only); @lamestracuqui and @cosetes_de_la_classe (sell their own children's stories).
+- Do not read profiles through Instagram's `web_profile_info` endpoint from the @meapica_books session: on 2026-10-10 it
+  answered 429 to every call. Read them logged-out with a throwaway browser profile instead.
 
 ## First wave (recommended 12)
 
