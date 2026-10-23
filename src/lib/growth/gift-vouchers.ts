@@ -57,7 +57,7 @@ export function buildVoucherCheckoutParams(input: {
   const { locale, origin } = input;
   return {
     mode: "payment",
-    payment_method_types: ["card"],
+    // Dashboard-managed payment methods, as for books (checkout/session.ts).
     line_items: [{ price: input.priceId, quantity: 1 }],
     locale: CHECKOUT_LOCALE[locale],
     automatic_tax: { enabled: true },

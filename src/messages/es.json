@@ -586,44 +586,72 @@
       },
       "themeHeading": "Cuentos por temática"
     },
+    "home": {
+      "whatIs": {
+        "title": "¿Qué es un cuento personalizado?",
+        "paragraphs": [
+          "Los cuentos personalizados son libros ilustrados en los que tu hijo es el protagonista. Su nombre va en la portada y en cada página, y el personaje se pinta a partir de cómo es él (piel, pelo, ojos, gafas, pecas) para que se le parezca.",
+          "En Meapica la historia no es una plantilla con un hueco para el nombre. Tú eliges el mundo y los tres capítulos, y el texto se escribe para su edad, de {ageMin} a {ageMax} años: frases cortas y letra grande para los pequeños, más trama para los que ya leen solos. Mira los <ages>cuentos por edad</ages> para ver cuál le encaja.",
+          "Nuestros cuentos personalizados para niños se imprimen en {size} × {size} cm, con {pages} páginas y {scenes} escenas pintadas a acuarela. Antes de pagar ves la portada con su nombre, su retrato y las primeras escenas de su cuento."
+        ]
+      }
+    },
     "hubs": {
       "gifts": {
         "metaTitle": "Regalos personalizados para niños | Meapica",
-        "metaDescription": "Cuentos personalizados para cada ocasión: Reyes, Sant Jordi, cumpleaños, comunión y Navidad. El regalo donde tu hijo es el protagonista.",
+        "metaDescription": "Regalos personalizados para niños en cada ocasión: Reyes, Navidad, Sant Jordi, cumpleaños o comunión. Un cuento donde tu hijo es el protagonista.",
         "h1": "Regalos personalizados para niños, para cada ocasión",
-        "intro": "Un cuento donde tu hijo es el héroe es el regalo que se recuerda. Elige la ocasión y crea una edición única, impresa y pensada para guardar toda la vida."
+        "intro": "Un cuento donde tu hijo es el héroe es el regalo que se recuerda. Elige la ocasión y crea uno de nuestros <home>cuentos personalizados</home>: una edición única, impresa y pensada para guardar toda la vida."
       },
       "ages": {
-        "metaTitle": "Libro personalizado para niños: cuentos por edad | Meapica",
-        "metaDescription": "Libro personalizado para niños de 2 a 12 años: cuentos personalizados para cada edad, con su nombre y su cara en acuarela. Vista previa y envío gratis.",
-        "h1": "Libro personalizado para niños: elige su cuento por edad",
-        "intro": "Un libro personalizado para niños funciona cuando la historia está escrita para su edad. Elige la franja de tu hijo y descubre cuentos personalizados pensados para su momento lector, siempre con él como protagonista.",
-        "guideHeading": "Cómo elegir su cuento según la edad",
+        "metaTitle": "Libros personalizados para niños de {ageMin} a {ageMax} años | Meapica",
+        "metaDescription": "Libros personalizados para niños de {ageMin} a {ageMax} años: un cuento escrito para su edad, con su nombre y un retrato en acuarela que se le parece. Vista previa gratis.",
+        "h1": "Libros personalizados para niños: un cuento para cada edad",
+        "intro": "Un libro personalizado funciona cuando la historia está escrita para su edad. Elige la franja de tu hijo y descubre libros personalizados para niños pensados para su momento lector, siempre con él como protagonista.",
+        "guideHeading": "Cómo cambia el libro según su edad",
         "sections": [
           {
             "heading": "De 2 a 4 años: escuchar su nombre",
             "paragraphs": [
               "A esta edad el cuento se lee en voz alta. Lo que engancha es reconocerse: su nombre en la portada, su cara en cada dibujo, un compañero de aventura al que señalar. Por eso los mundos para los más pequeños, El Chef Más Pequeño (2 a 4 años), El Bosque Mágico y El País de los Dulces (2 a 5), tienen frases cortas y escenas sencillas.",
-              "Para estas manos, la tapa dura es la apuesta segura: aguanta mejor las relecturas y los tirones."
+              "Para estas manos, la tapa dura es la apuesta segura: aguanta mejor las relecturas y los tirones.",
+              "Cada página de texto lleva unas pocas frases, de 15 a 36 palabras, en letra grande para seguirlas con el dedo mientras se lo lees."
             ]
           },
           {
             "heading": "De 5 a 7 años: empezar a leer",
             "paragraphs": [
-              "Es la edad de las primeras palabras leídas a solas, y su propio nombre es la primera que reconoce sin ayuda. Las historias son más largas y tienen un reto que resolver. Encajan La Gran Aventura Espacial y Piratas del Mar (5 a 8 años), La Tierra de los Dinosaurios y Safari en la Sabana (4 a 7) y El Castillo de los Sueños (6 a 10)."
+              "Es la edad de las primeras palabras leídas a solas, y su propio nombre es la primera que reconoce sin ayuda. Las historias son más largas y tienen un reto que resolver. Encajan La Gran Aventura Espacial y Piratas del Mar (5 a 8 años), La Tierra de los Dinosaurios y Safari en la Sabana (4 a 7) y El Castillo de los Sueños (6 a 10).",
+              "A los 5 y 6 años cada página tiene entre 36 y 50 palabras, y a partir de los 7, entre 72 y 95, con la letra algo más pequeña a medida que lee mejor."
             ]
           },
           {
             "heading": "De 8 a 12 años: lectores con criterio",
             "paragraphs": [
-              "A partir de los 8 ya lee solo y quiere historias con más fondo. La Fábrica de Inventos (8 a 12 años) y Superhéroe por un Día (7 a 10) tienen más texto y retos de verdad. Ser protagonista funciona a cualquier edad, y a esta, además, se convierte en un recuerdo de quién era."
+              "A partir de los 8 ya lee solo y quiere historias con más fondo. La Fábrica de Inventos (8 a 12 años) y Superhéroe por un Día (7 a 10) tienen más texto y retos de verdad. Ser protagonista funciona a cualquier edad, y a esta, además, se convierte en un recuerdo de quién era.",
+              "A partir de los 10 años cada página llega a 105-140 palabras: más cerca de una novela corta ilustrada que de un álbum."
             ]
           },
           {
-            "heading": "Lo mismo en todas las edades",
+            "heading": "En castellano o en catalán",
             "paragraphs": [
-              "Cada libro mide {size} × {size} cm y tiene {pages} páginas, {scenes} escenas ilustradas a acuarela y papel estucado seda de {paper} g. Tú eliges el mundo y los tres capítulos, escribes la dedicatoria y ves la portada, su retrato y las primeras escenas antes de pagar.",
-              "Tapa dura, {hardcover} IVA incluido; tapa blanda, {softcover} IVA incluido; las dos con el envío gratis y el PDF. Llega en {minDays}-{maxDays} días laborables a España peninsular y Baleares. Solo el PDF cuesta {pdf} IVA incluido y te llega por correo tras el pago."
+              "El libro se escribe en el idioma de la web donde lo creas: castellano, catalán, inglés o francés. La edición en catalán no es una traducción del castellano: la historia se escribe directamente en catalán, con el artículo delante del nombre como se dice en casa (en Pol, la Martina, l'Arnau).",
+              "Es lo que suelen buscar las familias con escuela en catalán y los abuelos que quieren regalar en la lengua del nieto. Si lo necesitas en dos idiomas, puedes crear uno en cada uno."
+            ]
+          },
+          {
+            "heading": "Tapa dura, tapa blanda o PDF",
+            "paragraphs": [
+              "Todas las edades comparten formato: {size} × {size} cm, {pages} páginas, {scenes} escenas ilustradas a acuarela en papel estucado seda de {paper} g y tapas con acabado mate.",
+              "La tapa dura, {hardcover} IVA incluido, es la que mejor aguanta las manos de 2 a 4 años y la que se queda en la estantería; la tapa blanda, {softcover} IVA incluido, pesa menos y viaja mejor en la mochila. Las dos llevan el envío gratis y el PDF del cuento completo, y llegan en {minDays}-{maxDays} días laborables a España peninsular y Baleares.",
+              "Si no hay tiempo para la imprenta, solo el PDF cuesta {pdf} IVA incluido y te llega por correo tras el pago, normalmente en menos de una hora."
+            ]
+          },
+          {
+            "heading": "Lo ves antes de pagar",
+            "paragraphs": [
+              "Crear el libro es gratis y no pide registro. Escribes su nombre y su edad, eliges cómo es y qué aventura vivirá, y ves la portada con su nombre, su retrato y las primeras {previewScenes} escenas ilustradas.",
+              "Si el retrato no se le parece, cambias su aspecto y volvemos a pintar el libro con el nuevo personaje antes de que pagues. Solo pagas si te gusta cómo ha quedado."
             ]
           }
         ],
@@ -648,8 +676,8 @@
     "loading": "Cargando…"
   },
   "metadata": {
-    "title": "Cuento personalizado para niños con su nombre | Meapica",
-    "description": "Libro personalizado para niños: su nombre en la portada, su cara pintada en acuarela y la aventura que eliges tú. Vista previa y envío gratis.",
+    "title": "Cuentos personalizados para niños con su nombre | Meapica",
+    "description": "Cuentos personalizados para niños con su nombre en la portada, un retrato en acuarela que se le parece y la aventura que eliges tú. Vista previa gratis.",
     "keywords": "cuentos personalizados, libros infantiles personalizados, regalo original niños, cuentos con nombre, libros con ilustraciones, regalo personalizado, libro impreso niños",
     "pages": {
       "create": "Crea su cuento",
@@ -680,7 +708,7 @@
     "language": "Idioma"
   },
   "hero": {
-    "eyebrow": "Cuento personalizado para niños",
+    "eyebrow": "Cuentos personalizados para niños",
     "title": "El cuento que te pedirá <hl>otra vez</hl>",
     "subtitle": "Porque sale su nombre en la portada, su cara pintada en acuarela y la aventura que eliges tú. Impreso y en tu casa.",
     "nameLabel": "¿Cómo se llama?",
@@ -885,6 +913,9 @@
     "priceA": "Tapa blanda, {softcover}. Tapa dura, {hardcover}. Solo el PDF, {pdf}. Todos los precios llevan el IVA incluido. El libro impreso incluye el envío y el PDF del cuento completo.",
     "returnsQ": "¿Puedo devolverlo?",
     "returnsA": "Al ser un libro hecho a medida, con su nombre y su retrato, no admite devoluciones; por eso, antes de pagar, ves su portada, su retrato y las primeras escenas de su cuento. Pero si llega con cualquier defecto de impresión o se daña en el envío, te enviamos otro nuevo sin coste. Solo tienes que escribirnos en los 30 días siguientes a recibirlo, con una foto del libro y del embalaje.",
+    "agesQ": "¿Para qué edades son los cuentos personalizados?",
+    "agesA": "Para niños de {ageMin} a {ageMax} años. Cada uno de los diez mundos tiene su franja de edad, y el texto se escribe para la edad de tu hijo: frases cortas y letra grande para los más pequeños, capítulos con más texto y retos de verdad a partir de los 8.",
+    "agesLink": "Ver cuentos por edad",
     "moreQuestions": "¿Tienes otra duda? Escríbenos a"
   },
   "finalCta": {

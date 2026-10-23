@@ -9,6 +9,7 @@ import QualitySection from "@/components/landing/QualitySection";
 import UniqueEdition from "@/components/landing/UniqueEdition";
 import AdventurePack from "@/components/landing/AdventurePack";
 import FaqSection from "@/components/landing/FaqSection";
+import WhatIsSection from "@/components/landing/WhatIsSection";
 import FinalCta from "@/components/landing/FinalCta";
 import Footer from "@/components/landing/Footer";
 import MobileStickyCta from "@/components/landing/MobileStickyCta";
@@ -55,7 +56,8 @@ export default async function Home({ params }: Props) {
       <Navbar />
       <main>
         {/* Conversion order: promise → how → what the gift really is → pick a story → proof it is theirs →
-            the physical book → objections (FAQ) → close with their name. */}
+            the physical book → what a personalised story is (the head term, server-rendered) →
+            objections (FAQ) → close with their name. */}
         <Hero />
         <HowItWorks />
         <Moments />
@@ -64,6 +66,7 @@ export default async function Home({ params }: Props) {
         <QualitySection />
         {ADDON_ENABLED.adventure_pack && <AdventurePack />}
         <CustomerReviews locale={locale} summary={reviews} />
+        <WhatIsSection locale={locale} />
         <FaqSection />
         <FinalCta />
       </main>

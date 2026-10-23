@@ -571,6 +571,16 @@
       },
       "themeHeading": "Books by theme"
     },
+    "home": {
+      "whatIs": {
+        "title": "What is a personalised storybook?",
+        "paragraphs": [
+          "A personalised storybook is an illustrated book where your child is the hero. Their name is on the cover and on every page, and the character is painted from what they look like (skin, hair, eyes, glasses, freckles) so it resembles them.",
+          "At Meapica the story is not a template with a gap for the name. You choose the world and the three chapters, and the text is written for their age, from {ageMin} to {ageMax}: short sentences and big type for little ones, more plot for children who read on their own. Browse <ages>books by age</ages> to find the right one.",
+          "Each book is printed at {size} × {size} cm, with {pages} pages and {scenes} watercolour scenes. Before you pay, you see the cover with their name, their portrait and the first scenes of their story."
+        ]
+      }
+    },
     "hubs": {
       "gifts": {
         "metaTitle": "Personalized Gifts for Kids | Meapica",
@@ -862,6 +872,9 @@
     "priceA": "Softcover, {softcover}. Hardcover, {hardcover}. PDF only, {pdf}. All prices include VAT. The printed book includes shipping and the PDF of the full story.",
     "returnsQ": "Can I return it?",
     "returnsA": "As a made-to-order book with their name and portrait, it can't be returned, which is why, before paying, you see the cover, their portrait and the first scenes of their story. But if it arrives with any printing defect or gets damaged in transit, we'll send you a new one free of charge. Just write to us within 30 days of receiving it, with a photo of the book and the packaging.",
+    "agesQ": "What ages are the books for?",
+    "agesA": "For children aged {ageMin} to {ageMax}. Each of the ten worlds has its own age range, and the text is written for your child's age: short sentences and big type for the youngest, longer chapters with real challenges from 8.",
+    "agesLink": "See books by age",
     "moreQuestions": "Another question? Write to us at"
   },
   "finalCta": {

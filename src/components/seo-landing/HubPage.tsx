@@ -111,7 +111,16 @@ export default async function HubPage({ type, locale, extraLinks = [] }: Props) 
           <div className="mt-4 max-w-3xl lg:mt-8">
             <p className={kicker}>{th("eyebrow")}</p>
             <h1 className={cx("mt-2", marketingH1)}>{t(`hubs.${type}.h1`)}</h1>
-            <p className={cx("mt-4 max-w-2xl", marketingLead)}>{t(`hubs.${type}.intro`)}</p>
+            <p className={cx("mt-4 max-w-2xl", marketingLead)}>
+              {/* <home>…</home> in an intro = contextual link to the home (gifts hub → "cuentos personalizados"). */}
+              {t.rich(`hubs.${type}.intro`, {
+                home: (chunks) => (
+                  <Link href="/" className="font-semibold underline decoration-brand/30 underline-offset-4 transition-colors hover:text-brand-text">
+                    {chunks}
+                  </Link>
+                ),
+              })}
+            </p>
             <div className="mt-7 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-5">
               <Link id="hero-cta" href="/create" className={buttonClass({ className: "min-h-14 w-full sm:w-auto sm:px-8" })}>
                 {th("cta")}

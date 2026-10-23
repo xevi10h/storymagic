@@ -4,6 +4,8 @@ import { Link } from "@/i18n/navigation";
 import { Heading } from "@/components/ui";
 import { FAQJsonLd } from "@/components/seo/JsonLd";
 import { PRICING, SUPPORT_EMAIL, formatPrice } from "@/lib/pricing";
+import { COPY_PARAMS } from "@/lib/product-facts";
+import { seoHubPath } from "@/lib/seo-landing";
 import { CHRISTMAS_DELIVERY_PATH, DELIVERY_PARAMS, formatDeadlines, spainToday, type SeasonOccasion } from "@/lib/shipping";
 import FaqItem from "./FaqItem";
 
@@ -21,7 +23,7 @@ function openCutoff(today: string, occasion: SeasonOccasion): string | null {
 
 /**
  * Landing FAQ, ordered by what blocks a gift purchase: seeing it before paying,
- * likeness, delivery (Reyes), price, returns, then the book itself. Every answer is
+ * likeness, delivery (Reyes), price, returns, ages, then the book itself. Every answer is
  * backed by the product: preview flow, shipping.ts cut-offs, pricing.ts, the Terms.
  * The same list feeds the FAQPage JSON-LD so markup and page never drift.
  */
@@ -75,6 +77,22 @@ export default function FaqSection() {
       }),
     },
     { id: "returns", question: t("returnsQ"), answer: t("returnsA") },
+    {
+      id: "ages",
+      question: t("agesQ"),
+      answer: t("agesA", COPY_PARAMS),
+      extra: (
+        <Link
+          href={seoHubPath("ages")}
+          className="mt-3 inline-flex min-h-11 items-center gap-1 font-semibold text-ink-soft underline decoration-brand/30 underline-offset-2 transition-colors hover:text-brand-text"
+        >
+          {t("agesLink")}
+          <span aria-hidden className="material-symbols-outlined text-lg">
+            arrow_forward
+          </span>
+        </Link>
+      ),
+    },
     { id: "paper", question: tl("faq.section4Title"), answer: tl("faq.section4Text") },
     { id: "size", question: tl("faq.section6Title"), answer: tl("faq.section6Text") },
   ];

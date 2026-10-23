@@ -599,46 +599,75 @@
       },
       "themeHeading": "Contes per temàtica"
     },
+    "home": {
+      "whatIs": {
+        "title": "Què és un conte personalitzat?",
+        "paragraphs": [
+          "Els contes personalitzats són llibres il·lustrats on el teu fill és el protagonista. El seu nom surt a la portada i a cada pàgina, i el personatge es pinta a partir de com és (pell, cabell, ulls, ulleres, pigues) perquè s'hi assembli.",
+          "A Meapica la història no és una plantilla amb un forat per al nom. Tu tries el món i els tres capítols, i el text s'escriu per a la seva edat, de {ageMin} a {ageMax} anys: frases curtes i lletra grossa per als petits, més trama per als que ja llegeixen sols. Fes un cop d'ull als <ages>contes per edat</ages> per trobar el que li escau.",
+          "I s'escriu directament en català, amb l'article davant del nom (en Pol, la Martina), sense passar pel traductor. T'ho expliquem a <catalan>contes personalitzats en català</catalan>.",
+          "Els nostres contes personalitzats per a nens s'imprimeixen en {size} × {size} cm, amb {pages} pàgines i {scenes} escenes pintades a l'aquarel·la. Abans de pagar veus la portada amb el seu nom, el seu retrat i les primeres escenes del seu conte."
+        ]
+      }
+    },
     "hubs": {
       "gifts": {
         "metaTitle": "Regals personalitzats per a nens | Meapica",
-        "metaDescription": "Contes personalitzats per a cada ocasió: Reis, Sant Jordi, aniversari, comunió i Nadal. El regal on el teu fill és el protagonista.",
+        "metaDescription": "Regals personalitzats per a nens en cada ocasió: Reis, Nadal, Sant Jordi, aniversari o comunió. Un conte amb el seu nom on el teu fill és el protagonista.",
         "h1": "Regals personalitzats per a nens, per a cada ocasió",
-        "intro": "Un conte on el teu fill és l’heroi és el regal que es recorda. Tria l’ocasió i crea una edició única, impresa i pensada per guardar tota la vida."
+        "intro": "Un conte on el teu fill és l’heroi és el regal que es recorda. Tria l’ocasió i crea un dels nostres <home>contes personalitzats</home>: una edició única, impresa i pensada per guardar tota la vida."
       },
       "ages": {
-        "metaTitle": "Llibre personalitzat per a nens: contes per edat | Meapica",
-        "metaDescription": "Llibre personalitzat per a nens de 2 a 12 anys: contes personalitzats per a cada edat, amb el seu nom i la seva cara a l'aquarel·la. Vista prèvia gratuïta.",
-        "h1": "Llibre personalitzat per a nens: tria el seu conte per edat",
-        "intro": "Un llibre personalitzat per a nens funciona quan la història està escrita per a la seva edat. Tria la franja del teu fill i descobreix contes personalitzats pensats per al seu moment lector, sempre amb ell com a protagonista.",
-        "guideHeading": "Com triar el conte segons l'edat",
+        "metaTitle": "Llibres personalitzats per a nens de {ageMin} a {ageMax} anys | Meapica",
+        "metaDescription": "Llibres personalitzats per a nens de {ageMin} a {ageMax} anys: un conte escrit per a la seva edat, amb el seu nom i un retrat a l'aquarel·la. Vista prèvia gratuïta.",
+        "h1": "Llibres personalitzats per a nens: un conte per a cada edat",
+        "intro": "Un llibre personalitzat funciona quan la història està escrita per a la seva edat. Tria la franja del teu fill i descobreix llibres personalitzats per a nens pensats per al seu moment lector, sempre amb ell com a protagonista.",
+        "guideHeading": "Com canvia el llibre segons l'edat",
         "sections": [
           {
             "heading": "De 2 a 4 anys: reconèixer-se",
             "paragraphs": [
               "Als dos anys encara no llegeixen, però reconeixen. Quan veuen el seu nom a la portada i una cara que s'assembla a la seva, assenyalen i diuen «soc jo». Per això, en aquesta franja, les frases són curtes i les escenes, grans i clares, per anomenar en veu alta el que hi passa.",
-              "Els mons pensats per a aquesta edat són El Xef Més Petit (2-4), El Bosc Màgic (2-5) i El País dels Dolços (2-5)."
+              "Els mons pensats per a aquesta edat són El Xef Més Petit (2-4), El Bosc Màgic (2-5) i El País dels Dolços (2-5).",
+              "Cada pàgina de text porta poques frases, d'entre 15 i 36 paraules, en lletra grossa per seguir-les amb el dit mentre llegiu junts."
             ]
           },
           {
             "heading": "De 5 a 7 anys: els primers lectors",
             "paragraphs": [
               "És l'edat en què comencen a desxifrar paraules. Veure el seu nom escrit a cada pàgina ajuda molt: el reconeixen d'entrada i això els anima a seguir llegint. Les històries tenen més trama i més diàleg, però encara funcionen millor llegides junts.",
-              "Hi encaixen La Terra dels Dinosaures i Safari a la Sabana (4-7), La Gran Aventura Espacial i Pirates del Mar (5-8) i, a partir dels 6, El Castell dels Somnis."
+              "Hi encaixen La Terra dels Dinosaures i Safari a la Sabana (4-7), La Gran Aventura Espacial i Pirates del Mar (5-8) i, a partir dels 6, El Castell dels Somnis.",
+              "Als 5 i 6 anys cada pàgina té entre 36 i 50 paraules, i a partir dels 7, entre 72 i 95, amb la lletra una mica més petita a mesura que llegeix millor."
             ]
           },
           {
             "heading": "De 8 a 12 anys: lectors que ja van sols",
             "paragraphs": [
               "Als vuit anys molts ja llegeixen sols i volen històries que no els tractin com a petits. El text s'escriu per a la seva edat, amb més vocabulari i decisions que pesen en el final. Els tres capítols els tries tu, així que pots portar la història cap al que li agrada de debò.",
-              "Per a aquesta franja hi ha La Fàbrica d'Invents (8-12), i El Castell dels Somnis i Superheroi per un Dia arriben fins als 10 anys."
+              "Per a aquesta franja hi ha La Fàbrica d'Invents (8-12), i El Castell dels Somnis i Superheroi per un Dia arriben fins als 10 anys.",
+              "A partir dels 10 anys cada pàgina arriba a 105-140 paraules: més a prop d'una novel·la curta il·lustrada que d'un àlbum."
             ]
           },
           {
-            "heading": "El mateix llibre per a totes les edats",
+            "heading": "En català de debò",
             "paragraphs": [
-              "Tots els contes tenen el mateix format: {size} × {size} cm, {pages} pàgines i {scenes} escenes il·lustrades a l'aquarel·la en paper estucat setinat de {paper} g. Pots triar tapa dura, {hardcover} IVA inclòs, o tapa tova, {softcover} IVA inclòs, totes dues amb el PDF, o només el PDF, {pdf} IVA inclòs.",
-              "L'imprimim sota demanda a Europa i arriba en {minDays}-{maxDays} dies laborables a l'Espanya peninsular i les Balears, amb l'enviament gratuït. Abans de pagar veus la portada amb el seu nom, el seu retrat i les primeres escenes del seu conte."
+              "El conte s'escriu en la llengua de la web on el crees. Aquí, en català, la història s'escriu directament en català, no es tradueix del castellà, i el nom sempre porta el seu article, com quan el dius en veu alta: en Pol, la Martina, l'Arnau.",
+              "Va bé per als nens que aprenen a llegir en català a l'escola: llegeixen a casa en la mateixa llengua de la classe. Si és per a uns cosins que parlen castellà, anglès o francès, també el pots fer en aquests idiomes."
+            ]
+          },
+          {
+            "heading": "Tapa dura, tapa tova o PDF",
+            "paragraphs": [
+              "Totes les edats comparteixen format: {size} × {size} cm, {pages} pàgines, {scenes} escenes il·lustrades a l'aquarel·la en paper estucat setinat de {paper} g i tapes amb acabat mat.",
+              "La tapa dura, {hardcover} IVA inclòs, és la que aguanta millor les mans de 2 a 4 anys i la que es queda a la prestatgeria; la tapa tova, {softcover} IVA inclòs, pesa menys i viatja millor a la motxilla. Totes dues porten l'enviament gratuït i el PDF del conte complet, i arriben en {minDays}-{maxDays} dies laborables a l'Espanya peninsular i les Balears.",
+              "Si no hi ha temps per a la impremta, només el PDF costa {pdf} IVA inclòs i t'arriba per correu després del pagament, normalment en menys d'una hora."
+            ]
+          },
+          {
+            "heading": "El veus abans de pagar",
+            "paragraphs": [
+              "Crear el llibre és gratuït i no cal registrar-se. Escrius el seu nom i la seva edat, tries com és i quina aventura viurà, i veus la portada amb el seu nom, el seu retrat i les primeres {previewScenes} escenes il·lustrades.",
+              "Si el retrat no s'hi assembla, canvies el seu aspecte i tornem a pintar el llibre amb el nou personatge abans que paguis. Només pagues si t'agrada com ha quedat."
             ]
           }
         ],
@@ -665,8 +694,8 @@
     "loading": "Carregant…"
   },
   "metadata": {
-    "title": "Conte personalitzat per a nens amb el seu nom | Meapica",
-    "description": "Escrit en català: un llibre personalitzat per a nens amb el seu nom a la portada i la seva cara pintada a l'aquarel·la. Vista prèvia i enviament gratuïts.",
+    "title": "Contes personalitzats per a nens amb el seu nom | Meapica",
+    "description": "Contes personalitzats per a nens amb el seu nom a la portada, un retrat a l'aquarel·la que s'hi assembla i l'aventura que tries. Vista prèvia gratuïta.",
     "keywords": "conte personalitzat en català, contes personalitzats,llibres infantils personalitzats, regal original nens, contes amb nom, llibres amb il·lustracions, regal personalitzat, llibre imprès nens",
     "pages": {
       "create": "Crea el seu conte",
@@ -697,7 +726,7 @@
     "language": "Idioma"
   },
   "hero": {
-    "eyebrow": "Conte personalitzat per a nens",
+    "eyebrow": "Contes personalitzats per a nens",
     "title": "El conte que et demanarà <hl>un altre cop</hl>",
     "subtitle": "Perquè hi surt el seu nom a la portada, la seva cara pintada a l'aquarel·la i l'aventura que tries tu. Imprès i a casa teva.",
     "nameLabel": "Com es diu?",
@@ -902,6 +931,9 @@
     "priceA": "Tapa tova, {softcover}. Tapa dura, {hardcover}. Només el PDF, {pdf}. Tots els preus porten l'IVA inclòs. El llibre imprès inclou l'enviament i el PDF del conte complet.",
     "returnsQ": "El puc retornar?",
     "returnsA": "Com que és un llibre fet a mida, amb el seu nom i el seu retrat, no admet devolucions; per això, abans de pagar, veus la portada, el seu retrat i les primeres escenes del conte. Però si arriba amb qualsevol defecte d'impressió o es malmet durant l'enviament, t'enviem un altre de nou sense cost. Només cal que ens escriguis en els 30 dies següents a rebre'l, amb una foto del llibre i de l'embalatge.",
+    "agesQ": "Per a quines edats són els contes personalitzats?",
+    "agesA": "Per a nens de {ageMin} a {ageMax} anys. Cada un dels deu mons té la seva franja d'edat, i el text s'escriu per a l'edat del teu fill: frases curtes i lletra grossa per als més petits, capítols amb més text i reptes de debò a partir dels 8.",
+    "agesLink": "Veure contes per edat",
     "moreQuestions": "Tens un altre dubte? Escriu-nos a"
   },
   "finalCta": {

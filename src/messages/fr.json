@@ -567,6 +567,16 @@
       },
       "themeHeading": "Contes par thème"
     },
+    "home": {
+      "whatIs": {
+        "title": "Qu'est-ce qu'un livre personnalisé ?",
+        "paragraphs": [
+          "Un livre personnalisé est un album illustré dont votre enfant est le héros. Son prénom figure sur la couverture et à chaque page, et le personnage est peint d'après son apparence (peau, cheveux, yeux, lunettes, taches de rousseur) pour qu'il lui ressemble.",
+          "Chez Meapica, l'histoire n'est pas un modèle avec un blanc pour le prénom. Vous choisissez l'univers et les trois chapitres, et le texte est écrit pour son âge, de {ageMin} à {ageMax} ans : des phrases courtes et de gros caractères pour les petits, plus d'intrigue pour ceux qui lisent seuls. Parcourez les <ages>livres par âge</ages> pour trouver le bon.",
+          "Chaque livre est imprimé en {size} × {size} cm, avec {pages} pages et {scenes} scènes peintes à l'aquarelle. Avant de payer, vous voyez la couverture avec son prénom, son portrait et les premières scènes de son histoire."
+        ]
+      }
+    },
     "hubs": {
       "gifts": {
         "metaTitle": "Cadeaux personnalisés pour enfants | Meapica",
@@ -864,6 +874,9 @@
     "priceA": "Couverture souple, {softcover}. Couverture rigide, {hardcover}. PDF seul, {pdf}. Tous les prix sont TVA incluse. Le livre imprimé inclut la livraison et le PDF de l'histoire complète.",
     "returnsQ": "Puis-je le retourner ?",
     "returnsA": "Livre fait sur mesure, avec son prénom et son portrait, il n'est ni repris ni échangé : c'est pour cela que, avant de payer, vous voyez la couverture, son portrait et les premières scènes de son histoire. Mais s'il arrive avec le moindre défaut d'impression ou abîmé pendant la livraison, nous vous en envoyons un nouveau sans frais. Il suffit de nous écrire dans les 30 jours suivant sa réception, avec une photo du livre et de l'emballage.",
+    "agesQ": "Pour quel âge sont les livres ?",
+    "agesA": "Pour les enfants de {ageMin} à {ageMax} ans. Chacun des dix univers a sa tranche d'âge, et le texte est écrit pour l'âge de votre enfant : des phrases courtes et de gros caractères pour les plus petits, des chapitres plus longs et de vrais défis dès 8 ans.",
+    "agesLink": "Voir les livres par âge",
     "moreQuestions": "Une autre question ? Écrivez-nous à"
   },
   "finalCta": {

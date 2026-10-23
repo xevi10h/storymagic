@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import HubPage from "@/components/seo-landing/HubPage";
 import { GUIDES, GUIDE_LINK_LABELS, guidesForLocale } from "@/lib/guides";
+import { COPY_PARAMS } from "@/lib/product-facts";
 
 const BASE_URL = "https://meapica.es";
 const PATH = "/personalized-books";
@@ -16,8 +17,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const languages: Record<string, string> = {};
   for (const loc of routing.locales) languages[loc] = `${BASE_URL}/${loc}${PATH}`;
   languages["x-default"] = `${BASE_URL}/${routing.defaultLocale}${PATH}`;
-  const title = t("hubs.ages.metaTitle");
-  const description = t("hubs.ages.metaDescription");
+  // Age range from the story templates (product-facts), never hard-coded in the copy.
+  const title = t("hubs.ages.metaTitle", COPY_PARAMS);
+  const description = t("hubs.ages.metaDescription", COPY_PARAMS);
   return {
     title: { absolute: title },
     description,

@@ -140,6 +140,7 @@ export const COPY_PARAMS = {
   ageMax: AGE_MAX,
   pages: BOOK_INNER_PAGES,
   scenes: BOOK_SCENES,
+  previewScenes: PREVIEW_SCENES,
   size: BOOK_SIZE_CM,
   paper: BOOK_PAPER_GSM,
   defectDays: DEFECT_CLAIM_DAYS,

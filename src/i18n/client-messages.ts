@@ -5,7 +5,9 @@ import type { AbstractIntlMessages } from "next-intl";
  * EVERY page for client components. The programmatic-landing copy (seo.gifts /
  * seo.ages / seo.themes / seo.hubs, ≈46 KB of JSON, a quarter of the payload) is
  * only ever read by server components (SeoLandingPage, HubPage, generateMetadata,
- * OG images), so it is left out. `seo.nav` and `seo.common` stay (shared labels).
+ * OG images), so it is left out, and so is `seo.home` (the home's server-rendered
+ * "¿Qué es un cuento personalizado?" block, landing/WhatIsSection). `seo.nav` and
+ * `seo.common` stay (shared labels).
  *
  * The gift-voucher copy (`giftVoucher`) is server-only too.
  *
@@ -15,7 +17,7 @@ import type { AbstractIntlMessages } from "next-intl";
  * React re-render loop (≈3.5 s of CPU after load, measured 2026-10-03), cause not
  * identified; the seo-only trim was measured loop-free.
  */
-const SERVER_ONLY_SEO_KEYS = ["gifts", "ages", "themes", "hubs"] as const;
+const SERVER_ONLY_SEO_KEYS = ["gifts", "ages", "themes", "hubs", "home"] as const;
 
 export function clientMessages(messages: AbstractIntlMessages): AbstractIntlMessages {
   // giftVoucher: the voucher pages are server components; the form gets its labels as props.

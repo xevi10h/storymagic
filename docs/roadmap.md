@@ -209,7 +209,7 @@ crawl demand on a zero-authority domain, no technical blocker. Head terms are ou
 ## Next steps from commerce block A (2026-09-28)
 - **VeriFactu-compliant invoicing** before the 2027 obligation (Stripe invoices aren't); OSS registration when EU digital sales pass 10 000 €.
 - **Title edits after purchase** re-render nothing: block edits once paid or rebuild the PDF.
-- [x] 2026-10-23: checkout uses Dashboard-managed payment methods (was card-only). Owner: turn on Google Pay, Bizum, PayPal, Revolut Pay in Stripe Dashboard › Payment methods.
+- [x] 2026-10-23: checkout uses Dashboard-managed payment methods (was card-only). Google Pay turned on and Bizum requested (pending Stripe approval) the same day; PayPal and Revolut Pay still off.
 
 ## Next steps from brand system phase 1 (2026-09-30)
 Brand spec in `docs/brand.md`; semantic tokens in `globals.css`; primitives in `src/components/ui/`.

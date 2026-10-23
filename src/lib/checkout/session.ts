@@ -153,7 +153,9 @@ export function buildCheckoutSession(input: CheckoutSessionInput): CheckoutSessi
 
   const params: Stripe.Checkout.SessionCreateParams = {
     mode: "payment",
-    payment_method_types: ["card"],
+    // No payment_method_types: Stripe shows the methods enabled in the Dashboard
+    // (card, Apple/Google Pay, Klarna, Bizum…) that fit the buyer. Delayed methods
+    // complete unpaid and are fulfilled on async_payment_succeeded (payments.ts).
     // Promotion codes are managed in the Stripe Dashboard (schools/AMPA, gifts).
     allow_promotion_codes: true,
     line_items: lineItems,
