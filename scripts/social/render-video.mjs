@@ -252,7 +252,13 @@ if (STORYBOARD) {
 await browser.close();
 // outro: "short" = the compact corporate closing for short reels (logo, tagline, button, address; videos/closing-short).
 const OUTRO = T.outro === "short" ? `${ROOT}/docs/social/brand/closing-short-${T.lang}.mp4` : `${ROOT}/docs/social/brand/outro.mp4`;
-const outroLength = T.outro ? probe(OUTRO) : 0;
+// The narrator's outro line starts 0.3 s into the outro. When it is longer than the outro clip, the clip's last frame
+// is held until the line has ended (+0.6 s), so the address is never cut off mid-word.
+const OUTRO_SAY_AT = 0.3, OUTRO_TAIL = 0.6;
+const outroLine = T.outro && T.outroSay ? await narrate(T.outroSay) : null;
+const outroClip = T.outro ? probe(OUTRO) : 0;
+const outroLength = Math.max(outroClip, outroLine ? OUTRO_SAY_AT + outroLine.duration + OUTRO_TAIL : 0);
+const outroHold = outroLength - outroClip;
 if (T.outro) parts.push(OUTRO);
 
 // Assembly: every beat dissolves into the next (and the last one into the outro) while the sound runs straight
@@ -263,19 +269,19 @@ if (T.outro) starts.push(spoken);
 const total = T.outro ? spoken + outroLength : spoken + XF;
 const inputs = parts.flatMap((p) => ["-i", p]);
 let voiceLabel = "voice";
-let graph = parts.map((_, i) => `[${i}:v]settb=AVTB,fps=${FPS},format=yuv420p[s${i}]`).join(";");
+const isHeldOutro = (i) => T.outro && i === lengths.length && outroHold > 0;
+let graph = parts.map((_, i) => `[${i}:v]settb=AVTB,fps=${FPS},format=yuv420p${isHeldOutro(i) ? `,tpad=stop_mode=clone:stop_duration=${outroHold.toFixed(3)}` : ""}[s${i}]`).join(";");
 let last = "s0";
 for (let i = 1; i < parts.length; i++) {
   graph += `;[${last}][s${i}]xfade=transition=fade:duration=${XF}:offset=${starts[i].toFixed(3)}[x${i}]`;
   last = `x${i}`;
 }
-graph += ";" + parts.map((_, i) => `[${i}:a]${i < lengths.length ? `atrim=0:${lengths[i].toFixed(3)},` : ""}asetpts=PTS-STARTPTS,aresample=44100,aformat=channel_layouts=stereo[a${i}]`).join(";");
+graph += ";" + parts.map((_, i) => `[${i}:a]${i < lengths.length ? `atrim=0:${lengths[i].toFixed(3)},` : ""}asetpts=PTS-STARTPTS,aresample=44100,aformat=channel_layouts=stereo${isHeldOutro(i) ? `,apad=whole_dur=${outroLength.toFixed(3)}` : ""}[a${i}]`).join(";");
 graph += `;${parts.map((_, i) => `[a${i}]`).join("")}concat=n=${parts.length}:v=0:a=1[voice]`;
-if (T.outro && T.outroSay) {
+if (outroLine) {
   // The narrator says where to make one, over the logo.
-  const line = await narrate(T.outroSay);
-  inputs.push("-i", line.mp3);
-  graph += `;[${inputs.filter((x) => x === "-i").length - 1}:a]aresample=44100,aformat=channel_layouts=stereo,adelay=${Math.round((spoken + 0.3) * 1000)}:all=1[say];[voice][say]amix=inputs=2:duration=first:normalize=0[voiced]`;
+  inputs.push("-i", outroLine.mp3);
+  graph += `;[${inputs.filter((x) => x === "-i").length - 1}:a]aresample=44100,aformat=channel_layouts=stereo,adelay=${Math.round((spoken + OUTRO_SAY_AT) * 1000)}:all=1[say];[voice][say]amix=inputs=2:duration=first:normalize=0[voiced]`;
   voiceLabel = "voiced";
 }
 if (T.music) {
