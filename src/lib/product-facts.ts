@@ -9,7 +9,7 @@
 import { STORY_TEMPLATES } from "./create-store";
 import { PREVIEW_ILLUSTRATION_COUNT, PRICING, TOTAL_SCENE_COUNT } from "./pricing";
 import { DELIVERY_PARAMS, SHIPPING_REGIONS } from "./shipping";
-import { SUPPORT_EMAIL } from "./support";
+import { SUPPORT_EMAIL, SUPPORT_PHONE } from "./support";
 
 export const SITE_URL = "https://meapica.es";
 export const BRAND_NAME = "Meapica";
@@ -18,6 +18,7 @@ export const BRAND_NAME = "Meapica";
  * Public contact address shown in structured data and /llms.txt.
  */
 export const CONTACT_EMAIL = SUPPORT_EMAIL;
+export const CONTACT_PHONE = SUPPORT_PHONE;
 
 /**
  * Who makes Meapica: the person named in the legal notice (legal.terms.section1Text /

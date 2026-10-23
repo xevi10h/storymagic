@@ -10,6 +10,7 @@ import { GIFT_VOUCHER_PATH } from "@/lib/promo-codes";
 import { isToolLocale, toolPath } from "@/lib/tools/registry";
 import { GUIDES, GUIDES_HEADING, GUIDE_LINK_LABELS, guidesForLocale, isGuideLocale } from "@/lib/guides";
 import { SUPPORT_EMAIL } from "@/lib/pricing";
+import { SUPPORT_PHONE, SUPPORT_PHONE_HREF } from "@/lib/support";
 import { CookieSettingsButton } from "@/components/tracking/Tracking";
 
 // Every link is a ≥ 44 px tap target (brand.md › Mobile rules).
@@ -118,6 +119,11 @@ export default function Footer() {
             <li>
               <a className={cx(linkClass, "break-all")} href={`mailto:${SUPPORT_EMAIL}`}>
                 {SUPPORT_EMAIL}
+              </a>
+            </li>
+            <li>
+              <a className={cx(linkClass, "whitespace-nowrap")} href={SUPPORT_PHONE_HREF}>
+                {SUPPORT_PHONE}
               </a>
             </li>
           </FooterColumn>

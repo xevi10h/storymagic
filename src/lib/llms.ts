@@ -15,6 +15,7 @@ import {
   BOOK_SCENES,
   BOOK_SIZE_CM,
   CONTACT_EMAIL,
+  CONTACT_PHONE,
   DEFECT_CLAIM_DAYS,
   DELIVERY_BUSINESS_DAYS,
   FOUNDER,
@@ -103,6 +104,7 @@ export function llmsBrief(): string {
 
 ## Contact
 - ${CONTACT_EMAIL}
+- ${CONTACT_PHONE}
 `;
 }
 
