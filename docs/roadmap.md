@@ -12,9 +12,17 @@ Code, docs, Resend, Supabase allow-list and GSC property done (see `docs/stack.m
 - Before deploy (owner): Cloudflare › Turnstile › widget › Hostnames: add `meapica.es` (else login/preview captcha fails).
 - At deploy: Vercel env `NEXT_PUBLIC_SITE_URL`, `EMAIL_FROM`, `RESEND_API_KEY` (.es key); Vercel `meapica.es` redirect removed,
   `www.meapica.es`/`www.meapica.shop` → `meapica.es`; Supabase Site URL + SMTP sender `pedidos@meapica.es`.
-- After deploy: GSC Change of address (.shop → .es) + sitemap; Bing site + sitemap; IndexNow ping; Meta domain verification
-  for `.es`; Google Merchant Center website + claim `.es`; Pinterest claim `.es`; Gmail "Send mail as" `hola@meapica.es`;
-  social bios (Zernio); Stripe + Gelato webhooks to `.es`, then make `meapica.shop` a Vercel domain-level 301. Renew `.shop` yearly.
+- Done after deploy (2026-10-23): GSC sitemap + Change of address .shop → .es; Bing `meapica.es` verified (DNS CNAME) + sitemap
+  (Bing has no site-move tool); IndexNow ping (94 URLs); Merchant Center website `.es` claimed + feed URL on `.es`; Gmail
+  "Send mail as" `hola@meapica.es`; Stripe live + test webhooks and Resend inbound webhook on `.es`; cana → `sc-domain:meapica.es`.
+- Still open:
+  - Gelato webhook host → `meapica.es` (same path + `?secret=`). Blocked: owner runs
+    `! node ~/.claude/skills/browser-session/pw-session.mjs login gelato` once (dashboard is behind Cloudflare), then Claude does it.
+  - Meta domain verification for `meapica.es` (keep `.shop`). Blocked: owner runs
+    `! node ~/.claude/skills/browser-session/pw-session.mjs login meta-business`, then Claude reads the TXT and adds it at Hostinger.
+  - Merchant Center: customer service email still `hola@meapica.shop`, data source still named "(meapica.shop)".
+  - Social bios (Zernio). Pinterest dropped.
+  - After Gelato moves: make `meapica.shop` a Vercel domain-level 301. Renew `.shop` yearly.
 
 ## Next up (2026-10-03, after the Phase 0 QA + SEO/GEO/social review)
 

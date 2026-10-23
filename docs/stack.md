@@ -132,7 +132,8 @@ Seller on invoices: Xavier Huix Trenco (autónomo), NIF 41649433K, Carrer Aribau
   `charge.dispute.created`); a NEW endpoint prints its signing secret once. **The last two events are
   new (2026-09-30): add them to the existing live + test endpoints (or re-run the script).**
 
-**Endpoints:** both modes point at `https://meapica.shop/api/webhooks/stripe`; the route verifies with
+**Endpoints:** both modes point at `https://meapica.es/api/webhooks/stripe` (moved 2026-10-23: live
+`we_1UKekqAyKcfLUpfGWsbB0sRn` from `.shop`, test from `meapica.com`); the route verifies with
 `STRIPE_WEBHOOK_SECRET_LIVE` and `STRIPE_WEBHOOK_SECRET_TEST` and ignores events whose mode ≠
 `STRIPE_ENVIRONMENT`. Test endpoint: `we_1UKdD8BD04FISl5urkd8gXlZ` (sandbox). The old Constrack live
 endpoint `we_1T8hz2…` is obsolete once the new live account is in use.
@@ -211,10 +212,10 @@ key is derived from `SUPABASE_SERVICE_ROLE_KEY` (no new var).
 No Gelato sandbox: orders are `draft` unless `STRIPE_ENVIRONMENT=live`.
 
 **Webhook:** register in Gelato → Developer → Webhooks
-`https://meapica.shop/api/webhooks/gelato?secret=<GELATO_WEBHOOK_SECRET>` (Gelato sends no signature
+`https://meapica.es/api/webhooks/gelato?secret=<GELATO_WEBHOOK_SECRET>` (Gelato sends no signature
 or custom headers) for `order_status_updated` and `order_item_tracking_code_updated`. Gelato retries
 a failed delivery only 3×, so the fulfilment cron also reconciles every hour via `GET /v4/orders/{id}`.
-Registered on `meapica.shop` with the secret since 2026-10-01 (see Domains below).
+Registered on `meapica.shop` with the secret since 2026-10-01; **move to the `.es` URL above is pending** (see Domains below).
 **First real print order 2026-10-09** (gift code, hardcover, Sabadell): Gelato `orderType: order`, files `passed`,
 shipped direct to the customer with `package_48_72`, cost 16,56 € (11,76 book + 4,80 shipping), delivery estimate 10-11 days.
 
@@ -265,9 +266,17 @@ Code map: `docs/technical-architecture.md` › Ads tracking. No TikTok Pixel (Ti
   Inbound `*@meapica.es` → same Resend `email.received` webhook → forwarded to admin@casmar.tech from `hola@meapica.es`.
   Old domain `meapica.shop` (id `ac086507-…`) stays verified so `*@meapica.shop` keeps receiving.
   Admin key for domain management: `~/.config/resend/meapica`.
-- **Webhooks:** Stripe live `we_1UKekqAyKcfLUpfGWsbB0sRn` and Gelato registered on `meapica.shop/api/webhooks/*` (work through
-  the alias; move to `.es` in the dashboards, Stripe CLI profile `stripe -p meapica` lacks `webhook_write`).
-- **Meta domain verification:** meapica.com + meapica.shop verified (meta tags in root layout + TXT on .shop). meapica.es: pending.
+- **Webhooks (2026-10-23):** Stripe LIVE `we_1UKekqAyKcfLUpfGWsbB0sRn` and TEST `we_1UKdD8BD04FISl5urkd8gXlZ` (was on
+  meapica.com) → `https://meapica.es/api/webhooks/stripe`. Resend inbound webhook `11260e42…` →
+  `https://meapica.es/api/webhooks/resend-inbound` (test email OK). **Gelato still on `meapica.shop/api/webhooks/gelato`**
+  (works through the alias): pending, no `gelato` browser profile yet and the dashboard sits behind Cloudflare; change the host
+  only, keep path + `?secret=`. Until it moves, `meapica.shop` cannot become a domain-level 301.
+- **Meta domain verification:** meapica.com + meapica.shop verified (meta tags in root layout + TXT on .shop). meapica.es: pending
+  (no `meta-business` browser profile; the Graph API has no domain-verification edge for our system-user token). Get the TXT from
+  Business settings › Brand safety › Domains and add it to Hostinger (add-only).
+- **Gmail "Send mail as" (2026-10-23):** `Xavi de Meapica <hola@meapica.es>` added and confirmed in admin@casmar.tech (alias,
+  smtp.resend.com:465 SSL, user `resend`, password = `~/.config/resend/meapica-es-sending`). `hola@meapica.shop` kept.
+- **Bing DNS verification:** CNAME `410a995a7b95552813a6359ec6817435.meapica.es` → `verify.bing.com.` (Hostinger, 2026-10-23).
 
 ## Ads tracking — TikTok (2026-10-01)
 
@@ -279,8 +288,9 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
 ## Search & analytics measurement (2026-10-01)
 
 - **Google Search Console:** Domain properties `sc-domain:meapica.es` (primary, verified 2026-10-23 via Site Verification API +
-  DNS TXT, owner admin@casmar.tech) and `sc-domain:meapica.shop` (legacy, TXT `TCFgqmj9…`). After the switch: submit
-  `https://meapica.es/sitemap.xml` and run **Settings › Change of address** on the .shop property (UI only, no API).
+  DNS TXT, owner admin@casmar.tech) and `sc-domain:meapica.shop` (legacy, TXT `TCFgqmj9…`). 2026-10-23: sitemap
+  `https://meapica.es/sitemap.xml` submitted (API) and **Change of address** .shop → .es confirmed (Settings › Change of address,
+  validation passed; "Este sitio web se está trasladando", start 23-10-2026). Keep both properties and the 308s for 180+ days.
   meapica.com has no GSC property (its DNS isn't ours).
 - **GA4:** property `556936860` "Meapica" (account 384452227, Europe/Madrid, EUR, 14-month retention), web stream `15937070228`,
   measurement ID `G-R4KZQ2ZYQ2`. Key events: `purchase`, `begin_checkout`. Browser gtag loads only after cookie consent (same banner
@@ -303,13 +313,16 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   every `ph_*` cookie/storage key deleted. Headless browsers are dropped as bots (test with real Chrome). Project settings:
   replay on, console logs off, network timings off (request URLs carry signed image links), min duration 2 s. Env: `NEXT_PUBLIC_POSTHOG_KEY` (phc_…, build-time; unset = PostHog off).
   Personal API key (phx_, owner's) for the PostHog API is not stored in the repo.
-- **cana:** project key `meapica` in `~/.config/casmar-analytics/sites.json` (`cana gsc …` / `cana ga4 …` from this repo).
+- **cana:** project key `meapica` in `~/.config/casmar-analytics/sites.json`, GSC site `sc-domain:meapica.es` since 2026-10-23
+  (`cana gsc …` / `cana ga4 …` from this repo).
 - **IndexNow:** key file `public/2ecdea1c8139eed8afa1e608880f24f7.txt`; after a deploy run `node scripts/indexnow-ping.mjs`
   (pings api.indexnow.org with every sitemap URL; `--dry-run` to count). Bing recognises it (IndexNow page: 90 URLs, source Self, 2026-10-09).
 - **Bing Webmaster Tools (2026-10-19):** `meapica.shop/` is verified in the shared Casmar Bing account (with atalaya.watch, constrack.pro,
   licita-ia.com…), signed in with Google. Sitemap `https://meapica.shop/sitemap.xml` submitted 2026-10-19 (Processing). Headless access:
   `pw-session.mjs run bing-webmaster <script>` (browser-session service `bing-webmaster`, profile `google`; the sign-in dialog is shadow
   DOM, click "Google" by coordinates). Direct pages: `/webmasters/{sitemaps,indexnow}?siteUrl=https://meapica.shop/`.
+  **2026-10-23:** `https://meapica.es/` added and verified (DNS CNAME, see Domains), sitemap `https://meapica.es/sitemap.xml`
+  submitted (Processing). Bing's current UI has no Site Move tool: the 308s + IndexNow (94 URLs pinged on .es, 202) carry the move.
 - **GSC "Request indexing" (no API):** headless via browser-session (`google-search-console`, ~10 URLs/day); check status first with the
   URL Inspection API (cana service account). 2026-10-19: 10 requested (`/es/about`, `/ca/about`, `/ca/gifts/christmas`, `/ca/gifts`,
   `/{es,ca}/christmas-delivery`, `/es/gift-voucher`, `/es/blog/three-kings-gift-ideas`, `/es/personalized-books/in-catalan`, `/es/themes`);
@@ -350,7 +363,7 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   `node scripts/social/render-book-carousel.mjs <dir>/carousel.json` (1080×1350 slides: book pages, idea cards) and
   `node scripts/social/render-video.mjs <dir>/video.json` (1080×1920: full-screen art with slow zoom or pan, narrator, burned-in
   captions timed from the voice, music bed; the brand shows only at the end: `"outro": true` appends the animated logo `docs/social/brand/outro.mp4`, built by
-  the HyperFrames project `videos/outro-libro/` (3.6 s, chosen by the owner 2026-10-04: the spine of the book "M" stands up, its two pages swing open, the loose leaves flick out and the name flows out of the open book with a warm light; sting mixed from the bundled Pixabay SFX in `assets/sting.wav`; the music bed ends before it). Other candidates kept for reference: `videos/outro-pluma/` (the name written with a pen), `videos/outro-acuarela/` (watercolour wash) and `videos/meapica-outro/` (line then ink). Rebuild: `cd videos/outro-libro && npx hyperframes render . -q high -o renders/video.mp4`, then re-encode to `docs/social/brand/outro.mp4` at 30 fps H.264 + AAC 44.1 kHz stereo (the format `render-video.mjs` concatenates), or `brand: true` puts a `meapica.shop` pill on the last beat of short loops).
+  the HyperFrames project `videos/outro-libro/` (3.6 s, chosen by the owner 2026-10-04: the spine of the book "M" stands up, its two pages swing open, the loose leaves flick out and the name flows out of the open book with a warm light; sting mixed from the bundled Pixabay SFX in `assets/sting.wav`; the music bed ends before it). Other candidates kept for reference: `videos/outro-pluma/` (the name written with a pen), `videos/outro-acuarela/` (watercolour wash) and `videos/meapica-outro/` (line then ink). Rebuild: `cd videos/outro-libro && npx hyperframes render . -q high -o renders/video.mp4`, then re-encode to `docs/social/brand/outro.mp4` at 30 fps H.264 + AAC 44.1 kHz stereo (the format `render-video.mjs` concatenates), or `brand: true` puts a `meapica.es` pill on the last beat of short loops). `outroSay` is spoken 0.3 s into the outro; when the line is longer than the outro clip, the clip's last frame is held until the line ends + 0.6 s (before 2026-10-23 the line was cut, so the address was never heard).
 - **Storyboard and code-drawn videos (2026-10-07):** `render-video.mjs <video.json> --storyboard` writes `storyboard.jpg` (first frame of every beat with its title and line, no narration, about 40 s) to review before a full render. Formats that are pure motion graphics are HyperFrames projects under `videos/` (first one: `videos/name-reveal/`, "Escribe su nombre", `npx hyperframes check | snapshot | render` inside the folder); their MP4 is copied next to the post's `post.json`.
 - **Closings and photo scenes (2026-10-07):** `"outro": "short"` in `video.json` appends the compact corporate closing `docs/social/brand/closing-short-<lang>.mp4` (HyperFrames project `videos/closing-short/`, one render per language by changing `LANG`); `"outro": true` still appends the logo outro. Scenes with people: start photos from `fal-ai/flux-2/edit` (`FAL_KEY`, real cover or spread as reference) animated with `SCENE_STYLE=photo node scripts/social/animate-scene.mjs` (Higgsfield, about $0.55 per 5 s clip).
 - **Learning loop (2026-10-08):** `node scripts/social/learn.mjs` joins every post in `docs/social/posts/` (its `strategy` and `people` from `post.json`, voice and length from its video) with Zernio analytics and writes `docs/social/scoreboard.md`; run it before creating posts. `schedule.mjs` refuses a post without `strategy`.
@@ -543,6 +556,9 @@ Recommended: apply the migration, then deploy, then run `?dry_run=1` once to see
 
 **Status 2026-10-02: LIVE.** Account `5865149718` "Meapica", domain claimed, free listings ENABLED (ES). Data source
 `10756117518` (daily fetch 06:00 Madrid), return policy `9351866615` (NO_RETURNS), customer service hola@meapica.shop.
+**2026-10-23:** website changed to `https://meapica.es` and claimed (Merchant API `accounts/5865149718/homepage` + `:claim`,
+`claimed: true`); data source fetch URL → `https://meapica.es/feeds/google-merchant.xml` (fetch triggered). Item links and images
+in the feed already use `.es`. Still `.shop`: customer service email and the data source display name.
 API access: service account `cana-agent@casmar-analytics.iam.gserviceaccount.com` is Admin in Merchant Center, Merchant API
 enabled in GCP `casmar-analytics` and registered (`developerRegistration:registerGcp`); token with scope
 `https://www.googleapis.com/auth/content` WITHOUT `sub` (no DWD). Item-level `postal_code` is rejected for ES
