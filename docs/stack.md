@@ -145,7 +145,11 @@ already hold the Meapica sandbox values). No publishable key is used (redirect C
 **Checkout:** `automatic_tax`, `invoice_creation` (factura with NIF; Stripe Invoicing fee applies),
 `tax_id_collection` (customer may add a NIF → factura completa; a full refund issues a credit note =
 factura rectificativa, `src/lib/fulfilment/payments.ts`),
-locale es/en/fr (Stripe has no Catalan → es), shipping ES only, card only, promotion codes allowed.
+locale es/en/fr (Stripe has no Catalan → es), shipping ES only, promotion codes allowed.
+Payment methods are Dashboard-managed (no `payment_method_types`, since 2026-10-23; same for gift vouchers):
+default config `pmc_1UKcQxAyKcfLUpfGBJ5zByeo` has card, Apple Pay, Link, Klarna, Amazon Pay on; Google Pay,
+Bizum, PayPal and Revolut Pay are off (owner turns them on in Dashboard › Settings › Payment methods; Bizum needs
+the capability request). Delayed methods complete unpaid and are fulfilled on `async_payment_succeeded`.
 Invoices are not VeriFactu-compliant: move to a VeriFactu tool before the obligation applies (2027).
 
 **Stripe-mode isolation:** local dev uses the prod database. Cron + pipeline only fulfil orders whose
@@ -215,7 +219,7 @@ No Gelato sandbox: orders are `draft` unless `STRIPE_ENVIRONMENT=live`.
 `https://meapica.es/api/webhooks/gelato?secret=<GELATO_WEBHOOK_SECRET>` (Gelato sends no signature
 or custom headers) for `order_status_updated` and `order_item_tracking_code_updated`. Gelato retries
 a failed delivery only 3×, so the fulfilment cron also reconciles every hour via `GET /v4/orders/{id}`.
-Registered on `meapica.shop` with the secret since 2026-10-01; **move to the `.es` URL above is pending** (see Domains below).
+Registered with the secret since 2026-10-01 (on `meapica.shop`); moved to the `.es` URL above on 2026-10-23 (see Domains below).
 **First real print order 2026-10-09** (gift code, hardcover, Sabadell): Gelato `orderType: order`, files `passed`,
 shipped direct to the customer with `package_48_72`, cost 16,56 € (11,76 book + 4,80 shipping), delivery estimate 10-11 days.
 
@@ -249,9 +253,9 @@ Code map: `docs/technical-architecture.md` › Ads tracking. No TikTok Pixel (Ti
   All canonical URLs, sitemap, OG, emails, legal texts, printed books (back cover + QR) use it (`src/lib/product-facts.ts`
   `SITE_URL`, `NEXT_PUBLIC_SITE_URL`).
 - **Legacy: `meapica.shop`** (primary 2026-09-30 → 2026-10-23). **Keep renewing it forever:** printed books' QR, sent pitches,
-  social bios and pins point to it. Stays attached to Vercel **without** a domain-level redirect, so `/api/*` webhooks still
-  registered on it keep working; `src/middleware.ts` 308s every page to `meapica.es`. Once Stripe, Gelato and Resend inbound
-  webhooks are on `.es`, it can become a domain-level 301 in Vercel. `www.meapica.shop` = Vercel 301 → `meapica.es`.
+  social bios and pins point to it. **Since 2026-10-23 ~15:00 it is a Vercel domain-level 308 → `meapica.es`, including `/api`**
+  (done after Stripe, Resend inbound and Gelato webhooks moved to `.es`), so `src/middleware.ts` no longer comes into play for
+  `.shop`. `www.meapica.shop` = Vercel 308 → `meapica.es`.
 - **Legacy: `meapica.com`** stays attached and redirects too, but its DNS (Spaceship) is no longer ours: nothing may depend on it.
 - **Host canonicalization:** `src/middleware.ts` 308-redirects `www.meapica.es`, `meapica.shop`, `www.meapica.shop`, `meapica.com`,
   `www.meapica.com` to `https://meapica.es` + same path/query (explicit list: localhost and `*.vercel.app` untouched).
@@ -268,12 +272,11 @@ Code map: `docs/technical-architecture.md` › Ads tracking. No TikTok Pixel (Ti
   Admin key for domain management: `~/.config/resend/meapica`.
 - **Webhooks (2026-10-23):** Stripe LIVE `we_1UKekqAyKcfLUpfGWsbB0sRn` and TEST `we_1UKdD8BD04FISl5urkd8gXlZ` (was on
   meapica.com) → `https://meapica.es/api/webhooks/stripe`. Resend inbound webhook `11260e42…` →
-  `https://meapica.es/api/webhooks/resend-inbound` (test email OK). **Gelato still on `meapica.shop/api/webhooks/gelato`**
-  (works through the alias): pending, no `gelato` browser profile yet and the dashboard sits behind Cloudflare; change the host
-  only, keep path + `?secret=`. Until it moves, `meapica.shop` cannot become a domain-level 301.
-- **Meta domain verification:** meapica.com + meapica.shop verified (meta tags in root layout + TXT on .shop). meapica.es: pending
-  (no `meta-business` browser profile; the Graph API has no domain-verification edge for our system-user token). Get the TXT from
-  Business settings › Brand safety › Domains and add it to Hostinger (add-only).
+  `https://meapica.es/api/webhooks/resend-inbound` (test email OK). Gelato → `https://meapica.es/api/webhooks/gelato?secret=…`
+  (changed by hand in the dashboard by the owner, 2026-10-23). Nothing depends on `meapica.shop/api` any more.
+- **Meta domain verification:** meapica.com, meapica.shop and **meapica.es** (id `1695418718593985`, verified 2026-10-23 via DNS
+  TXT `@ facebook-domain-verification=q6dniltnd7ciydmcu9e6ehkjgo7qsq` at Hostinger) all Verified in business `1636233548120737`.
+  The two meta tags in `RootDocument.tsx` are the .com/.shop codes (the .es one is DNS-only).
 - **Gmail "Send mail as" (2026-10-23):** `Xavi de Meapica <hola@meapica.es>` added and confirmed in admin@casmar.tech (alias,
   smtp.resend.com:465 SSL, user `resend`, password = `~/.config/resend/meapica-es-sending`). `hola@meapica.shop` kept.
 - **Bing DNS verification:** CNAME `410a995a7b95552813a6359ec6817435.meapica.es` → `verify.bing.com.` (Hostinger, 2026-10-23).

@@ -15,14 +15,12 @@ Code, docs, Resend, Supabase allow-list and GSC property done (see `docs/stack.m
 - Done after deploy (2026-10-23): GSC sitemap + Change of address .shop → .es; Bing `meapica.es` verified (DNS CNAME) + sitemap
   (Bing has no site-move tool); IndexNow ping (94 URLs); Merchant Center website `.es` claimed + feed URL on `.es`; Gmail
   "Send mail as" `hola@meapica.es`; Stripe live + test webhooks and Resend inbound webhook on `.es`; cana → `sc-domain:meapica.es`.
+- Also done 2026-10-23: Meta domain `meapica.es` verified (DNS TXT); Gelato webhook on `.es` (owner, by hand); `meapica.shop` is a Vercel domain-level 308 → `meapica.es`
+  (incl. `/api`) since ~15:00.
 - Still open:
-  - Gelato webhook host → `meapica.es` (same path + `?secret=`). Blocked: owner runs
-    `! node ~/.claude/skills/browser-session/pw-session.mjs login gelato` once (dashboard is behind Cloudflare), then Claude does it.
-  - Meta domain verification for `meapica.es` (keep `.shop`). Blocked: owner runs
-    `! node ~/.claude/skills/browser-session/pw-session.mjs login meta-business`, then Claude reads the TXT and adds it at Hostinger.
   - Merchant Center: customer service email still `hola@meapica.shop`, data source still named "(meapica.shop)".
   - Social bios (Zernio). Pinterest dropped.
-  - After Gelato moves: make `meapica.shop` a Vercel domain-level 301. Renew `.shop` yearly.
+  - Renew `.shop` yearly (keep forever: printed QR codes).
 
 ## Next up (2026-10-03, after the Phase 0 QA + SEO/GEO/social review)
 
@@ -161,6 +159,8 @@ crawl demand on a zero-authority domain, no technical blocker. Head terms are ou
 - [ ] Owner: 5-10 real links (Reyes letter tool + Catalan books → Ara Criatures, Sortir amb Nens, Bebés y Más, Serpadres); Trustpilot + Google Business Profile once the first books arrive.
 - [x] Code (2026-10-09, not deployed yet): Catalan cluster. New Catalan-only guides `/ca/gifts/tio-de-nadal` and `/ca/personalized-books/in-catalan/by-age`; `/ca/gifts/three-kings` deepened (Patge Reial, cavalcada, tortell) instead of a second Reis page; contextual links to in-catalan / tió / by-age from the Christmas, Reyes, Sant Jordi and age landings, the Reyes tools, in-catalan and every example page. "Libro personalizado para niños" / "llibre personalitzat per a nens" in the `/personalized-books` hub title, H1 and intro, the home meta description and the home "El libro impreso" section (hero subtitle untouched: it is sized to the first phone screen).
 - [x] Code (2026-10-09): example pages server-render the cover + every scene as `<img>` with localised alt, plus breadcrumbs, "more examples", related links and the site footer (the compact reader header stays, see product-spec).
+- [x] Code (2026-10-23, SEO P0 from GSC, on `local`, not deployed): plural head terms split by page. Home = "cuentos personalizados" / "contes personalitzats" (title, H1, meta, "¿Qué es un cuento personalizado?" section, ages FAQ item); `/personalized-books` = "libros personalizados para niños" (title with the age range, H1, guide ~700 words: words per page by age, Catalan edition, formats, preview); `/gifts` meta leads with "Regalos personalizados para niños" + intro link to the home. Details in `docs/product-spec.md` › Head terms. Next: after deploy, request indexing of `/es`, `/ca`, both hubs; re-read GSC positions for the four queries in 3-4 weeks.
+- [ ] Redirect hop: `meapica.shop/` and `www.meapica.shop/` 308 → `meapica.es/` → 308 `/es` (two hops). Both are Vercel domain-level redirects (host only, path kept, so they cannot target `/es`); one hop would need the `.shop` domain redirect removed and `src/middleware.ts` sending the bare root of alias hosts to `/es`. Low priority: 2 hops is fine for Google.
 - [ ] Code: de-template `/gifts/*` and `/themes/*` (~55 % shared text between siblings). Not started.
 - [x] Code (GEO, 2026-10-19, not deployed yet): `/llms-full.txt`; "Qué es Meapica" facts page `/es/about` + `/ca/about` (sitemap, footer, `/llms.txt`); Person author "Xavier Huix" + `dateModified` in the blog Article JSON-LD and a new Article JSON-LD on the five guides, visible byline on both; explicit AI-bot group in `robots.ts`. Details in `docs/product-spec.md` › GEO pass. (Product JSON-LD on `/compare` and in-catalan: done 2026-10-09.)
 - [ ] Reviews in `ProductJsonLd`: skipped, no real review exists (no reviews table, 0 paid orders). Collect them first (post-delivery email asking for a review, Trustpilot/Google profile), then pass genuine ones to `reviews`.
@@ -209,7 +209,7 @@ crawl demand on a zero-authority domain, no technical blocker. Head terms are ou
 ## Next steps from commerce block A (2026-09-28)
 - **VeriFactu-compliant invoicing** before the 2027 obligation (Stripe invoices aren't); OSS registration when EU digital sales pass 10 000 €.
 - **Title edits after purchase** re-render nothing: block edits once paid or rebuild the PDF.
-- Bizum/PayPal (payment_method_types is card-only).
+- [x] 2026-10-23: checkout uses Dashboard-managed payment methods (was card-only). Owner: turn on Google Pay, Bizum, PayPal, Revolut Pay in Stripe Dashboard › Payment methods.
 
 ## Next steps from brand system phase 1 (2026-09-30)
 Brand spec in `docs/brand.md`; semantic tokens in `globals.css`; primitives in `src/components/ui/`.
