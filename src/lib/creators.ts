@@ -46,10 +46,22 @@ export function commissionCents(input: {
 
 export type CommissionState = "pending" | "available" | "void";
 
-/** Same rule as the SQL in creator_withdraw: delivered = available, refunded/cancelled = void. */
-export function commissionState(orderStatus: string, commission: number): CommissionState {
-  if (orderStatus === "refunded" || orderStatus === "cancelled") return "void";
-  if (orderStatus === "delivered") return commission > 0 ? "available" : "void";
+/** The order a commission hangs on (orders.status / format / ready_email_sent_at). */
+export interface CommissionOrder {
+  order_status: string;
+  format?: string | null;
+  ready_email_sent_at?: string | null;
+}
+
+/**
+ * Same rule as the SQL in creator_withdraw: refunded/cancelled = void; a printed book is
+ * available once delivered; a PDF once its "your book is ready" email went out (PDF orders
+ * stay 'producing' for ever: there is no delivery to wait for).
+ */
+export function commissionState(order: CommissionOrder, commission: number): CommissionState {
+  if (order.order_status === "refunded" || order.order_status === "cancelled") return "void";
+  const delivered = order.order_status === "delivered" || (order.format === "digital_pdf" && !!order.ready_email_sent_at);
+  if (delivered) return commission > 0 ? "available" : "void";
   return "pending";
 }
 
@@ -70,13 +82,13 @@ export interface CreatorBalance {
 }
 
 export function creatorBalance(
-  commissions: readonly { commission_cents: number; order_status: string }[],
+  commissions: readonly (CommissionOrder & { commission_cents: number })[],
   withdrawals: readonly { kind: WithdrawalKind; status: WithdrawalStatus; amount_cents: number }[],
 ): CreatorBalance {
   let pendingCents = 0;
   let earned = 0;
   for (const c of commissions) {
-    const state = commissionState(c.order_status, c.commission_cents);
+    const state = commissionState(c, c.commission_cents);
     if (state === "pending") pendingCents += c.commission_cents;
     else if (state === "available") earned += c.commission_cents;
   }
@@ -144,6 +156,11 @@ export function maskIban(iban: string): string {
   return `${iban.slice(0, 4)} •••• ${iban.slice(-4)}`;
 }
 
+/** "12345678Z" → "•••••678Z" (shown back to the creator). */
+export function maskTaxId(taxId: string): string {
+  return `•••••${taxId.slice(-4)}`;
+}
+
 export function normalizeTaxId(input: unknown): string {
   return typeof input === "string" ? input.toUpperCase().replace(/[\s.-]+/g, "") : "";
 }
@@ -166,6 +183,34 @@ export function cleanHolderName(input: unknown): string | null {
   if (typeof input !== "string") return null;
   const name = input.normalize("NFC").replace(/[\u0000-\u001F\u007F]/g, "").replace(/\s+/g, " ").trim();
   return name.length >= 3 && name.length <= 80 ? name : null;
+}
+
+// ── Weekly sales chart ─────────────────────────────────────────────────────
+
+const MADRID_DAY = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Madrid", year: "numeric", month: "2-digit", day: "2-digit" });
+
+/** Monday (YYYY-MM-DD, Spain time) of the week `iso` falls in. */
+function madridMonday(iso: string | number | Date): string {
+  const [y, m, d] = MADRID_DAY.format(new Date(iso)).split("-").map(Number);
+  const day = new Date(Date.UTC(y, m - 1, d));
+  day.setUTCDate(day.getUTCDate() - ((day.getUTCDay() + 6) % 7));
+  return day.toISOString().slice(0, 10);
+}
+
+/** Books sold per week (Monday-Sunday, Spain time), oldest first, the current week last. */
+export function weeklyBookCounts(dates: readonly string[], now: number, weeks = 6): { weekStart: string; count: number }[] {
+  const current = new Date(`${madridMonday(now)}T00:00:00Z`);
+  const out = Array.from({ length: weeks }, (_, i) => {
+    const d = new Date(current);
+    d.setUTCDate(d.getUTCDate() - 7 * (weeks - 1 - i));
+    return { weekStart: d.toISOString().slice(0, 10), count: 0 };
+  });
+  const index = new Map(out.map((w, i) => [w.weekStart, i]));
+  for (const date of dates) {
+    const i = index.get(madridMonday(date));
+    if (i !== undefined) out[i].count++;
+  }
+  return out;
 }
 
 /** "@Lara_Mamaestra " → "lara_mamaestra" (Instagram handle); null when it can't be one. */

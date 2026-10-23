@@ -22,10 +22,12 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   response.headers.set("Cache-Control", "private, no-store");
   if (code) {
     // Strictly necessary for the service the visitor asked for (the discount of the link).
+    // Readable by the page (not httpOnly): the buy panel names the code and offers "¿Tienes
+    // otro código?". The code is no secret, it is in the link itself.
     response.cookies.set(REFERRAL_COOKIE, code, {
       path: "/",
       maxAge: REFERRAL_COOKIE_MAX_AGE_S,
-      httpOnly: true,
+      httpOnly: false,
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
     });

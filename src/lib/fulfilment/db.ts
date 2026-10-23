@@ -283,7 +283,7 @@ export type FulfilmentDatabase = Omit<Database, "public"> & {
         Row: CreatorWithdrawalRow;
         // Inserts go through the creator_withdraw RPC only (balance guard).
         Insert: never;
-        Update: Partial<Pick<CreatorWithdrawalRow, "status" | "paid_at" | "stripe_promotion_code_id" | "updated_at">>;
+        Update: Partial<Pick<CreatorWithdrawalRow, "status" | "paid_at" | "code" | "stripe_promotion_code_id" | "updated_at">>;
         Relationships: [];
       };
       reviews: {

@@ -3,8 +3,10 @@
 //
 //   follower pays with <NAME>10 (typed, or pre-applied from /r/<NAME>10) ──► recordOrderPromotion
 //       (webhook): orders.promotion_code_* + creator_commissions row (10 % of paid ex-VAT)
-//   charge.refunded ──► recordCreatorRefund: commission recomputed (VAT share of the refund off)
-//   order delivered ──► the commission counts as available (read from orders.status, no job)
+//   charge.refunded / dispute lost ──► recordCreatorRefund: commission recomputed from the charge
+//       re-read from Stripe (events can arrive out of order), VAT share of the refund off
+//   order delivered (PDF: ready email sent) ──► the commission counts as available (read from
+//       the order, no job)
 //   creator: POST /api/creator ──► requestCreatorPayout (operator emailed, marks it paid in /admin/creators)
 //                              └─► spendCreatorCredit (X € of balance → single-use 2X € code)
 
@@ -28,6 +30,7 @@ import {
   isValidIban,
   isValidTaxId,
   maskIban,
+  maskTaxId,
   normalizeHandle,
   normalizeIban,
   normalizeTaxId,
@@ -50,7 +53,7 @@ export async function recordOrderPromotion(
   supabase: FulfilmentClient,
   params: {
     order: { id: string; status: string };
-    session: Pick<Stripe.Checkout.Session, "discounts" | "amount_total" | "total_details">;
+    session: Pick<Stripe.Checkout.Session, "discounts" | "amount_total" | "total_details" | "payment_intent">;
     buyerEmail: string | null;
   },
 ): Promise<void> {
@@ -85,13 +88,17 @@ export async function recordOrderPromotion(
 
   const amountTotal = session.amount_total ?? 0;
   const amountTax = session.total_details?.amount_tax ?? 0;
-  const { commission } = commissionCents({ amountTotal, amountTax, amountRefunded: 0 });
+  // A refund can land before this row exists (webhook retries): start from what is refunded now.
+  const paymentIntentId = typeof session.payment_intent === "string" ? session.payment_intent : (session.payment_intent?.id ?? null);
+  const amountRefunded = paymentIntentId ? await refundedOnPayment(paymentIntentId) : 0;
+  const { commission } = commissionCents({ amountTotal, amountTax, amountRefunded });
   const { error } = await supabase.from("creator_commissions").upsert(
     {
       creator_id: creator.id,
       order_id: order.id,
       amount_total_cents: amountTotal,
       amount_tax_cents: amountTax,
+      amount_refunded_cents: Math.min(amountRefunded, amountTotal),
       commission_cents: commission,
     },
     { onConflict: "order_id", ignoreDuplicates: true },
@@ -100,8 +107,18 @@ export async function recordOrderPromotion(
   console.log(`[creators] Order ${order.id} paid with ${creator.promo_code}: commission ${commission} cents`);
 }
 
-/** charge.refunded: recompute the order's commission with the cumulative refunded amount. Throws on DB error. */
-export async function recordCreatorRefund(supabase: FulfilmentClient, orderId: string, amountRefundedCents: number): Promise<void> {
+/** Amount refunded so far on a payment's latest charge (read from Stripe, never from an event). */
+async function refundedOnPayment(paymentIntentId: string): Promise<number> {
+  const pi = await getStripe().paymentIntents.retrieve(paymentIntentId, { expand: ["latest_charge"] });
+  return typeof pi.latest_charge === "object" && pi.latest_charge ? pi.latest_charge.amount_refunded : 0;
+}
+
+/**
+ * Recompute an order's commission after a refund: `chargeId` = the refunded charge, re-read
+ * from Stripe so an older event delivered late never overwrites a newer amount; null = the
+ * whole payment is lost (chargeback lost). Throws on DB/Stripe errors (the webhook retries).
+ */
+export async function recordCreatorRefund(supabase: FulfilmentClient, orderId: string, chargeId: string | null): Promise<void> {
   const { data: row, error } = await supabase
     .from("creator_commissions")
     .select("id, amount_total_cents, amount_tax_cents, commission_cents")
@@ -109,6 +126,8 @@ export async function recordCreatorRefund(supabase: FulfilmentClient, orderId: s
     .maybeSingle();
   if (error) throw new Error(`creator_commissions read (order ${orderId}): ${error.message}`);
   if (!row) return;
+  const refunded = chargeId ? (await getStripe().charges.retrieve(chargeId)).amount_refunded : row.amount_total_cents;
+  const amountRefundedCents = Math.min(refunded, row.amount_total_cents);
   const { commission } = commissionCents({
     amountTotal: row.amount_total_cents,
     amountTax: row.amount_tax_cents,
@@ -162,10 +181,22 @@ export interface CreatorPanel {
     creditMultiplier: number;
   };
   /** Books bought with the creator's code. No buyer data: date, format, amounts, state. */
-  sales: { id: string; createdAt: string; format: string; paidCents: number; commissionCents: number; state: CommissionState }[];
+  sales: {
+    id: string;
+    createdAt: string;
+    format: string;
+    /** pending / paid / producing / shipped / delivered / refunded / cancelled */
+    orderStatus: string;
+    paidCents: number;
+    commissionCents: number;
+    state: CommissionState;
+  }[];
   payouts: { id: string; createdAt: string; amountCents: number; status: "requested" | "paid" | "cancelled"; paidAt: string | null; iban: string }[];
   credits: { id: string; createdAt: string; amountCents: number; discountCents: number; code: string; ready: boolean }[];
-  /** Details of the latest payout, to prefill the next request (the creator's own data). */
+  /**
+   * Details of the latest payout, to prefill the next request. IBAN and NIF masked: the full
+   * values never go back to the browser; a payout sent without them reuses the saved ones.
+   */
   payoutDefaults: { iban: string; holderName: string; taxId: string } | null;
 }
 
@@ -174,14 +205,25 @@ type CommissionWithOrder = {
   created_at: string;
   amount_total_cents: number;
   commission_cents: number;
-  orders: { status: string; format: string } | { status: string; format: string }[] | null;
+  orders: OrderJoin | OrderJoin[] | null;
 };
+type OrderJoin = { status: string; format: string; ready_email_sent_at: string | null };
+
+/** The commission's order as creatorBalance / commissionState read it (a missing order = void). */
+function commissionOrder(orders: OrderJoin | OrderJoin[] | null) {
+  const o = Array.isArray(orders) ? orders[0] : orders;
+  return { order_status: o?.status ?? "cancelled", format: o?.format ?? "", ready_email_sent_at: o?.ready_email_sent_at ?? null };
+}
+
+// ponytail: the panel and /admin/creators load every row of a creator (PostgREST caps a read at
+// ~1 000 rows). Fine for tens of sales per creator; past that, aggregate the balance in SQL (a
+// view or RPC like creator_withdraw's) and page the sales list.
 
 export async function getCreatorPanel(supabase: FulfilmentClient, creator: CreatorRow): Promise<CreatorPanel> {
   const [commissionsRes, withdrawalsRes] = await Promise.all([
     supabase
       .from("creator_commissions")
-      .select("id, created_at, amount_total_cents, commission_cents, orders(status, format)")
+      .select("id, created_at, amount_total_cents, commission_cents, orders(status, format, ready_email_sent_at)")
       .eq("creator_id", creator.id)
       .order("created_at", { ascending: false }),
     supabase.from("creator_withdrawals").select("*").eq("creator_id", creator.id).order("created_at", { ascending: false }),
@@ -189,15 +231,12 @@ export async function getCreatorPanel(supabase: FulfilmentClient, creator: Creat
   if (commissionsRes.error) throw new Error(`creator_commissions read: ${commissionsRes.error.message}`);
   if (withdrawalsRes.error) throw new Error(`creator_withdrawals read: ${withdrawalsRes.error.message}`);
 
-  const commissions = ((commissionsRes.data ?? []) as unknown as CommissionWithOrder[]).map((c) => {
-    const order = Array.isArray(c.orders) ? c.orders[0] : c.orders;
-    return { ...c, order_status: order?.status ?? "cancelled", format: order?.format ?? "" };
-  });
+  const commissions = ((commissionsRes.data ?? []) as unknown as CommissionWithOrder[]).map((c) => ({ ...c, ...commissionOrder(c.orders) }));
   let withdrawals = withdrawalsRes.data ?? [];
 
   // Credit codes whose Stripe promotion code failed to be created: retry now (best-effort).
   for (const w of withdrawals) {
-    if (w.kind !== "credit" || w.stripe_promotion_code_id) continue;
+    if (w.kind !== "credit" || w.status !== "issued" || w.stripe_promotion_code_id) continue;
     try {
       const promoId = await ensureCreditPromotionCode(supabase, w);
       withdrawals = withdrawals.map((x) => (x.id === w.id ? { ...x, stripe_promotion_code_id: promoId } : x));
@@ -220,9 +259,10 @@ export async function getCreatorPanel(supabase: FulfilmentClient, creator: Creat
       id: c.id,
       createdAt: c.created_at,
       format: c.format,
+      orderStatus: c.order_status,
       paidCents: c.amount_total_cents,
       commissionCents: c.commission_cents,
-      state: commissionState(c.order_status, c.commission_cents),
+      state: commissionState(c, c.commission_cents),
     })),
     payouts: withdrawals
       .filter((w) => w.kind === "payout")
@@ -235,7 +275,7 @@ export async function getCreatorPanel(supabase: FulfilmentClient, creator: Creat
         iban: maskIban(w.iban ?? ""),
       })),
     credits: withdrawals
-      .filter((w) => w.kind === "credit")
+      .filter((w) => w.kind === "credit" && w.status === "issued")
       .map((w) => ({
         id: w.id,
         createdAt: w.created_at,
@@ -246,7 +286,7 @@ export async function getCreatorPanel(supabase: FulfilmentClient, creator: Creat
       })),
     payoutDefaults:
       lastPayout?.iban && lastPayout.holder_name && lastPayout.tax_id
-        ? { iban: lastPayout.iban, holderName: lastPayout.holder_name, taxId: lastPayout.tax_id }
+        ? { iban: maskIban(lastPayout.iban), holderName: lastPayout.holder_name, taxId: maskTaxId(lastPayout.tax_id) }
         : null,
   };
 }
@@ -277,17 +317,33 @@ async function withdraw(
   return { ok: true, withdrawal: data };
 }
 
+/** IBAN + NIF of the creator's latest payout (reused when the form keeps the saved, masked values). */
+async function savedPayoutDetails(supabase: FulfilmentClient, creatorId: string): Promise<{ iban: string; taxId: string } | null> {
+  const { data, error } = await supabase
+    .from("creator_withdrawals")
+    .select("iban, tax_id")
+    .eq("creator_id", creatorId)
+    .eq("kind", "payout")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw new Error(`creator_withdrawals read (${creatorId}): ${error.message}`);
+  return data?.iban && data.tax_id ? { iban: data.iban, taxId: data.tax_id } : null;
+}
+
 /**
  * Bank transfer of `amountCents` (the client sends the whole available balance it showed;
- * the RPC refuses more than what is really available). Emails the operator once.
+ * the RPC refuses more than what is really available). An empty IBAN / NIF = the saved one.
+ * Emails the operator once.
  */
 export async function requestCreatorPayout(
   supabase: FulfilmentClient,
   creator: CreatorRow,
-  input: { requestKey: string; amountCents: number; iban: string; holderName: string; taxId: string },
+  input: { requestKey: string; amountCents: number; iban?: string; holderName: string; taxId?: string },
 ): Promise<WithdrawResult> {
-  const iban = normalizeIban(input.iban);
-  const taxId = normalizeTaxId(input.taxId);
+  const saved = !input.iban?.trim() || !input.taxId?.trim() ? await savedPayoutDetails(supabase, creator.id) : null;
+  const iban = normalizeIban(input.iban?.trim() ? input.iban : saved?.iban);
+  const taxId = normalizeTaxId(input.taxId?.trim() ? input.taxId : saved?.taxId);
   const holderName = cleanHolderName(input.holderName);
   if (!isValidIban(iban)) return { ok: false, error: "invalid_iban" };
   if (!isValidTaxId(taxId)) return { ok: false, error: "invalid_tax_id" };
@@ -389,13 +445,31 @@ async function ensureCreditPromotionCode(supabase: FulfilmentClient, credit: Cre
       { idempotencyKey: `creator-credit-coupon-${credit.id}` },
     );
   }
-  const promoId = await ensurePromotionCode({ code: credit.code, coupon: couponId, maxRedemptions: 1, metadata });
-  const { error } = await supabase
-    .from("creator_withdrawals")
-    .update({ stripe_promotion_code_id: promoId, updated_at: new Date().toISOString() })
-    .eq("id", credit.id);
-  if (error) throw new Error(`creator_withdrawals update (${credit.id}): ${error.message}`);
-  return promoId;
+  let code = credit.code;
+  for (let attempt = 0; ; attempt++) {
+    try {
+      const promoId = await ensurePromotionCode({ code, coupon: couponId, maxRedemptions: 1, metadata });
+      const { error } = await supabase
+        .from("creator_withdrawals")
+        .update({ stripe_promotion_code_id: promoId, updated_at: new Date().toISOString() })
+        .eq("id", credit.id);
+      if (error) throw new Error(`creator_withdrawals update (${credit.id}): ${error.message}`);
+      return promoId;
+    } catch (err) {
+      // The text is taken in Stripe by another code: give this credit a new one (only while it has no Stripe code).
+      if (attempt >= 3 || !(err instanceof Error) || !err.message.includes("already exists on another coupon")) throw err;
+      const next = newCode("reward");
+      const { data, error } = await supabase
+        .from("creator_withdrawals")
+        .update({ code: next, updated_at: new Date().toISOString() })
+        .eq("id", credit.id)
+        .is("stripe_promotion_code_id", null)
+        .select("id");
+      if (error && error.code !== UNIQUE_VIOLATION) throw new Error(`creator_withdrawals new code (${credit.id}): ${error.message}`);
+      if (!error && (data ?? []).length === 0) throw new Error(`Credit ${credit.id} changed meanwhile, retry`);
+      if (!error) code = next;
+    }
+  }
 }
 
 // ── Operator (/admin/creators) ───────────────────────────────────────────────
@@ -432,20 +506,25 @@ export async function registerCreator(
   return { ok: true, creator: data };
 }
 
-/** Operator marks a requested payout as transferred, or cancels it (balance released). */
-export async function settleCreatorPayout(
+/**
+ * Operator: mark a requested payout as transferred, cancel it (balance released), or cancel a
+ * credit stuck before its Stripe code exists (balance released; a credit with a live code can't).
+ */
+export async function settleCreatorWithdrawal(
   supabase: FulfilmentClient,
   withdrawalId: string,
-  status: "paid" | "cancelled",
+  action: "mark_paid" | "cancel_payout" | "cancel_credit",
 ): Promise<boolean> {
   const now = new Date().toISOString();
-  const { data, error } = await supabase
+  let query = supabase
     .from("creator_withdrawals")
-    .update({ status, paid_at: status === "paid" ? now : null, updated_at: now })
-    .eq("id", withdrawalId)
-    .eq("kind", "payout")
-    .eq("status", "requested")
-    .select("id");
+    .update({ status: action === "mark_paid" ? "paid" : "cancelled", paid_at: action === "mark_paid" ? now : null, updated_at: now })
+    .eq("id", withdrawalId);
+  query =
+    action === "cancel_credit"
+      ? query.eq("kind", "credit").eq("status", "issued").is("stripe_promotion_code_id", null)
+      : query.eq("kind", "payout").eq("status", "requested");
+  const { data, error } = await query.select("id");
   if (error) throw new Error(`creator_withdrawals settle (${withdrawalId}): ${error.message}`);
   return (data ?? []).length > 0;
 }
@@ -455,18 +534,20 @@ export interface AdminCreator extends CreatorRow {
   sales: number;
 }
 
-/** Every creator with their balance, plus every payout still to transfer (with bank details). */
+type AdminWithdrawal = CreatorWithdrawalRow & { handle: string };
+
+/** Every creator with their balance, every payout still to transfer (with bank details) and every stuck credit. */
 export async function listCreatorsForAdmin(
   supabase: FulfilmentClient,
-): Promise<{ creators: AdminCreator[]; openPayouts: (CreatorWithdrawalRow & { handle: string })[] }> {
+): Promise<{ creators: AdminCreator[]; openPayouts: AdminWithdrawal[]; stuckCredits: AdminWithdrawal[] }> {
   const [cRes, kRes, wRes] = await Promise.all([
     supabase.from("creators").select("*").order("created_at", { ascending: true }),
-    supabase.from("creator_commissions").select("creator_id, commission_cents, orders(status)"),
+    supabase.from("creator_commissions").select("creator_id, commission_cents, orders(status, format, ready_email_sent_at)"),
     supabase.from("creator_withdrawals").select("*").order("created_at", { ascending: true }),
   ]);
   for (const r of [cRes, kRes, wRes]) if (r.error) throw new Error(`creators admin read: ${r.error.message}`);
-  const commissions = ((kRes.data ?? []) as unknown as { creator_id: string; commission_cents: number; orders: { status: string } | { status: string }[] | null }[]).map(
-    (c) => ({ ...c, order_status: (Array.isArray(c.orders) ? c.orders[0] : c.orders)?.status ?? "cancelled" }),
+  const commissions = ((kRes.data ?? []) as unknown as { creator_id: string; commission_cents: number; orders: OrderJoin | OrderJoin[] | null }[]).map(
+    (c) => ({ ...c, ...commissionOrder(c.orders) }),
   );
   const withdrawals = wRes.data ?? [];
   const creators = (cRes.data ?? []).map((c) => {
@@ -474,8 +555,8 @@ export async function listCreatorsForAdmin(
     return { ...c, sales: own.length, balance: creatorBalance(own, withdrawals.filter((w) => w.creator_id === c.id)) };
   });
   const handleOf = new Map(creators.map((c) => [c.id, c.handle]));
-  const openPayouts = withdrawals
-    .filter((w) => w.kind === "payout" && w.status === "requested")
-    .map((w) => ({ ...w, handle: handleOf.get(w.creator_id) ?? "?" }));
-  return { creators, openPayouts };
+  const withHandle = (w: CreatorWithdrawalRow) => ({ ...w, handle: handleOf.get(w.creator_id) ?? "?" });
+  const openPayouts = withdrawals.filter((w) => w.kind === "payout" && w.status === "requested").map(withHandle);
+  const stuckCredits = withdrawals.filter((w) => w.kind === "credit" && w.status === "issued" && !w.stripe_promotion_code_id).map(withHandle);
+  return { creators, openPayouts, stuckCredits };
 }

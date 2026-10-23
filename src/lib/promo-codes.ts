@@ -153,12 +153,15 @@ export function referralRewardDecision(source: ReferralSource, referred: Referre
 /**
  * Pre-apply a code from the /r cookie to a book checkout? A referral code only on printed
  * formats (its coupon does not cover the PDF); a creator's audience code (10 %, any product)
- * on every format. Never the code owner's own checkout.
+ * on every format. Never the code owner's own checkout, and never when the buyer wants to type
+ * their own code (`ownCode`: "¿Tienes otro código?") or holds one (`holdsOwnCode`: unredeemed
+ * gift voucher, creator credit): a pre-applied code hides Stripe's code field.
  */
 export function canPreApplyReferral(
   source: Pick<ReferralSource, "user_id" | "email"> & { kind?: "referral" | "creator" },
-  buyer: { userId: string; email: string | null | undefined; format: string },
+  buyer: { userId: string; email: string | null | undefined; format: string; ownCode?: boolean; holdsOwnCode?: boolean },
 ): boolean {
+  if (buyer.ownCode || buyer.holdsOwnCode) return false;
   if (source.kind !== "creator" && buyer.format !== "hardcover" && buyer.format !== "softcover") return false;
   if (source.user_id && source.user_id === buyer.userId) return false;
   const e = normalizeEmail(buyer.email);

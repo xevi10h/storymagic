@@ -301,8 +301,8 @@ export async function recordRefund(supabase: FulfilmentClient, charge: Stripe.Ch
     console.warn(`[payments] charge.refunded for unknown payment ${paymentId}`);
     return;
   }
-  // Creator commission follows every refund, partial or full (cumulative amount_refunded).
-  await recordCreatorRefund(supabase, order.id, charge.amount_refunded);
+  // Creator commission follows every refund, partial or full (charge re-read from Stripe).
+  await recordCreatorRefund(supabase, order.id, charge.id);
 
   if (!charge.refunded) {
     await alertOperator(supabase, {
@@ -438,6 +438,19 @@ export async function recordAsyncPaymentFailed(supabase: FulfilmentClient, sessi
     email: session.customer_details?.email?.trim() || session.customer_email?.trim() || null,
     buyerName: session.customer_details?.name ?? null,
   });
+}
+
+/**
+ * charge.dispute.closed: a LOST chargeback takes the whole payment back, so the order's
+ * creator commission (if any) goes to 0. Won / warning disputes change nothing.
+ */
+export async function recordDisputeClosed(supabase: FulfilmentClient, dispute: Stripe.Dispute): Promise<void> {
+  if (dispute.status !== "lost") return;
+  const paymentId = typeof dispute.payment_intent === "string" ? dispute.payment_intent : dispute.payment_intent?.id;
+  if (!paymentId) return;
+  const { data: order, error } = await supabase.from("orders").select("id").eq("stripe_payment_id", paymentId).maybeSingle();
+  if (error) throw new Error(`Failed to read order for payment ${paymentId}: ${error.message}`);
+  if (order) await recordCreatorRefund(supabase, order.id, null);
 }
 
 /**

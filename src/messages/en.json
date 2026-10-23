@@ -1386,7 +1386,10 @@
         "emailTitle": "Email it to yourself",
         "emailBody": "We'll send you the link to look at it calmly or forward it.",
         "emailSend": "Send"
-      }
+      },
+      "linkCodeNote": "Code {code} from your link, applied at payment.",
+      "otherCode": "Have another code?",
+      "ownCodeNote": "Enter your code on the payment page."
     }
   },
   "checkout": {
@@ -1509,7 +1512,8 @@
     "tabs": {
       "stories": "My stories",
       "orders": "My orders",
-      "characters": "My characters"
+      "characters": "My characters",
+      "creator": "Creator"
     },
     "backHome": "Back to home",
     "loadError": "Could not load your library",
@@ -1591,6 +1595,108 @@
       "codeLabel": "Your code",
       "copy": "Copy link",
       "copied": "Link copied"
+    },
+    "creator": {
+      "kicker": "Creator panel",
+      "summary": "@{handle} · {count, plural, =0 {no books with your code yet} one {# book with your code} other {# books with your code}}",
+      "loadError": "We couldn't load your panel. Reload the page in a moment.",
+      "code": {
+        "label": "Your code",
+        "copy": "Copy",
+        "copied": "Copied",
+        "line": "Your followers get 10 % off. You earn 10 % of what they pay, excluding VAT.",
+        "copyLink": "Copy link",
+        "linkCopied": "Link copied",
+        "linkHint": "With the link the discount applies by itself. Put it in your bio or story."
+      },
+      "balance": {
+        "available": "Available",
+        "worth": "In Meapica books it's worth {amount}",
+        "pending": "Pending",
+        "paidOut": "Paid out",
+        "spent": "Spent",
+        "spend": "Spend on books ×2",
+        "payout": "Cash out by bank transfer",
+        "payoutMin": "You need at least {min} available to cash out.",
+        "requested": "Transfer of {amount} requested on {date}. We'll send it within a few days.",
+        "payoutSent": "Request sent. We'll make the transfer within a few days.",
+        "hint": "A commission moves from pending to available when the book arrives."
+      },
+      "codes": {
+        "title": "Your book codes",
+        "item": "{amount} code · {date}",
+        "preparing": "Preparing your code. Reload in a moment.",
+        "hint": "Enter it as a promotion code when paying for a printed book. One order only."
+      },
+      "chart": {
+        "title": "Books per week",
+        "range": "Last 6",
+        "aria": "Books sold per week, oldest to current: {counts}"
+      },
+      "sales": {
+        "title": "Books your followers bought",
+        "paid": "Paid {amount}",
+        "showAll": "Show all {count}",
+        "privacy": "We never show who buys: only the book, the amount and the status.",
+        "empty": "When someone buys with your code, you'll see it here.",
+        "badge": {
+          "pending": "Pending",
+          "available": "Available",
+          "void": "Void"
+        }
+      },
+      "format": {
+        "hardcover": "Hardcover",
+        "softcover": "Softcover",
+        "digital_pdf": "PDF"
+      },
+      "status": {
+        "pending": "Awaiting payment",
+        "paid": "Preparing",
+        "producing": "Printing",
+        "shipped": "On its way",
+        "delivered": "Delivered",
+        "refunded": "Refunded",
+        "cancelled": "Cancelled"
+      },
+      "spend": {
+        "title": "Spend it on books",
+        "intro": "Every euro of your balance is worth 2 € at Meapica.",
+        "legend": "How much balance?",
+        "max": "Maximum: {amount}",
+        "maxNote": "one hardcover book",
+        "youGet": "You get a {amount} code",
+        "terms": "For any printed book, for you or as a gift. One order only: if the book costs less, the difference is not kept, so pick the amount you will use.",
+        "more": "You'll still have balance left: create another code whenever you like.",
+        "cta": "Create my {amount} code",
+        "noCash": "Converted balance can no longer be cashed out.",
+        "doneTitle": "Your {amount} code",
+        "doneLine": "Enter it as a promotion code when paying for a printed book. One order only.",
+        "copy": "Copy code",
+        "copied": "Code copied",
+        "close": "Close",
+        "all": "All: {amount}"
+      },
+      "payout": {
+        "title": "Cash out {amount}",
+        "intro": "By bank transfer to your account. Minimum {min}. We send it within a few business days.",
+        "holder": "Account holder",
+        "taxId": "Tax ID (NIF)",
+        "iban": "IBAN",
+        "ibanHint": "Saved for next time. Only you and Meapica can see it.",
+        "change": "Change",
+        "nudge": "In Meapica books, these {amount} are worth <b>{double}</b>.",
+        "nudgeCta": "See",
+        "cta": "Request {amount}",
+        "close": "Close"
+      },
+      "errors": {
+        "invalid_iban": "Check the IBAN: it doesn't look right.",
+        "invalid_tax_id": "Check the NIF or NIE: the letter doesn't match.",
+        "invalid_name": "Enter the account holder's full name.",
+        "insufficient_balance": "Your balance has changed. Close and reopen the panel.",
+        "generic": "That didn't work. Try again in a moment."
+      }
     }
   },
   "profile": {

@@ -1388,7 +1388,10 @@
         "emailTitle": "Recevez-le par e-mail",
         "emailBody": "Nous vous envoyons le lien pour le regarder tranquillement ou le transférer.",
         "emailSend": "Envoyer"
-      }
+      },
+      "linkCodeNote": "Code {code} de votre lien, appliqué au paiement.",
+      "otherCode": "Vous avez un autre code ?",
+      "ownCodeNote": "Saisissez votre code sur la page de paiement."
     }
   },
   "checkout": {
@@ -1511,7 +1514,8 @@
     "tabs": {
       "stories": "Mes contes",
       "orders": "Mes commandes",
-      "characters": "Mes personnages"
+      "characters": "Mes personnages",
+      "creator": "Créateur"
     },
     "backHome": "Retour à l'accueil",
     "loadError": "Impossible de charger votre bibliothèque",
@@ -1593,6 +1597,108 @@
       "codeLabel": "Votre code",
       "copy": "Copier le lien",
       "copied": "Lien copié"
+    },
+    "creator": {
+      "kicker": "Espace créateur",
+      "summary": "@{handle} · {count, plural, =0 {pas encore de livre avec votre code} one {# livre avec votre code} other {# livres avec votre code}}",
+      "loadError": "Impossible de charger votre espace. Rechargez la page dans un instant.",
+      "code": {
+        "label": "Votre code",
+        "copy": "Copier",
+        "copied": "Copié",
+        "line": "Vos abonnés ont 10 % de réduction. Vous gagnez 10 % de ce qu'ils paient, hors TVA.",
+        "copyLink": "Copier le lien",
+        "linkCopied": "Lien copié",
+        "linkHint": "Avec le lien, la réduction s'applique toute seule. Mettez-le dans votre bio ou votre story."
+      },
+      "balance": {
+        "available": "Disponible",
+        "worth": "En livres Meapica, il vaut {amount}",
+        "pending": "En attente",
+        "paidOut": "Versé",
+        "spent": "Dépensé",
+        "spend": "Dépenser en livres ×2",
+        "payout": "Recevoir par virement",
+        "payoutMin": "Il vous faut au moins {min} disponibles pour un virement.",
+        "requested": "Virement de {amount} demandé le {date}. Nous l'envoyons sous quelques jours.",
+        "payoutSent": "Demande envoyée. Nous ferons le virement sous quelques jours.",
+        "hint": "La commission passe d'en attente à disponible quand le livre arrive."
+      },
+      "codes": {
+        "title": "Vos codes livres",
+        "item": "Code de {amount} · {date}",
+        "preparing": "Votre code est en préparation. Rechargez dans un instant.",
+        "hint": "Saisissez-le comme code promo en payant un livre imprimé. Une seule commande."
+      },
+      "chart": {
+        "title": "Livres par semaine",
+        "range": "6 dernières",
+        "aria": "Livres vendus par semaine, de la plus ancienne à l'actuelle : {counts}"
+      },
+      "sales": {
+        "title": "Livres de vos abonnés",
+        "paid": "Payé {amount}",
+        "showAll": "Voir les {count}",
+        "privacy": "Nous ne montrons jamais qui achète : seulement le livre, le montant et le statut.",
+        "empty": "Quand quelqu'un achètera avec votre code, vous le verrez ici.",
+        "badge": {
+          "pending": "En attente",
+          "available": "Disponible",
+          "void": "Annulée"
+        }
+      },
+      "format": {
+        "hardcover": "Couverture rigide",
+        "softcover": "Couverture souple",
+        "digital_pdf": "PDF"
+      },
+      "status": {
+        "pending": "En attente de paiement",
+        "paid": "En préparation",
+        "producing": "En impression",
+        "shipped": "En route",
+        "delivered": "Livré",
+        "refunded": "Remboursé",
+        "cancelled": "Annulé"
+      },
+      "spend": {
+        "title": "Dépensez-le en livres",
+        "intro": "Chaque euro de votre solde vaut 2 € chez Meapica.",
+        "legend": "Combien de solde ?",
+        "max": "Maximum : {amount}",
+        "maxNote": "un livre à couverture rigide",
+        "youGet": "Vous recevez un code de {amount}",
+        "terms": "Pour n'importe quel livre imprimé, pour vous ou à offrir. Une seule commande : si le livre coûte moins, la différence n'est pas conservée, choisissez donc le montant que vous utiliserez.",
+        "more": "Il vous restera du solde : vous pourrez créer un autre code quand vous voudrez.",
+        "cta": "Créer mon code de {amount}",
+        "noCash": "Le solde converti ne peut plus être versé en argent.",
+        "doneTitle": "Votre code de {amount}",
+        "doneLine": "Saisissez-le comme code promo en payant un livre imprimé. Une seule commande.",
+        "copy": "Copier le code",
+        "copied": "Code copié",
+        "close": "Fermer",
+        "all": "Tout : {amount}"
+      },
+      "payout": {
+        "title": "Recevoir {amount}",
+        "intro": "Par virement sur votre compte. Minimum {min}. Envoyé sous quelques jours ouvrés.",
+        "holder": "Titulaire du compte",
+        "taxId": "NIF",
+        "iban": "IBAN",
+        "ibanHint": "Enregistré pour la prochaine fois. Seuls vous et Meapica le voyez.",
+        "change": "Modifier",
+        "nudge": "En livres Meapica, ces {amount} valent <b>{double}</b>.",
+        "nudgeCta": "Voir",
+        "cta": "Demander {amount}",
+        "close": "Fermer"
+      },
+      "errors": {
+        "invalid_iban": "Vérifiez l'IBAN : il ne semble pas correct.",
+        "invalid_tax_id": "Vérifiez le NIF ou NIE : la lettre ne correspond pas.",
+        "invalid_name": "Saisissez le nom complet du titulaire.",
+        "insufficient_balance": "Votre solde a changé. Fermez et rouvrez votre espace.",
+        "generic": "Cela n'a pas fonctionné. Réessayez dans un instant."
+      }
     }
   },
   "profile": {

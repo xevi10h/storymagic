@@ -1409,7 +1409,10 @@
         "emailTitle": "Recíbelo por email",
         "emailBody": "Te enviamos el enlace para verlo con calma o reenviarlo.",
         "emailSend": "Enviar"
-      }
+      },
+      "linkCodeNote": "Código {code} del enlace, se aplica al pagar.",
+      "otherCode": "¿Tienes otro código?",
+      "ownCodeNote": "Escribe tu código en la página de pago."
     }
   },
   "checkout": {
@@ -1532,7 +1535,8 @@
     "tabs": {
       "stories": "Mis cuentos",
       "orders": "Mis pedidos",
-      "characters": "Mis personajes"
+      "characters": "Mis personajes",
+      "creator": "Creador"
     },
     "backHome": "Volver al inicio",
     "loadError": "No se pudo cargar tu biblioteca",
@@ -1614,6 +1618,108 @@
       "codeLabel": "Tu código",
       "copy": "Copiar enlace",
       "copied": "Enlace copiado"
+    },
+    "creator": {
+      "kicker": "Panel de creador",
+      "summary": "@{handle} · {count, plural, =0 {aún ningún libro con tu código} one {# libro con tu código} other {# libros con tu código}}",
+      "loadError": "No hemos podido cargar tu panel. Recarga la página en un momento.",
+      "code": {
+        "label": "Tu código",
+        "copy": "Copiar",
+        "copied": "Copiado",
+        "line": "Tus seguidores tienen un 10 % de descuento. Tú ganas el 10 % de lo que pagan, sin IVA.",
+        "copyLink": "Copiar enlace",
+        "linkCopied": "Enlace copiado",
+        "linkHint": "Con el enlace el descuento se aplica solo. Ponlo en la bio o en la story."
+      },
+      "balance": {
+        "available": "Disponible",
+        "worth": "En libros de Meapica vale {amount}",
+        "pending": "Pendiente",
+        "paidOut": "Cobrado",
+        "spent": "Gastado",
+        "spend": "Gastar en libros ×2",
+        "payout": "Cobrar por transferencia",
+        "payoutMin": "Para cobrar por transferencia necesitas al menos {min} disponibles.",
+        "requested": "Transferencia de {amount} solicitada el {date}. Te la hacemos en unos días.",
+        "payoutSent": "Solicitud enviada. Te haremos la transferencia en unos días.",
+        "hint": "La comisión pasa de pendiente a disponible cuando el libro llega a casa."
+      },
+      "codes": {
+        "title": "Tus códigos para libros",
+        "item": "Código de {amount} · {date}",
+        "preparing": "Preparando tu código. Recarga en un momento.",
+        "hint": "Escríbelo en «código promocional» al pagar un libro impreso. Vale para un solo pedido."
+      },
+      "chart": {
+        "title": "Libros por semana",
+        "range": "Últimas 6",
+        "aria": "Libros vendidos por semana, de la más antigua a la actual: {counts}"
+      },
+      "sales": {
+        "title": "Libros de tus seguidores",
+        "paid": "Pagado {amount}",
+        "showAll": "Ver los {count}",
+        "privacy": "No mostramos quién compra: solo el libro, el importe y el estado.",
+        "empty": "Cuando alguien compre con tu código, lo verás aquí.",
+        "badge": {
+          "pending": "Pendiente",
+          "available": "Disponible",
+          "void": "Anulada"
+        }
+      },
+      "format": {
+        "hardcover": "Tapa dura",
+        "softcover": "Tapa blanda",
+        "digital_pdf": "PDF"
+      },
+      "status": {
+        "pending": "Pendiente de pago",
+        "paid": "Preparando",
+        "producing": "En producción",
+        "shipped": "En camino",
+        "delivered": "Entregado",
+        "refunded": "Reembolsado",
+        "cancelled": "Cancelado"
+      },
+      "spend": {
+        "title": "Gástalo en libros",
+        "intro": "Cada euro de tu saldo vale 2 € en Meapica.",
+        "legend": "¿Cuánto saldo usas?",
+        "max": "Máximo: {amount}",
+        "maxNote": "un libro de tapa dura",
+        "youGet": "Recibes un código de {amount}",
+        "terms": "Para cualquier libro impreso, para ti o para regalar. Vale para un solo pedido: si el libro cuesta menos, la diferencia no se guarda, así que elige el importe que vayas a usar.",
+        "more": "Te quedará saldo: podrás crear otro código cuando quieras.",
+        "cta": "Crear mi código de {amount}",
+        "noCash": "Lo que conviertas ya no se puede cobrar en efectivo.",
+        "doneTitle": "Tu código de {amount}",
+        "doneLine": "Escríbelo en «código promocional» al pagar un libro impreso. Vale para un solo pedido.",
+        "copy": "Copiar código",
+        "copied": "Código copiado",
+        "close": "Cerrar",
+        "all": "Todo: {amount}"
+      },
+      "payout": {
+        "title": "Cobrar {amount}",
+        "intro": "Por transferencia a tu cuenta. Mínimo {min}. Te la hacemos en unos días laborables.",
+        "holder": "Titular de la cuenta",
+        "taxId": "NIF",
+        "iban": "IBAN",
+        "ibanHint": "Lo guardamos para la próxima vez. Solo tú y Meapica lo veis.",
+        "change": "Cambiar",
+        "nudge": "En libros de Meapica, estos {amount} valen <b>{double}</b>.",
+        "nudgeCta": "Ver",
+        "cta": "Solicitar {amount}",
+        "close": "Cerrar"
+      },
+      "errors": {
+        "invalid_iban": "Revisa el IBAN: no parece correcto.",
+        "invalid_tax_id": "Revisa el NIF o NIE: la letra no cuadra.",
+        "invalid_name": "Escribe el nombre completo del titular.",
+        "insufficient_balance": "Tu saldo ha cambiado. Cierra y vuelve a abrir el panel.",
+        "generic": "No se ha podido completar. Inténtalo de nuevo en un momento."
+      }
     }
   },
   "profile": {

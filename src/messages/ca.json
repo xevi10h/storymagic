@@ -1426,7 +1426,10 @@
         "emailTitle": "Rep-lo per correu",
         "emailBody": "T'enviem l'enllaç per mirar-lo amb calma o reenviar-lo.",
         "emailSend": "Enviar"
-      }
+      },
+      "linkCodeNote": "Codi {code} de l'enllaç, s'aplica en pagar.",
+      "otherCode": "Tens un altre codi?",
+      "ownCodeNote": "Escriu el teu codi a la pàgina de pagament."
     }
   },
   "checkout": {
@@ -1549,7 +1552,8 @@
     "tabs": {
       "stories": "Els meus contes",
       "orders": "Les meves comandes",
-      "characters": "Els meus personatges"
+      "characters": "Els meus personatges",
+      "creator": "Creador"
     },
     "backHome": "Tornar a l'inici",
     "loadError": "No s'ha pogut carregar la teva biblioteca",
@@ -1631,6 +1635,108 @@
       "codeLabel": "El teu codi",
       "copy": "Copiar l'enllaç",
       "copied": "Enllaç copiat"
+    },
+    "creator": {
+      "kicker": "Panell de creador",
+      "summary": "@{handle} · {count, plural, =0 {encara cap llibre amb el teu codi} one {# llibre amb el teu codi} other {# llibres amb el teu codi}}",
+      "loadError": "No hem pogut carregar el teu panell. Torna a carregar la pàgina d'aquí a un moment.",
+      "code": {
+        "label": "El teu codi",
+        "copy": "Copiar",
+        "copied": "Copiat",
+        "line": "Els teus seguidors tenen un 10 % de descompte. Tu guanyes el 10 % del que paguen, sense IVA.",
+        "copyLink": "Copiar l'enllaç",
+        "linkCopied": "Enllaç copiat",
+        "linkHint": "Amb l'enllaç el descompte s'aplica sol. Posa'l a la bio o a la story."
+      },
+      "balance": {
+        "available": "Disponible",
+        "worth": "En llibres de Meapica val {amount}",
+        "pending": "Pendent",
+        "paidOut": "Cobrat",
+        "spent": "Gastat",
+        "spend": "Gastar en llibres ×2",
+        "payout": "Cobrar per transferència",
+        "payoutMin": "Per cobrar per transferència necessites com a mínim {min} disponibles.",
+        "requested": "Transferència de {amount} sol·licitada el {date}. Te la fem en uns dies.",
+        "payoutSent": "Sol·licitud enviada. Et farem la transferència en uns dies.",
+        "hint": "La comissió passa de pendent a disponible quan el llibre arriba a casa."
+      },
+      "codes": {
+        "title": "Els teus codis per a llibres",
+        "item": "Codi de {amount} · {date}",
+        "preparing": "Estem preparant el teu codi. Torna a carregar d'aquí a un moment.",
+        "hint": "Escriu-lo a «codi promocional» quan paguis un llibre imprès. Val per a una sola comanda."
+      },
+      "chart": {
+        "title": "Llibres per setmana",
+        "range": "Últimes 6",
+        "aria": "Llibres venuts per setmana, de la més antiga a l'actual: {counts}"
+      },
+      "sales": {
+        "title": "Llibres dels teus seguidors",
+        "paid": "Pagat {amount}",
+        "showAll": "Veure'ls tots ({count})",
+        "privacy": "No mostrem qui compra: només el llibre, l'import i l'estat.",
+        "empty": "Quan algú compri amb el teu codi, ho veuràs aquí.",
+        "badge": {
+          "pending": "Pendent",
+          "available": "Disponible",
+          "void": "Anul·lada"
+        }
+      },
+      "format": {
+        "hardcover": "Tapa dura",
+        "softcover": "Tapa tova",
+        "digital_pdf": "PDF"
+      },
+      "status": {
+        "pending": "Pendent de pagament",
+        "paid": "En preparació",
+        "producing": "En producció",
+        "shipped": "En camí",
+        "delivered": "Lliurat",
+        "refunded": "Reemborsat",
+        "cancelled": "Cancel·lat"
+      },
+      "spend": {
+        "title": "Gasta'l en llibres",
+        "intro": "Cada euro del teu saldo val 2 € a Meapica.",
+        "legend": "Quant saldo fas servir?",
+        "max": "Màxim: {amount}",
+        "maxNote": "un llibre de tapa dura",
+        "youGet": "Reps un codi de {amount}",
+        "terms": "Per a qualsevol llibre imprès, per a tu o per regalar. Val per a una sola comanda: si el llibre costa menys, la diferència no es guarda, així que tria l'import que facis servir.",
+        "more": "Et quedarà saldo: podràs crear un altre codi quan vulguis.",
+        "cta": "Crear el meu codi de {amount}",
+        "noCash": "El que converteixis ja no es pot cobrar en efectiu.",
+        "doneTitle": "El teu codi de {amount}",
+        "doneLine": "Escriu-lo a «codi promocional» quan paguis un llibre imprès. Val per a una sola comanda.",
+        "copy": "Copiar el codi",
+        "copied": "Codi copiat",
+        "close": "Tancar",
+        "all": "Tot: {amount}"
+      },
+      "payout": {
+        "title": "Cobrar {amount}",
+        "intro": "Per transferència al teu compte. Mínim {min}. Te la fem en uns dies laborables.",
+        "holder": "Titular del compte",
+        "taxId": "NIF",
+        "iban": "IBAN",
+        "ibanHint": "El desem per a la propera vegada. Només tu i Meapica el veieu.",
+        "change": "Canviar",
+        "nudge": "En llibres de Meapica, aquests {amount} valen <b>{double}</b>.",
+        "nudgeCta": "Veure",
+        "cta": "Sol·licitar {amount}",
+        "close": "Tancar"
+      },
+      "errors": {
+        "invalid_iban": "Revisa l'IBAN: no sembla correcte.",
+        "invalid_tax_id": "Revisa el NIF o NIE: la lletra no quadra.",
+        "invalid_name": "Escriu el nom complet del titular.",
+        "insufficient_balance": "El teu saldo ha canviat. Tanca i torna a obrir el panell.",
+        "generic": "No s'ha pogut completar. Torna-ho a provar d'aquí a un moment."
+      }
     }
   },
   "profile": {

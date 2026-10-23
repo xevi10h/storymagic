@@ -5,6 +5,7 @@ import { createFulfilmentClient } from "@/lib/fulfilment/db";
 import {
   recordAsyncPaymentFailed,
   recordDispute,
+  recordDisputeClosed,
   recordExpiredSession,
   recordPaidSession,
   recordRefund,
@@ -92,6 +93,9 @@ export async function POST(request: Request) {
         break;
       case "charge.dispute.created":
         await recordDispute(supabase, event.data.object);
+        break;
+      case "charge.dispute.closed":
+        await recordDisputeClosed(supabase, event.data.object);
         break;
       default:
         break;

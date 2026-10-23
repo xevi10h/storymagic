@@ -11,6 +11,8 @@ import { BrandLoader } from "@/components/ui/BrandLoader";
 import { Spinner } from "@/components/ui/Spinner";
 import { OrdersTab, ReorderSheet, type DashboardOrder } from "@/components/dashboard/OrdersTab";
 import type { StoryUpsell } from "@/lib/upsell";
+import { CreatorTab } from "@/components/dashboard/CreatorTab";
+import type { CreatorPanel } from "@/lib/growth/creators";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -56,7 +58,7 @@ interface DashboardData {
   offers?: Record<string, StoryUpsell>;
 }
 
-type TabId = "stories" | "orders" | "characters";
+type TabId = "stories" | "orders" | "characters" | "creator";
 
 // ── Status helpers ─────────────────────────────────────────────────────────
 
@@ -97,10 +99,12 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TabId>("stories");
+  // Invite-only creators (GET /api/creator): null for everyone else, and the tab stays hidden.
+  const [creator, setCreator] = useState<CreatorPanel | null>(null);
   // Deep link (order emails → login → /dashboard?tab=orders). Read after mount: no hydration mismatch.
   useEffect(() => {
     const tab = new URLSearchParams(window.location.search).get("tab");
-    if (tab === "orders" || tab === "characters" || tab === "stories") setActiveTab(tab);
+    if (tab === "orders" || tab === "characters" || tab === "stories" || tab === "creator") setActiveTab(tab);
   }, []);
   const t = useTranslations("dashboard");
   const locale = useLocale();
@@ -119,10 +123,17 @@ export default function DashboardPage() {
 
     async function fetchDashboard() {
       try {
-        const res = await fetch("/api/dashboard");
+        // The creator panel is optional: a failure there never blocks the library.
+        const [res, creatorPanel] = await Promise.all([
+          fetch("/api/dashboard"),
+          fetch("/api/creator")
+            .then((r) => (r.ok ? (r.json() as Promise<CreatorPanel | { creator: null }>) : null))
+            .catch(() => null),
+        ]);
         if (!res.ok) throw new Error("Failed to fetch dashboard");
         const json = await res.json();
         setData(json);
+        if (creatorPanel && "balance" in creatorPanel) setCreator(creatorPanel);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Error loading dashboard");
       } finally {
@@ -158,7 +169,10 @@ export default function DashboardPage() {
     { id: "stories", label: t("tabs.stories"), IconComponent: BrandIcon, count: data?.stories.length ?? 0 },
     { id: "orders", label: t("tabs.orders"), icon: "shopping_bag", count: data?.orders.length ?? 0 },
     { id: "characters", label: t("tabs.characters"), icon: "face", count: data?.characters.length ?? 0 },
+    ...(creator ? [{ id: "creator" as const, label: t("tabs.creator"), icon: "campaign", count: 0 }] : []),
   ];
+  // ?tab=creator for someone who is not (or no longer) a creator: the library.
+  const tab: TabId = activeTab === "creator" && !creator ? "stories" : activeTab;
 
   return (
     <div className="min-h-screen bg-cream">
@@ -201,31 +215,31 @@ export default function DashboardPage() {
       {/* Tabs */}
       <div className="mx-auto max-w-5xl px-4 pt-6 sm:px-6">
         <div className="flex gap-1 rounded-xl border border-border-light bg-white p-1">
-          {tabs.map((tab) => (
+          {tabs.map((item) => (
             <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              key={item.id}
+              onClick={() => setActiveTab(item.id)}
               className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${
-                activeTab === tab.id
+                tab === item.id
                   ? "bg-brand-tint font-bold text-brand-text shadow-sm ring-1 ring-inset ring-brand"
                   : "text-text-soft hover:bg-cream hover:text-text-main"
               }`}
             >
-              {tab.IconComponent ? (
-                <tab.IconComponent className="h-4.5 w-auto" />
+              {item.IconComponent ? (
+                <item.IconComponent className="h-4.5 w-auto" />
               ) : (
-                <span className="material-symbols-outlined text-lg">{tab.icon}</span>
+                <span className="material-symbols-outlined text-lg">{item.icon}</span>
               )}
-              <span className="hidden sm:inline">{tab.label}</span>
-              {tab.count > 0 && (
+              <span className="hidden sm:inline">{item.label}</span>
+              {item.count > 0 && (
                 <span
                   className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
-                    activeTab === tab.id
+                    tab === item.id
                       ? "bg-surface text-brand-text"
                       : "bg-badge-bg text-text-soft"
                   }`}
                 >
-                  {tab.count}
+                  {item.count}
                 </span>
               )}
             </button>
@@ -235,7 +249,7 @@ export default function DashboardPage() {
 
       {/* Tab content */}
       <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
-        {activeTab === "stories" && (
+        {tab === "stories" && (
           <StoriesTab
             stories={data?.stories ?? []}
             offers={data?.offers ?? {}}
@@ -252,7 +266,7 @@ export default function DashboardPage() {
             }}
           />
         )}
-        {activeTab === "orders" && (
+        {tab === "orders" && (
           <OrdersTab
             orders={data?.orders ?? []}
             empty={
@@ -266,7 +280,8 @@ export default function DashboardPage() {
             }
           />
         )}
-        {activeTab === "characters" && <CharactersTab characters={data?.characters ?? []} t={t} formatDate={formatDate} />}
+        {tab === "characters" && <CharactersTab characters={data?.characters ?? []} t={t} formatDate={formatDate} />}
+        {tab === "creator" && creator && <CreatorTab initialPanel={creator} />}
       </div>
     </div>
   );

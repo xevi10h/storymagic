@@ -93,17 +93,19 @@ export function CreatorActions() {
   );
 }
 
-/** Mark a requested transfer as paid (after doing it in the bank) or cancel it (balance released). */
-export function PayoutActions({ withdrawalId, amount, handle }: { withdrawalId: string; amount: string; handle: string }) {
+/** Mark a requested transfer as paid (after doing it in the bank) or cancel it (balance released). Credit: only cancel. */
+export function PayoutActions({ withdrawalId, amount, handle, credit = false }: { withdrawalId: string; amount: string; handle: string; credit?: boolean }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<Result>(null);
 
-  async function run(action: "mark_paid" | "cancel_payout") {
+  async function run(action: "mark_paid" | "cancel_payout" | "cancel_credit") {
     const question =
       action === "mark_paid"
         ? `¿Ya has transferido ${amount} a @${handle}?`
-        : `¿Cancelar la solicitud de ${amount} de @${handle}? El saldo vuelve a estar disponible.`;
+        : action === "cancel_credit"
+          ? `¿Cancelar el código de ${amount} de @${handle}? Aún no existe en Stripe; el saldo vuelve a estar disponible.`
+          : `¿Cancelar la solicitud de ${amount} de @${handle}? El saldo vuelve a estar disponible.`;
     if (busy || !window.confirm(question)) return;
     setBusy(true);
     const r = await post({ action, withdrawalId, confirm: true });
@@ -114,12 +116,14 @@ export function PayoutActions({ withdrawalId, amount, handle }: { withdrawalId: 
 
   return (
     <span className="ml-auto flex items-center gap-2">
-      <Button size="sm" variant="quiet" onClick={() => run("cancel_payout")} disabled={busy}>
+      <Button size="sm" variant="quiet" onClick={() => run(credit ? "cancel_credit" : "cancel_payout")} disabled={busy}>
         Cancelar
       </Button>
-      <Button size="sm" onClick={() => run("mark_paid")} loading={busy}>
-        Marcar pagado
-      </Button>
+      {!credit && (
+        <Button size="sm" onClick={() => run("mark_paid")} loading={busy}>
+          Marcar pagado
+        </Button>
+      )}
       {result && !result.ok && <ResultLine result={result} />}
     </span>
   );

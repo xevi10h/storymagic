@@ -17,9 +17,11 @@ import {
   isValidIban,
   isValidTaxId,
   maskIban,
+  maskTaxId,
   normalizeHandle,
   normalizeIban,
   parseEuroCents,
+  weeklyBookCounts,
 } from "./creators.ts";
 
 // ── Commission: 10 % of what was paid without VAT ─────────────────────────
@@ -36,11 +38,18 @@ assert.equal(commissionCents({ amountTotal: null, amountTax: undefined, amountRe
 assert.equal(commissionCents({ amountTotal: 1000, amountTax: 38, amountRefunded: 5000 }).commission, 0);
 
 // ── State: pending until delivered, void when refunded/cancelled ──────────
-for (const s of ["paid", "producing", "shipped"]) assert.equal(commissionState(s, 432), "pending");
-assert.equal(commissionState("delivered", 432), "available");
-assert.equal(commissionState("delivered", 0), "void", "refunded after delivery");
-assert.equal(commissionState("refunded", 432), "void");
-assert.equal(commissionState("cancelled", 432), "void");
+const st = (order_status, extra = {}) => ({ order_status, format: "hardcover", ready_email_sent_at: null, ...extra });
+for (const s of ["paid", "producing", "shipped"]) assert.equal(commissionState(st(s), 432), "pending");
+assert.equal(commissionState(st("delivered"), 432), "available");
+assert.equal(commissionState(st("delivered"), 0), "void", "refunded after delivery");
+assert.equal(commissionState(st("refunded"), 432), "void");
+assert.equal(commissionState(st("cancelled"), 432), "void");
+// PDF: stays 'producing' for ever; available once the "book ready" email went out
+assert.equal(commissionState(st("producing", { format: "digital_pdf" }), 86), "pending");
+assert.equal(commissionState(st("producing", { format: "digital_pdf", ready_email_sent_at: "2026-10-20T10:00:00Z" }), 86), "available");
+assert.equal(commissionState(st("refunded", { format: "digital_pdf", ready_email_sent_at: "2026-10-20T10:00:00Z" }), 86), "void");
+// a printed book's ready email (PDF part) does not make it available before delivery
+assert.equal(commissionState(st("shipped", { ready_email_sent_at: "2026-10-20T10:00:00Z" }), 432), "pending");
 
 // ── Balance (mirrors the SQL in creator_withdraw) ─────────────────────────
 const sales = [
@@ -49,11 +58,17 @@ const sales = [
   { commission_cents: 300, order_status: "shipped" },
   { commission_cents: 400, order_status: "refunded" },
 ];
+// a delivered PDF counts as available in the balance too
+assert.equal(
+  creatorBalance([{ commission_cents: 86, order_status: "producing", format: "digital_pdf", ready_email_sent_at: "2026-10-20T10:00:00Z" }], []).availableCents,
+  86,
+);
 assert.deepEqual(creatorBalance(sales, []), { pendingCents: 300, availableCents: 2500, requestedCents: 0, paidOutCents: 0, spentCents: 0 });
 const w = [
   { kind: "payout", status: "paid", amount_cents: 2000 },
   { kind: "payout", status: "cancelled", amount_cents: 2500 }, // released
   { kind: "credit", status: "issued", amount_cents: 200 },
+  { kind: "credit", status: "cancelled", amount_cents: 700 }, // stuck credit cancelled by the operator: released
 ];
 assert.deepEqual(creatorBalance(sales, w), { pendingCents: 300, availableCents: 300, requestedCents: 0, paidOutCents: 2000, spentCents: 200 });
 // a requested payout is reserved
@@ -111,5 +126,24 @@ assert.equal(cleanHolderName("A"), null);
 assert.equal(normalizeHandle("@Lara_Mamaestra "), "lara_mamaestra");
 assert.equal(normalizeHandle("myfamilytime.es"), "myfamilytime.es");
 assert.equal(normalizeHandle("bad handle"), null);
+
+assert.equal(maskTaxId("12345678Z"), "•••••678Z");
+
+// ── Weekly chart: 6 Monday-Sunday weeks, Spain time, current week last ─────
+const now = Date.parse("2026-10-23T10:00:00Z"); // Friday
+const weeks = weeklyBookCounts(
+  [
+    "2026-10-19T08:00:00Z", // Mon this week
+    "2026-10-18T22:30:00Z", // Sun 23:30 UTC = Mon 00:30 in Madrid → this week
+    "2026-10-18T21:00:00Z", // Sun 23:00 Madrid → last week
+    "2026-09-14T10:00:00Z", // Mon 6 weeks ago (week 15 Sep is the oldest shown? no: oldest = 14 Sep)
+    "2026-09-13T10:00:00Z", // 7 weeks ago: outside
+  ],
+  now,
+);
+assert.deepEqual(weeks.map((w) => w.weekStart), ["2026-09-14", "2026-09-21", "2026-09-28", "2026-10-05", "2026-10-12", "2026-10-19"]);
+assert.deepEqual(weeks.map((w) => w.count), [1, 0, 0, 0, 1, 2]);
+// winter time (CET, UTC+1) and the year boundary
+assert.equal(weeklyBookCounts([], Date.parse("2027-01-01T12:00:00Z")).at(-1).weekStart, "2026-12-28");
 
 console.log("creators.check: all assertions passed");

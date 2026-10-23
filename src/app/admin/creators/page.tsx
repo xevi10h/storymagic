@@ -11,7 +11,7 @@ const eur = (cents: number) => formatMoney(cents / 100);
 /** Creator programme: invite creators, see balances, transfer and mark payouts paid. */
 export default async function AdminCreatorsPage() {
   await requireAdminPage();
-  const { creators, openPayouts } = await listCreatorsForAdmin(createFulfilmentClient());
+  const { creators, openPayouts, stuckCredits } = await listCreatorsForAdmin(createFulfilmentClient());
 
   return (
     <div className="flex flex-col gap-6">
@@ -45,6 +45,30 @@ export default async function AdminCreatorsPage() {
           </ul>
         )}
       </section>
+
+      {stuckCredits.length > 0 && (
+        <section className="rounded-2xl border border-line bg-surface">
+          <header className="border-b border-line px-4 py-2.5">
+            <h2 className="text-xs font-bold uppercase tracking-wide text-ink-soft">Códigos ×2 sin crear en Stripe ({stuckCredits.length})</h2>
+          </header>
+          <p className="px-4 pt-3 text-xs text-ink-muted">
+            Se reintentan solos cada vez que el creador abre su panel. Cancélalo solo si sigue fallando: el saldo vuelve a estar disponible.
+          </p>
+          <ul className="divide-y divide-line">
+            {stuckCredits.map((c) => (
+              <li key={c.id} className="flex flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3 text-sm">
+                <span className="font-semibold text-ink">@{c.handle}</span>
+                <span className="font-mono text-ink-soft">{c.code}</span>
+                <span className="tabular-nums text-ink">
+                  {eur(c.amount_cents)} → {eur(c.discount_cents ?? c.amount_cents * 2)}
+                </span>
+                <span className="text-xs text-ink-muted">{formatDateTime(c.created_at)}</span>
+                <PayoutActions withdrawalId={c.id} amount={eur(c.amount_cents)} handle={c.handle} credit />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <section className="overflow-x-auto rounded-2xl border border-line bg-surface">
         <table className="w-full text-sm">

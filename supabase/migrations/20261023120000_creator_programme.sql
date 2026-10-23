@@ -5,13 +5,16 @@
 --     promotion code <NAME>10 from /admin/creators). Signing in with that email = the panel.
 --   * creator_commissions: one row per order paid with a creator's audience code (unique
 --     order_id = webhook idempotency). 10 % of the amount paid without VAT; recomputed on
---     refunds. Pending until orders.status = 'delivered', then available.
+--     refunds. Pending until the order is delivered (a PDF: once its "book ready" email went
+--     out, since PDF orders stay 'producing'), then available.
 --   * creator_withdrawals: what leaves the balance. 'payout' = bank transfer requested by the
 --     creator (min 20 €, reserved while 'requested', the operator marks it 'paid' or
---     'cancelled'); 'credit' = X € of balance turned into a single-use 2X € discount code.
+--     'cancelled'); 'credit' = X € of balance turned into a single-use 2X € discount code
+--     ('cancelled' only while its Stripe code does not exist: the operator releases a stuck one).
 --   * creator_withdraw(): the ONLY way to insert a withdrawal. Locks the creator row, replays
---     an already-used request key (double click) and refuses more than the available balance,
---     so two concurrent requests can never spend the same euros.
+--     an already-used request key (double click), refuses more than the available balance and
+--     a payout that is not exactly the whole available balance, so two concurrent requests can
+--     never spend the same euros.
 --
 -- Everything is server-only (service role): RLS on, no policies, no client grants. The
 -- creator reads their own rows through GET /api/creator, which matches the verified login
@@ -66,7 +69,9 @@ revoke all on table public.creators from anon, authenticated;
 create table if not exists public.creator_commissions (
   id uuid primary key default gen_random_uuid(),
   creator_id uuid not null references public.creators(id) on delete restrict,
-  order_id uuid not null references public.orders(id) on delete cascade,
+  -- restrict: orders are accounting records (kept and anonymised on account erasure), and a
+  -- commission must never disappear silently with one.
+  order_id uuid not null references public.orders(id) on delete restrict,
   amount_total_cents integer not null,
   amount_tax_cents integer not null default 0,
   amount_refunded_cents integer not null default 0,
@@ -80,7 +85,7 @@ create table if not exists public.creator_commissions (
 );
 
 comment on table public.creator_commissions is
-  'One row per order paid with a creator audience code (unique order_id). State comes from orders.status: delivered = available. Service role only.';
+  'One row per order paid with a creator audience code (unique order_id). State comes from the order: delivered (PDF: ready_email_sent_at set) = available. Service role only.';
 comment on column public.creator_commissions.commission_cents is
   '10 % of (amount_total - amount_tax - VAT share of amount_refunded), recomputed on every charge.refunded.';
 
@@ -124,7 +129,7 @@ create table if not exists public.creator_withdrawals (
       and code is null and stripe_promotion_code_id is null)
     or
     (kind = 'credit'
-      and status = 'issued'
+      and (status = 'issued' or (status = 'cancelled' and stripe_promotion_code_id is null))
       and code ~ '^[A-Z0-9]{4,24}$'
       and iban is null and holder_name is null and tax_id is null)
   )
@@ -180,7 +185,9 @@ begin
            select sum(c.commission_cents)
            from public.creator_commissions c
            join public.orders o on o.id = c.order_id
-           where c.creator_id = p_creator_id and o.status = 'delivered'
+           where c.creator_id = p_creator_id
+             and (o.status = 'delivered'
+               or (o.format = 'digital_pdf' and o.ready_email_sent_at is not null and o.status not in ('refunded', 'cancelled')))
          ), 0)
        - coalesce((
            select sum(w.amount_cents)
@@ -189,7 +196,9 @@ begin
          ), 0)
     into v_available;
 
-  if p_amount_cents is null or p_amount_cents <= 0 or p_amount_cents > v_available then
+  -- A payout is always the whole available balance (owner decision); a credit any part of it.
+  if p_amount_cents is null or p_amount_cents <= 0 or p_amount_cents > v_available
+     or (p_kind = 'payout' and p_amount_cents <> v_available) then
     raise exception 'insufficient_balance';
   end if;
 

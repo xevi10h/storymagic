@@ -8,7 +8,7 @@ import { purchaseEligibility } from "@/lib/fulfilment/logic";
 import { buildCheckoutSession, checkoutOffer } from "@/lib/checkout/session";
 import { CONSENT_COOKIE, GA_SESSION_COOKIE, UTM_COOKIE, consentAllows, parseConsent } from "@/lib/tracking/consent";
 import { gaClientId, gaSessionId } from "@/lib/tracking/ga4-mp";
-import { referralForCheckout } from "@/lib/growth/referrals";
+import { buyerHasOwnCode, referralForCheckout } from "@/lib/growth/referrals";
 import { canPreApplyReferral, REFERRAL_COOKIE } from "@/lib/promo-codes";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -92,6 +92,8 @@ export async function POST(request: Request) {
       withdrawalConsent?: boolean;
       /** "No quiero recibir ofertas…" ticked (LSSI 21.2 opt-out at collection). */
       marketingOptOut?: boolean;
+      /** "¿Tienes otro código?": don't pre-apply the /r link code (Stripe then shows its code field). */
+      ownCode?: boolean;
     };
     const { storyId, format } = body;
     const addonIds = Array.isArray(body.addons) ? body.addons : [];
@@ -173,9 +175,20 @@ export async function POST(request: Request) {
       ?.split(/;\s*/)
       .find((c) => c.startsWith(`${REFERRAL_COOKIE}=`))
       ?.slice(REFERRAL_COOKIE.length + 1);
-    const referral = await referralForCheckout(createFulfilmentClient(), refCookie);
+    // Skipped when the buyer asked to type their own code, or holds one (gift voucher, creator
+    // credit): a pre-applied code hides Stripe's code field.
+    const referral = body.ownCode === true ? null : await referralForCheckout(createFulfilmentClient(), refCookie);
     const referralPromotionCodeId =
-      referral && canPreApplyReferral(referral, { userId: user.id, email: user.email, format }) ? referral.stripe_promotion_code_id : null;
+      referral &&
+      canPreApplyReferral(referral, {
+        userId: user.id,
+        email: user.email,
+        format,
+        ownCode: body.ownCode === true,
+        holdsOwnCode: await buyerHasOwnCode(createFulfilmentClient(), user.email),
+      })
+        ? referral.stripe_promotion_code_id
+        : null;
 
     const attribution = attributionMetadata(request);
     const planFor = (referralPromotionCodeId: string | null) => buildCheckoutSession({
@@ -264,7 +277,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Failed to create order" }, { status: 500 });
     }
 
-    return NextResponse.json({ url: session.url });
+    const response = NextResponse.json({ url: session.url });
+    // The buyer chose their own code: forget the link code for good.
+    if (body.ownCode === true) response.cookies.delete(REFERRAL_COOKIE);
+    return response;
   } catch (err) {
     console.error("Checkout error:", err instanceof Error ? { message: err.message, stack: err.stack } : err);
     return NextResponse.json({ error: "Checkout failed" }, { status: 500 });

@@ -34,6 +34,7 @@ import { Spinner } from "@/components/ui/Spinner";
 import { OfferCallout, ReorderSheet } from "@/components/dashboard/OrdersTab";
 import type { StoryUpsell } from "@/lib/upsell";
 import { trackEvent } from "@/lib/tracking/consent";
+import { normalizeCode, REFERRAL_COOKIE } from "@/lib/promo-codes";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -131,6 +132,13 @@ export default function PreviewPage() {
   const [withdrawalConsent, setWithdrawalConsent] = useState(false);
   // LSSI 21.2 opt-out at collection: unticked by default.
   const [marketingOptOut, setMarketingOptOut] = useState(false);
+  // Code kept from a /r link (pre-applied by /api/checkout) and "¿Tienes otro código?".
+  const [linkCode, setLinkCode] = useState<{ code: string; replaced: boolean } | null>(null);
+  useEffect(() => {
+    const raw = document.cookie.split(/;\s*/).find((c) => c.startsWith(`${REFERRAL_COOKIE}=`))?.slice(REFERRAL_COOKIE.length + 1);
+    const code = normalizeCode(raw ? decodeURIComponent(raw) : undefined);
+    if (code) setLinkCode({ code, replaced: false });
+  }, []);
   const [consentState, setConsentState] = useState<ConsentState>("idle");
   const [editPanel, setEditPanel] = useState<EditPanel | null>(null);
   const isWide = useIsWide();
@@ -375,6 +383,7 @@ export default function PreviewPage() {
           locale,
           withdrawalConsent: true,
           marketingOptOut,
+          ownCode: linkCode?.replaced === true,
         }),
       });
 
@@ -401,7 +410,7 @@ export default function PreviewPage() {
       );
       setCheckingOut(false);
     }
-  }, [storyId, format, addons, locale, withdrawalConsent, marketingOptOut, t, scrollToConsent]);
+  }, [storyId, format, addons, locale, withdrawalConsent, marketingOptOut, linkCode, t, scrollToConsent]);
 
   // Mobile sticky bar: formats first; once chosen, the consent line (softly, never
   // the red error), then straight to Stripe.
@@ -671,6 +680,8 @@ export default function PreviewPage() {
                 checkingOut={checkingOut}
                 checkoutError={checkoutError}
                 onCheckout={() => void handleCheckout()}
+                linkCode={linkCode}
+                onUseOwnCode={() => setLinkCode((c) => (c ? { ...c, replaced: true } : c))}
                 devTools={
                   isMockMode ? (
                     <div data-dev-tools className="mt-4 rounded-lg border border-dashed border-amber-400 bg-amber-50 p-3">

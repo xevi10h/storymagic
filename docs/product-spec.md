@@ -251,7 +251,7 @@ Rules in `src/lib/promo-codes.ts` (pure, checked by `src/lib/promo-codes.check.m
   PDF, extra copies or upgrades; max 20 uses per code). Shown: QR + code + one line on the **last inner page**
   (colophon, replaces the plain meapica.es QR; book locale), a commercial block in the order confirmation,
   `book_ready` and `delivered` emails (only with marketing permission + unsubscribe link, LSSI 21.2), and the
-  library order card ("Copiar enlace"). Link `/<locale>/r/<code>` sets cookie `meapica_ref` (30 days, httpOnly) and
+  library order card ("Copiar enlace"). Link `/<locale>/r/<code>` sets cookie `meapica_ref` (30 days; readable by the page since 2026-10-23, see Creator programme) and
   redirects to `/create`; `/api/checkout` pre-applies it to a printed book (Stripe `discounts`, the code field is then
   hidden) unless it is the buyer's own code; an unusable code falls back to a normal checkout.
 - **Reward:** when an order paid with a referral code is paid (webhook), the referrer gets a single-use 10 € code
@@ -273,29 +273,46 @@ Rules in `src/lib/promo-codes.ts` (pure, checked by `src/lib/promo-codes.check.m
 
 Rules in `src/lib/creators.ts` (pure, checked by `src/lib/creators.check.mjs`); server code in
 `src/lib/growth/creators.ts`; double-spend guard in the database (RPC `creator_withdraw`, checked by
-`supabase/tests/creator_withdraw.check.sh`). Backend done; **the creator panel UI is not built yet** (visual design
-pending owner approval; it will consume `GET/POST /api/creator`).
+`supabase/tests/creator_withdraw.check.sh`). UI: `src/components/dashboard/CreatorTab.tsx` (design approved 2026-10-23),
+copy in `dashboard.creator` (es / ca / en / fr), dev harness `/es/dev/creator?state=default|new|saved|small`.
 
 - **Invite-only:** an operator registers a creator in `/admin/creators` (login email + Instagram handle + their
   audience code `<NAME>10`, which must exist in Stripe with metadata `kind=audience`). Signing in to meapica.es with
   that email (verified, not a guest) makes the user a creator. Existing codes: `scripts/social/seed-creators.mjs`.
 - **Link:** `https://meapica.es/<locale>/r/<CODE>` (same route as the referral link). The checkout pre-applies the
   10 % audience code on **any** format (the audience coupon has no product restriction), never on the creator's own
-  checkout; an expired/used code falls back to a normal checkout.
+  checkout; an expired/used code falls back to a normal checkout. Because a pre-applied code hides Stripe's code
+  field, it is NOT pre-applied when the buyer holds a code of their own (an unredeemed gift voucher they bought, or a
+  creator 2x credit), and the buy panel of the preview shows "Código X del enlace, se aplica al pagar. ¿Tienes otro
+  código?": the link drops the cookie at checkout and lets them type any code (same for referral links; a `MEA…`
+  referral code is not announced on the PDF, where it never applies).
 - **Commission:** 10 % of what the buyer paid without VAT (`amount_total - amount_tax`), per order paid with their
   audience code (recorded by the Stripe webhook, one row per order). Refunds (partial or full) recompute it with the
-  VAT share of the refund taken off. A creator buying with their own code earns nothing. **Pending** until the order
-  is `delivered`, then **available**; refunded/cancelled = void.
-- **Panel data:** code + link, sales list (date, format, amount paid IVA incluido, commission, state; never buyer
-  data), balance: pending, available, requested (reserved), paid out, spent.
-- **Cash out:** the whole available balance, min 20 €, with IBAN (mod-97 checked), holder name and NIF/NIE (check
-  letter) or CIF. The amount is reserved at once; the owner gets an ops email (no bank data in it) and transfers by
-  hand, then "Marcar pagado" (or "Cancelar", which releases the balance) in `/admin/creators`. IRPF withholding on
-  payments to individuals: pending with the accountant.
-- **Spend at 2x:** X € of available balance (1 € to 24,95 €) becomes a single-use code worth 2X € (`MEA` + 10 chars,
-  own Stripe coupon `meapica_creator_credit_<id>`, amount off, printed-book products only like the referral coupon,
-  no expiry). Max 2X = one hardcover (49,90 €) because a remainder would be lost. Not restricted to the creator's
-  Stripe customer (Checkout uses `customer_email`), only single use.
+  VAT share of the refund taken off (amount re-read from Stripe, so late or out-of-order events can't overwrite it; a
+  refund before the row exists is counted at insert). A lost chargeback voids it. A creator buying with their own code
+  earns nothing. **Pending** until the order is `delivered` (a PDF: once its "book ready" email went out, since PDF
+  orders stay `producing`), then **available**; refunded/cancelled = void.
+- **Panel ("Creador" tab of the library, only for creators):** code card (copy code / copy `/r/` link), balance card
+  (available in large type, green line with its value in books at 2x, tiles pending / paid out / spent, the transfer in
+  progress, CTA "Gastar en libros ×2" and secondary "Cobrar por transferencia", disabled below 1 € / 20 €), the
+  creator's 2x codes, a bar chart of books per week (last 6 Monday-Sunday weeks, Spain time, current week highlighted)
+  and the sales list (format · date, amount paid, order status, commission, badge Pendiente / Disponible / Anulada;
+  first 4, "Ver los N"; never buyer data).
+- **Cash out** (sheet "Cobrar X €"): always the whole available balance (enforced by the RPC), min 20 €, with IBAN
+  (mod-97 checked), holder name and NIF/NIE (check letter) or CIF. Next time the holder is prefilled and NIF / IBAN
+  are shown masked ("Cambiar" to type new ones); the full values never go back to the browser. A green nudge shows
+  the balance's value in books and opens the spend sheet. The amount is reserved at once; the owner gets an ops email
+  (no bank data in it) and transfers by hand, then "Marcar pagado" (or "Cancelar", which releases the balance) in
+  `/admin/creators`. IRPF withholding on payments to individuals: pending with the accountant.
+- **Spend at 2x** (sheet "Gástalo en libros"): X € of available balance becomes a single-use code worth 2X € (`MEA` + 10
+  chars, own Stripe coupon `meapica_creator_credit_<id>`, amount off, printed-book products only like the referral
+  coupon, no expiry). Options: 10 € → 20 €, 20 € → 40 €, "Máximo: 24,95 € → 49,90 € (un libro de tapa dura)", only those
+  the balance covers; below 24,95 € the last option is "Todo: X €"; nothing under 1 €; one line says another code can
+  be created later when the balance exceeds 24,95 €. The sheet says the code is for one order, the difference is not
+  kept, and converted balance can't be cashed out; then shows the code with "Copiar código". Not restricted to the
+  creator's Stripe customer (Checkout uses `customer_email`), only single use. A credit whose Stripe code could not be
+  created is retried on every panel load (a code text taken in Stripe gets a new one); the operator can cancel it in
+  `/admin/creators` while it has no Stripe code (balance released).
 
 ## Customer reviews (2026-10-19)
 

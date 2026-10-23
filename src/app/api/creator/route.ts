@@ -40,9 +40,10 @@ const Body = z.discriminatedUnion("action", [
     requestKey: z.uuid(),
     /** The whole available balance the panel showed. */
     amountCents: z.number().int().positive(),
-    iban: z.string().max(64),
     holderName: z.string().max(200),
-    taxId: z.string().max(32),
+    /** Omitted or empty = keep the saved one (the panel only ever shows it masked). */
+    iban: z.string().max(64).optional(),
+    taxId: z.string().max(32).optional(),
   }),
   z.object({
     action: z.literal("credit"),

@@ -86,6 +86,10 @@ const creator = { kind: "creator", user_id: null, email: "lara@example.com" };
 assert.equal(canPreApplyReferral(creator, { userId: "u-new", email: "marta@example.com", format: "digital_pdf" }), true);
 assert.equal(canPreApplyReferral(creator, { userId: "u-new", email: "marta@example.com", format: "hardcover" }), true);
 assert.equal(canPreApplyReferral(creator, { userId: "u-new", email: " LARA@example.com", format: "softcover" }), false, "creator's own email");
+// "¿Tienes otro código?" or a code of their own (gift voucher, creator credit): never pre-applied
+assert.equal(canPreApplyReferral(creator, { userId: "u-new", email: "marta@example.com", format: "hardcover", ownCode: true }), false);
+assert.equal(canPreApplyReferral(source, { userId: "u-new", email: "marta@example.com", format: "hardcover", holdsOwnCode: true }), false);
+assert.equal(canPreApplyReferral(creator, { userId: "u-new", email: "marta@example.com", format: "hardcover", ownCode: false, holdsOwnCode: false }), true);
 
 // ── Idempotency: the promotion code applied to a session ──────────────────
 assert.deepEqual(sessionPromotionCodeIds(null), []);

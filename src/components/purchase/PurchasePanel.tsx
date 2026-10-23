@@ -18,6 +18,7 @@ import {
 import { useDeliveryLine, useSeasonNotice } from "./delivery";
 import { Spinner } from "@/components/ui/Spinner";
 import { MarketingOptOut } from "./MarketingOptOut";
+import { CODE_PREFIX } from "@/lib/promo-codes";
 
 /**
  * The PDF is sold as a text link under the two printed options ("¿Solo el PDF?"),
@@ -60,6 +61,12 @@ interface PurchasePanelProps {
   back?: BackCoverSource;
   /** Slot for dev-only tools (mock-mode unlock), rendered above the CTA. */
   devTools?: React.ReactNode;
+  /**
+   * Code kept from a /r link (referral or creator), pre-applied at checkout. `replaced` = the
+   * buyer chose "¿Tienes otro código?" (no pre-apply: Stripe shows its code field).
+   */
+  linkCode?: { code: string; replaced: boolean } | null;
+  onUseOwnCode?: () => void;
 }
 
 function mockupFormat(format: BookFormat): BookMockupFormat {
@@ -95,6 +102,8 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
     compact = false,
     back,
     devTools,
+    linkCode = null,
+    onUseOwnCode,
   },
   ctaRef,
 ) {
@@ -322,6 +331,21 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
       <p className="mt-1.5 text-center text-xs text-create-text-sub">
         {isDigital ? t("ctaNoteDigital") : t("ctaNotePhysical")}
       </p>
+      {/* A referral code (MEA…) never applies to the PDF: don't announce it there. */}
+      {linkCode && !(isDigital && linkCode.code.startsWith(CODE_PREFIX)) && (
+        <p className="mt-1 text-center text-xs text-create-text-sub" data-testid="link-code">
+          {linkCode.replaced ? (
+            t("ownCodeNote")
+          ) : (
+            <>
+              {t("linkCodeNote", { code: linkCode.code })}{" "}
+              <button type="button" onClick={onUseOwnCode} className="font-semibold text-secondary underline decoration-secondary/30 underline-offset-2 hover:text-brand-text">
+                {t("otherCode")}
+              </button>
+            </>
+          )}
+        </p>
+      )}
       {checkoutError && (
         <p className="mt-2 text-center text-xs text-red-700" role="alert">
           {checkoutError}

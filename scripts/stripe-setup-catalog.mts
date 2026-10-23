@@ -27,6 +27,8 @@ export const WEBHOOK_EVENTS: Stripe.WebhookEndpointCreateParams.EnabledEvent[] =
   "checkout.session.expired",
   "charge.refunded",
   "charge.dispute.created",
+  // 2026-10-23: a lost chargeback voids the creator commission of the order.
+  "charge.dispute.closed",
 ];
 
 const key = process.env.STRIPE_KEY?.trim();

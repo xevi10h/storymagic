@@ -114,7 +114,8 @@ GA4 2 Oct-19 Oct: 37 sessions, 6 from social. Funnel 3-19 Oct: 4 real stories, 4
 
 ## Next steps from the creator programme (2026-10-23)
 
-- [ ] Owner approves the visual design of the account area + creator panel, then build the panel UI on `GET/POST /api/creator` (es + ca copy).
+- [x] 2026-10-23: creator panel UI built from the approved design ("Creador" tab, spend and payout sheets) + the 10 review fixes. Next: new "Mi cuenta" home (account nav pills Inicio / Creador / Colecciones / Pedidos from the same design) and the grandparents wishlist link.
+- [ ] Run `scripts/social/backfill-creator-commissions.mjs` (dry run, then `--apply`) right after the migration + seeding, for audience-code orders paid before the deploy.
 - [ ] Apply migration `20261023120000_creator_programme` to production, deploy, seed the 16 creators (`scripts/social/seed-creators.mjs`, needs each creator's login email).
 - [ ] Accountant: IRPF withholding / invoice requirements for payouts to individual creators; adapt the payout form (e.g. self-invoice PDF) if needed.
 - [ ] Email the creator when a commission becomes available and when a payout is marked paid.
@@ -612,3 +613,11 @@ Replaced the old "mode → template → 3 decision knobs" with a single vertical
 - Halloween reel ("un cuento sin sustos") for the last week of October; a full 4 to 6 s corporate closing for sales and ad videos.
 - English and French example editions still call the hero Martí (decide: Martin); Higgsfield console offers up to 75 % off on three models (not activated).
 - Investigate why Instagram and Facebook reach collapsed (first reading after the Spanish-only week).
+
+## Repeat-purchase plan (owner decisions 2026-10-23)
+Design canvas: https://claude.ai/artifact/Epbcy1FwfVM2HLugAiynVo (account home, saga, creator panel, spend ×2, payout, strategy board).
+- [ ] Before Reyes: creator panel (in progress), new "Mi cuenta" home (next moment per child, collection shelf, season edition, sibling nudge, balance & gifts), grandparents wishlist link (family gifts the next book via gift vouchers), Reyes edition (story only orderable until 6 Jan).
+- [ ] January: numbered sagas (5 volumes, recurring companion, continuous spine art); next volume at -15 % (hardcover 42,42 € IVA incluido); sibling discount; first creator-exclusive saga.
+- [ ] April: Sant Jordi edition (1-23 April).
+- [ ] With repeat data: Club Meapica subscription. Checkout upsells: extra copy for grandparents, 2-volume pack.
+- Metrics: % orders from returning customers, books per family at 90 days, average order value.

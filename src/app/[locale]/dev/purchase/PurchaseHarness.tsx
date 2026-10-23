@@ -14,6 +14,8 @@ export function PurchaseHarness() {
   const [marketingOptOut, setMarketingOptOut] = useState(false);
   const [sent, setSent] = useState<string | null>(null);
   const [sheetStory, setSheetStory] = useState<string | null>(null);
+  // As if the visitor came through a creator link (/r/LARA10).
+  const [linkCode, setLinkCode] = useState({ code: "LARA10", replaced: false });
 
   return (
     <main className="min-h-dvh bg-paper px-4 py-8">
@@ -45,9 +47,11 @@ export function PurchaseHarness() {
           onMarketingOptOutChange={setMarketingOptOut}
           checkingOut={false}
           checkoutError={null}
+          linkCode={linkCode}
+          onUseOwnCode={() => setLinkCode({ ...linkCode, replaced: true })}
           onCheckout={() => {
             if (!consent) return setConsentState("missing");
-            setSent(JSON.stringify({ storyId: "fixture", format, addons: [...addons], locale: "es", withdrawalConsent: true, marketingOptOut }));
+            setSent(JSON.stringify({ storyId: "fixture", format, addons: [...addons], locale: "es", withdrawalConsent: true, marketingOptOut, ownCode: linkCode.replaced }));
           }}
         />
         {sent && (

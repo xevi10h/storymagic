@@ -141,6 +141,35 @@ export async function referralForCheckout(supabase: FulfilmentClient, rawCode: s
     : null;
 }
 
+/**
+ * Does the buyer hold a code of their own that a pre-applied link code would hide (Stripe
+ * hides the code field when a code is pre-applied)? An unredeemed gift voucher they bought, or
+ * an issued creator 2x credit. Fail soft: false on any error.
+ */
+export async function buyerHasOwnCode(supabase: FulfilmentClient, email: string | null | undefined): Promise<boolean> {
+  const e = normalizeEmail(email);
+  if (!e) return false;
+  const [vouchers, creator] = await Promise.all([
+    supabase.from("gift_vouchers").select("id").eq("buyer_email", e).is("redeemed_order_id", null).is("refunded_at", null).limit(1),
+    supabase.from("creators").select("id").eq("email", e).maybeSingle(),
+  ]);
+  if (vouchers.error || creator.error) {
+    console.warn("[referral] Own-code lookup failed:", vouchers.error?.message ?? creator.error?.message);
+    return false;
+  }
+  if ((vouchers.data ?? []).length > 0) return true;
+  if (!creator.data) return false;
+  const { data: credits, error } = await supabase
+    .from("creator_withdrawals")
+    .select("id")
+    .eq("creator_id", creator.data.id)
+    .eq("kind", "credit")
+    .eq("status", "issued")
+    .limit(1);
+  if (error) console.warn("[referral] Own-code lookup failed:", error.message);
+  return (credits ?? []).length > 0;
+}
+
 /** Escape LIKE wildcards so an email is matched literally by ilike. */
 function likeLiteral(value: string): string {
   return value.replace(/[\\%_]/g, (c) => `\\${c}`);
