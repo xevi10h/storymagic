@@ -6,7 +6,7 @@
 import { PROFILE_ID, api, meapicaAccounts } from "./zernio.mjs";
 
 const link = (source, lang) =>
-  `https://meapica.shop/${lang}?utm_source=${source}&utm_medium=organic_social&utm_campaign=org_q4-26&utm_content=dm_keyword&lang=${lang}`;
+  `https://meapica.es/${lang}?utm_source=${source}&utm_medium=organic_social&utm_campaign=org_q4-26&utm_content=dm_keyword&lang=${lang}`;
 
 const TEXT = {
   es: {

@@ -295,7 +295,7 @@ function analyse({ gscCur, gscPrev, qCur, qPrev, pCur, pPrev, gaCur, gaPrev, cov
     actions.push(`Search Console aún no registra impresiones: comprueba en GSC que el sitemap se ha leído (última lectura) y ejecuta "node scripts/indexnow-ping.mjs" tras cada deploy.`);
   }
   if (!hasGa) {
-    actions.push(`GA4 sin sesiones: verifica con la extensión Tag Assistant que gtag carga tras aceptar cookies en meapica.shop (Consent Mode v2) y que NEXT_PUBLIC_GA4_ID está en el build de producción.`);
+    actions.push(`GA4 sin sesiones: verifica con la extensión Tag Assistant que gtag carga tras aceptar cookies en meapica.es (Consent Mode v2) y que NEXT_PUBLIC_GA4_ID está en el build de producción.`);
   }
   const fallbacks = [
     `Publica 1 página nueva del clúster no-marca (regalo personalizado para niños por edad u ocasión) y enlázala desde la home y el blog.`,

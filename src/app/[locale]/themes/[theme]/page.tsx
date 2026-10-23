@@ -5,7 +5,7 @@ import { routing } from "@/i18n/routing";
 import SeoLandingPage from "@/components/seo-landing/SeoLandingPage";
 import { SEO_THEME_SLUGS, isValidSeoSlug, seoPath } from "@/lib/seo-landing";
 
-const BASE_URL = "https://meapica.shop";
+const BASE_URL = "https://meapica.es";
 const TYPE = "themes" as const;
 
 type PageProps = {

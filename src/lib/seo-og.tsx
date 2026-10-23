@@ -142,7 +142,7 @@ export function seoOgImage({
             letterSpacing: "2px",
           }}
         >
-          meapica.shop
+          meapica.es
         </div>
       </div>
     ),

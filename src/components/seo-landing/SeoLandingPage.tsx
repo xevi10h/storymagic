@@ -31,7 +31,7 @@ import { isToolLocale, toolPath } from "@/lib/tools/registry";
 import { GUIDES, GUIDE_LINK_LABELS, contextGuides } from "@/lib/guides";
 import { Breadcrumbs, PageHero, kicker, marketingH1, marketingLead } from "./MarketingHeader";
 
-const BASE_URL = "https://meapica.shop";
+const BASE_URL = "https://meapica.es";
 
 // Fallback only: a page without its own `faq` block shows this subset of the legal FAQ.
 const FALLBACK_FAQ_ORDER = [2, 3, 1, 4] as const;

@@ -59,8 +59,8 @@ const SHIPPING_AREA_NOTICE: Record<Locale, string> = {
 // Button = --brand-text, not --brand: Stripe's 16 px white label needs ≥ 4.5:1.
 export const CHECKOUT_BRANDING: Stripe.Checkout.SessionCreateParams.BrandingSettings = {
   display_name: "Meapica",
-  logo: { type: "url", url: "https://meapica.shop/images/meapica-logo.png" },
-  icon: { type: "url", url: "https://meapica.shop/images/icon-512.png" },
+  logo: { type: "url", url: "https://meapica.es/images/meapica-logo.png" },
+  icon: { type: "url", url: "https://meapica.es/images/icon-512.png" },
   background_color: "#FFF8F0",
   button_color: "#b94f1f",
   border_style: "rounded",

@@ -6,6 +6,16 @@ The roadmap is divided into 6 phases, from foundation to scale. Each phase has c
 
 ---
 
+## Domain move meapica.shop → meapica.es (2026-10-23)
+
+Code, docs, Resend, Supabase allow-list and GSC property done (see `docs/stack.md` › Domains). Remaining:
+- Before deploy (owner): Cloudflare › Turnstile › widget › Hostnames: add `meapica.es` (else login/preview captcha fails).
+- At deploy: Vercel env `NEXT_PUBLIC_SITE_URL`, `EMAIL_FROM`, `RESEND_API_KEY` (.es key); Vercel `meapica.es` redirect removed,
+  `www.meapica.es`/`www.meapica.shop` → `meapica.es`; Supabase Site URL + SMTP sender `pedidos@meapica.es`.
+- After deploy: GSC Change of address (.shop → .es) + sitemap; Bing site + sitemap; IndexNow ping; Meta domain verification
+  for `.es`; Google Merchant Center website + claim `.es`; Pinterest claim `.es`; Gmail "Send mail as" `hola@meapica.es`;
+  social bios (Zernio); Stripe + Gelato webhooks to `.es`, then make `meapica.shop` a Vercel domain-level 301. Renew `.shop` yearly.
+
 ## Next up (2026-10-03, after the Phase 0 QA + SEO/GEO/social review)
 
 State measured 2026-10-03: 14 of 132 sitemap URLs indexed, 1 impression, 0 organic sessions, 0 orders; 9 social posts live, only the Facebook Reel got reach (223 views), 0 followers.

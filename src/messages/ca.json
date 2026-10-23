@@ -943,7 +943,7 @@
       "title": "Política de Privacitat",
       "intro": "A Meapica, la privacitat dels nostres usuaris —especialment quan es tracta de dades de menors— és la nostra màxima prioritat.",
       "section1Title": "1. Responsable del tractament",
-      "section1Text": "El responsable del tractament de les dades personals recollides a través de meapica.shop és Xavier Huix Trenco (Meapica), NIF 41649433K, amb domicili a Carrer Aribau 140, 5è, 08036 Barcelona (Espanya). Per a qualsevol qüestió sobre privadesa pots escriure'ns a hola@meapica.shop.",
+      "section1Text": "El responsable del tractament de les dades personals recollides a través de meapica.es és Xavier Huix Trenco (Meapica), NIF 41649433K, amb domicili a Carrer Aribau 140, 5è, 08036 Barcelona (Espanya). Per a qualsevol qüestió sobre privadesa pots escriure'ns a hola@meapica.es.",
       "section2Title": "2. Dades que recollim",
       "section2Text": "Recollim les dades necessàries per crear el teu llibre personalitzat: nom de l'infant, edat, ciutat, interessos i característiques físiques per a la il·lustració i, només si decideixes pujar-la, una foto de l'infant (vegeu l'apartat 8). També recollim el correu electrònic i l'adreça d'enviament per processar les comandes.",
       "section3Title": "3. Finalitat del tractament",
@@ -953,17 +953,17 @@
       "section5Title": "5. Encarregats del tractament i transferències internacionals",
       "section5Text": "Per prestar el servei treballem amb proveïdors que tracten les dades només seguint les nostres instruccions: OpenAI Ireland Ltd. (generació del text i les il·lustracions del conte i, si la puges, del personatge a partir de la foto), Supabase (base de dades i emmagatzematge), Vercel (allotjament web), Stripe Payments Europe Ltd. (pagaments), Gelato (impressió i enviament), Resend (correus de la comanda i recordatoris que hagis demanat), Cloudflare, Inc. (Turnstile, verificació antibots en iniciar sessió i en començar com a convidat) i, només si acceptes les cookies publicitàries i d'anàlisi, Meta Platforms Ireland Ltd., TikTok Technology Limited (mesura dels nostres anuncis) Google Ireland Limited (Google Analytics, estadístiques de visites i compres) i PostHog, Inc. (estadístiques d'ús de la web i enregistraments anònims de sessió, allotjats a la UE). OpenAI no fa servir les dades que li enviem per entrenar els seus models i les pot conservar fins a 30 dies per detectar abusos. Quan un proveïdor o els seus subencarregats tracten dades fora de l'Espai Econòmic Europeu (per exemple, als Estats Units), la transferència s'empara en les clàusules contractuals tipus aprovades per la Comissió Europea o en el Marc de Privadesa de Dades UE-EUA.",
       "section6Title": "6. Els teus drets",
-      "section6Text": "Pots exercir els teus drets d'accés, rectificació, supressió, oposició, limitació del tractament i portabilitat, i retirar el teu consentiment en qualsevol moment, escrivint a hola@meapica.shop. Et respondrem en el termini màxim d'un mes. Si consideres que no hem tractat les teves dades correctament, pots presentar una reclamació davant l'Agència Espanyola de Protecció de Dades (www.aepd.es).",
+      "section6Text": "Pots exercir els teus drets d'accés, rectificació, supressió, oposició, limitació del tractament i portabilitat, i retirar el teu consentiment en qualsevol moment, escrivint a hola@meapica.es. Et respondrem en el termini màxim d'un mes. Si consideres que no hem tractat les teves dades correctament, pots presentar una reclamació davant l'Agència Espanyola de Protecció de Dades (www.aepd.es).",
       "section7Title": "7. Protecció de dades de menors",
       "section7Text": "No recollim dades directament de menors. Les dades del nen/a són proporcionades pel pare/mare o tutor legal que crea el llibre.",
       "section8Title": "8. Fotos de menors",
-      "section8Text": "Pujar una foto és opcional: també pots crear el personatge triant-ne els trets. Si la puges, la fem servir només per crear el seu personatge il·lustrat (el seu retrat i la seva fitxa de personatge) i només amb el consentiment de la seva mare, pare o tutor legal. Abans de desar-la n'eliminem totes les metadades, inclosa la ubicació GPS, i la guardem en un emmagatzematge privat al qual només accedeix el nostre servidor. La foto s'envia a OpenAI per dibuixar el personatge; OpenAI no la fa servir per entrenar els seus models i la pot conservar fins a 30 dies per detectar abusos. Esborrem la foto tan bon punt creem el seu personatge i, en qualsevol cas, en menys de 24 hores. El llibre (previsualització i versió final) s'il·lustra només a partir del personatge dibuixat, mai a partir de la foto. No la fem servir per a reconeixement facial ni per a cap altra finalitat. Pots retirar el teu consentiment en qualsevol moment escrivint a hola@meapica.shop i l'esborrarem immediatament. Guardem un registre del teu consentiment (data, versió del text acceptat i idioma) com a prova que el vas donar."
+      "section8Text": "Pujar una foto és opcional: també pots crear el personatge triant-ne els trets. Si la puges, la fem servir només per crear el seu personatge il·lustrat (el seu retrat i la seva fitxa de personatge) i només amb el consentiment de la seva mare, pare o tutor legal. Abans de desar-la n'eliminem totes les metadades, inclosa la ubicació GPS, i la guardem en un emmagatzematge privat al qual només accedeix el nostre servidor. La foto s'envia a OpenAI per dibuixar el personatge; OpenAI no la fa servir per entrenar els seus models i la pot conservar fins a 30 dies per detectar abusos. Esborrem la foto tan bon punt creem el seu personatge i, en qualsevol cas, en menys de 24 hores. El llibre (previsualització i versió final) s'il·lustra només a partir del personatge dibuixat, mai a partir de la foto. No la fem servir per a reconeixement facial ni per a cap altra finalitat. Pots retirar el teu consentiment en qualsevol moment escrivint a hola@meapica.es i l'esborrarem immediatament. Guardem un registre del teu consentiment (data, versió del text acceptat i idioma) com a prova que el vas donar."
     },
     "terms": {
       "title": "Avís Legal i Condicions d'Ús",
-      "intro": "En utilitzar meapica.shop acceptes les següents condicions.",
+      "intro": "En utilitzar meapica.es acceptes les següents condicions.",
       "section1Title": "1. Identificació",
-      "section1Text": "Meapica és una plataforma de creació de llibres infantils personalitzats operada des d'Espanya per Xavier Huix Trenco, NIF 41649433K, amb domicili al Carrer Aribau 140, 5è, 08036 Barcelona (Espanya). Contacte: hola@meapica.shop.",
+      "section1Text": "Meapica és una plataforma de creació de llibres infantils personalitzats operada des d'Espanya per Xavier Huix Trenco, NIF 41649433K, amb domicili al Carrer Aribau 140, 5è, 08036 Barcelona (Espanya). Contacte: hola@meapica.es.",
       "section2Title": "2. Servei",
       "section2Text": "Meapica ofereix la creació de contes infantils personalitzats amb il·lustracions úniques, impresos sota demanda.",
       "section3Title": "3. Propietat intel·lectual",
@@ -975,7 +975,7 @@
       "section6Title": "6. Limitació de responsabilitat",
       "section6Text": "Meapica no garanteix la disponibilitat ininterrompuda del servei. Les il·lustracions poden variar i no es garanteix un resultat específic.",
       "section7Title": "7. Targetes regal",
-      "section7Text": "La targeta regal dona dret a un conte personalitzat en el format triat en comprar-la (tapa dura, tapa tova o PDF), amb l'enviament a l'Espanya peninsular i les Balears inclòs en els formats impresos. Es paga en comprar-la, amb l'IVA del llibre inclòs. No caduca, es bescanvia una sola vegada escrivint el seu codi en pagar el conte a meapica.shop i no es pot canviar per diners ni fer servir per a un altre format; els extres (per exemple, un exemplar addicional) es paguen a part. En comprar-la per internet tens 14 dies naturals des de la compra per desistir sense donar explicacions, sempre que no s'hagi bescanviat: escriu-nos a hola@meapica.shop i et retornem l'import pel mateix mitjà de pagament en un màxim de 14 dies. Un cop bescanviada, el llibre es crea a mida i queda exclòs del dret de desistiment (art. 103 c) del text refós de la LGDCU). Guarda bé el codi: qualsevol persona que el tingui el pot bescanviar. Si el perds, te'l reenviem al correu de la compra.",
+      "section7Text": "La targeta regal dona dret a un conte personalitzat en el format triat en comprar-la (tapa dura, tapa tova o PDF), amb l'enviament a l'Espanya peninsular i les Balears inclòs en els formats impresos. Es paga en comprar-la, amb l'IVA del llibre inclòs. No caduca, es bescanvia una sola vegada escrivint el seu codi en pagar el conte a meapica.es i no es pot canviar per diners ni fer servir per a un altre format; els extres (per exemple, un exemplar addicional) es paguen a part. En comprar-la per internet tens 14 dies naturals des de la compra per desistir sense donar explicacions, sempre que no s'hagi bescanviat: escriu-nos a hola@meapica.es i et retornem l'import pel mateix mitjà de pagament en un màxim de 14 dies. Un cop bescanviada, el llibre es crea a mida i queda exclòs del dret de desistiment (art. 103 c) del text refós de la LGDCU). Guarda bé el codi: qualsevol persona que el tingui el pot bescanviar. Si el perds, te'l reenviem al correu de la compra.",
       "section8Title": "8. Programa de recomanació «10 € i 10 €»",
       "section8Text": "Cada comanda pagada d'un conte inclou un codi personal de recomanació, imprès a l'última pàgina del llibre i visible als correus de la comanda i a «Les meves comandes». Qui el faci servir en comprar un llibre imprès (tapa dura o tapa tova) té 10 € de descompte; no val per al PDF ni es combina amb altres codis. Quan aquesta comanda es paga, i si és la primera comanda d'aquella família, enviem a qui l'ha recomanat un codi de 10 € d'un sol ús per al seu proper llibre imprès, vàlid 12 mesos. No hi ha recompensa per comandes pròpies (mateix correu, mateix compte o mateix client de pagament). Cada codi personal admet fins a 20 usos. Els descomptes no es poden canviar per diners. Podem acabar el programa avisant-ho en aquesta pàgina; els codis de recompensa ja enviats es respecten fins a la seva data."
     },
@@ -1017,7 +1017,7 @@
       "section3Title": "Embalatge protector",
       "section3Text": "El teu llibre viatja en un embalatge de cartró pensat perquè arribi en perfecte estat, a punt per regalar. Si tot i així arriba malmès, escriu-nos i t'enviem un altre de nou sense cost.",
       "section4Title": "Seguiment de la comanda",
-      "section4Text": "Quan el llibre surti d'impremta, rebràs un correu electrònic amb el número de seguiment. També pots consultar l'estat de les teves comandes des del teu panell d'usuari a meapica.shop."
+      "section4Text": "Quan el llibre surti d'impremta, rebràs un correu electrònic amb el número de seguiment. També pots consultar l'estat de les teves comandes des del teu panell d'usuari a meapica.es."
     }
   },
   "notFound": {
@@ -1469,7 +1469,7 @@
       "viewOrders": "Veure les meves comandes",
       "notVerifiedTitle": "No hem pogut confirmar aquest pagament",
       "notVerifiedDescription": "Aquest enllaç no correspon a un pagament completat. Si acabes de pagar, la comanda apareixerà a la teva biblioteca d'aquí a uns minuts i rebràs la confirmació per correu. Si alguna cosa no quadra, escriu-nos i ho resolem.",
-      "contactUs": "Escriu-nos a hola@meapica.shop",
+      "contactUs": "Escriu-nos a hola@meapica.es",
       "confirmationEmail": "T'enviarem la confirmació i el seguiment a {email}",
       "guestNote": "Has comprat sense compte: guarda aquest correu, és el comprovant de la comanda.",
       "processingTitle": "Pagament confirmat!",
@@ -3132,11 +3132,11 @@
       },
       {
         "q": "La puc tornar?",
-        "a": "Sí. Tens 14 dies naturals des de la compra per desistir, sempre que no s'hagi bescanviat: escriu-nos a hola@meapica.shop i et retornem l'import. Un cop bescanviada, el llibre es crea a mida i ja no té dret de desistiment."
+        "a": "Sí. Tens 14 dies naturals des de la compra per desistir, sempre que no s'hagi bescanviat: escriu-nos a hola@meapica.es i et retornem l'import. Un cop bescanviada, el llibre es crea a mida i ja no té dret de desistiment."
       },
       {
         "q": "Com es bescanvia?",
-        "a": "Es crea el conte a meapica.shop, es tria el mateix format de la targeta i s'escriu el codi a «Afegeix un codi promocional» en pagar. El total queda a 0 €."
+        "a": "Es crea el conte a meapica.es, es tria el mateix format de la targeta i s'escriu el codi a «Afegeix un codi promocional» en pagar. El total queda a 0 €."
       },
       {
         "q": "Pot triar un altre format?",
@@ -3155,7 +3155,7 @@
       "validUntil": "No caduca",
       "printCta": "Veure i imprimir la targeta",
       "pendingTitle": "Estem preparant la teva targeta",
-      "pendingText": "El pagament està fet. T'arribarà per email d'aquí a uns minuts. Si no la veus, mira a la carpeta de promocions o escriu-nos a hola@meapica.shop.",
+      "pendingText": "El pagament està fet. T'arribarà per email d'aquí a uns minuts. Si no la veus, mira a la carpeta de promocions o escriu-nos a hola@meapica.es.",
       "backHome": "Tornar a l'inici"
     },
     "card": {
@@ -3170,9 +3170,9 @@
       },
       "codeLabel": "El teu codi",
       "validUntil": "No caduca",
-      "howTo": "Entra a meapica.shop, crea el teu conte amb el teu nom i la teva aventura, i escriu aquest codi en pagar.",
+      "howTo": "Entra a meapica.es, crea el teu conte amb el teu nom i la teva aventura, i escriu aquest codi en pagar.",
       "print": "Imprimir",
-      "notFound": "No trobem aquesta targeta. Revisa l'enllaç de l'email o escriu-nos a hola@meapica.shop."
+      "notFound": "No trobem aquesta targeta. Revisa l'enllaç de l'email o escriu-nos a hola@meapica.es."
     },
     "fromChristmas": "Prefereixes que el creï la família? Regala una targeta regal"
   },
@@ -3196,7 +3196,7 @@
       "nameLabel": "El teu nom, tal com el veuran altres famílies",
       "namePlaceholder": "Marta G.",
       "nameHint": "El teu nom i la inicial del cognom. No mostrem el teu correu ni les dades de la comanda.",
-      "consentLabel": "Podeu publicar la meva valoració, el meu text i aquest nom a meapica.shop.",
+      "consentLabel": "Podeu publicar la meva valoració, el meu text i aquest nom a meapica.es.",
       "consentNote": "Si no ho marques, la teva opinió només la llegirem nosaltres.",
       "submit": "Enviar la meva opinió",
       "privacy": "Si la publiques, ens pots demanar que la retirem quan vulguis.",
@@ -3210,7 +3210,7 @@
     },
     "done": {
       "title": "Gràcies per la teva opinió!",
-      "published": "Ja es veu a meapica.shop. Gràcies per ajudar altres famílies a decidir-se.",
+      "published": "Ja es veu a meapica.es. Gràcies per ajudar altres famílies a decidir-se.",
       "pending": "La revisarem i la publicarem aviat.",
       "private": "L'hem rebuda i la llegirem amb calma. No la publicarem.",
       "already": "Ja ens vas deixar la teva opinió sobre aquest conte. Gràcies de nou!"

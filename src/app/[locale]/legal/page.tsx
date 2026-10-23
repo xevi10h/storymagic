@@ -6,7 +6,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { COPY_PARAMS } from "@/lib/product-facts";
 
-const BASE_URL = "https://meapica.shop";
+const BASE_URL = "https://meapica.es";
 
 type PageProps = {
   params: Promise<{ locale: string }>;

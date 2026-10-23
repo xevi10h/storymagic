@@ -29,7 +29,7 @@ assert.equal(normalizeCode(" mea 7k3-p9q "), "MEA7K3P9Q");
 assert.equal(normalizeCode("MEA_7K3"), null);
 assert.equal(normalizeCode("<script>"), null);
 assert.equal(normalizeCode(42), null);
-assert.equal(referralUrl("https://meapica.shop/", "ca", "MEA7K3P9Q"), "https://meapica.shop/ca/r/MEA7K3P9Q");
+assert.equal(referralUrl("https://meapica.es/", "ca", "MEA7K3P9Q"), "https://meapica.es/ca/r/MEA7K3P9Q");
 
 // ── Dates: 12 months, clamped month ends ──────────────────────────────────
 assert.equal(addMonths(new Date("2026-12-24T10:00:00Z"), 12).toISOString(), "2027-12-24T10:00:00.000Z");

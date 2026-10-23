@@ -905,7 +905,7 @@
       "title": "Politique de confidentialité",
       "intro": "Chez Meapica, la confidentialité de nos utilisateurs — en particulier concernant les données des enfants — est notre priorité absolue.",
       "section1Title": "1. Responsable du traitement",
-      "section1Text": "Le responsable du traitement des données personnelles collectées via meapica.shop est Xavier Huix Trenco (Meapica), NIF 41649433K, domicilié à Carrer Aribau 140, 5º, 08036 Barcelone (Espagne). Pour toute question relative à la confidentialité, écrivez-nous à hola@meapica.shop.",
+      "section1Text": "Le responsable du traitement des données personnelles collectées via meapica.es est Xavier Huix Trenco (Meapica), NIF 41649433K, domicilié à Carrer Aribau 140, 5º, 08036 Barcelone (Espagne). Pour toute question relative à la confidentialité, écrivez-nous à hola@meapica.es.",
       "section2Title": "2. Données collectées",
       "section2Text": "Nous collectons les données nécessaires à la création de votre livre personnalisé : prénom de l'enfant, âge, ville, centres d'intérêt et caractéristiques physiques pour les illustrations et, uniquement si vous choisissez de la télécharger, une photo de l'enfant (voir la section 8). Nous collectons également votre e-mail et votre adresse de livraison pour traiter les commandes.",
       "section3Title": "3. Finalité du traitement",
@@ -915,17 +915,17 @@
       "section5Title": "5. Sous-traitants et transferts internationaux",
       "section5Text": "Pour fournir le service, nous travaillons avec des prestataires qui traitent les données uniquement selon nos instructions : OpenAI Ireland Ltd. (génération du texte et des illustrations de l'histoire et, si vous en téléchargez une, du personnage à partir de la photo), Supabase (base de données et stockage), Vercel (hébergement web), Stripe Payments Europe Ltd. (paiements), Gelato (impression et livraison), Resend (e-mails de commande et rappels que vous avez demandés), Cloudflare, Inc. (Turnstile, vérification anti-robots à la connexion et au démarrage en tant qu'invité) et, uniquement si vous acceptez les cookies publicitaires et d'analyse, Meta Platforms Ireland Ltd., TikTok Technology Limited (mesure de nos publicités) Google Ireland Limited (Google Analytics, statistiques de visites et d'achats) et PostHog, Inc. (statistiques d'utilisation du site et enregistrements anonymes de session, hébergés dans l'UE). OpenAI n'utilise pas les données que nous lui envoyons pour entraîner ses modèles et peut les conserver jusqu'à 30 jours pour détecter les abus. Lorsqu'un prestataire ou ses sous-traitants traitent des données en dehors de l'Espace économique européen (par exemple, aux États-Unis), le transfert repose sur les clauses contractuelles types de la Commission européenne ou sur le cadre de protection des données UE-États-Unis.",
       "section6Title": "6. Vos droits",
-      "section6Text": "Vous pouvez exercer vos droits d'accès, de rectification, d'effacement, d'opposition, de limitation du traitement et de portabilité, et retirer votre consentement à tout moment, en écrivant à hola@meapica.shop. Nous vous répondrons dans un délai maximal d'un mois. Si vous estimez que vos données n'ont pas été traitées correctement, vous pouvez introduire une réclamation auprès de l'Agence espagnole de protection des données (AEPD, www.aepd.es).",
+      "section6Text": "Vous pouvez exercer vos droits d'accès, de rectification, d'effacement, d'opposition, de limitation du traitement et de portabilité, et retirer votre consentement à tout moment, en écrivant à hola@meapica.es. Nous vous répondrons dans un délai maximal d'un mois. Si vous estimez que vos données n'ont pas été traitées correctement, vous pouvez introduire une réclamation auprès de l'Agence espagnole de protection des données (AEPD, www.aepd.es).",
       "section7Title": "7. Protection des données des mineurs",
       "section7Text": "Nous ne collectons pas de données directement auprès des mineurs. Les données de l'enfant sont fournies par le parent ou tuteur légal qui crée le livre.",
       "section8Title": "8. Photos d'enfants",
-      "section8Text": "Télécharger une photo est facultatif : vous pouvez aussi créer le personnage en choisissant ses traits. Si vous en téléchargez une, nous l'utilisons uniquement pour créer le personnage illustré de l'enfant (son portrait et sa fiche de personnage), et uniquement avec le consentement de sa mère, de son père ou de son tuteur légal. Avant de l'enregistrer, nous supprimons toutes ses métadonnées, y compris la localisation GPS, et la conservons dans un stockage privé auquel seul notre serveur a accès. La photo est envoyée à OpenAI pour dessiner le personnage ; OpenAI ne l'utilise pas pour entraîner ses modèles et peut la conserver jusqu'à 30 jours pour détecter les abus. Nous supprimons la photo dès que le personnage est créé et, dans tous les cas, en moins de 24 heures. Le livre (aperçu et version finale) est illustré uniquement à partir du personnage dessiné, jamais à partir de la photo. Nous ne l'utilisons ni pour la reconnaissance faciale ni pour aucune autre finalité. Vous pouvez retirer votre consentement à tout moment en écrivant à hola@meapica.shop et nous la supprimerons immédiatement. Nous conservons une trace de votre consentement (date, version du texte accepté et langue) comme preuve que vous l'avez donné."
+      "section8Text": "Télécharger une photo est facultatif : vous pouvez aussi créer le personnage en choisissant ses traits. Si vous en téléchargez une, nous l'utilisons uniquement pour créer le personnage illustré de l'enfant (son portrait et sa fiche de personnage), et uniquement avec le consentement de sa mère, de son père ou de son tuteur légal. Avant de l'enregistrer, nous supprimons toutes ses métadonnées, y compris la localisation GPS, et la conservons dans un stockage privé auquel seul notre serveur a accès. La photo est envoyée à OpenAI pour dessiner le personnage ; OpenAI ne l'utilise pas pour entraîner ses modèles et peut la conserver jusqu'à 30 jours pour détecter les abus. Nous supprimons la photo dès que le personnage est créé et, dans tous les cas, en moins de 24 heures. Le livre (aperçu et version finale) est illustré uniquement à partir du personnage dessiné, jamais à partir de la photo. Nous ne l'utilisons ni pour la reconnaissance faciale ni pour aucune autre finalité. Vous pouvez retirer votre consentement à tout moment en écrivant à hola@meapica.es et nous la supprimerons immédiatement. Nous conservons une trace de votre consentement (date, version du texte accepté et langue) comme preuve que vous l'avez donné."
     },
     "terms": {
       "title": "Mentions légales et conditions d'utilisation",
-      "intro": "En utilisant meapica.shop, vous acceptez les conditions suivantes.",
+      "intro": "En utilisant meapica.es, vous acceptez les conditions suivantes.",
       "section1Title": "1. Identification",
-      "section1Text": "Meapica est une plateforme de création de livres pour enfants personnalisés opérée depuis l'Espagne par Xavier Huix Trenco, NIF 41649433K, domicilié Carrer Aribau 140, 5º, 08036 Barcelone (Espagne). Contact : hola@meapica.shop.",
+      "section1Text": "Meapica est une plateforme de création de livres pour enfants personnalisés opérée depuis l'Espagne par Xavier Huix Trenco, NIF 41649433K, domicilié Carrer Aribau 140, 5º, 08036 Barcelone (Espagne). Contact : hola@meapica.es.",
       "section2Title": "2. Service",
       "section2Text": "Meapica propose la création d'histoires pour enfants personnalisées avec des illustrations uniques, imprimées à la demande.",
       "section3Title": "3. Propriété intellectuelle",
@@ -937,7 +937,7 @@
       "section6Title": "6. Limitation de responsabilité",
       "section6Text": "Meapica ne garantit pas la disponibilité ininterrompue du service. Les illustrations peuvent varier et un résultat spécifique n'est pas garanti.",
       "section7Title": "7. Cartes cadeaux",
-      "section7Text": "La carte cadeau donne droit à une histoire personnalisée dans le format choisi à l'achat (couverture rigide, couverture souple ou PDF), avec la livraison en Espagne péninsulaire et aux Baléares incluse pour les formats imprimés. Elle est payée à l'achat, TVA du livre incluse. Elle n'expire pas, s'utilise une seule fois en saisissant son code lors du paiement de l'histoire sur meapica.shop et ne peut être ni échangée contre de l'argent ni utilisée pour un autre format ; les extras (par exemple un exemplaire supplémentaire) se paient à part. Comme vous l'achetez en ligne, vous disposez de 14 jours calendaires à partir de l'achat pour vous rétracter sans motif, tant qu'elle n'a pas été utilisée : écrivez-nous à hola@meapica.shop et nous vous remboursons par le même moyen de paiement sous 14 jours maximum. Une fois utilisée, le livre est fait sur mesure et n'ouvre plus droit à la rétractation (art. 103 c de la loi espagnole de protection des consommateurs, LGDCU). Conservez bien le code : toute personne qui le détient peut l'utiliser. Si vous le perdez, nous le renvoyons à l'email de l'achat.",
+      "section7Text": "La carte cadeau donne droit à une histoire personnalisée dans le format choisi à l'achat (couverture rigide, couverture souple ou PDF), avec la livraison en Espagne péninsulaire et aux Baléares incluse pour les formats imprimés. Elle est payée à l'achat, TVA du livre incluse. Elle n'expire pas, s'utilise une seule fois en saisissant son code lors du paiement de l'histoire sur meapica.es et ne peut être ni échangée contre de l'argent ni utilisée pour un autre format ; les extras (par exemple un exemplaire supplémentaire) se paient à part. Comme vous l'achetez en ligne, vous disposez de 14 jours calendaires à partir de l'achat pour vous rétracter sans motif, tant qu'elle n'a pas été utilisée : écrivez-nous à hola@meapica.es et nous vous remboursons par le même moyen de paiement sous 14 jours maximum. Une fois utilisée, le livre est fait sur mesure et n'ouvre plus droit à la rétractation (art. 103 c de la loi espagnole de protection des consommateurs, LGDCU). Conservez bien le code : toute personne qui le détient peut l'utiliser. Si vous le perdez, nous le renvoyons à l'email de l'achat.",
       "section8Title": "8. Programme de parrainage « 10 € et 10 € »",
       "section8Text": "Chaque commande payée d'une histoire comprend un code personnel de parrainage, imprimé sur la dernière page du livre et visible dans les emails de la commande et dans « Mes commandes ». La personne qui l'utilise pour acheter un livre imprimé (couverture rigide ou souple) a 10 € de réduction ; il ne vaut pas pour le PDF et ne se cumule pas avec d'autres codes. Quand cette commande est payée, et s'il s'agit de la première commande de cette famille, nous envoyons au parrain un code de 10 € à usage unique pour son prochain livre imprimé, valable 12 mois. Aucune récompense pour ses propres commandes (même email, même compte ou même client payeur). Chaque code personnel peut être utilisé jusqu'à 20 fois. Les réductions ne sont pas échangeables contre de l'argent. Nous pouvons mettre fin au programme en l'annonçant sur cette page ; les codes de récompense déjà envoyés restent valables jusqu'à leur date."
     },
@@ -979,7 +979,7 @@
       "section3Title": "Emballage protecteur",
       "section3Text": "Votre livre voyage dans un emballage en carton conçu pour qu'il arrive en parfait état, prêt à offrir. S'il arrive malgré tout abîmé, écrivez-nous et nous vous en envoyons un nouveau sans frais.",
       "section4Title": "Suivi de commande",
-      "section4Text": "Dès que le livre quitte l'imprimerie, vous recevrez un e-mail avec le numéro de suivi. Vous pouvez aussi consulter l'état de vos commandes depuis votre espace utilisateur sur meapica.shop."
+      "section4Text": "Dès que le livre quitte l'imprimerie, vous recevrez un e-mail avec le numéro de suivi. Vous pouvez aussi consulter l'état de vos commandes depuis votre espace utilisateur sur meapica.es."
     }
   },
   "notFound": {
@@ -1431,7 +1431,7 @@
       "viewOrders": "Voir mes commandes",
       "notVerifiedTitle": "Nous n'avons pas pu confirmer ce paiement",
       "notVerifiedDescription": "Ce lien ne correspond pas à un paiement finalisé. Si vous venez de payer, votre commande apparaîtra dans votre bibliothèque d'ici quelques minutes et vous recevrez une confirmation par e-mail. Si quelque chose ne va pas, écrivez-nous et nous réglerons cela.",
-      "contactUs": "Écrivez-nous à hola@meapica.shop",
+      "contactUs": "Écrivez-nous à hola@meapica.es",
       "confirmationEmail": "Nous enverrons la confirmation et le suivi à {email}",
       "guestNote": "Vous avez commandé sans compte : conservez cet e-mail, c'est votre confirmation de commande.",
       "processingTitle": "Paiement confirmé !",
@@ -2812,11 +2812,11 @@
       },
       {
         "q": "Puis-je la retourner ?",
-        "a": "Oui. Vous avez 14 jours calendaires à partir de l'achat pour vous rétracter, tant qu'elle n'a pas été utilisée : écrivez-nous à hola@meapica.shop et nous vous remboursons. Une fois utilisée, le livre est fait sur mesure et le droit de rétractation ne s'applique plus."
+        "a": "Oui. Vous avez 14 jours calendaires à partir de l'achat pour vous rétracter, tant qu'elle n'a pas été utilisée : écrivez-nous à hola@meapica.es et nous vous remboursons. Une fois utilisée, le livre est fait sur mesure et le droit de rétractation ne s'applique plus."
       },
       {
         "q": "Comment l'utiliser ?",
-        "a": "On crée l'histoire sur meapica.shop, on choisit le format de la carte et on saisit le code dans « Ajouter un code promotionnel » au paiement. Le total passe à 0 €."
+        "a": "On crée l'histoire sur meapica.es, on choisit le format de la carte et on saisit le code dans « Ajouter un code promotionnel » au paiement. Le total passe à 0 €."
       },
       {
         "q": "Peut-on choisir un autre format ?",
@@ -2835,7 +2835,7 @@
       "validUntil": "Sans date d'expiration",
       "printCta": "Voir et imprimer la carte",
       "pendingTitle": "Nous préparons votre carte",
-      "pendingText": "Le paiement est validé. La carte arrivera par email dans quelques minutes. Si vous ne la voyez pas, regardez dans l'onglet Promotions ou écrivez-nous à hola@meapica.shop.",
+      "pendingText": "Le paiement est validé. La carte arrivera par email dans quelques minutes. Si vous ne la voyez pas, regardez dans l'onglet Promotions ou écrivez-nous à hola@meapica.es.",
       "backHome": "Retour à l'accueil"
     },
     "card": {
@@ -2850,9 +2850,9 @@
       },
       "codeLabel": "Ton code",
       "validUntil": "Sans date d'expiration",
-      "howTo": "Va sur meapica.shop, crée ton histoire avec ton prénom et ton aventure, et saisis ce code au paiement.",
+      "howTo": "Va sur meapica.es, crée ton histoire avec ton prénom et ton aventure, et saisis ce code au paiement.",
       "print": "Imprimer",
-      "notFound": "Nous ne trouvons pas cette carte. Vérifiez le lien de l'email ou écrivez-nous à hola@meapica.shop."
+      "notFound": "Nous ne trouvons pas cette carte. Vérifiez le lien de l'email ou écrivez-nous à hola@meapica.es."
     },
     "fromChristmas": "Vous préférez que la famille le crée ? Offrez une carte cadeau"
   },
@@ -2876,7 +2876,7 @@
       "nameLabel": "Votre nom, tel que les autres familles le verront",
       "namePlaceholder": "Marta G.",
       "nameHint": "Votre prénom et l'initiale de votre nom. Nous n'affichons jamais votre e-mail ni votre commande.",
-      "consentLabel": "Vous pouvez publier ma note, mon texte et ce nom sur meapica.shop.",
+      "consentLabel": "Vous pouvez publier ma note, mon texte et ce nom sur meapica.es.",
       "consentNote": "Si vous ne cochez pas la case, nous serons les seuls à lire votre avis.",
       "submit": "Envoyer mon avis",
       "privacy": "Si vous le publiez, vous pouvez nous demander de le retirer à tout moment.",
@@ -2890,7 +2890,7 @@
     },
     "done": {
       "title": "Merci pour votre avis !",
-      "published": "Il est déjà visible sur meapica.shop. Merci d'aider d'autres familles à se décider.",
+      "published": "Il est déjà visible sur meapica.es. Merci d'aider d'autres familles à se décider.",
       "pending": "Nous allons le vérifier et le publier rapidement.",
       "private": "Nous l'avons bien reçu et le lirons attentivement. Nous ne le publierons pas.",
       "already": "Vous avez déjà donné votre avis sur cette histoire. Merci encore !"

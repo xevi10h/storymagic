@@ -73,7 +73,7 @@ which records the version, or the SQL editor followed by
    `--dry-run` (copies showcase stories, waitlist covers, style samples, blog images; rewrites
    blog rows to the showcase URL). Must precede the deploy: the new code serves every public
    page (landing, `/examples`, OG, waitlist) from `showcase`.
-4. **Env (Vercel prod):** `CRON_SECRET` set (both crons need it); `NEXT_PUBLIC_SITE_URL=https://meapica.shop` (avatar anchors are fetched from it); `NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED`
+4. **Env (Vercel prod):** `CRON_SECRET` set (both crons need it); `NEXT_PUBLIC_SITE_URL=https://meapica.es` (avatar anchors are fetched from it); `NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED`
    unset/false until the DPIA + OpenAI DPA are signed.
 5. **Deploy the code** (works with the bucket still public: signed URLs also work on public buckets).
    Check `/examples`, landing BookCollection, waitlist page, blog; create a book end to end
@@ -107,7 +107,7 @@ old public URL. A preview tab left open > 1 h shows broken images for pages not 
 activated and configured 2026-09-28 (setup script run; live webhook `we_1UKekqAyKcfLUpfGWsbB0sRn`).
 Seller on invoices: Xavier Huix Trenco (autónomo), NIF 41649433K, Carrer Aribau 140, 5º, 08036 Barcelona.
 
-**Setup is code:** `STRIPE_KEY=sk_… npx tsx --tsconfig tsconfig.json scripts/stripe-setup-catalog.mts --webhook-url=https://meapica.shop/api/webhooks/stripe`
+**Setup is code:** `STRIPE_KEY=sk_… npx tsx --tsconfig tsconfig.json scripts/stripe-setup-catalog.mts --webhook-url=https://meapica.es/api/webhooks/stripe`
 (idempotent, `--dry-run` available) configures, on the account behind the key:
 - Stripe Tax: head office Barcelona, ES registration `standard` / `small_seller` (Spanish VAT also on
   EU digital sales while under the 10 000 € OSS threshold; switch to OSS with the gestor when crossed),
@@ -231,28 +231,35 @@ Meta Pixel + Conversions API behind an AEPD cookie banner. Off until the env var
 dataset "Meapica web", `meapica.shop` domain verification (DNS TXT). Owner setup + first campaign: `docs/ads/setup-guide.md`.
 Code map: `docs/technical-architecture.md` › Ads tracking. No TikTok Pixel (TikTok is organic only).
 
-## Domains (2026-09-30)
+## Domains (primary since 2026-10-23: meapica.es)
 
-- **Primary: `meapica.shop`** (+ `www`), registered at **Hostinger** 2026-09-30, DNS managed there (API token at `~/.config/hostinger/token`,
-  `PUT https://developers.hostinger.com/api/dns/v1/zones/meapica.shop`). Records: `@ A 76.76.21.21`, `www CNAME cname.vercel-dns.com`.
-  All canonical URLs, sitemap, OG, emails, printed books (back cover + QR) and ads use it.
-- **Legacy: `meapica.com`** stays attached to the Vercel project and serves the same site, but its DNS (Spaceship) is no longer
-  under our control: nothing critical (Stripe/Gelato webhooks, auth redirects, email sending, Meta domain) may depend on it.
-- **Redirect-only: `meapica.es` + `www.meapica.es`** (2026-10-19), registered at Hostinger, DNS there (same token/API, zone `meapica.es`):
-  `@ A 216.150.1.1` + `216.150.16.1`, `www CNAME fc2bc1c75745d993.vercel-dns-017.com.` (Vercel's recommended values, rank 1). No MX/TXT.
-  Both attached to the Vercel project as **domain-level 301 redirects to `meapica.shop`** (path + query preserved), set with
-  `vercel api /v10/projects/<id>/domains -f name=… -f redirect=meapica.shop -F redirectStatusCode=301`. No code involved.
-- **Host canonicalization (2026-10-01):** `src/middleware.ts` 308-redirects `www.meapica.shop`, `meapica.com` and
-  `www.meapica.com` to `https://meapica.shop` + same path/query (explicit alias list: localhost and `*.vercel.app`
-  previews untouched). `/api/*` is never redirected (a webhook left on an alias host must not get a 308), and files
-  outside the middleware matcher (sitemap.xml, robots.txt, images) are still served on the aliases: also set
-  www → apex as a redirect in Vercel › Domains. next-intl's `Link` hreflang response header is off
-  (`alternateLinks: false` in `src/i18n/routing.ts`); hreflang lives only in each page's `<link rel="alternate">`.
-- Status 2026-09-30: `NEXT_PUBLIC_SITE_URL=https://meapica.shop` (prod) ✔; Supabase Auth Site URL `https://meapica.shop` + allow-list
-  (.shop, www.shop, .com, www.com, localhost:3013) ✔ via Management API (`SUPABASE_ACCESS_TOKEN=$(cat ~/.config/supabase-profiles/meapica)`);
-  Stripe live webhook `we_1UKekqAyKcfLUpfGWsbB0sRn` → `https://meapica.shop/api/webhooks/stripe` ✔ (owner, 2026-10-01; CLI profile `stripe -p meapica` can read, lacks `webhook_write`);
-  Gelato webhook moved to `.shop` by the owner 2026-10-01 (endpoint verified: 200 with secret, 401 without; old secretless webhook deleted); Meta domain verification: meapica.com + meapica.shop VERIFIED 2026-10-01 (meta tags in root layout + TXT `facebook-domain-verification=…` on Hostinger @).
-- **Email (2026-10-01):** Resend domain `meapica.shop` (id `ac086507-5e3d-4851-a800-bd85e4d7be6c`, eu-west-1, Atalaya Resend account) **verified**; DNS on Hostinger: `resend._domainkey` TXT, `send` MX + TXT (SPF), `rsend` CNAME, `_dmarc` TXT `p=none; rua=admin@casmar.tech`. Prod env: `RESEND_API_KEY` = sending-only key scoped to that domain (`meapica-prod-sending`), `EMAIL_FROM=Meapica <pedidos@meapica.shop>`, `EMAIL_REPLY_TO=admin@casmar.tech` (customer replies land in the owner's Gmail). Admin key for domain management: `~/.config/resend/meapica`.
+- **Primary: `meapica.es`** (+ `www`), registered at **Hostinger**, DNS there (API token `~/.config/hostinger/token`,
+  `PUT https://developers.hostinger.com/api/dns/v1/zones/meapica.es`). Records: `@ A 216.150.1.1` + `216.150.16.1`,
+  `www CNAME fc2bc1c75745d993.vercel-dns-017.com.`, Resend (`resend._domainkey` TXT, `send` MX + SPF TXT, `rsend` CNAME,
+  root MX `10 receive-euw1.forge.rmta.net.` for inbound), `_dmarc` TXT `p=none`, `google-site-verification=zi6ZAB…` TXT.
+  All canonical URLs, sitemap, OG, emails, legal texts, printed books (back cover + QR) use it (`src/lib/product-facts.ts`
+  `SITE_URL`, `NEXT_PUBLIC_SITE_URL`).
+- **Legacy: `meapica.shop`** (primary 2026-09-30 → 2026-10-23). **Keep renewing it forever:** printed books' QR, sent pitches,
+  social bios and pins point to it. Stays attached to Vercel **without** a domain-level redirect, so `/api/*` webhooks still
+  registered on it keep working; `src/middleware.ts` 308s every page to `meapica.es`. Once Stripe, Gelato and Resend inbound
+  webhooks are on `.es`, it can become a domain-level 301 in Vercel. `www.meapica.shop` = Vercel 301 → `meapica.es`.
+- **Legacy: `meapica.com`** stays attached and redirects too, but its DNS (Spaceship) is no longer ours: nothing may depend on it.
+- **Host canonicalization:** `src/middleware.ts` 308-redirects `www.meapica.es`, `meapica.shop`, `www.meapica.shop`, `meapica.com`,
+  `www.meapica.com` to `https://meapica.es` + same path/query (explicit list: localhost and `*.vercel.app` untouched).
+  `/api/*` is never redirected (a webhook on an alias host must not get a 308); files outside the matcher (sitemap.xml,
+  robots.txt, images) are still served on the aliases. Vercel domain redirects: `www.meapica.es` → `meapica.es`.
+  next-intl's `Link` hreflang header is off (`alternateLinks: false`); hreflang lives in each page's `<link rel="alternate">`.
+- **Supabase Auth:** Site URL `https://meapica.es`; allow-list .es, www.es, .shop, www.shop, .com, www.com, localhost:3013
+  (Management API with `SUPABASE_PAT` from `.env.local`). SMTP sender `pedidos@meapica.es` via smtp.resend.com.
+- **Email:** Resend domain `meapica.es` (id `28782f60-3f1a-4ec4-a80c-1977c165d5b5`, eu-west-1, Atalaya Resend account, sending +
+  receiving) verified 2026-10-23. Prod `RESEND_API_KEY` = sending-only key scoped to it (`meapica-es-prod-sending`, file
+  `~/.config/resend/meapica-es-sending`), `EMAIL_FROM=Meapica <pedidos@meapica.es>`, `EMAIL_REPLY_TO=admin@casmar.tech`.
+  Inbound `*@meapica.es` → same Resend `email.received` webhook → forwarded to admin@casmar.tech from `hola@meapica.es`.
+  Old domain `meapica.shop` (id `ac086507-…`) stays verified so `*@meapica.shop` keeps receiving.
+  Admin key for domain management: `~/.config/resend/meapica`.
+- **Webhooks:** Stripe live `we_1UKekqAyKcfLUpfGWsbB0sRn` and Gelato registered on `meapica.shop/api/webhooks/*` (work through
+  the alias; move to `.es` in the dashboards, Stripe CLI profile `stripe -p meapica` lacks `webhook_write`).
+- **Meta domain verification:** meapica.com + meapica.shop verified (meta tags in root layout + TXT on .shop). meapica.es: pending.
 
 ## Ads tracking — TikTok (2026-10-01)
 
@@ -263,8 +270,9 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
 
 ## Search & analytics measurement (2026-10-01)
 
-- **Google Search Console:** Domain property `sc-domain:meapica.shop` (owner admin@casmar.tech, verified by DNS TXT
-  `google-site-verification=TCFgqmj9…` on Hostinger @, next to the facebook TXT). Sitemap `https://meapica.shop/sitemap.xml` submitted.
+- **Google Search Console:** Domain properties `sc-domain:meapica.es` (primary, verified 2026-10-23 via Site Verification API +
+  DNS TXT, owner admin@casmar.tech) and `sc-domain:meapica.shop` (legacy, TXT `TCFgqmj9…`). After the switch: submit
+  `https://meapica.es/sitemap.xml` and run **Settings › Change of address** on the .shop property (UI only, no API).
   meapica.com has no GSC property (its DNS isn't ours).
 - **GA4:** property `556936860` "Meapica" (account 384452227, Europe/Madrid, EUR, 14-month retention), web stream `15937070228`,
   measurement ID `G-R4KZQ2ZYQ2`. Key events: `purchase`, `begin_checkout`. Browser gtag loads only after cookie consent (same banner

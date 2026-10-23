@@ -4,7 +4,7 @@ import { routing } from "@/i18n/routing";
 import HubPage from "@/components/seo-landing/HubPage";
 import { GUIDES, GUIDE_LINK_LABELS, guidesForLocale } from "@/lib/guides";
 
-const BASE_URL = "https://meapica.shop";
+const BASE_URL = "https://meapica.es";
 const PATH = "/gifts";
 
 type PageProps = { params: Promise<{ locale: string }> };

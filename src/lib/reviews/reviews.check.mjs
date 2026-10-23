@@ -43,8 +43,8 @@ assert.throws(() => deriveReviewKey("", "review"));
 const modToken = signReviewToken("moderate", REVIEW, modK);
 assert.equal(verifyReviewToken("moderate", modToken, modK), REVIEW);
 assert.equal(verifyReviewToken("review", modToken, reviewK), null, "moderation token is not a review token");
-assert.equal(reviewPageUrl("https://meapica.shop/", "ca", token), `https://meapica.shop/ca/review?t=${token}`);
-assert.equal(moderationUrl("https://meapica.shop", modToken), `https://meapica.shop/api/reviews/moderate?t=${modToken}`);
+assert.equal(reviewPageUrl("https://meapica.es/", "ca", token), `https://meapica.es/ca/review?t=${token}`);
+assert.equal(moderationUrl("https://meapica.es", modToken), `https://meapica.es/api/reviews/moderate?t=${modToken}`);
 
 // ── Schedule ─────────────────────────────────────────────────────────────────
 const DAY = 86_400_000;

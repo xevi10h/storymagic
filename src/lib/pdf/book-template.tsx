@@ -99,7 +99,7 @@ export interface BookPdfInput {
   futureDream?: string | null;
   /**
    * The buyer's referral code ("10 € y 10 €", src/lib/promo-codes.ts): the last inner page
-   * prints its QR + one line instead of the plain meapica.shop QR. Absent = home QR.
+   * prints its QR + one line instead of the plain meapica.es QR. Absent = home QR.
    */
   referral?: { code: string; url: string } | null;
 }
@@ -783,12 +783,12 @@ function ColophonPage({ ctx }: { ctx: BookRenderContext }) {
               <Text style={{ fontFamily: FONTS.body, fontSize: 11, fontWeight: 700, color: COLORS.textMedium, letterSpacing: 1.5, marginTop: 7 }}>
                 {input.referral.code}
               </Text>
-              <Text style={{ fontFamily: FONTS.body, fontSize: 7, color: COLORS.textMuted, letterSpacing: 0.5, marginTop: 2 }}>meapica.shop</Text>
+              <Text style={{ fontFamily: FONTS.body, fontSize: 7, color: COLORS.textMuted, letterSpacing: 0.5, marginTop: 2 }}>meapica.es</Text>
             </View>
           ) : qrDataUrl ? (
             <View style={{ marginTop: 20, alignItems: "center", gap: 6 }}>
               <Image src={qrDataUrl} style={{ width: 72, height: 72 }} />
-              <Text style={{ fontFamily: FONTS.body, fontSize: 7, color: COLORS.textMuted, letterSpacing: 0.5 }}>meapica.shop</Text>
+              <Text style={{ fontFamily: FONTS.body, fontSize: 7, color: COLORS.textMuted, letterSpacing: 0.5 }}>meapica.es</Text>
             </View>
           ) : null}
           <View style={{ width: 48, height: 0.5, backgroundColor: COLORS.textLight, marginTop: 16 }} />
@@ -863,7 +863,7 @@ function renderPlannedPage(page: PlannedPage, ctx: BookRenderContext): JSX.Eleme
 export function InteriorOnlyPdf({ ctx }: { ctx: BookRenderContext }) {
   // Pastedowns first and last (glued to the boards), as in Teo's printed book (layout.ts).
   return (
-    <Document title={ctx.input.story.bookTitle} author="Meapica" creator="Meapica — meapica.shop" producer="Meapica">
+    <Document title={ctx.input.story.bookTitle} author="Meapica" creator="Meapica — meapica.es" producer="Meapica">
       <EndpaperPage theme={ctx.theme} edition={ctx.edition} offsetX={0} />
       {ctx.plan.pages.map((p) => renderPlannedPage(p, ctx))}
       <EndpaperPage theme={ctx.theme} edition={ctx.edition} offsetX={GEOMETRY.spreadRightOffset} />
@@ -879,7 +879,7 @@ export function BookPdf({ ctx }: { ctx: BookRenderContext }) {
       title={input.story.bookTitle}
       author="Meapica"
       subject={joinName(pdfForName(input.locale, "personalizedStory", input.characterName, input.characterGender), input.characterName)}
-      creator="Meapica — meapica.shop"
+      creator="Meapica — meapica.es"
       producer="Meapica"
     >
       <CoverPage ctx={ctx} />

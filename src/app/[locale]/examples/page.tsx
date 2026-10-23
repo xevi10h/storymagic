@@ -13,7 +13,7 @@ import { getShowcaseStories } from "@/lib/showcase";
 import { showcasePath } from "@/lib/showcase-slug";
 import ExampleBookCard from "@/components/seo-landing/ExampleBookCard";
 
-const BASE_URL = "https://meapica.shop";
+const BASE_URL = "https://meapica.es";
 const PATH = "/examples";
 
 type PageProps = { params: Promise<{ locale: string }> };

@@ -14,9 +14,9 @@
 //     pan?: [x0, x1] (0-1, slides the 9:16 window across the art) | zoom?: [from, to] + focus?: [x, y],
 //     ambient?: forest | sea | night | day (free layered motion for this still, see render-ambient.mjs),
 //     ambientMode?: "out" (end on the plain page, for the beat before a transition clip),
-//     brand?: true (shows meapica.shop: last beat only) }],
+//     brand?: true (shows meapica.es: last beat only) }],
 //   ambient?: preset applied to every still beat of the video,
-//   web?: true (a small meapica.shop label from the third beat on), outroSay?: line the narrator says over the outro,
+//   web?: true (a small meapica.es label from the third beat on), outroSay?: line the narrator says over the outro,
 //   outro?: true (appends the animated logo, docs/social/brand/outro.mp4, rendered from the HyperFrames project videos/outro-libro; use it instead of
 //     `brand` on narrated videos, not on short loops) }
 //   outro: "short" appends the 3.2 s corporate closing instead (docs/social/brand/closing-short-<lang>.mp4): every short reel ends with it.
@@ -56,7 +56,7 @@ const SRC_H = 2730;
 async function pdfPage(id, n) {
   const pdf = `${TMP}/${id}.pdf`;
   if (!existsSync(pdf)) {
-    const res = await fetch(`https://meapica.shop/api/showcase/${id}/pdf`);
+    const res = await fetch(`https://meapica.es/api/showcase/${id}/pdf`);
     if (!res.ok) throw new Error(`example PDF ${id}: HTTP ${res.status}`);
     writeFileSync(pdf, Buffer.from(await res.arrayBuffer()));
   }
@@ -219,8 +219,8 @@ for (const [i, b] of T.beats.entries()) {
   const layers = [];
   if (b.title) layers.push([await overlay(`b${i}-title`, `<div class="pill title"${b.titleTop ? ` style="top:${b.titleTop}px"` : ""}>${b.title}</div>`), 0, shown]);
   // Most viewers leave long before the outro: the address sits on screen from the third beat on.
-  if (T.web && i >= 2 && !b.title && !b.brand) layers.push([await overlay("web", `<div class="pill web">meapica.shop</div>`), 0, shown]);
-  if (b.brand) layers.push([await overlay(`b${i}-brand`, `<div class="pill brand">meapica.shop</div>`), 0, shown]);
+  if (T.web && i >= 2 && !b.title && !b.brand) layers.push([await overlay("web", `<div class="pill web">meapica.es</div>`), 0, shown]);
+  if (b.brand) layers.push([await overlay(`b${i}-brand`, `<div class="pill brand">meapica.es</div>`), 0, shown]);
   if (voice) {
     const chunks = captionChunks(voice.alignment);
     for (const [j, c] of chunks.entries()) {

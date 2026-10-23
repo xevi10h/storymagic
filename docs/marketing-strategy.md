@@ -32,10 +32,10 @@ preview before paying, the child's real likeness in watercolour, and native Cata
 4. Press for Reyes: 20 pitches in `docs/outreach/reyes-2026-targets.csv`, Gmail drafts recreated 2026-10-19, unsent. Roundups of "carta a los Reyes para imprimir" are refreshed in
    November: send them in the last week of October. Catalan media, AFA federations and Spanish gift guides:
    20 more pitches in `docs/outreach/media-2026-10.md` (Sortir amb Nens, Time Out, Ara Criatures, aFFaC, FANOC,
-   Malasmadres...), Gmail drafts from hola@meapica.shop created 2026-10-19, unsent.
+   Malasmadres...), Gmail drafts from hola@meapica.es created 2026-10-19, unsent.
 5. AFA/AMPA (Catalonia first) and companies: a Stripe promotion code per school (already supported:
    `allow_promotion_codes`), 10 % off for families plus 5 € per book to the class. Companies: Christmas gift for
-   employees' children. One deal = 50-400 books. Leads via the `lead-research` skill, emails from hola@meapica.shop.
+   employees' children. One deal = 50-400 books. Leads via the `lead-research` skill, emails from hola@meapica.es.
 6. Every book is an ad: last page with a QR "crea el de un amigo" plus a 10 € code for both families
    (referral, not built), and the grandparents share link from the preview (exists: `src/lib/share/`) pushed in the
    preview UI and the reminder emails.

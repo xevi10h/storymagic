@@ -74,8 +74,8 @@ const VOUCHER: Record<Locale, VoucherCopy> = {
     intro: (f, r) => `Gracias por regalar un cuento. Aquí tienes la tarjeta regalo de un cuento personalizado en ${f}${r ? ` para <strong>${r}</strong>` : ""}.`,
     redeem: (p) =>
       p
-        ? "Puedes imprimirla o reenviarla. Quien la reciba crea su cuento en meapica.shop y escribe el código al pagar: el libro le sale gratis, con el envío incluido."
-        : "Puedes imprimirla o reenviarla. Quien la reciba crea su cuento en meapica.shop y escribe el código al pagar: el PDF le sale gratis.",
+        ? "Puedes imprimirla o reenviarla. Quien la reciba crea su cuento en meapica.es y escribe el código al pagar: el libro le sale gratis, con el envío incluido."
+        : "Puedes imprimirla o reenviarla. Quien la reciba crea su cuento en meapica.es y escribe el código al pagar: el PDF le sale gratis.",
     noExpiry: "No caduca: la podéis canjear cuando queráis.",
     codeLabel: "Código de la tarjeta regalo",
     cta: "Ver e imprimir la tarjeta",
@@ -90,8 +90,8 @@ const VOUCHER: Record<Locale, VoucherCopy> = {
     intro: (f, r) => `Gràcies per regalar un conte. Aquí tens la targeta regal d'un conte personalitzat en ${f}${r ? ` per a <strong>${r}</strong>` : ""}.`,
     redeem: (p) =>
       p
-        ? "La pots imprimir o reenviar. Qui la rebi crea el seu conte a meapica.shop i escriu el codi en pagar: el llibre li surt gratis, amb l'enviament inclòs."
-        : "La pots imprimir o reenviar. Qui la rebi crea el seu conte a meapica.shop i escriu el codi en pagar: el PDF li surt gratis.",
+        ? "La pots imprimir o reenviar. Qui la rebi crea el seu conte a meapica.es i escriu el codi en pagar: el llibre li surt gratis, amb l'enviament inclòs."
+        : "La pots imprimir o reenviar. Qui la rebi crea el seu conte a meapica.es i escriu el codi en pagar: el PDF li surt gratis.",
     noExpiry: "No caduca: la podeu bescanviar quan vulgueu.",
     codeLabel: "Codi de la targeta regal",
     cta: "Veure i imprimir la targeta",
@@ -106,8 +106,8 @@ const VOUCHER: Record<Locale, VoucherCopy> = {
     intro: (f, r) => `Thank you for giving a story. Here is your gift voucher for one personalised ${f} book${r ? ` for <strong>${r}</strong>` : ""}.`,
     redeem: (p) =>
       p
-        ? "Print it or forward it. The recipient creates their story on meapica.shop and types the code at checkout: the book is free, shipping included."
-        : "Print it or forward it. The recipient creates their story on meapica.shop and types the code at checkout: the PDF is free.",
+        ? "Print it or forward it. The recipient creates their story on meapica.es and types the code at checkout: the book is free, shipping included."
+        : "Print it or forward it. The recipient creates their story on meapica.es and types the code at checkout: the PDF is free.",
     noExpiry: "It never expires: it can be redeemed whenever you like.",
     codeLabel: "Gift voucher code",
     cta: "View and print the voucher",
@@ -122,8 +122,8 @@ const VOUCHER: Record<Locale, VoucherCopy> = {
     intro: (f, r) => `Merci d'offrir une histoire. Voici votre carte cadeau pour un livre personnalisé en ${f}${r ? ` pour <strong>${r}</strong>` : ""}.`,
     redeem: (p) =>
       p
-        ? "Imprimez-la ou transférez-la. La personne qui la reçoit crée son histoire sur meapica.shop et saisit le code au paiement : le livre est offert, livraison comprise."
-        : "Imprimez-la ou transférez-la. La personne qui la reçoit crée son histoire sur meapica.shop et saisit le code au paiement : le PDF est offert.",
+        ? "Imprimez-la ou transférez-la. La personne qui la reçoit crée son histoire sur meapica.es et saisit le code au paiement : le livre est offert, livraison comprise."
+        : "Imprimez-la ou transférez-la. La personne qui la reçoit crée son histoire sur meapica.es et saisit le code au paiement : le PDF est offert.",
     noExpiry: "Elle n'expire pas : vous pouvez l'utiliser quand vous voulez.",
     codeLabel: "Code de la carte cadeau",
     cta: "Voir et imprimer la carte",

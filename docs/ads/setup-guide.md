@@ -14,7 +14,7 @@ the 2026-09-30 session research (Meta Graph API v26.0, AEPD cookie guide May 202
 5. **Dataset (Pixel)**: Events Manager › Connect data › Web › "Meapica web". Copy the **dataset id**.
 6. **Conversions API token**: Events Manager › the dataset › Settings › Conversions API › *Generate access token*.
    Also copy the **test event code** (Test events tab).
-7. **Domain**: Business settings › Brand safety › Domains › add `meapica.shop` → give Claude the TXT record to add to DNS.
+7. **Domain**: Business settings › Brand safety › Domains › add `meapica.es` → give Claude the TXT record to add to DNS.
 8. **TikTok** `@meapica`: create the account, then Settings › Account › **Switch to Business Account**. No TikTok Ads account for now.
 
 Hand Claude: dataset id, CAPI token, test event code, domain TXT. Claude sets them in Vercel and runs a test purchase.
@@ -49,7 +49,7 @@ Offline check of the server payload: `npx tsx scripts/check-meta-capi.mts`.
 - 4 posts/week from `organic-calendar.md`, alternating ES and CA.
 - Schedule IG/FB in **Meta Business Suite › Planner** and TikTok in **TikTok Studio (web) › Schedule**. Both are native and free, so no API integration is needed at this volume.
 - TikTok: turn on the **"AI-generated content"** label on posts that show the generated illustrations (TikTok policy). Meta adds its "AI info" label by itself when it detects it.
-- Bio link: `https://meapica.shop/es?utm_source=instagram&utm_medium=organic_social` (TikTok: `utm_source=tiktok`).
+- Bio link: `https://meapica.es/es?utm_source=instagram&utm_medium=organic_social` (TikTok: `utm_source=tiktok`).
 
 ## 5. What the site tracks (and when)
 

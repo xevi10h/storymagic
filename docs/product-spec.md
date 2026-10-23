@@ -23,7 +23,7 @@
 | 27 | "About the reader" — print-size hero portrait of the child + age, favourite colour, etc. |
 | 28–29 | Illustrated adventure map + age-adapted "busca y encuentra" game (2-4: 4 items · 5-6: 6 items + follow the path · 7-12: 8 items + 3 questions, answers upside down). Books made before 2026-09-28: Meapica endpaper spread |
 | Pastedowns | First + last page of the Gelato inside file (glued to the boards) and the digital book's endpapers: the Meapica endpaper — theme-tinted light paper with a calm scattered lattice of sparkles, crescent moons, small gold stars and dots (solid inks, no transparency; `EndpaperPage`) |
-| 30 | Colophon + QR to meapica.shop (left page alone) |
+| 30 | Colophon + QR to meapica.es (left page alone) |
 
 Body type grows with the reader's age band (2-4: 17 pt · 5-6: 15.5 · 7-9: 13 · 10-12: 11.5) and the LLM's word budgets are calibrated to fit at that size (docs/generation-pipeline.md). Young books then GROW their type to fill the page (2-4 up to 24 pt, 5-6 up to 19 pt): one size per book, the largest at which every body block fits (text pages, text under a secondary illustration, panorama text — which must stay on its gradient). Titles, ornaments and bridge text scale along; text blocks sit on the optical centre; centred text is set with balanced lines and no paragraph ends on a lone word. Reference: Júlia (3) prints at 21.5 pt, limited by her 4-line panorama.
 
@@ -97,7 +97,7 @@ Each template is identified by an English slug and is backed by a branching stor
 ### Child photo — privacy promise (2026-09-27)
 - Public copy: "la borramos en cuanto creamos su personaje (y siempre en menos de 24 horas)"; OpenAI does not train on it and may keep it up to 30 days for abuse monitoring. Privacy policy section 8 "Fotos de menores" (`legal.privacy.section8*`).
 - Consent record per photo (`photo_consents`: user, time, `PHOTO_CONSENT_VERSION`, locale), kept after deletion as proof. Bump `PHOTO_CONSENT_VERSION` whenever the `crear.photo.checkbox` copy changes.
-- Withdrawal: `DELETE /api/characters/photo` or email to hola@meapica.shop → deleted immediately.
+- Withdrawal: `DELETE /api/characters/photo` or email to hola@meapica.es → deleted immediately.
 - Pending before enabling: DPIA/EIPD, OpenAI DPA, controller NIF/address in the privacy policy (`[NIF]`, `[DIRECCIÓN]` placeholders).
 
 ## Upsells & Add-ons
@@ -178,7 +178,7 @@ Two more guides in the same registry (`src/lib/guides.ts`), **Catalan only** (ev
 
 ## Product facts, structured data and llms.txt (SEO/GEO pass, 2026-10-01)
 
-- **Single source of truth:** `src/lib/product-facts.ts` derives every public fact from the code that runs the product: prices (`STRIPE_CATALOG`, VAT-inclusive), delivery promise (`PROMISED_BUSINESS_DAYS` 7–10 business days, exposed as `DELIVERY_PARAMS` in `shipping.ts`), coverage (peninsula + Baleares; no Canarias/Ceuta/Melilla), ages (2–12 from the template ranges; bands `AGE_BANDS` 2-4 / 5-7 / 8-12 also drive the catalog filter and `/personalized-books`), book specs (20 × 20 cm, 30 pages = Gelato `INNER_PAGE_COUNT`, 12 scenes, 170 g), returns (no withdrawal, defect reprint within 30 days), contact email (`CONTACT_EMAIL` = `SUPPORT_EMAIL`, TODO swap to hola@meapica.shop). Messages quote facts through ICU params (`COPY_PARAMS` / `factParams()`: `{minDays}` `{maxDays}` `{ageMin}` `{ageMax}` `{pages}` `{scenes}` `{size}` `{paper}` `{hardcover}` `{softcover}` `{pdf}`), never hardcoded numbers; template age badges render `data.ageRange` from `ageMin`/`ageMax`.
+- **Single source of truth:** `src/lib/product-facts.ts` derives every public fact from the code that runs the product: prices (`STRIPE_CATALOG`, VAT-inclusive), delivery promise (`PROMISED_BUSINESS_DAYS` 7–10 business days, exposed as `DELIVERY_PARAMS` in `shipping.ts`), coverage (peninsula + Baleares; no Canarias/Ceuta/Melilla), ages (2–12 from the template ranges; bands `AGE_BANDS` 2-4 / 5-7 / 8-12 also drive the catalog filter and `/personalized-books`), book specs (20 × 20 cm, 30 pages = Gelato `INNER_PAGE_COUNT`, 12 scenes, 170 g), returns (no withdrawal, defect reprint within 30 days), contact email (`CONTACT_EMAIL` = `SUPPORT_EMAIL`, TODO swap to hola@meapica.es). Messages quote facts through ICU params (`COPY_PARAMS` / `factParams()`: `{minDays}` `{maxDays}` `{ageMin}` `{ageMax}` `{pages}` `{scenes}` `{size}` `{paper}` `{hardcover}` `{softcover}` `{pdf}`), never hardcoded numbers; template age badges render `data.ageRange` from `ageMin`/`ageMax`.
 - **Measured vs promised delivery:** customer copy promises 7–10 business days; the Christmas/Reyes cut-offs use the measured Gelato 7–8 calendar days + 6-day buffer (`/christmas-delivery` "Cómo calculamos" states both).
 - **JSON-LD** (`src/components/seo/JsonLd.tsx`): Organization (logo, email, contactPoint, Barcelona/ES, `hasMerchantReturnPolicy` = MerchantReturnNotPermitted + legal link; `sameAs` only when `SOCIAL_PROFILES` has real profiles). Product on the home and on every programmatic SEO landing (gifts / ages / themes; same Product, offers `url` = the page carrying it, 2026-10-03): real showcase covers as `image` (fallback template art), offers for hardcover / softcover / PDF with `valueAddedTaxIncluded: true`, `url` = the indexable home (not noindex `/create`), printed offers carry `shippingDetails` (0 €, ES postcode ranges excluding 35/38/51/52, 7–10 business days) and every offer the return policy.
 - **SEO landings** (`SeoLandingPage` / `HubPage`): every page has its own FAQ (`seo.{type}.{slug}.faq.q1..a4`) with FAQPage JSON-LD; optional long-form `sections` (three-kings, christmas, `/personalized-books` hub); three-kings and christmas show this season's order-by cards (`DeadlineCards`) and revalidate daily. Keyword split: three-kings = "regalo de Reyes personalizado", christmas = "cuento personalizado de Navidad" (Nochebuena/Papá Noel; ca Tió), `/christmas-delivery` = deadlines. Baptism and first-birthday are framed as keepsakes to read from age 2 (youngest template).
@@ -249,7 +249,7 @@ Rules in `src/lib/promo-codes.ts` (pure, checked by `src/lib/promo-codes.check.m
 - **Referral:** every paid book order (PDF or printed) gets one personal code (`MEA` + 6 chars), a Stripe promotion
   code on coupon `meapica_referral_10` (10 € off, applies only to the softcover/hardcover book products, so never the
   PDF, extra copies or upgrades; max 20 uses per code). Shown: QR + code + one line on the **last inner page**
-  (colophon, replaces the plain meapica.shop QR; book locale), a commercial block in the order confirmation,
+  (colophon, replaces the plain meapica.es QR; book locale), a commercial block in the order confirmation,
   `book_ready` and `delivered` emails (only with marketing permission + unsubscribe link, LSSI 21.2), and the
   library order card ("Copiar enlace"). Link `/<locale>/r/<code>` sets cookie `meapica_ref` (30 days, httpOnly) and
   redirects to `/create`; `/api/checkout` pre-applies it to a printed book (Stripe `discounts`, the code field is then
@@ -304,7 +304,7 @@ The entire site is gated behind a pre-launch waiting list when `WAITLIST_MODE=tr
 **How it works:**
 - A full-screen waitlist page replaces the normal site content for all visitors
 - Users submit their **name + email** to join the waiting list
-- On submission, a **confirmation email** is sent via **Resend** (currently sending from `constrack.pro` domain; `meapica.shop` DNS records pending configuration)
+- On submission, a **confirmation email** is sent via **Resend** (sending from `pedidos@meapica.es`)
 - Subscriber data is stored in the **`newsletter_subscribers`** table in Supabase
 - A **live subscriber counter** is displayed on the waitlist page to create social proof
 - Available in all **4 languages** (ES, CA, EN, FR) via next-intl

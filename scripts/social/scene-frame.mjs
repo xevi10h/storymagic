@@ -10,7 +10,7 @@ export async function sceneFrame(spec, tmp, name) {
   const [, id, page, focus] = spec.split(":");
   const pdf = `${tmp}/${id}.pdf`;
   if (!existsSync(pdf)) {
-    const res = await fetch(`https://meapica.shop/api/showcase/${id}/pdf`);
+    const res = await fetch(`https://meapica.es/api/showcase/${id}/pdf`);
     if (!res.ok) throw new Error(`example PDF ${id}: HTTP ${res.status}`);
     writeFileSync(pdf, Buffer.from(await res.arrayBuffer()));
   }

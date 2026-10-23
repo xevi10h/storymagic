@@ -34,5 +34,5 @@ Primary text per angle: `creative-pack.md`. TikTok (3-day test, €20/day ad gro
   (`story/v3/vo-take.py`); brand said **"MÉ-a-pi-ca"** (write "Méapica", never a period right after it).
 - Score: ElevenLabs Music with section plans (`story/v3/audio/music-{full,short}.json`, sections ≥ 3 s).
 - Assembly: `node docs/ads/creatives/story/v3/story-ad.mjs <noa|leo> <es|ca> <full|short> <916|45>`.
-- Phone beat: real meapica.shop flow (`story/v3/rec-flow.mjs`). Note: Turnstile now blocks automated
+- Phone beat: real meapica.es flow (`story/v3/rec-flow.mjs`). Note: Turnstile now blocks automated
   chapter taps; Leo's flow ends at the world/chapter-1 screen.

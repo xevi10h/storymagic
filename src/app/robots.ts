@@ -36,7 +36,7 @@ export default function robots(): MetadataRoute.Robots {
       { userAgent: "*", allow: "/", disallow: DISALLOW },
       { userAgent: AI_AND_SEARCH_BOTS, allow: "/", disallow: DISALLOW },
     ],
-    sitemap: "https://meapica.shop/sitemap.xml",
+    sitemap: "https://meapica.es/sitemap.xml",
     // No `Host:` line: Yandex-only and non-standard (Google ignores it); the
     // canonical host is enforced by the middleware 308s and <link rel="canonical">.
   };
