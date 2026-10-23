@@ -231,7 +231,16 @@ Meta Pixel + Conversions API behind an AEPD cookie banner. Off until the env var
 dataset "Meapica web", `meapica.shop` domain verification (DNS TXT). Owner setup + first campaign: `docs/ads/setup-guide.md`.
 Code map: `docs/technical-architecture.md` › Ads tracking. No TikTok Pixel (TikTok is organic only).
 
-## Domains (primary since 2026-10-23: meapica.es)
+## Domains (switch to meapica.es: code on main, prod rolled back)
+
+> **Status 2026-10-23:** `ff68feb` (code → .es) was deployed and **rolled back** after 6 min: Cloudflare Turnstile
+> answered `110200` (domain not authorized) on meapica.es, so login and previews failed. Prod = deployment of `b0fc1fa`
+> (Vercel auto-promotion is off after an instant rollback), `meapica.es` 301 → `meapica.shop` again, Supabase Site URL
+> back to `.shop` (SMTP sender stays `pedidos@meapica.es`). Vercel prod env already holds the .es values.
+> To retry: add `meapica.es` to the Turnstile widget `0x4AAAAAAFLSoggPOt81EmD4` hostnames, check that the widget no
+> longer returns 110200 on meapica.es (Playwright: render the widget with that sitekey), then promote the `ff68feb`
+> deployment, remove the `meapica.es` redirect, `www.meapica.es`/`www.meapica.shop` → `meapica.es` 308, Site URL `.es`.
+> The text below describes the target state.
 
 - **Primary: `meapica.es`** (+ `www`), registered at **Hostinger**, DNS there (API token `~/.config/hostinger/token`,
   `PUT https://developers.hostinger.com/api/dns/v1/zones/meapica.es`). Records: `@ A 216.150.1.1` + `216.150.16.1`,
@@ -471,13 +480,19 @@ Order: apply the migration → deploy → run the setup script with the live key
 ## Creator programme (2026-10-23)
 
 - No new env vars. Uses `ADMIN_EMAILS` (`/admin/creators`), `OPS_ALERT_EMAIL` (payout request emails, fallback
-  `GELATO_OWNER_EMAIL`), `STRIPE_ENVIRONMENT` + keys, `SUPABASE_SERVICE_ROLE_KEY`. No new webhook events.
+  `GELATO_OWNER_EMAIL`), `STRIPE_ENVIRONMENT` + keys, `SUPABASE_SERVICE_ROLE_KEY`.
+- **New webhook event `charge.dispute.closed`** (a lost chargeback voids the commission): in `WEBHOOK_EVENTS` of
+  `scripts/stripe-setup-catalog.mts`; enable it on the LIVE and TEST endpoints (re-run the script with
+  `--webhook-url=<the endpoint URL>` or add the event in the Dashboard). Without it, a lost chargeback keeps paying
+  commission.
 - Stripe: no setup script step. Each credit creates its own coupon `meapica_creator_credit_<uuid>` + one promotion code
   at runtime; it copies `applies_to` from `meapica_referral_10` (exists in LIVE, verified 2026-10-23). Audience codes
   stay as created by `scripts/social/create-creator-codes.sh` (coupon `pUqYq48o`, expire 2027-01-06).
 - Seeding the existing creators: write `creators.csv` (`<handle>,<login email>` per line), then
   `node scripts/social/seed-creators.mjs creators.csv` (LIVE Stripe read, dry run) and `--apply` to insert into the
-  Supabase project of `.env.local` (production). New creators later: `/admin/creators`.
+  Supabase project of `.env.local` (production), one row at a time (duplicates / invalid rows reported, never abort).
+  New creators later: `/admin/creators`. Then `node scripts/social/backfill-creator-commissions.mjs` (dry run) and
+  `--apply` for audience-code orders paid since 2026-10-06, before the deploy.
 - Checks: `node --experimental-strip-types src/lib/creators.check.mjs`; `bash supabase/tests/creator_withdraw.check.sh`
   (spins a throwaway local Postgres from Homebrew `postgresql@16`, tests the double-spend guard, deletes it).
 
@@ -487,7 +502,8 @@ Order: apply the migration → deploy → run the setup script with the live key
 |---|---|---|
 | 20261023120000 | `creator_programme.sql` (orders promotion columns, `creators`, `creator_commissions`, `creator_withdrawals`, RPC `creator_withdraw`) | **before** the deploy (additive; the webhook writes them on every promotion-code order and refund) |
 
-Order: apply the migration → deploy → seed creators → check `/admin/creators`.
+Order: apply the migration → deploy → enable `charge.dispute.closed` on the webhook endpoints → seed creators →
+backfill → check `/admin/creators`.
 
 ## Customer reviews (2026-10-19)
 
