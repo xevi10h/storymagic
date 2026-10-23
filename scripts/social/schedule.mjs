@@ -43,7 +43,7 @@ export function checkPost(p, dir) {
   if (p.title?.length > 100) errors.push("title over 100 chars");
   // Named before it is built (playbook rule 0); learn.mjs groups results by it.
   if (typeof p.strategy !== "string" || !p.strategy.trim()) errors.push('missing "strategy" (the spreading strategy this post tests)');
-  if (!/https:\/\/meapica\.shop\S*utm_source=facebook\S*org_fb_/.test(p.fb ?? "")) errors.push("fb caption needs the UTM link (utm_source=facebook, utm_content=org_fb_…)");
+  if (!/https:\/\/meapica\.(?:es|shop)\S*utm_source=facebook\S*org_fb_/.test(p.fb ?? "")) errors.push("fb caption needs the UTM link (utm_source=facebook, utm_content=org_fb_…)");
   if (!Array.isArray(p.media) || p.media.length === 0) errors.push("no media");
   else {
     const isVideo = p.media[0].type === "video";
