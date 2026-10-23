@@ -9,7 +9,7 @@ import { GUIDES, GUIDE_IDS, guideAlternates, guideUpdated } from "@/lib/guides";
 import { getShowcaseRefs } from "@/lib/showcase";
 import { showcasePath } from "@/lib/showcase-slug";
 
-const BASE_URL = "https://meapica.shop";
+const BASE_URL = "https://meapica.es";
 
 // We only ship to Spain: until the es/ca pages are indexed, en/fr stay out of the sitemap so the
 // crawl budget of a young domain is not spent on them. The pages still exist, stay indexable and

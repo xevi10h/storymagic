@@ -5,7 +5,7 @@ import { routing } from "@/i18n/routing";
 import SeoLandingPage from "@/components/seo-landing/SeoLandingPage";
 import { SEO_GIFT_SLUGS, isValidSeoSlug, seoPath } from "@/lib/seo-landing";
 
-const BASE_URL = "https://meapica.shop";
+const BASE_URL = "https://meapica.es";
 const TYPE = "gifts" as const;
 
 // Christmas / Reyes pages quote this season's order-by dates (FAQ + deadline cards): refresh daily.

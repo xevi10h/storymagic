@@ -14,7 +14,7 @@ import { CHRISTMAS_DELIVERY_PATH, nextPhysicalCutoff, spainToday } from "@/lib/s
 import { GIFT_VOUCHER_PATH, VOUCHER_FORMATS } from "@/lib/promo-codes";
 import { getPromotionSetup } from "@/lib/growth/stripe-promotions";
 
-const BASE_URL = "https://meapica.shop";
+const BASE_URL = "https://meapica.es";
 const PATH = GIFT_VOUCHER_PATH;
 const INTL_LOCALE: Record<string, string> = { es: "es-ES", ca: "ca-ES", en: "en-GB", fr: "fr-FR" };
 

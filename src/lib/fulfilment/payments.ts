@@ -17,6 +17,7 @@ import { sendTikTokPurchase } from "@/lib/tracking/tiktok-events";
 import { sendGa4Purchase } from "@/lib/tracking/ga4-mp";
 import { ensureReferralCode, processPromotionRedemptions } from "@/lib/growth/referrals";
 import { recordGiftVoucherRefund, voucherByPayment } from "@/lib/growth/gift-vouchers";
+import { recordCreatorRefund, recordOrderPromotion } from "@/lib/growth/creators";
 import type { FulfilmentClient, FulfilmentDatabase } from "./db";
 
 type OrderRow = FulfilmentDatabase["public"]["Tables"]["orders"]["Row"];
@@ -45,7 +46,10 @@ export async function recordPaidSession(
   sessionId: string,
   opts: { fallbackEmail?: string | null } = {},
 ): Promise<PaidSessionResult> {
-  const session = await getStripe().checkout.sessions.retrieve(sessionId, { expand: ["invoice", "line_items"] });
+  // discounts.promotion_code expanded: its text is recorded on the order (creator attribution).
+  const session = await getStripe().checkout.sessions.retrieve(sessionId, {
+    expand: ["invoice", "line_items", "discounts.promotion_code"],
+  });
   // Delayed payment methods complete the session unpaid; the money arrives later
   // with checkout.session.async_payment_succeeded. no_payment_required = 100 % promo code.
   if (session.payment_status !== "paid" && session.payment_status !== "no_payment_required") {
@@ -239,13 +243,19 @@ export async function recordPaidSession(
     receipt,
   });
 
-  // Codes used on this order: gift voucher → redeemed; referral code → reward the referrer.
+  // Codes used on this order: gift voucher → redeemed; referral code → reward the referrer;
+  // any code → recorded on the order, creator audience code → commission.
   let followUpError: string | undefined;
-  try {
-    await processPromotionRedemptions(supabase, { order, session, buyerEmail: customerEmail });
-  } catch (err) {
-    followUpError = err instanceof Error ? err.message : String(err);
-    console.error(`[payments] Promotion follow-up for order ${order.id} failed:`, followUpError);
+  for (const followUp of [
+    () => processPromotionRedemptions(supabase, { order, session, buyerEmail: customerEmail }),
+    () => recordOrderPromotion(supabase, { order, session, buyerEmail: customerEmail }),
+  ]) {
+    try {
+      await followUp();
+    } catch (err) {
+      followUpError = err instanceof Error ? err.message : String(err);
+      console.error(`[payments] Promotion follow-up for order ${order.id} failed:`, followUpError);
+    }
   }
   return { state: "paid", order, processedHere, followUpError };
 }
@@ -291,6 +301,8 @@ export async function recordRefund(supabase: FulfilmentClient, charge: Stripe.Ch
     console.warn(`[payments] charge.refunded for unknown payment ${paymentId}`);
     return;
   }
+  // Creator commission follows every refund, partial or full (cumulative amount_refunded).
+  await recordCreatorRefund(supabase, order.id, charge.amount_refunded);
 
   if (!charge.refunded) {
     await alertOperator(supabase, {

@@ -3,10 +3,10 @@ import { routing } from "@/i18n/routing";
 import { REFERRAL_COOKIE, REFERRAL_COOKIE_MAX_AGE_S, normalizeCode } from "@/lib/promo-codes";
 
 /**
- * Referral link printed in the book (QR) and shared from the emails / library:
- * /<locale>/r/<code> keeps the code for 30 days and opens the creator. /api/checkout
- * pre-applies it to a printed book (src/lib/growth/referrals.ts). No DB lookup here:
- * an unknown code is simply ignored at checkout.
+ * Referral link printed in the book (QR) and shared from the emails / library, and a
+ * creator's audience link (/<locale>/r/LARA10, shown in their panel): keeps the code for
+ * 30 days and opens the creation flow. /api/checkout pre-applies it (referralForCheckout in
+ * src/lib/growth/referrals.ts). No DB lookup here: an unknown code is ignored at checkout.
  */
 export async function GET(request: NextRequest, { params }: { params: Promise<{ locale: string; code: string }> }) {
   const { locale: raw, code: rawCode } = await params;

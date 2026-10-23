@@ -12,7 +12,7 @@ import { BreadcrumbJsonLd, articleAuthor } from "@/components/seo/JsonLd";
 import { Breadcrumbs, PageHero, kicker, marketingH1, marketingLead } from "@/components/seo-landing/MarketingHeader";
 import { getPublishedPosts, getBlogLocales } from "@/lib/blog";
 
-const BASE_URL = "https://meapica.shop";
+const BASE_URL = "https://meapica.es";
 const PATH = "/blog";
 
 type PageProps = { params: Promise<{ locale: string }> };

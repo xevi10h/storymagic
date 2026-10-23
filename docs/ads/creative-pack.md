@@ -179,7 +179,7 @@ Format: **Primary text** (first line = hook, ≤ 125 chars) / **Headline** (≤ 
 ## 3. Video scripts (9:16, 1080×1920)
 
 Production kit (all digital, capture once, reuse everywhere):
-- **Phone screen recordings** at 390×844 (iPhone 14/15 viewport) on meapica.shop, in ES and in CA. Use Playwright
+- **Phone screen recordings** at 390×844 (iPhone 14/15 viewport) on meapica.es, in ES and in CA. Use Playwright
   `recordVideo` or iOS screen record; hide status-bar clutter. Record with a demo name, never a real customer's child.
 - **Art stills**: `public/images/landing/hugo/*.webp`, `public/images/templates/{world}.jpg`, `public/images/path/{world}/`,
   portraits `public/images/avatar/{boy|girl|neutral}/…`, example books at `/{lang}/examples/{id}` (swipe viewer on mobile).
@@ -188,7 +188,7 @@ Production kit (all digital, capture once, reuse everywhere):
 - **Safe zones**: keep text out of the top 220 px and bottom 420 px (Reels/TikTok UI). One idea per card, Fredoka 64–80 px.
 - **VO**: brand voice (the founder or a hired voice), warm, calm; it never says "my son loved it" or poses as a customer.
   Music: soft acoustic/piano from the platform's commercial library.
-- End card (all videos): live cover + "meapica.shop" + price line with VAT + CTA text. Burned-in captions always (80 % watch muted).
+- End card (all videos): live cover + "meapica.es" + price line with VAT + CTA text. Burned-in captions always (80 % watch muted).
 
 ### V1 · "Escribe su nombre" (A1) · 15 s
 - **Hook 0–2 s:** extreme close-up of the empty hero field; a finger types "M-a-r-t-i-n-a" and the cover title changes letter by letter.
@@ -262,7 +262,7 @@ Production kit (all digital, capture once, reuse everywhere):
 1) Hugo cover: "Así es un libro Meapica por dentro" / CA "Així és un llibre Meapica per dins" · 2) title/dedication page · 3) scene-5 "Su cara en cada página" · 4) panorama scene-8 split across cards 4–5 (seamless swipe) · 6) end card price + "Crea el suyo" / "Crea el seu". Caption tag "Ejemplo: Hugo, 5 años".
 
 **S2 · Static "Su nombre aquí" (A1), dynamic creative**
-The live cover (forest or space) with 6 name variants rendered from the hero: ES Lucía, Martina, Hugo, Leo, Mateo, Sofía · CA Jana, Martina, Pol, Nil, Arlet, Biel. Line under cover: "Escribe el suyo en meapica.shop" / "Escriu el seu a meapica.shop". Price line with VAT. Let Meta's dynamic creative rotate names.
+The live cover (forest or space) with 6 name variants rendered from the hero: ES Lucía, Martina, Hugo, Leo, Mateo, Sofía · CA Jana, Martina, Pol, Nil, Arlet, Biel. Line under cover: "Escribe el suyo en meapica.es" / "Escriu el seu a meapica.es". Price line with VAT. Let Meta's dynamic creative rotate names.
 
 **S3 · Carousel "3 pasos y lo ves antes de pagar" (A2)**
 Card per step, each a real phone screenshot: 1) "Su nombre" 2) "Cómo es" (portrait) 3) "Su aventura" (path art) 4) "Su libro, gratis antes de pagar" (preview) 5) formats: "Tapa blanda 34,90 € IVA incluido · Tapa dura 49,90 € IVA incluido · PDF 9,90 € IVA incluido". CA equivalents from §3 V2.
@@ -293,7 +293,7 @@ Organic posts: `org_{platform}_w{week}{day}_{lang}` → `org_ig_w1mon_es`.
 | TikTok organic | `utm_source=tiktok&utm_medium=organic_social&utm_campaign=org_q4-26&utm_content=org_tt_w1wed_ca&lang=ca` |
 
 `utm_content` = the platform ad id (paid) so spend joins cleanly to orders; the human-readable ad name lives in the ad itself.
-Example final URL: `https://meapica.shop/ca/create?utm_source=meta&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_term={{adset.name}}&utm_content={{ad.id}}&utm_id={{campaign.id}}&lang=ca`
+Example final URL: `https://meapica.es/ca/create?utm_source=meta&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_term={{adset.name}}&utm_content={{ad.id}}&utm_id={{campaign.id}}&lang=ca`
 
 ---
 

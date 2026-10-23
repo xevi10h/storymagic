@@ -7,8 +7,9 @@
 // VAT (amount_total - amount_tax), paid by bank transfer once a month when the balance is >= 20 €.
 // Refunded amounts are subtracted. Gift codes (kind "gift", 0 €) never count.
 //
-// ponytail: no DB table for balances or payouts. A creator under 20 € carries over: rerun with a
-// --from that covers the unpaid months. Move to an orders column + payouts table if the channel grows.
+// Since 2026-10-23 the app keeps the ledger (creator panel + /admin/creators, tables creators /
+// creator_commissions / creator_withdrawals): this script stays as an independent cross-check
+// straight from Stripe. Formula shared with the app: src/lib/creators.ts (commissionCents).
 //
 // Usage:
 //   node scripts/social/creator-commissions.mjs                          # previous calendar month
@@ -16,29 +17,8 @@
 //   node scripts/social/creator-commissions.mjs --orders                 # also list every order
 import { readFileSync } from "node:fs";
 import Stripe from "stripe";
-
-export const COMMISSION_RATE = 0.1;
-export const PAYOUT_MIN_CENTS = 2000;
-
-/** Commission in cents for one paid session: 10% of (paid - VAT - refunded), never negative. */
-export function commissionCents({ amountTotal, amountTax, amountRefunded }) {
-  const paid = amountTotal || 0;
-  if (paid <= 0) return { net: 0, commission: 0 };
-  // Refunds include VAT: take the same VAT share off them.
-  const netRatio = (paid - (amountTax || 0)) / paid;
-  const net = Math.max(0, Math.round((paid - (amountRefunded || 0)) * netRatio));
-  return { net, commission: Math.round(net * COMMISSION_RATE) };
-}
-
-function demo() {
-  // Hardcover 49,90 with -10% = 44,91 (4% IVA inside: 1,73) → net 43,18 → 4,32 €
-  const a = commissionCents({ amountTotal: 4491, amountTax: 173, amountRefunded: 0 });
-  if (a.net !== 4318 || a.commission !== 432) throw new Error(`demo hardcover: ${JSON.stringify(a)}`);
-  const b = commissionCents({ amountTotal: 4491, amountTax: 173, amountRefunded: 4491 });
-  if (b.commission !== 0) throw new Error("demo full refund");
-  const c = commissionCents({ amountTotal: 0, amountTax: 0, amountRefunded: 0 });
-  if (c.commission !== 0) throw new Error("demo free order");
-}
+// Node >= 22.18 strips the types of a .ts import (pure module, no imports of its own).
+import { commissionCents, CREATOR_PAYOUT_MIN_CENTS as PAYOUT_MIN_CENTS } from "../../src/lib/creators.ts";
 
 function arg(name) {
   const i = process.argv.indexOf(name);
@@ -71,7 +51,6 @@ function range() {
 const eur = (cents) => (cents / 100).toLocaleString("es-ES", { style: "currency", currency: "EUR" });
 
 async function main() {
-  demo();
   const stripe = new Stripe(liveKey());
   const { label, gte, lt } = range();
   const byCreator = new Map();

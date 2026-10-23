@@ -29,7 +29,7 @@ assert.equal(normalizeCode(" mea 7k3-p9q "), "MEA7K3P9Q");
 assert.equal(normalizeCode("MEA_7K3"), null);
 assert.equal(normalizeCode("<script>"), null);
 assert.equal(normalizeCode(42), null);
-assert.equal(referralUrl("https://meapica.shop/", "ca", "MEA7K3P9Q"), "https://meapica.shop/ca/r/MEA7K3P9Q");
+assert.equal(referralUrl("https://meapica.es/", "ca", "MEA7K3P9Q"), "https://meapica.es/ca/r/MEA7K3P9Q");
 
 // ── Dates: 12 months, clamped month ends ──────────────────────────────────
 assert.equal(addMonths(new Date("2026-12-24T10:00:00Z"), 12).toISOString(), "2027-12-24T10:00:00.000Z");
@@ -81,6 +81,11 @@ assert.equal(canPreApplyReferral(source, { userId: "u-new", email: null, format:
 assert.equal(canPreApplyReferral(source, { userId: "u-new", email: "marta@example.com", format: "digital_pdf" }), false, "never on the PDF");
 assert.equal(canPreApplyReferral(source, { userId: "u-ref", email: null, format: "hardcover" }), false, "own account");
 assert.equal(canPreApplyReferral(source, { userId: "u-new", email: "Ana@Example.com", format: "hardcover" }), false, "own email");
+// creator audience code (10 %, any product): also on the PDF, never the creator's own checkout
+const creator = { kind: "creator", user_id: null, email: "lara@example.com" };
+assert.equal(canPreApplyReferral(creator, { userId: "u-new", email: "marta@example.com", format: "digital_pdf" }), true);
+assert.equal(canPreApplyReferral(creator, { userId: "u-new", email: "marta@example.com", format: "hardcover" }), true);
+assert.equal(canPreApplyReferral(creator, { userId: "u-new", email: " LARA@example.com", format: "softcover" }), false, "creator's own email");
 
 // ── Idempotency: the promotion code applied to a session ──────────────────
 assert.deepEqual(sessionPromotionCodeIds(null), []);

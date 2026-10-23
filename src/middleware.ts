@@ -8,11 +8,11 @@ import { localizedPath, sanitizeNextPath } from "@/lib/auth/next-path";
 const intlMiddleware = createIntlMiddleware(routing);
 
 /** The one public host. Every alias below is 308'd here (same path + query). */
-const CANONICAL_HOST = "meapica.shop";
+const CANONICAL_HOST = "meapica.es";
 /** Hosts attached to the Vercel project that serve the same site: duplicates for
  *  crawlers (and meapica.com's DNS is no longer ours). Explicit list on purpose:
  *  localhost, *.vercel.app previews and any other host are left alone. */
-const ALIAS_HOSTS = new Set(["www.meapica.shop", "meapica.com", "www.meapica.com"]);
+const ALIAS_HOSTS = new Set(["www.meapica.es", "meapica.shop", "www.meapica.shop", "meapica.com", "www.meapica.com"]);
 
 export async function middleware(request: NextRequest) {
   // Skip locale middleware for API routes. Never host-redirect them either: a

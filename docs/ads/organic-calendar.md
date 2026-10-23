@@ -5,14 +5,14 @@
 Assets reuse the kit in `docs/ads/creative-pack.md` (V = video script, S = static, example-book ids in §0).
 
 Rules: same as the creative pack (no invented proof, no "IA", VAT next to every price, ≤ 1 emoji, example books
-labelled "Ejemplo"/"Exemple"). Link in bio → `https://meapica.shop/{lang}?utm_source=instagram_organic&utm_medium=organic_social&utm_campaign=org_q4-26&utm_content=bio&lang={lang}`
+labelled "Ejemplo"/"Exemple"). Link in bio → `https://meapica.es/{lang}?utm_source=instagram_organic&utm_medium=organic_social&utm_campaign=org_q4-26&utm_content=bio&lang={lang}`
 (TikTok bio: `utm_source=tiktok&utm_medium=organic_social`). Post id = `org_{ig|tt}_w{n}{day}_{lang}`.
 
 ## Week 1 · Meet the book
 
 | Date | Lang | Format | Hook (first 2 s / first line) | Asset to produce |
 |---|---|---|---|---|
-| Mon 5 Oct | ES | Reel/TikTok 15 s | A finger types "Martina" and her name paints itself on the cover | V1 organic cut (no price card, end on meapica.shop) |
+| Mon 5 Oct | ES | Reel/TikTok 15 s | A finger types "Martina" and her name paints itself on the cover | V1 organic cut (no price card, end on meapica.es) |
 | Wed 7 Oct | CA | Carousel 6 | "Així és un llibre Meapica per dins" | S1 with the CA Hugo book (`/ca/examples/2152a65e-…`) |
 | Fri 9 Oct | ES | Reel/TikTok 12 s | Macro of watercolor paper, pull back to the full page | V4 (Hugo scene-7 → 5 → 11), ambient piano |
 | Sun 11 Oct | CA | Reel/TikTok 10 s + story poll | 10 covers flicking fast, freeze: "On comença l'aventura?" | 10 × `public/images/templates/*.jpg`; story poll with 2 worlds |

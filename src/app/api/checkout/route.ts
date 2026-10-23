@@ -165,14 +165,15 @@ export async function POST(request: Request) {
     }
     const offer = checkoutOffer({ orders: offerOrders, userId: user.id, storyId, format, isReorder, catalog, now: Date.now() });
 
-    // Referral link (/r/<code> cookie): pre-apply the friend's 10 € on a printed book,
-    // never the buyer's own code. Unknown / not live codes are simply ignored.
+    // /r/<code> cookie: pre-apply a friend's referral code (10 €, printed book) or a creator's
+    // audience code (10 %, any format), never the buyer's own code. Unknown / not live codes
+    // are simply ignored.
     const refCookie = request.headers
       .get("cookie")
       ?.split(/;\s*/)
       .find((c) => c.startsWith(`${REFERRAL_COOKIE}=`))
       ?.slice(REFERRAL_COOKIE.length + 1);
-    const referral = PRICING[format].requiresShipping ? await referralForCheckout(createFulfilmentClient(), refCookie) : null;
+    const referral = await referralForCheckout(createFulfilmentClient(), refCookie);
     const referralPromotionCodeId =
       referral && canPreApplyReferral(referral, { userId: user.id, email: user.email, format }) ? referral.stripe_promotion_code_id : null;
 
@@ -217,7 +218,7 @@ export async function POST(request: Request) {
     try {
       session = await attempt.request();
     } catch (err) {
-      // The referral code can't be applied (used up, deactivated…): same checkout without it.
+      // The code can't be applied (used up, expired, deactivated…): same checkout without it.
       if (!referralPromotionCodeId) throw err;
       console.warn(`[checkout] Referral code ${referral?.code} not applied:`, err instanceof Error ? err.message : err);
       attempt = createSession(null);

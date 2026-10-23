@@ -59,8 +59,8 @@ const SHIPPING_AREA_NOTICE: Record<Locale, string> = {
 // Button = --brand-text, not --brand: Stripe's 16 px white label needs ≥ 4.5:1.
 export const CHECKOUT_BRANDING: Stripe.Checkout.SessionCreateParams.BrandingSettings = {
   display_name: "Meapica",
-  logo: { type: "url", url: "https://meapica.shop/images/meapica-logo.png" },
-  icon: { type: "url", url: "https://meapica.shop/images/icon-512.png" },
+  logo: { type: "url", url: "https://meapica.es/images/meapica-logo.png" },
+  icon: { type: "url", url: "https://meapica.es/images/icon-512.png" },
   background_color: "#FFF8F0",
   button_color: "#b94f1f",
   border_style: "rounded",
@@ -107,9 +107,10 @@ export interface CheckoutSessionInput {
   offer: StoryUpsell | null;
   origin: string;
   /**
-   * Referral promotion code (promo_…) from the /r link, pre-applied to a printed book
-   * (the caller already checked it is not the buyer's own code). Stripe does not allow
-   * `discounts` together with `allow_promotion_codes`, so the code field is hidden then.
+   * Promotion code (promo_…) from the /r link: a referral code (printed books) or a creator's
+   * audience code (any format). The caller already checked the format and that it is not the
+   * buyer's own code (canPreApplyReferral). Stripe does not allow `discounts` together with
+   * `allow_promotion_codes`, so the code field is hidden then.
    */
   referralPromotionCodeId?: string | null;
 }
@@ -190,7 +191,7 @@ export function buildCheckoutSession(input: CheckoutSessionInput): CheckoutSessi
     // Another copy is bought from the library: back there if they change their mind.
     cancel_url: isReorder ? `${origin}/${locale}/dashboard?tab=orders` : `${origin}/${locale}/create/${storyId}/preview`,
   };
-  if (input.referralPromotionCodeId && requiresShipping && !appliedOffer) {
+  if (input.referralPromotionCodeId && !appliedOffer) {
     delete params.allow_promotion_codes;
     params.discounts = [{ promotion_code: input.referralPromotionCodeId }];
   }

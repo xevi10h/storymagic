@@ -3,10 +3,10 @@ import { verifySvix } from "@/lib/email/svix";
 
 export const runtime = "nodejs";
 
-// Inbound mail for *@meapica.shop (MX → Resend receiving). Resend posts
+// Inbound mail for *@meapica.es (MX → Resend receiving). Resend posts
 // `email.received` (metadata only); we fetch the message and forward it to the
 // team inbox with Reply-To = the original sender, so replies go to the customer.
-// Replies "as hola@meapica.shop" are sent from that inbox (Gmail "Send mail as"
+// Replies "as hola@meapica.es" are sent from that inbox (Gmail "Send mail as"
 // via smtp.resend.com). No mailbox to pay for.
 //
 // Env: RESEND_INBOUND_WEBHOOK_SECRET (whsec_…, from the Resend webhook),
@@ -14,7 +14,7 @@ export const runtime = "nodejs";
 // read received mail), INBOUND_FORWARD_TO (default admin@casmar.tech).
 
 const API = "https://api.resend.com";
-const FORWARD_FROM_ADDRESS = "hola@meapica.shop";
+const FORWARD_FROM_ADDRESS = "hola@meapica.es";
 
 interface ReceivedEmail {
   from: string;
@@ -71,10 +71,10 @@ export async function POST(request: Request) {
   try {
     const email = await resendGet<ReceivedEmail>(`/emails/receiving/${emailId}`, apiKey);
     // Never forward our own outbound mail back to ourselves (loops).
-    if (/@meapica\.shop>?\s*$/i.test(email.from)) return NextResponse.json({ skipped: "own-domain" });
+    if (/@meapica\.es>?\s*$/i.test(email.from)) return NextResponse.json({ skipped: "own-domain" });
     // The Resend account is shared with other products and its webhooks fire for every
     // domain: only mail addressed to ours is ours to forward.
-    if (!email.to.some((to) => /@meapica\.shop>?\s*$/i.test(to))) return NextResponse.json({ skipped: "other-domain" });
+    if (!email.to.some((to) => /@meapica\.es>?\s*$/i.test(to))) return NextResponse.json({ skipped: "other-domain" });
 
     const { data: attachments } = await resendGet<{ data: ReceivedAttachment[] }>(
       `/emails/receiving/${emailId}/attachments`,

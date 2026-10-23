@@ -36,7 +36,7 @@ const ES: LetterCopy = {
   drawingHeading: "Os he hecho un dibujo",
   signOff: "Con mucho cariño,",
   signatureLabel: "Mi firma",
-  footer: "Carta gratuita para imprimir · meapica.shop",
+  footer: "Carta gratuita para imprimir · meapica.es",
 };
 
 const CA: LetterCopy = {
@@ -54,7 +54,7 @@ const CA: LetterCopy = {
   drawingHeading: "Us he fet un dibuix",
   signOff: "Amb molt d'amor,",
   signatureLabel: "La meva signatura",
-  footer: "Carta gratuïta per imprimir · meapica.shop",
+  footer: "Carta gratuïta per imprimir · meapica.es",
 };
 
 export const LETTER_COPY: Record<"es" | "ca", LetterCopy> = { es: ES, ca: CA };

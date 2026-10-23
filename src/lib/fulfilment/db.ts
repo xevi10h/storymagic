@@ -100,6 +100,51 @@ export type OrderFulfilmentColumns = {
   shipped_at: string | null;
   delivered_at: string | null;
   review_request_sent_at: string | null;
+  // 20261023120000_creator_programme.sql
+  promotion_code_id: string | null;
+  promotion_code: string | null;
+  discount_cents: number | null;
+};
+
+// 20261023120000_creator_programme.sql (rules: src/lib/creators.ts)
+export type CreatorRow = {
+  id: string;
+  email: string;
+  handle: string;
+  promo_code: string;
+  stripe_promotion_code_id: string;
+  created_at: string;
+};
+
+export type CreatorCommissionRow = {
+  id: string;
+  creator_id: string;
+  order_id: string;
+  amount_total_cents: number;
+  amount_tax_cents: number;
+  amount_refunded_cents: number;
+  commission_cents: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type CreatorWithdrawalRow = {
+  id: string;
+  creator_id: string;
+  kind: "payout" | "credit";
+  amount_cents: number;
+  status: "requested" | "paid" | "cancelled" | "issued";
+  request_key: string;
+  iban: string | null;
+  holder_name: string | null;
+  tax_id: string | null;
+  paid_at: string | null;
+  /** Generated: amount_cents * 2 for a credit, null for a payout. */
+  discount_cents: number | null;
+  code: string | null;
+  stripe_promotion_code_id: string | null;
+  created_at: string;
+  updated_at: string;
 };
 
 // 20261019150000_reviews.sql (rules: src/lib/reviews/review-content.ts)
@@ -221,6 +266,26 @@ export type FulfilmentDatabase = Omit<Database, "public"> & {
         Update: Partial<GiftVoucherRow>;
         Relationships: [];
       };
+      creators: {
+        Row: CreatorRow;
+        Insert: Pick<CreatorRow, "email" | "handle" | "promo_code" | "stripe_promotion_code_id"> & Partial<CreatorRow>;
+        Update: Partial<CreatorRow>;
+        Relationships: [];
+      };
+      creator_commissions: {
+        Row: CreatorCommissionRow;
+        Insert: Pick<CreatorCommissionRow, "creator_id" | "order_id" | "amount_total_cents" | "commission_cents"> &
+          Partial<CreatorCommissionRow>;
+        Update: Partial<CreatorCommissionRow>;
+        Relationships: [];
+      };
+      creator_withdrawals: {
+        Row: CreatorWithdrawalRow;
+        // Inserts go through the creator_withdraw RPC only (balance guard).
+        Insert: never;
+        Update: Partial<Pick<CreatorWithdrawalRow, "status" | "paid_at" | "stripe_promotion_code_id" | "updated_at">>;
+        Relationships: [];
+      };
       reviews: {
         Row: ReviewRow;
         Insert: Pick<ReviewRow, "order_id" | "rating" | "display_name" | "locale"> & Partial<ReviewRow>;
@@ -238,6 +303,19 @@ export type FulfilmentDatabase = Omit<Database, "public"> & {
     Functions: PublicSchema["Functions"] & {
       claim_ops_alert: { Args: { p_key: string; p_window_seconds: number }; Returns: boolean };
       claim_daily_preview: { Args: { p_day: string; p_cap: number }; Returns: number | null };
+      creator_withdraw: {
+        Args: {
+          p_creator_id: string;
+          p_kind: "payout" | "credit";
+          p_amount_cents: number;
+          p_request_key: string;
+          p_code?: string | null;
+          p_iban?: string | null;
+          p_holder_name?: string | null;
+          p_tax_id?: string | null;
+        };
+        Returns: CreatorWithdrawalRow;
+      };
     };
   };
 };

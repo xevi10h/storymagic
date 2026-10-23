@@ -8,7 +8,7 @@ assert.deepEqual(
   parseAttribution({
     search: "?utm_source=Instagram&utm_medium=Paid_Social&utm_campaign=reyes-26&utm_content=%20reel-3%20&utm_term=x&fbclid=SECRET123",
     pathname: "/es/regalos",
-    referrer: "https://l.instagram.com/?u=https%3A%2F%2Fmeapica.shop",
+    referrer: "https://l.instagram.com/?u=https%3A%2F%2Fmeapica.es",
   }),
   {
     utm_source: "instagram",

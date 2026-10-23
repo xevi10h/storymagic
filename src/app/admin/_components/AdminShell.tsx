@@ -17,6 +17,9 @@ export function AdminShell({ email, children }: { email: string; children: React
             <Link href="/admin" className="rounded-xl px-3 py-1.5 font-semibold text-ink-soft hover:bg-line">
               Pedidos
             </Link>
+            <Link href="/admin/creators" className="rounded-xl px-3 py-1.5 font-semibold text-ink-soft hover:bg-line">
+              Creadores
+            </Link>
           </nav>
           <span className="ml-auto truncate text-xs text-ink-muted">{email}</span>
         </div>

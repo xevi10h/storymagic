@@ -926,7 +926,7 @@
       "title": "Política de Privacidad",
       "intro": "En Meapica, la privacidad de nuestros usuarios —especialmente cuando se trata de datos de menores— es nuestra máxima prioridad.",
       "section1Title": "1. Responsable del tratamiento",
-      "section1Text": "El responsable del tratamiento de los datos personales recogidos a través de meapica.shop es Xavier Huix Trenco (Meapica), NIF 41649433K, con domicilio en Carrer Aribau 140, 5º, 08036 Barcelona (España). Para cualquier cuestión sobre privacidad puedes escribirnos a hola@meapica.shop.",
+      "section1Text": "El responsable del tratamiento de los datos personales recogidos a través de meapica.es es Xavier Huix Trenco (Meapica), NIF 41649433K, con domicilio en Carrer Aribau 140, 5º, 08036 Barcelona (España). Para cualquier cuestión sobre privacidad puedes escribirnos a hola@meapica.es.",
       "section2Title": "2. Datos que recogemos",
       "section2Text": "Recogemos los datos necesarios para crear tu libro personalizado: nombre del niño/a, edad, ciudad, intereses y características físicas para la ilustración y, solo si decides subirla, una foto del niño/a (ver el apartado 8). También recogemos email y dirección de envío para procesar pedidos.",
       "section3Title": "3. Finalidad del tratamiento",
@@ -936,17 +936,17 @@
       "section5Title": "5. Encargados del tratamiento y transferencias internacionales",
       "section5Text": "Para prestar el servicio trabajamos con proveedores que tratan los datos solo siguiendo nuestras instrucciones: OpenAI Ireland Ltd. (generación del texto y las ilustraciones del cuento y, si la subes, del personaje a partir de la foto), Supabase (base de datos y almacenamiento), Vercel (alojamiento web), Stripe Payments Europe Ltd. (pagos), Gelato (impresión y envío), Resend (correos del pedido y recordatorios que hayas pedido), Cloudflare, Inc. (Turnstile, verificación anti-bots al iniciar sesión y al empezar como invitado) y, solo si aceptas las cookies publicitarias y de análisis, Meta Platforms Ireland Ltd., TikTok Technology Limited (medición de nuestros anuncios) Google Ireland Limited (Google Analytics, estadísticas de visitas y compras) y PostHog, Inc. (estadísticas de uso de la web y grabaciones anónimas de sesión, alojadas en la UE). OpenAI no usa los datos que le enviamos para entrenar sus modelos y puede conservarlos hasta 30 días para detectar abusos. Cuando un proveedor o sus subencargados tratan datos fuera del Espacio Económico Europeo (por ejemplo, en Estados Unidos), la transferencia se ampara en las cláusulas contractuales tipo aprobadas por la Comisión Europea o en el Marco de Privacidad de Datos UE-EE. UU.",
       "section6Title": "6. Tus derechos",
-      "section6Text": "Puedes ejercer tus derechos de acceso, rectificación, supresión, oposición, limitación del tratamiento y portabilidad, y retirar tu consentimiento en cualquier momento, escribiendo a hola@meapica.shop. Te responderemos en el plazo máximo de un mes. Si consideras que no hemos tratado tus datos correctamente, puedes presentar una reclamación ante la Agencia Española de Protección de Datos (www.aepd.es).",
+      "section6Text": "Puedes ejercer tus derechos de acceso, rectificación, supresión, oposición, limitación del tratamiento y portabilidad, y retirar tu consentimiento en cualquier momento, escribiendo a hola@meapica.es. Te responderemos en el plazo máximo de un mes. Si consideras que no hemos tratado tus datos correctamente, puedes presentar una reclamación ante la Agencia Española de Protección de Datos (www.aepd.es).",
       "section7Title": "7. Protección de datos de menores",
       "section7Text": "No recogemos datos directamente de menores. Los datos del niño/a son proporcionados por el padre/madre o tutor legal que crea el libro.",
       "section8Title": "8. Fotos de menores",
-      "section8Text": "Subir una foto es opcional: también puedes crear el personaje eligiendo sus rasgos. Si la subes, la usamos solo para crear su personaje ilustrado (su retrato y su ficha de personaje) y solo con el consentimiento de su madre, padre o tutor legal. Antes de guardarla eliminamos todos sus metadatos, incluida la ubicación GPS, y la guardamos en un almacenamiento privado al que solo accede nuestro servidor. La foto se envía a OpenAI para dibujar el personaje; OpenAI no la usa para entrenar sus modelos y puede conservarla hasta 30 días para detectar abusos. Borramos la foto en cuanto creamos su personaje y, en cualquier caso, en menos de 24 horas. El libro (previsualización y versión final) se ilustra solo a partir del personaje dibujado, nunca a partir de la foto. No la usamos para reconocimiento facial ni para ninguna otra finalidad. Puedes retirar tu consentimiento en cualquier momento escribiendo a hola@meapica.shop y la borraremos de inmediato. Guardamos un registro de tu consentimiento (fecha, versión del texto aceptado e idioma) como prueba de que lo diste."
+      "section8Text": "Subir una foto es opcional: también puedes crear el personaje eligiendo sus rasgos. Si la subes, la usamos solo para crear su personaje ilustrado (su retrato y su ficha de personaje) y solo con el consentimiento de su madre, padre o tutor legal. Antes de guardarla eliminamos todos sus metadatos, incluida la ubicación GPS, y la guardamos en un almacenamiento privado al que solo accede nuestro servidor. La foto se envía a OpenAI para dibujar el personaje; OpenAI no la usa para entrenar sus modelos y puede conservarla hasta 30 días para detectar abusos. Borramos la foto en cuanto creamos su personaje y, en cualquier caso, en menos de 24 horas. El libro (previsualización y versión final) se ilustra solo a partir del personaje dibujado, nunca a partir de la foto. No la usamos para reconocimiento facial ni para ninguna otra finalidad. Puedes retirar tu consentimiento en cualquier momento escribiendo a hola@meapica.es y la borraremos de inmediato. Guardamos un registro de tu consentimiento (fecha, versión del texto aceptado e idioma) como prueba de que lo diste."
     },
     "terms": {
       "title": "Aviso Legal y Condiciones de Uso",
-      "intro": "Al usar meapica.shop aceptas las siguientes condiciones.",
+      "intro": "Al usar meapica.es aceptas las siguientes condiciones.",
       "section1Title": "1. Identificación",
-      "section1Text": "Meapica es una plataforma de creación de libros infantiles personalizados operada desde España por Xavier Huix Trenco, NIF 41649433K, con domicilio en Carrer Aribau 140, 5º, 08036 Barcelona (España). Contacto: hola@meapica.shop.",
+      "section1Text": "Meapica es una plataforma de creación de libros infantiles personalizados operada desde España por Xavier Huix Trenco, NIF 41649433K, con domicilio en Carrer Aribau 140, 5º, 08036 Barcelona (España). Contacto: hola@meapica.es.",
       "section2Title": "2. Servicio",
       "section2Text": "Meapica ofrece la creación de cuentos infantiles personalizados con ilustraciones únicas, impresos bajo demanda.",
       "section3Title": "3. Propiedad intelectual",
@@ -958,7 +958,7 @@
       "section6Title": "6. Limitación de responsabilidad",
       "section6Text": "Meapica no garantiza la disponibilidad ininterrumpida del servicio. Las ilustraciones pueden variar y no se garantiza un resultado específico.",
       "section7Title": "7. Tarjetas regalo",
-      "section7Text": "La tarjeta regalo da derecho a un cuento personalizado en el formato elegido al comprarla (tapa dura, tapa blanda o PDF), con el envío a España peninsular y Baleares incluido en los formatos impresos. Se paga al comprarla, con el IVA del libro incluido. No caduca, se canjea una sola vez escribiendo su código al pagar el cuento en meapica.shop y no se puede cambiar por dinero ni usar para otro formato; los extras (por ejemplo, un ejemplar adicional) se pagan aparte. Al comprarla por internet tienes 14 días naturales desde la compra para desistir sin dar explicaciones, siempre que no se haya canjeado: escríbenos a hola@meapica.shop y te devolvemos el importe por el mismo medio de pago en un máximo de 14 días. Una vez canjeada, el libro se crea a medida y queda excluido del derecho de desistimiento (art. 103 c) del texto refundido de la LGDCU). Guarda bien el código: cualquiera que lo tenga puede canjearlo. Si lo pierdes, te lo reenviamos al correo de la compra.",
+      "section7Text": "La tarjeta regalo da derecho a un cuento personalizado en el formato elegido al comprarla (tapa dura, tapa blanda o PDF), con el envío a España peninsular y Baleares incluido en los formatos impresos. Se paga al comprarla, con el IVA del libro incluido. No caduca, se canjea una sola vez escribiendo su código al pagar el cuento en meapica.es y no se puede cambiar por dinero ni usar para otro formato; los extras (por ejemplo, un ejemplar adicional) se pagan aparte. Al comprarla por internet tienes 14 días naturales desde la compra para desistir sin dar explicaciones, siempre que no se haya canjeado: escríbenos a hola@meapica.es y te devolvemos el importe por el mismo medio de pago en un máximo de 14 días. Una vez canjeada, el libro se crea a medida y queda excluido del derecho de desistimiento (art. 103 c) del texto refundido de la LGDCU). Guarda bien el código: cualquiera que lo tenga puede canjearlo. Si lo pierdes, te lo reenviamos al correo de la compra.",
       "section8Title": "8. Programa de recomendación «10 € y 10 €»",
       "section8Text": "Cada pedido pagado de un cuento incluye un código personal de recomendación, impreso en la última página del libro y visible en los correos del pedido y en «Mis pedidos». Quien lo use al comprar un libro impreso (tapa dura o tapa blanda) tiene 10 € de descuento; no vale para el PDF ni se combina con otros códigos. Cuando ese pedido se paga, y si es el primer pedido de esa familia, enviamos a quien lo recomendó un código de 10 € de un solo uso para su próximo libro impreso, válido 12 meses. No hay recompensa por pedidos propios (mismo correo, misma cuenta o mismo cliente de pago). Cada código personal admite hasta 20 usos. Los descuentos no se pueden cambiar por dinero. Podemos terminar el programa avisándolo en esta página; los códigos de recompensa ya enviados se respetan hasta su fecha."
     },
@@ -1000,7 +1000,7 @@
       "section3Title": "Embalaje protector",
       "section3Text": "Tu libro viaja en un embalaje de cartón pensado para que llegue en perfecto estado, listo para regalar. Si aun así llega dañado, escríbenos y te enviamos otro nuevo sin coste.",
       "section4Title": "Seguimiento del pedido",
-      "section4Text": "Cuando el libro salga de imprenta, recibirás un correo electrónico con el número de seguimiento. También puedes consultar el estado de tus pedidos desde tu panel de usuario en meapica.shop."
+      "section4Text": "Cuando el libro salga de imprenta, recibirás un correo electrónico con el número de seguimiento. También puedes consultar el estado de tus pedidos desde tu panel de usuario en meapica.es."
     }
   },
   "notFound": {
@@ -1452,7 +1452,7 @@
       "viewOrders": "Ver mis pedidos",
       "notVerifiedTitle": "No hemos podido confirmar este pago",
       "notVerifiedDescription": "Este enlace no corresponde a un pago completado. Si acabas de pagar, tu pedido aparecerá en tu biblioteca en unos minutos y recibirás la confirmación por correo. Si algo no cuadra, escríbenos y lo resolvemos.",
-      "contactUs": "Escríbenos a hola@meapica.shop",
+      "contactUs": "Escríbenos a hola@meapica.es",
       "confirmationEmail": "Te enviaremos la confirmación y el seguimiento a {email}",
       "guestNote": "Has comprado sin cuenta: guarda ese correo, es tu comprobante del pedido.",
       "processingTitle": "¡Pago confirmado!",
@@ -3115,11 +3115,11 @@
       },
       {
         "q": "¿Puedo devolverla?",
-        "a": "Sí. Tienes 14 días naturales desde la compra para desistir, siempre que no se haya canjeado: escríbenos a hola@meapica.shop y te devolvemos el importe. Una vez canjeada, el libro se crea a medida y ya no tiene derecho de desistimiento."
+        "a": "Sí. Tienes 14 días naturales desde la compra para desistir, siempre que no se haya canjeado: escríbenos a hola@meapica.es y te devolvemos el importe. Una vez canjeada, el libro se crea a medida y ya no tiene derecho de desistimiento."
       },
       {
         "q": "¿Cómo se canjea?",
-        "a": "Se crea el cuento en meapica.shop, se elige el mismo formato de la tarjeta y se escribe el código en «Añadir código promocional» al pagar. El total queda en 0 €."
+        "a": "Se crea el cuento en meapica.es, se elige el mismo formato de la tarjeta y se escribe el código en «Añadir código promocional» al pagar. El total queda en 0 €."
       },
       {
         "q": "¿Puede elegir otro formato?",
@@ -3138,7 +3138,7 @@
       "validUntil": "No caduca",
       "printCta": "Ver e imprimir la tarjeta",
       "pendingTitle": "Estamos preparando tu tarjeta",
-      "pendingText": "El pago está hecho. Te llegará por email en unos minutos. Si no la ves, mira en la carpeta de promociones o escríbenos a hola@meapica.shop.",
+      "pendingText": "El pago está hecho. Te llegará por email en unos minutos. Si no la ves, mira en la carpeta de promociones o escríbenos a hola@meapica.es.",
       "backHome": "Volver al inicio"
     },
     "card": {
@@ -3153,9 +3153,9 @@
       },
       "codeLabel": "Tu código",
       "validUntil": "No caduca",
-      "howTo": "Entra en meapica.shop, crea tu cuento con tu nombre y tu aventura, y escribe este código al pagar.",
+      "howTo": "Entra en meapica.es, crea tu cuento con tu nombre y tu aventura, y escribe este código al pagar.",
       "print": "Imprimir",
-      "notFound": "No encontramos esta tarjeta. Revisa el enlace del email o escríbenos a hola@meapica.shop."
+      "notFound": "No encontramos esta tarjeta. Revisa el enlace del email o escríbenos a hola@meapica.es."
     },
     "fromChristmas": "¿Prefieres que lo cree la familia? Regala una tarjeta regalo"
   },
@@ -3179,7 +3179,7 @@
       "nameLabel": "Tu nombre, tal como lo verán otras familias",
       "namePlaceholder": "Marta G.",
       "nameHint": "Tu nombre y la inicial del apellido. No mostramos tu email ni tus datos del pedido.",
-      "consentLabel": "Podéis publicar mi valoración, mi texto y este nombre en meapica.shop.",
+      "consentLabel": "Podéis publicar mi valoración, mi texto y este nombre en meapica.es.",
       "consentNote": "Si no lo marcas, tu opinión solo la leeremos nosotros.",
       "submit": "Enviar mi opinión",
       "privacy": "Si la publicas, puedes pedirnos que la retiremos cuando quieras.",
@@ -3193,7 +3193,7 @@
     },
     "done": {
       "title": "¡Gracias por tu opinión!",
-      "published": "Ya se ve en meapica.shop. Gracias por ayudar a otras familias a decidirse.",
+      "published": "Ya se ve en meapica.es. Gracias por ayudar a otras familias a decidirse.",
       "pending": "La revisaremos y la publicaremos en breve.",
       "private": "La hemos recibido y la leeremos con calma. No la publicaremos.",
       "already": "Ya nos dejaste tu opinión sobre este cuento. ¡Gracias de nuevo!"

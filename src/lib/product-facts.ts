@@ -11,7 +11,7 @@ import { PREVIEW_ILLUSTRATION_COUNT, PRICING, TOTAL_SCENE_COUNT } from "./pricin
 import { DELIVERY_PARAMS, SHIPPING_REGIONS } from "./shipping";
 import { SUPPORT_EMAIL } from "./support";
 
-export const SITE_URL = "https://meapica.shop";
+export const SITE_URL = "https://meapica.es";
 export const BRAND_NAME = "Meapica";
 
 /**
@@ -45,7 +45,7 @@ export const SOCIAL_PROFILES: string[] = [
  * Trustpilot "write a review" page, offered on the thank-you state of /review (to EVERY
  * reviewer whatever their rating: Trustpilot forbids inviting only happy customers).
  * TODO(owner): the Trustpilot profile does not exist yet. Create it, then set e.g.
- * "https://www.trustpilot.com/evaluate/meapica.shop". Empty = the link is hidden.
+ * "https://www.trustpilot.com/evaluate/meapica.es". Empty = the link is hidden.
  */
 export const TRUSTPILOT_REVIEW_URL = "";
 

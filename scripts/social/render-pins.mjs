@@ -20,14 +20,14 @@ const TMP = `${OUT}/.build`;
 const LOGO = `${process.cwd()}/public/images/meapica-logo.png`;
 mkdirSync(TMP, { recursive: true });
 
-const link = (p) => `https://meapica.shop${p.path}?${T.utm.replace("{id}", p.id)}`;
+const link = (p) => `https://meapica.es${p.path}?${T.utm.replace("{id}", p.id)}`;
 
 /** file:// URL of page n of a book, rasterised once at 150 dpi (1181 px square). */
 async function pageUrl(bookKey, n) {
   const id = T.books[bookKey];
   const pdf = `${TMP}/${id}.pdf`;
   if (!existsSync(pdf)) {
-    const res = await fetch(`https://meapica.shop/api/showcase/${id}/pdf`);
+    const res = await fetch(`https://meapica.es/api/showcase/${id}/pdf`);
     if (!res.ok) throw new Error(`example PDF ${bookKey}: HTTP ${res.status}`);
     writeFileSync(pdf, Buffer.from(await res.arrayBuffer()));
   }
@@ -65,14 +65,14 @@ h1 em{font-style:normal;color:#E86C3A}
 const doc = (lang, body) => `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><style>${CSS}</style></head><body>${body}</body></html>`;
 const head = (p) => `<div class="kicker">${p.kicker}</div><h1>${p.headline}</h1>`;
 const facts = (p, top) => (p.facts?.length ? `<ul class="facts" style="top:${top}px">${p.facts.map((f) => `<li>${f}</li>`).join("")}</ul>` : "");
-const bar = (p) => `<div class="bar">${p.price ? `<div class="price">${p.price}</div>` : `<div class="price">${p.lang === "ca" ? "Gratis, sense registre" : "Gratis, sin registro"}</div>`}<div class="row"><span class="url">meapica.shop</span><img src="file://${LOGO}"></div></div>`;
+const bar = (p) => `<div class="bar">${p.price ? `<div class="price">${p.price}</div>` : `<div class="price">${p.lang === "ca" ? "Gratis, sense registre" : "Gratis, sin registro"}</div>`}<div class="row"><span class="url">meapica.es</span><img src="file://${LOGO}"></div></div>`;
 const page = (url, l, t, s, rot = 0) => `<div class="page" style="left:${l}px;top:${t}px;width:${s}px;height:${s}px;transform:rotate(${rot}deg);background-image:url('${url}')"></div>`;
 
 const letterShots = {};
 async function letterShot(browser, lang) {
   if (letterShots[lang]) return letterShots[lang];
   const tab = await browser.newPage({ viewport: { width: 1280, height: 1400 }, deviceScaleFactor: 2.5 });
-  await tab.goto(`https://meapica.shop/${lang}/tools/letter-to-the-three-kings`, { waitUntil: "networkidle" });
+  await tab.goto(`https://meapica.es/${lang}/tools/letter-to-the-three-kings`, { waitUntil: "networkidle" });
   await tab.locator("input[type=text]").first().fill(lang === "ca" ? "Júlia" : "Lucía");
   await tab.waitForTimeout(800);
   // The live preview card: the smallest block holding the letter greeting and the A4 caption sits just above it.

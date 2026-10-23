@@ -26,6 +26,7 @@ import {
   sessionPromotionCodeIds,
 } from "@/lib/promo-codes";
 import { ensurePromotionCode, getPromotionSetup, newCode } from "./stripe-promotions";
+import { creatorForCheckout } from "./creators";
 
 const BOOK_FORMATS = new Set(["digital_pdf", "softcover", "hardcover"]);
 const LOCALES = new Set(["es", "ca", "en", "fr"]);
@@ -110,14 +111,17 @@ export async function referralCodesForOrders(supabase: FulfilmentClient, orderId
   return out;
 }
 
+export type CheckoutCode = Pick<ReferralCodeRow, "code" | "user_id" | "email"> & {
+  kind: "referral" | "creator";
+  stripe_promotion_code_id: string;
+};
+
 /**
- * Referral code from the /r cookie, for pre-applying it at checkout. Null when unknown,
- * not live in Stripe yet, or unreadable (never blocks a checkout).
+ * Code from the /r cookie, for pre-applying it at checkout: a customer's referral code or a
+ * creator's audience code (creators table). Null when unknown, not live in Stripe yet, or
+ * unreadable (never blocks a checkout).
  */
-export async function referralForCheckout(
-  supabase: FulfilmentClient,
-  rawCode: string | undefined,
-): Promise<Pick<ReferralCodeRow, "code" | "user_id" | "email" | "stripe_promotion_code_id"> | null> {
+export async function referralForCheckout(supabase: FulfilmentClient, rawCode: string | undefined): Promise<CheckoutCode | null> {
   const code = normalizeCode(rawCode);
   if (!code) return null;
   const { data, error } = await supabase
@@ -129,7 +133,12 @@ export async function referralForCheckout(
     console.warn(`[referral] Lookup of ${code} failed: ${error.message}`);
     return null;
   }
-  return data?.stripe_promotion_code_id ? data : null;
+  if (data?.stripe_promotion_code_id) return { ...data, kind: "referral", stripe_promotion_code_id: data.stripe_promotion_code_id };
+  if (data) return null;
+  const creator = await creatorForCheckout(supabase, code);
+  return creator
+    ? { kind: "creator", code: creator.promo_code, user_id: null, email: creator.email, stripe_promotion_code_id: creator.stripe_promotion_code_id }
+    : null;
 }
 
 /** Escape LIKE wildcards so an email is matched literally by ilike. */

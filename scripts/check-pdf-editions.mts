@@ -212,7 +212,7 @@ for (const [edition, buf] of [["print", printPdf], ["digital", digitalPdf]] as c
 console.log("\n4. Referral QR (last inner page)");
 const REF_CODE = "MEA7K3P9Q";
 for (const locale of ["fr", "es", "ca"] as const) {
-  const refInput: BookPdfInput = { ...input, locale, referral: { code: REF_CODE, url: `https://meapica.shop/${locale}/r/${REF_CODE}` } };
+  const refInput: BookPdfInput = { ...input, locale, referral: { code: REF_CODE, url: `https://meapica.es/${locale}/r/${REF_CODE}` } };
   const refPrepared = await prepareBookRender(refInput);
   const refPrint = await renderInteriorPdf(refInput, refPrepared);
   const refDigital = await renderBookPdf(refInput, refPrepared, { edition: "digital" });
@@ -229,7 +229,7 @@ for (const locale of ["fr", "es", "ca"] as const) {
     const words = pagesWords(file)[pageNo - 1] ?? [];
     const text = words.map((w) => w.text).join(" ");
     check(text.includes(REF_CODE), `${locale} ${edition}: code printed on the last inner page`);
-    check(/meapica\.shop/.test(text), `${locale} ${edition}: meapica.shop under the QR`);
+    check(/meapica\.es/.test(text), `${locale} ${edition}: meapica.es under the QR`);
     const out = words.filter((w) => w.xMin < safePt || w.yMin < safePt || w.xMax > sizePt - safePt || w.yMax > sizePt - safePt);
     check(out.length === 0, `${locale} ${edition}: every word inside the safe area${out.length ? ` (${out.map((w) => w.text).join(" ")})` : ""}`);
     if (process.argv.includes("--keep")) {

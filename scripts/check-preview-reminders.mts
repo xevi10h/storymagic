@@ -66,9 +66,9 @@ assert.equal(afterChristmasCutoff?.kind === "printed" && afterChristmasCutoff.oc
 assert.deepEqual(reminderDeadline(nextPhysicalCutoff("2026-12-28"), true, "reyes"), { kind: "pdf_only", occasion: "reyes" });
 
 // ── Emails: 4 locales × 3 reminders ─────────────────────────────────────────
-const UNSUB = "https://meapica.shop/es/unsubscribe?t=v1.abc.def";
-const PREVIEW = "https://meapica.shop/es/preview/TOKEN";
-const COVER = "https://meapica.shop/api/preview-image/TOKEN";
+const UNSUB = "https://meapica.es/es/unsubscribe?t=v1.abc.def";
+const PREVIEW = "https://meapica.es/es/preview/TOKEN";
+const COVER = "https://meapica.es/api/preview-image/TOKEN";
 const VAT = { es: "IVA incluido", ca: "IVA inclòs", en: "VAT included", fr: "TVA incluse" } as const;
 for (const locale of ["es", "ca", "en", "fr"] as const) {
   for (const stage of [1, 2, 3] as const) {
@@ -88,7 +88,7 @@ for (const locale of ["es", "ca", "en", "fr"] as const) {
     assert.ok(!/[—–]/.test(mail.subject + mail.text), `${where} no dashes (email voice)`);
     assert.ok(mail.html.includes(UNSUB.replace("&", "&amp;")) && mail.text.includes(UNSUB), `${where} unsubscribe link`);
     assert.ok(mail.html.includes("NIF 41649433K") && mail.text.includes("NIF 41649433K"), `${where} seller identity (LSSI 20.1)`);
-    assert.ok(mail.html.includes("hola@meapica.shop"), `${where} address to object (LSSI 22.1)`);
+    assert.ok(mail.html.includes("hola@meapica.es"), `${where} address to object (LSSI 22.1)`);
     assert.ok(mail.html.includes(`src="${COVER}"`), `${where} cover image`);
     assert.ok(mail.html.split(PREVIEW).length >= 3 && mail.text.includes(PREVIEW), `${where} preview link (image + button)`);
     assert.ok(/10 (de |d')?(diciembre|desembre|December|décembre)/.test(mail.text), `${where} printed cut-off date: ${mail.text}`);
@@ -108,7 +108,7 @@ const ca = buildPreviewReminderEmail({
   unsubscribeUrl: UNSUB,
 });
 assert.equal(ca.subject, "El conte d'en Pau continua aquí");
-assert.ok(!ca.html.includes("<img src=\"https://meapica.shop/api/preview-image"), "no cover → no picture");
+assert.ok(!ca.html.includes("<img src=\"https://meapica.es/api/preview-image"), "no cover → no picture");
 const pdfOnly = buildPreviewReminderEmail({
   locale: "es",
   stage: 3,

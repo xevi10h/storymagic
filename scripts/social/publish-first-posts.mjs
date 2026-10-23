@@ -25,12 +25,12 @@ const ONLY_PLATFORMS = argList("only");
 
 // ── Links ─────────────────────────────────────────────────────────────────────
 // Facebook captions carry a clickable UTM link; Instagram points to the bio; TikTok (no bio link
-// until it is a Business account with 1k followers) writes meapica.shop in plain text.
+// until it is a Business account with 1k followers) writes meapica.es in plain text.
 const fbLink = (lang, content) =>
-  `https://meapica.shop/${lang}?utm_source=facebook&utm_medium=organic_social&utm_campaign=org_q4-26&utm_content=${content}&lang=${lang}`;
+  `https://meapica.es/${lang}?utm_source=facebook&utm_medium=organic_social&utm_campaign=org_q4-26&utm_content=${content}&lang=${lang}`;
 const BIO_LINKS = {
-  instagram: "https://meapica.shop/es?utm_source=instagram_organic&utm_medium=organic_social&utm_campaign=org_q4-26&utm_content=bio&lang=es",
-  tiktok: "https://meapica.shop/es?utm_source=tiktok&utm_medium=organic_social&utm_campaign=org_q4-26&utm_content=bio&lang=es",
+  instagram: "https://meapica.es/es?utm_source=instagram_organic&utm_medium=organic_social&utm_campaign=org_q4-26&utm_content=bio&lang=es",
+  tiktok: "https://meapica.es/es?utm_source=tiktok&utm_medium=organic_social&utm_campaign=org_q4-26&utm_content=bio&lang=es",
 };
 
 // ── Posts (single source of truth for the captions.md / preview.html) ─────────
@@ -49,7 +49,7 @@ Crea el suyo: link en la bio.
 
 #cuentospersonalizados #cuentosinfantiles #regalosparaniños #librosinfantiles`,
     fbLink: fbLink("es", "org_fb_w0sat_es_video"),
-    tiktok: `Ella es la protagonista de su cuento: su nombre en la portada y su cara pintada en cada página. Escena dramatizada, libro de ejemplo real. Crea el suyo en meapica.shop
+    tiktok: `Ella es la protagonista de su cuento: su nombre en la portada y su cara pintada en cada página. Escena dramatizada, libro de ejemplo real. Crea el suyo en meapica.es
 
 #cuentospersonalizados #cuentosinfantiles #regalosparaniños`,
     coverMs: 15000, // Noa's watercolour close-up: the strongest grid / feed cover
@@ -68,7 +68,7 @@ Crea el suyo: link en la bio.
       "Escena a doble pàgina: la Noa i els esquirols jugant entre bolets vermells.",
       "Doble pàgina: la Noa obre el cofre amb el mussol i els esquirols, i el text «Cuidar el bosc».",
       "Retrat a l'aquarel·la de la Noa al final del llibre.",
-      "Logo de Meapica, la portada del llibre i el preu: des de 34,90 € IVA inclòs, enviament gratuït. meapica.shop",
+      "Logo de Meapica, la portada del llibre i el preu: des de 34,90 € IVA inclòs, enviament gratuït. meapica.es",
     ],
     ig: `Així és per dins el llibre de la Noa, de 4 anys: la portada amb el seu nom, la dedicatòria, les escenes pintades a l'aquarel·la amb el seu text i, al final, el seu retrat. Llisca fins al final.
 
@@ -79,7 +79,7 @@ Crea el seu: enllaç a la bio.
 #contesinfantils #contepersonalitzat #llibresencatala #regalsperanens`,
     fbLink: fbLink("ca", "org_fb_w0sat_ca_carousel"),
     tiktokTitle: "Així és un llibre Meapica per dins",
-    tiktok: `El llibre d'exemple de la Noa, 4 anys: la portada amb el seu nom, la dedicatòria, les escenes pintades a l'aquarel·la i el seu retrat. Crea el del teu fill o filla a meapica.shop
+    tiktok: `El llibre d'exemple de la Noa, 4 anys: la portada amb el seu nom, la dedicatòria, les escenes pintades a l'aquarel·la i el seu retrat. Crea el del teu fill o filla a meapica.es
 
 #contesinfantils #contepersonalitzat #llibresencatala`,
   },
@@ -99,7 +99,7 @@ Prueba con su nombre: link en la bio.
 #cuentospersonalizados #regalosparaniños #cuentosinfantiles #regalooriginal`,
     fbLink: fbLink("es", "org_fb_w0sat_es_static"),
     tiktokTitle: "Su nombre, en la portada de su cuento",
-    tiktok: `Escribe su nombre y aparece en la portada. Y su cara, pintada en acuarela, en cada página. Ejemplos: los libros de Noa y Leo. Prueba con el suyo en meapica.shop
+    tiktok: `Escribe su nombre y aparece en la portada. Y su cara, pintada en acuarela, en cada página. Ejemplos: los libros de Noa y Leo. Prueba con el suyo en meapica.es
 
 #cuentospersonalizados #regalosparaniños #cuentosinfantiles`,
   },

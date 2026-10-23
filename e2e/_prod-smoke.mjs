@@ -10,7 +10,7 @@ const env = Object.fromEntries(
     .filter((l) => l.includes("=") && !l.startsWith("#"))
     .map((l) => [l.slice(0, l.indexOf("=")), l.slice(l.indexOf("=") + 1).replace(/^"|"$/g, "")]),
 );
-const BASE = process.env.BASE ?? "https://meapica.shop";
+const BASE = process.env.BASE ?? "https://meapica.es";
 
 let jar = [];
 const supabase = createServerClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_ANON_KEY, {

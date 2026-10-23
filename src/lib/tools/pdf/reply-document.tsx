@@ -123,7 +123,7 @@ export function ReplyDocument({ reply, portraitPng, logoPng, logoAspect }: Reply
         {/* Footer */}
         <View style={{ marginTop: 14, flexDirection: "row", justifyContent: "center", alignItems: "center", opacity: 0.7 }}>
           <Image src={logoPng} style={{ width: 8 * logoAspect, height: 8 }} />
-          <Text style={{ marginLeft: 7, fontFamily: BODY, fontSize: 7, color: INK.muted }}>meapica.shop</Text>
+          <Text style={{ marginLeft: 7, fontFamily: BODY, fontSize: 7, color: INK.muted }}>meapica.es</Text>
         </View>
       </Page>
     </Document>

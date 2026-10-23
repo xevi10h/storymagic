@@ -72,7 +72,7 @@ export default async function Page({ params }: Props) {
           <p className="mt-1 text-sm text-ink-soft">{t("validUntil")}</p>
         </div>
         <p className="mx-auto mt-6 max-w-sm text-sm leading-relaxed text-ink-body">{t("howTo")}</p>
-        <p className="mt-6 text-sm font-semibold text-ink-soft">meapica.shop</p>
+        <p className="mt-6 text-sm font-semibold text-ink-soft">meapica.es</p>
       </article>
     </main>
   );

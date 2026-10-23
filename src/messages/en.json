@@ -903,7 +903,7 @@
       "title": "Privacy Policy",
       "intro": "At Meapica, the privacy of our users — especially when it comes to children's data — is our top priority.",
       "section1Title": "1. Data controller",
-      "section1Text": "The data controller for personal data collected through meapica.shop is Xavier Huix Trenco (Meapica), tax ID 41649433K, address Carrer Aribau 140, 5º, 08036 Barcelona (Spain). For any privacy question, write to hola@meapica.shop.",
+      "section1Text": "The data controller for personal data collected through meapica.es is Xavier Huix Trenco (Meapica), tax ID 41649433K, address Carrer Aribau 140, 5º, 08036 Barcelona (Spain). For any privacy question, write to hola@meapica.es.",
       "section2Title": "2. Data we collect",
       "section2Text": "We collect the data needed to create your personalised book: the child's name, age, city, interests and physical features for the illustrations and, only if you choose to upload one, a photo of the child (see section 8). We also collect your email and shipping address to process orders.",
       "section3Title": "3. Purpose of processing",
@@ -913,17 +913,17 @@
       "section5Title": "5. Processors and international transfers",
       "section5Text": "To provide the service we work with providers that process data only on our instructions: OpenAI Ireland Ltd. (generating the story text and illustrations and, if you upload one, the character from the photo), Supabase (database and storage), Vercel (web hosting), Stripe Payments Europe Ltd. (payments), Gelato (printing and shipping), Resend (order emails and the reminders you asked for), Cloudflare, Inc. (Turnstile, anti-bot verification at sign-in and when starting as a guest) and, only if you accept advertising and analytics cookies, Meta Platforms Ireland Ltd., TikTok Technology Limited (measuring our ads) Google Ireland Limited (Google Analytics, visit and purchase statistics) and PostHog, Inc. (site-usage statistics and anonymous session recordings, hosted in the EU). OpenAI does not use the data we send it to train its models and may keep it for up to 30 days to detect abuse. When a provider or its sub-processors process data outside the European Economic Area (for example, in the United States), the transfer relies on the European Commission's Standard Contractual Clauses or the EU-US Data Privacy Framework.",
       "section6Title": "6. Your rights",
-      "section6Text": "You can exercise your rights of access, rectification, erasure, objection, restriction of processing and portability, and withdraw your consent at any time, by writing to hola@meapica.shop. We will reply within one month at the latest. If you believe we have not handled your data properly, you can lodge a complaint with the Spanish Data Protection Agency (AEPD, www.aepd.es).",
+      "section6Text": "You can exercise your rights of access, rectification, erasure, objection, restriction of processing and portability, and withdraw your consent at any time, by writing to hola@meapica.es. We will reply within one month at the latest. If you believe we have not handled your data properly, you can lodge a complaint with the Spanish Data Protection Agency (AEPD, www.aepd.es).",
       "section7Title": "7. Children's data protection",
       "section7Text": "We do not collect data directly from children. The child's data is provided by the parent or legal guardian who creates the book.",
       "section8Title": "8. Photos of children",
-      "section8Text": "Uploading a photo is optional: you can also create the character by choosing their features. If you upload one, we use it only to create the child's illustrated character (their portrait and character sheet), and only with the consent of the child's parent or legal guardian. Before storing it we remove all its metadata, including GPS location, and keep it in private storage that only our server can access. The photo is sent to OpenAI to draw the character; OpenAI does not use it to train its models and may keep it for up to 30 days to detect abuse. We delete the photo as soon as the character is created, and in any case within 24 hours. The book (preview and final version) is illustrated only from the drawn character, never from the photo. We do not use it for facial recognition or for any other purpose. You can withdraw your consent at any time by writing to hola@meapica.shop and we will delete it immediately. We keep a record of your consent (date, version of the accepted text and language) as proof that you gave it."
+      "section8Text": "Uploading a photo is optional: you can also create the character by choosing their features. If you upload one, we use it only to create the child's illustrated character (their portrait and character sheet), and only with the consent of the child's parent or legal guardian. Before storing it we remove all its metadata, including GPS location, and keep it in private storage that only our server can access. The photo is sent to OpenAI to draw the character; OpenAI does not use it to train its models and may keep it for up to 30 days to detect abuse. We delete the photo as soon as the character is created, and in any case within 24 hours. The book (preview and final version) is illustrated only from the drawn character, never from the photo. We do not use it for facial recognition or for any other purpose. You can withdraw your consent at any time by writing to hola@meapica.es and we will delete it immediately. We keep a record of your consent (date, version of the accepted text and language) as proof that you gave it."
     },
     "terms": {
       "title": "Legal Notice and Terms of Use",
-      "intro": "By using meapica.shop you accept the following terms.",
+      "intro": "By using meapica.es you accept the following terms.",
       "section1Title": "1. Identification",
-      "section1Text": "Meapica is a personalized children's book creation platform operated from Spain by Xavier Huix Trenco, tax ID (NIF) 41649433K, with registered address at Carrer Aribau 140, 5º, 08036 Barcelona (Spain). Contact: hola@meapica.shop.",
+      "section1Text": "Meapica is a personalized children's book creation platform operated from Spain by Xavier Huix Trenco, tax ID (NIF) 41649433K, with registered address at Carrer Aribau 140, 5º, 08036 Barcelona (Spain). Contact: hola@meapica.es.",
       "section2Title": "2. Service",
       "section2Text": "Meapica offers the creation of personalized children's stories with unique illustrations, printed on demand.",
       "section3Title": "3. Intellectual property",
@@ -935,7 +935,7 @@
       "section6Title": "6. Limitation of liability",
       "section6Text": "Meapica does not guarantee uninterrupted service availability. Illustrations may vary and a specific result is not guaranteed.",
       "section7Title": "7. Gift vouchers",
-      "section7Text": "A gift voucher entitles the holder to one personalised story in the format chosen at purchase (hardcover, softcover or PDF), with shipping to mainland Spain and the Balearic Islands included for printed formats. It is paid at purchase, with the book's VAT included. It never expires, can be redeemed once by typing its code when paying for the story on meapica.shop, and cannot be exchanged for cash or used for another format; extras (for example an additional copy) are paid separately. Because you buy it online, you have 14 calendar days from purchase to withdraw without giving a reason, as long as it has not been redeemed: write to hola@meapica.shop and we refund you through the same payment method within 14 days. Once redeemed, the book is made to measure and is excluded from the right of withdrawal (art. 103 c of the Spanish consumer law, LGDCU). Keep the code safe: anyone who has it can redeem it. If you lose it, we resend it to the email used for the purchase.",
+      "section7Text": "A gift voucher entitles the holder to one personalised story in the format chosen at purchase (hardcover, softcover or PDF), with shipping to mainland Spain and the Balearic Islands included for printed formats. It is paid at purchase, with the book's VAT included. It never expires, can be redeemed once by typing its code when paying for the story on meapica.es, and cannot be exchanged for cash or used for another format; extras (for example an additional copy) are paid separately. Because you buy it online, you have 14 calendar days from purchase to withdraw without giving a reason, as long as it has not been redeemed: write to hola@meapica.es and we refund you through the same payment method within 14 days. Once redeemed, the book is made to measure and is excluded from the right of withdrawal (art. 103 c of the Spanish consumer law, LGDCU). Keep the code safe: anyone who has it can redeem it. If you lose it, we resend it to the email used for the purchase.",
       "section8Title": "8. Referral programme \"€10 and €10\"",
       "section8Text": "Every paid story order includes a personal referral code, printed on the last page of the book and shown in the order emails and in \"My orders\". Whoever uses it to buy a printed book (hardcover or softcover) gets €10 off; it does not apply to the PDF and cannot be combined with other codes. When that order is paid, and if it is that family's first order, we send the referrer a single-use €10 code for their next printed book, valid for 12 months. There is no reward for one's own orders (same email, same account or same paying customer). Each personal code can be used up to 20 times. Discounts cannot be exchanged for cash. We may end the programme by announcing it on this page; reward codes already sent remain valid until their date."
     },
@@ -977,7 +977,7 @@
       "section3Title": "Protective packaging",
       "section3Text": "Your book travels in cardboard packaging designed to get it to you in perfect condition, ready to give. If it still arrives damaged, write to us and we'll send you a new one free of charge.",
       "section4Title": "Order tracking",
-      "section4Text": "Once the book leaves the printer, you'll receive an email with the tracking number. You can also check your order status from your user dashboard at meapica.shop."
+      "section4Text": "Once the book leaves the printer, you'll receive an email with the tracking number. You can also check your order status from your user dashboard at meapica.es."
     }
   },
   "notFound": {
@@ -1429,7 +1429,7 @@
       "viewOrders": "View my orders",
       "notVerifiedTitle": "We couldn't confirm this payment",
       "notVerifiedDescription": "This link doesn't match a completed payment. If you've just paid, your order will appear in your library within a few minutes and you'll get a confirmation email. If something doesn't add up, write to us and we'll sort it out.",
-      "contactUs": "Email us at hola@meapica.shop",
+      "contactUs": "Email us at hola@meapica.es",
       "confirmationEmail": "We'll send the confirmation and tracking to {email}",
       "guestNote": "You checked out as a guest: keep that email, it's your order confirmation.",
       "processingTitle": "Payment confirmed!",
@@ -2810,11 +2810,11 @@
       },
       {
         "q": "Can I return it?",
-        "a": "Yes. You have 14 calendar days from purchase to cancel, as long as it has not been redeemed: write to hola@meapica.shop and we refund you. Once redeemed, the book is made to measure and the right of withdrawal no longer applies."
+        "a": "Yes. You have 14 calendar days from purchase to cancel, as long as it has not been redeemed: write to hola@meapica.es and we refund you. Once redeemed, the book is made to measure and the right of withdrawal no longer applies."
       },
       {
         "q": "How is it redeemed?",
-        "a": "Create the story on meapica.shop, choose the voucher's format and type the code under \"Add promotion code\" at checkout. The total becomes €0."
+        "a": "Create the story on meapica.es, choose the voucher's format and type the code under \"Add promotion code\" at checkout. The total becomes €0."
       },
       {
         "q": "Can they choose another format?",
@@ -2833,7 +2833,7 @@
       "validUntil": "Never expires",
       "printCta": "View and print the voucher",
       "pendingTitle": "We are preparing your voucher",
-      "pendingText": "Your payment went through. The voucher will reach your inbox in a few minutes. If you can't see it, check your promotions folder or write to hola@meapica.shop.",
+      "pendingText": "Your payment went through. The voucher will reach your inbox in a few minutes. If you can't see it, check your promotions folder or write to hola@meapica.es.",
       "backHome": "Back to home"
     },
     "card": {
@@ -2848,9 +2848,9 @@
       },
       "codeLabel": "Your code",
       "validUntil": "Never expires",
-      "howTo": "Go to meapica.shop, create your story with your name and your adventure, and type this code at checkout.",
+      "howTo": "Go to meapica.es, create your story with your name and your adventure, and type this code at checkout.",
       "print": "Print",
-      "notFound": "We can't find this voucher. Check the link in the email or write to hola@meapica.shop."
+      "notFound": "We can't find this voucher. Check the link in the email or write to hola@meapica.es."
     },
     "fromChristmas": "Rather let the family create it? Give a gift voucher"
   },
@@ -2874,7 +2874,7 @@
       "nameLabel": "Your name, as other families will see it",
       "namePlaceholder": "Marta G.",
       "nameHint": "Your first name and the initial of your surname. We never show your email or order details.",
-      "consentLabel": "You may publish my rating, my text and this name on meapica.shop.",
+      "consentLabel": "You may publish my rating, my text and this name on meapica.es.",
       "consentNote": "If you leave it unticked, only we will read your review.",
       "submit": "Send my review",
       "privacy": "If you publish it, you can ask us to take it down at any time.",
@@ -2888,7 +2888,7 @@
     },
     "done": {
       "title": "Thank you for your review!",
-      "published": "It's now live on meapica.shop. Thank you for helping other families decide.",
+      "published": "It's now live on meapica.es. Thank you for helping other families decide.",
       "pending": "We'll check it and publish it shortly.",
       "private": "We've got it and will read it carefully. We won't publish it.",
       "already": "You already reviewed this story. Thank you again!"

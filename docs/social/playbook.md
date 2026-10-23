@@ -23,7 +23,7 @@ batch of 20 Oct-2 Nov is all narrated stories; "Comenta CUENTO/CONTE" goes only 
 1. **5 of 7 posts are useful or entertaining without buying anything.** At most 2 a week are product-first.
 2. **First frame = the art, full screen, already moving.** Never a logo, a brand card or a price. **No intro, ever**:
    the first 3 seconds decide whether the video is watched. The brand signature is the **outro** (3.6 s: the book of the logo opens
-   and the name Meapica flows out of it, with its own chime; the music bed fades out before it) on narrated videos; short loops keep a `meapica.shop` pill on the last beat instead.
+   and the name Meapica flows out of it, with its own chime; the music bed fades out before it) on narrated videos; short loops keep a `meapica.es` pill on the last beat instead.
 3. **Hook on screen from frame one**, 7 words or fewer, true to what follows. It answers a question a parent
    really searches or asks.
 4. **Works muted**: captions burned in from the first word. **Works with sound**: the same narrator in every video
@@ -31,7 +31,7 @@ batch of 20 Oct-2 Nov is all narrated stories; "Comenta CUENTO/CONTE" goes only 
 5. **Scenes move.** The opening scene, the transitions between places and the most magical moment are animated with
    an image-to-video model (paid); every other scene gets free layered motion; all beats dissolve into each other.
    **A visual change every 2 to 4 seconds.** One book and one idea per video. 15 to 60 seconds.
-6. **The site is said and shown before people leave**: a small `meapica.shop` label from the third beat on (`"web": true`),
+6. **The site is said and shown before people leave**: a small `meapica.es` label from the third beat on (`"web": true`),
    the narrator says it over the outro (`outroSay`), and Facebook and YouTube get the link as a first comment
    (automatic; not on YouTube videos declared as made for kids, which have no comments). Reason: on 2026-10-05 about
    1,400 social views had produced one visit to the site.
@@ -49,9 +49,9 @@ batch of 20 Oct-2 Nov is all narrated stories; "Comenta CUENTO/CONTE" goes only 
 3. **No reference images** (a name typed on a cover, a question in moving type): our own animation in code, a
    HyperFrames project under `videos/`.
 **Every video ends with the corporate closing** (owner, 2026-10-07; skill `product-video-closing`). Short reels
-use the compact one (3.2 s: the logo builds, "El cuento que te pedirá otra vez", "Crear su libro", meapica.shop;
+use the compact one (3.2 s: the logo builds, "El cuento que te pedirá otra vez", "Crear su libro", meapica.es;
 `"outro": "short"`, source `videos/closing-short/`). Narrated stories keep the logo outro with the address spoken
-until the full closing exists. This replaces the earlier rule that short loops only carried a `meapica.shop` pill.
+until the full closing exists. This replaces the earlier rule that short loops only carried a `meapica.es` pill.
 A still with a zoom is the fallback, not the plan. Cost: about $0.55 per 5 s Higgsfield clip (a four-shot reel is about $2.20), paid from the API balance; code animation is free.
 
 ## The learning loop (owner, 2026-10-08: the system must learn from what works)

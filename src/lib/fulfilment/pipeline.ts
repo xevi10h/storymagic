@@ -476,7 +476,7 @@ async function buildCustomerPdf(ctx: RunContext): Promise<void> {
 /**
  * Referral code printed on the last inner page: the order's own (print files), else the
  * story's first paid order's (the customer PDF is one file per story). Created here if
- * the webhook could not. Best-effort: any problem prints the plain meapica.shop QR.
+ * the webhook could not. Best-effort: any problem prints the plain meapica.es QR.
  */
 async function referralForPdf(ctx: RunContext, order?: OrderRow): Promise<ReferralLink | null> {
   const byDate = [...ctx.orders].sort((a, b) => a.created_at.localeCompare(b.created_at));

@@ -12,7 +12,7 @@ type Props = {
   params: Promise<{ locale: string }>;
 };
 
-const BASE_URL = "https://meapica.shop";
+const BASE_URL = "https://meapica.es";
 
 const LOCALE_MAP: Record<string, string> = {
   es: "es_ES",

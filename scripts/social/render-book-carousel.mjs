@@ -22,7 +22,7 @@ mkdirSync(TMP, { recursive: true });
 
 const pdf = `${TMP}/${T.storyId}.pdf`;
 if (!existsSync(pdf)) {
-  const res = await fetch(`https://meapica.shop/api/showcase/${T.storyId}/pdf`);
+  const res = await fetch(`https://meapica.es/api/showcase/${T.storyId}/pdf`);
   if (!res.ok) throw new Error(`example PDF: HTTP ${res.status}`);
   writeFileSync(pdf, Buffer.from(await res.arrayBuffer()));
 }

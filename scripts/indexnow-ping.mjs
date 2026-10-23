@@ -1,9 +1,9 @@
 // IndexNow: tell Bing (and Yandex, Seznam, Naver…) every sitemap URL changed, so the
 // Bing index (also used by Copilot / ChatGPT search) picks them up fast.
-// The key file is public/2ecdea1c8139eed8afa1e608880f24f7.txt (served at https://meapica.shop/2ecdea1c8139eed8afa1e608880f24f7.txt).
+// The key file is public/2ecdea1c8139eed8afa1e608880f24f7.txt (served at https://meapica.es/2ecdea1c8139eed8afa1e608880f24f7.txt).
 // Run after a deploy: node scripts/indexnow-ping.mjs  [--dry-run]  [sitemap url]
 const KEY = "2ecdea1c8139eed8afa1e608880f24f7";
-const HOST = "meapica.shop";
+const HOST = "meapica.es";
 const dryRun = process.argv.includes("--dry-run");
 const sitemapUrl = process.argv.slice(2).find((a) => !a.startsWith("--")) ?? `https://${HOST}/sitemap.xml`;
 

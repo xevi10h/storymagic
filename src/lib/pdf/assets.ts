@@ -86,7 +86,7 @@ export function hexToRgbTuple(hex: string): [number, number, number] {
  * src/lib/promo-codes.ts). Deliberately NOT a per-book URL: there is no public book
  * route, and a printed link must never expose a child's book.
  */
-export async function generateQrDataUrl(color: string, url = "https://meapica.shop"): Promise<string> {
+export async function generateQrDataUrl(color: string, url = "https://meapica.es"): Promise<string> {
   try {
     return await QRCode.toDataURL(url, {
       width: 600,
