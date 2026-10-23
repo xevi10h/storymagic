@@ -231,16 +231,15 @@ Meta Pixel + Conversions API behind an AEPD cookie banner. Off until the env var
 dataset "Meapica web", `meapica.shop` domain verification (DNS TXT). Owner setup + first campaign: `docs/ads/setup-guide.md`.
 Code map: `docs/technical-architecture.md` › Ads tracking. No TikTok Pixel (TikTok is organic only).
 
-## Domains (switch to meapica.es: code on main, prod rolled back)
+## Domains (meapica.es primary since 2026-10-23)
 
-> **Status 2026-10-23:** `ff68feb` (code → .es) was deployed and **rolled back** after 6 min: Cloudflare Turnstile
-> answered `110200` (domain not authorized) on meapica.es, so login and previews failed. Prod = deployment of `b0fc1fa`
-> (Vercel auto-promotion is off after an instant rollback), `meapica.es` 301 → `meapica.shop` again, Supabase Site URL
-> back to `.shop` (SMTP sender stays `pedidos@meapica.es`). Vercel prod env already holds the .es values.
-> To retry: add `meapica.es` to the Turnstile widget `0x4AAAAAAFLSoggPOt81EmD4` hostnames, check that the widget no
-> longer returns 110200 on meapica.es (Playwright: render the widget with that sitekey), then promote the `ff68feb`
-> deployment, remove the `meapica.es` redirect, `www.meapica.es`/`www.meapica.shop` → `meapica.es` 308, Site URL `.es`.
-> The text below describes the target state.
+> **Live 2026-10-23 (`4c6cdbc`, promoted by hand):** Turnstile widget `0x4AAAAAAFLSoggPOt81EmD4` (shared with Constrack,
+> named "constrack.pro +1 (Spin)") now lists `meapica.es` + `www.meapica.es`. Vercel: `meapica.es` no redirect,
+> `www.meapica.es` and `www.meapica.shop` 308 → `meapica.es`, `meapica.shop` no domain redirect (middleware 308s pages, `/api`
+> served). Supabase Site URL `https://meapica.es`. `vercel promote` restored auto-promotion
+> (`autoAssignCustomDomains: true`, no `lastRollbackTarget`): pushes to `main` go live again.
+> Changing domain redirects: `vercel api /v9/projects/prj_q2l2AcxlyfjXJEMLvirbrinMZbVf/domains/<name> -X PATCH -F redirect=<host|null>
+> -F redirectStatusCode=308` (clear the apex redirect first: Vercel refuses chained redirects).
 
 - **Primary: `meapica.es`** (+ `www`), registered at **Hostinger**, DNS there (API token `~/.config/hostinger/token`,
   `PUT https://developers.hostinger.com/api/dns/v1/zones/meapica.es`). Records: `@ A 216.150.1.1` + `216.150.16.1`,
@@ -477,7 +476,7 @@ Order: apply the migration → deploy → run the setup script with the live key
 - **Order matters:** apply the migration BEFORE deploying the code: the new `/api/newsletter` writes
   `reyes_reminder_consent_at`, so without the column every Reyes opt-in would fail with a 500.
 
-## Creator programme (2026-10-23)
+## Creator programme (live 2026-10-23)
 
 - No new env vars. Uses `ADMIN_EMAILS` (`/admin/creators`), `OPS_ALERT_EMAIL` (payout request emails, fallback
   `GELATO_OWNER_EMAIL`), `STRIPE_ENVIRONMENT` + keys, `SUPABASE_SERVICE_ROLE_KEY`.

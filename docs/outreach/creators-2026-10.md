@@ -24,7 +24,7 @@ Six go by email (#1, 2, 3, 7, 8, 9), four by Instagram message (#4, 5, 11, 12). 
   labelled as advertising ("Publicitat" / "publicidad"). Monthly report: `node scripts/social/creator-commissions.mjs`
   (previous month; `--from/--to` to include carried-over months; `--orders` for detail). Fiscal treatment of paying
   individuals (IRPF withholding) is pending with the accountant.
-- **Creator panel (built 2026-10-23, not in production yet; "Creador" tab of the library):** the app now keeps the ledger. Each
+- **Creator panel (live in production 2026-10-23, "Creador" tab of the library; 12 creators registered with their contact email, @totdemare, @maestraprimariaypt, @lara_mamaestra, @bocinsdemi pending their login email; test creator @pruebameapica = admin@casmar.tech, code PRUEBAMEAPICA10 max 1 use):** the app now keeps the ledger. Each
   creator signs in to meapica.es with the email we register for them (`/admin/creators`, or
   `scripts/social/seed-creators.mjs` for the existing 16 codes) and sees their link `meapica.es/<es|ca>/r/<CODE>`
   (pre-applies the 10 %), their sales (no buyer data), and their balance (pending until the book is delivered). They
