@@ -18,8 +18,8 @@ Code, docs, Resend, Supabase allow-list and GSC property done (see `docs/stack.m
 - Also done 2026-10-23: Meta domain `meapica.es` verified (DNS TXT); Gelato webhook on `.es` (owner, by hand); `meapica.shop` is a Vercel domain-level 308 → `meapica.es`
   (incl. `/api`) since ~15:00.
 - Still open:
-  - Merchant Center: customer service email still `hola@meapica.shop`, data source still named "(meapica.shop)".
-  - Social bios (Zernio). Pinterest dropped.
+  - Owner, in the Instagram app: @meapica_books website `meapica.shop/es` → `meapica.es/es`. TikTok bio link: owner (headless blocked).
+    (Facebook page website and Merchant Center contact moved to `.es` on 2026-10-23.)
   - Renew `.shop` yearly (keep forever: printed QR codes).
 
 ## Next up (2026-10-03, after the Phase 0 QA + SEO/GEO/social review)

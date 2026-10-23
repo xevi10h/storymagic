@@ -147,9 +147,8 @@ already hold the Meapica sandbox values). No publishable key is used (redirect C
 factura rectificativa, `src/lib/fulfilment/payments.ts`),
 locale es/en/fr (Stripe has no Catalan → es), shipping ES only, promotion codes allowed.
 Payment methods are Dashboard-managed (no `payment_method_types`, since 2026-10-23; same for gift vouchers):
-default config `pmc_1UKcQxAyKcfLUpfGBJ5zByeo` has card, Apple Pay, Link, Klarna, Amazon Pay on; Google Pay,
-Bizum, PayPal and Revolut Pay are off (owner turns them on in Dashboard › Settings › Payment methods; Bizum needs
-the capability request). Delayed methods complete unpaid and are fulfilled on `async_payment_succeeded`.
+default config `pmc_1UKcQxAyKcfLUpfGBJ5zByeo` has card, Apple Pay, Google Pay (on 2026-10-23), Link, Klarna,
+Amazon Pay on; Bizum requested 2026-10-23 ("Pending approval" by Stripe); PayPal and Revolut Pay off. Delayed methods complete unpaid and are fulfilled on `async_payment_succeeded`.
 Invoices are not VeriFactu-compliant: move to a VeriFactu tool before the obligation applies (2027).
 
 **Stripe-mode isolation:** local dev uses the prod database. Cron + pipeline only fulfil orders whose
@@ -280,6 +279,10 @@ Code map: `docs/technical-architecture.md` › Ads tracking. No TikTok Pixel (Ti
 - **Gmail "Send mail as" (2026-10-23):** `Xavi de Meapica <hola@meapica.es>` added and confirmed in admin@casmar.tech (alias,
   smtp.resend.com:465 SSL, user `resend`, password = `~/.config/resend/meapica-es-sending`). `hola@meapica.shop` kept.
 - **Bing DNS verification:** CNAME `410a995a7b95552813a6359ec6817435.meapica.es` → `verify.bing.com.` (Hostinger, 2026-10-23).
+- **Social profile links (2026-10-23):** Facebook page website `http://meapica.com/` → `https://meapica.es/` (Business Suite ›
+  Edit Page; the Graph token lacks `pages_manage_metadata`). Instagram @meapica_books website still `meapica.shop/es` (web says
+  links are editable only in the mobile app; the bio text has no URL). TikTok: headless refused. Pinterest (dropped): website field
+  locked to the claimed `meapica.shop`. All old links 308 to `meapica.es`.
 
 ## Ads tracking — TikTok (2026-10-01)
 
@@ -561,7 +564,9 @@ Recommended: apply the migration, then deploy, then run `?dry_run=1` once to see
 `10756117518` (daily fetch 06:00 Madrid), return policy `9351866615` (NO_RETURNS), customer service hola@meapica.shop.
 **2026-10-23:** website changed to `https://meapica.es` and claimed (Merchant API `accounts/5865149718/homepage` + `:claim`,
 `claimed: true`); data source fetch URL → `https://meapica.es/feeds/google-merchant.xml` (fetch triggered). Item links and images
-in the feed already use `.es`. Still `.shop`: customer service email and the data source display name.
+in the feed already use `.es`. Customer service email `hola@meapica.es` + URI `https://meapica.es/es/legal` and data source
+name "Meapica feed (meapica.es)" updated the same day. Return policy `9351866615` URL is still `https://meapica.shop/es/legal`
+(the Merchant API has no update for it, only delete + create; the URL 308s to `.es`, so left as is).
 API access: service account `cana-agent@casmar-analytics.iam.gserviceaccount.com` is Admin in Merchant Center, Merchant API
 enabled in GCP `casmar-analytics` and registered (`developerRegistration:registerGcp`); token with scope
 `https://www.googleapis.com/auth/content` WITHOUT `sub` (no DWD). Item-level `postal_code` is rejected for ES
