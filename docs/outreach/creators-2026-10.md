@@ -22,8 +22,15 @@ Six go by email (#1, 2, 3, 7, 8, 9), four by Instagram message (#4, 5, 11, 12). 
   the buyer paid without VAT (`amount_total - amount_tax`, minus refunds) for every order with their `<NAME>10` code,
   paid by bank transfer once a month when the balance reaches 20 € (below that it carries over). Posts with the code are
   labelled as advertising ("Publicitat" / "publicidad"). Monthly report: `node scripts/social/creator-commissions.mjs`
-  (previous month; `--from/--to` to include carried-over months; `--orders` for detail). No payouts table: payouts are
-  tracked by hand. Fiscal treatment of paying individuals (IRPF withholding) is pending with the accountant.
+  (previous month; `--from/--to` to include carried-over months; `--orders` for detail). Fiscal treatment of paying
+  individuals (IRPF withholding) is pending with the accountant.
+- **Creator panel (built 2026-10-23, backend only, not in production yet):** the app now keeps the ledger. Each
+  creator signs in to meapica.es with the email we register for them (`/admin/creators`, or
+  `scripts/social/seed-creators.mjs` for the existing 16 codes) and sees their link `meapica.es/<es|ca>/r/<CODE>`
+  (pre-applies the 10 %), their sales (no buyer data), and their balance (pending until the book is delivered). They
+  can ask for a transfer (min 20 €, IBAN + name + NIF; we get an email and mark it paid in `/admin/creators`) or spend
+  X € of balance as a single-use 2X € code for a printed book. Details: `docs/product-spec.md` › Creator programme.
+  Before going live we need each creator's login email.
   Told so far: @totdemare (Instagram, 2026-10-22, `TOTDEMARE10`), @lara_mamaestra (Instagram, 2026-10-22, `LARA10`),
   @myfamilytime.es (email 2026-10-22, `FAMILYTIME10`, plus her gift code resent: she had lost it).
 - Replies so far: @myfamilytime.es said yes on 2026-10-08 and the reply with her code (`REGALO-FAMILYTIME-…`) was SENT the

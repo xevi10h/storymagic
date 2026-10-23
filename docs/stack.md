@@ -468,6 +468,27 @@ Order: apply the migration → deploy → run the setup script with the live key
 - **Order matters:** apply the migration BEFORE deploying the code: the new `/api/newsletter` writes
   `reyes_reminder_consent_at`, so without the column every Reyes opt-in would fail with a 500.
 
+## Creator programme (2026-10-23)
+
+- No new env vars. Uses `ADMIN_EMAILS` (`/admin/creators`), `OPS_ALERT_EMAIL` (payout request emails, fallback
+  `GELATO_OWNER_EMAIL`), `STRIPE_ENVIRONMENT` + keys, `SUPABASE_SERVICE_ROLE_KEY`. No new webhook events.
+- Stripe: no setup script step. Each credit creates its own coupon `meapica_creator_credit_<uuid>` + one promotion code
+  at runtime; it copies `applies_to` from `meapica_referral_10` (exists in LIVE, verified 2026-10-23). Audience codes
+  stay as created by `scripts/social/create-creator-codes.sh` (coupon `pUqYq48o`, expire 2027-01-06).
+- Seeding the existing creators: write `creators.csv` (`<handle>,<login email>` per line), then
+  `node scripts/social/seed-creators.mjs creators.csv` (LIVE Stripe read, dry run) and `--apply` to insert into the
+  Supabase project of `.env.local` (production). New creators later: `/admin/creators`.
+- Checks: `node --experimental-strip-types src/lib/creators.check.mjs`; `bash supabase/tests/creator_withdraw.check.sh`
+  (spins a throwaway local Postgres from Homebrew `postgresql@16`, tests the double-spend guard, deletes it).
+
+### Deploy order — creator programme (2026-10-23)
+
+| Version | File | When |
+|---|---|---|
+| 20261023120000 | `creator_programme.sql` (orders promotion columns, `creators`, `creator_commissions`, `creator_withdrawals`, RPC `creator_withdraw`) | **before** the deploy (additive; the webhook writes them on every promotion-code order and refund) |
+
+Order: apply the migration → deploy → seed creators → check `/admin/creators`.
+
 ## Customer reviews (2026-10-19)
 
 - Cron `/api/cron/review-requests` (vercel.json, daily 10:00 UTC, `CRON_SECRET`; `?dry_run=1`, `?limit=N`). Answers

@@ -112,6 +112,14 @@ GA4 2 Oct-19 Oct: 37 sessions, 6 from social. Funnel 3-19 Oct: 4 real stories, 4
 - [ ] Attribution follow-ups: tag every bio link, post and ad with `utm_source/utm_medium/utm_campaign` (untagged in-app browsers often send no referrer and land as `(direct)`); consider keeping the first touch across reloads only if a clearly exempt way exists (any device storage needs consent, see technical-architecture › Story attribution).
 - [ ] Drop the YouTube leg or keep it only for bedtime stories (21 views in 12 Shorts). Since 2026-10-19 posts can name their `platforms`; the 20 Oct-2 Nov batch leaves out YouTube and Pinterest.
 
+## Next steps from the creator programme (2026-10-23)
+
+- [ ] Owner approves the visual design of the account area + creator panel, then build the panel UI on `GET/POST /api/creator` (es + ca copy).
+- [ ] Apply migration `20261023120000_creator_programme` to production, deploy, seed the 16 creators (`scripts/social/seed-creators.mjs`, needs each creator's login email).
+- [ ] Accountant: IRPF withholding / invoice requirements for payouts to individual creators; adapt the payout form (e.g. self-invoice PDF) if needed.
+- [ ] Email the creator when a commission becomes available and when a payout is marked paid.
+- [ ] Monthly creator statement (PDF) and a public creator leaderboard to spark competition between creators.
+
 ## Next steps from customer reviews (2026-10-19)
 
 - Create the Trustpilot business profile and set `TRUSTPILOT_REVIEW_URL` in `src/lib/product-facts.ts`.

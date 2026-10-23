@@ -269,6 +269,34 @@ Rules in `src/lib/promo-codes.ts` (pure, checked by `src/lib/promo-codes.check.m
 - **Fail soft:** until `scripts/stripe-setup-catalog.mts` has created the coupons/prices on the active account, no
   referral codes are minted (plain QR, no email block) and the voucher page shows "coming soon".
 
+## Creator programme: commissions, payouts and 2x credit (2026-10-23)
+
+Rules in `src/lib/creators.ts` (pure, checked by `src/lib/creators.check.mjs`); server code in
+`src/lib/growth/creators.ts`; double-spend guard in the database (RPC `creator_withdraw`, checked by
+`supabase/tests/creator_withdraw.check.sh`). Backend done; **the creator panel UI is not built yet** (visual design
+pending owner approval; it will consume `GET/POST /api/creator`).
+
+- **Invite-only:** an operator registers a creator in `/admin/creators` (login email + Instagram handle + their
+  audience code `<NAME>10`, which must exist in Stripe with metadata `kind=audience`). Signing in to meapica.es with
+  that email (verified, not a guest) makes the user a creator. Existing codes: `scripts/social/seed-creators.mjs`.
+- **Link:** `https://meapica.es/<locale>/r/<CODE>` (same route as the referral link). The checkout pre-applies the
+  10 % audience code on **any** format (the audience coupon has no product restriction), never on the creator's own
+  checkout; an expired/used code falls back to a normal checkout.
+- **Commission:** 10 % of what the buyer paid without VAT (`amount_total - amount_tax`), per order paid with their
+  audience code (recorded by the Stripe webhook, one row per order). Refunds (partial or full) recompute it with the
+  VAT share of the refund taken off. A creator buying with their own code earns nothing. **Pending** until the order
+  is `delivered`, then **available**; refunded/cancelled = void.
+- **Panel data:** code + link, sales list (date, format, amount paid IVA incluido, commission, state; never buyer
+  data), balance: pending, available, requested (reserved), paid out, spent.
+- **Cash out:** the whole available balance, min 20 €, with IBAN (mod-97 checked), holder name and NIF/NIE (check
+  letter) or CIF. The amount is reserved at once; the owner gets an ops email (no bank data in it) and transfers by
+  hand, then "Marcar pagado" (or "Cancelar", which releases the balance) in `/admin/creators`. IRPF withholding on
+  payments to individuals: pending with the accountant.
+- **Spend at 2x:** X € of available balance (1 € to 24,95 €) becomes a single-use code worth 2X € (`MEA` + 10 chars,
+  own Stripe coupon `meapica_creator_credit_<id>`, amount off, printed-book products only like the referral coupon,
+  no expiry). Max 2X = one hardcover (49,90 €) because a remainder would be lost. Not restricted to the creator's
+  Stripe customer (Checkout uses `customer_email`), only single use.
+
 ## Customer reviews (2026-10-19)
 
 Reviews live on our own site (owner decision 2026-10-19), with an optional Trustpilot link afterwards.
