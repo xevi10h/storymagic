@@ -567,6 +567,12 @@ Recommended: apply the migration, then deploy, then run `?dry_run=1` once to see
 in the feed already use `.es`. Customer service email `hola@meapica.es` + URI `https://meapica.es/es/legal` and data source
 name "Meapica feed (meapica.es)" updated the same day. Return policy `9351866615` URL is still `https://meapica.shop/es/legal`
 (the Merchant API has no update for it, only delete + create; the URL 308s to `.es`, so left as is).
+**2026-10-23 evening:** account suspended for "Información engañosa" (automated, right after the website change). Fixed in the UI:
+account shipping policy "Política de envío 20 43" (Spain, all products, free, handling 2-4 + transit 5-6 = 7-10 business days,
+cut-off 14:00 Madrid); return policy "Estándar para España" (no returns, no exchanges, URL `https://meapica.es/es/legal`,
+status Verificada; the old `9351866615` no longer listed); customer service phone `+34 606 404 251` (also on the site:
+footer, legal notice, Organization JSON-LD, llms.txt; `SUPPORT_PHONE` in `src/lib/support.ts`). Pending (owner only):
+identity verification with an ID document, then "Solicitar revisión" in Merchant Center › Problemas de la cuenta.
 API access: service account `cana-agent@casmar-analytics.iam.gserviceaccount.com` is Admin in Merchant Center, Merchant API
 enabled in GCP `casmar-analytics` and registered (`developerRegistration:registerGcp`); token with scope
 `https://www.googleapis.com/auth/content` WITHOUT `sub` (no DWD). Item-level `postal_code` is rejected for ES
