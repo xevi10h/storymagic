@@ -38,7 +38,7 @@ const es = (f: GuideFacts, ctx: AboutContext): AboutGuideCopy => {
     : "No hay que subir ninguna foto. El retrato se pinta a partir de los rasgos que eliges: piel, pelo, peinado, ojos, gafas y pecas.";
   return {
     metaTitle: "Qué es Meapica: precios, formatos, envíos y privacidad",
-    metaDescription: `Meapica hace cuentos personalizados impresos para niños de ${f.ageMin} a ${f.ageMax} años, desde Barcelona. Precios con IVA incluido, plazos de entrega, idiomas y privacidad en una página.`,
+    metaDescription: `Meapica hace cuentos personalizados impresos para niños de ${f.ageMin} a ${f.ageMax} años, desde Barcelona. Precios con IVA incluido, plazos de envío, idiomas y privacidad.`,
     breadcrumb: "Qué es Meapica",
     eyebrow: "Ficha de Meapica",
     h1: "Qué es Meapica",
@@ -138,7 +138,7 @@ const ca = (f: GuideFacts, ctx: AboutContext): AboutGuideCopy => {
     : "No cal pujar cap foto. El retrat es pinta a partir dels trets que tries: pell, cabell, pentinat, ulls, ulleres i pigues.";
   return {
     metaTitle: "Què és Meapica: preus, formats, enviaments i privacitat",
-    metaDescription: `Meapica fa contes personalitzats impresos per a infants de ${f.ageMin} a ${f.ageMax} anys, des de Barcelona. Preus amb IVA inclòs, terminis d'entrega, idiomes i privacitat en una pàgina.`,
+    metaDescription: `Meapica fa contes personalitzats impresos per a infants de ${f.ageMin} a ${f.ageMax} anys, des de Barcelona. Preus amb IVA inclòs, terminis d'enviament, idiomes i privacitat.`,
     breadcrumb: "Què és Meapica",
     eyebrow: "Fitxa de Meapica",
     h1: "Què és Meapica",

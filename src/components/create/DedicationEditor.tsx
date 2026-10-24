@@ -89,7 +89,7 @@ export default function DedicationEditor({
         {saveState === "saving" && t("saving")}
         {saveState === "saved" && (
           <span className="inline-flex items-center gap-1 text-create-text">
-            <span aria-hidden className="material-symbols-outlined text-sm text-brand-text">check</span>
+            <span aria-hidden className="material-symbols-outlined text-sm text-brand-text" data-icon="check" />
             {t("saved")}
           </span>
         )}

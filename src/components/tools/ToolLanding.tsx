@@ -52,9 +52,7 @@ export function GuideSections({ sections }: { sections: Section[] }) {
               )}
             >
               {s.link.label}
-              <span aria-hidden className="material-symbols-outlined !text-lg">
-                arrow_forward
-              </span>
+              <span aria-hidden className="material-symbols-outlined !text-lg" data-icon="arrow_forward" />
             </Link>
           )}
         </div>
@@ -96,9 +94,7 @@ export async function BookBand({ locale }: { locale: ToolLocale }) {
             href={CHRISTMAS_DELIVERY_PATH}
             className="inline-flex min-h-11 items-center gap-2 rounded-lg text-sm font-semibold text-paper underline decoration-paper/40 underline-offset-4 hover:decoration-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           >
-            <span aria-hidden className="material-symbols-outlined !text-lg">
-              local_shipping
-            </span>
+            <span aria-hidden className="material-symbols-outlined !text-lg" data-icon="local_shipping" />
             {t("deadlineLink")}
           </Link>
         </div>
@@ -141,9 +137,7 @@ export function RelatedLinks({ heading, links }: { heading: string; links: { hre
             <li key={l.href}>
               <Link href={l.href} className={linkCard}>
                 <span className="min-w-0">{l.label}</span>
-                <span aria-hidden className="material-symbols-outlined !text-xl shrink-0 text-ink-muted transition-transform group-hover:translate-x-1 group-hover:text-brand-text">
-                  arrow_forward
-                </span>
+                <span aria-hidden className="material-symbols-outlined !text-xl shrink-0 text-ink-muted transition-transform group-hover:translate-x-1 group-hover:text-brand-text" data-icon="arrow_forward" />
               </Link>
             </li>
           ))}

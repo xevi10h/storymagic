@@ -97,9 +97,8 @@ export default function MobileStickyCta() {
           <span
             aria-hidden
             className="material-symbols-outlined inline-block w-5 shrink-0 overflow-hidden text-xl leading-5 transition-transform group-hover:translate-x-1"
-          >
-            arrow_forward
-          </span>
+            data-icon="arrow_forward"
+          />
         </Link>
       </div>
     </div>

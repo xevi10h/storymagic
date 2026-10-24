@@ -41,9 +41,7 @@ function ExtLink({ href, children }: { href: string | null; children: React.Reac
   return (
     <a href={href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 font-semibold text-brand-text underline decoration-brand-text/30 underline-offset-2 hover:decoration-brand-text">
       {children}
-      <span aria-hidden className="material-symbols-outlined text-[14px]">
-        open_in_new
-      </span>
+      <span aria-hidden className="material-symbols-outlined text-[14px]" data-icon="open_in_new" />
     </a>
   );
 }
@@ -69,9 +67,7 @@ export function OrderDetailView({ detail, files }: OrderDetailViewProps) {
     <div className="flex flex-col gap-5">
       <div>
         <Link href="/admin" className="inline-flex items-center gap-1 text-[13px] font-semibold text-ink-muted hover:text-ink-soft">
-          <span aria-hidden className="material-symbols-outlined text-base">
-            arrow_back
-          </span>
+          <span aria-hidden className="material-symbols-outlined text-base" data-icon="arrow_back" />
           Pedidos
         </Link>
         <div className="mt-2 flex flex-wrap items-center gap-2.5">

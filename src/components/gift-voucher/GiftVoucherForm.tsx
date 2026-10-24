@@ -168,9 +168,7 @@ export default function GiftVoucherForm({
           </p>
         )}
         <p className="mt-3 flex items-start gap-1.5 text-xs leading-snug text-ink-soft">
-          <span aria-hidden className="material-symbols-outlined mt-px !text-[15px] text-ink-muted">
-            lock
-          </span>
+          <span aria-hidden className="material-symbols-outlined mt-px !text-[15px] text-ink-muted" data-icon="lock" />
           {copy.secure}
         </p>
         <p className="mt-1.5 text-xs leading-snug text-ink-soft">

@@ -260,6 +260,14 @@ h1, h2, h3, h4 {
   font-feature-settings: "liga";
   -webkit-font-smoothing: antialiased;
 }
+/* The glyph name lives in `data-icon` and is drawn as generated content (the
+   font's ligatures apply to it), so "arrow_forward" etc. is never DOM text that
+   search engines index as page copy. Usage: <span className="material-symbols-outlined"
+   data-icon="arrow_forward" aria-hidden />. Icons stay aria-hidden; an icon-only
+   control carries its name in aria-label on the parent. */
+.material-symbols-outlined::before {
+  content: attr(data-icon);
+}
 
 @layer base {
   /* Accessible focus ring (components may replace it, e.g. a border +
@@ -270,7 +278,7 @@ h1, h2, h3, h4 {
   }
 
   /* Material Symbols: lock each icon to a 1em square box. The font loads
-     with display=block, so before it arrives the ligature ("arrow_forward")
+     with display=block, so before it arrives the ligature (data-icon)
      is laid out invisibly in the fallback font; without this box that
      word-width collapsing to 1em is a layout shift (CLS). */
   .material-symbols-outlined {

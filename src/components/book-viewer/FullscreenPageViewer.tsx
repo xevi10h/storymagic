@@ -155,7 +155,7 @@ export default function FullscreenPageViewer({
       className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 disabled:opacity-30 ${extra}`}
       aria-label={dir === -1 ? t("previous") : t("next")}
     >
-      <span aria-hidden className="material-symbols-outlined">{dir === -1 ? "chevron_left" : "chevron_right"}</span>
+      <span aria-hidden className="material-symbols-outlined" data-icon={dir === -1 ? "chevron_left" : "chevron_right"} />
     </button>
   );
 
@@ -169,7 +169,7 @@ export default function FullscreenPageViewer({
       aria-label={t("closeZoom")}
       data-testid="fullscreen-close"
     >
-      <span aria-hidden className="material-symbols-outlined text-xl">close</span>
+      <span aria-hidden className="material-symbols-outlined text-xl" data-icon="close" />
     </button>
   );
 
@@ -213,7 +213,7 @@ export default function FullscreenPageViewer({
               onClick={goToCheckout}
               className="absolute bottom-5 left-1/2 inline-flex min-h-12 -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-full bg-create-primary px-6 py-2.5 text-[19px] font-bold leading-tight text-white shadow-lg transition-colors hover:bg-create-primary-hover"
             >
-              <span aria-hidden className="material-symbols-outlined text-xl">shopping_bag</span>
+              <span aria-hidden className="material-symbols-outlined text-xl" data-icon="shopping_bag" />
               {t("lockedCta")}
             </button>
           )}
@@ -263,7 +263,7 @@ export default function FullscreenPageViewer({
             onClick={goToCheckout}
             className="inline-flex min-h-12 items-center gap-2 whitespace-nowrap rounded-full bg-create-primary px-6 py-2.5 text-[19px] font-bold leading-tight text-white shadow-lg shadow-create-primary/30 transition-colors hover:bg-create-primary-hover"
           >
-            <span aria-hidden className="material-symbols-outlined text-xl">shopping_bag</span>
+            <span aria-hidden className="material-symbols-outlined text-xl" data-icon="shopping_bag" />
             {t("lockedCta")}
           </button>
         ) : (

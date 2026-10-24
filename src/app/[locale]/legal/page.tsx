@@ -24,10 +24,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   languages["x-default"] = `${BASE_URL}/${routing.defaultLocale}/legal`;
 
   const descriptionMap: Record<string, string> = {
-    es: "Política de privacidad, condiciones de uso, cookies, preguntas frecuentes y envíos de Meapica.",
-    ca: "Política de privadesa, condicions d'ús, cookies, preguntes freqüents i enviaments de Meapica.",
-    en: "Privacy policy, terms of use, cookies, FAQ and shipping information for Meapica.",
-    fr: "Politique de confidentialité, conditions d'utilisation, cookies, FAQ et informations de livraison de Meapica.",
+    es: "Aviso legal, privacidad, condiciones de uso, cookies, envíos y preguntas frecuentes de Meapica: quién vende, qué datos tratamos y cómo llega tu cuento a casa.",
+    ca: "Avís legal, privadesa, condicions d'ús, cookies, enviaments i preguntes freqüents de Meapica: qui ven, quines dades tractem i com arriba el teu conte a casa.",
+    en: "Legal notice, privacy policy, terms of use, cookies, shipping and FAQ for Meapica: who sells the books, what data we process and how your book reaches you.",
+    fr: "Mentions légales, confidentialité, conditions d'utilisation, cookies, livraison et FAQ de Meapica : qui vend les livres et quelles données nous traitons.",
   };
 
   const description = descriptionMap[locale] || descriptionMap.es;
@@ -104,7 +104,7 @@ export default async function LegalPage({ params }: PageProps) {
             href="/"
             className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-brand-text transition-colors mb-10"
           >
-            <span className="material-symbols-outlined text-base">arrow_back</span>
+            <span className="material-symbols-outlined text-base" data-icon="arrow_back" aria-hidden />
             {t("backHome")}
           </Link>
 

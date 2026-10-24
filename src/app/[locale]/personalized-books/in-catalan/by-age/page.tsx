@@ -160,9 +160,7 @@ export default async function Page({ params }: PageProps) {
                   )}
                 >
                   {ts(`ages.${band.slug}.h1`)}
-                  <span aria-hidden className="material-symbols-outlined !text-lg">
-                    arrow_forward
-                  </span>
+                  <span aria-hidden className="material-symbols-outlined !text-lg" data-icon="arrow_forward" />
                 </Link>
               </div>
 

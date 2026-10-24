@@ -38,9 +38,7 @@ export default function CreationFooterNav({
             onClick={onBack}
             className="group flex min-h-12 min-w-12 shrink-0 items-center justify-center gap-2 rounded-full border-2 border-create-primary/20 bg-white px-4 max-[389px]:px-3 sm:px-6 py-2.5 text-sm sm:text-base font-bold text-brand-text whitespace-nowrap transition-all hover:border-create-primary hover:bg-create-primary/5"
           >
-            <span aria-hidden className="material-symbols-outlined text-lg transition-transform group-hover:-translate-x-1">
-              arrow_back
-            </span>
+            <span aria-hidden className="material-symbols-outlined text-lg transition-transform group-hover:-translate-x-1" data-icon="arrow_back" />
             {/* Under 390px the 19px next label ("Crear el seu llibre") needs the room: icon-only back
                 (the header keeps its own back arrow); the label stays as the accessible name. */}
             <span className="max-[389px]:sr-only">{t("back")}</span>
@@ -65,9 +63,7 @@ export default function CreationFooterNav({
             ) : (
               <>
                 <span>{resolvedNextLabel}</span>
-                <span aria-hidden className="material-symbols-outlined text-lg transition-transform group-hover:translate-x-1">
-                  arrow_forward
-                </span>
+                <span aria-hidden className="material-symbols-outlined text-lg transition-transform group-hover:translate-x-1" data-icon="arrow_forward" />
               </>
             )}
           </button>

@@ -34,9 +34,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const hasPosts = blogLocales.includes(locale);
   return {
     title: { absolute: `${t("title")} | Meapica` },
-    description: t("subtitle"),
+    // Own SERP copy (the visible subtitle is too short for a meta description).
+    description: t("metaDescription"),
     alternates: { canonical: url, languages },
-    openGraph: { title: t("title"), description: t("subtitle"), url, type: "website" },
+    openGraph: { title: t("title"), description: t("metaDescription"), url, type: "website" },
     ...(hasPosts ? {} : { robots: { index: false, follow: true } }),
   };
 }

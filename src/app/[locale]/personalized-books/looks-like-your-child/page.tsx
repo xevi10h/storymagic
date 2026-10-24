@@ -183,9 +183,7 @@ export default async function Page({ params }: PageProps) {
                         )}
                       >
                         {copy.labels.seeInside}
-                        <span aria-hidden className="material-symbols-outlined !text-lg">
-                          arrow_forward
-                        </span>
+                        <span aria-hidden className="material-symbols-outlined !text-lg" data-icon="arrow_forward" />
                       </Link>
                     </div>
                     <div className="no-scrollbar -mx-4 mt-4 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 pb-1 sm:mx-0 sm:grid sm:grid-cols-5 sm:overflow-visible sm:px-0">

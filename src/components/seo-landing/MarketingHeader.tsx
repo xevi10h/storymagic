@@ -23,9 +23,7 @@ export function Breadcrumbs({ items, label = "Breadcrumb" }: { items: Crumb[]; l
             className={cx("min-w-0 items-center gap-x-1", item.href || i === 0 ? "flex" : "hidden sm:flex")}
           >
             {i > 0 && (
-              <span aria-hidden className="material-symbols-outlined !text-base text-ink-muted/70">
-                chevron_right
-              </span>
+              <span aria-hidden className="material-symbols-outlined !text-base text-ink-muted/70" data-icon="chevron_right" />
             )}
             {item.href ? (
               <Link

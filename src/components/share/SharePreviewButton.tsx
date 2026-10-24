@@ -155,7 +155,7 @@ export default function SharePreviewButton({ storyId, childName, childGender, cl
         {status === "loading" ? (
           <Spinner className="text-lg" />
         ) : (
-          <span aria-hidden className="material-symbols-outlined text-lg">{status === "copied" ? "check" : "ios_share"}</span>
+          <span aria-hidden className="material-symbols-outlined text-lg" data-icon={status === "copied" ? "check" : "ios_share"} />
         )}
         {status === "loading" ? t("sharing") : status === "copied" ? t("copied") : t("button")}
       </button>

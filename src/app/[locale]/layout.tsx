@@ -21,26 +21,11 @@ const LOCALE_MAP: Record<string, string> = {
   fr: "fr_FR",
 };
 
-const LANG_MAP: Record<string, string> = {
-  es: "es",
-  ca: "ca",
-  en: "en",
-  fr: "fr",
-};
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "metadata" });
 
   const canonicalUrl = `${BASE_URL}/${locale}`;
-
-  // Build hreflang alternates for all supported locales
-  const languages: Record<string, string> = {};
-  for (const loc of routing.locales) {
-    languages[LANG_MAP[loc] || loc] = `${BASE_URL}/${loc}`;
-  }
-  // x-default points to the default locale
-  languages["x-default"] = `${BASE_URL}/${routing.defaultLocale}`;
 
   return {
     metadataBase: new URL(BASE_URL),
@@ -62,10 +47,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       apple: "/images/apple-touch-icon.png",
     },
     manifest: "/manifest.json",
-    alternates: {
-      canonical: canonicalUrl,
-      languages,
-    },
+    // No `alternates` here: a layout's canonical/hreflang is inherited by every page that
+    // does not set its own, and by 404s (notFound() keeps the layout metadata), which then
+    // pointed canonical at the home. Each indexable page sets its own (home: [locale]/page.tsx).
     openGraph: {
       title: t("title"),
       description: t("description"),

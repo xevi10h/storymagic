@@ -36,9 +36,7 @@ export default function NewsletterForm() {
   if (status === "success") {
     return (
       <p role="status" className="flex items-center gap-2 text-sm font-semibold text-white">
-        <span aria-hidden className="material-symbols-outlined text-lg">
-          check
-        </span>
+        <span aria-hidden className="material-symbols-outlined text-lg" data-icon="check" />
         {t("subscribed")}
       </p>
     );

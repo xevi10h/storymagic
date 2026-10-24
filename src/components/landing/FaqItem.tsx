@@ -9,9 +9,8 @@ export default function FaqItem({ question, answer, children }: { question: stri
         <span
           aria-hidden
           className="material-symbols-outlined shrink-0 text-2xl text-ink-muted transition-transform duration-200 group-open:rotate-180 motion-reduce:transition-none"
-        >
-          expand_more
-        </span>
+          data-icon="expand_more"
+        />
       </summary>
       <div className="px-5 pb-5 sm:px-6">
         <p className="max-w-prose text-base leading-relaxed text-ink-body">{answer}</p>

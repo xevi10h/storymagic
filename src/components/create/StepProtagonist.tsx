@@ -104,9 +104,8 @@ function SwatchGroup({
                   className={`material-symbols-outlined text-lg font-bold ${
                     LIGHT_SWATCHES.has(o.color) ? "text-create-text-dark" : "text-white"
                   }`}
-                >
-                  check
-                </span>
+                  data-icon="check"
+                />
               )}
             </button>
           );
@@ -158,9 +157,7 @@ export default function StepProtagonist({
       >
         {mode === "photo" ? (
           <span className="absolute inset-0 flex items-center justify-center text-create-primary/70">
-            <span aria-hidden className="material-symbols-outlined text-4xl lg:text-7xl">
-              {photoPath ? "check_circle" : "add_a_photo"}
-            </span>
+            <span aria-hidden className="material-symbols-outlined text-4xl lg:text-7xl" data-icon={photoPath ? "check_circle" : "add_a_photo"} />
           </span>
         ) : (
           <ProtagonistAvatar look={traits} alt={name} priority className="absolute inset-0 h-full w-full" />

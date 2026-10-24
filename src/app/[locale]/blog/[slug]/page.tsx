@@ -109,7 +109,8 @@ export default async function BlogPost({ params }: PageProps) {
         description={post.excerpt}
         datePublished={post.publishedAt}
         dateModified={post.updatedAt}
-        image={post.coverImageUrl}
+        // Same ~120 KB JPG as og:image, not the ~2.4 MB cover PNG.
+        image={post.coverImageUrl ? blogOgImageUrl(post.coverImageUrl).url : null}
         authorName={post.author}
       />
       <BreadcrumbJsonLd
@@ -171,9 +172,7 @@ export default async function BlogPost({ params }: PageProps) {
             <div className="mt-6 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
               <Link href="/create" className={buttonClass({ className: "min-h-14 sm:px-8" })}>
                 {th("cta")}
-                <span aria-hidden className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1">
-                  arrow_forward
-                </span>
+                <span aria-hidden className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1" data-icon="arrow_forward" />
               </Link>
               {relatedHref && relatedLabel && (
                 <Link href={relatedHref} className={buttonClass({ variant: "secondary", className: "min-h-14" })}>
@@ -196,7 +195,7 @@ export default async function BlogPost({ params }: PageProps) {
                 focusRing,
               )}
             >
-              <span aria-hidden className="material-symbols-outlined !text-lg">arrow_back</span>
+              <span aria-hidden className="material-symbols-outlined !text-lg" data-icon="arrow_back" />
               {tb("backToBlog")}
             </Link>
           </div>

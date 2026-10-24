@@ -156,10 +156,10 @@ export default function BookCollection() {
           {showArrows && (
             <div className="hidden shrink-0 gap-2 md:flex xl:hidden">
               <button type="button" onClick={() => scrollByPage(-1)} disabled={!edges.left} aria-label={t("prev")} className={arrowClass}>
-                <span aria-hidden className="material-symbols-outlined">chevron_left</span>
+                <span aria-hidden className="material-symbols-outlined" data-icon="chevron_left" />
               </button>
               <button type="button" onClick={() => scrollByPage(1)} disabled={!edges.right} aria-label={t("next")} className={arrowClass}>
-                <span aria-hidden className="material-symbols-outlined">chevron_right</span>
+                <span aria-hidden className="material-symbols-outlined" data-icon="chevron_right" />
               </button>
             </div>
           )}

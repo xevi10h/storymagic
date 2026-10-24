@@ -37,9 +37,7 @@ export default function CompareTable({
       {scrollHint && (
         <p className="mb-3 flex items-center gap-1 text-sm text-ink-muted lg:hidden">
           {scrollHint}
-          <span aria-hidden className="material-symbols-outlined !text-lg">
-            arrow_forward
-          </span>
+          <span aria-hidden className="material-symbols-outlined !text-lg" data-icon="arrow_forward" />
         </p>
       )}
       <div

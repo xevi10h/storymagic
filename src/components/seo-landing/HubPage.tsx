@@ -124,9 +124,7 @@ export default async function HubPage({ type, locale, extraLinks = [] }: Props) 
             <div className="mt-7 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-5">
               <Link id="hero-cta" href="/create" className={buttonClass({ className: "min-h-14 w-full sm:w-auto sm:px-8" })}>
                 {th("cta")}
-                <span aria-hidden className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1">
-                  arrow_forward
-                </span>
+                <span aria-hidden className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1" data-icon="arrow_forward" />
               </Link>
               <p className="w-full text-center text-sm text-ink-soft sm:w-auto sm:text-left">
                 <span className="font-bold tabular-nums text-brand-deep">{th("priceFrom", { price: fromPrice })}</span>
@@ -168,9 +166,8 @@ export default async function HubPage({ type, locale, extraLinks = [] }: Props) 
                       <span
                         aria-hidden
                         className="material-symbols-outlined !text-xl shrink-0 text-ink-muted transition-transform group-hover:translate-x-1 group-hover:text-brand-text"
-                      >
-                        arrow_forward
-                      </span>
+                        data-icon="arrow_forward"
+                      />
                     </span>
                     <span className="line-clamp-2 text-sm leading-snug text-ink-muted sm:line-clamp-3">{c.intro}</span>
                   </div>
@@ -193,9 +190,7 @@ export default async function HubPage({ type, locale, extraLinks = [] }: Props) 
                     )}
                   >
                     {l.label}
-                    <span aria-hidden className="material-symbols-outlined !text-lg">
-                      arrow_forward
-                    </span>
+                    <span aria-hidden className="material-symbols-outlined !text-lg" data-icon="arrow_forward" />
                   </Link>
                 </li>
               ))}

@@ -98,9 +98,7 @@ export default async function Page({ params }: PageProps) {
               <ul className="mt-6 flex flex-col gap-3">
                 {points.map((p, i) => (
                   <li key={p} className="flex items-start gap-3 text-base leading-snug text-ink-body">
-                    <span aria-hidden className="material-symbols-outlined mt-px !text-xl shrink-0 text-brand-text">
-                      {["mail", "local_shipping", "event"][i] ?? "check"}
-                    </span>
+                    <span aria-hidden className="material-symbols-outlined mt-px !text-xl shrink-0 text-brand-text" data-icon={["mail", "local_shipping", "event"][i] ?? "check"} />
                     {p}
                   </li>
                 ))}
@@ -129,9 +127,7 @@ export default async function Page({ params }: PageProps) {
                 />
               ) : (
                 <div data-testid="gift-voucher-unavailable">
-                  <span aria-hidden className="material-symbols-outlined !text-3xl text-brand-text">
-                    redeem
-                  </span>
+                  <span aria-hidden className="material-symbols-outlined !text-3xl text-brand-text" data-icon="redeem" />
                   <h2 className="mt-2 font-display text-xl font-bold leading-snug text-ink">{t("unavailableTitle")}</h2>
                   <p className="mt-2 text-base leading-relaxed text-ink-body">{t("unavailableText")}</p>
                   <p className="mt-4 text-sm text-ink-soft">
@@ -170,9 +166,7 @@ export default async function Page({ params }: PageProps) {
         <section aria-labelledby="voucher-xmas" className="bg-paper px-4 pt-16 sm:px-6 sm:pt-20">
           <div className="mx-auto max-w-[1200px]">
             <div className="flex flex-col gap-4 rounded-2xl border-2 border-line bg-surface p-6 sm:flex-row sm:items-center sm:gap-8 sm:p-8">
-              <span aria-hidden className="material-symbols-outlined !text-4xl shrink-0 text-brand-text">
-                celebration
-              </span>
+              <span aria-hidden className="material-symbols-outlined !text-4xl shrink-0 text-brand-text" data-icon="celebration" />
               <div className="min-w-0 flex-1">
                 <h2 id="voucher-xmas" className="font-display text-xl font-bold leading-snug text-ink sm:text-2xl">
                   {t("christmasHeading")}

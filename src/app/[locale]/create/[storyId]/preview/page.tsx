@@ -479,7 +479,7 @@ export default function PreviewPage() {
         <CreationHeader rightAction="close" />
         <div className="flex flex-1 flex-col items-center justify-center px-4 text-center">
           <div className="max-w-md">
-            <span aria-hidden className="material-symbols-outlined text-5xl text-brand-text">devices</span>
+            <span aria-hidden className="material-symbols-outlined text-5xl text-brand-text" data-icon="devices" />
             <h1 className="mt-4 font-display text-2xl font-bold text-secondary">{t("notAccessibleTitle")}</h1>
             <p className="mt-3 text-sm leading-relaxed text-text-muted">{t("notAccessibleBody")}</p>
             <div className="mt-8 flex flex-col items-center gap-3">
@@ -488,7 +488,7 @@ export default function PreviewPage() {
                   href={`/auth/login?next=/create/${storyId}/preview`}
                   className="min-h-12 inline-flex items-center gap-2 rounded-xl bg-create-primary px-6 py-3.5 text-[19px] font-bold leading-tight text-white transition-colors hover:bg-create-primary-hover"
                 >
-                  <span aria-hidden className="material-symbols-outlined text-lg">login</span>
+                  <span aria-hidden className="material-symbols-outlined text-lg" data-icon="login" />
                   {t("notAccessibleLogin")}
                 </Link>
               )}
@@ -507,9 +507,7 @@ export default function PreviewPage() {
       <div className="flex min-h-screen flex-col bg-create-bg">
         <CreationHeader rightAction="close" />
         <div className="flex flex-1 flex-col items-center justify-center px-4">
-          <span className="material-symbols-outlined text-5xl text-red-400">
-            error
-          </span>
+          <span className="material-symbols-outlined text-5xl text-red-400" data-icon="error" aria-hidden />
           <p className="mt-4 text-base text-text-main">{error}</p>
           <Link
             href="/create"
@@ -571,7 +569,7 @@ export default function PreviewPage() {
             title={tPurchase("editTitle")}
             className="ml-1.5 inline-flex h-7 w-7 translate-y-[-1px] items-center justify-center rounded-full align-middle text-create-text-sub transition-colors hover:bg-create-neutral hover:text-brand-text"
           >
-            <span aria-hidden className="material-symbols-outlined text-[18px]">edit</span>
+            <span aria-hidden className="material-symbols-outlined text-[18px]" data-icon="edit" />
           </button>
         )}
       </h1>
@@ -733,7 +731,7 @@ export default function PreviewPage() {
             {downloadingPdf ? (
               <Spinner className="text-lg" />
             ) : (
-              <span aria-hidden className="material-symbols-outlined text-lg">picture_as_pdf</span>
+              <span aria-hidden className="material-symbols-outlined text-lg" data-icon="picture_as_pdf" />
             )}
             {t("downloadPdf")}
           </button>
@@ -757,14 +755,14 @@ export default function PreviewPage() {
       {isOutdatedPreview && (
         <section id="checkout-section" className="border-t border-border-light bg-white">
           <div className="mx-auto max-w-md px-4 py-10 text-center">
-            <span aria-hidden className="material-symbols-outlined mb-3 text-4xl text-brand-text">history</span>
+            <span aria-hidden className="material-symbols-outlined mb-3 text-4xl text-brand-text" data-icon="history" />
             <h2 className="font-display text-xl font-bold text-secondary">{t("previewOutdatedTitle")}</h2>
             <p className="mt-2 text-sm text-text-muted">{t("previewOutdatedBody")}</p>
             <Link
               href={`/create?characterId=${story.character_id}`}
               className="min-h-12 mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-create-primary px-6 py-3.5 text-[19px] font-bold leading-tight text-white transition-colors hover:bg-create-primary-hover"
             >
-              <span aria-hidden className="material-symbols-outlined text-lg">auto_stories</span>
+              <span aria-hidden className="material-symbols-outlined text-lg" data-icon="auto_stories" />
               {t("previewOutdatedCta")}
             </Link>
           </div>
@@ -860,7 +858,7 @@ export default function PreviewPage() {
               href="/dashboard"
               className="inline-flex w-full max-w-md items-center justify-center gap-2 rounded-xl border-2 border-border-light px-6 py-3.5 text-sm font-bold text-secondary transition-all hover:border-create-primary hover:bg-create-primary/5 hover:text-brand-text active:scale-[0.98]"
             >
-              <span aria-hidden className="material-symbols-outlined text-lg">library_books</span>
+              <span aria-hidden className="material-symbols-outlined text-lg" data-icon="library_books" />
               {t("savedGoToLibrary")}
             </Link>
           </div>
@@ -883,7 +881,7 @@ function LaterOption({ icon, title, body, children }: { icon: string; title: str
     <li className="flex flex-col p-5 sm:p-6">
       <div className="flex items-center gap-3">
         <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-tint text-brand-text">
-          <span className="material-symbols-outlined text-[22px]">{icon}</span>
+          <span className="material-symbols-outlined text-[22px]" data-icon={icon} aria-hidden />
         </span>
         <h3 className="font-display text-base font-bold leading-tight text-create-text-dark">{title}</h3>
       </div>

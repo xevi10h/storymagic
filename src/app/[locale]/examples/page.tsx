@@ -27,9 +27,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   languages["x-default"] = `${BASE_URL}/${routing.defaultLocale}${PATH}`;
   return {
     title: { absolute: `${t("title")} | Meapica` },
-    description: t("subtitle"),
+    // Own SERP copy (the visible subtitle is too short for a meta description).
+    description: t("metaDescription"),
     alternates: { canonical: url, languages },
-    openGraph: { title: t("title"), description: t("subtitle"), url, type: "website" },
+    openGraph: { title: t("title"), description: t("metaDescription"), url, type: "website" },
   };
 }
 
@@ -89,9 +90,7 @@ export default async function ShowcaseIndex({ params }: PageProps) {
               className={buttonClass({ className: "mt-7 min-h-14 w-full sm:w-auto sm:px-8" })}
             >
               {th("cta")}
-              <span aria-hidden className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1">
-                arrow_forward
-              </span>
+              <span aria-hidden className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1" data-icon="arrow_forward" />
             </Link>
           </div>
         </PageHero>

@@ -14,7 +14,11 @@ export const asLoc = (locale: string): Loc => (locale === "ca" || locale === "en
 interface ExampleCopy {
   /** <title>: the book's title + what the page is. */
   seoTitle: (title: string) => string;
+  /** Shorter <title> for long book titles (the SERP shows ~60 chars). */
+  seoTitleShort: (title: string) => string;
   description: (title: string, name: string, age: number, gender: string) => string;
+  /** Same description without the "page by page" clause, for when the full one passes 160 chars. */
+  descriptionShort: (title: string, name: string, age: number, gender: string) => string;
   textHeading: string;
   /** One line above the text: whose book it is and that it is an example. */
   textIntro: (name: string, age: number, gender: string) => string;
@@ -36,8 +40,11 @@ interface ExampleCopy {
 export const EXAMPLE_COPY: Record<Loc, ExampleCopy> = {
   es: {
     seoTitle: (title) => `${title}: ejemplo de cuento personalizado`,
+    seoTitleShort: (title) => `${title}: cuento de ejemplo`,
     description: (title, name, age) =>
       `Ejemplo real de cuento personalizado: «${title}», el libro de ${name} (${age} años). Léelo entero, página a página, y crea el de tu hijo.`,
+    descriptionShort: (title, name, age) =>
+      `Ejemplo real de cuento personalizado: «${title}», el libro de ${name} (${age} años). Léelo entero y crea el de tu hijo.`,
     textHeading: "El texto de este cuento de ejemplo",
     textIntro: (name, age) =>
       `Este es un libro de ejemplo, creado para ${name} (${age} años). En el tuyo, el nombre, el retrato y la aventura son los de tu hijo.`,
@@ -54,8 +61,11 @@ export const EXAMPLE_COPY: Record<Loc, ExampleCopy> = {
   },
   ca: {
     seoTitle: (title) => `${title}: exemple de conte personalitzat`,
+    seoTitleShort: (title) => `${title}: conte d'exemple`,
     description: (title, name, age, gender) =>
       `Exemple real de conte personalitzat: «${title}», el llibre ${caArticle(name, gender).de} (${age} anys). Llegeix-lo sencer, pàgina a pàgina, i crea el del teu fill.`,
+    descriptionShort: (title, name, age, gender) =>
+      `Exemple real de conte personalitzat: «${title}», el llibre ${caArticle(name, gender).de} (${age} anys). Llegeix-lo sencer i crea el del teu fill.`,
     textHeading: "El text d'aquest conte d'exemple",
     textIntro: (name, age, gender) =>
       `Aquest és un llibre d'exemple, creat per a ${caArticle(name, gender).bare} (${age} anys). En el teu, el nom, el retrat i l'aventura són els del teu fill.`,
@@ -72,8 +82,11 @@ export const EXAMPLE_COPY: Record<Loc, ExampleCopy> = {
   },
   en: {
     seoTitle: (title) => `${title}: personalised book sample`,
+    seoTitleShort: (title) => `${title}: sample book`,
     description: (title, name, age) =>
       `A real sample of a personalised children's book: “${title}”, made for ${name} (age ${age}). Read it page by page, then create your child's.`,
+    descriptionShort: (title, name, age) =>
+      `A real sample of a personalised children's book: “${title}”, made for ${name} (age ${age}). Read it, then create your child's.`,
     textHeading: "The text of this sample book",
     textIntro: (name, age) =>
       `This is a sample book, made for ${name} (age ${age}). In yours, the name, the portrait and the adventure are your child's.`,
@@ -90,8 +103,11 @@ export const EXAMPLE_COPY: Record<Loc, ExampleCopy> = {
   },
   fr: {
     seoTitle: (title) => `${title} : exemple de livre personnalisé`,
+    seoTitleShort: (title) => `${title} : livre d'exemple`,
     description: (title, name, age) =>
       `Exemple réel de livre personnalisé : « ${title} », le livre de ${name} (${age} ans). Lisez-le en entier, page après page, et créez celui de votre enfant.`,
+    descriptionShort: (title, name, age) =>
+      `Exemple réel de livre personnalisé : « ${title} », le livre de ${name} (${age} ans). Lisez-le et créez celui de votre enfant.`,
     textHeading: "Le texte de ce livre d'exemple",
     textIntro: (name, age) =>
       `Ceci est un livre d'exemple, créé pour ${name} (${age} ans). Dans le vôtre, le prénom, le portrait et l'aventure sont ceux de votre enfant.`,

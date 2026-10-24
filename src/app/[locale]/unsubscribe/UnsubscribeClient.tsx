@@ -78,9 +78,7 @@ function Panel({ title, icon, testId, children }: { title: string; icon?: string
       className="w-full max-w-[520px] rounded-3xl bg-surface p-6 text-base leading-relaxed text-ink-body shadow-card ring-1 ring-line sm:p-8"
     >
       {icon && (
-        <span aria-hidden className="material-symbols-outlined mb-3 block text-[36px] text-success">
-          {icon}
-        </span>
+        <span aria-hidden className="material-symbols-outlined mb-3 block text-[36px] text-success" data-icon={icon} />
       )}
       <h1 className="text-balance font-display text-[26px] font-bold leading-tight text-ink sm:text-3xl">{title}</h1>
       <div className="mt-3">{children}</div>

@@ -61,9 +61,7 @@ export default function FaqSection() {
           className="mt-3 inline-flex min-h-11 items-center gap-1 font-semibold text-ink-soft underline decoration-brand/30 underline-offset-2 transition-colors hover:text-brand-text"
         >
           {t("deliveryDatesLink")}
-          <span aria-hidden className="material-symbols-outlined text-lg">
-            arrow_forward
-          </span>
+          <span aria-hidden className="material-symbols-outlined text-lg" data-icon="arrow_forward" />
         </Link>
       ),
     },
@@ -87,9 +85,7 @@ export default function FaqSection() {
           className="mt-3 inline-flex min-h-11 items-center gap-1 font-semibold text-ink-soft underline decoration-brand/30 underline-offset-2 transition-colors hover:text-brand-text"
         >
           {t("agesLink")}
-          <span aria-hidden className="material-symbols-outlined text-lg">
-            arrow_forward
-          </span>
+          <span aria-hidden className="material-symbols-outlined text-lg" data-icon="arrow_forward" />
         </Link>
       ),
     },

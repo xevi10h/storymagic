@@ -83,7 +83,7 @@ export default function ShowcaseBookView({ storyId, title, templateId, gender, f
                 focusRing,
               )}
             >
-              <span aria-hidden className="material-symbols-outlined">arrow_back</span>
+              <span aria-hidden className="material-symbols-outlined" data-icon="arrow_back" />
             </Link>
             <Link href="/" aria-label="Meapica" className={cx("flex items-center rounded-md", focusRing)}>
               <BrandLogo className="h-5 text-brand-deep sm:h-6" />
@@ -149,9 +149,7 @@ export default function ShowcaseBookView({ storyId, title, templateId, gender, f
             <p className="mx-auto mt-3 max-w-prose text-base leading-relaxed text-ink-body">{t("createYourVersionHint")}</p>
             <Link href={createHref} className={buttonClass({ className: "mt-7 min-h-14 sm:px-8" })}>
               {tHero("cta")}
-              <span aria-hidden className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1">
-                arrow_forward
-              </span>
+              <span aria-hidden className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1" data-icon="arrow_forward" />
             </Link>
             <p className="mt-4 text-sm text-ink-soft tabular-nums">
               {t("softcover")} <span className="font-bold text-brand-deep">{softcoverPrice}</span>

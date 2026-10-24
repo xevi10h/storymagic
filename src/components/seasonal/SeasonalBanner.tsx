@@ -52,18 +52,14 @@ export default function SeasonalBanner({ serverToday }: { serverToday: string | 
           href={CHRISTMAS_DELIVERY_PATH}
           className={cx("group flex min-h-10 min-w-0 flex-1 items-center gap-2 rounded-full py-1.5 pl-3.5 sm:pl-4", focusRing)}
         >
-          <span aria-hidden className="material-symbols-outlined !text-lg shrink-0 text-white/85">
-            {state.kind === "physical" ? "local_shipping" : "download"}
-          </span>
+          <span aria-hidden className="material-symbols-outlined !text-lg shrink-0 text-white/85" data-icon={state.kind === "physical" ? "local_shipping" : "download"} />
           <span className="min-w-0">
             <span className="font-semibold">{main}</span>
             <span className="hidden text-white/75 md:inline"> · {more}</span>
           </span>
           <span className="ml-auto hidden shrink-0 items-center gap-0.5 pl-3 font-bold underline decoration-white/40 underline-offset-2 group-hover:decoration-white sm:inline-flex">
             {t("link")}
-            <span aria-hidden className="material-symbols-outlined !text-base transition-transform group-hover:translate-x-0.5">
-              arrow_forward
-            </span>
+            <span aria-hidden className="material-symbols-outlined !text-base transition-transform group-hover:translate-x-0.5" data-icon="arrow_forward" />
           </span>
         </Link>
         <button
@@ -75,7 +71,7 @@ export default function SeasonalBanner({ serverToday }: { serverToday: string | 
             focusRing,
           )}
         >
-          <span aria-hidden className="material-symbols-outlined !text-lg">close</span>
+          <span aria-hidden className="material-symbols-outlined !text-lg" data-icon="close" />
         </button>
       </div>
     </div>

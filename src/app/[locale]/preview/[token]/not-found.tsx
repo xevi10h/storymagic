@@ -10,7 +10,7 @@ export default async function SharedPreviewNotFound() {
       <CreationHeader rightAction="none" />
       <div className="flex flex-1 flex-col items-center justify-center px-4 text-center">
         <div className="max-w-md">
-          <span aria-hidden className="material-symbols-outlined text-5xl text-brand-text">link_off</span>
+          <span aria-hidden className="material-symbols-outlined text-5xl text-brand-text" data-icon="link_off" />
           <h1 className="mt-4 font-display text-2xl font-bold text-secondary">{t("title")}</h1>
           <p className="mt-3 text-sm leading-relaxed text-text-muted">{t("body")}</p>
           <div className="mt-8 flex flex-col items-center gap-3">
@@ -18,7 +18,7 @@ export default async function SharedPreviewNotFound() {
               href="/create"
               className="min-h-12 inline-flex items-center gap-2 rounded-xl bg-create-primary px-6 py-3.5 text-[19px] font-bold leading-tight text-white transition-colors hover:bg-create-primary-hover"
             >
-              <span aria-hidden className="material-symbols-outlined text-lg">auto_stories</span>
+              <span aria-hidden className="material-symbols-outlined text-lg" data-icon="auto_stories" />
               {t("createCta")}
             </Link>
             <Link href="/" className="text-sm text-text-muted transition-colors hover:text-brand-text">

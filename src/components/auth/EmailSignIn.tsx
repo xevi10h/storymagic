@@ -276,9 +276,7 @@ export default function EmailSignIn({ next, initialEmail = "", initialError = nu
     return (
       <div className="step-in flex flex-col gap-5" data-testid="auth-code-step">
         <div className="flex gap-3 rounded-2xl bg-brand/[0.06] px-4 py-3.5">
-          <span aria-hidden className="material-symbols-outlined shrink-0 text-brand-text">
-            mail
-          </span>
+          <span aria-hidden className="material-symbols-outlined shrink-0 text-brand-text" data-icon="mail" />
           <div className="min-w-0 text-sm leading-relaxed text-ink-soft">
             <p>
               {t.rich("code.sentTo", {

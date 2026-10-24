@@ -63,11 +63,11 @@ export default function CreationHeader({
           <div className="flex flex-1 items-center gap-2">
             {onBack ? (
               <button type="button" onClick={onBack} className={backClass} aria-label={t("back")}>
-                <span className="material-symbols-outlined text-xl" aria-hidden>arrow_back</span>
+                <span className="material-symbols-outlined text-xl" aria-hidden data-icon="arrow_back" />
               </button>
             ) : (
               <Link href="/" className={backClass} aria-label={t("backHome")}>
-                <span className="material-symbols-outlined text-xl" aria-hidden>arrow_back</span>
+                <span className="material-symbols-outlined text-xl" aria-hidden data-icon="arrow_back" />
               </Link>
             )}
             <Link href="/" className="flex items-center" aria-label="Meapica">
@@ -95,7 +95,7 @@ export default function CreationHeader({
                         }`}
                       >
                         {done ? (
-                          <span className="material-symbols-outlined text-sm" aria-hidden>check</span>
+                          <span className="material-symbols-outlined text-sm" aria-hidden data-icon="check" />
                         ) : (
                           step
                         )}
@@ -149,7 +149,7 @@ export default function CreationHeader({
                 className="flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-semibold text-create-text-sub transition-colors hover:bg-create-neutral hover:text-create-text"
                 aria-label={t("exit")}
               >
-                <span className="material-symbols-outlined text-lg" aria-hidden>close</span>
+                <span className="material-symbols-outlined text-lg" aria-hidden data-icon="close" />
                 <span className="hidden sm:inline">{t("exit")}</span>
               </Link>
             )}

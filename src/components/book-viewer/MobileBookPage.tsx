@@ -90,9 +90,7 @@ const MobileBookPage = React.forwardRef<HTMLDivElement, MobileBookPageProps>(
               }}
               className="absolute inset-0 flex flex-col items-center justify-center bg-white/60 backdrop-blur-md z-10 cursor-pointer transition-colors hover:bg-white/50 group"
             >
-              <span className="material-symbols-outlined text-[clamp(1.5rem,8cqi,2.5rem)] text-create-primary/60 mb-1 group-hover:text-brand-text transition-colors">
-                lock
-              </span>
+              <span className="material-symbols-outlined text-[clamp(1.5rem,8cqi,2.5rem)] text-create-primary/60 mb-1 group-hover:text-brand-text transition-colors" data-icon="lock" aria-hidden />
               <LockedText />
             </button>
           )}
@@ -117,7 +115,7 @@ function EditPill({ onClick, target }: { onClick: () => void; target: "cover" | 
       data-testid={`edit-${target}`}
       className="absolute right-[3%] top-[3%] z-20 inline-flex items-center gap-1 rounded-full bg-white/92 px-2.5 py-1 text-[11px] font-bold text-create-text-dark shadow-md shadow-black/15 ring-1 ring-black/5 transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-create-primary"
     >
-      <span aria-hidden className="material-symbols-outlined pointer-events-none text-[14px]">edit</span>
+      <span aria-hidden className="material-symbols-outlined pointer-events-none text-[14px]" data-icon="edit" />
       <span className="pointer-events-none">{t("editPage")}</span>
     </button>
   );
@@ -136,7 +134,7 @@ function LockedText() {
         {t("lockedDescription")}
       </p>
       <span className="mt-1 inline-flex items-center gap-1 rounded-full border-2 border-brand bg-brand-tint px-3 py-1.5 text-[clamp(0.6rem,2.2cqi,0.75rem)] font-bold text-brand-text group-hover:bg-surface transition-colors">
-        <span className="material-symbols-outlined text-[clamp(0.7rem,2.5cqi,0.875rem)]">shopping_bag</span>
+        <span className="material-symbols-outlined text-[clamp(0.7rem,2.5cqi,0.875rem)]" data-icon="shopping_bag" aria-hidden />
         {t("lockedCta")}
       </span>
     </div>
@@ -216,7 +214,7 @@ function TeaserPage({ page, templateId, gender, favoriteColor, onOrder }: { page
               className="mt-auto inline-flex items-center gap-1.5 rounded-full border-2 border-brand bg-brand-tint px-[6cqi] py-[2.4cqi] text-[clamp(0.75rem,3.6cqi,0.95rem)] font-bold text-brand-text transition-colors hover:bg-surface"
             >
               <span className="pointer-events-none">{tp("teaserOrderCta")}</span>
-              <span aria-hidden className="material-symbols-outlined pointer-events-none text-[1.1em]">arrow_downward</span>
+              <span aria-hidden className="material-symbols-outlined pointer-events-none text-[1.1em]" data-icon="arrow_downward" />
             </button>
           )}
         </div>

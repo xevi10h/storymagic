@@ -78,9 +78,7 @@ function Swatches({
               style={{ backgroundColor: o.hex }}
             >
               {selected && (
-                <span aria-hidden className={cx("material-symbols-outlined !text-lg font-bold", LIGHT_SWATCHES.has(o.hex) ? "text-ink" : "text-white")}>
-                  check
-                </span>
+                <span aria-hidden className={cx("material-symbols-outlined !text-lg font-bold", LIGHT_SWATCHES.has(o.hex) ? "text-ink" : "text-white")} data-icon="check" />
               )}
             </button>
           );

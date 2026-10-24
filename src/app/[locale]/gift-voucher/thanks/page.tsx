@@ -68,13 +68,13 @@ export default async function Page({ params, searchParams }: Props) {
                   <p className="mt-2 text-sm text-ink-soft">{t("validUntil")}</p>
                 </div>
                 <a href={voucherCardUrl(voucher)} className={buttonClass({ className: "mt-6" })}>
-                  <span aria-hidden className="material-symbols-outlined text-xl">print</span>
+                  <span aria-hidden className="material-symbols-outlined text-xl" data-icon="print" />
                   {t("printCta")}
                 </a>
               </>
             ) : (
               <>
-                <span aria-hidden className="material-symbols-outlined !text-4xl text-brand-text">mail</span>
+                <span aria-hidden className="material-symbols-outlined !text-4xl text-brand-text" data-icon="mail" />
                 <h1 className={cx("mt-2", marketingH1)}>{t("pendingTitle")}</h1>
                 <p className={cx("mt-4", marketingLead)}>{t("pendingText")}</p>
                 <Link href="/" className={buttonClass({ variant: "secondary", className: "mt-6" })}>

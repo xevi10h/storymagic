@@ -78,9 +78,7 @@ export function ProblemBadge({ problem }: { problem: OrderProblem }) {
       )}
     >
       {problem !== "refunded" && (
-        <span aria-hidden className="material-symbols-outlined text-[14px]">
-          error
-        </span>
+        <span aria-hidden className="material-symbols-outlined text-[14px]" data-icon="error" />
       )}
       {PROBLEM_LABELS[problem]}
     </span>

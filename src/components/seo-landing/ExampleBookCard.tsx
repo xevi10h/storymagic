@@ -51,9 +51,7 @@ export default function ExampleBookCard({
       <div className="flex flex-1 flex-col gap-2 p-3 sm:p-4">
         <Title className="font-display text-base font-semibold leading-tight text-ink text-balance sm:text-lg">{story.title}</Title>
         <span className="mt-auto inline-flex items-center gap-1 text-sm font-bold text-brand-text">
-          <span aria-hidden className="material-symbols-outlined !text-lg">
-            menu_book
-          </span>
+          <span aria-hidden className="material-symbols-outlined !text-lg" data-icon="menu_book" />
           {tc("viewSample")}
         </span>
       </div>

@@ -142,9 +142,7 @@ export default async function Page({ params }: PageProps) {
                     <ul className="mt-3 flex flex-col gap-2.5">
                       {group.items.map((item) => (
                         <li key={item} className="flex items-start gap-2.5 text-[15px] leading-snug text-ink-body">
-                          <span aria-hidden className={cx("material-symbols-outlined mt-px !text-xl shrink-0", group.tone)}>
-                            {group.icon}
-                          </span>
+                          <span aria-hidden className={cx("material-symbols-outlined mt-px !text-xl shrink-0", group.tone)} data-icon={group.icon} />
                           {item}
                         </li>
                       ))}

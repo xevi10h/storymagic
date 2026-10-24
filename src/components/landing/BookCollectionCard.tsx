@@ -52,9 +52,7 @@ export default function BookCollectionCard({ world, fromPrice, className }: Book
               focusRing,
             )}
           >
-            <span aria-hidden className="material-symbols-outlined inline-block w-5 overflow-hidden text-lg leading-5">
-              menu_book
-            </span>
+            <span aria-hidden className="material-symbols-outlined inline-block w-5 overflow-hidden text-lg leading-5" data-icon="menu_book" />
             {t("seeInside")}
             <span className="sr-only">: {example.title}</span>
           </Link>
@@ -92,9 +90,7 @@ export default function BookCollectionCard({ world, fromPrice, className }: Book
             className="mt-2 inline-flex items-center gap-1 text-sm font-bold text-brand-text"
           >
             {t("cta")}
-            <span className="material-symbols-outlined inline-block w-5 overflow-hidden text-lg leading-5 transition-transform group-hover:translate-x-1 motion-reduce:transition-none">
-              arrow_forward
-            </span>
+            <span className="material-symbols-outlined inline-block w-5 overflow-hidden text-lg leading-5 transition-transform group-hover:translate-x-1 motion-reduce:transition-none" data-icon="arrow_forward" aria-hidden />
           </span>
         </div>
       </div>

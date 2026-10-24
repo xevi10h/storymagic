@@ -164,9 +164,7 @@ export default function StepAdventure({
             <LiveCover name={name} gender={character.gender} templateId={selectedTemplate} sizes="360px" />
             <ol className="mt-5 flex flex-col gap-2 text-sm" aria-label={t("summaryLabel")}>
               <li className="flex items-center gap-2">
-                <span aria-hidden className={`material-symbols-outlined text-lg ${selectedTemplate ? "text-brand-text" : "text-create-text-sub/50"}`}>
-                  {selectedTemplate ? "check_circle" : "radio_button_unchecked"}
-                </span>
+                <span aria-hidden className={`material-symbols-outlined text-lg ${selectedTemplate ? "text-brand-text" : "text-create-text-sub/50"}`} data-icon={selectedTemplate ? "check_circle" : "radio_button_unchecked"} />
                 <span className="font-bold text-create-text">{t("worldLabel")}</span>
                 {selectedTemplate && <span className="truncate text-create-text-sub">{td(`templates.${selectedTemplate}.title`)}</span>}
               </li>
@@ -175,9 +173,7 @@ export default function StepAdventure({
                 const opt = choice ? chapters[i]?.options.find((o) => o.id === choice.optionId) : undefined;
                 return (
                   <li key={i} className="flex items-center gap-2">
-                    <span aria-hidden className={`material-symbols-outlined text-lg ${opt ? "text-brand-text" : "text-create-text-sub/50"}`}>
-                      {opt ? "check_circle" : "radio_button_unchecked"}
-                    </span>
+                    <span aria-hidden className={`material-symbols-outlined text-lg ${opt ? "text-brand-text" : "text-create-text-sub/50"}`} data-icon={opt ? "check_circle" : "radio_button_unchecked"} />
                     <span className="font-bold text-create-text">{t("chapter", { n: i + 1 })}</span>
                     {opt && <span className="truncate text-create-text-sub">{tx(opt.title, locale)}</span>}
                   </li>
@@ -228,7 +224,7 @@ export default function StepAdventure({
                       <Image src={w.image} alt="" fill sizes="(max-width:640px) 38vw, 180px" className="object-cover" />
                       {selected && (
                         <span className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-create-primary text-white shadow">
-                          <span aria-hidden className="material-symbols-outlined text-base">check</span>
+                          <span aria-hidden className="material-symbols-outlined text-base" data-icon="check" />
                         </span>
                       )}
                       {w.isRecommended && (
@@ -308,12 +304,12 @@ export default function StepAdventure({
                             <Image src={art} alt="" fill sizes="(max-width:640px) 96px, 260px" className="object-cover" />
                           ) : (
                             <span className={`absolute inset-0 flex items-center justify-center bg-gradient-to-br ${themeGradient}`}>
-                              <span aria-hidden className="material-symbols-outlined text-3xl text-white">{o.icon}</span>
+                              <span aria-hidden className="material-symbols-outlined text-3xl text-white" data-icon={o.icon} />
                             </span>
                           )}
                           {selected && (
                             <span className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-create-primary text-white shadow">
-                              <span aria-hidden className="material-symbols-outlined text-base">check</span>
+                              <span aria-hidden className="material-symbols-outlined text-base" data-icon="check" />
                             </span>
                           )}
                         </span>

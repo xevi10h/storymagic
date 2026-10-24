@@ -1,5 +1,7 @@
+import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { setRequestLocale } from "next-intl/server";
+import { routing } from "@/i18n/routing";
 import Navbar from "@/components/landing/Navbar";
 import Hero from "@/components/landing/Hero";
 import HowItWorks from "@/components/landing/HowItWorks";
@@ -19,6 +21,7 @@ import DevResetCreateState from "@/components/dev/DevResetCreateState";
 import CustomerReviews from "@/components/reviews/CustomerReviews";
 import { ADDON_ENABLED } from "@/lib/pricing";
 import { getReviewSummary } from "@/lib/reviews/published";
+import { SITE_URL } from "@/lib/product-facts";
 
 // The FAQ quotes this season's Christmas/Reyes order cut-offs (depend on "today"):
 // re-render at most hourly, like /christmas-delivery.
@@ -27,6 +30,15 @@ export const revalidate = 3600;
 type Props = {
   params: Promise<{ locale: string }>;
 };
+
+/** Canonical + hreflang of the home (title, description and OG come from the locale layout). */
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const languages: Record<string, string> = {};
+  for (const loc of routing.locales) languages[loc] = `${SITE_URL}/${loc}`;
+  languages["x-default"] = `${SITE_URL}/${routing.defaultLocale}`;
+  return { alternates: { canonical: `${SITE_URL}/${locale}`, languages } };
+}
 
 export default async function Home({ params }: Props) {
   const { locale } = await params;

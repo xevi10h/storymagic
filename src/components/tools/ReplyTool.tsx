@@ -123,9 +123,7 @@ export default function ReplyTool({ locale, reyesYear }: { locale: ToolLocale; r
                   )}
                 >
                   {selected && (
-                    <span aria-hidden className="material-symbols-outlined !text-base">
-                      check
-                    </span>
+                    <span aria-hidden className="material-symbols-outlined !text-base" data-icon="check" />
                   )}
                   {tr(`achievements.${id}`)}
                 </button>

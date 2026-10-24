@@ -63,9 +63,7 @@ export function OrdersListView({ rows, filter, q, now, truncated, error }: Order
           {filter !== "all" && <input type="hidden" name="status" value={filter} />}
           <label className="relative flex-1 sm:w-80">
             <span className="sr-only">Buscar</span>
-            <span aria-hidden className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-lg text-ink-muted">
-              search
-            </span>
+            <span aria-hidden className="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-lg text-ink-muted" data-icon="search" />
             <input
               type="search"
               name="q"

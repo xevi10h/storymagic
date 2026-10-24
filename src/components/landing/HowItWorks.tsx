@@ -84,7 +84,7 @@ export default function HowItWorks() {
             <Image src={`/images/path/${LANDING_EXAMPLE.templateId}/${id}.webp`} alt="" fill sizes="240px" className="object-cover" />
             {i === CHOSEN_ADVENTURE && (
               <span className="absolute top-1/2 right-1.5 flex size-6 -translate-y-1/2 items-center justify-center rounded-full bg-brand text-white">
-                <span className="material-symbols-outlined text-base">check</span>
+                <span className="material-symbols-outlined text-base" data-icon="check" aria-hidden />
               </span>
             )}
           </div>
@@ -177,9 +177,7 @@ export default function HowItWorks() {
         <div className="mt-10 hidden justify-center lg:flex">
           <Link href="/create" className={buttonClass({ size: "md" })}>
             {t("cta")}
-            <span aria-hidden className="material-symbols-outlined text-lg transition-transform group-hover:translate-x-1">
-              arrow_forward
-            </span>
+            <span aria-hidden className="material-symbols-outlined text-lg transition-transform group-hover:translate-x-1" data-icon="arrow_forward" />
           </Link>
         </div>
       </div>

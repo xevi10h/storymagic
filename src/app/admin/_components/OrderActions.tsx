@@ -232,9 +232,7 @@ function ActionRow({ icon, label, hint, disabled, onClick }: { icon: string; lab
       disabled={disabled}
       className="flex w-full items-center gap-3 rounded-xl border-2 border-line px-3 py-2.5 text-left text-sm font-semibold text-ink transition-colors hover:border-brand/40 hover:bg-brand/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-line disabled:hover:bg-transparent"
     >
-      <span aria-hidden className="material-symbols-outlined text-xl text-ink-muted">
-        {icon}
-      </span>
+      <span aria-hidden className="material-symbols-outlined text-xl text-ink-muted" data-icon={icon} />
       <span className="flex-1">
         {label}
         {hint && <span className="block text-xs font-normal text-ink-muted">{hint}</span>}
@@ -251,9 +249,7 @@ function EmailChip({ label, disabled, onClick }: { label: string; disabled?: boo
       disabled={disabled}
       className="inline-flex h-8 items-center gap-1 rounded-full border border-line bg-surface px-3 text-[13px] font-semibold text-ink-soft transition-colors hover:border-brand/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand disabled:cursor-not-allowed disabled:opacity-40"
     >
-      <span aria-hidden className="material-symbols-outlined text-[16px]">
-        mail
-      </span>
+      <span aria-hidden className="material-symbols-outlined text-[16px]" data-icon="mail" />
       {label}
     </button>
   );

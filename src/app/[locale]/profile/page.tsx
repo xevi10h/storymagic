@@ -66,9 +66,7 @@ export default function ProfilePage() {
           aria-label={t("back")}
           className={cx("-ml-2 flex h-11 w-11 items-center justify-center rounded-full text-ink-soft transition-colors hover:bg-brand/5 hover:text-ink", focusRing)}
         >
-          <span aria-hidden className="material-symbols-outlined">
-            arrow_back
-          </span>
+          <span aria-hidden className="material-symbols-outlined" data-icon="arrow_back" />
         </Link>
         <h1 className="font-display text-lg font-bold text-ink">{t("title")}</h1>
       </div>
@@ -311,9 +309,7 @@ function AccountProfile({
             focusRing,
           )}
         >
-          <span aria-hidden className="material-symbols-outlined !text-lg">
-            delete
-          </span>
+          <span aria-hidden className="material-symbols-outlined !text-lg" data-icon="delete" />
           {t("deleteAccount.button")}
         </button>
       </section>

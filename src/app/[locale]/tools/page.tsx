@@ -67,7 +67,7 @@ export default async function Page({ params }: PageProps) {
             {TOOL_IDS.map((id) => (
               <li key={id} className="relative flex flex-col rounded-2xl border-2 border-line bg-surface p-6 transition-colors hover:border-brand/40 sm:p-7">
                 <span aria-hidden className="flex h-11 w-11 items-center justify-center rounded-full bg-brand-tint text-brand-text">
-                  <span className="material-symbols-outlined">{ICON[id]}</span>
+                  <span className="material-symbols-outlined" data-icon={ICON[id]} aria-hidden />
                 </span>
                 <h2 className="mt-4 font-display text-xl font-bold leading-snug text-ink sm:text-2xl">
                   <Link
@@ -80,7 +80,7 @@ export default async function Page({ params }: PageProps) {
                 <p className="mt-2 flex-1 text-base leading-relaxed text-ink-body">{t(`cards.${id}.description`)}</p>
                 <span aria-hidden className="mt-5 inline-flex items-center gap-1 text-sm font-bold text-brand-text">
                   {t(`cards.${id}.cta`)}
-                  <span className="material-symbols-outlined !text-lg">arrow_forward</span>
+                  <span className="material-symbols-outlined !text-lg" data-icon="arrow_forward" aria-hidden />
                 </span>
               </li>
             ))}

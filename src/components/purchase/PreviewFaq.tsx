@@ -19,9 +19,7 @@ export default function PreviewFaq() {
           <details key={id} className="group">
             <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-5 py-3.5 text-sm font-semibold text-create-text-dark transition-colors hover:text-brand-text sm:px-6 sm:text-[15px] [&::-webkit-details-marker]:hidden">
               {t(`faq.${id}.q`)}
-              <span aria-hidden className="material-symbols-outlined text-xl text-create-text-sub transition-transform group-open:rotate-180">
-                expand_more
-              </span>
+              <span aria-hidden className="material-symbols-outlined text-xl text-create-text-sub transition-transform group-open:rotate-180" data-icon="expand_more" />
             </summary>
             <p className="-mt-1 px-5 pb-4 pr-12 text-sm leading-relaxed text-create-text-body sm:px-6 sm:pr-14">{t(`faq.${id}.a`, COPY_PARAMS)}</p>
           </details>

@@ -217,7 +217,7 @@ export function BookMockup({
 
       {rotateLabel && (
         <span aria-hidden className={s.rotateHint} data-hidden={!(canRotate && hintVisible)} data-testid="mockup-rotate-hint">
-          <span className={`material-symbols-outlined ${s.rotateHintIcon}`}>360</span>
+          <span className={`material-symbols-outlined ${s.rotateHintIcon}`} data-icon="360" aria-hidden />
           {rotateLabel}
         </span>
       )}

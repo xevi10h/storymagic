@@ -12,7 +12,7 @@ export default class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return this.props.fallback ?? (
         <div className="flex flex-col items-center justify-center p-8 text-center">
-          <span className="material-symbols-outlined text-4xl text-red-400 mb-3">error</span>
+          <span className="material-symbols-outlined text-4xl text-red-400 mb-3" data-icon="error" aria-hidden />
           <p className="text-sm text-text-muted">Something went wrong. Please refresh the page.</p>
         </div>
       );

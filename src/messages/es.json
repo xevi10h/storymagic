@@ -2708,6 +2708,7 @@
   "showcase": {
     "title": "Ejemplos de cuentos reales",
     "subtitle": "Mira cuentos personalizados que ya hemos creado. Cada uno es único: imagina el de tu hijo.",
+    "metaDescription": "Mira cuentos personalizados reales que ya hemos creado y léelos enteros, página a página. Cada uno es único, con su nombre y retrato: imagina el de tu hijo.",
     "cta": "Crear el de mi hijo",
     "sampleBadge": "Ejemplo",
     "coverAlt": "Portada del cuento personalizado «{title}»",
@@ -2760,6 +2761,7 @@
   "blog": {
     "title": "Ideas, regalos y lectura",
     "subtitle": "Guías y consejos para regalar mejor y acompañar a los peques en su amor por los libros.",
+    "metaDescription": "Guías y consejos para regalar mejor y acompañar a los peques en su amor por los libros: ideas de regalo por edad y ocasión y trucos para fomentar la lectura.",
     "readingTime": "{min} min de lectura",
     "backToBlog": "Volver al blog",
     "empty": "Pronto publicaremos nuevos artículos.",
@@ -3191,7 +3193,7 @@
   },
   "giftVoucher": {
     "metaTitle": "Tarjeta regalo de cuento personalizado | Meapica",
-    "metaDescription": "Regala un cuento personalizado con su nombre y su aventura. La tarjeta regalo llega al momento por email, lista para imprimir. Tapa dura, tapa blanda o PDF, IVA incluido.",
+    "metaDescription": "Regala un cuento personalizado con su nombre y su aventura. La tarjeta regalo llega al momento por email, lista para imprimir. Tapa dura, blanda o PDF.",
     "breadcrumb": "Tarjeta regalo",
     "footerLink": "Tarjeta regalo",
     "eyebrow": "Tarjeta regalo",

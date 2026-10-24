@@ -56,11 +56,9 @@ export default function LocaleSwitcher() {
         aria-label={t("language")}
         className="flex items-center gap-1.5 rounded-lg border border-border-light bg-white px-3 py-2 text-sm font-medium text-text-main transition-colors hover:border-border-medium hover:bg-cream"
       >
-        <span className="material-symbols-outlined text-lg">language</span>
+        <span className="material-symbols-outlined text-lg" data-icon="language" aria-hidden />
         <span>{LOCALE_SHORT[locale]}</span>
-        <span className="material-symbols-outlined text-base text-text-muted">
-          expand_more
-        </span>
+        <span className="material-symbols-outlined text-base text-text-muted" data-icon="expand_more" aria-hidden />
       </button>
 
       {open && (

@@ -223,7 +223,7 @@ export default function MobileBookViewer({
           aria-label={t("previous")}
           data-testid="book-prev"
         >
-          <span aria-hidden className="material-symbols-outlined text-lg">chevron_left</span>
+          <span aria-hidden className="material-symbols-outlined text-lg" data-icon="chevron_left" />
         </button>
 
         <div className="flex-1 flex flex-col items-center gap-1">
@@ -248,7 +248,7 @@ export default function MobileBookViewer({
           aria-label={t("next")}
           data-testid="book-next"
         >
-          <span aria-hidden className="material-symbols-outlined text-lg">chevron_right</span>
+          <span aria-hidden className="material-symbols-outlined text-lg" data-icon="chevron_right" />
         </button>
       </div>
 
@@ -262,7 +262,7 @@ export default function MobileBookViewer({
               className="inline-flex items-center justify-center gap-1.5 rounded-full border border-border-light bg-white px-4 py-1.5 text-xs font-semibold text-create-text-dark transition-colors hover:border-create-primary hover:text-brand-text"
               data-testid="book-zoom"
             >
-              <span aria-hidden className="material-symbols-outlined text-lg text-brand-text">zoom_in</span>
+              <span aria-hidden className="material-symbols-outlined text-lg text-brand-text" data-icon="zoom_in" />
               {t("zoomPage")}
             </button>
           )}

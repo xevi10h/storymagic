@@ -124,7 +124,7 @@ export function OfferCallout({
       data-offer={offer.offer}
     >
       <span aria-hidden className="hidden sm:block">
-        <span className="material-symbols-outlined !text-[26px] text-brand-text">{upgrade ? "menu_book" : "family_restroom"}</span>
+        <span className="material-symbols-outlined !text-[26px] text-brand-text" data-icon={upgrade ? "menu_book" : "family_restroom"} aria-hidden />
       </span>
       <div className="min-w-0 flex-1">
         <p className="font-display text-[15px] font-semibold leading-tight text-ink">
@@ -171,7 +171,7 @@ export function ReferralCallout({ code, className }: { code: string; className?:
   return (
     <div className={cx("flex flex-col gap-3 rounded-2xl border-2 border-line bg-paper px-4 py-3.5 sm:flex-row sm:items-center", className)} data-testid="order-referral">
       <span aria-hidden className="hidden sm:block">
-        <span className="material-symbols-outlined !text-[26px] text-brand-text">redeem</span>
+        <span className="material-symbols-outlined !text-[26px] text-brand-text" data-icon="redeem" aria-hidden />
       </span>
       <div className="min-w-0 flex-1">
         <p className="font-display text-[15px] font-semibold leading-tight text-ink">{t("title", { amount })}</p>
@@ -255,7 +255,7 @@ function OrderCard({
       {/* Tracking (print, once the carrier has a code) */}
       {order.tracking_number && view.kind === "print" && order.status !== "refunded" && (
         <div className="flex flex-wrap items-center gap-3 border-t border-line px-4 py-3 sm:px-5">
-          <span aria-hidden className="material-symbols-outlined !text-xl text-ink-muted">package_2</span>
+          <span aria-hidden className="material-symbols-outlined !text-xl text-ink-muted" data-icon="package_2" />
           <div className="min-w-0 flex-1">
             <p className="text-xs font-bold uppercase tracking-wide text-ink-soft">{t("trackingNumber")}</p>
             <p className="break-all font-mono text-sm text-ink">{order.tracking_number}</p>
@@ -267,7 +267,7 @@ function OrderCard({
               rel="noopener noreferrer"
               className={buttonClass({ variant: "secondary", size: "sm", className: "w-full sm:w-auto" })}
             >
-              <span aria-hidden className="material-symbols-outlined !text-lg">local_shipping</span>
+              <span aria-hidden className="material-symbols-outlined !text-lg" data-icon="local_shipping" />
               {t("orders.trackShipment")}
             </a>
           )}
@@ -278,7 +278,7 @@ function OrderCard({
       <div className="flex flex-wrap items-center gap-2 border-t border-line px-4 py-3 sm:px-5">
         {downloadHref && (
           <a href={downloadHref} className={buttonClass({ variant: "secondary", size: "sm" })} data-testid="order-download">
-            <span aria-hidden className="material-symbols-outlined !text-lg">download</span>
+            <span aria-hidden className="material-symbols-outlined !text-lg" data-icon="download" />
             {t("orders.downloadPdf")}
           </a>
         )}
@@ -289,7 +289,7 @@ function OrderCard({
             onClick={() => onReorder({ storyId, title })}
             data-testid="order-reorder"
           >
-            <span aria-hidden className="material-symbols-outlined !text-lg">library_add</span>
+            <span aria-hidden className="material-symbols-outlined !text-lg" data-icon="library_add" />
             {order.status === "refunded"
               ? t("orders.reorderAgain")
               : view.kind === "digital"
@@ -305,9 +305,7 @@ function OrderCard({
           className={cx(buttonClass({ variant: "quiet", size: "sm" }), "ml-auto")}
         >
           {open ? t("orders.hideDetail") : t("orders.showDetail")}
-          <span aria-hidden className="material-symbols-outlined !text-lg">
-            {open ? "expand_less" : "expand_more"}
-          </span>
+          <span aria-hidden className="material-symbols-outlined !text-lg" data-icon={open ? "expand_less" : "expand_more"} />
         </button>
       </div>
 
@@ -380,9 +378,7 @@ function OrderStatus({
           view.phase === "print_problem" ? "text-red-700" : view.phase === "print_delivered" ? "text-success" : "text-ink",
         )}
       >
-        <span aria-hidden className="material-symbols-outlined !text-xl">
-          {view.phase === "print_problem" ? "support_agent" : STEP_ICONS[PRINT_STEPS[step]]}
-        </span>
+        <span aria-hidden className="material-symbols-outlined !text-xl" data-icon={view.phase === "print_problem" ? "support_agent" : STEP_ICONS[PRINT_STEPS[step]]} />
         <span>
           {message}
           {view.refunded && order.refunded_at && (
@@ -407,9 +403,7 @@ function OrderStatus({
                     !done && !active && "border-2 border-line bg-surface text-ink-muted",
                   )}
                 >
-                  <span aria-hidden className="material-symbols-outlined" style={{ fontSize: 14 }}>
-                    {done ? "check" : STEP_ICONS[s]}
-                  </span>
+                  <span aria-hidden className="material-symbols-outlined" style={{ fontSize: 14 }} data-icon={done ? "check" : STEP_ICONS[s]} />
                 </span>
                 <span
                   className={cx(
@@ -440,9 +434,7 @@ function StatusRow({ icon, tone, children }: { icon: string; tone: "success" | "
           tone === "success" ? "text-success" : tone === "brand" ? "text-ink" : "text-ink-soft",
         )}
       >
-        <span aria-hidden className={cx("material-symbols-outlined !text-xl", tone === "brand" && "text-brand-text")}>
-          {icon}
-        </span>
+        <span aria-hidden className={cx("material-symbols-outlined !text-xl", tone === "brand" && "text-brand-text")} data-icon={icon} />
         <span>{children}</span>
       </p>
     </div>
@@ -518,7 +510,7 @@ function OrderDetail({
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 font-semibold text-ink-soft underline decoration-ink-muted/40 underline-offset-2 hover:text-brand-text"
           >
-            <span aria-hidden className="material-symbols-outlined !text-lg">receipt_long</span>
+            <span aria-hidden className="material-symbols-outlined !text-lg" data-icon="receipt_long" />
             {t("orders.invoice")}
           </a>
         )}
@@ -526,7 +518,7 @@ function OrderDetail({
           href={contactHref}
           className="inline-flex items-center gap-1.5 font-semibold text-ink-soft underline decoration-ink-muted/40 underline-offset-2 hover:text-brand-text"
         >
-          <span aria-hidden className="material-symbols-outlined !text-lg">mail</span>
+          <span aria-hidden className="material-symbols-outlined !text-lg" data-icon="mail" />
           {t("orders.contact")}
         </a>
       </div>
@@ -641,7 +633,7 @@ export function ReorderSheet({
           className="mt-3 flex items-start gap-2 rounded-xl bg-brand-tint px-3 py-2.5 text-[13px] font-semibold leading-snug text-brand-text"
           data-testid="reorder-offer-note"
         >
-          <span aria-hidden className="material-symbols-outlined !text-lg">sell</span>
+          <span aria-hidden className="material-symbols-outlined !text-lg" data-icon="sell" />
           <span>
             {upgrade
               ? t("reorder.offerUpgradeNote", { pdf: formatPrice(STRIPE_CATALOG.digital_pdf.amount, locale) })

@@ -155,7 +155,7 @@ export async function getBlogLocales(): Promise<string[]> {
  * Share image for a post: the PNG covers in the public `showcase` bucket weigh
  * ~2.3 MB, too heavy for WhatsApp link previews, so `scripts/blog-og-images.mjs`
  * uploads a 1200x630 JPG (< 300 KB) next to each one as `<name>-og.jpg`. Covers
- * hosted anywhere else are shared as they are.
+ * hosted anywhere else are shared as they are. Also the Article JSON-LD `image`.
  */
 export function blogOgImageUrl(coverImageUrl: string): { url: string; width?: number; height?: number } {
   const m = coverImageUrl.match(/^(.*\/storage\/v1\/object\/public\/showcase\/blog\/[^/]+)\.png$/);

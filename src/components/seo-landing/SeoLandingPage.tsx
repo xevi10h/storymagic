@@ -167,9 +167,7 @@ export default async function SeoLandingPage({ type, slug, locale }: Props) {
               <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
                 <Link id="hero-cta" href={ctaHref} className={buttonClass({ className: "min-h-14 sm:px-8" })}>
                   {ctaLabel}
-                  <span aria-hidden className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1">
-                    arrow_forward
-                  </span>
+                  <span aria-hidden className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1" data-icon="arrow_forward" />
                 </Link>
                 <Link
                   href="/examples"
@@ -191,9 +189,7 @@ export default async function SeoLandingPage({ type, slug, locale }: Props) {
               <ul className="mt-6 flex flex-col gap-2.5 border-t border-line pt-5 text-sm text-ink-soft sm:flex-row sm:flex-wrap sm:gap-x-6">
                 {[th("trustPreview"), th("trustFormats")].map((line) => (
                   <li key={line} className="flex items-center gap-2">
-                    <span aria-hidden className="material-symbols-outlined !text-xl text-brand">
-                      check_circle
-                    </span>
+                    <span aria-hidden className="material-symbols-outlined !text-xl text-brand" data-icon="check_circle" />
                     {line}
                   </li>
                 ))}
@@ -207,9 +203,7 @@ export default async function SeoLandingPage({ type, slug, locale }: Props) {
                     focusRing,
                   )}
                 >
-                  <span aria-hidden className="material-symbols-outlined !text-xl text-success">
-                    local_shipping
-                  </span>
+                  <span aria-hidden className="material-symbols-outlined !text-xl text-success" data-icon="local_shipping" />
                   {tcd("seoCallout")}
                 </Link>
               )}
@@ -221,9 +215,7 @@ export default async function SeoLandingPage({ type, slug, locale }: Props) {
                     focusRing,
                   )}
                 >
-                  <span aria-hidden className="material-symbols-outlined !text-xl text-brand-text">
-                    draw
-                  </span>
+                  <span aria-hidden className="material-symbols-outlined !text-xl text-brand-text" data-icon="draw" />
                   {toolsLink}
                 </Link>
               )}
@@ -263,9 +255,7 @@ export default async function SeoLandingPage({ type, slug, locale }: Props) {
               <ul className="mt-4 flex flex-col gap-3.5">
                 {benefits.map((b, i) => (
                   <li key={i} className="flex items-start gap-3 text-[15px] leading-snug text-ink-soft">
-                    <span aria-hidden className="material-symbols-outlined mt-px !text-xl shrink-0 text-brand">
-                      check_circle
-                    </span>
+                    <span aria-hidden className="material-symbols-outlined mt-px !text-xl shrink-0 text-brand" data-icon="check_circle" />
                     <span>{b}</span>
                   </li>
                 ))}
@@ -357,9 +347,8 @@ export default async function SeoLandingPage({ type, slug, locale }: Props) {
                     <span
                       aria-hidden
                       className="material-symbols-outlined !text-xl shrink-0 text-ink-muted transition-transform group-hover:translate-x-1 group-hover:text-brand-text"
-                    >
-                      arrow_forward
-                    </span>
+                      data-icon="arrow_forward"
+                    />
                   </Link>
                 </li>
               ))}

@@ -2726,6 +2726,7 @@
   "showcase": {
     "title": "Exemples de contes reals",
     "subtitle": "Mira contes personalitzats que ja hem creat. Cada un és únic: imagina el del teu fill.",
+    "metaDescription": "Mira contes personalitzats reals que ja hem creat i llegeix-los sencers, pàgina a pàgina. Cada un és únic, amb el seu nom i retrat: imagina el del teu fill.",
     "cta": "Crear el del meu fill",
     "sampleBadge": "Exemple",
     "coverAlt": "Portada del conte personalitzat «{title}»",
@@ -2778,6 +2779,7 @@
   "blog": {
     "title": "Idees, regals i lectura",
     "subtitle": "Guies i consells per regalar millor i acompanyar els petits en el seu amor pels llibres.",
+    "metaDescription": "Guies i consells per regalar millor i acompanyar els petits en el seu amor pels llibres: idees de regal per edat i ocasió i trucs per fomentar la lectura.",
     "readingTime": "{min} min de lectura",
     "backToBlog": "Tornar al blog",
     "empty": "Aviat publicarem nous articles.",
@@ -3209,7 +3211,7 @@
   },
   "giftVoucher": {
     "metaTitle": "Targeta regal de conte personalitzat | Meapica",
-    "metaDescription": "Regala un conte personalitzat amb el seu nom i la seva aventura. La targeta regal arriba a l'instant per email, a punt per imprimir. Tapa dura, tapa tova o PDF, IVA inclòs.",
+    "metaDescription": "Regala un conte personalitzat amb el seu nom i la seva aventura. La targeta regal arriba a l'instant per email, a punt per imprimir. Tapa dura, tova o PDF.",
     "breadcrumb": "Targeta regal",
     "footerLink": "Targeta regal",
     "eyebrow": "Targeta regal",

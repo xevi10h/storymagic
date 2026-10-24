@@ -201,7 +201,7 @@ export default function PhotoUploadPanel({ name, photoPath, onPhotoChange }: Pho
             <img src={previewUrl} alt={tu("uploadedAlt", { name })} className="h-16 w-16 rounded-lg object-cover" />
           ) : (
             <span className="flex h-16 w-16 items-center justify-center rounded-lg bg-create-neutral">
-              <span aria-hidden className="material-symbols-outlined text-2xl text-create-text-sub">photo</span>
+              <span aria-hidden className="material-symbols-outlined text-2xl text-create-text-sub" data-icon="photo" />
             </span>
           )}
           <div className="min-w-0 flex-1">
@@ -255,7 +255,7 @@ export default function PhotoUploadPanel({ name, photoPath, onPhotoChange }: Pho
               {busy === "upload" ? (
                 <Spinner className="text-lg" />
               ) : (
-                <span aria-hidden className="material-symbols-outlined text-lg">photo_library</span>
+                <span aria-hidden className="material-symbols-outlined text-lg" data-icon="photo_library" />
               )}
               {busy === "upload" ? tu("uploading") : tu("choosePhoto")}
             </button>
@@ -265,7 +265,7 @@ export default function PhotoUploadPanel({ name, photoPath, onPhotoChange }: Pho
               onClick={() => cameraRef.current?.click()}
               className={`${buttonBase} border-2 border-create-primary/30 bg-white text-brand-text hover:border-create-primary sm:hidden`}
             >
-              <span aria-hidden className="material-symbols-outlined text-lg">photo_camera</span>
+              <span aria-hidden className="material-symbols-outlined text-lg" data-icon="photo_camera" />
               {tu("takePhoto")}
             </button>
           </div>

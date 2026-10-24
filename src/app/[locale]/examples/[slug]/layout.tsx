@@ -36,7 +36,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const copy = EXAMPLE_COPY[asLoc(locale)];
   const title = ref.title;
-  const description = copy.description(title, story.characters.name, story.characters.age, story.characters.gender);
+  const { name, age, gender } = story.characters;
+  // SERP descriptions stay within 160 chars: long book titles get the compact variant.
+  const fullDescription = copy.description(title, name, age, gender);
+  const description = fullDescription.length <= 160 ? fullDescription : copy.descriptionShort(title, name, age, gender);
   const canonicalUrl = `${SITE_URL}/${locale}${showcasePath(ref.slug)}`;
 
   // hreflang: the same book's edition in each locale (each has its own slug).
@@ -50,12 +53,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const firstScene = [...story.story_illustrations].sort((a, b) => a.scene_number - b.scene_number)[0]?.image_url ?? null;
   const coverImage = story.cover_image_url ?? firstScene;
 
-  // Keep the SERP title within ~60 chars: drop the brand suffix when it would overflow.
+  // Keep the SERP title within 60 chars: drop the brand suffix, then use the short wording.
   const seoTitle = copy.seoTitle(title);
-  const branded = `${seoTitle} | Meapica`;
+  const pageTitle = [`${seoTitle} | Meapica`, seoTitle, copy.seoTitleShort(title)].find((c) => c.length <= 60) ?? title;
 
   return {
-    title: { absolute: branded.length <= 60 ? branded : seoTitle },
+    title: { absolute: pageTitle },
     description,
     alternates: { canonical: canonicalUrl, languages },
     openGraph: {

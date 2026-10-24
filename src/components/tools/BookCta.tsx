@@ -18,9 +18,7 @@ export default function BookCta() {
   return (
     <Link href={createPageHref(name)} className={buttonClass({ className: "min-h-14 max-w-full sm:px-8" })} data-testid="tool-book-cta">
       <span className="min-w-0 truncate">{name ? t("ctaWithName", { deName: deName(name, locale) }) : t("cta")}</span>
-      <span aria-hidden className="material-symbols-outlined shrink-0 text-xl transition-transform group-hover:translate-x-1">
-        arrow_forward
-      </span>
+      <span aria-hidden className="material-symbols-outlined shrink-0 text-xl transition-transform group-hover:translate-x-1" data-icon="arrow_forward" />
     </Link>
   );
 }

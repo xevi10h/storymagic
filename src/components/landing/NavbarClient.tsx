@@ -18,9 +18,8 @@ function Icon({ name, className = "" }: { name: string; className?: string }) {
     <span
       aria-hidden
       className={`material-symbols-outlined inline-block w-5 shrink-0 overflow-hidden text-center text-[20px] leading-5 ${className}`}
-    >
-      {name}
-    </span>
+      data-icon={name}
+    />
   );
 }
 
@@ -277,9 +276,7 @@ export default function NavbarClient({ seasonToday }: { seasonToday: string | nu
               aria-controls={panelId}
               aria-label={mobileOpen ? t("closeMenu") : t("openMenu")}
             >
-              <span aria-hidden className="material-symbols-outlined inline-block w-6 overflow-hidden text-2xl leading-6">
-                {mobileOpen ? "close" : "menu"}
-              </span>
+              <span aria-hidden className="material-symbols-outlined inline-block w-6 overflow-hidden text-2xl leading-6" data-icon={mobileOpen ? "close" : "menu"} />
             </button>
           </nav>
 

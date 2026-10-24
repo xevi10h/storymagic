@@ -89,7 +89,7 @@ export default function SendPreviewEmail({
         role="status"
         data-testid="send-preview-sent"
       >
-        <span aria-hidden className="material-symbols-outlined shrink-0 text-lg text-brand-text">mark_email_read</span>
+        <span aria-hidden className="material-symbols-outlined shrink-0 text-lg text-brand-text" data-icon="mark_email_read" />
         <span className="min-w-0 break-words">{t(reminderOn ? "sentReminder" : "sent", { email: email.trim() })}</span>
       </p>
     );

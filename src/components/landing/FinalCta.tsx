@@ -81,9 +81,7 @@ export default function FinalCta() {
               })}
             >
               <span className="truncate">{first ? t("ctaWithName", { deName: deName(first, locale) }) : t("cta")}</span>
-              <span aria-hidden className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1">
-                arrow_forward
-              </span>
+              <span aria-hidden className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1" data-icon="arrow_forward" />
             </button>
           </form>
 

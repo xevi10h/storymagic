@@ -137,9 +137,7 @@ export default async function Page({ params }: PageProps) {
             </Heading>
             <DeadlineCards serverToday={today} />
             <p className="mt-6 flex max-w-prose items-start gap-2 text-sm leading-relaxed text-ink-soft">
-              <span aria-hidden className="material-symbols-outlined mt-px !text-lg shrink-0 text-ink-muted">
-                info
-              </span>
+              <span aria-hidden className="material-symbols-outlined mt-px !text-lg shrink-0 text-ink-muted" data-icon="info" />
               {t("regionNote")}
             </p>
           </div>
@@ -174,18 +172,14 @@ export default async function Page({ params }: PageProps) {
               </p>
               <Link href="/create" className={buttonClass({ variant: "secondary", block: true, className: "mt-4" })}>
                 {t("ctaDigital")}
-                <span aria-hidden className="material-symbols-outlined !text-lg transition-transform group-hover:translate-x-1">
-                  arrow_forward
-                </span>
+                <span aria-hidden className="material-symbols-outlined !text-lg transition-transform group-hover:translate-x-1" data-icon="arrow_forward" />
               </Link>
               <Link
                 href={GIFT_VOUCHER_PATH}
                 className="mt-4 flex min-h-11 items-center gap-2 rounded-md text-sm font-semibold text-ink-soft underline decoration-brand/30 underline-offset-4 transition-colors hover:text-brand-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
                 data-testid="christmas-gift-voucher-link"
               >
-                <span aria-hidden className="material-symbols-outlined !text-xl text-brand-text">
-                  redeem
-                </span>
+                <span aria-hidden className="material-symbols-outlined !text-xl text-brand-text" data-icon="redeem" />
                 {tgv("fromChristmas")}
               </Link>
               {toolsLink && (
@@ -193,9 +187,7 @@ export default async function Page({ params }: PageProps) {
                   href={toolPath("letter")}
                   className="mt-4 flex min-h-11 items-center gap-2 rounded-md text-sm font-semibold text-ink-soft underline decoration-brand/30 underline-offset-4 transition-colors hover:text-brand-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
                 >
-                  <span aria-hidden className="material-symbols-outlined !text-xl text-brand-text">
-                    draw
-                  </span>
+                  <span aria-hidden className="material-symbols-outlined !text-xl text-brand-text" data-icon="draw" />
                   {toolsLink}
                 </Link>
               )}
@@ -225,9 +217,7 @@ export default async function Page({ params }: PageProps) {
             </h2>
             <Link href="/create" className={buttonClass({ className: "min-h-14 sm:px-8" })}>
               {ctaLabel}
-              <span aria-hidden className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1">
-                arrow_forward
-              </span>
+              <span aria-hidden className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1" data-icon="arrow_forward" />
             </Link>
           </div>
         </section>

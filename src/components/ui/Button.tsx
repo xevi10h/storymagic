@@ -89,16 +89,12 @@ export function Button({
         <Spinner className="text-lg" />
       ) : (
         leadingIcon && (
-          <span aria-hidden className="material-symbols-outlined text-lg transition-transform group-hover:-translate-x-1">
-            {leadingIcon}
-          </span>
+          <span aria-hidden className="material-symbols-outlined text-lg transition-transform group-hover:-translate-x-1" data-icon={leadingIcon} />
         )
       )}
       {children}
       {!loading && trailingIcon && (
-        <span aria-hidden className="material-symbols-outlined text-lg transition-transform group-hover:translate-x-1">
-          {trailingIcon}
-        </span>
+        <span aria-hidden className="material-symbols-outlined text-lg transition-transform group-hover:translate-x-1" data-icon={trailingIcon} />
       )}
     </button>
   );

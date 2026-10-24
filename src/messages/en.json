@@ -2667,6 +2667,7 @@
   "showcase": {
     "title": "Real personalized book examples",
     "subtitle": "Browse personalized books we have already created. Each one is unique — imagine your child’s.",
+    "metaDescription": "Browse real personalised books we have already made and read them page by page. Each one is unique, with the child's name and portrait: imagine your child's.",
     "cta": "Create my child’s book",
     "sampleBadge": "Sample",
     "coverAlt": "Cover of the personalised book “{title}”",
@@ -2719,6 +2720,7 @@
   "blog": {
     "title": "Ideas, gifts & reading",
     "subtitle": "Guides and tips to give better gifts and nurture a child’s love of books.",
+    "metaDescription": "Guides and tips to give better gifts and nurture a child's love of books: gift ideas by age and occasion, plus simple ways to build a reading habit at home.",
     "readingTime": "{min} min read",
     "backToBlog": "Back to the blog",
     "empty": "New articles coming soon.",
@@ -2868,7 +2870,7 @@
   },
   "giftVoucher": {
     "metaTitle": "Personalised story gift voucher | Meapica",
-    "metaDescription": "Give a personalised story with their name and their adventure. The gift voucher arrives instantly by email, ready to print. Hardcover, softcover or PDF, VAT included.",
+    "metaDescription": "Give a personalised story with their name and their adventure. The gift voucher arrives instantly by email, ready to print. Hardcover, softcover or PDF.",
     "breadcrumb": "Gift voucher",
     "footerLink": "Gift voucher",
     "eyebrow": "Gift voucher",

@@ -556,6 +556,17 @@ src/
   canonical and hreflang are in `<head>` (a dynamic render streams metadata into `<body>`). The layout's robots
   metadata sets only `googleBot` directives (no explicit `index, follow`, which conflicted with Next's 404 `noindex`);
   noindex layouts (auth, checkout, create, dashboard, profile, unsubscribe, preview) set `alternates.canonical: null`.
+  The locale layout sets NO `alternates` (2026-10-24): a layout canonical/hreflang is inherited by every page without
+  its own and by 404s (`notFound()` keeps the layout metadata), so 404s said canonical → `/es`. Every indexable page
+  sets its own canonical + hreflang (home: `generateMetadata` in `[locale]/page.tsx`); 404s carry only `noindex`.
+  Meta descriptions are kept at 130-158 chars: `/blog` and `/examples` use a `metaDescription` message (the visible
+  subtitle is too short); example books pick `descriptionShort` / `seoTitleShort` (`examples/[slug]/copy.ts`) when the
+  full one would pass 160 / 60 chars. Blog Article JSON-LD `image` = the same `-og.jpg` as og:image (`blogOgImageUrl`).
+  Footer column titles are `<p>` (same look), so the page outline only has content headings.
+  **Icons (2026-10-24):** `<span className="material-symbols-outlined" data-icon="arrow_forward" aria-hidden />`; the
+  glyph name is drawn by `.material-symbols-outlined::before { content: attr(data-icon) }` (ligatures apply to generated
+  content), so icon names are not DOM text and never get indexed as page copy. Icon-only controls carry `aria-label`
+  on the parent. `node scripts/material-symbols-subset.mjs --check` fails on an icon that still has its name as a child.
   `/examples/[slug]` (2026-10-03): server-rendered and indexable. Slug = the printed title in that locale
   (`src/lib/showcase-slug.ts`; `getShowcaseRefs()` in `src/lib/showcase.ts` resolves slugs, de-duplicates equal titles
   per locale with an id suffix, and groups the locale editions of one book by `story_decisions.showcaseTranslationOf`).

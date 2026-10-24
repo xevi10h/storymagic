@@ -85,7 +85,7 @@ function StatusBadge({
   const info = styleMap[status] ?? { color: "bg-gray-100 text-gray-600", icon: "help" };
   return (
     <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ${info.color}`}>
-      <span className="material-symbols-outlined text-sm">{info.icon}</span>
+      <span className="material-symbols-outlined text-sm" data-icon={info.icon} aria-hidden />
       {label}
     </span>
   );
@@ -154,7 +154,7 @@ export default function DashboardPage() {
   if (error || (!loading && data === null)) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-cream px-4">
-        <span className="material-symbols-outlined text-5xl text-red-400">error</span>
+        <span className="material-symbols-outlined text-5xl text-red-400" data-icon="error" aria-hidden />
         <p className="mt-4 text-base text-text-main">
           {error ?? t("loadError")}
         </p>
@@ -188,7 +188,7 @@ export default function DashboardPage() {
               href="/create"
               className="flex items-center gap-2 rounded-lg border border-brand bg-brand-tint px-4 py-2 text-sm font-bold text-brand-text transition-all hover:bg-surface active:scale-[0.98]"
             >
-              <span className="material-symbols-outlined text-lg">add</span>
+              <span className="material-symbols-outlined text-lg" data-icon="add" aria-hidden />
               <span className="hidden sm:inline">{t("newStory")}</span>
             </Link>
             <Link
@@ -196,7 +196,7 @@ export default function DashboardPage() {
               className="flex h-9 w-9 items-center justify-center rounded-full text-text-soft transition-colors hover:bg-cream hover:text-text-main"
               aria-label={t("tabs.characters")}
             >
-              <span className="material-symbols-outlined text-xl">settings</span>
+              <span className="material-symbols-outlined text-xl" data-icon="settings" aria-hidden />
             </Link>
           </div>
         </div>
@@ -219,6 +219,7 @@ export default function DashboardPage() {
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
+              aria-label={item.label}
               className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${
                 tab === item.id
                   ? "bg-brand-tint font-bold text-brand-text shadow-sm ring-1 ring-inset ring-brand"
@@ -228,7 +229,7 @@ export default function DashboardPage() {
               {item.IconComponent ? (
                 <item.IconComponent className="h-4.5 w-auto" />
               ) : (
-                <span className="material-symbols-outlined text-lg">{item.icon}</span>
+                <span className="material-symbols-outlined text-lg" data-icon={item.icon} aria-hidden />
               )}
               <span className="hidden sm:inline">{item.label}</span>
               {item.count > 0 && (
@@ -471,9 +472,7 @@ function StoryCard({
                   className="shrink-0 opacity-60 sm:opacity-0 transition-opacity group-hover:opacity-100"
                   aria-label={t("editTitle")}
                 >
-                  <span className="material-symbols-outlined text-base text-text-muted hover:text-brand-text">
-                    edit
-                  </span>
+                  <span className="material-symbols-outlined text-base text-text-muted hover:text-brand-text" data-icon="edit" aria-hidden />
                 </button>
               )}
             </div>
@@ -496,7 +495,7 @@ function StoryCard({
               {downloading ? (
                 <Spinner className="text-sm" />
               ) : (
-                <span className="material-symbols-outlined text-sm leading-none">download</span>
+                <span className="material-symbols-outlined text-sm leading-none" data-icon="download" aria-hidden />
               )}
               <span>PDF</span>
             </button>
@@ -510,7 +509,7 @@ function StoryCard({
               data-testid="story-reorder"
               aria-label={t("orders.reorder")}
             >
-              <span className="material-symbols-outlined text-sm leading-none">library_add</span>
+              <span className="material-symbols-outlined text-sm leading-none" data-icon="library_add" aria-hidden />
               <span className="hidden sm:inline">{t("orders.reorder")}</span>
             </button>
           )}
@@ -526,7 +525,7 @@ function StoryCard({
             }`}
           >
             {actionLabel}
-            <span className="material-symbols-outlined text-sm leading-none">arrow_forward</span>
+            <span className="material-symbols-outlined text-sm leading-none" data-icon="arrow_forward" aria-hidden />
           </Link>
         </div>
       </div>
@@ -773,7 +772,7 @@ function CharacterDetailModal({
                 className="shrink-0 rounded-lg p-1 text-text-muted transition-colors hover:bg-cream hover:text-text-main"
                 aria-label="Cerrar"
               >
-                <span className="material-symbols-outlined text-xl">close</span>
+                <span className="material-symbols-outlined text-xl" data-icon="close" aria-hidden />
               </button>
             </div>
             <p className="mt-0.5 text-sm text-text-muted">
@@ -829,9 +828,7 @@ function CharacterDetailModal({
                         }`}>
                           {t(`storyStatus.${story.status}` as "storyStatus.draft")}
                         </span>
-                        <span className="material-symbols-outlined text-sm text-text-muted transition-transform group-hover:translate-x-0.5">
-                          arrow_forward
-                        </span>
+                        <span className="material-symbols-outlined text-sm text-text-muted transition-transform group-hover:translate-x-0.5" data-icon="arrow_forward" aria-hidden />
                       </div>
                     </div>
                     {synopsis && (
@@ -859,7 +856,7 @@ function CharacterDetailModal({
                   {idx === 0 && (
                     <div className="mb-1.5 flex items-center gap-1.5">
                       <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-0.5 text-[10px] font-semibold text-amber-700">
-                        <span className="material-symbols-outlined text-[12px]">kid_star</span>
+                        <span className="material-symbols-outlined text-[12px]" data-icon="kid_star" aria-hidden />
                         {t("recommendedFor", { name: character.name })}
                       </span>
                     </div>
@@ -883,9 +880,7 @@ function CharacterDetailModal({
                         {td(`templates.${tpl.id}.description`)}
                       </p>
                     </div>
-                    <span className="material-symbols-outlined shrink-0 text-sm text-text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-brand-text">
-                      arrow_forward
-                    </span>
+                    <span className="material-symbols-outlined shrink-0 text-sm text-text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-brand-text" data-icon="arrow_forward" aria-hidden />
                   </Link>
                 </div>
               ))}
@@ -904,7 +899,7 @@ function CharacterDetailModal({
               onClick={onClose}
               className="min-h-12 flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 text-[19px] font-bold leading-tight text-white transition-colors hover:bg-primary-hover active:scale-[0.98]"
             >
-              <span className="material-symbols-outlined text-lg">add</span>
+              <span className="material-symbols-outlined text-lg" data-icon="add" aria-hidden />
               {t("createBook")}
             </Link>
           </div>
@@ -937,7 +932,7 @@ function EmptyState({
         {IconComponent ? (
           <IconComponent className="h-9 w-auto text-text-muted" />
         ) : (
-          <span className="material-symbols-outlined text-3xl text-text-muted">{icon}</span>
+          <span className="material-symbols-outlined text-3xl text-text-muted" data-icon={icon} aria-hidden />
         )}
       </div>
       <h3 className="font-display text-lg font-bold text-secondary">{title}</h3>
@@ -946,7 +941,7 @@ function EmptyState({
         href={ctaHref}
         className="min-h-12 mt-6 flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-[19px] font-bold leading-tight text-white transition-all hover:bg-primary-hover active:scale-[0.98]"
       >
-        <span className="material-symbols-outlined text-lg">add</span>
+        <span className="material-symbols-outlined text-lg" data-icon="add" aria-hidden />
         {ctaLabel}
       </Link>
     </div>

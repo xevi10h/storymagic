@@ -87,7 +87,7 @@ export default function SharedPreviewView({ storyId, title, childName, templateI
 
       <section id="checkout-section" className="border-t border-border-light bg-white">
         <div className="mx-auto max-w-md px-4 py-10 text-center">
-          <span aria-hidden className="material-symbols-outlined mb-3 text-4xl text-brand-text">auto_stories</span>
+          <span aria-hidden className="material-symbols-outlined mb-3 text-4xl text-brand-text" data-icon="auto_stories" />
           <h2 className="font-display text-2xl font-bold text-secondary">{t("restTitle")}</h2>
           <p className="mt-2 text-sm text-text-muted">{t("restBody", { name: childName })}</p>
           <Link
@@ -96,7 +96,7 @@ export default function SharedPreviewView({ storyId, title, childName, templateI
             data-testid="share-create-cta"
           >
             {t("createCta")}
-            <span aria-hidden className="material-symbols-outlined text-lg">arrow_forward</span>
+            <span aria-hidden className="material-symbols-outlined text-lg" data-icon="arrow_forward" />
           </Link>
           <p className="mt-6 text-xs text-text-muted">
             {t("ownerHint")}{" "}

@@ -208,9 +208,7 @@ export default async function ShowcaseBookPage({ params }: PageProps) {
               <details className="group mt-6 rounded-2xl border-2 border-line bg-surface">
                 <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 rounded-2xl px-5 text-base font-bold text-ink-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand [&::-webkit-details-marker]:hidden">
                   {copy.textToggle}
-                  <span aria-hidden className="material-symbols-outlined shrink-0 text-2xl text-ink-muted transition-transform duration-200 group-open:rotate-180 motion-reduce:transition-none">
-                    expand_more
-                  </span>
+                  <span aria-hidden className="material-symbols-outlined shrink-0 text-2xl text-ink-muted transition-transform duration-200 group-open:rotate-180 motion-reduce:transition-none" data-icon="expand_more" />
                 </summary>
                 <div lang={story.locale ?? locale} className="border-t border-line px-5 py-6 text-[17px] leading-[1.75] text-ink-body [&>p+p]:mt-4">
                   <p className="font-display text-xl font-semibold leading-snug text-ink">{title}</p>

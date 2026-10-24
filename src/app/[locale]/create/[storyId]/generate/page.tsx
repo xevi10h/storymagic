@@ -369,9 +369,7 @@ export default function GenerarPage() {
         <CreationHeader currentStep={4} onBack={() => void handleBack()} onStepClick={(s) => void goToCreateStep(s)} canStepNavigate={(s) => s <= 3} />
         <main className="flex flex-1 flex-col items-center justify-center px-4 py-10 text-center" role="alert">
           <div className="max-w-md">
-            <span aria-hidden className="material-symbols-outlined mb-4 text-5xl text-brand-text">
-              {failure === "rate_limited" || dailyCap ? "schedule" : "auto_stories"}
-            </span>
+            <span aria-hidden className="material-symbols-outlined mb-4 text-5xl text-brand-text" data-icon={failure === "rate_limited" || dailyCap ? "schedule" : "auto_stories"} />
             <h1 className="font-display text-2xl font-bold text-create-text-dark">
               {dailyCap ? t("errorDailyCapTitle") : name ? t("errorTitleNamed", nameArgs) : t("errorTitle")}
             </h1>
@@ -398,7 +396,7 @@ export default function GenerarPage() {
                     {retrying ? (
                       <Spinner className="text-lg" />
                     ) : (
-                      <span aria-hidden className="material-symbols-outlined text-lg">refresh</span>
+                      <span aria-hidden className="material-symbols-outlined text-lg" data-icon="refresh" />
                     )}
                     {t("retry")}
                   </button>
@@ -500,7 +498,7 @@ export default function GenerarPage() {
                       // eslint-disable-next-line @next/next/no-img-element
                       <img key={progress?.coverKey ?? coverUrl} src={coverUrl} alt={t("coverThumbAlt")} className="cover-art-in absolute inset-0 h-full w-full object-cover" />
                     ) : (
-                      <span aria-hidden className="material-symbols-outlined absolute inset-0 flex items-center justify-center text-base text-create-text-sub/50">auto_stories</span>
+                      <span aria-hidden className="material-symbols-outlined absolute inset-0 flex items-center justify-center text-base text-create-text-sub/50" data-icon="auto_stories" />
                     )}
                   </li>
                   {Array.from({ length: total }, (_, i) => {
@@ -529,7 +527,7 @@ export default function GenerarPage() {
               className="min-h-12 hidden items-center justify-center gap-2 rounded-full bg-create-primary px-8 py-3.5 text-[19px] font-bold leading-tight text-white shadow-lg shadow-create-primary/25 transition-colors hover:bg-create-primary-hover lg:flex"
             >
               {t("viewBook", nameArgs)}
-              <span aria-hidden className="material-symbols-outlined text-lg">arrow_forward</span>
+              <span aria-hidden className="material-symbols-outlined text-lg" data-icon="arrow_forward" />
             </button>
           )}
         </section>

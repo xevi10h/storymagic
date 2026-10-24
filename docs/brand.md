@@ -260,8 +260,9 @@ Esc/backdrop close, focus trapped and restored. Edit in place, never navigate aw
 The global `:focus-visible` ring lives in `@layer base` (globals.css), so `outline-none` on a component
 wins: inputs use `outline-none focus:border-brand` as their single ring (no double ring).
 
-**Icons:** Material Symbols Outlined (`<span class="material-symbols-outlined">`), 18–20 px inline,
-always `aria-hidden` with a text label. Allowed metaphors: arrows, check, edit, local_shipping,
+**Icons:** Material Symbols Outlined (`<span className="material-symbols-outlined" data-icon="name" aria-hidden />`,
+the name is drawn by CSS generated content, never as a child: icon names must not be page text), 18–20 px inline,
+always `aria-hidden` with a text label (or `aria-label` on an icon-only control). Allowed metaphors: arrows, check, edit, local_shipping,
 event_available, download, close. The font is a self-hosted subset (`src/fonts/material-symbols-outlined.woff2`,
 ~90 KB, only the icons the code uses, next/font/local in `RootDocument`): **after adding a new icon name run
 `node scripts/material-symbols-subset.mjs`** (a missing glyph renders as its ligature text; `--check` verifies offline).

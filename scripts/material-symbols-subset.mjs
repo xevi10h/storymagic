@@ -12,9 +12,12 @@
  * Run it (without --check) whenever you add a new icon name: a glyph missing from
  * the subset renders as its ligature text ("arrow_forward") instead of the icon.
  *
- * Candidates = every snake_case string literal or JSX text in src/**\/*.ts(x) that
- * is a real Material Symbols name (dynamic icons come from code constants, so their
- * literals are caught too). Over-inclusion only costs a few bytes.
+ * Icons are written as <span className="material-symbols-outlined" data-icon="name" aria-hidden />
+ * and drawn by CSS generated content (globals.css), so the name is never indexable text.
+ * Candidates = every snake_case string literal in src/**\/*.ts(x) that is a real
+ * Material Symbols name: data-icon="…" values and the code constants behind dynamic
+ * data-icon={…} are both string literals. Over-inclusion only costs a few bytes.
+ * --check also fails if an icon span still has its name as a child (old pattern).
  * Axes: wght 100..700 only (the app never sets FILL/GRAD/opsz; font-weight maps to wght).
  */
 import fs from "node:fs";
@@ -41,12 +44,24 @@ function sourceFiles(dir, out = []) {
 
 function candidateTokens() {
   const tokens = new Set();
-  const re = /["'`]([a-z0-9_]{2,40})["'`]|>\s*([a-z0-9_]{2,40})\s*</g;
+  const re = /["'`]([a-z0-9_]{2,40})["'`]/g;
   for (const file of sourceFiles(path.join(ROOT, "src"))) {
     const src = fs.readFileSync(file, "utf8");
-    for (let m; (m = re.exec(src)); ) tokens.add(m[1] || m[2]);
+    for (let m; (m = re.exec(src)); ) tokens.add(m[1]);
   }
   return tokens;
+}
+
+// Icon spans that still render the glyph name as a JSX child: `material-symbols-outlined…>name<`
+// or `…>{expr}</` (a self-closing `/>` tag is the current pattern and never matches).
+function textChildIcons() {
+  const re = /material-symbols-outlined[^<>]*?[^/<>]>\s*(?:[a-z0-9_]{2,40}|\{[^}<>]+\})\s*<\//g;
+  const hits = [];
+  for (const file of sourceFiles(path.join(ROOT, "src"))) {
+    const src = fs.readFileSync(file, "utf8");
+    for (let m; (m = re.exec(src)); ) hits.push(`${path.relative(ROOT, file)}: ${m[0].replace(/\s+/g, " ").slice(-60)}`);
+  }
+  return hits;
 }
 
 async function fetchText(url) {
@@ -65,6 +80,11 @@ async function main() {
     const known = new Set(fs.readFileSync(path.join(FONT_DIR, "material-symbols-codepoints.txt"), "utf8").split("\n").filter(Boolean));
     const subset = new Set(fs.readFileSync(LIST_FILE, "utf8").split(",").map((s) => s.trim()).filter(Boolean));
     const missing = [...tokens].filter((t) => known.has(t) && !subset.has(t)).sort();
+    const legacy = textChildIcons();
+    if (legacy.length) {
+      console.error(`Icon names rendered as text (use data-icon="…" and a self-closing span):\n${legacy.join("\n")}`);
+      process.exit(1);
+    }
     if (missing.length) {
       console.error(`Icons used but missing from the font subset: ${missing.join(", ")}\nRun: node scripts/material-symbols-subset.mjs`);
       process.exit(1);

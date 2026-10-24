@@ -205,7 +205,7 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
                   </span>
                   {!digital && (
                     <span className="mt-1 flex items-center gap-1 text-xs font-semibold text-success">
-                      <span aria-hidden className="material-symbols-outlined text-[15px]">local_shipping</span>
+                      <span aria-hidden className="material-symbols-outlined text-[15px]" data-icon="local_shipping" />
                       {t("freeShipping")}
                       <span className="font-normal text-create-text-sub">· {t("pdfIncluded")}</span>
                     </span>
@@ -255,14 +255,14 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
       <div className="mt-4 space-y-1 text-[13px] leading-snug">
         {isDigital ? (
           <p className="flex items-start gap-2 text-create-text">
-            <span aria-hidden className="material-symbols-outlined mt-px text-[17px] text-brand-text">download</span>
+            <span aria-hidden className="material-symbols-outlined mt-px text-[17px] text-brand-text" data-icon="download" />
             {t("digitalDelivery")}
           </p>
         ) : (
           <>
             {delivery && (
               <p className="flex items-start gap-2 font-semibold text-create-text-dark" data-testid="delivery-line">
-                <span aria-hidden className="material-symbols-outlined mt-px text-[17px] text-brand-text">event_available</span>
+                <span aria-hidden className="material-symbols-outlined mt-px text-[17px] text-brand-text" data-icon="event_available" />
                 <span>
                   {delivery} <span className="font-normal text-create-text-sub">({t("deliveryEstimate")})</span>
                 </span>
@@ -358,7 +358,7 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
           data-testid="reprint-guarantee"
           className="mt-2.5 flex items-start justify-center gap-1.5 rounded-xl bg-success/[0.08] px-3 py-2 text-[12.5px] font-semibold leading-snug text-create-text-dark"
         >
-          <span aria-hidden className="material-symbols-outlined mt-px text-[17px] text-success">verified</span>
+          <span aria-hidden className="material-symbols-outlined mt-px text-[17px] text-success" data-icon="verified" />
           <span>{t("trustReprint")}</span>
         </p>
       )}
@@ -376,7 +376,7 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
 function TrustLine({ icon, children }: { icon: string; children: React.ReactNode }) {
   return (
     <li className="flex items-start gap-2">
-      <span aria-hidden className="material-symbols-outlined mt-px text-[17px] text-create-text-sub">{icon}</span>
+      <span aria-hidden className="material-symbols-outlined mt-px text-[17px] text-create-text-sub" data-icon={icon} />
       <span>{children}</span>
     </li>
   );

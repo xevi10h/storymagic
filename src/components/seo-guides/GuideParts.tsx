@@ -40,9 +40,7 @@ export function GuideCtaLink({ cta, id, className }: { cta: GuideCta; id?: strin
   return (
     <Link id={id} href={cta.href} locale={cta.locale} className={buttonClass({ className: cx("min-h-14 sm:px-8", className) })}>
       {cta.label}
-      <span aria-hidden className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1">
-        arrow_forward
-      </span>
+      <span aria-hidden className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1" data-icon="arrow_forward" />
     </Link>
   );
 }
@@ -154,9 +152,7 @@ export async function GuideHero({
           <ul className="mt-6 flex flex-col gap-2.5 border-t border-line pt-5 text-sm text-ink-soft sm:flex-row sm:flex-wrap sm:gap-x-6">
             {trust.map((line) => (
               <li key={line} className="flex items-center gap-2">
-                <span aria-hidden className="material-symbols-outlined !text-xl text-brand">
-                  check_circle
-                </span>
+                <span aria-hidden className="material-symbols-outlined !text-xl text-brand" data-icon="check_circle" />
                 {line}
               </li>
             ))}

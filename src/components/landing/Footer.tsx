@@ -22,10 +22,13 @@ const linkClass = cx(
 
 const SEO_LINK_TYPES: SeoPageType[] = ["gifts", "ages", "themes"];
 
+// Column titles are <p>, not headings: the footer repeats on every page, so headings
+// here would add the same "El libro", "Atención"… entries to every page outline.
+// `font-display tracking-[-0.01em]` reproduces the global h1–h4 rule (globals.css) they had as h2s.
 function FooterColumn({ title, children }: { title: ReactNode; children: ReactNode }) {
   return (
     <div>
-      <h2 className="mb-2 font-display text-base font-semibold text-white">{title}</h2>
+      <p className="mb-2 font-display text-base font-semibold tracking-[-0.01em] text-white">{title}</p>
       <ul className="flex flex-col text-sm">{children}</ul>
     </div>
   );
@@ -130,7 +133,7 @@ export default function Footer() {
 
           {/* Reading club */}
           <div className="col-span-2 lg:col-span-1">
-            <h2 className="font-display text-base font-semibold text-white">{t("readingClub")}</h2>
+            <p className="font-display text-base font-semibold tracking-[-0.01em] text-white">{t("readingClub")}</p>
             <p className="mt-2 mb-4 text-sm leading-relaxed text-white/75">{t("readingClubDescription")}</p>
             <NewsletterForm />
           </div>
@@ -141,11 +144,11 @@ export default function Footer() {
         <div className="mt-12 grid gap-8 border-t border-white/15 pt-10 sm:grid-cols-2 lg:grid-cols-3">
           {SEO_LINK_TYPES.map((type) => (
             <div key={type}>
-              <h2 className="mb-1 text-xs font-bold uppercase tracking-wide text-white">
+              <p className="mb-1 font-display text-xs font-bold uppercase tracking-[-0.01em] text-white">
                 <Link className={linkClass} href={seoHubPath(type)}>
                   {ts(SEO_HUB_HEADING_KEY[type])}
                 </Link>
-              </h2>
+              </p>
               <ul className="flex flex-wrap gap-x-5 text-sm">
                 {SEO_SLUGS[type].map((slug) => (
                   <li key={slug}>
@@ -159,7 +162,7 @@ export default function Footer() {
           ))}
           {/* Guides (Catalan, likeness, comparison): only the ones that exist in this locale. */}
           <div>
-            <h2 className="mb-1 text-xs font-bold uppercase tracking-wide text-white">{GUIDES_HEADING[locale] ?? GUIDES_HEADING.es}</h2>
+            <p className="mb-1 font-display text-xs font-bold uppercase tracking-[-0.01em] text-white">{GUIDES_HEADING[locale] ?? GUIDES_HEADING.es}</p>
             <ul className="flex flex-wrap gap-x-5 text-sm">
               {guidesForLocale(locale).map((id) => (
                 <li key={id}>

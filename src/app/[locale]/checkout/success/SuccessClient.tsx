@@ -222,14 +222,10 @@ export default function SuccessClient({
                 <BrandLoader size="md" />
               </div>
               <div className="absolute -top-2 -right-4 animate-create-float">
-                <span className="material-symbols-outlined text-2xl text-create-gold opacity-60">
-                  star
-                </span>
+                <span className="material-symbols-outlined text-2xl text-create-gold opacity-60" data-icon="star" aria-hidden />
               </div>
               <div className="absolute -bottom-1 -left-6 animate-create-float-delay-1">
-                <span className="material-symbols-outlined text-xl text-brand-text opacity-40">
-                  auto_awesome
-                </span>
+                <span className="material-symbols-outlined text-xl text-brand-text opacity-40" data-icon="auto_awesome" aria-hidden />
               </div>
             </div>
 
@@ -287,7 +283,7 @@ export default function SuccessClient({
         <div className="flex flex-1 flex-col items-center justify-center px-4 text-center">
           <div className="w-full max-w-md">
             <div className="mb-6 inline-flex h-24 w-24 items-center justify-center rounded-full bg-success/10">
-              <span className="material-symbols-outlined text-5xl text-success">check_circle</span>
+              <span className="material-symbols-outlined text-5xl text-success" data-icon="check_circle" aria-hidden />
             </div>
             <h1 className="font-display text-2xl sm:text-3xl font-bold text-secondary">
               {t("processingTitle")}
@@ -302,7 +298,7 @@ export default function SuccessClient({
             </p>
             {customerEmail && (
               <p className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs text-text-soft shadow-sm">
-                <span className="material-symbols-outlined text-sm text-brand-text">mail</span>
+                <span className="material-symbols-outlined text-sm text-brand-text" data-icon="mail" aria-hidden />
                 {t("confirmationEmail", { email: customerEmail })}
               </p>
             )}
@@ -316,7 +312,7 @@ export default function SuccessClient({
                 href="/dashboard"
                 className="flex w-full items-center justify-center gap-2 rounded-xl border border-border-light px-6 py-3 text-sm font-medium text-text-soft transition-colors hover:bg-cream hover:text-text-main"
               >
-                <span className="material-symbols-outlined text-lg">auto_stories</span>
+                <span className="material-symbols-outlined text-lg" data-icon="auto_stories" aria-hidden />
                 {t("viewOrders")}
               </Link>
             </div>
@@ -335,7 +331,7 @@ export default function SuccessClient({
         <div className="flex flex-1 flex-col items-center justify-center px-4 text-center">
           <div className="max-w-md">
             <div className="mb-6 inline-flex h-24 w-24 items-center justify-center rounded-full bg-amber-100">
-              <span className="material-symbols-outlined text-5xl text-amber-600">help</span>
+              <span className="material-symbols-outlined text-5xl text-amber-600" data-icon="help" aria-hidden />
             </div>
             <h1 className="font-display text-2xl font-bold text-secondary">
               {t("notVerifiedTitle")}
@@ -367,9 +363,7 @@ export default function SuccessClient({
         <div className="flex flex-1 flex-col items-center justify-center px-4 text-center">
           <div className="max-w-md">
             <div className="mb-6 inline-flex h-24 w-24 items-center justify-center rounded-full bg-amber-100">
-              <span className="material-symbols-outlined text-5xl text-amber-600">
-                warning
-              </span>
+              <span className="material-symbols-outlined text-5xl text-amber-600" data-icon="warning" aria-hidden />
             </div>
             <h1 className="font-display text-2xl font-bold text-secondary">
               {t("completionErrorTitle")}
@@ -416,9 +410,7 @@ export default function SuccessClient({
         <div className="w-full max-w-md text-center">
           {/* Success icon */}
           <div className="mb-6 inline-flex h-24 w-24 items-center justify-center rounded-full bg-success/10">
-            <span className="material-symbols-outlined text-5xl text-success">
-              check_circle
-            </span>
+            <span className="material-symbols-outlined text-5xl text-success" data-icon="check_circle" aria-hidden />
           </div>
 
           <h1 className="font-display text-3xl font-bold text-secondary">
@@ -433,7 +425,7 @@ export default function SuccessClient({
 
           {customerEmail && (
             <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs text-text-soft shadow-sm">
-              <span className="material-symbols-outlined text-sm text-brand-text">mail</span>
+              <span className="material-symbols-outlined text-sm text-brand-text" data-icon="mail" aria-hidden />
               {t("confirmationEmail", { email: customerEmail })}
             </p>
           )}
@@ -446,9 +438,7 @@ export default function SuccessClient({
             {/* PDF download — available for all formats */}
             {order && (
               <div className="flex items-center gap-3 text-text-soft">
-                <span className="material-symbols-outlined text-xl text-brand-text">
-                  download
-                </span>
+                <span className="material-symbols-outlined text-xl text-brand-text" data-icon="download" aria-hidden />
                 <div className="flex-1">
                   <p className="text-sm font-medium text-text-main">
                     {t("pdfReady")}
@@ -473,7 +463,7 @@ export default function SuccessClient({
                 rel="noopener noreferrer"
                 className="mt-4 flex items-center gap-3 text-sm font-medium text-text-main hover:text-brand-text"
               >
-                <span aria-hidden className="material-symbols-outlined text-xl text-brand-text">receipt_long</span>
+                <span aria-hidden className="material-symbols-outlined text-xl text-brand-text" data-icon="receipt_long" />
                 {t("viewInvoice")}
               </a>
             )}
@@ -482,9 +472,7 @@ export default function SuccessClient({
             {!isDigital && (
               <>
                 <div className="mt-4 flex items-center gap-3 text-text-soft">
-                  <span className="material-symbols-outlined text-xl text-brand-text">
-                    local_shipping
-                  </span>
+                  <span className="material-symbols-outlined text-xl text-brand-text" data-icon="local_shipping" aria-hidden />
                   <div>
                     <p className="text-sm font-medium text-text-main">
                       {t("nextStepsTitle")}
@@ -496,9 +484,7 @@ export default function SuccessClient({
                 </div>
 
                 <div className="mt-4 flex items-center gap-3 text-text-soft">
-                  <span className="material-symbols-outlined text-xl text-brand-text">
-                    schedule
-                  </span>
+                  <span className="material-symbols-outlined text-xl text-brand-text" data-icon="schedule" aria-hidden />
                   <div>
                     <p className="text-sm font-medium text-text-main">
                       {t("deliveryTitle")}
@@ -513,9 +499,7 @@ export default function SuccessClient({
 
             {effectiveFormat && (
               <div className="mt-4 flex items-center gap-3 text-text-soft">
-                <span className="material-symbols-outlined text-xl text-brand-text">
-                  {isDigital ? "download" : effectiveFormat === "hardcover" ? "book" : "menu_book"}
-                </span>
+                <span className="material-symbols-outlined text-xl text-brand-text" data-icon={isDigital ? "download" : effectiveFormat === "hardcover" ? "book" : "menu_book"} aria-hidden />
                 <div>
                   <p className="text-sm font-medium text-text-main">
                     {t("formatLabel", {
@@ -540,18 +524,14 @@ export default function SuccessClient({
               href="/create"
               className="min-h-12 flex w-full items-center justify-center gap-2 rounded-xl bg-create-primary px-6 py-3.5 text-[19px] font-bold leading-tight text-white transition-all hover:bg-create-primary-hover active:scale-[0.98] shadow-lg shadow-create-primary/20"
             >
-              <span className="material-symbols-outlined text-lg">
-                add_circle
-              </span>
+              <span className="material-symbols-outlined text-lg" data-icon="add_circle" aria-hidden />
               {t("createAnother")}
             </Link>
             <Link
               href="/dashboard"
               className="flex w-full items-center justify-center gap-2 rounded-xl border border-border-light px-6 py-3 text-sm font-medium text-text-soft transition-colors hover:bg-cream hover:text-text-main"
             >
-              <span className="material-symbols-outlined text-lg">
-                auto_stories
-              </span>
+              <span className="material-symbols-outlined text-lg" data-icon="auto_stories" aria-hidden />
               {t("viewOrders")}
             </Link>
           </div>

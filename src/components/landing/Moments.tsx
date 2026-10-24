@@ -160,9 +160,7 @@ function TypeNameButton({ label }: { label: string }) {
       className="mt-2 inline-flex min-h-11 items-center gap-1 self-start text-sm font-semibold text-paper underline decoration-paper/40 underline-offset-4 transition-colors hover:decoration-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-paper"
     >
       {label}
-      <span aria-hidden className="material-symbols-outlined inline-block w-5 shrink-0 overflow-hidden text-lg leading-5">
-        arrow_upward
-      </span>
+      <span aria-hidden className="material-symbols-outlined inline-block w-5 shrink-0 overflow-hidden text-lg leading-5" data-icon="arrow_upward" />
     </button>
   );
 }

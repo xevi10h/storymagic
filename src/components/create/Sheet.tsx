@@ -82,7 +82,7 @@ export default function Sheet({ open, title, onClose, closeLabel, children, foot
             aria-label={closeLabel}
             className="flex h-9 w-9 items-center justify-center rounded-full text-create-text-sub transition-colors hover:bg-create-neutral"
           >
-            <span aria-hidden className="material-symbols-outlined text-xl">close</span>
+            <span aria-hidden className="material-symbols-outlined text-xl" data-icon="close" />
           </button>
         </div>
         <div className="flex-1 overflow-y-auto px-5 py-4">{children}</div>

@@ -439,7 +439,7 @@ function CrearPageContent() {
                 {saving ? (
                   <Spinner className="text-base" />
                 ) : (
-                  <span aria-hidden className="material-symbols-outlined text-base">refresh</span>
+                  <span aria-hidden className="material-symbols-outlined text-base" data-icon="refresh" />
                 )}
                 {t("errors.retry")}
               </button>

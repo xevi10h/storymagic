@@ -2669,6 +2669,7 @@
   "showcase": {
     "title": "Exemples de contes réels",
     "subtitle": "Découvrez des contes personnalisés que nous avons déjà créés. Chacun est unique — imaginez celui de votre enfant.",
+    "metaDescription": "Découvrez de vrais livres personnalisés déjà créés et lisez-les page après page. Chacun est unique, avec le prénom et le portrait de l'enfant.",
     "cta": "Créer celui de mon enfant",
     "sampleBadge": "Exemple",
     "coverAlt": "Couverture du livre personnalisé « {title} »",
@@ -2721,6 +2722,7 @@
   "blog": {
     "title": "Idées, cadeaux & lecture",
     "subtitle": "Guides et conseils pour mieux offrir et accompagner les enfants dans leur amour des livres.",
+    "metaDescription": "Guides et conseils pour mieux offrir et accompagner les enfants dans leur amour des livres : idées cadeaux par âge et occasion, et astuces pour la lecture.",
     "readingTime": "{min} min de lecture",
     "backToBlog": "Retour au blog",
     "empty": "De nouveaux articles arrivent bientôt.",
@@ -2870,7 +2872,7 @@
   },
   "giftVoucher": {
     "metaTitle": "Carte cadeau livre personnalisé | Meapica",
-    "metaDescription": "Offrez une histoire personnalisée avec son prénom et son aventure. La carte cadeau arrive tout de suite par email, prête à imprimer. Couverture rigide, souple ou PDF, TVA incluse.",
+    "metaDescription": "Offrez une histoire personnalisée avec son prénom et son aventure. La carte cadeau arrive tout de suite par email, prête à imprimer. Rigide, souple ou PDF.",
     "breadcrumb": "Carte cadeau",
     "footerLink": "Carte cadeau",
     "eyebrow": "Carte cadeau",

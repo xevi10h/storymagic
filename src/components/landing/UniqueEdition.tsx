@@ -62,7 +62,7 @@ export default function UniqueEdition() {
                   aria-hidden
                   className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-brand/10 text-brand"
                 >
-                  <span className="material-symbols-outlined text-base">check</span>
+                  <span className="material-symbols-outlined text-base" data-icon="check" aria-hidden />
                 </span>
                 <div>
                   <h3 className="font-display text-base font-bold leading-tight text-ink">{t(`points.${id}.title`)}</h3>
@@ -76,9 +76,7 @@ export default function UniqueEdition() {
             {/* Phones already have the sticky "Crear su libro" bar: one CTA per viewport. */}
             <Link href="/create" className={buttonClass({ size: "md", className: "max-sm:hidden" })}>
               {t("cta")}
-              <span aria-hidden className="material-symbols-outlined text-lg transition-transform group-hover:translate-x-1">
-                arrow_forward
-              </span>
+              <span aria-hidden className="material-symbols-outlined text-lg transition-transform group-hover:translate-x-1" data-icon="arrow_forward" />
             </Link>
             <Link
               href={showcasePath(book.slug)}

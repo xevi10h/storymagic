@@ -94,9 +94,7 @@ export default function ToolDownload({
         {state.kind === "done" && (
           <div className="rounded-2xl border-2 border-line bg-paper px-4 py-3 text-sm text-ink-soft" data-testid="tool-download-done">
             <p className="flex items-center gap-2 font-bold text-success">
-              <span aria-hidden className="material-symbols-outlined !text-lg">
-                check_circle
-              </span>
+              <span aria-hidden className="material-symbols-outlined !text-lg" data-icon="check_circle" />
               {t("downloaded")}
             </p>
             <p className="mt-1">{t("printTip")}</p>
@@ -119,9 +117,7 @@ export default function ToolDownload({
       </div>
 
       <p className="flex items-start gap-2 text-xs text-ink-muted">
-        <span aria-hidden className="material-symbols-outlined mt-px !text-base shrink-0">
-          lock
-        </span>
+        <span aria-hidden className="material-symbols-outlined mt-px !text-base shrink-0" data-icon="lock" />
         {t("privacyNote")}
       </p>
     </div>
@@ -172,9 +168,7 @@ export function ReminderOptIn() {
   if (status === "done") {
     return (
       <p role="status" className="flex items-center gap-2 rounded-2xl bg-paper px-4 py-3 text-sm font-semibold text-success" data-testid="reminder-done">
-        <span aria-hidden className="material-symbols-outlined !text-lg">
-          check
-        </span>
+        <span aria-hidden className="material-symbols-outlined !text-lg" data-icon="check" />
         {t("reminderDone")}
       </p>
     );

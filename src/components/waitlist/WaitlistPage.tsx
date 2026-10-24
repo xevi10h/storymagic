@@ -141,9 +141,7 @@ export default function WaitlistPage() {
         {status === "success" ? (
           <div className="mt-8 flex flex-col items-center gap-4 animate-fade-in">
             <div className="flex h-20 w-20 items-center justify-center rounded-full bg-success/10">
-              <span className="material-symbols-outlined text-4xl text-success">
-                check_circle
-              </span>
+              <span className="material-symbols-outlined text-4xl text-success" data-icon="check_circle" aria-hidden />
             </div>
             <h2 className="font-display text-2xl font-bold text-secondary">
               {t("success")}
@@ -181,9 +179,7 @@ export default function WaitlistPage() {
               ) : (
                 <>
                   {t("cta")}
-                  <span className="material-symbols-outlined text-xl">
-                    arrow_forward
-                  </span>
+                  <span className="material-symbols-outlined text-xl" data-icon="arrow_forward" aria-hidden />
                 </>
               )}
             </button>
@@ -203,23 +199,17 @@ export default function WaitlistPage() {
         {/* Trust signals — right below CTA */}
         <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm font-medium text-text-muted">
           <div className="flex items-center gap-1.5">
-            <span className="material-symbols-outlined text-base text-success">
-              forest
-            </span>
+            <span className="material-symbols-outlined text-base text-success" data-icon="forest" aria-hidden />
             <span>{t("feature1Title")}</span>
           </div>
           <span className="hidden text-border-light sm:inline">|</span>
           <div className="flex items-center gap-1.5">
-            <span className="material-symbols-outlined text-base text-brand-text">
-              palette
-            </span>
+            <span className="material-symbols-outlined text-base text-brand-text" data-icon="palette" aria-hidden />
             <span>{t("feature2Title")}</span>
           </div>
           <span className="hidden text-border-light sm:inline">|</span>
           <div className="flex items-center gap-1.5">
-            <span className="material-symbols-outlined text-base text-primary-hover">
-              local_shipping
-            </span>
+            <span className="material-symbols-outlined text-base text-primary-hover" data-icon="local_shipping" aria-hidden />
             <span>{t("feature3Title")}</span>
           </div>
         </div>
@@ -336,9 +326,7 @@ function FeatureCard({
 }) {
   return (
     <div className="flex-1 rounded-2xl border border-border-light bg-white/60 p-6 backdrop-blur-sm transition-all hover:border-border-medium hover:shadow-md">
-      <span className="material-symbols-outlined mb-3 text-3xl text-brand-text">
-        {icon}
-      </span>
+      <span className="material-symbols-outlined mb-3 text-3xl text-brand-text" data-icon={icon} aria-hidden />
       <h3 className="mb-2 font-display text-lg font-bold text-secondary">
         {title}
       </h3>
