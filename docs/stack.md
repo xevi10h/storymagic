@@ -353,7 +353,7 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
 
 ## Social (organic posts through Zernio, 2026-10-04)
 
-- **Accounts:** Instagram + TikTok `@meapica_books`, Facebook page "Meapica", YouTube channel + Pinterest `meapica` (connected 2026-10-04;
+- **Accounts:** Instagram `@meapica_libros` (renamed from `@meapica_books`, seen 2026-10-25; `zernio.mjs` matches it by account id), TikTok `@meapica_books`, Facebook page "Meapica", YouTube channel + Pinterest `meapica` (connected 2026-10-04;
   videos go to YouTube as Shorts, every post goes to Pinterest as a pin linking to the site, on the default board
   "Cuentos personalizados para niños"), all in Zernio (`https://zernio.com/api/v1`,
   OpenAPI at `https://zernio.com/openapi.json`). Key: `ZERNIO_API_KEY` or `~/.config/zernio/api_key`. Shared helpers: `scripts/social/zernio.mjs`.

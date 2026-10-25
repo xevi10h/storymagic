@@ -8,14 +8,15 @@
   "beats": [
     {
       "img": {
-        "video": "../2026-10-08/clips/p12.mp4"
+        "video": "clips/luc3.mp4"
       },
       "say": "¿Qué puede perder un dragón que acaba de nacer? Lucía lo va a averiguar.",
-      "title": "¿Qué pierde un dragón<br><em>recién nacido?</em>"
+      "title": "¿Qué pierde un dragón<br><em>recién nacido?</em>",
+      "titleTop": 240
     },
     {
       "img": {
-        "video": "../2026-10-08/clips/p04.mp4"
+        "video": "../2026-11-02/clips/luc2.mp4"
       },
       "say": "Lucía tenía nueve años y una cinta morada que guardaba en su libro."
     },
@@ -64,25 +65,15 @@
     },
     {
       "img": {
-        "pdf": "461c6578-404b-4362-8dff-afcae81f6141",
-        "page": 24
+        "video": "../2026-11-02/clips/luc5.mp4"
       },
-      "say": "Lucía hizo un pastel de miel, y el sueño bajó atraído por el olor.",
-      "zoom": [
-        1.2,
-        1.05
-      ]
+      "say": "Lucía hizo un pastel de miel, y el sueño bajó atraído por el olor."
     },
     {
       "img": {
-        "pdf": "461c6578-404b-4362-8dff-afcae81f6141",
-        "page": 26
+        "video": "../2026-11-02/clips/luc4.mp4"
       },
-      "say": "Se posó en su cinta morada. Los sueños no se cazan: se invitan.",
-      "zoom": [
-        1.05,
-        1.2
-      ]
+      "say": "Se posó en su cinta morada. Los sueños no se cazan: se invitan."
     }
   ]
 }

@@ -8,16 +8,15 @@
   "beats": [
     {
       "img": {
-        "video": "../2026-10-05/clips/amb-bc6e2dbd-p10-forest-in-8.52.mp4",
-        "fit": true
+        "video": "clips/noa2.mp4"
       },
       "say": "Un cuento corto para peques de tres y cuatro años. Frases pequeñas, sonidos y un búho.",
-      "title": "Cuento para niños<br><em>de 3 y 4 años</em>"
+      "title": "Cuento para niños<br><em>de 3 y 4 años</em>",
+      "titleTop": 240
     },
     {
       "img": {
-        "video": "../2026-10-05/clips/amb-bc6e2dbd-p4-day-in-5.78.mp4",
-        "fit": true
+        "video": "../2026-11-01/clips/noa3.mp4"
       },
       "say": "Noa juega en casa con su cubo amarillo. Toc, toc, cae una pieza."
     },
@@ -51,7 +50,7 @@
     },
     {
       "img": {
-        "video": "../2026-10-05/clips/p20.mp4"
+        "video": "../../tests/week-2026-10-12/fri-teddy/clips/c1.mp4"
       },
       "say": "¡La llave de flor canta tin, tin!"
     },
@@ -63,7 +62,7 @@
     },
     {
       "img": {
-        "video": "../2026-10-05/clips/p26.mp4"
+        "video": "../../tests/week-2026-10-12/fri-teddy/clips/c4.mp4"
       },
       "say": "Pasito, pasito, el mundo suena bonito."
     }

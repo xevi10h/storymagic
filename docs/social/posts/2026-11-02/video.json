@@ -8,20 +8,15 @@
   "beats": [
     {
       "img": {
-        "pdf": "461c6578-404b-4362-8dff-afcae81f6141",
-        "page": 20
+        "video": "clips/luc1.mp4"
       },
       "say": "Si este sueño se queda ahí arriba, dormirá cien años entre telarañas dulces. Lucía tiene una noche para bajarlo.",
-      "zoom": [
-        1.05,
-        1.2
-      ],
-      "title": "Si se queda ahí,<br><em>dormirá cien años</em>"
+      "title": "Si se queda ahí,<br><em>dormirá cien años</em>",
+      "titleTop": 240
     },
     {
       "img": {
-        "video": "../2026-10-08/clips/amb-461c6578-p6-night-in-5.05.mp4",
-        "fit": true
+        "video": "clips/luc2.mp4"
       },
       "say": "Todo empezó con una cinta morada que se movió sola y señaló la pared."
     },
@@ -58,25 +53,15 @@
     },
     {
       "img": {
-        "pdf": "461c6578-404b-4362-8dff-afcae81f6141",
-        "page": 24
+        "video": "clips/luc5.mp4"
       },
-      "say": "Lucía no lo persiguió. Hizo un pastel de miel, porque los sueños no se cazan: se invitan.",
-      "zoom": [
-        1.05,
-        1.2
-      ]
+      "say": "Lucía no lo persiguió. Hizo un pastel de miel, porque los sueños no se cazan: se invitan."
     },
     {
       "img": {
-        "pdf": "461c6578-404b-4362-8dff-afcae81f6141",
-        "page": 26
+        "video": "clips/luc4.mp4"
       },
-      "say": "El sueño bajó y se posó en su cinta morada. Y esa noche, antes de dormir, Lucía miró muy bien.",
-      "zoom": [
-        1.2,
-        1.05
-      ]
+      "say": "El sueño bajó y se posó en su cinta morada. Y esa noche, antes de dormir, Lucía miró muy bien."
     }
   ]
 }

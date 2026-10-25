@@ -8,11 +8,11 @@
   "beats": [
     {
       "img": {
-        "video": "../2026-10-05/clips/amb-bc6e2dbd-p10-forest-in-8.52.mp4",
-        "fit": true
+        "video": "clips/nca1.mp4"
       },
       "say": "Em dic Bruno, soc un mussol. I aquesta és la tarda que la Noa va entrar al meu bosc.",
-      "title": "Un conte explicat<br><em>per un mussol</em>"
+      "title": "Un conte explicat<br><em>per un mussol</em>",
+      "titleTop": 240
     },
     {
       "img": {
@@ -44,7 +44,7 @@
     },
     {
       "img": {
-        "video": "../2026-10-05/clips/p20.mp4"
+        "video": "clips/nca2.mp4"
       },
       "say": "La clau de flor! Dring, dring!"
     },
@@ -63,7 +63,7 @@
     },
     {
       "img": {
-        "video": "../2026-10-05/clips/p26.mp4"
+        "video": "clips/nca3.mp4"
       },
       "say": "Passet a passet, el món sona bonic."
     }

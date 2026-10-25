@@ -8,10 +8,11 @@
   "beats": [
     {
       "img": {
-        "video": "../2026-10-08/clips/p12.mp4"
+        "video": "clips/lca5.mp4"
       },
       "say": "Aquesta nit, un dragonet acabat de néixer ha perdut el seu primer somni.",
-      "title": "Conte per anar a dormir<br><em>en 1 minut</em>"
+      "title": "Conte per anar a dormir<br><em>en 1 minut</em>",
+      "titleTop": 240
     },
     {
       "img": {
@@ -42,14 +43,9 @@
     },
     {
       "img": {
-        "pdf": "461c6578-404b-4362-8dff-afcae81f6141",
-        "page": 20
+        "video": "../2026-10-29/clips/lca3.mp4"
       },
-      "say": "El somni s'havia amagat entre els núvols de sucre de la cuina.",
-      "zoom": [
-        1.05,
-        1.2
-      ]
+      "say": "El somni s'havia amagat entre els núvols de sucre de la cuina."
     },
     {
       "img": {
@@ -64,14 +60,9 @@
     },
     {
       "img": {
-        "pdf": "461c6578-404b-4362-8dff-afcae81f6141",
-        "page": 26
+        "video": "../2026-10-29/clips/lca4.mp4"
       },
-      "say": "El somni va baixar a la seva cinta morada. I aquella nit, la Lucía va dormir molt bé.",
-      "zoom": [
-        1.05,
-        1.2
-      ]
+      "say": "El somni va baixar a la seva cinta morada. I aquella nit, la Lucía va dormir molt bé."
     }
   ]
 }

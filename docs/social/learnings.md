@@ -104,6 +104,24 @@ Never upload both variants to Instagram on the same day (duplicate uploads on 4 
 | 5 | World | space, castle and magic, dinosaurs, pirates, forest: same format, one world each | | set when built | queued; 10 Oct post asks it in comments |
 | 6 | Voice | narrator (carries the AI label) | music and captions only, no label | set when built | queued; also tests the Instagram drop |
 | 7 | Footage | illustrated pages | a real printed book in real hands | set when built | when a printed copy or a creator video exists |
+| 8 | People | the narrated story animated from the book (10 control posts) | the same story carried by generated people reading the real book (10 posts, 10-28 to 11-16) | below, "People vs animation" | 10 pairs from 10-28, read ~2026-11-23 |
+
+**People vs animation, from 2026-10-28 (owner, 2026-10-24: posts with people perform better).** Half of the queued
+narrated stories were rebuilt with realistic generated people carrying the video; the other half stay animated as
+the control. Only the visuals change: same strategy, script, cached ElevenLabs narration (María Díaz) and length.
+People versions: a parent, grandparent or godparent reading the real example book at bedtime, the gift unwrapped,
+hands on the real cover and pages; children from behind or as hands; first beat (the hook) and last beat are people,
+4 of 8-10 beats in all, the rest are the book's own animated scenes. Start photos with `fal-ai/flux-2/edit` from
+the real cover or spread, animated with Higgsfield (25 new clips plus the paid reveal and teddy clips). AI label on;
+captions say "Escena recreada"; `"people": true`. Language stays as queued (three Catalan posts), so that is not a
+second variable within a pair.
+Pairs (people ↔ animated twin of the same strategy): 10-28 ↔ 11-08 (contrarian-opinion), 10-29 ↔ 11-11
+(gift-dedication-open), 10-30 ↔ 11-09 (seasonal-moment), 11-01 ↔ 11-05 (open-loop-question), 11-02 ↔ 11-07
+(story-with-stakes), 11-04 ↔ 11-13 (story-calm-open), 11-06 ↔ 11-05 (search-led-story, nearest twin), 11-12 ↔ 11-03
+(companion-pov), 11-14 ↔ 11-09 (seasonal-deadline ↔ seasonal-moment), 11-16 ↔ 10-26 (open-loop-question).
+Decision rule (set before publishing): people win if, across the pairs, TikTok average watch time is at least 15 %
+higher and Facebook "still watching at 3 s" is not lower in at least 6 of the 10 pairs; a smaller or mixed gap is a
+tie. Read out on about 2026-11-23, when the last pair has 48 h of data (`learn.mjs`, cut "people").
 
 **Lifestyle photos test, 2026-10-07 (owner's idea: people enjoying the book, as a clothing brand would shoot it).**
 Draft in `docs/social/tests/2026-10-07-lifestyle/`, not scheduled. Four photos generated with `fal-ai/flux-2/edit`

@@ -8,15 +8,15 @@
   "beats": [
     {
       "img": {
-        "video": "../2026-10-05/clips/p20.mp4"
+        "video": "clips/noa1.mp4"
       },
       "say": "¿Qué abre una llave de flor? Noa está a punto de descubrirlo.",
-      "title": "¿Qué abre una<br><em>llave de flor?</em>"
+      "title": "¿Qué abre una<br><em>llave de flor?</em>",
+      "titleTop": 240
     },
     {
       "img": {
-        "video": "../2026-10-05/clips/amb-bc6e2dbd-p4-day-in-5.78.mp4",
-        "fit": true
+        "video": "clips/noa3.mp4"
       },
       "say": "Noa juega en casa con su cubo amarillo. Toc, toc, cae una pieza."
     },
@@ -43,8 +43,7 @@
     },
     {
       "img": {
-        "video": "../2026-10-05/clips/amb-bc6e2dbd-p12-forest-in-4.42.mp4",
-        "fit": true
+        "video": "../../tests/week-2026-10-12/fri-teddy/clips/c2.mp4"
       },
       "say": "Solo me abre la llave de flor, susurra el cofre."
     },
@@ -70,7 +69,7 @@
     },
     {
       "img": {
-        "video": "../2026-10-05/clips/p26.mp4"
+        "video": "../../tests/week-2026-10-12/fri-teddy/clips/c4.mp4"
       },
       "say": "Pasito, pasito, el mundo suena bonito."
     }
