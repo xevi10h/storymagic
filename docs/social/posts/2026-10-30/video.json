@@ -8,14 +8,15 @@
   "beats": [
     {
       "img": {
-        "video": "../2026-10-09/clips/p12.mp4"
+        "video": "clips/mar1.mp4"
       },
       "say": "Para la carta de los Reyes: un cuento donde el protagonista es él. Escucha el de Martín.",
-      "title": "Para la carta<br><em>de los Reyes</em>"
+      "title": "Para la carta<br><em>de los Reyes</em>",
+      "titleTop": 240
     },
     {
       "img": {
-        "video": "../2026-10-09/clips/p04.mp4"
+        "video": "clips/mar2.mp4"
       },
       "say": "Martín guardaba tesoros pequeños en un frasco de cristal con tapa roja."
     },
@@ -56,8 +57,7 @@
     },
     {
       "img": {
-        "video": "../2026-10-09/clips/amb-31ada3cf-p22-night-in-8.75.mp4",
-        "fit": true
+        "video": "clips/mar3.mp4"
       },
       "say": "Entonces Martín abrió su frasco, solo un hilo."
     },
@@ -70,8 +70,7 @@
     },
     {
       "img": {
-        "video": "../2026-10-09/clips/amb-31ada3cf-p26-night-in-4.48.mp4",
-        "fit": true
+        "video": "clips/mar4.mp4"
       },
       "say": "Y en la primera página del libro, sus abuelos: ojalá nunca dejes de mirar hacia arriba."
     }

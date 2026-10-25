@@ -69,7 +69,8 @@ export async function meapicaAccounts() {
   if (acc.status !== 200) throw new Error(`accounts: HTTP ${acc.status}`);
   const pick = (platform, match) => acc.json.accounts.find((a) => a.platform === platform && match(a));
   const accounts = {
-    instagram: pick("instagram", (a) => a.username === "meapica_books"),
+    // Matched by id: the handle changed from meapica_books to meapica_libros (seen 2026-10-25) on the same account.
+    instagram: pick("instagram", (a) => a._id === "6abfe1bdc7046a05c69e8b42"),
     tiktok: pick("tiktok", (a) => a.username === "meapica_books"),
     facebook: pick("facebook", (a) => a.displayName === "Meapica"),
     youtube: pick("youtube", (a) => a.username === "meapica"),

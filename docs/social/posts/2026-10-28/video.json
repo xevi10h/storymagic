@@ -8,15 +8,15 @@
   "beats": [
     {
       "img": {
-        "video": "../../tests/2026-10-11-ca-story/clips/p04.mp4"
+        "video": "clips/leo1.mp4"
       },
       "say": "No le regales otro dinosaurio de juguete. Leo ya tiene uno. Lo que quería era conocer uno de verdad.",
-      "title": "No le regales otro<br><em>dinosaurio de juguete</em>"
+      "title": "No le regales otro<br><em>dinosaurio de juguete</em>",
+      "titleTop": 240
     },
     {
       "img": {
-        "video": "../2026-10-06/clips/amb-fd5512f6-p4-day-in-3.55.mp4",
-        "fit": true
+        "video": "clips/leo2.mp4"
       },
       "say": "Así que una noche lo pidió bajito, junto a la cama."
     },
@@ -57,7 +57,7 @@
     },
     {
       "img": {
-        "video": "../2026-10-06/clips/p20.mp4"
+        "video": "../../tests/2026-10-07-reveal/clips/c3.mp4"
       },
       "say": "Pero Leo no corrió. Juntó las manos y llamó: ¡uoooo!"
     },
@@ -69,8 +69,7 @@
     },
     {
       "img": {
-        "video": "../../tests/2026-10-11-ca-story/clips/amb-fd5512f6-p26-night-in-5.62.mp4",
-        "fit": true
+        "video": "../../tests/2026-10-07-reveal/clips/c4.mp4"
       },
       "say": "Leo volvió a casa y abrazó su dinosaurio naranja."
     }

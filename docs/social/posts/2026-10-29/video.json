@@ -8,7 +8,7 @@
   "beats": [
     {
       "img": {
-        "video": "../2026-10-08/clips/p04.mp4"
+        "video": "clips/lca1.mp4"
       },
       "say": "Per a la Lucía, que converteix qualsevol tarda en una aventura. Ho signa el seu padrí, en Jordi. I l'aventura comença així.",
       "title": "El seu padrí va escriure<br><em>això a la primera pàgina</em>",
@@ -16,8 +16,7 @@
     },
     {
       "img": {
-        "video": "../2026-10-08/clips/amb-461c6578-p6-night-in-5.05.mp4",
-        "fit": true
+        "video": "clips/lca2.mp4"
       },
       "say": "Una tarda, la cinta morada del seu llibre es va moure sola i va assenyalar la paret."
     },
@@ -54,14 +53,9 @@
     },
     {
       "img": {
-        "pdf": "461c6578-404b-4362-8dff-afcae81f6141",
-        "page": 20
+        "video": "clips/lca3.mp4"
       },
-      "say": "El somni s'amagava entre núvols de sucre. Els somnis no es cacen, va xiuxiuejar la Lucía. Es conviden.",
-      "zoom": [
-        1.2,
-        1.05
-      ]
+      "say": "El somni s'amagava entre núvols de sucre. Els somnis no es cacen, va xiuxiuejar la Lucía. Es conviden."
     },
     {
       "img": {
@@ -76,14 +70,9 @@
     },
     {
       "img": {
-        "pdf": "461c6578-404b-4362-8dff-afcae81f6141",
-        "page": 26
+        "video": "clips/lca4.mp4"
       },
-      "say": "El somni va baixar i es va posar a la seva cinta morada. En Chispa ja tenia el seu regal.",
-      "zoom": [
-        1.2,
-        1.05
-      ]
+      "say": "El somni va baixar i es va posar a la seva cinta morada. En Chispa ja tenia el seu regal."
     }
   ]
 }
