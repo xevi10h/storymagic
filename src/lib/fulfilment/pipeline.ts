@@ -58,6 +58,7 @@ import {
   isFinalStage,
   isOrderForActiveStripeMode,
   isUsableStoredImage,
+  splitAddressLines,
   validateSourceImages,
   type SceneRow,
 } from "./logic";
@@ -661,12 +662,14 @@ function buildShippingAddress(order: OrderRow) {
   const addr = order.shipping_address as {
     line1?: string; line2?: string; city?: string; state?: string; postal_code?: string; country?: string; phone?: string;
   };
+  const lines = splitAddressLines(addr.line1, addr.line2);
+  // A local 4xx = "rejected, nothing created": the caller alerts the operator at once instead of retrying.
+  if (!lines) throw new GelatoApiError(422, "local:shippingAddress", `address does not fit two Gelato lines: "${addr.line1 ?? ""}" / "${addr.line2 ?? ""}"`);
   const [firstName, ...rest] = (order.shipping_name ?? "").split(" ");
   return {
     firstName: firstName ?? "",
     lastName: rest.join(" "),
-    addressLine1: addr.line1 ?? "",
-    addressLine2: addr.line2 || undefined,
+    ...lines,
     city: addr.city ?? "",
     state: addr.state || undefined,
     postCode: addr.postal_code ?? "",

@@ -18,6 +18,7 @@ import {
   isUsableStoredImage,
   pickTracking,
   selectScenesToRender,
+  splitAddressLines,
   validateSourceImages,
 } from "./logic.ts";
 import { classifyProviderError } from "./provider-errors.ts";
@@ -222,3 +223,19 @@ console.log("purchase eligibility ✓");
   assert.equal(confirmationRetryDue({ ...base, created_at: "garbage" }, at(30)), false);
 }
 console.log("confirmation retry ✓");
+
+// Gelato caps each address line at 35 chars (order f5f4ee73 failed on 2026-10-25).
+{
+  const long = splitAddressLines("C/Mossén Jacint Verdaguer 164-166 Baixos 1 Esc. Esquerra", "");
+  assert.deepEqual(long, { addressLine1: "C/Mossén Jacint Verdaguer 164-166", addressLine2: "Baixos 1 Esc. Esquerra" });
+  assert.deepEqual(splitAddressLines("Miguel Yuste, 17, 3 Planta", ""), { addressLine1: "Miguel Yuste, 17, 3 Planta" }, "short line untouched, empty line2 dropped");
+  assert.deepEqual(splitAddressLines("Carrer Martí Codolar, 43", "1 2"), { addressLine1: "Carrer Martí Codolar, 43", addressLine2: "1 2" }, "both fit: kept as typed");
+  assert.deepEqual(splitAddressLines("Avinguda de la Mare de Déu de Montserrat 123", "Escala B"), { addressLine1: "Avinguda de la Mare de Déu de", addressLine2: "Montserrat 123 Escala B" }, "overflow merges into line2");
+  assert.equal(splitAddressLines("x".repeat(36), ""), null, "an unbreakable 36-char word is not cut");
+  assert.equal(splitAddressLines("Calle " + "Muy Larga ".repeat(8), ""), null, "more than two lines needs a human");
+  assert.deepEqual(splitAddressLines("  Calle   Mayor  1 ", null), { addressLine1: "Calle Mayor 1" }, "whitespace normalised");
+  for (const r of [long, splitAddressLines("Avinguda de la Mare de Déu de Montserrat 123", "Escala B")]) {
+    assert.ok(r.addressLine1.length <= 35 && (r.addressLine2 ?? "").length <= 35);
+  }
+}
+console.log("address lines ✓");

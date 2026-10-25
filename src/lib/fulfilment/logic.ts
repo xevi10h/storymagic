@@ -365,3 +365,35 @@ export function parseGelatoOrderReference(reference: string | null | undefined):
   if (!match) return null;
   return { orderId: match[1].toLowerCase(), reprint: match[2] ? Number(match[2]) : 0 };
 }
+
+// ── Shipping address lines (Gelato) ──────────────────────────────────────────
+
+/** Gelato rejects longer lines ("addressLine1 ... Maximum length is '35'", order f5f4ee73, 2026-10-25). */
+export const GELATO_ADDRESS_LINE_MAX = 35;
+
+/**
+ * Packs the customer's address (Stripe line1 + line2) into Gelato's two 35-char
+ * lines, breaking only between words. Returns null when it cannot fit without
+ * losing text: the caller must stop and alert a human, never truncate.
+ */
+export function splitAddressLines(
+  line1: string | null | undefined,
+  line2: string | null | undefined,
+  max = GELATO_ADDRESS_LINE_MAX,
+): { addressLine1: string; addressLine2?: string } | null {
+  const clean = (s: string | null | undefined) => (s ?? "").replace(/\s+/g, " ").trim();
+  const a = clean(line1);
+  const b = clean(line2);
+  if (a.length <= max && b.length <= max) return { addressLine1: a, ...(b ? { addressLine2: b } : {}) };
+
+  const lines: string[] = [""];
+  for (const word of [a, b].filter(Boolean).join(" ").split(" ")) {
+    if (word.length > max) return null; // ponytail: no mid-word cuts; a 36+ char word goes to a human
+    const current = lines[lines.length - 1];
+    if (!current) lines[lines.length - 1] = word;
+    else if (current.length + 1 + word.length <= max) lines[lines.length - 1] = `${current} ${word}`;
+    else lines.push(word);
+  }
+  if (lines.length > 2) return null;
+  return { addressLine1: lines[0], ...(lines[1] ? { addressLine2: lines[1] } : {}) };
+}
