@@ -325,6 +325,8 @@ Post-purchase fulfilment — resumable (src/lib/fulfilment/pipeline.ts)
   │           ├─→ Upload: {user}/{story}-interior-{orderId}.pdf, -cover-{orderId}.pdf
   │           ├─→ Gelato: claim attempt → search by orderReferenceId (Gelato doesn't dedupe; adopt an
   │           │     existing order) → create (quantity 2 with extra_copy) → record gelato_order_id
+  │           │     (shipping address packed into Gelato's two 35-char lines on word boundaries,
+  │           │     `splitAddressLines`; if it cannot fit, local 4xx → operator alerted, never truncated)
   │           │     (CAS on 'paid'; refunded meanwhile → cancel at Gelato) → 'producing', story 'ordered'
   │           ├─→ Email "in_production" (only from the run that recorded the Gelato id)
   │           └─→ Failure: backoff 5 min → 6 h; operator alert from attempt 3 (or at once on 4xx /
