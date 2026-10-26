@@ -403,10 +403,11 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   account-wide on Instagram and Facebook: commenting or messaging `CUENTO` (ES) or `CONTE` (CA) sends a DM with a tracked button to the
   site and a short public reply. Captions of Instagram and Facebook posts end with the call to comment the keyword. Stats (triggered,
   delivered, link clicks) come back from the same script. Not available on TikTok, YouTube or Pinterest.
-- **Ads:** Meta ad account "Meapica Ads" (`act_2479938985822992`) is connected in Zernio and active, but has **no payment method**
-  (billingStatus `missing`, checked 2026-10-06 and again 2026-10-26; Graph returns no `funding_source`): no campaign can run until the owner adds one in Meta.
-- **First Meta campaign (built PAUSED 2026-10-26, nothing spent):** campaign `mpc_meta_reyes_es_q4-26` (`120252257123880661`),
-  OUTCOME_TRAFFIC, CBO 6 €/day, lowest cost, no end date. Ad set `mpc_meta_reyes_es_q4-26_as_broad-25-55` (`120252257133430661`):
+- **Ads:** Meta ad account "Meapica Ads" (`act_2479938985822992`) is connected in Zernio and active, with a
+  card on file (MasterCard ···· 4880, seen in Billing hub 2026-10-26) and a 300 €/month spending limit. Graph returns no
+  `funding_source` and Zernio says billingStatus `missing` even so: check Billing hub, not those fields.
+- **First Meta campaign (ACTIVE since 2026-10-26, owner's OK):** campaign `mpc_meta_reyes_es_q4-26` (`120252257123880661`),
+  OUTCOME_TRAFFIC, CBO 6 €/day, lowest cost; ad set ends 2026-11-09 23:59 (about 84 € at most). Ad set `mpc_meta_reyes_es_q4-26_as_broad-25-55` (`120252257133430661`):
   LANDING_PAGE_VIEWS, Advantage+ audience (age_min 25 hard, age_range 25-55 suggestion), Spain minus Canarias, Ceuta, Melilla
   (we do not ship there), Spanish locales, Advantage+ placements, DSA beneficiary/payor "Meapica". Ads (LEARN_MORE, IG
   @meapica_libros + FB page, link `/es` with `utm_source=meta&utm_medium=paid&utm_campaign=reyes_q4-26&utm_content=<post date>`).
