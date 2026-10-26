@@ -404,7 +404,19 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   site and a short public reply. Captions of Instagram and Facebook posts end with the call to comment the keyword. Stats (triggered,
   delivered, link clicks) come back from the same script. Not available on TikTok, YouTube or Pinterest.
 - **Ads:** Meta ad account "Meapica Ads" (`act_2479938985822992`) is connected in Zernio and active, but has **no payment method**
-  (billingStatus `missing`, checked 2026-10-06): no campaign can run until the owner adds one in Meta.
+  (billingStatus `missing`, checked 2026-10-06 and again 2026-10-26; Graph returns no `funding_source`): no campaign can run until the owner adds one in Meta.
+- **First Meta campaign (built PAUSED 2026-10-26, nothing spent):** campaign `mpc_meta_reyes_es_q4-26` (`120252257123880661`),
+  OUTCOME_TRAFFIC, CBO 7 €/day, lowest cost, no end date. Ad set `mpc_meta_reyes_es_q4-26_as_broad-25-55` (`120252257133430661`):
+  LANDING_PAGE_VIEWS, Advantage+ audience (age_min 25 hard, age_range 25-55 suggestion), Spain minus Canarias, Ceuta, Melilla
+  (we do not ship there), Spanish locales, Advantage+ placements, DSA beneficiary/payor "Meapica". Ads (LEARN_MORE, IG
+  @meapica_libros + FB page, link `/es` with `utm_source=meta&utm_medium=paid&utm_campaign=reyes_q4-26&utm_content=<post date>`):
+  `120252257165130661` (video `docs/social/posts/2026-11-14`, Reyes deadline) and `120252257169270661` (`2026-10-28`, "No le
+  regales otro dinosaurio"). Traffic, not Sales: the pixel saw only 11 InitiateCheckout / 24 AddToCart in 28 days, too few to learn on 7 €/day.
+  **Gotcha:** our app "Meapica Ads API" is in development mode, so Graph refuses to create creatives (`object_story_spec` →
+  subcode 1885183). Campaign and ad set were created with Graph v26.0; the two ads through Zernio `POST /v1/ads/create` with
+  `adSetId` + `video: {id}` (Zernio adds `url_tags` `zrn={{ad.id}}` and opts out of every Advantage+ creative enhancement).
+  No API field for AI-content disclosure was found; the copy says "Escena recreada". To go live: add a card, then set campaign,
+  ad set and both ads to ACTIVE (and an end date 14 days out).
 - **TikTok Ads through Zernio (checked 2026-10-08):** the ad account is connected as a `tiktokads` account (Zernio id
   `6abe76003d9fcab2182a1c5a`, advertiser `7691596144782180404`, Business Center `7691596115342442502`, identity "Meapica").
   `GET /v1/ads/accounts?accountId=…` returns status and balances: cash 0, grant 0, no campaigns. Billing info
