@@ -1,4 +1,4 @@
-# Talking-to-camera video request (drafted 2026-10-26, not sent)
+# Talking-to-camera video request (drafted and sent 2026-10-26)
 
 Owner, 2026-10-26: the posts that sell are real people talking to camera about their experience, so we ask the creators
 who already have (or are about to receive) their gifted book for that format, with permission to repost it and use it in ads.
@@ -52,3 +52,17 @@ Hola [Nombre]! Qué ilusión que ya tengáis el cuento 😊 Una idea: los vídeo
 ## Instagram message CA (@totdemare)
 
 Hola [Nom]! Quina il·lusió que ja tingueu el conte 😊 Una idea: els vídeos que funcionen millor són d'algú real parlant a càmera. T'animes a fer-ne un de 30-60 s explicant com el vau rebre i què li va semblar al petit, sense guió? Publicat com a col·laboració amb @meapica_libros (marcat com a publicitat) i amb el teu codi [CODI], com millor funcioni, més comissió t'emportes. I si ens deixes fer-lo servir 12 mesos a xarxes i anuncis, aquestes vendes també compten per a tu. La careta del petit només si ens ho confirmes per aquí; amb mans o d'esquena també val. Et va bé?
+
+## Sent 2026-10-26
+
+Book status checked on Instagram (prod order reads are blocked for the agent): @totdemare already posted a reel with
+the book on 2026-10-22 (collab, "s'ha convertit en el seu llibre preferit"), @lara_mamaestra had given feedback on it.
+@familiabellugueta and @familiacaricu had not posted, so their emails open with "Quan tingueu el conte a casa (o si ja
+us ha arribat)".
+
+- Emails via Resend from hola@meapica.shop, bcc admin@casmar.tech: @familiabellugueta (`BELLUGUETA10`, id
+  01a17783-40c7-7dcd-a138-e368545b8f64), @familiacaricu (`CARICU10`, Instagram or TikTok, id
+  01a17783-417d-7529-8361-ccbec1a654f8).
+- Instagram DMs from @meapica_libros: @lara_mamaestra (ES, `LARA10`), @totdemare (CA, `TOTDEMARE10`, also asks to use
+  her 2026-10-22 reel in ads for 12 months).
+- Pending: @myfamilytime.es and @onanemdema once their books (ordered 2026-10-25) arrive, around 2026-11-15.
