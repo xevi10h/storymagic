@@ -50,6 +50,22 @@ Rules for every concept:
 - 12-18 s: the whole family on the sofa reading it.
 - 18-22 s: "Pídelo antes del [real cut-off from src/lib/shipping]" + end card.
 
+## 7. "Si decides entrar en la cueva…" (parents' gamebook nostalgia, owner idea 2026-10-27)
+Insight: today's parents (30-45) grew up with gamebooks where you chose what happened ("pasa a la página 47"). Our
+creation flow is the same idea (branching story tree, the parent and child pick each fork), and now the hero is the child.
+Honesty: the choosing happens while creating the book; the printed book reads straight through. Never say or show
+that the printed book branches.
+- 0-3 s: 1994, VHS grain, a boy under the blanket with a torch and a worn paperback. A finger on the line
+  "Si decides entrar en la cueva, pasa a la página 47." On-screen: "Si te acuerdas de esto…"
+- 3-8 s: match cut, same hands now adult, dad on the sofa today with his 5-year-old. On-screen: "…ahora te toca a ti con él."
+- 8-16 s: they choose together, the boy shouting the choice ("¡El volcán!"), dad laughing; the phone stays soft-focus,
+  faces carry the shot.
+- 16-22 s: the printed book arrives, the boy finds himself on the cover. On-screen: "Antes elegías tu aventura. Ahora
+  él es el protagonista."
+- 22-25 s: end card.
+- IP: do not name the "Elige tu propia aventura" series nor copy its cover design; a generic worn 90s paperback.
+- A 12-15 s cut-down (shots 1, 2, 5 + end card) for TikTok.
+
 ## Production
 - Start frames: fal flux-2 edit with the actor photos plus the real cover; then image-to-video with audio (lip sync)
   through Higgsfield. Pick the model and quote the cost before generating.
