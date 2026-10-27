@@ -165,6 +165,9 @@ the beat's title. Paid generation for this batch: two Higgsfield clips for Paje 
 3. **Reyes world deployed.** Before 1 Dec: `https://meapica.es/es/create?template=reyes` opens with "Paje Real por
    una Noche" selected.
 4. Set **campaign, both ad sets and both ads to ACTIVE** for each promotion (any time before its window; Pack Reyes
-   right after step 2). The schedule does the rest. `pack-reyes` ACTIVE since 2026-10-27 (ads in Meta review,
-   `IN_PROCESS`); the other four are still PAUSED.
+   right after step 2). The schedule does the rest. `pack-reyes`: ads approved, campaign PAUSED again on
+   2026-10-27 (0 € spent) because the /es banner only shows the pack from 1 Nov; Meta refuses a new `start_time` once
+   an ad set has started, so a one-shot launchd job on the owner's Mac (`~/.local/bin/meapica-pack-reyes-on.sh`,
+   `com.meapica.pack-reyes-on`, 1 Nov 00:05 and 09:00) sets the campaign ACTIVE and removes itself. The other four
+   are still PAUSED.
 5. Day 7 (day 4 for Black Friday and Última llamada): read-out above, move both budgets to the winner, note it here.
