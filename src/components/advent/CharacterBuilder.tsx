@@ -14,7 +14,6 @@ import { Button, ChoiceChip } from "@/components/ui";
 import { AVATAR_EYE_COLORS, AVATAR_HAIR_COLORS, AVATAR_SKIN_TONES, AVATAR_BASE_EYE_COLOR, ageBandFor, avatarBaseKey, isAvatarRendered } from "@/lib/avatar/manifest";
 import { formatChildName } from "@/lib/child-name";
 import { ensureGuestSession } from "@/lib/guest-session";
-import { isCaptchaError } from "@/lib/captcha/turnstile";
 import type { AdventLocale } from "@/lib/advent/render";
 
 const AGES = Array.from({ length: 11 }, (_, i) => i + 2); // 2–12, as on /create
@@ -35,7 +34,6 @@ export default function CharacterBuilder({
   onSaved: () => Promise<void> | void;
 }) {
   const t = useTranslations("advent.builder");
-  const tAuth = useTranslations("auth");
   const [name, setName] = useState(initialName);
   const [age, setAge] = useState<number | null>(null);
   const [avatar, setAvatar] = useState<ToolAvatarState>(DEFAULT_TOOL_AVATAR);
@@ -52,7 +50,7 @@ export default function CharacterBuilder({
     setError(null);
     setSaving(true);
     try {
-      await ensureGuestSession({ prompt: tAuth("captcha.prompt"), cancel: tAuth("captcha.cancel"), locale });
+      await ensureGuestSession(locale);
       const base = displayTraits(look);
       const res = await fetch("/api/characters", {
         method: "POST",
@@ -73,7 +71,8 @@ export default function CharacterBuilder({
       if (!res.ok) throw new Error(`characters ${res.status}`);
       await onSaved();
     } catch (err) {
-      setError(isCaptchaError(err) ? t("captchaFailed") : t("error"));
+      console.warn("[advent] saving the character failed:", err);
+      setError(t("error"));
     } finally {
       setSaving(false);
     }

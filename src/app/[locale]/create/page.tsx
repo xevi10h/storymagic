@@ -29,7 +29,6 @@ import {
 import { usePersistedState, STORAGE_KEY } from "@/hooks/usePersistedState";
 import { ensureGuestSession } from "@/lib/guest-session";
 import { getFirstTouch } from "@/lib/tracking/attribution";
-import { isCaptchaError } from "@/lib/captcha/turnstile";
 import CreationHeader from "@/components/create/CreationHeader";
 import StepName from "@/components/create/StepName";
 import { formatChildName } from "@/lib/child-name";
@@ -55,7 +54,6 @@ export default function CrearPage() {
 
 function CrearPageContent() {
   const t = useTranslations("crear");
-  const tAuth = useTranslations("auth");
   const locale = useLocale();
   const router = useRouter();
   const [state, setState, , hydrated] = usePersistedState<CreateBookState>(
@@ -273,7 +271,7 @@ function CrearPageContent() {
       prepInFlight.current = snapshot;
       void (async () => {
         try {
-          await ensureGuestSession({ prompt: tAuth("captcha.prompt"), cancel: tAuth("captcha.cancel"), locale });
+          await ensureGuestSession(locale);
           const res = await fetch("/api/characters/prepare", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -304,7 +302,7 @@ function CrearPageContent() {
         }
       })();
     },
-    [setState, t, tAuth, locale],
+    [setState, t, locale],
   );
 
   const handleProtagonistNext = useCallback(() => {
@@ -327,7 +325,7 @@ function CrearPageContent() {
     setError(null);
     setCreateFailed(false);
     try {
-      await ensureGuestSession({ prompt: tAuth("captcha.prompt"), cancel: tAuth("captcha.cancel"), locale });
+      await ensureGuestSession(locale);
       const name = state.character.name.trim();
       // Pre-filled, editable on the next screen; addressed to the first name only.
       const dedication = state.dedication.trim() ? state.dedication : t("dedication.default", { name: firstName(name) });
@@ -373,11 +371,11 @@ function CrearPageContent() {
         setSaving(false);
         return;
       }
-      setError(isCaptchaError(err) ? t("errors.captchaFailed") : t("errors.saveFailed"));
+      setError(t("errors.saveFailed"));
       setCreateFailed(true);
       setSaving(false);
     }
-  }, [saving, state, locale, router, setState, t, tAuth]);
+  }, [saving, state, locale, router, setState, t]);
 
   // ── Render ────────────────────────────────────────────────────────────────
 

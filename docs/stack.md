@@ -191,6 +191,21 @@ inlined at build → redeploy after changing; unset = no captcha). The Turnstile
 `signInAnonymously` and `signInWithOtp` (the only calls Supabase checks). `DAILY_PREVIEW_CAP` (default 300,
 0 = off): global per-UTC-day ceiling on new AI previews; ops alert at 80 % and 100 % via `OPS_ALERT_EMAIL`.
 
+**Create flow = invisible captcha + limit (2026-10-27, after 0 of ~55 Meta ad visitors passed the step-3 modal):**
+the guest sign-up never shows a captcha. `getBackgroundCaptchaToken()` renders Turnstile off-screen
+(`appearance: interaction-only`, 10 s timeout) and gives up as soon as Cloudflare wants an interaction
+(`before-interactive-callback`). Token accepted by Supabase → normal ("verified") guest. No token / refused token →
+`POST /api/auth/guest-session`: anonymous sign-up with the service role (GoTrue skips CAPTCHA for admin tokens,
+`verifyCaptcha` → `requireAdminCredentials`), user flagged `app_metadata.guest_captcha = "unverified"`
+(`src/lib/unverified-guest.ts`). Unverified guests get per-IP rolling-24 h caps in `rate_limits`
+(subject `rateLimitSubject("unverified:<ip>")`, no migration): 10 guest sessions, 3 character prepares, 3 AI portraits,
+**1 preview** (`/api/stories/[id]/generate`, refused → story back to draft + the "vuelve mañana" daily-cap screen).
+Verified guests and accounts keep the per-user limits. Every decision logs `[unverified] <action> allowed|refused ip=<hash8>`
+in Vercel (measure the share of unverified visitors there). Supabase's own "anonymous sign-ins per hour per IP" limit
+sees Vercel's IP for the fallback (shared): keep it high (Auth → Rate Limits). Email login (`getCaptchaToken`) is unchanged
+(overlay only if Cloudflare asks). Recommended: a dedicated **Invisible** Turnstile widget for Meapica (the current one is
+Managed and shared with Constrack); the code works with either.
+
 **Env (Vercel prod):** `ADMIN_EMAILS` (comma-separated; empty = nobody gets into `/admin`).
 `CRON_SECRET` also guards `/api/cron/purge-guests` (vercel.json, daily 03:40 UTC) and `/api/cron/upsell-reminders` (daily 08:00 UTC, `?dry_run=1`). Unsubscribe tokens are HMAC-signed with a key derived from `SUPABASE_SERVICE_ROLE_KEY`; commercial emails send `List-Unsubscribe` + `List-Unsubscribe-Post` via Resend headers. Guest-merge cookie
 key is derived from `SUPABASE_SERVICE_ROLE_KEY` (no new var).

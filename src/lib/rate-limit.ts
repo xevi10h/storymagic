@@ -36,6 +36,13 @@ const LIMITS: Record<string, RateLimitConfig> = {
   tool_pdf: { maxRequests: 40, windowSeconds: 3600 },
   // Gift voucher Checkout Sessions, per hashed IP (subject = rateLimitSubject("voucher:<ip>")).
   gift_voucher_checkout: { maxRequests: 10, windowSeconds: 3600 },
+  // Guests whose Turnstile check did not pass (src/lib/unverified-guest.ts), per hashed IP
+  // (subject = rateLimitSubject("unverified:<ip>")), rolling 24 h. Verified guests and
+  // accounts keep the per-user limits above.
+  unverified_guest_session: { maxRequests: 10, windowSeconds: 86_400 },
+  unverified_prepare: { maxRequests: 3, windowSeconds: 86_400 },
+  unverified_portrait: { maxRequests: 3, windowSeconds: 86_400 },
+  unverified_preview: { maxRequests: 1, windowSeconds: 86_400 },
 };
 
 /**

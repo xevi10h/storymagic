@@ -13,6 +13,7 @@ import { STORY_TEMPLATES } from "@/lib/create-store";
 import { ownedPortraitPath } from "@/lib/storage/illustration-urls";
 import { avatarAssetUrl } from "@/lib/character-look";
 import { DAILY_CAP_ERROR, claimDailyPreviewSlot } from "@/lib/preview-cap-server";
+import { checkUnverifiedCap, isUnverifiedGuest } from "@/lib/unverified-guest";
 
 // Book Plan (35–90 s, streamed) with the sheets, cover and first scenes rendered
 // while it streams; the request ends shortly after the plan does.
@@ -49,7 +50,7 @@ function createProgressWriter(db: FulfilmentClient, storyId: string) {
 }
 
 export async function POST(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ storyId: string }> }
 ) {
   const routeStart = Date.now();
@@ -128,6 +129,16 @@ export async function POST(
   // Global daily ceiling (bots can mint unlimited anonymous users): one slot per
   // preview actually started. Refused → back to draft, nothing is spent.
   if (!isMockGeneration()) {
+    // Guest without a passed Turnstile check: one paid preview per IP per 24 h. Checked
+    // after the claim, so a retry of a refused request never counts twice. Shown with
+    // the daily-cap screen (come back tomorrow, everything typed is kept).
+    if (isUnverifiedGuest(user)) {
+      const unverified = await checkUnverifiedCap(request, "unverified_preview");
+      if (!unverified.allowed) {
+        await db.from("stories").update({ status: "draft" }).eq("id", storyId).eq("user_id", user.id).eq("status", "generating");
+        return NextResponse.json({ error: DAILY_CAP_ERROR }, { status: 503, headers: { "Retry-After": String(unverified.retryAfterSeconds ?? 86_400) } });
+      }
+    }
     const cap = await claimDailyPreviewSlot(db);
     if (!cap.allowed) {
       await db.from("stories").update({ status: "draft" }).eq("id", storyId).eq("user_id", user.id).eq("status", "generating");

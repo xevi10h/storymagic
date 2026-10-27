@@ -21,6 +21,7 @@ import { avatarAssetPathSchema, avatarAssetUrl, characterLookShape } from "@/lib
 import { isMockGeneration } from "@/lib/ai/story-generator";
 import { createFulfilmentClient } from "@/lib/fulfilment/db";
 import { DAILY_CAP_ERROR, isDailyPreviewCapFull } from "@/lib/preview-cap-server";
+import { checkUnverifiedCap, isUnverifiedGuest } from "@/lib/unverified-guest";
 
 // The child sheet (gpt-image-2.5-flare, medium, 1536×1024) takes ~15–25 s and
 // runs in after(), which lives for this route's maxDuration.
@@ -138,6 +139,14 @@ export async function POST(request: Request) {
   const userLimit = await checkRateLimit(user.id, "generate_portrait");
   if (!userLimit.allowed) {
     return NextResponse.json(RATE_LIMITED, { status: 429, headers: { "Retry-After": String(userLimit.retryAfterSeconds ?? 3600) } });
+  }
+  // Guest without a passed Turnstile check: stricter per-IP daily cap (best effort for
+  // the client: without a prep the book pipeline renders the sheet itself, under its own cap).
+  if (isUnverifiedGuest(user)) {
+    const cap = await checkUnverifiedCap(request, "unverified_prepare");
+    if (!cap.allowed) {
+      return NextResponse.json(RATE_LIMITED, { status: 429, headers: { "Retry-After": String(cap.retryAfterSeconds ?? 86_400) } });
+    }
   }
 
   // The photo's bytes are read now (410 when already used/deleted/withdrawn, so the

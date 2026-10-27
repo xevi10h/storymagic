@@ -17,6 +17,10 @@ Code, docs, Resend, Supabase allow-list and GSC property done (see `docs/stack.m
   "Send mail as" `hola@meapica.es`; Stripe live + test webhooks and Resend inbound webhook on `.es`; cana → `sc-domain:meapica.es`.
 - Also done 2026-10-23: Meta domain `meapica.es` verified (DNS TXT); Gelato webhook on `.es` (owner, by hand); `meapica.shop` is a Vercel domain-level 308 → `meapica.es`
   (incl. `/api`) since ~15:00.
+- Captcha in the create flow (2026-10-27, local, not deployed): background-only Turnstile + unverified-guest caps
+  (docs/stack.md › Anti-abuse). Owner, optional: dedicated Invisible Turnstile widget for meapica.es; check Supabase
+  Auth › Rate Limits › anonymous sign-ins per hour (the fallback signs up from Vercel's IP). After deploy: read the
+  `[unverified]` log lines and tune the caps.
 - Still open:
   - Owner, in the Instagram app: @meapica_books website `meapica.shop/es` → `meapica.es/es`. TikTok bio link: owner (headless blocked).
     (Facebook page website and Merchant Center contact moved to `.es` on 2026-10-23.)

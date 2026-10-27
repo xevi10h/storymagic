@@ -14,6 +14,7 @@ import { isOwnedPhotoPath, isPhotoUploadEnabled, isValidPhotoPath } from "@/lib/
 import { PhotoUnavailableError, deleteChildPhoto, loadChildPhoto } from "@/lib/privacy/child-photo";
 import { createFulfilmentClient } from "@/lib/fulfilment/db";
 import { DAILY_CAP_ERROR, isDailyPreviewCapFull } from "@/lib/preview-cap-server";
+import { checkUnverifiedCap, isUnverifiedGuest } from "@/lib/unverified-guest";
 
 // OpenAI portrait (gpt-image-2.5-flare, medium) takes ~15–25 s.
 export const maxDuration = 60;
@@ -155,6 +156,16 @@ export async function POST(request: Request) {
     // Global daily preview cap full: no paid portrait either (the photo is kept for a retry).
     if (await isDailyPreviewCapFull(createFulfilmentClient())) {
       return NextResponse.json({ error: DAILY_CAP_ERROR }, { status: 503 });
+    }
+    // Guest without a passed Turnstile check: stricter per-IP daily cap.
+    if (isUnverifiedGuest(user)) {
+      const cap = await checkUnverifiedCap(request, "unverified_portrait");
+      if (!cap.allowed) {
+        return NextResponse.json(RATE_LIMITED_RESPONSE, {
+          status: 429,
+          headers: { "Retry-After": String(cap.retryAfterSeconds ?? 86_400) },
+        });
+      }
     }
 
     const photo = photoPath ? await loadChildPhoto(photoPath, user.id) : null;

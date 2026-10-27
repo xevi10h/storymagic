@@ -8,9 +8,12 @@
 // isIgnoreCaptchaRoute), so only signInAnonymously and signInWithOtp need one here.
 //
 // Tokens are single use and expire after 300 s, so every call renders a fresh
-// widget, resolves with its token and removes it. Appearance "interaction-only":
-// nothing is shown unless Cloudflare asks the visitor to interact; only then the
-// overlay becomes visible (with a cancel button).
+// widget, resolves with its token and removes it. Two entry points:
+// - getBackgroundCaptchaToken (create flow, guest sign-up): never shows anything;
+//   no silent token → undefined, and the guest gets the limited session instead
+//   (src/lib/guest-session.ts, POST /api/auth/guest-session).
+// - getCaptchaToken (email login): appearance "interaction-only", the overlay (with a
+//   cancel button) appears only when Cloudflare asks the visitor to interact.
 //
 // No NEXT_PUBLIC_TURNSTILE_SITE_KEY → no captcha (undefined token): local dev and
 // deployments where Supabase CAPTCHA is still off keep working unchanged.
@@ -174,6 +177,81 @@ function createOverlay(labels: CaptchaLabels | undefined, onCancel: () => void) 
       overlay.remove();
     },
   };
+}
+
+/** Background checks give up quickly: the visitor is already on the next screen. */
+const BACKGROUND_TIMEOUT_MS = 10_000;
+
+/**
+ * A fresh token obtained without ever showing anything, or `undefined` when captcha
+ * is not configured or the check cannot pass silently (blocked script, failure,
+ * unsupported browser, timeout, or Cloudflare asking for an interaction). Never
+ * rejects: the caller falls back to the limited guest path (src/lib/guest-session.ts).
+ * Works with a Managed widget ("interaction-only": an interactive challenge is
+ * abandoned before it becomes visible) and with an Invisible widget.
+ */
+export async function getBackgroundCaptchaToken(locale?: string): Promise<string | undefined> {
+  const sitekey = siteKey();
+  if (!sitekey) return undefined;
+  let turnstile: TurnstileApi;
+  try {
+    turnstile = await loadTurnstile();
+  } catch {
+    return undefined;
+  }
+
+  return new Promise<string | undefined>((resolve) => {
+    let widgetId: string | null | undefined = null;
+    let settled = false;
+    // Out of view and inert: the widget runs here but is never seen or focusable.
+    const host = document.createElement("div");
+    host.setAttribute("aria-hidden", "true");
+    host.dataset.testid = "captcha-background";
+    host.style.cssText = "position:fixed;left:-10000px;top:0;width:300px;height:65px;overflow:hidden;opacity:0;pointer-events:none;";
+    document.body.appendChild(host);
+
+    const settle = (token: string | undefined, reason?: string) => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timer);
+      if (reason) console.info(`[captcha] background check without token: ${reason}`);
+      window.setTimeout(() => {
+        if (widgetId) {
+          try {
+            turnstile.remove(widgetId);
+          } catch {
+            // already gone
+          }
+        }
+        host.remove();
+      }, 0);
+      resolve(token);
+    };
+    const timer = window.setTimeout(() => settle(undefined, "timeout"), BACKGROUND_TIMEOUT_MS);
+
+    try {
+      widgetId = turnstile.render(host, {
+        sitekey,
+        callback: (token) => settle(token),
+        "error-callback": (code) => {
+          settle(undefined, `error ${code}`);
+          return true; // handled: no uncaught Turnstile error in the console
+        },
+        "timeout-callback": () => settle(undefined, "timeout"),
+        "unsupported-callback": () => settle(undefined, "unsupported"),
+        "before-interactive-callback": () => settle(undefined, "interactive"),
+        "after-interactive-callback": () => undefined,
+        appearance: "interaction-only",
+        retry: "never",
+        "refresh-expired": "never",
+        theme: "light",
+        language: widgetLanguage(locale),
+      });
+      if (!widgetId) settle(undefined, "render");
+    } catch {
+      settle(undefined, "render");
+    }
+  });
 }
 
 /**

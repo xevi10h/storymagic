@@ -1,6 +1,8 @@
 import { test, expect, type Page, type Route } from "@playwright/test";
 
 // Turnstile → Supabase Auth captcha_token wiring (login OTP + guest sign-up).
+// Login: overlay when Cloudflare wants an interaction. Create flow: never anything visible;
+// no silent token → POST /api/auth/guest-session (limited guest session) and the flow goes on.
 // Every Supabase Auth and /api call is intercepted: nothing reaches the shared
 // project the local .env points at.
 //
@@ -49,6 +51,7 @@ interface AuthCall {
 
 async function installMocks(page: Page) {
   const auth: AuthCall[] = [];
+  const api: string[] = [];
   await page.route(/\/auth\/v1\//, async (route: Route) => {
     const req = route.request();
     const url = new URL(req.url());
@@ -67,12 +70,17 @@ async function installMocks(page: Page) {
   await page.route(/\/api\//, async (route: Route) => {
     const req = route.request();
     const path = new URL(req.url()).pathname;
+    api.push(path);
+    if (path === "/api/auth/guest-session") {
+      const s = session();
+      return route.fulfill({ json: { access_token: s.access_token, refresh_token: s.refresh_token } });
+    }
     if (path === "/api/auth/guest-merge") return route.fulfill({ json: { ok: true } });
     if (path === "/api/characters/prepare") return route.fulfill({ json: { characterPrepId: "prep-123" } });
     if (path === "/api/stories" && req.method() === "POST") return route.fulfill({ status: 500, json: { error: "mock_stop" } });
     return route.fulfill({ status: 404, json: { error: "unmocked", path } });
   });
-  return auth;
+  return Object.assign(auth, { api });
 }
 
 function trackConsole(page: Page) {
@@ -136,7 +144,7 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
       expect(ownErrors(errors)).toEqual([]);
     });
 
-    test(`guest sign-up carries the captcha token [${MODE} ${vpName}]`, async ({ page }) => {
+    test(`guest sign-up never shows a captcha [${MODE} ${vpName}]`, async ({ page }) => {
       test.setTimeout(120_000);
       const errors = trackConsole(page);
       const auth = await installMocks(page);
@@ -150,37 +158,24 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
       await expect(page.getByTestId("protagonist-portrait")).toBeVisible();
       await page.getByRole("button", { name: /Siguiente/ }).click(); // → background character prep → guest session
 
-      if (MODE === "interactive") {
-        await interactiveCheckbox(page);
-        await page.waitForTimeout(1200);
-        await page.screenshot({ path: `${SHOTS}/create-interactive-${vpName}.png` });
-        // Escape cancels: the overlay goes away, no sign-up without a token
-        await page.keyboard.press("Escape");
-        await expect(page.getByTestId("captcha-overlay")).toHaveCount(0);
-        expect(auth.filter((c) => c.path.endsWith("/signup"))).toHaveLength(0);
-        return;
-      }
-
-      if (MODE === "fail") {
-        // Prep is best effort (silent); creating the book surfaces the failure.
-        await page.getByRole("radio", { name: /Espacial/i }).first().click();
-        for (let ch = 1; ch <= 3; ch++) {
-          const option = page.locator(`section[aria-labelledby="adv-ch-${ch}"] [role=radio]`).first();
-          await option.waitFor({ state: "visible", timeout: 15_000 });
-          await option.click();
-        }
-        await page.getByRole("button", { name: /Crear su libro/ }).click();
-        await expect(page.getByText("No hemos podido comprobar que eres una persona").first()).toBeVisible({ timeout: 20_000 });
-        expect(auth.filter((c) => c.path.endsWith("/signup"))).toHaveLength(0);
-        await page.screenshot({ path: `${SHOTS}/create-fail-${vpName}.png` });
+      // Background check only: nothing is ever shown, whatever Cloudflare answers.
+      await expect.poll(() => auth.api.includes("/api/characters/prepare"), { timeout: 30_000 }).toBe(true);
+      expect(await page.locator('[data-testid="captcha-overlay"][aria-hidden="false"]').count()).toBe(0);
+      const signups = auth.filter((c) => c.path.endsWith("/signup"));
+      if (MODE === "pass") {
+        // Silent token → direct (verified) anonymous sign-up, no fallback.
+        expect((signups[0]?.body?.gotrue_meta_security as { captcha_token?: string } | undefined)?.captcha_token).toBe(DUMMY_TOKEN);
+        expect(auth.api).not.toContain("/api/auth/guest-session");
+      } else if (MODE === "off") {
+        expect((signups[0]?.body?.gotrue_meta_security as { captcha_token?: string } | undefined)?.captcha_token).toBeUndefined();
+        expect(auth.api).not.toContain("/api/auth/guest-session");
       } else {
-        await expect.poll(() => auth.some((c) => c.path.endsWith("/signup")), { timeout: 20_000 }).toBe(true);
-        const signup = auth.find((c) => c.path.endsWith("/signup"))!;
-        const security = signup.body?.gotrue_meta_security as { captcha_token?: string } | undefined;
-        if (MODE === "pass") expect(security?.captcha_token).toBe(DUMMY_TOKEN);
-        else expect(security?.captcha_token).toBeUndefined();
-        await page.screenshot({ path: `${SHOTS}/create-${MODE}-${vpName}.png` });
+        // fail / interactive: no token → limited guest session from the server, the flow goes on.
+        expect(signups).toHaveLength(0);
+        expect(auth.api).toContain("/api/auth/guest-session");
       }
+      await expect(page.getByRole("radio", { name: /Espacial/i }).first()).toBeVisible();
+      await page.screenshot({ path: `${SHOTS}/create-${MODE}-${vpName}.png` });
       await expect(page.getByTestId("captcha-overlay")).toHaveCount(0);
       expect(ownErrors(errors)).toEqual([]);
     });
