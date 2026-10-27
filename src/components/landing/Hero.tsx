@@ -157,7 +157,13 @@ export default function Hero() {
             </div>
           </form>
 
-          <div className="mt-3 flex flex-col items-center gap-1 text-sm lg:items-start">
+          {/* The free preview promise, right under the CTA: the answer to "do I pay blind?". */}
+          <p className="mt-2.5 text-balance text-center text-[13px] font-semibold leading-5 text-ink-soft min-[380px]:text-sm lg:text-left">
+            <Icon name="visibility" className="mr-1.5 align-[-4px] text-brand" />
+            {t("trustPreview")}
+          </p>
+
+          <div className="mt-1 flex flex-col items-center gap-1 text-sm lg:items-start">
             <p className="text-ink-soft">
               <span className="font-bold tabular-nums text-brand-deep">{t("priceFrom", { price: priceFrom })}</span>
               <span> · {tPricing("vatIncluded")}</span>
@@ -176,10 +182,6 @@ export default function Hero() {
           </div>
 
           <ul className="mt-7 flex flex-col items-center gap-2.5 border-t border-line pt-6 text-sm text-ink-soft sm:flex-row sm:flex-wrap sm:justify-center sm:gap-x-6 lg:justify-start">
-            <li className="flex items-center gap-2">
-              <Icon name="check_circle" className="text-brand" />
-              {t("trustPreview")}
-            </li>
             <li className="flex items-center gap-2">
               <Icon name="check_circle" className="text-brand" />
               {t("trustFormats")}

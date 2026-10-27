@@ -718,7 +718,7 @@
     "ctaWithName": "Crear el libro {deName}",
     "priceFrom": "Desde {price}",
     "freeShipping": "Envío gratis",
-    "trustPreview": "Ves las primeras páginas antes de pagar",
+    "trustPreview": "Ves su portada y las primeras páginas antes de pagar",
     "trustFormats": "Tapa dura o blanda, con PDF incluido",
     "sampleCta": "Ver un cuento por dentro",
     "coverAlt": "Portada de un cuento personalizado para niños, pintada en acuarela",
@@ -1211,7 +1211,6 @@
       "templateUnavailable": "Esta edición de temporada ya no se puede pedir y no se ha hecho ningún cargo. Puedes crear un cuento nuevo en cualquiera de los otros mundos."
     },
     "errors": {
-      "captchaFailed": "No hemos podido comprobar que eres una persona. Vuelve a pulsar el botón: todo lo que has escrito sigue aquí.",
       "saveFailed": "No hemos podido guardar tu cuento. Revisa tu conexión y vuelve a pulsar el botón: todo lo que has escrito sigue aquí.",
       "dismiss": "Cerrar",
       "retry": "Reintentar",
@@ -1363,8 +1362,7 @@
         "too_small": "La foto es demasiado pequeña. Sube una en la que se vea bien su cara.",
         "photo_unavailable": "La foto ya se ha borrado. Súbela de nuevo si quieres usarla.",
         "rate_limited": "Has subido muchas fotos seguidas. Espera un rato y vuelve a probar.",
-        "upload_failed": "No hemos podido subir la foto. Vuelve a intentarlo.",
-        "captcha_failed": "No hemos podido comprobar que eres una persona. Vuelve a subir la foto."
+        "upload_failed": "No hemos podido subir la foto. Vuelve a intentarlo."
       }
     },
     "purchase": {
@@ -2983,7 +2981,7 @@
   },
   "cookieConsent": {
     "title": "Cookies",
-    "text": "Usamos cookies propias y de terceros para analizar el uso de la web y medir y mostrarte anuncios según tu navegación.",
+    "text": "Cookies propias y de terceros para análisis y anuncios.",
     "policy": "Más información",
     "accept": "Aceptar",
     "reject": "Rechazar",
@@ -3518,7 +3516,6 @@
       "cancel": "Cancelar",
       "nameError": "Escribe su nombre.",
       "error": "No hemos podido guardar su personaje. Vuelve a probar en un momento.",
-      "captchaFailed": "No hemos podido comprobar que eres una persona. Vuelve a pulsar el botón.",
       "ageError": "Elige su edad."
     },
     "signup": {

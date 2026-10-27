@@ -678,7 +678,7 @@
     "ctaWithName": "Créer le livre {deName}",
     "priceFrom": "À partir de {price}",
     "freeShipping": "Livraison offerte",
-    "trustPreview": "Vous voyez les premières pages avant de payer",
+    "trustPreview": "Vous voyez sa couverture et les premières pages avant de payer",
     "trustFormats": "Couverture rigide ou souple, PDF inclus",
     "sampleCta": "Feuilleter un exemple",
     "coverAlt": "Couverture à l'aquarelle d'un livre personnalisé pour enfant",
@@ -1171,7 +1171,6 @@
       "templateUnavailable": "Cette édition de saison ne peut plus être commandée et aucun paiement n'a été effectué. Vous pouvez créer un nouveau livre dans n'importe quel autre univers."
     },
     "errors": {
-      "captchaFailed": "Nous n'avons pas pu vérifier que vous êtes une personne. Appuyez à nouveau sur le bouton : tout ce que vous avez écrit est conservé.",
       "saveFailed": "Nous n'avons pas pu enregistrer votre livre. Vérifiez votre connexion et appuyez à nouveau sur le bouton : tout ce que vous avez saisi est toujours là.",
       "dismiss": "Fermer",
       "retry": "Réessayer",
@@ -1323,8 +1322,7 @@
         "too_small": "La photo est trop petite. Téléchargez-en une où son visage est bien visible.",
         "photo_unavailable": "La photo a déjà été supprimée. Téléchargez-la à nouveau si vous souhaitez l'utiliser.",
         "rate_limited": "Vous avez téléchargé beaucoup de photos d'affilée. Patientez un peu et réessayez.",
-        "upload_failed": "Nous n'avons pas pu télécharger la photo. Veuillez réessayer.",
-        "captcha_failed": "Nous n'avons pas pu vérifier que vous êtes une personne. Envoyez à nouveau la photo."
+        "upload_failed": "Nous n'avons pas pu télécharger la photo. Veuillez réessayer."
       }
     },
     "purchase": {
@@ -2943,7 +2941,7 @@
   },
   "cookieConsent": {
     "title": "Cookies",
-    "text": "Nous utilisons des cookies internes et tiers pour analyser l'utilisation du site et mesurer et vous montrer des publicités selon votre navigation.",
+    "text": "Cookies internes et tiers pour l'analyse et la publicité.",
     "policy": "En savoir plus",
     "accept": "Accepter",
     "reject": "Refuser",

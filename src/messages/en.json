@@ -676,7 +676,7 @@
     "ctaWithName": "Create {deName}’s book",
     "priceFrom": "From {price}",
     "freeShipping": "Free shipping",
-    "trustPreview": "See the first pages before you pay",
+    "trustPreview": "See their cover and first pages before you pay",
     "trustFormats": "Hardcover or softcover, PDF included",
     "sampleCta": "Look inside a book",
     "coverAlt": "Watercolour cover of a personalised children's book",
@@ -1169,7 +1169,6 @@
       "templateUnavailable": "This seasonal edition can no longer be ordered, and you have not been charged. You can create a new book in any of the other worlds."
     },
     "errors": {
-      "captchaFailed": "We couldn't confirm you're a person. Press the button again: everything you wrote is still here.",
       "saveFailed": "We couldn't save your book. Check your connection and tap the button again: everything you've entered is still here.",
       "dismiss": "Dismiss",
       "retry": "Try again",
@@ -1321,8 +1320,7 @@
         "too_small": "The photo is too small. Upload one where their face is clearly visible.",
         "photo_unavailable": "The photo has already been deleted. Upload it again if you want to use it.",
         "rate_limited": "You've uploaded a lot of photos in a row. Wait a while and try again.",
-        "upload_failed": "We couldn't upload the photo. Please try again.",
-        "captcha_failed": "We couldn't confirm you're a person. Please upload the photo again."
+        "upload_failed": "We couldn't upload the photo. Please try again."
       }
     },
     "purchase": {
@@ -2941,7 +2939,7 @@
   },
   "cookieConsent": {
     "title": "Cookies",
-    "text": "We use our own and third-party cookies to analyse how the site is used and to measure and show you ads based on your browsing.",
+    "text": "Our own and third-party cookies for analytics and ads.",
     "policy": "Learn more",
     "accept": "Accept",
     "reject": "Reject",

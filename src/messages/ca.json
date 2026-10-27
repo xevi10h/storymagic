@@ -736,7 +736,7 @@
     "ctaWithName": "Crear el llibre {deName}",
     "priceFrom": "Des de {price}",
     "freeShipping": "Enviament gratuït",
-    "trustPreview": "Veus les primeres pàgines abans de pagar",
+    "trustPreview": "Veus la seva portada i les primeres pàgines abans de pagar",
     "trustFormats": "Tapa dura o tova, amb PDF inclòs",
     "sampleCta": "Veure un conte per dins",
     "coverAlt": "Portada d'un conte personalitzat per a nens, pintada a l'aquarel·la",
@@ -1229,7 +1229,6 @@
       "templateUnavailable": "Aquesta edició de temporada ja no es pot demanar i no s'ha fet cap càrrec. Pots crear un conte nou en qualsevol dels altres mons."
     },
     "errors": {
-      "captchaFailed": "No hem pogut comprovar que ets una persona. Torna a prémer el botó: tot el que has escrit continua aquí.",
       "saveFailed": "No hem pogut desar el conte. Revisa la connexió i torna a prémer el botó: tot el que has escrit continua aquí.",
       "dismiss": "Tancar",
       "retry": "Tornar-ho a provar",
@@ -1381,8 +1380,7 @@
         "too_small": "La foto és massa petita. Puja'n una on es vegi bé la seva cara.",
         "photo_unavailable": "La foto ja s'ha esborrat. Torna-la a pujar si la vols fer servir.",
         "rate_limited": "Has pujat moltes fotos seguides. Espera una estona i torna-ho a provar.",
-        "upload_failed": "No hem pogut pujar la foto. Torna-ho a provar.",
-        "captcha_failed": "No hem pogut comprovar que ets una persona. Torna a pujar la foto."
+        "upload_failed": "No hem pogut pujar la foto. Torna-ho a provar."
       }
     },
     "purchase": {
@@ -3001,7 +2999,7 @@
   },
   "cookieConsent": {
     "title": "Cookies",
-    "text": "Fem servir cookies pròpies i de tercers per analitzar l'ús de la web i mesurar i mostrar-te anuncis segons la teva navegació.",
+    "text": "Cookies pròpies i de tercers per a anàlisi i anuncis.",
     "policy": "Més informació",
     "accept": "Acceptar",
     "reject": "Rebutjar",
@@ -3536,7 +3534,6 @@
       "cancel": "Cancel·lar",
       "nameError": "Escriu el seu nom.",
       "error": "No hem pogut desar el seu personatge. Torna-ho a provar d'aquí a una estona.",
-      "captchaFailed": "No hem pogut comprovar que ets una persona. Torna a prémer el botó.",
       "ageError": "Tria la seva edat."
     },
     "signup": {

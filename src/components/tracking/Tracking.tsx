@@ -158,6 +158,12 @@ export default function Tracking() {
   // Same style, size and row for "Rechazar" and "Aceptar": the AEPD requires rejecting to be
   // as easy as accepting, and forbids nudging towards "accept".
   const choiceClass = buttonClass({ variant: "secondary", size: "sm", className: "min-h-11 flex-1 px-3" });
+  // First layer: both buttons share one fixed width on phones (equal prominence), half the card from lg.
+  const compactChoiceClass = buttonClass({
+    variant: "secondary",
+    size: "sm",
+    className: "min-h-11 w-[5.5rem] whitespace-nowrap px-2 lg:w-auto lg:flex-1 lg:px-3",
+  });
   const purposes: { id: ConsentCategory; title: string; text: string }[] = [
     { id: "analytics", title: t("analyticsTitle"), text: t("analyticsText") },
     { id: "ads", title: t("adsTitle"), text: t("adsText") },
@@ -190,8 +196,8 @@ export default function Tracking() {
           aria-live="polite"
           aria-label={t("title")}
           data-testid="cookie-banner"
-          // Phones: a compact bar flush with the bottom edge (two lines of text + one row of buttons,
-          // about an eighth of the screen), so the page stays usable behind it. The third parties are
+          // Phones: a compact one-row bar flush with the bottom edge (short text + links, then Rechazar and
+          // Aceptar side by side), so the hero CTA and its price line stay visible behind it. The third parties are
           // named in the settings layer and in the cookie policy. From lg: a small card in the corner, lifted
           // above the creation footer where there is one (.cookie-banner in globals.css).
           className="cookie-banner fixed inset-x-0 bottom-0 z-[60] lg:bottom-4 lg:left-4 lg:right-auto lg:w-[26rem]"
@@ -259,30 +265,34 @@ export default function Tracking() {
                 </button>
               </>
             ) : (
-              <>
-                <p className="text-[12.5px] leading-snug text-ink-soft lg:text-[13px]">
+              // Phones: ONE row (short text + links | Rechazar | Aceptar), ~4 rem tall, so the hero
+              // CTA and price line stay visible above it. From lg: text, then the two buttons.
+              <div className="flex items-center gap-2 lg:block">
+                <p className="min-w-0 flex-1 text-[12px] leading-[1.35] text-ink-soft lg:text-[13px] lg:leading-snug">
                   {t("text")}{" "}
                   <Link href="/legal#cookies" className="font-semibold text-brand-text underline underline-offset-2">
                     {t("policy")}
                   </Link>
-                </p>
-                <div className="mt-1.5 flex items-center gap-2 lg:mt-2.5">
+                  <span aria-hidden> · </span>
                   <button
                     type="button"
                     data-testid="cookie-configure"
                     onClick={openSettings}
-                    className="min-h-11 shrink-0 px-1 text-[13px] font-semibold text-ink-soft underline decoration-ink-muted/40 underline-offset-4 hover:text-brand-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+                    // Inline text button; the padding/negative margin give it a ~44 px tap height.
+                    className="-my-3 py-3 font-semibold text-ink-soft underline decoration-ink-muted/40 underline-offset-2 hover:text-brand-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
                   >
                     {t("configure")}
                   </button>
-                  <button type="button" data-testid="cookie-reject" className={choiceClass} onClick={() => choose("denied")}>
+                </p>
+                <div className="flex shrink-0 gap-2 lg:mt-2.5">
+                  <button type="button" data-testid="cookie-reject" className={compactChoiceClass} onClick={() => choose("denied")}>
                     {t("reject")}
                   </button>
-                  <button type="button" data-testid="cookie-accept" className={choiceClass} onClick={() => choose("granted")}>
+                  <button type="button" data-testid="cookie-accept" className={compactChoiceClass} onClick={() => choose("granted")}>
                     {t("accept")}
                   </button>
                 </div>
-              </>
+              </div>
             )}
             </div>
           </div>
