@@ -417,7 +417,8 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   @meapica_libros + FB page, link `/es` with `utm_source=meta&utm_medium=paid&utm_campaign=reyes_q4-26&utm_content=<post date>`).
   Plan (owner 2026-10-26): non-seasonal warm-up now, Reyes from ~15 Nov. Warm-up ads ACTIVE since 2026-10-27 (owner's OK, «Sustituir los de Leo»):
   `120252257290520661` `..._ad_2026-11-01_llave-de-flor` (Noa bedtime video), `120252277927030661` `..._ad_2026-10-27_soy-yo-martin`
-  (Martín and his dad) and `120252277938110661` `..._ad_2026-10-27_la-cueva`, both via Zernio `video.url` + `thumbnailUrl` in
+  (Martín and his dad) and `120252277969570661` `..._ad_2026-10-27_la-cueva-v2` (neutral "tu peque" copy: the video ends
+  with a girl; v1 `120252277938110661` said "tu hijo" and is PAUSED), both via Zernio `video.url` + `thumbnailUrl` in
   `showcase/social/ads/2026-10-27-<slug>(.mp4|-thumb.jpg)`, AI disclosure OPT_IN, `utm_content=2026-10-27-<slug>`.
   PAUSED 2026-10-27 (Leo versions): `120252257279350661` `..._ad_2026-10-28_no-otro-juguete` (dinosaur) and
   `120252275455070661` `..._ad_2026-10-27_soy-yo` (old Leo «¡Soy yo!», `showcase/social/ads/2026-10-27-soy-yo.mp4`). Held back: `120252257165130661`
