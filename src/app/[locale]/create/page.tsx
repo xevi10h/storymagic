@@ -37,9 +37,6 @@ import StepAdventure from "@/components/create/StepAdventure";
 import { BrandLoader } from "@/components/ui/BrandLoader";
 import { Spinner } from "@/components/ui/Spinner";
 import { trackEvent } from "@/lib/tracking/consent";
-import { capturePosthog } from "@/lib/tracking/posthog";
-
-const CREATE_STEP_NAMES = ["name", "protagonist", "adventure"] as const;
 
 /** POST /api/stories answers in < 1 s; past this the connection is considered stalled. */
 const CREATE_TIMEOUT_MS = 30_000;
@@ -187,11 +184,6 @@ function CrearPageContent() {
       return;
     }
     window.scrollTo({ top: 0 });
-  }, [state.currentStep, hydrated]);
-
-  // Funnel step for PostHog (no-op without analytics consent).
-  useEffect(() => {
-    if (hydrated) capturePosthog("create_step", { step: state.currentStep, step_name: CREATE_STEP_NAMES[state.currentStep - 1] });
   }, [state.currentStep, hydrated]);
 
   // ── State updaters ─────────────────────────────────────────────────────────

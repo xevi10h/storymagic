@@ -11,6 +11,7 @@ import { MAX_NAME_LENGTH, deName, firstName } from "@/lib/creation-flow";
 import { formatChildName } from "@/lib/child-name";
 import { createPageHref, setHeroName, useHeroName } from "./HeroNameStore";
 import { LANDING_EXAMPLE } from "./HowItWorksExample";
+import { trackEvent } from "@/lib/tracking/consent";
 
 /** Material Symbols glyph with a fixed box, so the late icon font never shifts the text. */
 function Icon({ name, className = "" }: { name: string; className?: string }) {
@@ -46,6 +47,7 @@ export default function Hero() {
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     // Without JS the form still works: GET /{locale}/create?name=… (same prefill).
     e.preventDefault();
+    trackEvent("cta_click", { placement: "hero" });
     const formatted = formatChildName(name);
     setHeroName(formatted);
     router.push(createPageHref(formatted));

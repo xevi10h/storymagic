@@ -4,6 +4,7 @@
 // Shared by client and server — no server-only imports here.
 
 import { POSTHOG_KEY, capturePosthog } from "./posthog";
+import { trackFunnel } from "./vercel-analytics";
 
 export const CONSENT_COOKIE = "meapica_consent";
 export const UTM_COOKIE = "meapica_utm";
@@ -113,6 +114,8 @@ const GA4_EVENT: Record<string, string> = {
 
 /** Our events that are Meta standard events (fbq "track"); anything else goes through "trackCustom". */
 const META_STANDARD = new Set(["ViewContent", "AddToCart", "Lead", "InitiateCheckout", "Purchase"]);
+/** Funnel-only events (Vercel Web Analytics + PostHog): never sent to the ad pixels. */
+const NOT_FOR_ADS = new Set(["landing_view", "cta_click", "create_step", "photo_uploaded"]);
 
 /** Meta-style params → GA4's (`items`; `transaction_id` = the shared event id, deduped with the server purchase). */
 function toGa4Params(params: Record<string, unknown> = {}, eventId?: string): Record<string, unknown> {
@@ -136,14 +139,17 @@ function toTikTokParams(params: Record<string, unknown> = {}): Record<string, un
 /**
  * Browser event for the Meta and TikTok pixels, GA4 and PostHog. No-op without consent (the
  * pixels aren't loaded). `eventId` must match the server event for deduplication.
+ * Funnel names also go to Vercel Web Analytics, which is cookieless and so consent-independent
+ * (lib/tracking/vercel-analytics.ts).
  */
 export function trackEvent(name: string, params?: Record<string, unknown>, eventId?: string) {
+  trackFunnel(name, params);
   if (!ADS_TRACKING_ENABLED) return;
   const consent = getConsent();
   const analytics = consentAllows(consent, "analytics");
   const ads = consentAllows(consent, "ads");
   if (POSTHOG_KEY && analytics) capturePosthog(name, params);
-  if (META_PIXEL_ID && ads) {
+  if (META_PIXEL_ID && ads && !NOT_FOR_ADS.has(name)) {
     whenLoaded("fbq", (fbq: Fbq) => fbq(META_STANDARD.has(name) ? "track" : "trackCustom", name, params ?? {}, eventId ? { eventID: eventId } : undefined));
   }
   const tiktokEvent = TIKTOK_EVENT[name];

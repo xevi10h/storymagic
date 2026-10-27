@@ -345,7 +345,7 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   analytics + session replay, loaded only after the same cookie consent (`src/lib/tracking/posthog.ts`, started/stopped by
   `Tracking.tsx`). Ingestion through our own proxy `/ingest/*` → `eu.i.posthog.com` / `eu-assets.i.posthog.com` (rewrites in
   `next.config.ts`, `/ingest` excluded from the middleware matcher; `skipTrailingSlashRedirect` is on, so the middleware does
-  the `/x/` → `/x` 308 itself). Events: autocapture, `$pageview` on history change, `create_step` (step 1-3 of `/create`) and
+  the `/x/` → `/x` 308 itself). Events: autocapture, `$pageview` on history change, `create_step` {step 1-6, step_name} (since 2026-10-27 sent by `CreationHeader`, once per step per page load; before, step 1-3 of `/create` on every change) and
   every `trackEvent()` name (ViewContent, AddToCart, InitiateCheckout, Purchase, Lead, ToolDownload, and since 2026-10-03
   `generation_start` {retry} / `preview_ready` {seconds} from `/create/<id>/generate`, also sent to GA4 under the same names and to
   Meta as custom events). Privacy: on
@@ -354,6 +354,26 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   every `ph_*` cookie/storage key deleted. Headless browsers are dropped as bots (test with real Chrome). Project settings:
   replay on, console logs off, network timings off (request URLs carry signed image links), min duration 2 s. Env: `NEXT_PUBLIC_POSTHOG_KEY` (phc_…, build-time; unset = PostHog off).
   Personal API key (phx_, owner's) for the PostHog API is not stored in the repo.
+- **Vercel Web Analytics (2026-10-27, local, not deployed yet):** cookieless page views + funnel events for every visitor,
+  loaded regardless of the cookie choice (`<VercelAnalytics />` in `[locale]/layout.tsx` → `@vercel/analytics/next`, pinned
+  2.0.1). Why no consent: nothing is stored on or read from the device for it (Vercel counts visitors with a hash of the request,
+  discarded after 24 h; its script only writes localStorage `__va_attribution` if `identify()` / `enableCookie` is called, and
+  we call neither; verified headless: no cookie, no storage key from it). Enabled on project kids-book since 2026-02-26
+  (`webAnalytics.enabledAt`), but no events before this change (the package wasn't installed). Privacy (`beforeSend` in
+  `src/lib/tracking/vercel-analytics.ts`, check `npx tsx src/lib/tracking/vercel-analytics.check.mts`): URLs keep only
+  `utm_source` / `utm_campaign` / `utm_content`, story UUIDs → `[id]`, `/r/<code>` → `[code]`, `/preview/<token>` and
+  `/gift-voucher/card/<token>` send nothing. Events (2 properties max on Pro: `source` + one): `landing_view` {page},
+  `cta_click` {placement hero|sticky}, `create_step` {step 1-6}, `photo_uploaded`, `preview_requested` {retry} (= our
+  `generation_start`), `preview_shown` (= `preview_ready`), `checkout_started` {format} (= `InitiateCheckout`). `source` =
+  `meta` when the landing URL has `utm_source=meta` or Zernio's `zrn`, else `other` (`funnelSource()` in `attribution.ts`; JS
+  memory for the page load, no sessionStorage, same LSSI reasoning as the story attribution: a full reload or new tab
+  restarts it). All of it goes through the existing `trackEvent()` (consent.ts), which also forwards to PostHog with consent;
+  the four new names are never sent to the ad pixels. Cost: Pro bills $0.03 per 1K events (page views + custom events), from
+  the Pro monthly usage credit; no included events. UTM panels in the dashboard need Web Analytics Plus ($10/month); not
+  bought: `source` + the kept UTMs in the URL cover the Meta question. Read-out: `node scripts/vercel-funnel.mjs [--days N |
+  --since/--until] [--json]` (meta vs other per step, via `vercel api` /v1/query/web-analytics/events/aggregate, production
+  only) or the dashboard https://vercel.com/xevi10hs-projects/kids-book/analytics › Events. Local dev only logs to the console
+  (debug script, nothing sent); Vercel's script ignores headless browsers (`navigator.webdriver`).
 - **cana:** project key `meapica` in `~/.config/casmar-analytics/sites.json`, GSC site `sc-domain:meapica.es` since 2026-10-23
   (`cana gsc …` / `cana ga4 …` from this repo).
 - **IndexNow:** key file `public/2ecdea1c8139eed8afa1e608880f24f7.txt`; after a deploy run `node scripts/indexnow-ping.mjs`

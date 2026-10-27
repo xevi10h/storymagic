@@ -56,12 +56,32 @@ export function parseAttribution(input: { search: string; pathname: string; refe
   return out;
 }
 
+/** Coarse channel of a landing URL for the cookieless funnel (lib/tracking/vercel-analytics.ts). */
+export type FunnelSource = "meta" | "other";
+
+/**
+ * Pure: "meta" = a paid Meta ad click (our ads carry utm_source=meta; Zernio adds zrn=<ad id>).
+ * Organic Facebook/Instagram posts use utm_source=facebook / instagram_organic and stay "other".
+ */
+export function funnelSource(search: string): FunnelSource {
+  const params = new URLSearchParams(search);
+  return params.get("utm_source")?.trim().toLowerCase() === "meta" || params.has("zrn") ? "meta" : "other";
+}
+
 let firstTouch: Attribution | null = null;
+let firstTouchSource: FunnelSource | null = null;
 
 /** Client: record the first page of this page load (idempotent; later navigations keep it). */
 export function captureFirstTouch() {
   if (firstTouch || typeof window === "undefined") return;
   firstTouch = parseAttribution({ search: location.search, pathname: location.pathname, referrer: document.referrer });
+  firstTouchSource = funnelSource(location.search);
+}
+
+/** Client: the funnel source of this page load (captured on first use; in memory only, like the rest). */
+export function getFirstTouchSource(): FunnelSource {
+  captureFirstTouch();
+  return firstTouchSource ?? "other";
 }
 
 /** Client: what POST /api/stories receives. Null if nothing was captured in this page load. */

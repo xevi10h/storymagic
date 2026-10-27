@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { PHOTO_CONSENT_VERSION, PHOTO_MAX_EDGE, PHOTO_MAX_UPLOAD_BYTES } from "@/lib/creation-flow";
 import { ensureGuestSession } from "@/lib/guest-session";
+import { trackEvent } from "@/lib/tracking/consent";
 import { buttonClass } from "@/components/ui";
 import Sheet from "./Sheet";
 import { Spinner } from "@/components/ui/Spinner";
@@ -138,6 +139,7 @@ export default function PhotoUploadPanel({ name, photoPath, onPhotoChange }: Pho
       }
       setPreviewUrl(URL.createObjectURL(jpeg));
       onPhotoChange(data.photoPath);
+      trackEvent("photo_uploaded");
     } catch (err) {
       console.warn("[create] photo upload failed:", err);
       setError("upload_failed");

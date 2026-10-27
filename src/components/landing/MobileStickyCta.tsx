@@ -6,6 +6,7 @@ import { Link } from "@/i18n/navigation";
 import { buttonClass } from "@/components/ui";
 import { PRICING, formatPrice } from "@/lib/pricing";
 import { createPageHref, useHeroName } from "./HeroNameStore";
+import { trackEvent } from "@/lib/tracking/consent";
 
 /**
  * Bottom "Crear su libro" bar for phones and tablets (< lg). It appears once the
@@ -90,6 +91,7 @@ export default function MobileStickyCta() {
         </p>
         <Link
           href={createPageHref(name)}
+          onClick={() => trackEvent("cta_click", { placement: "sticky" })}
           // 19px bold label (AA on --brand); tight gaps so "Crear el seu llibre" fits at 360px
           className={buttonClass({ className: "h-12 min-w-0 flex-1 gap-1.5! px-4! sm:flex-none sm:px-8!" })}
         >

@@ -15,6 +15,7 @@
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.97.0",
     "@types/qrcode": "^1.5.6",
+    "@vercel/analytics": "2.0.1",
     "botid": "1.5.11",
     "lucide-react": "^0.575.0",
     "marked": "^18.0.4",

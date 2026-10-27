@@ -5,6 +5,7 @@ import { getMessages, getTranslations, setRequestLocale } from "next-intl/server
 import { routing } from "@/i18n/routing";
 import { clientMessages } from "@/i18n/client-messages";
 import Tracking from "@/components/tracking/Tracking";
+import VercelAnalytics from "@/components/tracking/VercelAnalytics";
 import RootDocument from "@/app/_components/RootDocument";
 
 type Props = {
@@ -105,6 +106,7 @@ export default async function LocaleLayout({ children, params }: Props) {
     <RootDocument lang={locale}>
       <NextIntlClientProvider messages={messages}>
         {children}
+        <VercelAnalytics />
         <Tracking />
       </NextIntlClientProvider>
     </RootDocument>

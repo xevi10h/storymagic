@@ -1,10 +1,11 @@
 "use client";
 
-import { useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import BrandLogo from "@/components/BrandLogo";
 import { TOTAL_CREATION_STEPS } from "@/lib/creation-flow";
+import { trackEvent } from "@/lib/tracking/consent";
 
 interface CreationHeaderProps {
   /** 1..6 — omit to hide the progress indicator. */
@@ -19,6 +20,10 @@ interface CreationHeaderProps {
 }
 
 const STEP_KEYS = ["stepName", "stepProtagonist", "stepAdventure", "stepDedication", "stepBook", "stepOrder"] as const;
+/** `create_step` step_name (PostHog), same order as STEP_KEYS. */
+const STEP_NAMES = ["name", "protagonist", "adventure", "dedication", "book", "order"] as const;
+/** Steps already reported in this page load: the funnel counts reaching a step, not going back to it. */
+const reportedSteps = new Set<number>();
 
 /**
  * The single progress indicator for the 6-screen creation flow.
@@ -49,6 +54,14 @@ export default function CreationHeader({
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
+
+  // Funnel step (PostHog with analytics consent, Vercel Web Analytics always: cookieless).
+  // The header is the one place that knows which of the 6 steps is on screen.
+  useEffect(() => {
+    if (!currentStep || reportedSteps.has(currentStep)) return;
+    reportedSteps.add(currentStep);
+    trackEvent("create_step", { step: currentStep, step_name: STEP_NAMES[currentStep - 1] });
+  }, [currentStep]);
 
   const navigable = (step: number) =>
     !!onStepClick && step !== currentStep && (canStepNavigate?.(step) ?? false);

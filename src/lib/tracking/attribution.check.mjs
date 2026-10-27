@@ -1,7 +1,7 @@
 // Runnable check for the first-touch attribution parser (no deps, no test runner):
 //   node --experimental-strip-types src/lib/tracking/attribution.check.mjs
 import assert from "node:assert/strict";
-import { getFirstTouch, parseAttribution } from "./attribution.ts";
+import { funnelSource, getFirstTouch, parseAttribution } from "./attribution.ts";
 
 // UTMs (lower-cased, trimmed, capped), ad-click id name only, referrer host only.
 assert.deepEqual(
@@ -36,6 +36,14 @@ assert.deepEqual(parseAttribution({ search: "?utm_source=%20%20&utm_campaign=", 
 const long = parseAttribution({ search: `?utm_campaign=${"a".repeat(500)}`, pathname: `/${"b".repeat(500)}`, referrer: "" });
 assert.equal(long.utm_campaign.length, 100);
 assert.equal(long.landing_path.length, 200);
+
+// Funnel source: paid Meta = utm_source=meta or Zernio's zrn; organic Facebook/Instagram stays "other".
+assert.equal(funnelSource("?utm_source=meta&utm_medium=paid&utm_campaign=reyes_q4-26"), "meta");
+assert.equal(funnelSource("?utm_source=%20META%20"), "meta");
+assert.equal(funnelSource("?zrn=120252257133430661&fbclid=x"), "meta");
+assert.equal(funnelSource("?utm_source=facebook&utm_medium=organic_social"), "other");
+assert.equal(funnelSource("?fbclid=x"), "other");
+assert.equal(funnelSource(""), "other");
 
 // Server-side (no window): nothing captured.
 assert.equal(getFirstTouch(), null);
