@@ -415,10 +415,12 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   LANDING_PAGE_VIEWS, Advantage+ audience (age_min 25 hard, age_range 25-55 suggestion), Spain minus Canarias, Ceuta, Melilla
   (we do not ship there), Spanish locales, Advantage+ placements, DSA beneficiary/payor "Meapica". Ads (LEARN_MORE, IG
   @meapica_libros + FB page, link `/es` with `utm_source=meta&utm_medium=paid&utm_campaign=reyes_q4-26&utm_content=<post date>`).
-  Plan (owner 2026-10-26): non-seasonal warm-up now, Reyes from ~15 Nov. Warm-up ads: `120252257279350661`
-  `..._ad_2026-10-28_no-otro-juguete` (Leo dinosaur video, copy without Navidad/Reyes) and `120252257290520661`
-  `..._ad_2026-11-01_llave-de-flor` (Noa bedtime video). Added 2026-10-27 (ACTIVE, owner's OK): `120252275455070661`
-  `..._ad_2026-10-27_soy-yo` («¡Soy yo!» Kling video via `video.url` in the `showcase` bucket, AI disclosure OPT_IN; still the Leo version, the local `docs/social/ads/soy-yo/video.mp4` was recast to Martín on 2026-10-27 and is not uploaded). Held back: `120252257165130661`
+  Plan (owner 2026-10-26): non-seasonal warm-up now, Reyes from ~15 Nov. Warm-up ads ACTIVE since 2026-10-27 (owner's OK, «Sustituir los de Leo»):
+  `120252257290520661` `..._ad_2026-11-01_llave-de-flor` (Noa bedtime video), `120252277927030661` `..._ad_2026-10-27_soy-yo-martin`
+  (Martín and his dad) and `120252277938110661` `..._ad_2026-10-27_la-cueva`, both via Zernio `video.url` + `thumbnailUrl` in
+  `showcase/social/ads/2026-10-27-<slug>(.mp4|-thumb.jpg)`, AI disclosure OPT_IN, `utm_content=2026-10-27-<slug>`.
+  PAUSED 2026-10-27 (Leo versions): `120252257279350661` `..._ad_2026-10-28_no-otro-juguete` (dinosaur) and
+  `120252275455070661` `..._ad_2026-10-27_soy-yo` (old Leo «¡Soy yo!», `showcase/social/ads/2026-10-27-soy-yo.mp4`). Held back: `120252257165130661`
   `..._ad_2026-11-14_reyes-deadline_from-11-15` (switch on around 15 Nov). The first seasonal dinosaur ad (`120252257169270661`) was
   deleted (Zernio's ad list may still show it until it resyncs). Traffic, not Sales: the pixel saw only 11 InitiateCheckout / 24 AddToCart in 28 days, too few to learn on this budget.
   **Gotcha:** our app "Meapica Ads API" is in development mode, so Graph refuses to create creatives (`object_story_spec` →
