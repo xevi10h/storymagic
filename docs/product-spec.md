@@ -276,7 +276,7 @@ este cuento en 3 días…" with a link to the privacy policy. The account email 
   and the paywall line as the Black Friday offer; a dismissed banner shows once more that week.
 - Known gap: refunding the earning order does not revoke its code.
 
-## Advent calendar (`/advent`, es + ca only, built 2026-10-27, not deployed)
+## Advent calendar (`/advent`, es + ca only, live since 2026-10-27, commit 982f9e9)
 
 Free, web-only calendar for 1–24 December 2026: one door a day, each a short bedtime mini-story (≈120–190 words) starring
 the child by name, plus a closing bedtime question. Story arc: Bartolo, the Three Kings' youngest camel, is sent ahead to

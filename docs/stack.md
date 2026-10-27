@@ -527,7 +527,7 @@ Order: apply the migration → deploy → run the setup script with the live key
 - **Order matters:** apply the migration BEFORE deploying the code: the new `/api/newsletter` writes
   `reyes_reminder_consent_at`, so without the column every Reyes opt-in would fail with a 500.
 
-## Advent calendar (built 2026-10-27, not deployed)
+## Advent calendar (live since 2026-10-27, commit 982f9e9)
 
 - Cron `/api/cron/advent` (vercel.json `*/15 6-11 * * *` UTC = 07:00–12:45 Madrid in December, `CRON_SECRET`;
   `?dry_run=1`, `?limit=N` default 150 max 400, dev-only `?now=`). Sends only to confirmed rows (`confirmed_at` set) and
