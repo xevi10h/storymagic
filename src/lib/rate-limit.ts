@@ -42,7 +42,7 @@ const LIMITS: Record<string, RateLimitConfig> = {
   unverified_guest_session: { maxRequests: 10, windowSeconds: 86_400 },
   unverified_prepare: { maxRequests: 3, windowSeconds: 86_400 },
   unverified_portrait: { maxRequests: 3, windowSeconds: 86_400 },
-  unverified_preview: { maxRequests: 1, windowSeconds: 86_400 },
+  unverified_preview: { maxRequests: 3, windowSeconds: 86_400 },
 };
 
 /**

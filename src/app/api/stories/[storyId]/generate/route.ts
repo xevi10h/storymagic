@@ -129,7 +129,7 @@ export async function POST(
   // Global daily ceiling (bots can mint unlimited anonymous users): one slot per
   // preview actually started. Refused → back to draft, nothing is spent.
   if (!isMockGeneration()) {
-    // Guest without a passed Turnstile check: one paid preview per IP per 24 h. Checked
+    // Guest without a passed Turnstile check: 3 paid previews per IP per 24 h. Checked
     // after the claim, so a retry of a refused request never counts twice. Shown with
     // the daily-cap screen (come back tomorrow, everything typed is kept).
     if (isUnverifiedGuest(user)) {
