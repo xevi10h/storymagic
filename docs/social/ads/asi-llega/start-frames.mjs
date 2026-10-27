@@ -1,0 +1,12 @@
+// «Así llega a casa» (slate #6, 2026-10-27): the parcel arrives and is opened, all AI-generated (owner: no real footage).
+// Only hands and the book, no faces, no dialogue; the real cover of book 31ada3cf composited, real pages as inserts.
+// Run from this folder: node start-frames.mjs a, then b c (they reuse people/start-a.jpg for the kitchen).
+import { run, REAL } from "../_shared/start-frames.mjs";
+const LOOK = "A frame from a casual vertical phone video filmed from above by the person opening it, a weekday morning in an ordinary Spanish kitchen: a worn wooden table with crumbs, a coffee mug, a child's drawing, keys and a phone charger, grey daylight from a window mixed with the warm under-cabinet light, slight motion blur, phone noise, off-centre framing. Photorealistic, not a commercial, not a product shot. No added text, no logos, no brand names, no watermark.";
+const HANDS = "a mother's hands, ordinary, short unpainted nails, a thin wedding ring, the sleeves of a grey sweatshirt pushed up";
+const COVER = "This exact square hardcover children's picture book from the reference image of the cover. Copy the cover without changing anything: the same painting of the boy with glasses in a red jacket next to a giant rainbow crystal and a small rocket in space, and the same white title, which reads exactly \"Martín\" in large letters with \"y la luz guardada\" in smaller letters below it.";
+await run({
+  a: { refs: ["people/ref-cover.jpg"], prompt: `Top-down phone view of the kitchen table: ${HANDS} pull a strip of brown packing tape off a plain brown cardboard mailer box with no printing, a pair of scissors next to it. ${REAL} ${LOOK}` },
+  b: { refs: ["people/start-a.jpg", "people/ref-cover.jpg"], prompt: `The same kitchen table and the same hands as in the first image, a moment later: the box is open with crumpled white tissue paper, and the hands lift out the book, holding it toward the camera so its front cover fills the lower-middle of the frame, slightly tilted. The book is ${COVER} ${REAL} ${LOOK}` },
+  c: { refs: ["people/start-a.jpg"], prompt: `The same kitchen table and the same hands as in the reference image, a moment later: the large square book lies open on the table, seen from above at an angle, the pages blurred by motion as one hand turns a page; a small child's hand reaches in from the bottom edge, pointing at the page. No readable text or artwork on the pages. ${REAL} ${LOOK}` },
+});

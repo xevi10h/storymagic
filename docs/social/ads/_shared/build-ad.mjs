@@ -1,4 +1,5 @@
 // Shared assembler for the parent-and-child ads (generalised from the «¡Soy yo!» pilot):
+// Before generating any shot and before showing a cut: the least-AI pass in docs/social/ad-concepts-2026-10.md (owner 2026-10-27).
 // 1080×1920, 30 fps, H.264 + AAC. Each ad's build.mjs only describes its shots and captions and calls buildAd().
 // Hard cuts between every shot (a dissolve between two live shots doubled faces in the pilot); only the end card dissolves.
 // Owner 2026-10-27: no AI line inside the video (it goes in the ad copy). Safe zones: text only between 14 % and 65 % of the height.
@@ -87,7 +88,7 @@ function pcm(file, from, to) {
 }
 
 /**
- * cfg = { dir, story (showcase id), music (docs/social/audio file), shots, line: { page, focus, html, t }, captions(t) }
+ * cfg = { dir, story (showcase id), music (docs/social/audio file), shots, line: { page, focus, html, t }, captions(t), sfx? }
  * shot = { src, ss, t, audio?, audioFrom?: {src, ss}, vf? }  a video clip (audio: keep its VOICE; audioFrom: another clip's voice under it, an L-cut)
  *      | { page, mode: "fit"|"crop", px?, focus?, t, zoom?: [z0, z1], vf? }  a real page of the example PDF, slow push-in
  *      | { img, t, zoom?: [z0, z1], y?, vf? }  a still image already 9:16, slow push-in toward height fraction y
@@ -300,7 +301,11 @@ body{font-family:Fredoka,sans-serif;position:relative;font-kerning:none}
   });
   const di = E + 1 + OV.length;
   inputs.push("-i", `${TMP}/stem-dialogue.wav`, "-i", `${TMP}/stem-bed.wav`);
-  g += `;[${di}:a][${di + 1}:a]amix=inputs=2:duration=first:normalize=0,alimiter=limit=0.89[aout]`;
+  // Sound effects: cfg.sfx = [{ shot, at, file, vol }], each placed at `at` s into shot `shot` (ElevenLabs sound effects).
+  const fx = (cfg.sfx ?? []).map((e) => ({ ...e, t: starts[e.shot] + (e.at ?? 0) }));
+  fx.forEach((e) => inputs.push("-i", e.file));
+  fx.forEach((e, k) => { g += `;[${di + 2 + k}:a]aresample=${SR},aformat=channel_layouts=stereo,volume=${e.vol ?? 0.8},adelay=${Math.round(e.t * 1000)}:all=1[fx${k}]`; });
+  g += `;[${di}:a][${di + 1}:a]${fx.map((_, k) => `[fx${k}]`).join("")}amix=inputs=${2 + fx.length}:duration=first:normalize=0,alimiter=limit=0.89[aout]`;
   ff([...inputs, "-filter_complex", g, "-map", `[${last}]`, "-map", "[aout]", "-t", total.toFixed(3), "-r", String(FPS),
     "-c:v", "libx264", "-preset", "slow", "-crf", "20", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-ar", String(SR), "-movflags", "+faststart", `${DIR}/video.mp4`]);
   // Contact sheet: one frame every 2 s.

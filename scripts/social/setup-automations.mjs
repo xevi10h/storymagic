@@ -39,7 +39,8 @@ for (const source of ["instagram", "facebook"]) {
       trigger: "comment",
       keywords: [t.keyword],
       matchMode: "word", // "contains" would fire on "cuentos" inside any sentence
-      typoTolerance: true,
+      // false: with typo tolerance "cuenta" matched CUENTO and the bot answered insults on the ads (2026-10-27). All four paused since.
+      typoTolerance: false,
       // Comments only: matching in private messages sent the canned link to a creator mid-conversation (2026-10-08).
       alsoMatchInDms: false,
       dmMessage: t.dm,
