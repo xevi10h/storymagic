@@ -200,6 +200,10 @@ the only Cloudflare dependency (and 0 of ~55 Meta ad visitors passed the old ste
   headers (curl, headless scripts such as `e2e/_prod-smoke.mjs` or ad screen recordings on prod) is a bot in prod.
   Env (server, optional): `BOTID_MODE=monitor` = log bots but let them through (emergency valve if real visitors get
   403s; redeploy after changing). If `checkBotId()` itself fails, the request is allowed and logged.
+  **Prod: `BOTID_MODE=monitor` since 2026-10-27** (deploy 4da6317, set by the owner, sensitive var). Prod smoke the same
+  day: headless Instagram-UA run logged `[botid] guest_session|prepare|email_otp bot (monitor: allowed)`, all 200.
+  **Review 2026-10-30:** share of `bot` vs `human` lines on real ad traffic → switch to enforce (remove the var + redeploy)
+  only if real visitors read `human`. `NEXT_PUBLIC_TURNSTILE_SITE_KEY` still set in Vercel (unused), remove later.
 - **Guest sessions** only via `POST /api/auth/guest-session` (`src/lib/guest-session.ts`, 20 s deadline): BotID, then
   anonymous sign-up with the service role. **Email sign-in** code/link only via `POST /api/auth/email-otp`
   (`EmailSignIn.tsx`): BotID, 10/h per IP + 5/h per recipient (`email_otp_ip`, `email_otp_recipient`), then Supabase `/otp`
