@@ -6,6 +6,7 @@ import { CHRISTMAS_DELIVERY_PATH } from "@/lib/shipping";
 import { GIFT_VOUCHER_PATH } from "@/lib/promo-codes";
 import { TOOL_IDS, TOOL_LOCALES, TOOLS_CONTENT_UPDATED, TOOLS_HUB_PATH, toolAlternates, toolPath } from "@/lib/tools/registry";
 import { GUIDES, GUIDE_IDS, guideAlternates, guideUpdated } from "@/lib/guides";
+import { ADVENT_CONTENT_UPDATED, ADVENT_LOCALES, ADVENT_PATH, adventAlternates } from "@/lib/advent/calendar";
 import { getShowcaseRefs } from "@/lib/showcase";
 import { showcasePath } from "@/lib/showcase-slug";
 
@@ -82,6 +83,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         alternates: { languages: toolAlternates(BASE_URL, path) },
       });
     }
+  }
+
+  // ── Advent calendar 2026: es + ca only (en/fr 404) ──
+  for (const locale of ADVENT_LOCALES) {
+    entries.push({
+      url: `${BASE_URL}/${locale}${ADVENT_PATH}`,
+      lastModified: new Date(`${ADVENT_CONTENT_UPDATED}T00:00:00Z`),
+      changeFrequency: "daily",
+      priority: 0.8,
+      alternates: { languages: adventAlternates(BASE_URL) },
+    });
   }
 
   // ── Guides (Catalan, likeness, comparison, tió, Catalan by age): only their own locales, lastmod = content date ──

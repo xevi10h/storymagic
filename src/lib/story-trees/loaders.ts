@@ -1,7 +1,7 @@
 // Client-safe dynamic loaders for the story trees.
 //
 // Client components (StepAdventure) must NOT import from "./index": that file statically imports all
-// 10 trees (~600KB source) for the server-side story generator. The client
+// the trees (~600KB source) for the server-side story generator. The client
 // loads only the selected template's tree as its own chunk via these loaders.
 
 import type { StoryTree } from "./types";
@@ -19,6 +19,7 @@ const LOADERS: Record<string, () => Promise<StoryTree>> = {
   safari: () => import("./safari").then((m) => m.safariTree),
   inventor: () => import("./inventor").then((m) => m.inventorTree),
   candy: () => import("./candy").then((m) => m.candyTree),
+  reyes: () => import("./reyes").then((m) => m.reyesTree),
 };
 
 /** Whether a template has a branching tree (no tree data loaded). */

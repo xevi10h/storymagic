@@ -175,6 +175,48 @@ export type ReferralCodeRow = {
   created_at: string;
 };
 
+// 20261026120000_second_book_codes.sql (rules: src/lib/second-book.ts)
+export type SecondBookCodeRow = {
+  id: string;
+  order_id: string;
+  user_id: string | null;
+  email: string | null;
+  code: string;
+  stripe_promotion_code_id: string | null;
+  locale: string;
+  expires_at: string;
+  redeemed_order_id: string | null;
+  redeemed_at: string | null;
+  created_at: string;
+};
+
+// 20261027120000_advent_subscriptions.sql (rules: src/lib/advent/calendar.ts)
+export type AdventSubscriptionRow = {
+  id: string;
+  season: number;
+  email: string;
+  user_id: string | null;
+  character_id: string | null;
+  child_name: string;
+  gender: "boy" | "girl" | "neutral";
+  locale: "es" | "ca";
+  consent_at: string;
+  consent_version: string;
+  consent_source: string;
+  /** Double opt-in: null = pending (never emailed by the cron). */
+  confirmed_at: string | null;
+  confirm_token: string;
+  /** Last confirmation email (re-sent at most every 10 minutes). */
+  confirm_sent_at: string | null;
+  unsubscribe_token: string;
+  unsubscribed_at: string | null;
+  /** Last door emailed (0 = none). */
+  last_sent_day: number;
+  last_sent_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export type ReferralRewardRow = {
   id: string;
   referral_code_id: string;
@@ -251,6 +293,19 @@ export type FulfilmentDatabase = Omit<Database, "public"> & {
         Row: ReferralCodeRow;
         Insert: Pick<ReferralCodeRow, "order_id" | "code"> & Partial<ReferralCodeRow>;
         Update: Partial<ReferralCodeRow>;
+        Relationships: [];
+      };
+      second_book_codes: {
+        Row: SecondBookCodeRow;
+        Insert: Pick<SecondBookCodeRow, "order_id" | "code" | "expires_at"> & Partial<SecondBookCodeRow>;
+        Update: Partial<SecondBookCodeRow>;
+        Relationships: [];
+      };
+      advent_subscriptions: {
+        Row: AdventSubscriptionRow;
+        Insert: Pick<AdventSubscriptionRow, "email" | "child_name" | "consent_at" | "consent_version" | "unsubscribe_token" | "confirm_token"> &
+          Partial<AdventSubscriptionRow>;
+        Update: Partial<AdventSubscriptionRow>;
         Relationships: [];
       };
       referral_rewards: {

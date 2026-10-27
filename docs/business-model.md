@@ -30,6 +30,15 @@
 | Collection discount (3 books) | -20% on total | Still ~60%+ margin |
 | Poster / collectible print | +8-12 EUR | ~65% |
 
+### Pack Reyes (seasonal, 2026-10-26)
+Every printed book paid from 26 Oct to the printed Reyes cut-off (22 Dec) earns one single-use code: a second
+book in softcover at **19,90 € IVA incluido** (34,90 € − 15 €), valid until 6 Jan, any story, shareable. Rules
+in `src/lib/second-book.ts`. The second book is always its own order and shipment. Per second book (4 % IVA):
+net 19,13 € − Gelato softcover + shipping 13,61 € − Stripe ~0,55 € − final-book AI ~1,75 € (~$1.9,
+docs/generation-pipeline.md) ≈ **3 € margin** (≈5 € when it is another copy of the same story, no AI). The bet
+is volume and a second family reached, not margin: a family that uses it brings ~32 € on two books instead
+of ~29 € on one.
+
 ### Future Revenue (Post-MVP)
 - **Saga subscriptions:** Monthly/quarterly new chapter delivered
 - **Premium adventure packs:** Branded packaging with physical extras

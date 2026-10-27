@@ -131,7 +131,7 @@ function captionChunks(alignment) {
 const CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=block');
 *{margin:0;box-sizing:border-box} html,body{width:${W}px;height:${H}px;overflow:hidden;background:transparent}
-body{font-family:Fredoka,sans-serif;position:relative}
+body{font-family:Fredoka,sans-serif;position:relative;font-kerning:none} /* Fredoka kerns "IV" so tight that "IVA" reads "MA" */
 .pill{position:absolute;left:50%;transform:translateX(-50%);max-width:940px;width:max-content;text-align:center;border-radius:28px;
   box-shadow:0 10px 30px rgba(27,18,14,.28)}
 .title{top:250px;background:#FFF8F0;color:#1b120e;font-weight:700;font-size:70px;line-height:1.1;padding:24px 40px}

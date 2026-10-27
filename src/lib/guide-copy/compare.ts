@@ -8,10 +8,11 @@
 // Micuento was left out: micuento.com did not resolve on 2026-10-02 (stated on the page).
 // Meapica's column is derived from product-facts.ts (prices VAT-inclusive, B2C).
 
-import { STORY_TEMPLATES } from "@/lib/create-store";
+import { EVERGREEN_TEMPLATES } from "@/lib/create-store";
 import type { GuideBaseCopy, GuideFacts } from "./types";
 
-const WORLDS = STORY_TEMPLATES.length;
+// Seasonal worlds (Reyes) come and go: the count is the worlds sold all year.
+const WORLDS = EVERGREEN_TEMPLATES.length;
 
 export const COMPARE_CHECKED_ON = "2026-10-02";
 

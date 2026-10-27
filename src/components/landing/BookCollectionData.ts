@@ -1,4 +1,4 @@
-import { STORY_TEMPLATES, type StoryTemplateConfig } from "@/lib/create-store";
+import { EVERGREEN_TEMPLATES, type StoryTemplateConfig } from "@/lib/create-store";
 import { AGE_BANDS, type AgeBandSlug } from "@/lib/product-facts";
 
 /** Real book made on the platform (GET /api/showcase). */
@@ -49,7 +49,8 @@ export function buildCatalog(showcase: ShowcaseBook[]): CatalogWorld[] {
     // The API returns newest first: keep the first book per world, and only books with art.
     if (book.coverImage && !exampleByTemplate.has(book.templateId)) exampleByTemplate.set(book.templateId, book);
   }
-  const worlds = STORY_TEMPLATES.map((template) => ({ template, example: exampleByTemplate.get(template.id) ?? null }));
+  // Evergreen worlds only: a seasonal edition (Reyes) is not part of the year-round catalog.
+  const worlds = EVERGREEN_TEMPLATES.map((template) => ({ template, example: exampleByTemplate.get(template.id) ?? null }));
   const withExample = worlds.filter((w) => w.example);
   return withExample.length > 0 ? withExample : worlds;
 }

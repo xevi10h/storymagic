@@ -9,7 +9,9 @@ import { buildCheckoutSession, checkoutOffer } from "@/lib/checkout/session";
 import { CONSENT_COOKIE, GA_SESSION_COOKIE, UTM_COOKIE, consentAllows, parseConsent } from "@/lib/tracking/consent";
 import { gaClientId, gaSessionId } from "@/lib/tracking/ga4-mp";
 import { buyerHasOwnCode, referralForCheckout } from "@/lib/growth/referrals";
+import { secondBookPromotionForBuyer } from "@/lib/growth/second-book";
 import { canPreApplyReferral, REFERRAL_COOKIE } from "@/lib/promo-codes";
+import { isTemplateAvailable } from "@/lib/create-store";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -112,7 +114,7 @@ export async function POST(request: Request) {
     // Service role + explicit owner filter (clients cannot read stories.generated_text).
     const { data: story, error: storyError } = await createFulfilmentClient()
       .from("stories")
-      .select("id, status, locale, generated_text")
+      .select("id, status, locale, generated_text, template_id")
       .eq("id", storyId)
       .eq("user_id", user.id)
       .single();
@@ -133,6 +135,11 @@ export async function POST(request: Request) {
     const generated = story.generated_text as { imagePlan?: unknown } | null;
     if (!generated?.imagePlan) {
       return NextResponse.json({ error: "preview_outdated" }, { status: 409 });
+    }
+    // Seasonal worlds (Reyes) are sold only inside their window (Europe/Madrid). A reorder of a
+    // book already paid for (another printed copy) is a reprint, not a new sale: never blocked.
+    if (!isReorder && story.template_id && !isTemplateAvailable(story.template_id)) {
+      return NextResponse.json({ error: "template_unavailable" }, { status: 410 });
     }
 
     // MOCK_MODE: refuse checkout. Local dev shares the production Supabase, and the
@@ -189,6 +196,13 @@ export async function POST(request: Request) {
       })
         ? referral.stripe_promotion_code_id
         : null;
+    // Pack Reyes: the buyer's own 19,90 € softcover code beats a link code (15 € > 10 €). Not when
+    // they asked to type a code or hold a voucher/credit (a pre-applied code hides Stripe's field).
+    const secondBookPromo =
+      format === "softcover" && body.ownCode !== true && !(await buyerHasOwnCode(createFulfilmentClient(), user.email))
+        ? await secondBookPromotionForBuyer(createFulfilmentClient(), { userId: user.id, email: user.email })
+        : null;
+    const preAppliedPromo = secondBookPromo ?? referralPromotionCodeId;
 
     const attribution = attributionMetadata(request);
     const planFor = (referralPromotionCodeId: string | null) => buildCheckoutSession({
@@ -226,14 +240,14 @@ export async function POST(request: Request) {
           }),
       };
     };
-    let attempt = createSession(referralPromotionCodeId);
+    let attempt = createSession(preAppliedPromo);
     let session;
     try {
       session = await attempt.request();
     } catch (err) {
       // The code can't be applied (used up, expired, deactivated…): same checkout without it.
-      if (!referralPromotionCodeId) throw err;
-      console.warn(`[checkout] Referral code ${referral?.code} not applied:`, err instanceof Error ? err.message : err);
+      if (!preAppliedPromo) throw err;
+      console.warn(`[checkout] Pre-applied code ${secondBookPromo ? "(second book)" : referral?.code} not applied:`, err instanceof Error ? err.message : err);
       attempt = createSession(null);
       session = await attempt.request();
     }

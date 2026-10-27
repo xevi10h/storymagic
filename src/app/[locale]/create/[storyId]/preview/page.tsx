@@ -394,6 +394,12 @@ export default function PreviewPage() {
           setCheckingOut(false);
           return;
         }
+        if (data?.error === "template_unavailable") {
+          // Seasonal world (Reyes) past its last order day: say so instead of "try again".
+          setCheckoutError(t("templateUnavailable"));
+          setCheckingOut(false);
+          return;
+        }
         throw new Error(data?.error === "mock_mode_checkout_disabled" ? "mock" : "checkout");
       }
 

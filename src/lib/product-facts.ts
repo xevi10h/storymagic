@@ -6,7 +6,7 @@
 // STRIPE_CATALOG (pricing.ts), delivery promise and coverage from shipping.ts, ages
 // from the story templates (create-store.ts). Change the fact there, never here.
 
-import { STORY_TEMPLATES } from "./create-store";
+import { EVERGREEN_TEMPLATES } from "./create-store";
 import { PREVIEW_ILLUSTRATION_COUNT, PRICING, TOTAL_SCENE_COUNT } from "./pricing";
 import { DELIVERY_PARAMS, SHIPPING_REGIONS } from "./shipping";
 import { SUPPORT_EMAIL, SUPPORT_PHONE } from "./support";
@@ -79,9 +79,9 @@ export const PRINTED_FROM_CENTS = Math.min(PRICING.softcover.price, PRICING.hard
 
 // ── Ages ────────────────────────────────────────────────────────────────────
 
-/** Youngest / oldest reader any story template is written for. */
-export const AGE_MIN = Math.min(...STORY_TEMPLATES.map((t) => t.ageMin));
-export const AGE_MAX = Math.max(...STORY_TEMPLATES.map((t) => t.ageMax));
+/** Youngest / oldest reader any evergreen story template is written for (seasonal worlds excluded). */
+export const AGE_MIN = Math.min(...EVERGREEN_TEMPLATES.map((t) => t.ageMin));
+export const AGE_MAX = Math.max(...EVERGREEN_TEMPLATES.map((t) => t.ageMax));
 
 /**
  * Age bands used by the catalog filter and the /personalized-books pages. Each

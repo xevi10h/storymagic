@@ -50,7 +50,7 @@ State measured 2026-10-03: 14 of 132 sitemap URLs indexed, 1 impression, 0 organ
 
 See **`docs/generation-pipeline.md`** and **`docs/launch-checklist.md`** for full detail.
 
-**Blocked on:** BFL + fal image credits exhausted → top up ~$15-20 (fal) before any generation work.
+**Credits:** books use OpenAI gpt-image-2.5 only; fal (path art) topped up 2026-10-27.
 
 - [ ] **Preview ≤ 20-30s to first cover** — streaming preview + early child sheet shipped
       (2026-09-27, docs/generation-pipeline.md "Streaming preview"): measured scene 1 at 35 s,
@@ -103,7 +103,19 @@ test = 10 € for 38,107 people reached, 166 clicks, 1.56 s average watch, at mo
 - [ ] Catalan version of the letter ad (`/ca/tools/letter-to-the-three-kings`) once the Spanish one shows opt-ins.
 - [ ] School AFA/AMPA fundraiser: one code per school, a share of each sale to the AFA, spread through class WhatsApp groups.
 - [ ] Giveaway with family-plan accounts where the entry is creating the free preview (not a follow).
-- [ ] Meta test (payment method missing) optimised on `preview_ready`, replacing TikTok traffic spend.
+- [ ] Meta test optimised on `preview_ready`, replacing TikTok traffic spend (card on file since 2026-10-26; current Meta plan: `docs/ads/promotions-q4-2026.md`).
+
+## Meta promotions Q4 2026 (built 2026-10-26, all PAUSED)
+
+Plan, ids and checklist: `docs/ads/promotions-q4-2026.md`. Five promotions × two ads (A/B on the hook only), 10 €/day each, scheduled to their windows.
+- [ ] Owner: raise the Meta spending limit from 300 € to about 450 €/month (Billing hub), or delivery stops mid-promotion in November and December.
+- [ ] Deploy Pack Reyes (`src/lib/second-book.ts` + Stripe coupon) and the `reyes` world, then check `/es` banner and `/es/create?template=reyes` in production.
+- [ ] Owner: set campaign + both ad sets + both ads ACTIVE for each promotion (Pack Reyes right after its deploy; the others any time before their window).
+- [ ] Advent calendar (built 2026-10-27, see product-spec › Advent calendar): apply migration `20261027120000_advent_subscriptions`, deploy, then a live test before 1 Dec: sign up with a real inbox, test the full send locally with `?now=2026-12-05` against a NON-production Supabase + Resend test key (Vercel previews run with NODE_ENV=production, so `?now` is ignored there), then on 1 Dec call `/api/cron/advent?dry_run=1` in production before the first real run; check the PDF attachment, the one-click unsubscribe and the portrait PDF on an account email.
+- [ ] Advent follow-ups: a "puerta de hoy" reminder for subscribers who never open; schedule social posts of doors 1, 5, 12, 24 with the reel skill; measure `door_open` → `advent_cta_click` → preview in the growth funnel.
+- [x] fal.ai topped up 2026-10-27; `reyes` path art 39/39 (`reyes-c3camelsa-song` needed a hand-crafted prompt: the auto-prompt painted lettering).
+- [ ] Day 7 of each promotion (day 4 for Black Friday and Última llamada): read hook rate, CTR and cost per InitiateCheckout, give the winner both budgets, write the result in the plan.
+- [ ] Optional: a Catalan pair per promotion (Catalunya + Balears, Catalan copy and narration) once the Spanish read-outs show which hooks win.
 
 ## Social performance review (2026-10-19)
 
@@ -625,7 +637,7 @@ Replaced the old "mode → template → 3 decision knobs" with a single vertical
 
 ## Repeat-purchase plan (owner decisions 2026-10-23)
 Design canvas: https://claude.ai/artifact/Epbcy1FwfVM2HLugAiynVo (account home, saga, creator panel, spend ×2, payout, strategy board).
-- [ ] Before Reyes: creator panel (in progress), new "Mi cuenta" home (next moment per child, collection shelf, season edition, sibling nudge, balance & gifts), grandparents wishlist link (family gifts the next book via gift vouchers), Reyes edition (story only orderable until 6 Jan).
+- [ ] Before Reyes: creator panel (in progress), new "Mi cuenta" home (next moment per child, collection shelf, season edition, sibling nudge, balance & gifts), grandparents wishlist link (family gifts the next book via gift vouchers), Reyes edition (story only orderable until 6 Jan): BUILT 2026-10-26 on `local`, not deployed (world `reyes` "Paje Real por una Noche", gated by `isTemplateAvailable`, fixed Three Kings looks; docs/product-spec.md › Seasonal worlds). Path art 39/39 (2026-10-27). Pending: bump `availableUntil` each season; optional explicit "no llega para Reyes" line on 6 Jan.
 - [ ] January: numbered sagas (5 volumes, recurring companion, continuous spine art); next volume at -15 % (hardcover 42,42 € IVA incluido); sibling discount; first creator-exclusive saga.
 - [ ] April: Sant Jordi edition (1-23 April).
 - [ ] With repeat data: Club Meapica subscription. Checkout upsells: extra copy for grandparents, 2-volume pack.

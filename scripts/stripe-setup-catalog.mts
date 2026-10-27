@@ -3,7 +3,7 @@
 //   Spanish VAT on EU digital sales under the 10k € OSS threshold), the seller NIF
 //   for invoices, every STRIPE_CATALOG Product/Price (VAT-inclusive, lookup keys from
 //   src/lib/pricing.ts, incl. the PDF → printed upgrade and the gift-voucher Prices), the
-//   referral + gift-voucher coupons (src/lib/promo-codes.ts) and the webhook endpoint.
+//   referral + gift-voucher coupons (src/lib/promo-codes.ts), the Pack Reyes coupon (src/lib/second-book.ts) and the webhook endpoint.
 //
 //   STRIPE_KEY=sk_test_... npx tsx --tsconfig tsconfig.json scripts/stripe-setup-catalog.mts \
 //     [--webhook-url=https://meapica.es/api/webhooks/stripe] [--dry-run]
@@ -15,6 +15,7 @@
 import Stripe from "stripe";
 import { STRIPE_CATALOG, type CatalogItemId } from "../src/lib/pricing";
 import { REFERRAL_COUPON_ID, REFERRAL_DISCOUNT_CENTS, VOUCHER_COUPON_IDS, VOUCHER_FORMATS } from "../src/lib/promo-codes";
+import { SECOND_BOOK_COUPON_ID, SECOND_BOOK_DISCOUNT_CENTS } from "../src/lib/second-book";
 
 const SELLER = {
   nif: "41649433K", // Xavier Huix Trenco (autónomo), same as the legal pages
@@ -153,6 +154,13 @@ await ensureCoupon(
   [softProduct, hardProduct],
   { name: "Recomendación · 10 € libro impreso", amount_off: REFERRAL_DISCOUNT_CENTS, currency: "eur", duration: "once" },
   (c) => c.amount_off === REFERRAL_DISCOUNT_CENTS && c.currency === "eur",
+);
+// Pack Reyes (src/lib/second-book.ts): 15 € off the softcover book only (34,90 → 19,90 €).
+await ensureCoupon(
+  SECOND_BOOK_COUPON_ID,
+  [softProduct],
+  { name: "Pack Reyes · 2º libro tapa blanda", amount_off: SECOND_BOOK_DISCOUNT_CENTS, currency: "eur", duration: "once" },
+  (c) => c.amount_off === SECOND_BOOK_DISCOUNT_CENTS && c.currency === "eur",
 );
 const bookProducts = { digital_pdf: pdfProduct, softcover: softProduct, hardcover: hardProduct };
 // Customer-facing in Checkout (max 40 characters).

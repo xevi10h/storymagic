@@ -6,6 +6,7 @@ import { ILLUSTRATION_URL_TTL, signIllustrationRefs, userAccess } from "@/lib/st
 import { isPdfUpgradeAvailable } from "@/lib/stripe";
 import { upsellForStory, type StoryUpsell, type UpsellOrderRow } from "@/lib/upsell";
 import { referralCodesForOrders } from "@/lib/growth/referrals";
+import { secondBookCodesForOrders, type SecondBookCode } from "@/lib/growth/second-book";
 
 const LIVE_ORDER_STATUSES = new Set<string>(PAID_ORDER_STATUSES);
 
@@ -128,12 +129,19 @@ export async function GET() {
   for (const [id, u] of offersByStory) if (u) offers[id] = u;
 
   // Referral code of each live order ("10 € y 10 €"). Best-effort: the library works without it.
+  // Plus its usable Pack Reyes code (second book in softcover at 19,90 €).
   let referralCodes = new Map<string, string>();
+  let secondBookCodes = new Map<string, SecondBookCode>();
+  const liveIds = orderRows.filter((o) => LIVE_ORDER_STATUSES.has(o.status) && !o.refunded_at).map((o) => o.id as string);
   try {
-    const liveIds = orderRows.filter((o) => LIVE_ORDER_STATUSES.has(o.status) && !o.refunded_at).map((o) => o.id as string);
     referralCodes = await referralCodesForOrders(db, liveIds);
   } catch (err) {
     console.warn("[dashboard] Referral codes unavailable:", err instanceof Error ? err.message : err);
+  }
+  try {
+    secondBookCodes = await secondBookCodesForOrders(db, liveIds);
+  } catch (err) {
+    console.warn("[dashboard] Second-book codes unavailable:", err instanceof Error ? err.message : err);
   }
 
   return NextResponse.json(
@@ -147,6 +155,7 @@ export async function GET() {
           stories: o.stories ? withStorySummary(o.stories) : null,
           upsell: upsell && upsell.sourceOrderId === id ? upsell : null,
           referral_code: referralCodes.get(id) ?? null,
+          second_book: secondBookCodes.get(id) ?? null,
         };
       }),
       offers,

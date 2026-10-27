@@ -33,6 +33,21 @@ export interface SendEmailParams {
   replyTo?: string;
   /** Extra MIME headers (Resend `headers`), e.g. List-Unsubscribe on commercial content */
   headers?: Record<string, string>;
+  /**
+   * Files (Resend `attachments`: base64 `content` + `filename`; optional `content_id` for an
+   * inline <img src="cid:…">). Max 40 MB per email after base64; not allowed on /emails/batch.
+   */
+  attachments?: EmailAttachment[];
+}
+
+export interface EmailAttachment {
+  filename: string;
+  /** Base64 file content. */
+  content: string;
+  /** MIME type; derived from the filename when omitted. */
+  contentType?: string;
+  /** Inline image id, referenced as cid:<contentId> in the HTML. */
+  contentId?: string;
 }
 
 /**
@@ -64,6 +79,16 @@ export async function sendEmail(params: SendEmailParams): Promise<boolean> {
         text: params.text,
         ...(replyTo ? { reply_to: replyTo } : {}),
         ...(params.headers && Object.keys(params.headers).length > 0 ? { headers: params.headers } : {}),
+        ...(params.attachments && params.attachments.length > 0
+          ? {
+              attachments: params.attachments.map((a) => ({
+                filename: a.filename,
+                content: a.content,
+                ...(a.contentType ? { content_type: a.contentType } : {}),
+                ...(a.contentId ? { content_id: a.contentId } : {}),
+              })),
+            }
+          : {}),
       }),
     });
 

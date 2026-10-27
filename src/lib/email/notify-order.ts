@@ -19,6 +19,7 @@ import { getStripe, isPdfUpgradeAvailable } from "@/lib/stripe";
 import { upsellForStory, type UpsellOffer, type UpsellOrderRow } from "@/lib/upsell";
 import { mayReceiveOffers, unsubscribeLinks } from "@/lib/marketing/suppression";
 import { referralCodesForOrders, referralLink, type ReferralLink } from "@/lib/growth/referrals";
+import { secondBookCodesForOrders, type SecondBookCode } from "@/lib/growth/second-book";
 
 /** Lifecycle emails that carry the buyer's referral code (commercial block, LSSI 21.2). */
 const REFERRAL_EVENTS = new Set<OrderEmailEvent>(["order_confirmed", "order_confirmed_digital", "book_ready", "delivered"]);
@@ -107,12 +108,13 @@ export async function notifyOrderEmail(params: NotifyOrderParams): Promise<boole
     //    regardless.
     let upsell: Awaited<ReturnType<typeof resolveUpsell>> = null;
     let referral: ReferralLink | null = null;
+    let secondBook: SecondBookCode | null = null;
     let unsubscribe: ReturnType<typeof unsubscribeLinks> = null;
     const wantsReferral = REFERRAL_EVENTS.has(event) && !!params.orderId;
     if ((offerEventFor(event, params.isPhysical) || wantsReferral) && (await mayReceiveOffers(supabase, { marketing_opt_out: marketingOptOut }, email))) {
       upsell = await resolveUpsell(supabase, event, { userId, storyId, isPhysical: params.isPhysical });
-      if (wantsReferral) referral = await resolveReferral(supabase, params.orderId!, locale);
-      if (upsell || referral) unsubscribe = unsubscribeLinks(email, locale);
+      if (wantsReferral) [referral, secondBook] = await Promise.all([resolveReferral(supabase, params.orderId!, locale), resolveSecondBook(supabase, params.orderId!)]);
+      if (upsell || referral || secondBook) unsubscribe = unsubscribeLinks(email, locale);
     }
 
     const built = buildOrderEmail(event, {
@@ -133,6 +135,7 @@ export async function notifyOrderEmail(params: NotifyOrderParams): Promise<boole
       recipientEmail: email,
       upsell,
       referral,
+      secondBook,
       unsubscribeUrl: unsubscribe?.pageUrl ?? null,
     });
 
@@ -243,6 +246,20 @@ async function resolveReferral(
     return code ? referralLink(code, locale) : null;
   } catch (err) {
     console.warn(`[email] Referral lookup failed for order ${orderId}:`, err instanceof Error ? err.message : err);
+    return null;
+  }
+}
+
+/** The order's usable Pack Reyes code, or null. Best-effort. */
+async function resolveSecondBook(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabase: any,
+  orderId: string,
+): Promise<SecondBookCode | null> {
+  try {
+    return (await secondBookCodesForOrders(supabase, [orderId])).get(orderId) ?? null;
+  } catch (err) {
+    console.warn(`[email] Second-book lookup failed for order ${orderId}:`, err instanceof Error ? err.message : err);
     return null;
   }
 }

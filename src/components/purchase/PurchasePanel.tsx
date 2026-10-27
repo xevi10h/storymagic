@@ -15,7 +15,7 @@ import {
   type AddonId,
   type BookFormat,
 } from "@/lib/pricing";
-import { useDeliveryLine, useSeasonNotice } from "./delivery";
+import { useDeliveryLine, useSeasonNotice, useSecondBookPromo } from "./delivery";
 import { Spinner } from "@/components/ui/Spinner";
 import { MarketingOptOut } from "./MarketingOptOut";
 import { CODE_PREFIX } from "@/lib/promo-codes";
@@ -117,6 +117,7 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
   const isDigital = format === "digital_pdf";
   const delivery = useDeliveryLine(format);
   const season = useSeasonNotice();
+  const secondBookPromo = useSecondBookPromo();
   const extraSelected = addons.has("extra_copy");
   const gap = PRICING.hardcover.price - PRICING.softcover.price;
 
@@ -276,6 +277,12 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
             <Link href={CHRISTMAS_DELIVERY_PATH} className="font-semibold text-secondary underline decoration-secondary/30 underline-offset-2 hover:text-brand-text">
               {season.text}
             </Link>
+          </p>
+        )}
+        {!isDigital && secondBookPromo && (
+          <p className="flex items-start gap-2 pt-1 font-semibold text-create-text-dark" data-testid="second-book-promo">
+            <span aria-hidden className="material-symbols-outlined mt-px text-[17px] text-brand-text" data-icon="auto_stories" />
+            {secondBookPromo}
           </p>
         )}
       </div>

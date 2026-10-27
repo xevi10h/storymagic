@@ -3,7 +3,9 @@
 import { useLocale, useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { cx, focusRing } from "@/components/ui";
-import { CHRISTMAS_DELIVERY_PATH, giftSeason, seasonBanner } from "@/lib/shipping";
+import { CHRISTMAS_DELIVERY_PATH, earliestPrintedCutoff, giftSeason, seasonBanner } from "@/lib/shipping";
+import { formatPrice } from "@/lib/pricing";
+import { SECOND_BOOK_PRICE_CENTS, isBlackFridayWeek, secondBookIssuing } from "@/lib/second-book";
 import {
   dismissBanner,
   formatSeasonDate,
@@ -30,15 +32,27 @@ export default function SeasonalBanner({ serverToday }: { serverToday: string | 
   const state = today ? seasonBanner(today) : null;
   if (!today || !state || pathname === CHRISTMAS_DELIVERY_PATH) return null;
 
-  // New message (Christmas → Reyes → PDF, or a new season) shows again once.
-  const id = `${giftSeason(today).christmasYear}:${state.kind}:${state.occasion}`;
+  // New message (Christmas → Reyes → PDF, Black Friday, or a new season) shows again once.
+  const id = `${giftSeason(today).christmasYear}:${state.kind}:${state.occasion}${isBlackFridayWeek(today) ? ":bf" : ""}`;
   if (dismissed === id) return null;
 
-  const main =
+  const cutoffText =
     state.kind === "physical"
       ? t(`physical.${state.occasion}`, { date: formatSeasonDate(state.lastOrderDate, locale) })
       : t(`digital.${state.occasion}`);
-  const more = state.kind === "physical" ? t("physicalMore") : t("digitalMore");
+  // Pack Reyes while printed orders earn the 19,90 € second-book code; in Black Friday week it
+  // leads the banner (no price cut, owner 2026-10-26).
+  const pack = state.kind === "physical" && secondBookIssuing(today, earliestPrintedCutoff(today, "reyes"));
+  const price = formatPrice(SECOND_BOOK_PRICE_CENTS, locale);
+  const blackFriday = pack && isBlackFridayWeek(today);
+  const main = blackFriday ? t("blackFriday", { price }) : cutoffText;
+  const more = blackFriday
+    ? cutoffText
+    : state.kind !== "physical"
+      ? t("digitalMore")
+      : pack
+        ? t("secondBookMore", { price })
+        : t("physicalMore");
 
   return (
     <div data-season-banner={id} className="px-4 pt-2 sm:px-6">

@@ -239,6 +239,7 @@ export async function eraseAccount(
   must(await admin.from("photo_consents").delete().eq("user_id", userId), "delete photo_consents");
   must(await admin.from("rate_limits").delete().eq("user_id", userId), "delete rate_limits");
   if (email) must(await admin.from("newsletter_subscribers").delete().ilike("email", emailPattern), "delete newsletter row");
+  await deleteAdventSubscriptions(admin, userId, email);
   must(await admin.from("profiles").delete().eq("id", userId), "delete profile");
 
   // ── 6. Auth user ────────────────────────────────────────────────────────────
@@ -260,4 +261,16 @@ export async function eraseAccount(
   console.log(`[erasure] ${opts.trigger} user ${userId}: ${JSON.stringify(counts)} kept orders ${keptOrderIds.length}`);
 
   return { state: "erased", counts, keptOrderIds };
+}
+
+/**
+ * Advent calendar subscriptions (20261027120000): the account's own rows and any row for its
+ * address. Tolerates the table not existing yet (code shipped before the migration).
+ */
+async function deleteAdventSubscriptions(admin: SupabaseClient, userId: string, email: string): Promise<void> {
+  const byUser = await admin.from("advent_subscriptions").delete().eq("user_id", userId);
+  if (byUser.error && isMissingSchemaError(byUser.error)) return;
+  must(byUser, "delete advent subscriptions");
+  // Stored normalised (lower-case, trimmed): exact match.
+  if (email) must(await admin.from("advent_subscriptions").delete().eq("email", email), "delete advent subscriptions by email");
 }

@@ -8,6 +8,7 @@ import { normaliseHairstyle } from "@/lib/avatar/manifest";
 import {
   GLASSES_OPTIONS,
   INITIAL_STATE,
+  isTemplateAvailable,
   type CharacterData,
   type CreateBookState,
   type Gender,
@@ -132,7 +133,8 @@ function CrearPageContent() {
         ...INITIAL_STATE,
         character,
         basicsConfirmed,
-        selectedTemplate: templateParam ?? null,
+        // A seasonal world out of its window (or an unknown id) falls back to the normal list.
+        selectedTemplate: templateParam && isTemplateAvailable(templateParam) ? templateParam : null,
         // A saved character is complete (skip to step 2); a typed name still needs age + gender.
         currentStep: characterIdParam && character.name.trim() && basicsConfirmed.age && basicsConfirmed.gender ? 2 : 1,
       });
@@ -231,6 +233,18 @@ function CrearPageContent() {
     (photoPath: string | null) => setState((prev) => ({ ...prev, photoPath })),
     [setState],
   );
+
+  // A restored draft can hold a seasonal world whose window has closed (e.g. Reyes
+  // after 6 January): drop it and its path so the parent picks another world instead
+  // of hitting the 410 from POST /api/stories.
+  useEffect(() => {
+    if (!hydrated || !state.selectedTemplate || isTemplateAvailable(state.selectedTemplate)) return;
+    setState((prev) =>
+      prev.selectedTemplate && !isTemplateAvailable(prev.selectedTemplate)
+        ? { ...prev, selectedTemplate: null, decisions: {}, ending: null }
+        : prev,
+    );
+  }, [hydrated, state.selectedTemplate, setState]);
 
   const setTemplate = useCallback(
     (templateId: string) => {
@@ -341,7 +355,9 @@ function CrearPageContent() {
         }),
       });
       if (!res.ok) {
-        console.warn("[create] saving story failed:", res.status, await res.text().catch(() => ""));
+        const body = await res.text().catch(() => "");
+        console.warn("[create] saving story failed:", res.status, body);
+        if (res.status === 410 && body.includes("template_unavailable")) throw new Error("template_unavailable");
         throw new Error("save_failed");
       }
       const { storyId } = (await res.json()) as { storyId: string };
@@ -350,6 +366,13 @@ function CrearPageContent() {
       router.push(`/create/${storyId}/generate`);
     } catch (err) {
       console.warn("[create] create failed:", err);
+      if (err instanceof Error && err.message === "template_unavailable") {
+        // The world's window closed while the parent was choosing: back to the world list.
+        setError(t("errors.templateUnavailable"));
+        setState((prev) => ({ ...prev, selectedTemplate: null, decisions: {}, ending: null }));
+        setSaving(false);
+        return;
+      }
       setError(isCaptchaError(err) ? t("errors.captchaFailed") : t("errors.saveFailed"));
       setCreateFailed(true);
       setSaving(false);

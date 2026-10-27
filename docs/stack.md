@@ -530,7 +530,8 @@ Order: apply the migration → deploy → run the setup script with the live key
 ## Advent calendar (built 2026-10-27, not deployed)
 
 - Cron `/api/cron/advent` (vercel.json `*/15 6-11 * * *` UTC = 07:00–12:45 Madrid in December, `CRON_SECRET`;
-  `?dry_run=1`, `?limit=N` default 150 max 400, dev-only `?now=`). Sends only on 1–24 Dec (Spain date); several runs a
+  `?dry_run=1`, `?limit=N` default 150 max 400, dev-only `?now=`). Sends only to confirmed rows (`confirmed_at` set) and
+  only on 1–24 Dec (Spain date); several runs a
   morning so a deferred batch goes out on the next one. Answers `{ migrationPending: true }` with 200 until migration
   `20261027120000_advent_subscriptions` is applied.
 - Resend: one email per subscriber (attachments cannot go through `/emails/batch`), sequential, ≥ 150 ms apart (team
@@ -540,7 +541,8 @@ Order: apply the migration → deploy → run the setup script with the live key
   JPEG with `sharp` (`src/lib/advent/assets.ts`, read from /public or fetched from `NEXT_PUBLIC_SITE_URL` on Vercel).
   Measured locally: one door ≈ 0.3 s, the 25-page compilation ≈ 2–8 s (name-only PDFs are cached per run by
   locale + door + name + gender). Email art: `GET /api/advent/art/{door}` (JPEG, long cache; Outlook ignores webp).
-- Routes: `GET /api/advent/me`, `POST /api/advent/subscribe`, `POST /api/advent/unsubscribe` (one-click + page),
+- Routes: `GET /api/advent/me`, `POST /api/advent/subscribe` (double opt-in: sends the confirmation email inline),
+  `POST /api/advent/confirm` (button of `/[locale]/advent/confirm`), `POST /api/advent/unsubscribe` (one-click + page),
   `GET /api/advent/pdf`, `POST /api/characters` (character-only save, same validation as `POST /api/stories`).
 - **Deploy order:** apply the migration, then deploy. Account erasure also deletes `advent_subscriptions` (tolerates the
   table missing).

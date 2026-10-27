@@ -100,10 +100,13 @@ export default function AvatarPicker({
   value,
   onChange,
   showGenderHint = false,
+  hideAgeBand = false,
 }: {
   value: ToolAvatarState;
   onChange: (next: ToolAvatarState) => void;
   showGenderHint?: boolean;
+  /** The caller asks for the exact age and derives the band (Advent "Crear su personaje"). */
+  hideAgeBand?: boolean;
 }) {
   const t = useTranslations("tools.common");
   const tp = useTranslations("crear.protagonist");
@@ -130,6 +133,7 @@ export default function AvatarPicker({
         {showGenderHint && <p className="text-xs text-ink-muted">{t("genderHint")}</p>}
       </div>
 
+      {!hideAgeBand && (
       <div className="flex flex-col gap-2">
         <Eyebrow as="span" id="lbl-tool-age-band">
           {t("ageBand")}
@@ -142,6 +146,7 @@ export default function AvatarPicker({
           ))}
         </div>
       </div>
+      )}
 
       <div className="grid gap-6 sm:grid-cols-2">
         <Swatches

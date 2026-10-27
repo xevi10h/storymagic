@@ -2,6 +2,7 @@
 
 import { useId, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import Sheet from "@/components/create/Sheet";
 import { MarketingOptOut } from "@/components/purchase/MarketingOptOut";
 import { Button, buttonClass, cx } from "@/components/ui";
@@ -10,6 +11,7 @@ import { orderReference, orderView, PRINT_STEPS, type OrderView } from "@/lib/or
 import { SUPPORT_EMAIL } from "@/lib/support";
 import type { StoryUpsell } from "@/lib/upsell";
 import { REFERRAL_DISCOUNT_CENTS, REFERRAL_ROUTE } from "@/lib/promo-codes";
+import { SECOND_BOOK_PRICE_CENTS } from "@/lib/second-book";
 
 // ── Types (shape of /api/dashboard → orders) ────────────────────────────────
 
@@ -44,6 +46,8 @@ export interface DashboardOrder {
   upsell?: StoryUpsell | null;
   /** The order's personal referral code ("10 € y 10 €"), null when none / not live. */
   referral_code?: string | null;
+  /** The order's usable Pack Reyes code (second book in softcover at 19,90 €), null when none. */
+  second_book?: { code: string; expiresAt: string } | null;
   stories: {
     title: string | null;
     status: string;
@@ -187,6 +191,33 @@ export function ReferralCallout({ code, className }: { code: string; className?:
   );
 }
 
+// ── Pack Reyes (second book in softcover at 19,90 €) ────────────────────────
+
+/** The order's single-use Pack Reyes code: applied by itself at checkout when the buyer picks softcover. */
+export function SecondBookCallout({ code, expiresAt, className }: { code: string; expiresAt: string; className?: string }) {
+  const t = useTranslations("dashboard.secondBook");
+  const locale = useLocale();
+  const price = formatPrice(SECOND_BOOK_PRICE_CENTS, locale);
+  const date = new Intl.DateTimeFormat(locale === "en" ? "en-GB" : locale, { day: "numeric", month: "long", timeZone: "Europe/Madrid" }).format(new Date(expiresAt));
+  return (
+    <div className={cx("flex flex-col gap-3 rounded-2xl border-2 border-line bg-paper px-4 py-3.5 sm:flex-row sm:items-center", className)} data-testid="order-second-book">
+      <span aria-hidden className="hidden sm:block">
+        <span className="material-symbols-outlined !text-[26px] text-brand-text" data-icon="auto_stories" aria-hidden />
+      </span>
+      <div className="min-w-0 flex-1">
+        <p className="font-display text-[15px] font-semibold leading-tight text-ink">{t("title", { price })}</p>
+        <p className="mt-1 text-[13px] leading-snug text-ink-body">{t("line", { price, date })}</p>
+        <p className="mt-1.5 text-[13px] text-ink-soft">
+          {t("codeLabel")}: <span className="select-all font-mono font-bold tracking-wider text-ink">{code}</span>
+        </p>
+      </div>
+      <Link href="/create" className={cx(buttonClass({ variant: "secondary", size: "sm" }), "w-full shrink-0 sm:w-auto")} data-testid="order-second-book-create">
+        {t("cta")}
+      </Link>
+    </div>
+  );
+}
+
 // ── One order ───────────────────────────────────────────────────────────────
 
 function OrderCard({
@@ -243,6 +274,12 @@ function OrderCard({
       {showOffer && order.upsell && storyId && (
         <div className="border-t border-line px-4 py-3 sm:px-5">
           <OfferCallout offer={order.upsell} onOpen={() => onReorder({ storyId, title })} />
+        </div>
+      )}
+
+      {order.second_book && !view.refunded && view.phase !== "cancelled" && (
+        <div className="border-t border-line px-4 py-3 sm:px-5">
+          <SecondBookCallout code={order.second_book.code} expiresAt={order.second_book.expiresAt} />
         </div>
       )}
 

@@ -14,7 +14,7 @@ import type { PostHog } from "posthog-js";
 export const POSTHOG_KEY = process.env.NEXT_PUBLIC_POSTHOG_KEY ?? "";
 
 /** Pages that show the child's data (name, dedication, story, avatar). Locale prefix optional. */
-const PRIVATE_PATH = /^(\/(es|ca|en|fr))?\/(create|dashboard|profile|checkout|preview|auth)(\/|$)/;
+const PRIVATE_PATH = /^(\/(es|ca|en|fr))?\/(create|dashboard|profile|checkout|preview|auth|advent)(\/|$)/;
 /** Shared previews: the token in the URL grants access to a child's book. */
 const NO_TRACK_PATH = /^(\/(es|ca|en|fr))?\/preview\//;
 

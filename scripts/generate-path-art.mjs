@@ -237,6 +237,8 @@ const OPTIONS = [
   { template: "dinosaurs", seed: "dinosaurs-c3eggc-fly", prompt: "A gentle young pterosaur with wide friendly wings soaring over a prehistoric valley of giant ferns and winding rivers, scanning the green horizon below for a dinosaur family, warm golden sky." },
   { template: "pirates", seed: "pirates-c3dolphinc-race", prompt: "A cheerful dolphin leaping joyfully along the shoreline of a tropical beach in a friendly race, splashing turquoise water, a glowing pearl waiting on a rock at the finish, palm trees leaning over the sand." },
   { template: "pirates", seed: "pirates-c3islandc-game", prompt: "A friendly octopus on a tropical island playfully covering its eyes with two tentacles while pointing toward a glowing lantern half-buried in the warm sand, a game of hot-and-cold among seashells and starfish." },
+  // The auto-prompt ("A walking song…") made FLUX paint a lettered book page.
+  { template: "reyes", seed: "reyes-c3camelsa-song", prompt: "Three gentle camels with royal saddle blankets walking in step along moonlit rooftops, a few little musical notes drifting in the night air above them, warm starry sky." },
 ];
 
 // ── auto-prompts for trees without hand-crafted entries ───────────────────────
@@ -252,6 +254,7 @@ const AUTO_PROMPT_TREES = [
   "safari",
   "inventor",
   "candy",
+  "reyes",
 ];
 
 function autoPromptOptions() {

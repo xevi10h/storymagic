@@ -723,7 +723,8 @@
     "createBook": "Crear el seu llibre",
     "mainNav": "Navegació principal",
     "user": "Usuari",
-    "language": "Idioma"
+    "language": "Idioma",
+    "advent": "Advent"
   },
   "hero": {
     "eyebrow": "Contes personalitzats per a nens",
@@ -981,7 +982,7 @@
       "section3Title": "3. Finalitat del tractament",
       "section3Text": "Utilitzem les teves dades exclusivament per: generar el conte personalitzat i el seu personatge il·lustrat, processar el pagament i l'enviament, i comunicar-nos amb tu sobre la teva comanda. Mai no venem dades a tercers.",
       "section4Title": "4. Base legal",
-      "section4Text": "Crear, previsualitzar i imprimir el teu llibre, gestionar el teu compte, el pagament i l'enviament: execució del contracte que ens demanes (art. 6.1.b RGPD). Foto de l'infant: consentiment explícit de la seva mare, pare o tutor legal (art. 6.1.a RGPD i art. 7 LOPDGDD), que pots retirar en qualsevol moment. Butlletí i llista d'espera: el teu consentiment (art. 6.1.a RGPD), que pots retirar quan vulguis. Conservació de factures i registres comptables: obligació legal (art. 6.1.c RGPD). Seguretat del servei i prevenció d'abusos (per exemple, límits d'ús): interès legítim (art. 6.1.f RGPD). Saber quin canal t'ha portat fins a nosaltres quan crees un llibre (la campanya o el lloc web d'origen d'aquella visita, sense cookies ni identificadors del teu dispositiu), per mesurar quins canals funcionen amb estadístiques agregades: interès legítim (art. 6.1.f RGPD); s'esborra amb el llibre. Mesura dels nostres anuncis amb Meta i TikTok i estadístiques de visites i d'ús amb Google Analytics i PostHog (cookies publicitàries i d'anàlisi, i esdeveniment de compra): el teu consentiment (art. 6.1.a RGPD), que pots retirar des de «Configurar cookies». Recordatoris de la teva vista prèvia per correu (com a màxim 3, durant 3 dies, només si marques la casella quan ens demanes la vista prèvia): el teu consentiment (art. 6.1.a RGPD i art. 21.1 LSSI), que pots retirar donant-te de baixa des de qualsevol d'aquests correus. Desem la data, l'idioma i la versió del text que vas acceptar com a prova del consentiment. Una sola petició d'opinió per correu uns dies després de rebre la teva comanda: interès legítim (art. 6.1.f RGPD i art. 21.2 LSSI); no te l'enviem si vas marcar que no vols ofertes en pagar, i et pots donar de baixa des del mateix correu. Si publiques la teva opinió, mostrem al web la puntuació, el text i el nom que triïs, amb el teu consentiment (art. 6.1.a RGPD), que pots retirar escrivint-nos.",
+      "section4Text": "Crear, previsualitzar i imprimir el teu llibre, gestionar el teu compte, el pagament i l'enviament: execució del contracte que ens demanes (art. 6.1.b RGPD). Foto de l'infant: consentiment explícit de la seva mare, pare o tutor legal (art. 6.1.a RGPD i art. 7 LOPDGDD), que pots retirar en qualsevol moment. Butlletí, llista d'espera i correus diaris del Calendari d'Advent (de l'1 al 24 de desembre): el teu consentiment (art. 6.1.a RGPD), que pots retirar quan vulguis. Conservació de factures i registres comptables: obligació legal (art. 6.1.c RGPD). Seguretat del servei i prevenció d'abusos (per exemple, límits d'ús): interès legítim (art. 6.1.f RGPD). Saber quin canal t'ha portat fins a nosaltres quan crees un llibre (la campanya o el lloc web d'origen d'aquella visita, sense cookies ni identificadors del teu dispositiu), per mesurar quins canals funcionen amb estadístiques agregades: interès legítim (art. 6.1.f RGPD); s'esborra amb el llibre. Mesura dels nostres anuncis amb Meta i TikTok i estadístiques de visites i d'ús amb Google Analytics i PostHog (cookies publicitàries i d'anàlisi, i esdeveniment de compra): el teu consentiment (art. 6.1.a RGPD), que pots retirar des de «Configurar cookies». Recordatoris de la teva vista prèvia per correu (com a màxim 3, durant 3 dies, només si marques la casella quan ens demanes la vista prèvia): el teu consentiment (art. 6.1.a RGPD i art. 21.1 LSSI), que pots retirar donant-te de baixa des de qualsevol d'aquests correus. Desem la data, l'idioma i la versió del text que vas acceptar com a prova del consentiment. Una sola petició d'opinió per correu uns dies després de rebre la teva comanda: interès legítim (art. 6.1.f RGPD i art. 21.2 LSSI); no te l'enviem si vas marcar que no vols ofertes en pagar, i et pots donar de baixa des del mateix correu. Si publiques la teva opinió, mostrem al web la puntuació, el text i el nom que triïs, amb el teu consentiment (art. 6.1.a RGPD), que pots retirar escrivint-nos.",
       "section5Title": "5. Encarregats del tractament i transferències internacionals",
       "section5Text": "Per prestar el servei treballem amb proveïdors que tracten les dades només seguint les nostres instruccions: OpenAI Ireland Ltd. (generació del text i les il·lustracions del conte i, si la puges, del personatge a partir de la foto), Supabase (base de dades i emmagatzematge), Vercel (allotjament web), Stripe Payments Europe Ltd. (pagaments), Gelato (impressió i enviament), Resend (correus de la comanda i recordatoris que hagis demanat), Cloudflare, Inc. (Turnstile, verificació antibots en iniciar sessió i en començar com a convidat) i, només si acceptes les cookies publicitàries i d'anàlisi, Meta Platforms Ireland Ltd., TikTok Technology Limited (mesura dels nostres anuncis) Google Ireland Limited (Google Analytics, estadístiques de visites i compres) i PostHog, Inc. (estadístiques d'ús de la web i enregistraments anònims de sessió, allotjats a la UE). OpenAI no fa servir les dades que li enviem per entrenar els seus models i les pot conservar fins a 30 dies per detectar abusos. Quan un proveïdor o els seus subencarregats tracten dades fora de l'Espai Econòmic Europeu (per exemple, als Estats Units), la transferència s'empara en les clàusules contractuals tipus aprovades per la Comissió Europea o en el Marc de Privadesa de Dades UE-EUA.",
       "section6Title": "6. Els teus drets",
@@ -1224,13 +1225,15 @@
       "closeZoom": "Tancar",
       "zoomTitle": "Pàgina ampliada",
       "rotateHint": "Gira el mòbil per veure la doble pàgina",
-      "zoomPage": "Ampliar"
+      "zoomPage": "Ampliar",
+      "templateUnavailable": "Aquesta edició de temporada ja no es pot demanar i no s'ha fet cap càrrec. Pots crear un conte nou en qualsevol dels altres mons."
     },
     "errors": {
       "captchaFailed": "No hem pogut comprovar que ets una persona. Torna a prémer el botó: tot el que has escrit continua aquí.",
       "saveFailed": "No hem pogut desar el conte. Revisa la connexió i torna a prémer el botó: tot el que has escrit continua aquí.",
       "dismiss": "Tancar",
-      "retry": "Tornar-ho a provar"
+      "retry": "Tornar-ho a provar",
+      "templateUnavailable": "Aquest món de temporada ja no està disponible. Tria un altre món per al conte: tota la resta del que has escrit continua aquí."
     },
     "cover": {
       "titlePrefix": "L'aventura de",
@@ -1461,7 +1464,9 @@
       },
       "linkCodeNote": "Codi {code} de l'enllaç, s'aplica en pagar.",
       "otherCode": "Tens un altre codi?",
-      "ownCodeNote": "Escriu el teu codi a la pàgina de pagament."
+      "ownCodeNote": "Escriu el teu codi a la pàgina de pagament.",
+      "secondBookPromo": "Amb aquest llibre, el 2n en tapa tova et surt a {price} IVA inclòs (codi vàlid fins al {until})",
+      "secondBookPromoBlackFriday": "Black Friday: amb aquest llibre, el 2n en tapa tova et surt a {price} IVA inclòs (codi vàlid fins al {until})"
     }
   },
   "checkout": {
@@ -1769,6 +1774,12 @@
         "insufficient_balance": "El teu saldo ha canviat. Tanca i torna a obrir el panell.",
         "generic": "No s'ha pogut completar. Torna-ho a provar d'aquí a un moment."
       }
+    },
+    "secondBook": {
+      "title": "El 2n llibre a {price}",
+      "line": "Un altre conte en tapa tova a {price} IVA inclòs, per a un altre infant o amb una altra aventura. S'aplica automàticament en pagar amb aquest compte, i també pots regalar el codi. Vàlid fins al {date}.",
+      "codeLabel": "El teu codi",
+      "cta": "Crear el 2n llibre"
     }
   },
   "profile": {
@@ -2720,6 +2731,84 @@
             "description": "S'adorm en un llit de cotó de sucre somiant amb tornar-hi."
           }
         }
+      },
+      "reyes": {
+        "title": "Patge Reial per una Nit",
+        "description": "La nit del 5 de gener, els Reis d'Orient tenen un problema enorme i necessiten un Patge Reial que els ajudi a repartir els regals abans que es faci de dia.",
+        "previewChapterTitle": "Toc, toc a la finestra",
+        "decisions": {
+          "encounter": {
+            "question": "Què troba {name} a la finestra la nit de Reis?",
+            "three-crowns": {
+              "title": "Tres Corones",
+              "subtitle": "Brillen a l'altra banda del vidre"
+            },
+            "camel-footprints": {
+              "title": "Petjades de Camell",
+              "subtitle": "Porten dretes fins al balcó"
+            },
+            "golden-letter": {
+              "title": "Una Carta Daurada",
+              "subtitle": "Amb el segell dels Reis"
+            }
+          },
+          "companion": {
+            "question": "Quin Rei acompanya {name} durant el repartiment?",
+            "melchor": {
+              "title": "Melcior",
+              "subtitle": "El més savi, i el més despistat"
+            },
+            "gaspar": {
+              "title": "Gaspar",
+              "subtitle": "Riu tan fort que tremolen les finestres"
+            },
+            "baltasar": {
+              "title": "Baltasar",
+              "subtitle": "Tranquil, espavilat i amb molta música"
+            }
+          },
+          "challenge": {
+            "question": "Quin problema tenen els Reis aquesta nit?",
+            "sleepy-camels": {
+              "title": "Camells Dormilegues",
+              "subtitle": "Ronquen i no hi ha qui els desperti"
+            },
+            "lost-map": {
+              "title": "El Mapa Volador",
+              "subtitle": "El vent se l'ha endut"
+            },
+            "torn-sack": {
+              "title": "El Sac Descosit",
+              "subtitle": "Els regals han rodolat per la ciutat"
+            }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "starry-night": "Nit Estelada",
+            "midnight": "Mitjanit",
+            "first-light": "Primera Llum"
+          },
+          "setting": {
+            "rooftops": "Teulades de la Ciutat",
+            "parade-street": "El Carrer de la Cavalcada",
+            "home-window": "La Finestra de Casa"
+          }
+        },
+        "endings": {
+          "dawn-delivery": {
+            "title": "Repartit a l'Alba",
+            "description": "L'últim regal arriba a casa just quan el cel es torna rosa."
+          },
+          "royal-badge": {
+            "title": "La Insígnia de Patge",
+            "description": "Els Reis li regalen una insígnia daurada per recordar la nit."
+          },
+          "sweet-coal": {
+            "title": "Carbó Dolç",
+            "description": "Al matí, al costat de les sabates, apareix la broma preferida d'en Gaspar."
+          }
+        }
       }
     }
   },
@@ -2853,7 +2942,9 @@
       },
       "digitalMore": "t'arriba per correu el mateix dia",
       "link": "Veure dates",
-      "dismiss": "Tancar avís"
+      "dismiss": "Tancar avís",
+      "secondBookMore": "i el 2n llibre en tapa tova a {price} IVA inclòs",
+      "blackFriday": "Black Friday: el 2n llibre en tapa tova a {price} IVA inclòs"
     },
     "footerLink": "Arriba a temps per Reis?",
     "seoCallout": "Arriba a temps? Consulta les dates límit de Nadal i Reis"
@@ -3377,5 +3468,138 @@
     "count": "{count, plural, one {# opinió} other {# opinions}}",
     "starsLabel": "{rating} de 5 estrelles",
     "verified": "Compra verificada"
+  },
+  "advent": {
+    "metaTitle": "Calendari d'Advent gratis: 24 contes amb el seu nom | Meapica",
+    "metaDescription": "De l'1 al 24 de desembre, una porta cada dia amb un conte curt per anar a dormir protagonitzat pel teu fill o la teva filla, amb el seu nom i el seu retrat. Gratis, al web i en PDF.",
+    "breadcrumb": "Calendari d'Advent",
+    "eyebrow": "Calendari d'Advent · Gratis",
+    "h1": "24 nits, 24 contes amb el seu nom",
+    "h1WithName": "24 nits, 24 contes amb {name}",
+    "lead": "De l'1 al 24 de desembre s'obre una porta cada dia. A darrere hi ha un conte curt per llegir abans d'anar a dormir, amb el seu nom i el seu retrat.",
+    "storiesFor": "Contes per a",
+    "change": "Canviar",
+    "portraitAlt": "Retrat {deName}",
+    "gridHeading": "Les portes",
+    "opensOn": "S'obre l'1 de desembre",
+    "gridNote": "Les portes obertes es queden obertes: si un dia se us passa, el conte us espera.",
+    "door": {
+      "open": "Obrir la porta {n}",
+      "locked": "Porta {n}: s'obre el {date}",
+      "opens": "{day} des.",
+      "today": "Avui",
+      "kicker": "Porta {n} · {date}",
+      "kickerOf": "Porta {n} de 24 · {date}",
+      "read": "Llegir el conte",
+      "pdf": "PDF",
+      "downloadPdf": "Descarregar en PDF",
+      "share": "Compartir",
+      "copied": "Enllaç copiat",
+      "tomorrow": "Demà s'obre la porta {n}.",
+      "last": "Era l'última porta. Bon Nadal!",
+      "back": "Calendari"
+    },
+    "teaser": {
+      "kicker": "Porta 1 · 1 de desembre",
+      "title": "La primera porta s'obre l'1 de desembre",
+      "text": "Apunta-t'hi i aquell matí et portem el primer conte al correu."
+    },
+    "compilation": {
+      "title": "El seu llibre d'Advent",
+      "text": "Els 24 contes junts, en un sol PDF per imprimir.",
+      "cta": "Descarregar el llibre en PDF"
+    },
+    "chooser": {
+      "title": "Per a qui són els contes?",
+      "text": "Amb el seu retrat a l'aquarel·la, cada conte és seu.",
+      "create": "Crear el seu personatge",
+      "createHint": "El seu nom i un retrat que s'hi assembla. Gratis, en un parell de minuts. Després et serveix per al seu llibre.",
+      "or": "o, de moment",
+      "nameLabel": "Només el seu nom",
+      "namePlaceholder": "Ex.: Martina",
+      "read": "Llegir",
+      "genderLabel": "Els contes parlen de…",
+      "girl": "Una nena",
+      "boy": "Un nen",
+      "neutral": "Prefereixo no dir-ho",
+      "nameError": "Escriu el seu nom per llegir els contes.",
+      "pickFirst": "Primer, digues-nos per a qui són els contes.",
+      "useSaved": "Tornar a {name}, el seu personatge"
+    },
+    "builder": {
+      "title": "El seu personatge",
+      "intro": "Tria com és i el pintem a l'aquarel·la. El desem per als seus contes i per al seu llibre.",
+      "nameLabel": "El seu nom",
+      "ageLabel": "Edat",
+      "years": "{age} anys",
+      "save": "Desar i llegir",
+      "cancel": "Cancel·lar",
+      "nameError": "Escriu el seu nom.",
+      "error": "No hem pogut desar el seu personatge. Torna-ho a provar d'aquí a una estona.",
+      "captchaFailed": "No hem pogut comprovar que ets una persona. Torna a prémer el botó.",
+      "ageError": "Tria la seva edat."
+    },
+    "signup": {
+      "title": "Cada matí, la porta al teu correu",
+      "titleTeaser": "T'avisem l'1 de desembre?",
+      "consent": "Obre'm la porta cada matí: un correu al dia de l'1 al 24 de desembre amb el conte en PDF. Et dones de baixa quan vulguis.",
+      "emailLabel": "Correu",
+      "emailPlaceholder": "el.teu@correu.cat",
+      "submit": "Apuntar-me",
+      "portraitNote": "Arribarà amb el seu retrat, perquè és el correu del teu compte.",
+      "nameOnlyNote": "Arribarà amb el seu nom. El retrat només va al correu del teu compte.",
+      "privacy": "Només fem servir el teu correu per a aquests missatges. <link>Política de privacitat</link>.",
+      "done": "Fet! De l'1 al 24 de desembre, cada matí t'arribarà la seva porta.",
+      "doneOpen": "Fet! Cada matí t'arribarà la seva porta, fins al 24 de desembre.",
+      "consentError": "Marca la casella per rebre els correus.",
+      "emailError": "Revisa el correu: sembla que hi falta alguna cosa.",
+      "needName": "Abans, digues-nos el seu nom a dalt.",
+      "error": "No t'hem pogut apuntar. Torna-ho a provar d'aquí a una estona.",
+      "donePending": "T'hem enviat un correu per confirmar. Obre l'enllaç i prem «Confirmar»: fins aleshores no t'enviarem cap porta."
+    },
+    "book": {
+      "kicker": "Després del 24",
+      "heading": "I l'aventura sencera, amb {name} a cada pàgina",
+      "headingNoName": "I l'aventura sencera, amb el seu nom a cada pàgina",
+      "text": "Tria el seu món i els seus tres capítols. {pages} pàgines pintades a l'aquarel·la, imprès i a casa teva. El veus abans de pagar.",
+      "mobileHeading": "El conte sencer, amb {name} a cada pàgina",
+      "mobileHeadingNoName": "El conte sencer, amb el seu nom a cada pàgina",
+      "mobileText": "{pages} pàgines pintades a l'aquarel·la. Tu tries la seva aventura i el veus abans de pagar.",
+      "cta": "Crear el llibre {deName}",
+      "ctaNoName": "Crear el seu llibre",
+      "from": "des de {price} IVA inclòs · Enviament gratuït",
+      "pack": "i el 2n llibre en tapa tova a {price} IVA inclòs",
+      "deadline": "Per Reis, demana'l fins al {date}",
+      "late": "El PDF arriba a l'instant: {price} IVA inclòs"
+    },
+    "reyes": {
+      "lead": "Història exclusiva de Reis:",
+      "text": "«Patge Reial per una Nit», amb {name} ajudant els Reis d'Orient la nit del 5 de gener. Només fins al {date}.",
+      "link": "Veure-la"
+    },
+    "unsubscribe": {
+      "metaTitle": "Donar-se de baixa del Calendari d'Advent",
+      "title": "Deixem d'obrir-te les portes?",
+      "body": "Deixaràs de rebre els correus del Calendari d'Advent. Les portes continuen al web quan vulguis.",
+      "button": "Donar-me de baixa",
+      "doneTitle": "Fet",
+      "doneBody": "No t'enviarem més portes del Calendari d'Advent. Els contes continuen al web.",
+      "invalidTitle": "Aquest enllaç no funciona",
+      "invalidBody": "Potser està tallat. Escriu-nos a <mail>{email}</mail> i et donem de baixa.",
+      "error": "No t'hem pogut donar de baixa. Torna-ho a provar o escriu-nos a <mail>{email}</mail>.",
+      "back": "Tornar al calendari"
+    },
+    "confirm": {
+      "metaTitle": "Confirmar el Calendari d'Advent",
+      "title": "Confirma el teu correu",
+      "body": "Prem el botó per començar a rebre cada matí, de l'1 al 24 de desembre, la porta del dia amb el conte en PDF.",
+      "button": "Confirmar",
+      "doneTitle": "Confirmat!",
+      "doneBody": "Cada matí de l'1 al 24 de desembre t'arribarà la seva porta. Et pots donar de baixa des de qualsevol dels correus.",
+      "invalidTitle": "Aquest enllaç no funciona",
+      "invalidBody": "Potser està tallat o ja t'has donat de baixa. Torna-t'hi a apuntar al calendari o escriu-nos a <mail>{email}</mail>.",
+      "error": "No ho hem pogut confirmar. Torna-ho a provar o escriu-nos a <mail>{email}</mail>.",
+      "back": "Anar al calendari"
+    }
   }
 }

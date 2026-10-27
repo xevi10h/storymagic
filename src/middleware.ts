@@ -135,6 +135,8 @@ export async function middleware(request: NextRequest) {
         pathWithoutLocale !== "/" &&
         !pathWithoutLocale.startsWith("/preview/") &&
         pathWithoutLocale !== "/unsubscribe" &&
+        pathWithoutLocale !== "/advent/unsubscribe" &&
+        pathWithoutLocale !== "/advent/confirm" &&
         pathWithoutLocale !== "/review"
       ) {
         const rootUrl = request.nextUrl.clone();
@@ -201,7 +203,13 @@ export async function middleware(request: NextRequest) {
   }
 
   // Share links carry a private token: never index them, never let a shared cache keep them.
-  if (pathWithoutLocale.startsWith("/preview/") || pathWithoutLocale === "/unsubscribe" || pathWithoutLocale === "/review") {
+  if (
+    pathWithoutLocale.startsWith("/preview/") ||
+    pathWithoutLocale === "/unsubscribe" ||
+    pathWithoutLocale === "/advent/unsubscribe" ||
+    pathWithoutLocale === "/advent/confirm" ||
+    pathWithoutLocale === "/review"
+  ) {
     response.headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
     response.headers.set("Referrer-Policy", "no-referrer");
   }

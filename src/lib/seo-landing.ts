@@ -3,7 +3,7 @@
 // story themes) from a single config. English slugs (project SEO convention);
 // all visible/meta content is localized via the `seo` message namespace.
 
-import { STORY_TEMPLATES } from "@/lib/create-store";
+import { EVERGREEN_TEMPLATES } from "@/lib/create-store";
 import { AGE_BANDS } from "@/lib/product-facts";
 
 export type SeoPageType = "gifts" | "ages" | "themes";
@@ -74,28 +74,28 @@ export const SEO_HUB_HEADING_KEY: Record<SeoPageType, string> = {
   themes: "nav.themeHeading",
 };
 
-/** Templates featured on a page, as create-store template ids. */
+/** Templates featured on a page, as create-store template ids (evergreen worlds only: SEO pages outlive a season). */
 export function featuredTemplateIds(type: SeoPageType, slug: string): string[] {
   if (type === "ages") {
     const [min, max] = slug.split("-").map(Number);
-    return STORY_TEMPLATES.filter(
+    return EVERGREEN_TEMPLATES.filter(
       (t) => t.ageMin <= max && t.ageMax >= min,
     ).map((t) => t.id);
   }
 
   if (type === "themes") {
     const mainId = THEME_TEMPLATE[slug];
-    const main = STORY_TEMPLATES.find((t) => t.id === mainId);
-    if (!main) return STORY_TEMPLATES.slice(0, 4).map((t) => t.id);
+    const main = EVERGREEN_TEMPLATES.find((t) => t.id === mainId);
+    if (!main) return EVERGREEN_TEMPLATES.slice(0, 4).map((t) => t.id);
     // Main template first, then up to 3 others sharing an emotional tag.
-    const related = STORY_TEMPLATES.filter(
+    const related = EVERGREEN_TEMPLATES.filter(
       (t) => t.id !== mainId && t.tags.some((tag) => main.tags.includes(tag)),
     ).slice(0, 3);
     return [mainId, ...related.map((t) => t.id)];
   }
 
   // gifts: show a diverse curated set across ages/themes.
-  return STORY_TEMPLATES.slice(0, 8).map((t) => t.id);
+  return EVERGREEN_TEMPLATES.slice(0, 8).map((t) => t.id);
 }
 
 /** Primary CTA deep-link into the creation flow, prefilling the theme template. */

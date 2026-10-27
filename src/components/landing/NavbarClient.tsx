@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import LocaleSwitcher from "@/components/LocaleSwitcher";
@@ -9,6 +9,7 @@ import BrandLogo from "@/components/BrandLogo";
 import SeasonalBanner from "@/components/seasonal/SeasonalBanner";
 import { NAV_HEIGHT_SCRIPT } from "@/components/seasonal/season-scripts";
 import { brandBadge, buttonClass, cx, focusRing } from "@/components/ui";
+import { ADVENT_PATH, adventAnnounced } from "@/lib/advent/calendar";
 
 type NavUser = { email?: string; user_metadata?: { full_name?: string; avatar_url?: string } };
 
@@ -132,6 +133,7 @@ function UserMenu({ user, onSignOut }: { user: NavUser; onSignOut: () => void })
  */
 export default function NavbarClient({ seasonToday }: { seasonToday: string | null }) {
   const t = useTranslations("nav");
+  const locale = useLocale();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user: sessionUser, loading, signOut } = useAuth();
   // A guest (anonymous session) has no account yet: show "Entrar", never an avatar menu.
@@ -148,6 +150,8 @@ export default function NavbarClient({ seasonToday }: { seasonToday: string | nu
     { label: t("books"), href: "/#catalog" },
     { label: t("sample"), href: "/examples" },
     { label: t("faq"), href: "/#faq" },
+    // Advent calendar (es/ca, 15 Nov – 24 Dec): the only seasonal nav entry.
+    ...(seasonToday && adventAnnounced(seasonToday, locale) ? [{ label: t("advent"), href: ADVENT_PATH }] : []),
   ];
 
   // Expose the header height (banner included) to the page.

@@ -117,7 +117,7 @@ export default async function LegalPage({ params }: PageProps) {
                 {t(`${id}.title`)}
               </Heading>
               <p className="text-xs text-text-muted mb-8">
-                {t("lastUpdated", { date: "2026-10-19" })}
+                {t("lastUpdated", { date: "2026-10-27" })}
               </p>
               <LegalSection t={t} sectionKey={id} sectionCount={sectionCount} />
             </article>

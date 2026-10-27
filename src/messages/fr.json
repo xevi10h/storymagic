@@ -924,7 +924,7 @@
       "section3Title": "3. Finalité du traitement",
       "section3Text": "Nous utilisons vos données exclusivement pour : créer l'histoire personnalisée et son personnage illustré, traiter le paiement et la livraison, et vous contacter au sujet de votre commande. Nous ne vendons jamais de données à des tiers.",
       "section4Title": "4. Base légale",
-      "section4Text": "Créer, prévisualiser et imprimer votre livre, gérer votre compte, le paiement et la livraison : exécution du contrat que vous nous demandez (art. 6.1.b RGPD). Photo de l'enfant : consentement explicite de sa mère, de son père ou de son tuteur légal (art. 6.1.a RGPD et art. 7 de la LOPDGDD espagnole), que vous pouvez retirer à tout moment. Newsletter et liste d'attente : votre consentement (art. 6.1.a RGPD), que vous pouvez retirer quand vous le souhaitez. Conservation des factures et des registres comptables : obligation légale (art. 6.1.c RGPD). Sécurité du service et prévention des abus (par exemple, limites d'utilisation) : intérêt légitime (art. 6.1.f RGPD). Savoir quel canal vous a amené jusqu'à nous lorsque vous créez un livre (la campagne ou le site web d'origine de cette visite, sans cookies ni identifiants de votre appareil), afin de mesurer quels canaux fonctionnent au moyen de statistiques agrégées : intérêt légitime (art. 6.1.f RGPD) ; ces données sont supprimées avec le livre. Mesure de nos publicités avec Meta et TikTok et statistiques de visite et d'utilisation avec Google Analytics et PostHog (cookies publicitaires et de mesure d'audience, et événement d'achat) : votre consentement (art. 6.1.a RGPD), que vous pouvez retirer via « Paramètres des cookies ». Rappels de votre aperçu par e-mail (3 au maximum, pendant 3 jours, uniquement si vous cochez la case en demandant l'aperçu) : votre consentement (art. 6.1.a RGPD et art. 21.1 LSSI), que vous pouvez retirer en vous désabonnant depuis n'importe lequel de ces e-mails. Nous conservons la date, la langue et la version du texte accepté comme preuve du consentement. Une seule demande d'avis par e-mail quelques jours après la réception de votre commande : intérêt légitime (art. 6.1.f RGPD et art. 21.2 LSSI) ; nous ne l'envoyons pas si vous avez coché que vous ne souhaitez pas d'offres lors du paiement, et vous pouvez vous désabonner depuis ce même e-mail. Si vous publiez votre avis, nous affichons sur le site votre note, votre texte et le nom que vous choisissez, avec votre consentement (art. 6.1.a RGPD), que vous pouvez retirer en nous écrivant.",
+      "section4Text": "Créer, prévisualiser et imprimer votre livre, gérer votre compte, le paiement et la livraison : exécution du contrat que vous nous demandez (art. 6.1.b RGPD). Photo de l'enfant : consentement explicite de sa mère, de son père ou de son tuteur légal (art. 6.1.a RGPD et art. 7 de la LOPDGDD espagnole), que vous pouvez retirer à tout moment. Newsletter, liste d'attente et e-mails quotidiens du calendrier de l'Avent (du 1er au 24 décembre) : votre consentement (art. 6.1.a RGPD), que vous pouvez retirer quand vous le souhaitez. Conservation des factures et des registres comptables : obligation légale (art. 6.1.c RGPD). Sécurité du service et prévention des abus (par exemple, limites d'utilisation) : intérêt légitime (art. 6.1.f RGPD). Savoir quel canal vous a amené jusqu'à nous lorsque vous créez un livre (la campagne ou le site web d'origine de cette visite, sans cookies ni identifiants de votre appareil), afin de mesurer quels canaux fonctionnent au moyen de statistiques agrégées : intérêt légitime (art. 6.1.f RGPD) ; ces données sont supprimées avec le livre. Mesure de nos publicités avec Meta et TikTok et statistiques de visite et d'utilisation avec Google Analytics et PostHog (cookies publicitaires et de mesure d'audience, et événement d'achat) : votre consentement (art. 6.1.a RGPD), que vous pouvez retirer via « Paramètres des cookies ». Rappels de votre aperçu par e-mail (3 au maximum, pendant 3 jours, uniquement si vous cochez la case en demandant l'aperçu) : votre consentement (art. 6.1.a RGPD et art. 21.1 LSSI), que vous pouvez retirer en vous désabonnant depuis n'importe lequel de ces e-mails. Nous conservons la date, la langue et la version du texte accepté comme preuve du consentement. Une seule demande d'avis par e-mail quelques jours après la réception de votre commande : intérêt légitime (art. 6.1.f RGPD et art. 21.2 LSSI) ; nous ne l'envoyons pas si vous avez coché que vous ne souhaitez pas d'offres lors du paiement, et vous pouvez vous désabonner depuis ce même e-mail. Si vous publiez votre avis, nous affichons sur le site votre note, votre texte et le nom que vous choisissez, avec votre consentement (art. 6.1.a RGPD), que vous pouvez retirer en nous écrivant.",
       "section5Title": "5. Sous-traitants et transferts internationaux",
       "section5Text": "Pour fournir le service, nous travaillons avec des prestataires qui traitent les données uniquement selon nos instructions : OpenAI Ireland Ltd. (génération du texte et des illustrations de l'histoire et, si vous en téléchargez une, du personnage à partir de la photo), Supabase (base de données et stockage), Vercel (hébergement web), Stripe Payments Europe Ltd. (paiements), Gelato (impression et livraison), Resend (e-mails de commande et rappels que vous avez demandés), Cloudflare, Inc. (Turnstile, vérification anti-robots à la connexion et au démarrage en tant qu'invité) et, uniquement si vous acceptez les cookies publicitaires et d'analyse, Meta Platforms Ireland Ltd., TikTok Technology Limited (mesure de nos publicités) Google Ireland Limited (Google Analytics, statistiques de visites et d'achats) et PostHog, Inc. (statistiques d'utilisation du site et enregistrements anonymes de session, hébergés dans l'UE). OpenAI n'utilise pas les données que nous lui envoyons pour entraîner ses modèles et peut les conserver jusqu'à 30 jours pour détecter les abus. Lorsqu'un prestataire ou ses sous-traitants traitent des données en dehors de l'Espace économique européen (par exemple, aux États-Unis), le transfert repose sur les clauses contractuelles types de la Commission européenne ou sur le cadre de protection des données UE-États-Unis.",
       "section6Title": "6. Vos droits",
@@ -1167,13 +1167,15 @@
       "closeZoom": "Fermer",
       "zoomTitle": "Page agrandie",
       "rotateHint": "Tournez votre téléphone pour voir la double page",
-      "zoomPage": "Agrandir"
+      "zoomPage": "Agrandir",
+      "templateUnavailable": "Cette édition de saison ne peut plus être commandée et aucun paiement n'a été effectué. Vous pouvez créer un nouveau livre dans n'importe quel autre univers."
     },
     "errors": {
       "captchaFailed": "Nous n'avons pas pu vérifier que vous êtes une personne. Appuyez à nouveau sur le bouton : tout ce que vous avez écrit est conservé.",
       "saveFailed": "Nous n'avons pas pu enregistrer votre livre. Vérifiez votre connexion et appuyez à nouveau sur le bouton : tout ce que vous avez saisi est toujours là.",
       "dismiss": "Fermer",
-      "retry": "Réessayer"
+      "retry": "Réessayer",
+      "templateUnavailable": "Cet univers de saison n'est plus disponible. Choisissez un autre univers pour votre livre : tout le reste de ce que vous avez saisi est toujours là."
     },
     "cover": {
       "titlePrefix": "L'aventure de",
@@ -1404,7 +1406,9 @@
       },
       "linkCodeNote": "Code {code} de votre lien, appliqué au paiement.",
       "otherCode": "Vous avez un autre code ?",
-      "ownCodeNote": "Saisissez votre code sur la page de paiement."
+      "ownCodeNote": "Saisissez votre code sur la page de paiement.",
+      "secondBookPromo": "Avec ce livre, le 2e en couverture souple est à {price} TVA incluse (code valable jusqu'au {until})",
+      "secondBookPromoBlackFriday": "Black Friday : avec ce livre, le 2e en couverture souple est à {price} TVA incluse (code valable jusqu'au {until})"
     }
   },
   "checkout": {
@@ -1712,6 +1716,12 @@
         "insufficient_balance": "Votre solde a changé. Fermez et rouvrez votre espace.",
         "generic": "Cela n'a pas fonctionné. Réessayez dans un instant."
       }
+    },
+    "secondBook": {
+      "title": "Le 2e livre à {price}",
+      "line": "Un autre livre en couverture souple à {price} TVA incluse, pour un autre enfant ou une autre aventure. Il s'applique automatiquement en payant avec ce compte, et vous pouvez aussi offrir le code. Valable jusqu'au {date}.",
+      "codeLabel": "Votre code",
+      "cta": "Créer le 2e livre"
     }
   },
   "profile": {
@@ -2663,6 +2673,84 @@
             "description": "S'endort dans un lit de barbe à papa en rêvant d'y retourner."
           }
         }
+      },
+      "reyes": {
+        "title": "Page royal d'une Nuit",
+        "description": "La nuit du 5 janvier, les Rois mages ont un énorme problème et il leur faut un Page royal pour distribuer tous les cadeaux avant l'aube.",
+        "previewChapterTitle": "Toc, toc à la fenêtre",
+        "decisions": {
+          "encounter": {
+            "question": "Que trouve {name} à la fenêtre la nuit des Rois ?",
+            "three-crowns": {
+              "title": "Trois Couronnes",
+              "subtitle": "Elles brillent derrière le carreau"
+            },
+            "camel-footprints": {
+              "title": "Des Traces de Chameau",
+              "subtitle": "Elles mènent tout droit au balcon"
+            },
+            "golden-letter": {
+              "title": "Une Lettre Dorée",
+              "subtitle": "Avec le sceau des Rois"
+            }
+          },
+          "companion": {
+            "question": "Quel Roi accompagne {name} pendant la distribution ?",
+            "melchor": {
+              "title": "Melchior",
+              "subtitle": "Le plus sage, et le plus distrait"
+            },
+            "gaspar": {
+              "title": "Gaspard",
+              "subtitle": "Il rit si fort que les vitres tremblent"
+            },
+            "baltasar": {
+              "title": "Balthazar",
+              "subtitle": "Calme, malin et plein de musique"
+            }
+          },
+          "challenge": {
+            "question": "Quel problème ont les Rois cette nuit ?",
+            "sleepy-camels": {
+              "title": "Les Chameaux Dormeurs",
+              "subtitle": "Ils ronflent et rien ne les réveille"
+            },
+            "lost-map": {
+              "title": "La Carte Envolée",
+              "subtitle": "Le vent l'a emportée"
+            },
+            "torn-sack": {
+              "title": "Le Sac Décousu",
+              "subtitle": "Les cadeaux ont roulé dans toute la ville"
+            }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "starry-night": "Nuit Étoilée",
+            "midnight": "Minuit",
+            "first-light": "Premières Lueurs"
+          },
+          "setting": {
+            "rooftops": "Les Toits de la Ville",
+            "parade-street": "La Rue du Défilé",
+            "home-window": "La Fenêtre de la Maison"
+          }
+        },
+        "endings": {
+          "dawn-delivery": {
+            "title": "Livré à l'Aube",
+            "description": "Le tout dernier cadeau arrive chez lui juste quand le ciel devient rose."
+          },
+          "royal-badge": {
+            "title": "L'Insigne de Page",
+            "description": "Les Rois offrent un insigne doré en souvenir de cette nuit."
+          },
+          "sweet-coal": {
+            "title": "Le Charbon Sucré",
+            "description": "Le matin, à côté des chaussures, attend la blague préférée de Gaspard."
+          }
+        }
       }
     }
   },
@@ -2796,7 +2884,9 @@
       },
       "digitalMore": "il arrive par e-mail le jour même",
       "link": "Voir les dates",
-      "dismiss": "Fermer l'avis"
+      "dismiss": "Fermer l'avis",
+      "secondBookMore": "et le 2e livre en couverture souple à {price} TVA incluse",
+      "blackFriday": "Black Friday : le 2e livre en couverture souple à {price} TVA incluse"
     },
     "footerLink": "Arrivera-t-il pour les Rois mages ?",
     "seoCallout": "Arrivera-t-il à temps ? Voir les dates limites de Noël et des Rois mages"

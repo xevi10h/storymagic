@@ -21,7 +21,7 @@ import { orderAccessUrl } from "@/lib/auth/next-path";
 import { formatPrice, offerPrice, SELLER_IDENTITY, STRIPE_CATALOG, type CatalogItemId } from "@/lib/pricing";
 import type { UpsellOffer } from "@/lib/upsell";
 import { ORDER_NOTICES, type NoticeEventStrings, type OrderNoticeEvent } from "./order-notices";
-import { renderReferralBlock } from "./growth-emails";
+import { renderReferralBlock, renderSecondBookBlock } from "./growth-emails";
 
 export type OrderEmailEvent =
   | "order_confirmed"
@@ -93,6 +93,8 @@ export interface OrderEmailContext {
   upsell?: { offer: UpsellOffer; expiresAt: string | null } | null;
   /** The buyer's referral code ("10 € y 10 €"): commercial block, needs unsubscribeUrl too. */
   referral?: { code: string; url: string } | null;
+  /** The order's Pack Reyes code (second book in softcover at 19,90 €): commercial block, needs unsubscribeUrl too. */
+  secondBook?: { code: string; expiresAt: string } | null;
   /**
    * Unsubscribe page for this recipient. The offer block is commercial content
    * (LSSI 21.2): it is only rendered together with this link, and the caller only
@@ -820,12 +822,16 @@ export function buildOrderEmail(event: OrderEmailEvent, ctx: OrderEmailContext):
     ctx.referral && ctx.unsubscribeUrl
       ? renderReferralBlock(ctx.referral, loc, { ...s.offerOptOut, url: ctx.unsubscribeUrl })
       : null;
+  const secondBook =
+    ctx.secondBook && ctx.unsubscribeUrl
+      ? renderSecondBookBlock(ctx.secondBook, loc, { ...s.offerOptOut, url: ctx.unsubscribeUrl })
+      : null;
   const html = renderEmailLayout({
     heading: ev.heading,
     greeting: escapeHtml(greeting),
     paragraphs,
     cta: shownCta,
-    detailsHtml: (receipt ? renderReceiptHtml(receipt, s.receipt, loc) : (upsell?.html ?? "")) + (referral?.html ?? ""),
+    detailsHtml: (receipt ? renderReceiptHtml(receipt, s.receipt, loc) : (upsell?.html ?? "")) + (secondBook?.html ?? "") + (referral?.html ?? ""),
     infoHtml,
     signoff: s.signoff,
     lang: loc,
@@ -837,6 +843,7 @@ export function buildOrderEmail(event: OrderEmailEvent, ctx: OrderEmailContext):
   const textLines = [greeting, ...paragraphs.map(stripTags), `${shownCta.label}: ${shownCta.url}`];
   if (receipt) textLines.push(renderReceiptText(receipt, s.receipt, loc));
   if (upsell) textLines.push(upsell.text);
+  if (secondBook) textLines.push(secondBook.text);
   if (referral) textLines.push(referral.text);
   if (infoText) textLines.push(infoText);
   textLines.push("---", s.signoff);
@@ -845,6 +852,6 @@ export function buildOrderEmail(event: OrderEmailEvent, ctx: OrderEmailContext):
     subject: ev.subject(ctx),
     html,
     text: textLines.join("\n\n"),
-    commercial: !!upsell || !!referral,
+    commercial: !!upsell || !!referral || !!secondBook,
   };
 }

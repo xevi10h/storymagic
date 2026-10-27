@@ -705,7 +705,8 @@
     "createBook": "Crear su libro",
     "mainNav": "Navegación principal",
     "user": "Usuario",
-    "language": "Idioma"
+    "language": "Idioma",
+    "advent": "Adviento"
   },
   "hero": {
     "eyebrow": "Cuentos personalizados para niños",
@@ -963,7 +964,7 @@
       "section3Title": "3. Finalidad del tratamiento",
       "section3Text": "Utilizamos tus datos exclusivamente para: generar el cuento personalizado y su personaje ilustrado, procesar el pago y envío, y comunicarnos contigo sobre tu pedido. Nunca vendemos datos a terceros.",
       "section4Title": "4. Base legal",
-      "section4Text": "Crear, previsualizar e imprimir tu libro, gestionar tu cuenta, el pago y el envío: ejecución del contrato que nos pides (art. 6.1.b RGPD). Foto del niño/a: consentimiento explícito de su madre, padre o tutor legal (art. 6.1.a RGPD y art. 7 LOPDGDD), que puedes retirar en cualquier momento. Newsletter y lista de espera: tu consentimiento (art. 6.1.a RGPD), que puedes retirar cuando quieras. Conservación de facturas y registros contables: obligación legal (art. 6.1.c RGPD). Seguridad del servicio y prevención de abusos (por ejemplo, límites de uso): interés legítimo (art. 6.1.f RGPD). Saber qué canal te trajo hasta nosotros cuando creas un libro (la campaña o el sitio web de origen de esa visita, sin cookies ni identificadores de tu dispositivo), para medir qué canales funcionan con estadísticas agregadas: interés legítimo (art. 6.1.f RGPD); se borra con el libro. Medición de nuestros anuncios con Meta y TikTok y estadísticas de visitas y de uso con Google Analytics y PostHog (cookies publicitarias y de análisis, y evento de compra): tu consentimiento (art. 6.1.a RGPD), que puedes retirar desde «Configurar cookies». Recordatorios de tu vista previa por email (como mucho 3, durante 3 días, solo si marcas la casilla al pedirnos la vista previa): tu consentimiento (art. 6.1.a RGPD y art. 21.1 LSSI), que puedes retirar dándote de baja desde cualquiera de esos correos. Guardamos la fecha, el idioma y la versión del texto que aceptaste como prueba del consentimiento. Una sola petición de opinión por email unos días después de recibir tu pedido: interés legítimo (art. 6.1.f RGPD y art. 21.2 LSSI); no te la enviamos si marcaste que no quieres ofertas al pagar, y puedes darte de baja desde ese mismo correo. Si publicas tu opinión, mostramos en la web tu puntuación, tu texto y el nombre que elijas, con tu consentimiento (art. 6.1.a RGPD), que puedes retirar escribiéndonos.",
+      "section4Text": "Crear, previsualizar e imprimir tu libro, gestionar tu cuenta, el pago y el envío: ejecución del contrato que nos pides (art. 6.1.b RGPD). Foto del niño/a: consentimiento explícito de su madre, padre o tutor legal (art. 6.1.a RGPD y art. 7 LOPDGDD), que puedes retirar en cualquier momento. Newsletter, lista de espera y emails diarios del Calendario de Adviento (del 1 al 24 de diciembre): tu consentimiento (art. 6.1.a RGPD), que puedes retirar cuando quieras. Conservación de facturas y registros contables: obligación legal (art. 6.1.c RGPD). Seguridad del servicio y prevención de abusos (por ejemplo, límites de uso): interés legítimo (art. 6.1.f RGPD). Saber qué canal te trajo hasta nosotros cuando creas un libro (la campaña o el sitio web de origen de esa visita, sin cookies ni identificadores de tu dispositivo), para medir qué canales funcionan con estadísticas agregadas: interés legítimo (art. 6.1.f RGPD); se borra con el libro. Medición de nuestros anuncios con Meta y TikTok y estadísticas de visitas y de uso con Google Analytics y PostHog (cookies publicitarias y de análisis, y evento de compra): tu consentimiento (art. 6.1.a RGPD), que puedes retirar desde «Configurar cookies». Recordatorios de tu vista previa por email (como mucho 3, durante 3 días, solo si marcas la casilla al pedirnos la vista previa): tu consentimiento (art. 6.1.a RGPD y art. 21.1 LSSI), que puedes retirar dándote de baja desde cualquiera de esos correos. Guardamos la fecha, el idioma y la versión del texto que aceptaste como prueba del consentimiento. Una sola petición de opinión por email unos días después de recibir tu pedido: interés legítimo (art. 6.1.f RGPD y art. 21.2 LSSI); no te la enviamos si marcaste que no quieres ofertas al pagar, y puedes darte de baja desde ese mismo correo. Si publicas tu opinión, mostramos en la web tu puntuación, tu texto y el nombre que elijas, con tu consentimiento (art. 6.1.a RGPD), que puedes retirar escribiéndonos.",
       "section5Title": "5. Encargados del tratamiento y transferencias internacionales",
       "section5Text": "Para prestar el servicio trabajamos con proveedores que tratan los datos solo siguiendo nuestras instrucciones: OpenAI Ireland Ltd. (generación del texto y las ilustraciones del cuento y, si la subes, del personaje a partir de la foto), Supabase (base de datos y almacenamiento), Vercel (alojamiento web), Stripe Payments Europe Ltd. (pagos), Gelato (impresión y envío), Resend (correos del pedido y recordatorios que hayas pedido), Cloudflare, Inc. (Turnstile, verificación anti-bots al iniciar sesión y al empezar como invitado) y, solo si aceptas las cookies publicitarias y de análisis, Meta Platforms Ireland Ltd., TikTok Technology Limited (medición de nuestros anuncios) Google Ireland Limited (Google Analytics, estadísticas de visitas y compras) y PostHog, Inc. (estadísticas de uso de la web y grabaciones anónimas de sesión, alojadas en la UE). OpenAI no usa los datos que le enviamos para entrenar sus modelos y puede conservarlos hasta 30 días para detectar abusos. Cuando un proveedor o sus subencargados tratan datos fuera del Espacio Económico Europeo (por ejemplo, en Estados Unidos), la transferencia se ampara en las cláusulas contractuales tipo aprobadas por la Comisión Europea o en el Marco de Privacidad de Datos UE-EE. UU.",
       "section6Title": "6. Tus derechos",
@@ -1206,13 +1207,15 @@
       "closeZoom": "Cerrar",
       "zoomTitle": "Página ampliada",
       "rotateHint": "Gira el móvil para ver la doble página",
-      "zoomPage": "Ampliar"
+      "zoomPage": "Ampliar",
+      "templateUnavailable": "Esta edición de temporada ya no se puede pedir y no se ha hecho ningún cargo. Puedes crear un cuento nuevo en cualquiera de los otros mundos."
     },
     "errors": {
       "captchaFailed": "No hemos podido comprobar que eres una persona. Vuelve a pulsar el botón: todo lo que has escrito sigue aquí.",
       "saveFailed": "No hemos podido guardar tu cuento. Revisa tu conexión y vuelve a pulsar el botón: todo lo que has escrito sigue aquí.",
       "dismiss": "Cerrar",
-      "retry": "Reintentar"
+      "retry": "Reintentar",
+      "templateUnavailable": "Este mundo de temporada ya no está disponible. Elige otro mundo para tu cuento: todo lo demás que has escrito sigue aquí."
     },
     "cover": {
       "titlePrefix": "La aventura de",
@@ -1443,7 +1446,9 @@
       },
       "linkCodeNote": "Código {code} del enlace, se aplica al pagar.",
       "otherCode": "¿Tienes otro código?",
-      "ownCodeNote": "Escribe tu código en la página de pago."
+      "ownCodeNote": "Escribe tu código en la página de pago.",
+      "secondBookPromo": "Con este libro, el 2.º en tapa blanda te sale a {price} IVA incluido (código válido hasta el {until})",
+      "secondBookPromoBlackFriday": "Black Friday: con este libro, el 2.º en tapa blanda te sale a {price} IVA incluido (código válido hasta el {until})"
     }
   },
   "checkout": {
@@ -1751,6 +1756,12 @@
         "insufficient_balance": "Tu saldo ha cambiado. Cierra y vuelve a abrir el panel.",
         "generic": "No se ha podido completar. Inténtalo de nuevo en un momento."
       }
+    },
+    "secondBook": {
+      "title": "El 2.º libro a {price}",
+      "line": "Otro cuento en tapa blanda a {price} IVA incluido, para otro niño o con otra aventura. Se aplica automáticamente al pagar con esta cuenta, y también puedes regalar el código. Válido hasta el {date}.",
+      "codeLabel": "Tu código",
+      "cta": "Crear el 2.º libro"
     }
   },
   "profile": {
@@ -2702,6 +2713,84 @@
             "description": "Se duerme en una cama de algodón de azúcar soñando con volver."
           }
         }
+      },
+      "reyes": {
+        "title": "Paje Real por una Noche",
+        "description": "La noche del 5 de enero, los Reyes Magos tienen un problema enorme y necesitan un Paje Real que les ayude a repartir los regalos antes del amanecer.",
+        "previewChapterTitle": "Toc, toc en la ventana",
+        "decisions": {
+          "encounter": {
+            "question": "¿Qué encuentra {name} en la ventana la noche de Reyes?",
+            "three-crowns": {
+              "title": "Tres Coronas",
+              "subtitle": "Brillan al otro lado del cristal"
+            },
+            "camel-footprints": {
+              "title": "Huellas de Camello",
+              "subtitle": "Llevan derechas hasta el balcón"
+            },
+            "golden-letter": {
+              "title": "Una Carta Dorada",
+              "subtitle": "Con el sello de los Reyes"
+            }
+          },
+          "companion": {
+            "question": "¿Qué Rey acompaña a {name} durante el reparto?",
+            "melchor": {
+              "title": "Melchor",
+              "subtitle": "El más sabio, y el más despistado"
+            },
+            "gaspar": {
+              "title": "Gaspar",
+              "subtitle": "Se ríe tan fuerte que tiemblan las ventanas"
+            },
+            "baltasar": {
+              "title": "Baltasar",
+              "subtitle": "Tranquilo, listo y con mucha música"
+            }
+          },
+          "challenge": {
+            "question": "¿Qué problema tienen los Reyes esta noche?",
+            "sleepy-camels": {
+              "title": "Camellos Dormilones",
+              "subtitle": "Roncan y no hay quien los despierte"
+            },
+            "lost-map": {
+              "title": "El Mapa Volador",
+              "subtitle": "El viento se lo ha llevado"
+            },
+            "torn-sack": {
+              "title": "El Saco Descosido",
+              "subtitle": "Los regalos han rodado por la ciudad"
+            }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "starry-night": "Noche Estrellada",
+            "midnight": "Medianoche",
+            "first-light": "Primera Luz"
+          },
+          "setting": {
+            "rooftops": "Tejados de la Ciudad",
+            "parade-street": "La Calle de la Cabalgata",
+            "home-window": "La Ventana de Casa"
+          }
+        },
+        "endings": {
+          "dawn-delivery": {
+            "title": "Repartido al Alba",
+            "description": "El último regalo llega a su casa justo cuando el cielo se vuelve rosa."
+          },
+          "royal-badge": {
+            "title": "La Insignia de Paje",
+            "description": "Los Reyes le regalan una insignia dorada para recordar la noche."
+          },
+          "sweet-coal": {
+            "title": "Carbón Dulce",
+            "description": "Por la mañana, junto a los zapatos, aparece la broma favorita de Gaspar."
+          }
+        }
       }
     }
   },
@@ -2835,7 +2924,9 @@
       },
       "digitalMore": "te llega por correo el mismo día",
       "link": "Ver fechas",
-      "dismiss": "Cerrar aviso"
+      "dismiss": "Cerrar aviso",
+      "secondBookMore": "y el 2.º libro en tapa blanda a {price} IVA incluido",
+      "blackFriday": "Black Friday: el 2.º libro en tapa blanda a {price} IVA incluido"
     },
     "footerLink": "¿Llega a tiempo para Reyes?",
     "seoCallout": "¿Llega a tiempo? Consulta las fechas límite de Navidad y Reyes"
@@ -3359,5 +3450,138 @@
     "count": "{count, plural, one {# opinión} other {# opiniones}}",
     "starsLabel": "{rating} de 5 estrellas",
     "verified": "Compra verificada"
+  },
+  "advent": {
+    "metaTitle": "Calendario de Adviento gratis: 24 cuentos con su nombre | Meapica",
+    "metaDescription": "Del 1 al 24 de diciembre, una puerta cada día con un cuento corto para dormir protagonizado por tu hijo o tu hija, con su nombre y su retrato. Gratis, en la web y en PDF.",
+    "breadcrumb": "Calendario de Adviento",
+    "eyebrow": "Calendario de Adviento · Gratis",
+    "h1": "24 noches, 24 cuentos con su nombre",
+    "h1WithName": "24 noches, 24 cuentos con {name}",
+    "lead": "Del 1 al 24 de diciembre se abre una puerta cada día. Detrás hay un cuento corto para leer antes de dormir, con su nombre y su retrato.",
+    "storiesFor": "Cuentos para",
+    "change": "Cambiar",
+    "portraitAlt": "Retrato de {name}",
+    "gridHeading": "Las puertas",
+    "opensOn": "Abre el 1 de diciembre",
+    "gridNote": "Las puertas abiertas se quedan abiertas: si un día se os pasa, el cuento os espera.",
+    "door": {
+      "open": "Abrir la puerta {n}",
+      "locked": "Puerta {n}: se abre el {date}",
+      "opens": "{day} dic",
+      "today": "Hoy",
+      "kicker": "Puerta {n} · {date}",
+      "kickerOf": "Puerta {n} de 24 · {date}",
+      "read": "Leer el cuento",
+      "pdf": "PDF",
+      "downloadPdf": "Descargar en PDF",
+      "share": "Compartir",
+      "copied": "Enlace copiado",
+      "tomorrow": "Mañana se abre la puerta {n}.",
+      "last": "Era la última puerta. ¡Feliz Nochebuena!",
+      "back": "Calendario"
+    },
+    "teaser": {
+      "kicker": "Puerta 1 · 1 de diciembre",
+      "title": "La primera puerta se abre el 1 de diciembre",
+      "text": "Apúntate y esa mañana te llevamos el primer cuento al correo."
+    },
+    "compilation": {
+      "title": "Su libro de Adviento",
+      "text": "Los 24 cuentos juntos, en un solo PDF para imprimir.",
+      "cta": "Descargar el libro en PDF"
+    },
+    "chooser": {
+      "title": "¿Para quién son los cuentos?",
+      "text": "Con su retrato a acuarela, cada cuento es suyo.",
+      "create": "Crear su personaje",
+      "createHint": "Su nombre y un retrato que se le parece. Gratis, en un par de minutos. Luego te sirve para su libro.",
+      "or": "o, de momento",
+      "nameLabel": "Solo su nombre",
+      "namePlaceholder": "Ej.: Lucía",
+      "read": "Leer",
+      "genderLabel": "Los cuentos hablan de…",
+      "girl": "Una niña",
+      "boy": "Un niño",
+      "neutral": "Prefiero no decirlo",
+      "nameError": "Escribe su nombre para leer los cuentos.",
+      "pickFirst": "Primero, dinos para quién son los cuentos.",
+      "useSaved": "Volver a {name}, su personaje"
+    },
+    "builder": {
+      "title": "Su personaje",
+      "intro": "Elige cómo es y lo pintamos a acuarela. Lo guardamos para sus cuentos y para su libro.",
+      "nameLabel": "Su nombre",
+      "ageLabel": "Edad",
+      "years": "{age} años",
+      "save": "Guardar y leer",
+      "cancel": "Cancelar",
+      "nameError": "Escribe su nombre.",
+      "error": "No hemos podido guardar su personaje. Vuelve a probar en un momento.",
+      "captchaFailed": "No hemos podido comprobar que eres una persona. Vuelve a pulsar el botón.",
+      "ageError": "Elige su edad."
+    },
+    "signup": {
+      "title": "Cada mañana, la puerta en tu correo",
+      "titleTeaser": "¿Te avisamos el 1 de diciembre?",
+      "consent": "Ábreme la puerta cada mañana: un email al día del 1 al 24 de diciembre con el cuento en PDF. Te das de baja cuando quieras.",
+      "emailLabel": "Correo",
+      "emailPlaceholder": "tu@correo.com",
+      "submit": "Apuntarme",
+      "portraitNote": "Llegará con su retrato, porque es el correo de tu cuenta.",
+      "nameOnlyNote": "Llegará con su nombre. El retrato solo va al correo de tu cuenta.",
+      "privacy": "Solo usamos tu correo para estos emails. <link>Política de privacidad</link>.",
+      "done": "¡Hecho! Del 1 al 24 de diciembre, cada mañana te llegará su puerta.",
+      "doneOpen": "¡Hecho! Cada mañana te llegará su puerta, hasta el 24 de diciembre.",
+      "consentError": "Marca la casilla para recibir los emails.",
+      "emailError": "Revisa el correo: parece que falta algo.",
+      "needName": "Antes, dinos su nombre arriba.",
+      "error": "No hemos podido apuntarte. Vuelve a probar en un momento.",
+      "donePending": "Te hemos enviado un correo para confirmar. Abre el enlace y pulsa «Confirmar»: hasta entonces no te enviaremos ninguna puerta."
+    },
+    "book": {
+      "kicker": "Después del 24",
+      "heading": "Y la aventura entera, con {name} en cada página",
+      "headingNoName": "Y la aventura entera, con su nombre en cada página",
+      "text": "Elige su mundo y sus tres capítulos. {pages} páginas pintadas a acuarela, impreso y en tu casa. Lo ves antes de pagar.",
+      "mobileHeading": "El cuento entero, con {name} en cada página",
+      "mobileHeadingNoName": "El cuento entero, con su nombre en cada página",
+      "mobileText": "{pages} páginas pintadas a acuarela. Tú eliges su aventura y lo ves antes de pagar.",
+      "cta": "Crear el libro {deName}",
+      "ctaNoName": "Crear su libro",
+      "from": "desde {price} IVA incluido · Envío gratis",
+      "pack": "y el 2.º libro en tapa blanda a {price} IVA incluido",
+      "deadline": "Para Reyes, pide hasta el {date}",
+      "late": "El PDF llega al momento: {price} IVA incluido"
+    },
+    "reyes": {
+      "lead": "Historia exclusiva de Reyes:",
+      "text": "«Paje Real por una Noche», con {name} ayudando a los Reyes Magos la noche del 5 de enero. Solo hasta el {date}.",
+      "link": "Verla"
+    },
+    "unsubscribe": {
+      "metaTitle": "Darse de baja del Calendario de Adviento",
+      "title": "¿Dejamos de abrirte las puertas?",
+      "body": "Dejarás de recibir los emails del Calendario de Adviento. Las puertas siguen en la web cuando quieras.",
+      "button": "Darme de baja",
+      "doneTitle": "Hecho",
+      "doneBody": "No te enviaremos más puertas del Calendario de Adviento. Los cuentos siguen en la web.",
+      "invalidTitle": "Este enlace no funciona",
+      "invalidBody": "Puede que esté cortado. Escríbenos a <mail>{email}</mail> y te damos de baja.",
+      "error": "No hemos podido darte de baja. Vuelve a probar o escríbenos a <mail>{email}</mail>.",
+      "back": "Volver al calendario"
+    },
+    "confirm": {
+      "metaTitle": "Confirmar el Calendario de Adviento",
+      "title": "Confirma tu correo",
+      "body": "Pulsa el botón para empezar a recibir cada mañana, del 1 al 24 de diciembre, la puerta del día con el cuento en PDF.",
+      "button": "Confirmar",
+      "doneTitle": "¡Confirmado!",
+      "doneBody": "Cada mañana del 1 al 24 de diciembre te llegará su puerta. Puedes darte de baja desde cualquiera de los emails.",
+      "invalidTitle": "Este enlace no funciona",
+      "invalidBody": "Puede que esté cortado o que ya te hayas dado de baja. Vuelve a apuntarte en el calendario o escríbenos a <mail>{email}</mail>.",
+      "error": "No hemos podido confirmar. Vuelve a probar o escríbenos a <mail>{email}</mail>.",
+      "back": "Ir al calendario"
+    }
   }
 }

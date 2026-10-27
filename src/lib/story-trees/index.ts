@@ -9,6 +9,7 @@ import { castleTree } from "./castle";
 import { safariTree } from "./safari";
 import { inventorTree } from "./inventor";
 import { candyTree } from "./candy";
+import { reyesTree } from "./reyes";
 
 export { tx } from "./types";
 export type { StoryTree, TreeNode, TreeOption, LocalizedText, Locale } from "./types";
@@ -26,6 +27,7 @@ export const STORY_TREES: Record<string, StoryTree> = {
   safari: safariTree,
   inventor: inventorTree,
   candy: candyTree,
+  reyes: reyesTree,
 };
 
 export function getStoryTree(templateId: string): StoryTree | null {

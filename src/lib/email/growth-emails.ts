@@ -1,5 +1,5 @@
 // Emails of the referral programme and the gift vouchers (es / ca / en / fr), plus the
-// referral block shown in the order emails. Same shell and voice as order-emails.ts:
+// referral and Pack Reyes blocks shown in the order emails. Same shell and voice as order-emails.ts:
 // warm, direct, short paragraphs, no em-dashes.
 
 import { EMAIL_COLORS, escapeHtml, renderEmailLayout } from "./layout";
@@ -8,6 +8,7 @@ import { buyerFirstName } from "./order-emails";
 import { SUPPORT_EMAIL } from "@/lib/support";
 import { REFERRAL_DISCOUNT_CENTS, VOUCHER_WITHDRAWAL_DAYS, type VoucherFormat } from "@/lib/promo-codes";
 import type { GiftVoucherRow } from "@/lib/fulfilment/db";
+import { SECOND_BOOK_PRICE_CENTS } from "@/lib/second-book";
 
 type Locale = "es" | "ca" | "en" | "fr";
 const LOCALES: Locale[] = ["es", "ca", "en", "fr"];
@@ -279,5 +280,53 @@ export function renderReferralBlock(
     <p style="margin:14px 0 0;font-size:12px;line-height:1.5;color:${C.muted};">${escapeHtml(optOut.lead)} <a href="${escapeHtml(optOut.url)}" style="color:${C.muted};text-decoration:underline;">${escapeHtml(optOut.link)}</a></p>
   </div>`;
   const text = `${s.title(a)}\n${s.body(a, referral.code)}\n${s.link}: ${referral.url}\n${optOut.lead} ${optOut.link}: ${optOut.url}`;
+  return { html, text };
+}
+
+// ── Pack Reyes block inside the order emails (commercial: only with an unsubscribe link) ──
+
+const SECOND_BOOK_BLOCK: Record<Locale, { title: (p: string) => string; body: (p: string, code: string, until: string) => string; link: string }> = {
+  es: {
+    title: (p) => `Para Reyes, el segundo libro a ${p}`,
+    body: (p, c, u) => `Con tu código ${c}, el próximo cuento en tapa blanda te sale a ${p} IVA incluido: para un hermano, un primo o con otra aventura. Puedes usarlo tú o regalárselo a otra familia. Válido hasta el ${u}.`,
+    link: "Crear el segundo libro",
+  },
+  ca: {
+    title: (p) => `Per Reis, el segon llibre a ${p}`,
+    body: (p, c, u) => `Amb el teu codi ${c}, el pròxim conte en tapa tova et surt a ${p} IVA inclòs: per a un germà, un cosí o amb una altra aventura. El pots fer servir tu o regalar-lo a una altra família. Vàlid fins al ${u}.`,
+    link: "Crear el segon llibre",
+  },
+  en: {
+    title: (p) => `For Three Kings' Day, a second book for ${p}`,
+    body: (p, c, u) => `With your code ${c}, your next softcover book is ${p} VAT included: for a sibling, a cousin or a different adventure. Use it yourself or give it to another family. Valid until ${u}.`,
+    link: "Create the second book",
+  },
+  fr: {
+    title: (p) => `Pour l'Épiphanie, le deuxième livre à ${p}`,
+    body: (p, c, u) => `Avec votre code ${c}, votre prochain livre en couverture souple est à ${p} TVA incluse : pour un frère, un cousin ou une autre aventure. Utilisez-le ou offrez-le à une autre famille. Valable jusqu'au ${u}.`,
+    link: "Créer le deuxième livre",
+  },
+};
+
+/** The Pack Reyes block (html + text) for an order email. */
+export function renderSecondBookBlock(
+  secondBook: { code: string; expiresAt: string },
+  locale: string,
+  optOut: { lead: string; link: string; url: string },
+): { html: string; text: string } {
+  const l = loc(locale);
+  const s = SECOND_BOOK_BLOCK[l];
+  const price = new Intl.NumberFormat(INTL[l].replace("en-GB", "en-IE"), { style: "currency", currency: "EUR" }).format(SECOND_BOOK_PRICE_CENTS / 100);
+  const until = longDate(secondBook.expiresAt, l);
+  const url = `${getSiteUrl()}/${l}/create`;
+  const C = EMAIL_COLORS;
+  const codeHtml = `<strong style="font-family:'SFMono-Regular',Menlo,Consolas,monospace;letter-spacing:0.08em;color:${C.heading};">${escapeHtml(secondBook.code)}</strong>`;
+  const html = `<div style="margin:0 0 24px;padding:18px 20px;border:1px solid ${C.border};border-radius:12px;background-color:${C.bg};">
+    <p style="margin:0 0 6px;font-size:16px;font-weight:700;color:${C.heading};">${escapeHtml(s.title(price))}</p>
+    <p style="margin:0 0 12px;font-size:14px;line-height:1.6;color:${C.body};">${escapeHtml(s.body(price, "\u0000", until)).replace("\u0000", codeHtml)}</p>
+    <p style="margin:0;font-size:14px;line-height:1.5;"><a href="${escapeHtml(url)}" style="color:${C.primaryText};font-weight:700;text-decoration:underline;">${escapeHtml(s.link)}</a></p>
+    <p style="margin:14px 0 0;font-size:12px;line-height:1.5;color:${C.muted};">${escapeHtml(optOut.lead)} <a href="${escapeHtml(optOut.url)}" style="color:${C.muted};text-decoration:underline;">${escapeHtml(optOut.link)}</a></p>
+  </div>`;
+  const text = `${s.title(price)}\n${s.body(price, secondBook.code, until)}\n${s.link}: ${url}\n${optOut.lead} ${optOut.link}: ${optOut.url}`;
   return { html, text };
 }

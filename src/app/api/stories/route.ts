@@ -6,9 +6,10 @@ import type { Json } from "@/lib/database.types";
 import { ownedPortraitPath } from "@/lib/storage/illustration-urls";
 import { avatarAssetPathSchema, characterLookShape } from "@/lib/character-look";
 import { formatChildName } from "@/lib/child-name";
+import { isTemplateAvailable } from "@/lib/create-store";
 import { ATTRIBUTION_CLICK_IDS, ATTRIBUTION_MAX, type Attribution } from "@/lib/tracking/attribution";
 
-const VALID_TEMPLATE_IDS = ["space", "forest", "superhero", "pirates", "chef", "dinosaurs", "castle", "safari", "inventor", "candy"] as const;
+const VALID_TEMPLATE_IDS = ["space", "forest", "superhero", "pirates", "chef", "dinosaurs", "castle", "safari", "inventor", "candy", "reyes"] as const;
 const VALID_MODES = ["solo", "juntos"] as const;
 const VALID_LOCALES = ["es", "ca", "en", "fr"] as const;
 
@@ -98,6 +99,14 @@ export async function POST(request: Request) {
   }
 
   const { character, templateId, creationMode, decisions, dedication, senderName, ending, portraitUrl, avatarAssetPath, recraftStyleId, locale, characterPrepId, attribution } = parsed.data;
+
+  // Seasonal worlds (e.g. "reyes") can only be started inside their window (Europe/Madrid).
+  if (!isTemplateAvailable(templateId)) {
+    return NextResponse.json(
+      { error: "template_unavailable", message: "This seasonal story world is no longer available." },
+      { status: 410 },
+    );
+  }
 
   // Reads use the caller's RLS client; writes use the service role (clients have no
   // write grants on product tables) with the owner pinned explicitly on every row.

@@ -18,10 +18,13 @@ import {
   type CODE_LENGTH,
   type VoucherFormat,
 } from "@/lib/promo-codes";
+import { SECOND_BOOK_COUPON_ID, SECOND_BOOK_DISCOUNT_CENTS } from "@/lib/second-book";
 
 export interface PromotionSetup {
   /** The 10 € referral coupon exists and is valid. */
   referral: boolean;
+  /** The Pack Reyes 15 € softcover coupon exists and is valid. */
+  secondBook: boolean;
   /** Per format: the Price that sells the voucher (null = voucher not sellable). */
   voucherPrices: Record<VoucherFormat, string | null>;
 }
@@ -47,19 +50,20 @@ async function couponOk(stripe: Stripe, id: string, check: (c: Stripe.Coupon) =>
 /** What is set up on the active Stripe account. Never throws; cached 10 min. */
 export async function getPromotionSetup(): Promise<PromotionSetup> {
   if (cached && Date.now() - cached.at < TTL_MS) return cached.value;
-  const none: PromotionSetup = { referral: false, voucherPrices: { hardcover: null, softcover: null, digital_pdf: null } };
+  const none: PromotionSetup = { referral: false, secondBook: false, voucherPrices: { hardcover: null, softcover: null, digital_pdf: null } };
   try {
     const stripe = getStripe();
-    const [catalog, referral, ...vouchers] = await Promise.all([
+    const [catalog, referral, secondBook, ...vouchers] = await Promise.all([
       getStripeCatalog(),
       couponOk(stripe, REFERRAL_COUPON_ID, (c) => c.amount_off === REFERRAL_DISCOUNT_CENTS && c.currency === "eur"),
+      couponOk(stripe, SECOND_BOOK_COUPON_ID, (c) => c.amount_off === SECOND_BOOK_DISCOUNT_CENTS && c.currency === "eur"),
       ...VOUCHER_FORMATS.map((f) => couponOk(stripe, VOUCHER_COUPON_IDS[f], (c) => c.percent_off === 100)),
     ]);
     const voucherPrices = { ...none.voucherPrices };
     VOUCHER_FORMATS.forEach((f, i) => {
       voucherPrices[f] = vouchers[i] ? (catalog.optionalPrices[VOUCHER_CATALOG_ITEMS[f]] ?? null) : null;
     });
-    const value = { referral, voucherPrices };
+    const value = { referral, secondBook, voucherPrices };
     cached = { at: Date.now(), value };
     return value;
   } catch (err) {

@@ -31,6 +31,7 @@ import {
 import { getStoryTree, tx } from "@/lib/story-trees";
 import { buildCharacterVisualDescription } from "./character-description";
 import { castLabel, worldLabel } from "./entity-label";
+import { applyFixedCast, fixedCastPrompt } from "./template-cast";
 import { callOpenAIStructured, type LLMUsage, type ReasoningEffort } from "./openai-http";
 import type { StoryInput, GeneratedStory, GeneratedScene, ArchitectOutput } from "./story-generator";
 import type { CastMember, VisualCast, WorldAsset } from "./visual-assets";
@@ -332,6 +333,11 @@ const TEMPLATE_TONES: Record<string, NarrativeTone> = {
     craft: "A dream where everything is edible and a little ridiculous; underneath, a story about sharing and what really makes something sweet. Synaesthesia welcome.",
     register: "delight, generosity, the difference between sweetness and kindness",
   },
+  reyes: {
+    voice: "Warm, funny and hushed, like a secret told on the most magical night of the year",
+    craft: "The Night of the Three Kings as families in Spain live it: shoes by the window, the letter to the Kings, water for the camels, roscón, the cabalgata, sweet coal only ever as Gaspar's joke (never a threat or a punishment). The Kings are kind, a little clumsy and very human; the child is not a helper but the one whose idea saves the night. Gentle hurry against dawn, never fear. Folk tradition only: no religious scenes, no nativity, no Bethlehem, no gold-frankincense-myrrh. Words of the tradition per book language: es Reyes Magos, Paje Real, roscón, carbón dulce, cabalgata · ca Reis d'Orient, Patge Reial, tortell de Reis (never \"roscó\"), carbó dolç, cavalcada · en the Three Kings, Royal Page, Kings' cake, sweet coal, parade · fr les Rois mages, Page royal, couronne des Rois, charbon en sucre, défilé.",
+    register: "excitement, belonging, the joy of giving, pride at being trusted",
+  },
 };
 
 // ── Mode craft + beat maps ───────────────────────────────────────────────────
@@ -534,6 +540,7 @@ export function buildPlanUserPrompt(input: StoryInput, spec: PlanSpec): string {
       : legacy.length
         ? `STORY DECISIONS (weave all of them)\n${legacy.join("\n")}`
         : "",
+    fixedCastPrompt(input.templateId, locale) ?? "",
     `ENDING\n${ending}`,
     input.dedication?.trim()
       ? "DEDICATION\nThe parent wrote their own dedication; it is printed separately on the first page. Do not write one and do not quote it."
@@ -873,17 +880,21 @@ function normalizeShot(shot: PlanShot, n: number, cast: PlanCastMember[], world:
 }
 
 /** Cast/world exactly as normalizeDraft stores them (shared with the streaming view so both agree byte for byte). */
-function normalizeBible(draftCast: PlanCastMember[], draftWorld: PlanWorldAsset[], childName: string): { cast: PlanCastMember[]; world: PlanWorldAsset[] } {
+function normalizeBible(draftCast: PlanCastMember[], draftWorld: PlanWorldAsset[], childName: string, templateId?: string): { cast: PlanCastMember[]; world: PlanWorldAsset[] } {
   return {
-    cast: draftCast
-      .filter((c) => c.id !== PLAN_CHILD_ID)
-      .map((c) => ({ ...c, label: castLabel({ ...c, label: scrubChildName(c.label ?? "", childName) }), visual: scrubChildName(c.visual, childName) })),
+    // A template's fixed characters (the Three Kings) always get their canonical look.
+    cast: applyFixedCast(
+      templateId,
+      draftCast
+        .filter((c) => c.id !== PLAN_CHILD_ID)
+        .map((c) => ({ ...c, label: castLabel({ ...c, label: scrubChildName(c.label ?? "", childName) }), visual: scrubChildName(c.visual, childName) })),
+    ),
     world: draftWorld.map((w) => ({ ...w, label: worldLabel({ ...w, label: scrubChildName(w.label ?? "", childName) }), visual: scrubChildName(w.visual, childName) })),
   };
 }
 
-export function normalizeDraft(draft: BookPlanDraft, spec: PlanSpec, childName: string, locale: string): BookPlanDraft {
-  const { cast, world } = normalizeBible(draft.cast, draft.world, childName);
+export function normalizeDraft(draft: BookPlanDraft, spec: PlanSpec, childName: string, locale: string, templateId?: string): BookPlanDraft {
+  const { cast, world } = normalizeBible(draft.cast, draft.world, childName, templateId);
 
   const byNumber = new Map(draft.scenes.map((s) => [s.sceneNumber, s]));
   const ordered = byNumber.size === SCENE_COUNT
@@ -984,13 +995,13 @@ const PartialBibleSchema = z.object({
  *   - `world` is complete once `cover` is present.
  * Returns null until the cast is complete.
  */
-export function readProgress(partial: unknown, spec: PlanSpec, childName: string): BookPlanProgress | null {
+export function readProgress(partial: unknown, spec: PlanSpec, childName: string, templateId?: string): BookPlanProgress | null {
   const bible = PartialBibleSchema.safeParse(partial);
   if (!bible.success || !bible.data.cast) return null;
   const castComplete = bible.data.world !== undefined || bible.data.cover !== undefined;
   if (!castComplete) return null;
   const worldComplete = bible.data.cover !== undefined && bible.data.world !== undefined;
-  const { cast, world } = normalizeBible(bible.data.cast, worldComplete ? bible.data.world! : [], childName);
+  const { cast, world } = normalizeBible(bible.data.cast, worldComplete ? bible.data.world! : [], childName, templateId);
   if (!bible.data.cover || !worldComplete) {
     return { title: bible.data.title, cast, world, cover: null, scenes: [] };
   }
@@ -1048,7 +1059,7 @@ export async function generateBookPlan(
   let reported = { ...none };
   const onPartial = opts?.onProgress
     ? (partial: unknown) => {
-        const progress = readProgress(partial, spec, input.childName);
+        const progress = readProgress(partial, spec, input.childName, input.templateId);
         if (!progress) return;
         const hasCover = !!progress.cover;
         if ((reported.cover && !hasCover) || progress.scenes.length < reported.scenes) reported = { ...none };
@@ -1072,7 +1083,7 @@ export async function generateBookPlan(
   });
   let usage = first.usage;
   let costUsd = first.costUsd ?? 0;
-  let draft = normalizeDraft(first.data, spec, input.childName, input.locale || "es");
+  let draft = normalizeDraft(first.data, spec, input.childName, input.locale || "es", input.templateId);
   const initialViolations = await checkPlan(draft, input, spec);
   let violations = initialViolations;
   const repairMs: number[] = [];

@@ -18,6 +18,8 @@
  *   --no-prep     render the child sheet inside the generate phase (in parallel
  *                 with the Book Plan) instead of reusing a prepared one
  *   --no-avatar   skip the avatar portrait (sheet anchored on the Bible text only)
+ *   --template=ID world to test (default forest) · --picks=0,1,0 option index per chapter
+ *   --locale=es|ca|en|fr book language (default es)
  */
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
@@ -44,6 +46,10 @@ const args = process.argv.slice(2);
 const usePrep = !args.includes("--no-prep");
 const useAvatar = !args.includes("--no-avatar");
 const BUDGET_USD = 1.5;
+const argValue = (name) => args.find((a) => a.startsWith(`--${name}=`))?.slice(name.length + 3);
+const templateId = argValue("template") ?? "forest";
+const picks = (argValue("picks") ?? "0,1,0").split(",").map(Number);
+const locale = argValue("locale") ?? "es";
 
 const { generateArchitect } = await import("../src/lib/ai/story-generator.ts");
 const { startPreviewSession } = await import("../src/lib/ai/preview-book.ts");
@@ -78,14 +84,14 @@ const input = {
   eyeColor: "#8d6e63",
   skinTone: "#d4a574",
   hairstyle: "curly",
-  templateId: "forest",
-  templateTitle: "El Bosque Mágico",
+  templateId,
+  templateTitle: getTemplateConfig(templateId)?.title ?? templateId,
   creationMode: "solo",
-  decisions: { treePath: treePath("forest", [0, 1, 0]) },
-  endingChoice: getTemplateConfig("forest")?.endings[0]?.id,
+  decisions: { treePath: treePath(templateId, picks) },
+  endingChoice: getTemplateConfig(templateId)?.endings[0]?.id,
   dedication: "Para Martina, que siempre encuentra el camino.",
   senderName: "Mamá",
-  locale: "es",
+  locale,
 };
 
 const out = resolve(process.cwd(), "artifacts/bench-preview", new Date().toISOString().replace(/[:.]/g, "-"));
@@ -188,4 +194,5 @@ for (const [label, ms] of rows) console.log(`${label.padEnd(34)} ${ms === undefi
 console.log(`cast: [${architect.plan?.cast.map((c) => c.id).join(", ")}], cover cast: [${architect.plan?.cover.castIds.join(", ")}]`);
 console.log(`superseded renders: ${events.filter((e) => e.detail.includes("superseded")).length}`);
 console.log(`book plan: ${s(architect.planReport?.totalMs ?? 0)} $${(architect.planReport?.costUsd ?? 0).toFixed(3)} · images $${result.costUsd.toFixed(3)} · total spend $${spend.toFixed(3)}`);
+writeFileSync(join(out, "plan.json"), JSON.stringify(architect.plan ?? null, null, 2));
 writeFileSync(join(out, "timings.json"), JSON.stringify({ usePrep, useAvatar, prepMs, marks, events, spend, result: { ...result, progress: result.progress } }, null, 2));

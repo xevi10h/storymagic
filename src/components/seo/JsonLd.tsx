@@ -1,4 +1,4 @@
-import { STORY_TEMPLATES } from "@/lib/create-store";
+import { EVERGREEN_TEMPLATES } from "@/lib/create-store";
 import {
   AGE_MAX,
   AGE_MIN,
@@ -172,7 +172,7 @@ async function productImages(locale: string): Promise<string[]> {
   } catch {
     // Structured data must never break the page: fall back to static art.
   }
-  const fallback = STORY_TEMPLATES.slice(0, 3).map((t) => `${BASE_URL}${t.image}`);
+  const fallback = EVERGREEN_TEMPLATES.slice(0, 3).map((t) => `${BASE_URL}${t.image}`);
   return [...new Set([...covers, ...fallback])].slice(0, 6);
 }
 

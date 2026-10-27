@@ -1,5 +1,5 @@
 /**
- * Generate cover images for ALL 10 story templates using Recraft V3 API.
+ * Generate cover images for the story templates (10 evergreen + seasonal) using Recraft V3 API.
  * Uses the SAME illustration style as the actual book pages:
  *   - All ages: digital_illustration / child_book
  *   - Ages 2-4: soft watercolor (Oliver Jeffers + Eric Carle)
@@ -104,6 +104,12 @@ const TEMPLATES = [
     id: "inventor",
     ageGroup: "older",
     prompt: `A fantastical inventor's workshop: intricate gears and brass machinery, a half-built flying machine made of umbrellas and bicycle parts, glowing lightbulbs suspended from the ceiling, blueprints and sketches pinned to wooden walls, a mechanical bird mid-flight, warm workshop lamp lighting. No human characters. ${AGE_STYLES.older}`,
+  },
+  // ─── Seasonal ───
+  {
+    id: "reyes",
+    ageGroup: "mid",
+    prompt: `A cosy night scene for the Night of the Three Kings: three friendly camels (exactly three) walking in a line across the terracotta rooftops of a small whitewashed Spanish town, each wearing an empty golden saddle with red tassels, a big round moon and a deep blue sky full of tiny stars; in the foreground a balcony with a pair of small shoes and a present with a red bow beside a warmly lit window. Riderless camels. No human characters, no people, no riders. ${AGE_STYLES.mid}`,
   },
 ];
 

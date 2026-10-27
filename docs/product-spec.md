@@ -75,6 +75,20 @@ Each template is identified by an English slug and is backed by a branching stor
 | `inventor` | Inventor | Workshop of fantastical inventions |
 | `candy` | Candy | Sweet land of candy and confectionery |
 
+### Seasonal worlds (2026-10-26)
+
+A seasonal world lives in `STORY_TEMPLATES` with `seasonal: true` and an optional window `availableFrom` / `availableUntil` ("YYYY-MM-DD", Europe/Madrid, inclusive). It is **not** one of the 10 worlds: every count, catalog, SEO list and age range uses `EVERGREEN_TEMPLATES` (`compare.ts`, `JsonLd`, `BookCollectionData`, `product-facts` AGE_MIN/MAX, `seo-landing.featuredTemplateIds` → by-age).
+
+| Slug | Title (es / ca) | Window | Theme |
+|------|-------|--------|-------|
+| `reyes` | Paje Real por una Noche / Patge Reial per una Nit | until **6 Jan 2027** (bump `availableUntil` every season) | Night of 5 Jan: Melchor, Gaspar and Baltasar have a problem (sleepy camels / runaway map / split sack) and name the child Royal Page to deliver before dawn. Ages 2–8. Folk tradition only. |
+
+- **Availability gate** `isTemplateAvailable(id|config, today = templateToday())` (`src/lib/create-store.ts`; `templateToday` = `spainToday()`, in dev the browser honours `?now=YYYY-MM-DD`). Applied ONLY at entry points: the world list (`getRecommendedTemplates`: hidden outside the window, listed first inside it, never takes the "Para su edad" badge), the `?template=` deep link (falls back to the normal list), a restored draft (selection + path cleared), `POST /api/stories` (410 `template_unavailable`, the create page shows `crear.errors.templateUnavailable` and returns to the world list) and the FIRST checkout `POST /api/checkout` (410 `template_unavailable`, preview page shows `crear.preview.templateUnavailable`). Never gated: `getTemplateConfig`, generation, fulfilment, PDF/downloads, dashboard, and **reorders** of a paid book (another printed copy is a reprint, not a new sale).
+- **Paywall:** printed Reyes orders get the same season notice as any book (`useSeasonNotice`: physical cut-off, then "el PDF sí llega" until 5 Jan). On 6 Jan the season banner is over, so the paywall shows only the normal delivery window (no explicit "won't arrive for Reyes" line).
+- **The Three Kings look the same in every book:** `src/lib/ai/template-cast.ts` (`TEMPLATE_FIXED_CAST.reyes`) — canonical ids/labels/visuals (Melchor: white beard, crimson + gold, ermine; Gaspar: auburn beard, emerald + gold; Baltasar: a Black man, short black beard, purple turban under a sapphire crown, royal blue + purple). The Book Plan prompt gets a FIXED CAST section and `normalizeBible` overwrites whatever the model wrote (by id, else by name for people; a single "Three Kings" group entry gets all three looks), so sheets, scenes, the frozen `imagePlan`, the final run and the QA judge use the same bytes.
+- Assets: cover `public/images/templates/reyes.jpg` (Recraft, `scripts/generate-template-images.mjs reyes`), path art `public/images/path/reyes/` (`scripts/generate-path-art.mjs`, 39/39 since 2026-10-27; a missing seed falls back to the gradient + icon card).
+- Check: `npx tsx src/lib/story-trees/trees.check.mts` (every tree valid, reyes 39 options in 4 locales, path-art descs without people or lettering, window, evergreen count = 10, Kings override).
+
 ## Personalization Variables (Customer Input)
 
 | Variable | Type | Required | Description |
@@ -244,6 +258,70 @@ este cuento en 3 días…" with a link to the privacy policy. The account email 
   (`expired`). Max 3 emails per story ever (re-submitting never restarts a sequence). Unsubscribing suppresses the address for all
   commercial email (also the PDF → papel reminder).
 - Languages: es / ca / en / fr (story locale of the request). Kicker "Recordatorio" + seller identity in the footer (LSSI 20.1).
+
+## Pack Reyes + Black Friday (2026-10-26)
+
+- **Offer:** every printed book paid from 26 Oct to the printed Reyes cut-off (22 Dec, `earliestPrintedCutoff`) earns ONE
+  single-use code: a second book in softcover at **19,90 € IVA incluido** (Stripe coupon `meapica_second_book_softcover`,
+  15 € off the softcover product only, so add-ons stay full price; hardcover is refused). Valid until 6 Jan 23:59 Madrid. Any
+  story or child; the code can be given to another family. 0 € orders, the PDF and an order paid with a pack code earn none.
+  Rules: `src/lib/second-book.ts` (+ `second-book.check.mjs`); Stripe side `src/lib/growth/second-book.ts`; table
+  `second_book_codes` (service role only).
+- **Issued** in `recordPaidSession` (best-effort, before the confirmation email). **Shown** in the confirmation / book-ready /
+  delivered emails (commercial block, only with the unsubscribe link), the success page and each order in "Mi cuenta".
+- **Applied by itself** at checkout when the holder (same account or email) picks softcover and is not typing their own code
+  nor holding a voucher/creator credit; it beats a /r link code.
+- **Before purchase:** a paywall line ("Con este libro, el 2.º en tapa blanda te sale a 19,90 € IVA incluido") and the season
+  banner (from 1 Nov). **Black Friday 23–30 Nov** (`SECOND_BOOK_BLACK_FRIDAY`): no price cut, the same pack leads the banner
+  and the paywall line as the Black Friday offer; a dismissed banner shows once more that week.
+- Known gap: refunding the earning order does not revoke its code.
+
+## Advent calendar (`/advent`, es + ca only, built 2026-10-27, not deployed)
+
+Free, web-only calendar for 1–24 December 2026: one door a day, each a short bedtime mini-story (≈120–190 words) starring
+the child by name, plus a closing bedtime question. Story arc: Bartolo, the Three Kings' youngest camel, is sent ahead to
+learn everything a caravan camel must know (staying still, tiptoeing, the runaway star map, the caravan whistle…); on
+Nochebuena (door 24) he goes back to Oriente with the child's letter, leading toward the Reyes book.
+- **Routes:** `/[locale]/advent` (indexable, sitemap, hreflang es + ca + x-default es, OG image; ISR 10 min) and
+  `/[locale]/advent/unsubscribe?t=` + `/[locale]/advent/confirm?t=` (noindex). `/en|fr/advent` are 404; the language switcher sends them to `/`.
+- **Doors** (`src/lib/advent/calendar.ts`): unlocked by Spain date; past doors stay open, future ones locked (their text
+  never reaches the browser); before 1 Dec the page is a teaser + sign-up; after the 24th all 24 stay open. Dev preview:
+  `?now=YYYY-MM-DD` (page, PDF route, cron). `?door=N` opens a door directly (email links).
+- **Stories** (`src/lib/advent/stories.ts`): written natively in Spanish and Catalan, static, no AI at runtime. Tokens for
+  the name (Catalan personal article "la Noa / en Pau / l'Anna", `d'en`, `a la`…, from `catalanArticle`) and gender
+  alternatives `[boy|girl|neutral]` (neutral = a gender-free phrase); Catalan with an unknown article falls back to the
+  bare name. Art: existing path illustrations only (21 reyes, 2 forest, 1 castle), no lettering.
+- **Who the stories are for:** a signed-in visitor (guest sessions included) with a saved character → its name and the
+  watercolour portrait rebuilt from its traits (never `avatar_url`). Otherwise "¿Para quién son los cuentos?":
+  "Crear su personaje" (sheet with name, age 2–12 and the compact "Créalo tú" picker, saved by `POST /api/characters`
+  under the account or a silent guest session, so `/create?characterId=` prefills it) or "Solo su nombre" (kept in
+  localStorage, no portrait) with an optional "Los cuentos hablan de… una niña / un niño / prefiero no decirlo"
+  (owner-spec gap filled 2026-10-27: Catalan articles and agreement need it; default = neutral wording).
+- **Door view:** art + portrait, story, "Descargar en PDF" (`GET /api/advent/pdf`, in memory, nothing stored), share
+  (public calendar URL only, never the name), "Mañana se abre la puerta N", the Reyes-world teaser while it is on sale,
+  and the full-book CTA. From the 24th: "Descargar el libro en PDF" = "Su libro de Adviento" (cover + 24 doors).
+- **Daily email** (`src/lib/advent/send-run.ts`, `email.ts`): explicit unticked consent ("un email al día del 1 al 24 de
+  diciembre con el cuento en PDF"), stored in `advent_subscriptions` with version/date/source. **Double opt-in** (owner
+  2026-10-27): a sign-up whose email is the signed-in account's own verified address is active at once; every other one
+  is pending (`confirmed_at` null) and gets ONE plain, non-commercial confirmation email (es/ca, no offer, no PDF,
+  "Confirmar" → `/[locale]/advent/confirm?t=`, a noindex page whose button POSTs `/api/advent/confirm`, so mail scanners
+  cannot confirm); a pending re-sign-up re-sends at most every 10 min; a guest re-sign-up of a confirmed address changes
+  nothing; `confirmed_at` is the consent proof. Unconfirmed rows never get anything else. The page then says "Te hemos
+  enviado un correo para confirmar". Each morning (cron, 1–24 Dec
+  Spain time) one email with that door's PDF (on the 24th also the compilation); no backfill for late sign-ups;
+  idempotent per subscriber and day (`last_sent_day`). Portrait PDFs only when the subscription is linked to an account
+  whose confirmed, non-anonymous email is this address (re-checked at send time); everyone else gets name-only PDFs.
+  The email carries the book offer, so it is labelled "Oferta", names the seller, has an unsubscribe link (advent-only
+  stop by token) + RFC 8058 one-click, and skips addresses in `email_suppressions`. Privacy policy §4 lists it
+  (consent basis), updated 2026-10-27 in 4 locales.
+- **Book CTA everywhere** (page band, door view, email): "Crear el libro de {name}" → `/create?name=…` (+ `characterId`),
+  prices from `adventOffer()` with "IVA incluido": "desde 34,90 €", the Pack Reyes 19,90 € line while codes are issued,
+  "Para Reyes, pide hasta el 22 de diciembre" while the printed cut-off is open, then the instant PDF price.
+- **Entry point:** a nav link "Adviento" (es/ca, 15 Nov – 24 Dec); the seasonal banner is untouched.
+- **Analytics** (consent-gated `trackEvent`): `door_open` (door number, never the name), `advent_signup` + `Lead`
+  (`content_name: advent`), `advent_cta_click` (placement). `/advent` is a PostHog private path (replay masked).
+- Checks: `node --experimental-strip-types src/lib/advent/advent.check.mjs` (dates, double opt-in rules, all stories) and
+  `npx tsx --tsconfig tsconfig.json src/lib/advent/send-run.check.mts` (cron + sign-up/confirm against an in-memory DB).
 
 ## Referral programme "10 € y 10 €" + gift vouchers (2026-10-09)
 

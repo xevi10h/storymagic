@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createFulfilmentClient } from "@/lib/fulfilment/db";
 import { recordPaidSession } from "@/lib/fulfilment/payments";
+import { secondBookCodesForOrders } from "@/lib/growth/second-book";
 
 const PAID_STATUSES = new Set(["paid", "producing", "shipped", "delivered"]);
 
@@ -60,6 +61,14 @@ export async function GET(request: NextRequest) {
     characters: { name: string } | null;
   } | null;
 
+  // Pack Reyes code this order earned (best-effort: the page works without it).
+  const secondBook = await secondBookCodesForOrders(admin, [order.id])
+    .then((codes) => codes.get(order.id) ?? null)
+    .catch((err) => {
+      console.warn("[verify] Second-book code unavailable:", err instanceof Error ? err.message : err);
+      return null;
+    });
+
   return NextResponse.json({
     format: order.format,
     storyId: order.story_id,
@@ -67,5 +76,6 @@ export async function GET(request: NextRequest) {
     bookTitle: story?.title ?? story?.generated_text?.bookTitle ?? null,
     characterName: story?.characters?.name ?? null,
     invoiceUrl: order.invoice_url,
+    secondBook,
   });
 }

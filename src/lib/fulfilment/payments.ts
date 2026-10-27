@@ -16,6 +16,7 @@ import { sendMetaPurchase } from "@/lib/tracking/meta-capi";
 import { sendTikTokPurchase } from "@/lib/tracking/tiktok-events";
 import { sendGa4Purchase } from "@/lib/tracking/ga4-mp";
 import { ensureReferralCode, processPromotionRedemptions } from "@/lib/growth/referrals";
+import { ensureSecondBookCode } from "@/lib/growth/second-book";
 import { recordGiftVoucherRefund, voucherByPayment } from "@/lib/growth/gift-vouchers";
 import { recordCreatorRefund, recordOrderPromotion } from "@/lib/growth/creators";
 import type { FulfilmentClient, FulfilmentDatabase } from "./db";
@@ -205,6 +206,12 @@ export async function recordPaidSession(
     await ensureReferralCode(supabase, order, { email: customerEmail, locale: session.metadata?.locale, stripeCustomerId });
   } catch (err) {
     console.error(`[payments] Referral code for order ${order.id} not created:`, err instanceof Error ? err.message : err);
+  }
+  // Pack Reyes: a second book in softcover at 19,90 € (shown in the email below). Best-effort too.
+  try {
+    await ensureSecondBookCode(supabase, order, session, { email: customerEmail, locale: session.metadata?.locale });
+  } catch (err) {
+    console.error(`[payments] Second-book code for order ${order.id} not created:`, err instanceof Error ? err.message : err);
   }
 
   // Confirmation email (with receipt) for EVERY format, exactly once across webhook + verify.

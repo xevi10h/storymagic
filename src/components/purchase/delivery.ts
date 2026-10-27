@@ -2,8 +2,9 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { useSeasonToday, formatSeasonDate } from "@/components/seasonal/season-client";
-import { deliveryWindow, seasonBanner, type SeasonBanner } from "@/lib/shipping";
-import type { BookFormat } from "@/lib/pricing";
+import { deliveryWindow, earliestPrintedCutoff, seasonBanner, type SeasonBanner } from "@/lib/shipping";
+import { formatPrice, type BookFormat } from "@/lib/pricing";
+import { SECOND_BOOK_PRICE_CENTS, isBlackFridayWeek, secondBookIssuing, secondBookLastDay } from "@/lib/second-book";
 
 /**
  * "Llega entre el 9 y el 15 de octubre" for a printed format ordered today (Spain),
@@ -33,4 +34,15 @@ export function useSeasonNotice(): { state: NonNullable<SeasonBanner>; text: str
       ? t(`physical.${state.occasion}`, { date: formatSeasonDate(state.lastOrderDate, locale) })
       : t(`digital.${state.occasion}`);
   return { state, text };
+}
+
+/** Pack Reyes line ("y el 2.º libro en tapa blanda a 19,90 €") while printed orders earn the code, else null. */
+export function useSecondBookPromo(): string | null {
+  const t = useTranslations("crear.purchase");
+  const locale = useLocale();
+  const today = useSeasonToday(null);
+  if (!today) return null;
+  const cutoff = earliestPrintedCutoff(today, "reyes");
+  if (!secondBookIssuing(today, cutoff)) return null;
+  return t(isBlackFridayWeek(today) ? "secondBookPromoBlackFriday" : "secondBookPromo", { price: formatPrice(SECOND_BOOK_PRICE_CENTS, locale), until: formatSeasonDate(secondBookLastDay(cutoff), locale) });
 }

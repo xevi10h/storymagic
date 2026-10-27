@@ -8,6 +8,7 @@
 // ============================================================
 
 import { AVATAR_GLASSES_OPTIONS, type AvatarGlasses } from "@/lib/avatar/manifest";
+import { parseDateOverride, spainToday } from "@/lib/shipping";
 
 export type CreationMode = "solo" | "juntos" | null;
 export type Gender = "boy" | "girl" | "neutral";
@@ -162,6 +163,15 @@ export interface StoryTemplateConfig {
     settingOptions: AtmosphereSettingOption[];
   };
   endings: EndingOption[];
+  /**
+   * Seasonal world (e.g. "reyes"): left out of evergreen counts and lists
+   * (EVERGREEN_TEMPLATES) and only offered inside its availability window.
+   */
+  seasonal?: boolean;
+  /** First day it can be created/ordered, "YYYY-MM-DD" in Europe/Madrid (inclusive). */
+  availableFrom?: string;
+  /** Last day it can be created/ordered, "YYYY-MM-DD" in Europe/Madrid (inclusive). */
+  availableUntil?: string;
 }
 
 // ============================================================
@@ -2197,15 +2207,247 @@ export const STORY_TEMPLATES: StoryTemplateConfig[] = [
       },
     ],
   },
+
+  // ── REYES (seasonal) ────────────────────────────────────────
+  // "Paje Real por una noche". Orderable until 6 January (Madrid) inclusive; bump
+  // availableUntil (and availableFrom if wanted) every season. Paid books keep working
+  // after the window: only entry points check isTemplateAvailable.
+  {
+    id: "reyes",
+    title: "Paje Real por una Noche",
+    ageMin: 2,
+    ageMax: 8,
+    description:
+      "La noche del 5 de enero, los Reyes Magos tienen un problema enorme y necesitan un Paje Real que les ayude a repartir los regalos antes del amanecer.",
+    image: "/images/templates/reyes.jpg",
+    theme:
+      "The Night of the Three Kings (5 January) in a Spanish city: Melchor, Gaspar and Baltasar arrive with their camels, have a problem, and name the child their Royal Page for one night to help deliver every present before dawn. Folk tradition only (shoes by the window, letters to the Kings, camels, roscón, sweet coal as a joke, the cabalgata), no religious scenes",
+    moral: "Helping others is the best present of all",
+    relatedInterests: [],
+    tags: ["big-hearts", "adventurers", "dreamers"],
+    themeColor: "#1f2a5c",
+    themeGradient: "from-indigo-900 to-amber-700",
+    previewChapterTitle: "Toc, toc en la ventana",
+    seasonal: true,
+    availableUntil: "2027-01-06",
+    decisions: [
+      {
+        key: "encounter",
+        question: "¿Qué encuentra {name} en la ventana la noche de Reyes?",
+        options: [
+          {
+            id: "three-crowns",
+            title: "Tres Coronas",
+            subtitle: "Brillan al otro lado del cristal",
+            icon: "stars",
+            narrativeContext:
+              "Three shining crowns appear at the window: Melchor, Gaspar and Baltasar have come in person to ask the child for help.",
+          },
+          {
+            id: "camel-footprints",
+            title: "Huellas de Camello",
+            subtitle: "Llevan derechas hasta el balcón",
+            icon: "pets",
+            narrativeContext:
+              "A trail of camel footprints sparkling with stardust leads from the street to the child's balcony, where the Three Kings are waiting.",
+          },
+          {
+            id: "golden-letter",
+            title: "Una Carta Dorada",
+            subtitle: "Con el sello de los Reyes",
+            icon: "mail",
+            narrativeContext:
+              "A golden letter sealed with three crowns slides under the door: the Kings ask the child to be their Royal Page for one night.",
+          },
+        ],
+      },
+      {
+        key: "companion",
+        question: "¿Qué Rey acompaña a {name} durante el reparto?",
+        options: [
+          {
+            id: "melchor",
+            title: "Melchor",
+            subtitle: "El más sabio, y el más despistado",
+            icon: "auto_stories",
+            narrativeContext:
+              "Melchor, the oldest King, wise and a little absent-minded, who knows every street by heart but sometimes mixes up left and right.",
+          },
+          {
+            id: "gaspar",
+            title: "Gaspar",
+            subtitle: "Se ríe tan fuerte que tiemblan las ventanas",
+            icon: "sentiment_very_satisfied",
+            narrativeContext:
+              "Gaspar, the jolliest King, whose big laugh shakes the windows and who loves playing jokes with sweet coal.",
+          },
+          {
+            id: "baltasar",
+            title: "Baltasar",
+            subtitle: "Tranquilo, listo y con mucha música",
+            icon: "music_note",
+            narrativeContext:
+              "Baltasar, the calmest King, clever and kind, who hums a tune whenever he is thinking up a plan.",
+          },
+        ],
+      },
+      {
+        key: "challenge",
+        question: "¿Qué problema tienen los Reyes esta noche?",
+        options: [
+          {
+            id: "sleepy-camels",
+            title: "Camellos Dormilones",
+            subtitle: "Roncan y no hay quien los despierte",
+            icon: "bedtime",
+            narrativeContext:
+              "The Kings' camels have fallen fast asleep on a rooftop and nobody can wake them up.",
+          },
+          {
+            id: "lost-map",
+            title: "El Mapa Volador",
+            subtitle: "El viento se lo ha llevado",
+            icon: "map",
+            narrativeContext:
+              "The wind has blown away the starry map that shows where every child lives.",
+          },
+          {
+            id: "torn-sack",
+            title: "El Saco Descosido",
+            subtitle: "Los regalos han rodado por la ciudad",
+            icon: "redeem",
+            narrativeContext:
+              "The great sack of presents has split open and the parcels have rolled all over the sleeping city.",
+          },
+        ],
+      },
+    ],
+    atmosphere: {
+      timeOptions: [
+        {
+          id: "starry-night",
+          label: "Noche Estrellada",
+          icon: "nights_stay",
+          iconColor: "text-indigo-500",
+          narrativeContext: "The scene takes place on the cold, clear night of 5 January, the sky full of stars and the streets still smelling of the cabalgata",
+        },
+        {
+          id: "midnight",
+          label: "Medianoche",
+          icon: "bedtime",
+          iconColor: "text-purple-500",
+          narrativeContext: "The scene takes place at midnight, when every child is asleep and only the Kings, their camels and the Royal Page are awake",
+        },
+        {
+          id: "first-light",
+          label: "Primera Luz",
+          icon: "wb_twilight",
+          iconColor: "text-amber-500",
+          narrativeContext: "The scene takes place at the very first light of 6 January, the sky turning pink just as the last present is delivered",
+        },
+      ],
+      settingOptions: [
+        {
+          id: "rooftops",
+          label: "Tejados de la Ciudad",
+          icon: "roofing",
+          bgColor: "bg-indigo-100",
+          iconColor: "text-indigo-600",
+          narrativeContext: "Across the rooftops of the child's city, between chimneys, aerials and balconies with shoes waiting by the windows",
+        },
+        {
+          id: "parade-street",
+          label: "La Calle de la Cabalgata",
+          icon: "celebration",
+          bgColor: "bg-amber-100",
+          iconColor: "text-amber-600",
+          narrativeContext: "In the street where the cabalgata passed that evening, confetti and sweets still sparkling on the ground",
+        },
+        {
+          id: "home-window",
+          label: "La Ventana de Casa",
+          icon: "window",
+          bgColor: "bg-sky-100",
+          iconColor: "text-sky-600",
+          narrativeContext: "At the child's own window, where the shoes, the letter to the Kings and a plate of roscón for the camels are waiting",
+        },
+      ],
+    },
+    endings: [
+      {
+        id: "dawn-delivery",
+        title: "Repartido al Alba",
+        description: "El último regalo llega a su casa justo cuando el cielo se vuelve rosa.",
+        icon: "wb_sunny",
+        iconBg: "bg-amber-100",
+        iconColor: "text-amber-600",
+        narrativeContext: "The story ends as the very last present reaches its home just when the sky turns pink; the Kings bow to their Royal Page and the camels fly off towards the sunrise.",
+      },
+      {
+        id: "royal-badge",
+        title: "La Insignia de Paje",
+        description: "Los Reyes le regalan una insignia dorada para recordar la noche.",
+        icon: "military_tech",
+        iconBg: "bg-indigo-100",
+        iconColor: "text-indigo-600",
+        narrativeContext: "The story ends with the Three Kings pinning a little golden Royal Page badge on the child's pyjamas before tucking them back into bed.",
+      },
+      {
+        id: "sweet-coal",
+        title: "Carbón Dulce",
+        description: "Por la mañana, junto a los zapatos, aparece la broma favorita de Gaspar.",
+        icon: "cookie",
+        iconBg: "bg-stone-100",
+        iconColor: "text-stone-600",
+        narrativeContext: "The story ends the next morning: next to the presents by the shoes there is a tiny piece of sweet coal, Gaspar's favourite joke, and a camel hair on the windowsill to prove it was all real.",
+      },
+    ],
+  },
 ];
 
 // ============================================================
 // HELPER FUNCTIONS
 // ============================================================
 
-/** Find a template config by its ID */
+/**
+ * Find a template config by its ID. Never gated by availability: a paid book of a
+ * seasonal world must keep rendering, reprinting and downloading after its window.
+ */
 export function getTemplateConfig(templateId: string): StoryTemplateConfig | undefined {
   return STORY_TEMPLATES.find((t) => t.id === templateId);
+}
+
+/** Every world sold all year: use it for world counts, catalogs, SEO lists and age ranges. */
+export const EVERGREEN_TEMPLATES: StoryTemplateConfig[] = STORY_TEMPLATES.filter((t) => !t.seasonal);
+
+/**
+ * Today in Spain (YYYY-MM-DD) for availability checks. In development the browser
+ * honours "?now=YYYY-MM-DD" like the seasonal banner (season-client.ts); the server
+ * (API routes) always uses the real date.
+ */
+export function templateToday(): string {
+  if (process.env.NODE_ENV !== "production" && typeof window !== "undefined") {
+    try {
+      const override = parseDateOverride(new URLSearchParams(window.location.search).get("now"));
+      if (override) return override;
+    } catch {
+      /* ignore */
+    }
+  }
+  return spainToday();
+}
+
+/**
+ * Whether a world can be chosen / bought today (Europe/Madrid, inclusive window).
+ * Gate ONLY entry points (catalog, ?template= links, POST /api/stories, first
+ * checkout), never getTemplateConfig. Unknown ids are not available.
+ */
+export function isTemplateAvailable(template: string | StoryTemplateConfig, today: string = templateToday()): boolean {
+  const config = typeof template === "string" ? getTemplateConfig(template) : template;
+  if (!config) return false;
+  if (config.availableFrom && today < config.availableFrom) return false;
+  if (config.availableUntil && today > config.availableUntil) return false;
+  return true;
 }
 
 /** Get all unique tags used across templates, in a stable order */
@@ -2228,7 +2470,8 @@ export function getRecommendedTemplates(
   age: number,
   interests: string[]
 ): (StoryTemplateConfig & { score: number; isRecommended: boolean })[] {
-  const scored = STORY_TEMPLATES.map((template) => {
+  const today = templateToday();
+  const scored = STORY_TEMPLATES.filter((template) => isTemplateAvailable(template, today)).map((template) => {
     let score = 0;
 
     // Age match: full score if within range, partial if close
@@ -2251,20 +2494,22 @@ export function getRecommendedTemplates(
     return { ...template, score, isRecommended: false };
   });
 
-  // Sort by score descending
-  scored.sort((a, b) => b.score - a.score);
+  // Sort by score descending; a seasonal world in its window leads the list (it is the
+  // season's edition and only exists for a few weeks) without taking the badge.
+  scored.sort((a, b) => Number(!!b.seasonal) - Number(!!a.seasonal) || b.score - a.score);
 
   // Recommend by real interest match first (up to 3); otherwise fall back to the
   // single best age fit. Keeps the badge meaningful instead of arbitrary.
-  const byInterest = scored.filter((s) =>
+  const evergreen = scored.filter((s) => !s.seasonal);
+  const byInterest = evergreen.filter((s) =>
     interests.some((i) => s.relatedInterests.includes(i))
   );
   if (byInterest.length > 0) {
     byInterest.slice(0, 3).forEach((s) => {
       s.isRecommended = true;
     });
-  } else if (scored.length > 0 && scored[0].score > 5) {
-    scored[0].isRecommended = true;
+  } else if (evergreen.length > 0 && evergreen[0].score > 5) {
+    evergreen[0].isRecommended = true;
   }
 
   return scored;

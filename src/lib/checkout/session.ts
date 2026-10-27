@@ -107,9 +107,10 @@ export interface CheckoutSessionInput {
   offer: StoryUpsell | null;
   origin: string;
   /**
-   * Promotion code (promo_…) from the /r link: a referral code (printed books) or a creator's
-   * audience code (any format). The caller already checked the format and that it is not the
-   * buyer's own code (canPreApplyReferral). Stripe does not allow `discounts` together with
+   * Promotion code (promo_…) to pre-apply: from the /r link, a referral code (printed books) or a
+   * creator's audience code (any format), the caller having checked the format and that it is not
+   * the buyer's own code (canPreApplyReferral); or the buyer's own Pack Reyes code (softcover,
+   * src/lib/second-book.ts). Stripe does not allow `discounts` together with
    * `allow_promotion_codes`, so the code field is hidden then.
    */
   referralPromotionCodeId?: string | null;

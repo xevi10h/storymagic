@@ -9,6 +9,7 @@ import { BrandLoader } from "@/components/ui/BrandLoader";
 import { SUPPORT_EMAIL } from "@/lib/support";
 import { DELIVERY_PARAMS } from "@/lib/shipping";
 import { purchaseEventId, trackEvent } from "@/lib/tracking/consent";
+import { SecondBookCallout } from "@/components/dashboard/OrdersTab";
 
 interface OrderDetails {
   format: string;
@@ -16,6 +17,8 @@ interface OrderDetails {
   characterName: string | null;
   storyId: string;
   invoiceUrl?: string | null;
+  /** Pack Reyes code this order earned (second book in softcover at 19,90 €). */
+  secondBook?: { code: string; expiresAt: string } | null;
 }
 
 type CompletionStatus = "verifying" | "completing" | "processing" | "ready" | "error";
@@ -307,6 +310,7 @@ export default function SuccessClient({
               <Spinner className="text-base text-brand-text" />
               {t("processingSafeToLeave")}
             </p>
+            {order?.secondBook && <SecondBookCallout code={order.secondBook.code} expiresAt={order.secondBook.expiresAt} className="mt-8 text-left" />}
             <div className="mt-8 flex flex-col gap-3">
               <Link
                 href="/dashboard"
@@ -517,6 +521,8 @@ export default function SuccessClient({
               </div>
             )}
           </div>
+
+          {order?.secondBook && <SecondBookCallout code={order.secondBook.code} expiresAt={order.secondBook.expiresAt} className="mt-6 text-left" />}
 
           {/* Actions */}
           <div className="mt-8 flex flex-col gap-3">
