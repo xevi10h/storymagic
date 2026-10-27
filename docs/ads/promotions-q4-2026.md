@@ -157,10 +157,8 @@ the beat's title. Paid generation for this batch: two Higgsfield clips for Paje 
 
 ## Activation checklist (owner)
 
-1. **Spending limit.** The account has a card (MasterCard ···· 4880) but a **300 €/month** limit. With the warm-up
-   campaign, November needs about 350 € (warm-up 6 €/day to 9 Nov + Pack Reyes 10 €/day to 22 Nov + Black Friday
-   80 €) and December about 390 € (10 €/day, 20 €/day 15–22 Dec). Raise it to 450 € in Billing hub, or Meta stops
-   delivery mid-promotion.
+1. **Spending limit.** DONE 2026-10-27: monthly account spending limit raised from 300 € to 450 € (resets on the 1st;
+   Graph `spend_cap` 45000). The account is prepay, so the API refuses the change: it is done in Billing hub.
 2. **Pack Reyes deployed.** Before activating `pack-reyes` / `black-friday`: the second-book code is live in
    production (`src/lib/second-book.ts` is not yet committed), the purchase panel shows it, and from 1 Nov the
    banner on `/es` shows "y el 2.º libro en tapa blanda a 19,90 € IVA incluido" (23–30 Nov: the Black Friday line).

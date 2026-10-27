@@ -80,8 +80,9 @@ export function AdventBookBand({
 
   return (
     <section className="mt-12 flex flex-wrap overflow-hidden rounded-[28px] bg-brand-deep text-white lg:mt-14" aria-labelledby="advent-book-title">
-      <div className="relative h-[220px] min-w-0 flex-[1_1_380px] sm:h-[320px]">
-        <Image src={art} alt="" fill sizes="(min-width: 1024px) 560px, 100vw" className="object-cover" />
+      {/* The art is a vignette on near-white: the panel takes that colour and the full band height. */}
+      <div className="relative min-h-[220px] min-w-0 flex-[1_1_380px] bg-[#fdfdfd] sm:min-h-[320px]">
+        <Image src={art} alt="" fill sizes="(min-width: 1024px) 560px, 100vw" className="object-contain" />
       </div>
       <div className="flex min-w-0 flex-[1_1_440px] flex-col justify-center gap-3 p-6 sm:p-10">
         <p className="text-[13px] font-bold uppercase tracking-[0.08em] text-line-warm">{t("kicker")}</p>
