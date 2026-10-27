@@ -13,6 +13,57 @@ Rules for every concept:
 - End card 3 s, not 5: cover + "Su cuento. Con su nombre y su cara." + "Desde 34,90 € IVA incluido".
 - Different family per concept (age, look, mum/dad/grandparent) so the ad set has really different creatives.
 
+## Least-AI pass (every ad, before generating and before showing it; owner 2026-10-27)
+Viewers commented "basura de cuenta IA" on the first ads. Every ad goes through this pass twice: on the start frames and
+on the finished cut (contact sheet + transcript). Anything that fails is regenerated, not shipped.
+- **People**: ordinary faces, not models. Uneven skin, messy hair, ordinary clothes. No perfect teeth or symmetry, no beauty light.
+- **Room**: a real Spanish flat with clutter: toys on the floor, a mug, cables, a radiator, mixed light (lamp + TV or
+  window). No catalogue sofa, no symmetric lamps, no amber "golden hour" grade on everything.
+- **Camera**: phone video by the other parent: off-centre, slightly too close or cut off, a little shake, focus that
+  hunts. Not a framed cinematic shot.
+- **Acting**: small reactions. No cartoon gasp, no wide-eyed wonder pose, no tears on cue. Better a look than a line.
+- **Voices** (the owner's main complaint): native Castilian Spanish from Spain (never neutral or Latin American),
+  conversational and unpolished, matched to age, the SAME voice for a character in every shot. Child lines short and mumbled
+  rather than declaimed. Announcer or narrator voices are an AI tell inside a home scene. Pick voices tagged `conversational`, not `advertisement`.
+- **Dialogue**: one or two short lines per ad at most. Lip-synced speech is the biggest tell, so let faces and room sound
+  carry it.
+- **Sound**: room tone and real noises first, quiet music under it, no swelling score.
+- **Book**: the real cover composited, real pages as inserts, any model-drawn page blurred.
+- Disclosure stays: "Escena recreada con IA" in the ad copy.
+
+## Ten-ad slate for testing (2026-10-27, owner asked for other approaches)
+Ten genuinely different concepts, one angle each, so Meta can tell them apart. Every one passes the least-AI pass;
+voices ElevenLabs (child: Leo), video Higgsfield (Seedance 2.5). No testimonials, ratings or invented numbers.
+Already made, to rebuild with the least-AI pass (as `ads/soy-yo-real/`):
+1. «¡Soy yo!»: the reveal on the sofa. Angle: the child's reaction. Pilot done.
+2. «La abuela escribió la primera página»: grandparents as the buyer, the real dedication page. Angle: grandparent gift.
+3. «Si decides entrar en la cueva…»: dad's 90s gamebook, now his daughter chooses. Angle: parent nostalgia.
+4. «Unos años más»: bedtime, "one day she'll stop asking me to read". Angle: time passing.
+5. «Mañana de Reyes» (from 15 Nov): 6 January morning, the book under the tree, real order-by date. Angle: occasion + deadline.
+New approaches:
+6. «Así llega a casa» (real footage, zero AI): hands open the real printed book, slow page flip with paper sound,
+   cover with the name. Angle: product proof, the category's best format. Needs a printed book and 1 min of phone video.
+7. «¿Lo reconoces?»: a photo of the child (AI actor, disclosed) turns into his illustrated hero, then three adventures.
+   Angle: the product's magic in 3 s, no screen recording.
+8. «¿Sale su nombre?»: covers with popular names (Hugo, Lucía, Martín, Sofía…) flick past; "escribe su nombre en
+   comentarios". Angle: personalisation + participation; replies are done by hand.
+9. «POV: el tío que siempre regala lo mismo» (lo-fi, TikTok native): on-screen text joke over real pages and a trending
+   sound. Angle: humour, the gift-giver's pain.
+10. «No quería leer»: a child alone, absorbed in a book where he is the hero; one line from mum. Angle: reading habit
+   (parent problem, not gift).
+Paused: «La hermana mayor» and «Doce años después» (too close to 1 and 4).
+Owner 2026-10-27: everything AI-generated, no real footage (so #6 is staged with AI hands). First batch 1 + 2 + 6 + 7,
+built the same day, each `node docs/social/ads/<folder>/build.mjs`:
+- #1 `soy-yo-real/` (`VOICE=leo`) → `seedance25-leo/video.mp4`, 18.5 s.
+- #2 `la-abuela-real/` → `cut/video.mp4`, 19 s; grandmother = ElevenLabs Rosa `ypIbR1aohyRSdDv25DPr` (the line says
+  «Anda, ábrelo» because Rosa misreads a bare «Ábrelo» as «Hebreo»).
+- #6 `asi-llega/` → `cut/video.mp4`, 17 s; hands only, no dialogue, ElevenLabs sound effects in `sfx/` (`cfg.sfx` in
+  the builder). Hook «Su cuento, ya en casa», not «Así llega…»: the box is staged, so no claim about real packaging.
+  Clip C (page turning) was dropped: the model drew a text novel.
+- #7 `lo-reconoces/` → `cut/video.mp4`, 16 s; Seedance first + last frame (phone photo → page 29), mum off camera
+  (ElevenLabs Carolina, `sfx/mum.mp3`).
+Start frames now come from Qwen Image 3 edit on the Higgsfield API (`_shared/start-frames.mjs`).
+
 ## 1. "¡Soy yo!" (the reveal)
 - 0-2 s: close-up of a 4-year-old's face as dad opens the cover; the child gasps: "Papá… ¡ese soy yo!"
 - 2-10 s: the child turns pages and points: "¡Y aquí también!" (real page inserts with his face).
@@ -87,6 +138,32 @@ never cut together (a page insert goes between). Each build writes `.build/repor
 on a fresh transcript of the final mix, words cut by a shot edge, and the bed's loudness step at every cut (target ≤ 3).
 
 ## Production
-- Start frames: fal flux-2 edit with the actor photos plus the real cover; then image-to-video with audio (lip sync)
-  through Higgsfield. Pick the model and quote the cost before generating.
+- Start frames: Qwen Image 3 edit on the Higgsfield API (`_shared/start-frames.mjs`, up to three references: actor
+  frames plus the real cover); then image-to-video through the Higgsfield API (Seedance 2.5, the line spoken in Spanish),
+  voice replaced with ElevenLabs by `scripts/social/dub-clip.mjs`. Pick the model and quote the cost before generating.
+- ElevenLabs delivery tags matter for dubbing: «[con ritmo natural de conversación]» matched the actor's pace (tempo
+  1.01) where «[despacio]» needed a 1.23 squeeze; dub-clip keeps the clean take closest to the actor's pace.
 - Each ad is 4-6 shots of 4-6 s; render one draft, check it by frames, improvement pass, then upload paused.
+- Least-AI pilot (2026-10-27, `ads/soy-yo-real/`): «¡Soy yo!» reshot with ordinary actors in a cluttered flat
+  (`start-frames.mjs`), the same three frames animated by Seedance 2.5 and by Kling 3.0 Pro (`clips.sh`, about $7 of the
+  Higgsfield API balance), one cut per model (`MODEL=seedance25|kling3 node build.mjs`). Both models redraw the cover
+  art as it moves, so the live shot is blurred under the cover and the real cover follows as an insert; Seedance also
+  drew a stray book into the dad shot. Kling's line «Papá… ese soy yo» drags over 3 s, Seedance's lands in 2 s. Owner
+  picks the model by ear. Owner (2026-10-27): Seedance 2.5 preferred; voices always from ElevenLabs.
+- Voices from ElevenLabs (owner 2026-10-27): the line is ElevenLabs TTS (`eleven_v4`, peninsular voice), aligned to
+  where the model spoke, then the mouth is re-timed with fal `fal-ai/sync-lipsync/v3` (about $0.4 a clip, faces kept).
+  Ruled out the same day: ElevenLabs voice changer on the model's voice (mangled the words: «¡Y aquí también!» came out
+  as «¿Lancia está bien?»), Seedance 2.5 reference-to-video with `audio_urls` (re-performs the line with its own timing,
+  480p, changes the child's face), and designing a child voice (ElevenLabs blocks it). Only peninsular child voice in
+  the library: Leo `1tDEBGOo8EqEPApM49eJ`; alternative, a young woman voicing the child as in Spanish dubbing (Raquel
+  `1eHrpOW5l98cxiSRjbzJ`). Video model research: Artificial Analysis I2V leaderboard (Oct 2026) puts MiniMax H3, FLUX 3
+  Max, Seedance 2.5, Gemini Omni Flash 1.1 and Wan 3.0 in a statistical tie at the top; Kling 3.0 is not in the top 15.
+  Owner picked Leo for the child (2026-10-27). MiniMax H3 (Higgsfield API, `MODEL=minimax`, silent) on the same frames:
+  1440p, steadier cover, no invented objects; its cut with Leo needs the fal lip-sync. FLUX 3 Max is fal only
+  (`blackforestlabs/flux-3-max/image-to-video`); not on the Higgsfield API. fal answered 403 "User is locked. Reason:
+  TOP_UP" after the four lip-sync calls, which blocks both until the owner tops up fal.
+  Owner: use Higgsfield. The Higgsfield API has no lip-sync and no FLUX 3. Tried there: Wan 3.0 image-to-video with
+  `audio_url` (ignored it, the boy read the cover title aloud), Seedance 2.5 `video-edit` (`video_url` + `audio_url`, about
+  $2.8 a 5 s clip: scene kept, mouth on our timing, but it voices the line in Chinese). Adopted instead, free:
+  `scripts/social/dub-clip.mjs` — Seedance speaks the Spanish line itself, then the ElevenLabs line replaces it,
+  stretched to the actor's word span, so the drawn mouth still matches.

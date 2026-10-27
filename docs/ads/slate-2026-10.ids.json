@@ -1,0 +1,26 @@
+{
+  "soy-yo-real": {
+    "video": "https://media.zernio.com/temp/1793124514952_fbafb70ec6ff84cb_video.mp4",
+    "thumb": "https://media.zernio.com/temp/1793124515840_32f769db01067e3e_soy-yo-real-thumb.jpg",
+    "ad": "120252283649270661",
+    "zernio": "6ae0e8e04895706a066952b1"
+  },
+  "la-abuela": {
+    "video": "https://media.zernio.com/temp/1793124516395_8761e664dc9a9f36_video.mp4",
+    "thumb": "https://media.zernio.com/temp/1793124517463_fbf0c83d9cedc663_la-abuela-thumb.jpg",
+    "ad": "120252283663430661",
+    "zernio": "6ae0e90a632b86ad019728d6"
+  },
+  "ya-en-casa": {
+    "video": "https://media.zernio.com/temp/1793124619471_4efd7bb18b2d12d8_video.mp4",
+    "thumb": "https://media.zernio.com/temp/1793124620418_50d09d0478881905_ya-en-casa-thumb.jpg",
+    "ad": "120252283689660661",
+    "zernio": "6ae0e92b632b86ad019728e4"
+  },
+  "lo-reconoces": {
+    "video": "https://media.zernio.com/temp/1793124653175_ea01ed29e3de6ca5_video.mp4",
+    "thumb": "https://media.zernio.com/temp/1793124654207_ec60af82288af707_lo-reconoces-thumb.jpg",
+    "ad": "120252283730690661",
+    "zernio": "6ae0e954632b86ad0197292d"
+  }
+}

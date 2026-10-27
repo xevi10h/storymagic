@@ -199,7 +199,7 @@ the guest sign-up never shows a captcha. `getBackgroundCaptchaToken()` renders T
 `verifyCaptcha` → `requireAdminCredentials`), user flagged `app_metadata.guest_captcha = "unverified"`
 (`src/lib/unverified-guest.ts`). Unverified guests get per-IP rolling-24 h caps in `rate_limits`
 (subject `rateLimitSubject("unverified:<ip>")`, no migration): 10 guest sessions, 3 character prepares, 3 AI portraits,
-**1 preview** (`/api/stories/[id]/generate`, refused → story back to draft + the "vuelve mañana" daily-cap screen).
+**3 previews** (`/api/stories/[id]/generate`, refused → story back to draft + the "vuelve mañana" daily-cap screen).
 Verified guests and accounts keep the per-user limits. Every decision logs `[unverified] <action> allowed|refused ip=<hash8>`
 in Vercel (measure the share of unverified visitors there). Supabase's own "anonymous sign-ins per hour per IP" limit
 sees Vercel's IP for the fallback (shared): keep it high (Auth → Rate Limits). Email login (`getCaptchaToken`) is unchanged
@@ -435,6 +435,10 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   (Martín and his dad) and `120252277969570661` `..._ad_2026-10-27_la-cueva-v2` (neutral "tu peque" copy: the video ends
   with a girl; v1 `120252277938110661` said "tu hijo" and is PAUSED), both via Zernio `video.url` + `thumbnailUrl` in
   `showcase/social/ads/2026-10-27-<slug>(.mp4|-thumb.jpg)`, AI disclosure OPT_IN, `utm_content=2026-10-27-<slug>`.
+  Least-AI slate, created PAUSED 2026-10-27 (owner's OK «súbelos en pausa») with `node scripts/ads/upload-slate.mjs`
+  (ids in `docs/ads/slate-2026-10.ids.json`, AI disclosure OPT_IN, copy ends «Escena recreada con IA»): `120252283649270661`
+  `..._soy-yo-real`, `120252283663430661` `..._la-abuela`, `120252283689660661` `..._ya-en-casa`, `120252283730690661`
+  `..._lo-reconoces`. Switching them on is the owner's call.
   PAUSED 2026-10-27 (Leo versions): `120252257279350661` `..._ad_2026-10-28_no-otro-juguete` (dinosaur) and
   `120252275455070661` `..._ad_2026-10-27_soy-yo` (old Leo «¡Soy yo!», `showcase/social/ads/2026-10-27-soy-yo.mp4`). Held back: `120252257165130661`
   `..._ad_2026-11-14_reyes-deadline_from-11-15` (switch on around 15 Nov). The first seasonal dinosaur ad (`120252257169270661`) was
@@ -481,6 +485,7 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   does not go to it. What to read: `newsletter_subscribers` with `reyes_reminder_consent_at` set (before migration 20261022120000: `source = 'reyes_reminder'`) against TikTok clicks.
 - **Media upload fallback:** if the presigned upload host (`*.r2.cloudflarestorage.com`) times out, as on 2026-10-10 from the Mac,
   `POST /v1/media/upload-direct` (multipart `file`, API key, 25 MB max) returns the same kind of public URL.
+- **Ad voices:** `node scripts/social/dub-clip.mjs <in.mp4> <out.mp4> <voiceId> "<line>"` replaces a generated clip's voice with an ElevenLabs line (`eleven_v4`) timed to the actor's own words (STT spans + atempo); video copied. Child voice: Leo `1tDEBGOo8EqEPApM49eJ`.
 - **Inbox:** `node scripts/social/inbox.mjs` prints unanswered comments and unread DMs as JSON (read-only). `node scripts/social/reply.mjs dm <conversationId> "<text>"` answers a DM (adds Meta's human-agent tag when the 24 h window has closed) and marks the conversation read; `reply.mjs comment <postId> <commentId> "<text>"` answers a comment. Texts are approved by the owner first. First real sends 2026-10-12: three Instagram DMs (one four days old) and one TikTok comment reply, all accepted.
 - `scripts/social/publish-first-posts.mjs` is the one-off of 3 Oct (already published).
 - **Pinterest is blocked (found 2026-10-19):** every pin since 2026-10-10 failed with "Pinterest blocked the destination link as suspected spam"

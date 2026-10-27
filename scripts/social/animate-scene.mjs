@@ -4,7 +4,7 @@
 //   node scripts/social/animate-scene.mjs <out.mp4> "<prompt>" <start> [<end>]
 //   SCENE_STYLE=photo before the command: the start frame is a photograph (people, the printed book), not an illustration.
 //   MODEL=kling3 (Kling 3.0 Pro, $0.168/s with sound, $0.112/s without, 2026-10-27) or MODEL=seedance2 (Seedance 2.0,
-//   token-metered: about $0.30/s at 720p 9:16) instead of MiniMax H3; both take the aspect ratio from the start frame.
+//   token-metered: about $0.30/s at 720p 9:16) or MODEL=seedance25 (Seedance 2.5, same body, 2026-10-27) instead of MiniMax H3; both take the aspect ratio from the start frame.
 //   AUDIO=on: native sound, with dialogue lip-synced when the prompt quotes the line (kling3, seedance2). Default off.
 //   DURATION=<s>: clip length (default 5; kling3 3-15, seedance2 4-15).
 // <start> / <end>: a 1080×1920 JPEG, or `pdf:<showcase story id>:<page>:<focus x 0-1>` to cut the frame from the
@@ -22,7 +22,8 @@ const TMP = `${dirname(OUT)}/.build`;
 mkdirSync(TMP, { recursive: true });
 
 // SCENE_STYLE=photo: a lifestyle photograph of the printed book instead of a book illustration (brand imagery, AI label on).
-const STYLE = process.env.SCENE_STYLE === "photo"
+// SCENE_STYLE=none: no style guard, the prompt says everything (e.g. a photo turning into the book's illustration).
+const STYLE = process.env.SCENE_STYLE === "none" ? "" : process.env.SCENE_STYLE === "photo"
   ? "Photorealistic, natural home video look. Keep the book exactly as it is: same cover or pages, same artwork and text, nothing redrawn. Small natural movements only, slight handheld camera, one continuous shot, no cuts, no new people or objects, no added text."
   : endArg
   ? "Keep the exact hand-painted watercolour storybook style and the same child (face, hair, clothes) the whole time. One smooth continuous magical transition, no cuts, no text. End exactly on the final illustration."
@@ -44,12 +45,12 @@ async function upload(file) {
 const MODEL = process.env.MODEL ?? "minimax";
 const sound = process.env.AUDIO === "on";
 const duration = Number(process.env.DURATION ?? 5);
-const body = { prompt: `${prompt} ${STYLE}`, image_url: await upload(await frame(startArg, "start")), duration };
-const ENDPOINT = { minimax: "minimax/h3/image-to-video", kling3: "kling-video/v3.0/pro/image-to-video", seedance2: "bytedance/seedance-2.0/image-to-video" }[MODEL];
+const body = { prompt: `${prompt} ${STYLE}`.trim(), image_url: await upload(await frame(startArg, "start")), duration };
+const ENDPOINT = { minimax: "minimax/h3/image-to-video", kling3: "kling-video/v3.0/pro/image-to-video", seedance2: "bytedance/seedance-2.0/image-to-video", seedance25: "bytedance/seedance-2.5/image-to-video" }[MODEL];
 if (!ENDPOINT) throw new Error(`unknown MODEL ${MODEL}`);
 if (MODEL === "minimax") body.aspect_ratio = "9:16";
 if (MODEL === "kling3") body.sound = sound ? "on" : "off";
-if (MODEL === "seedance2") Object.assign(body, { generate_audio: sound, resolution: "720p" });
+if (MODEL.startsWith("seedance")) Object.assign(body, { generate_audio: sound, resolution: "720p" });
 if (endArg) body[MODEL === "kling3" ? "last_image_url" : "end_image_url"] = await upload(await frame(endArg, "end"));
 const submit = await (await fetch(`${API}/${ENDPOINT}`, { method: "POST", headers: { ...auth, "Content-Type": "application/json" }, body: JSON.stringify(body) })).json();
 if (!submit.request_id) throw new Error(`submit failed: ${JSON.stringify(submit).slice(0, 300)}`);
