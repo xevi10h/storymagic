@@ -1,8 +1,12 @@
-// Animates a real book illustration with an image-to-video model (MiniMax H3 through the Higgsfield API):
+// Animates a real book illustration or a start photo with an image-to-video model (MiniMax H3 by default, through the Higgsfield API):
 // either one scene coming alive, or a continuous transition from one scene to the next (start + end frame).
 // Paid: about $0.55 per 5 s clip, from the prepaid API balance (console open.higgsfield.ai, read 2026-10-08). Key: ~/.config/higgsfield/credentials.
 //   node scripts/social/animate-scene.mjs <out.mp4> "<prompt>" <start> [<end>]
 //   SCENE_STYLE=photo before the command: the start frame is a photograph (people, the printed book), not an illustration.
+//   MODEL=kling3 (Kling 3.0 Pro, $0.168/s with sound, $0.112/s without, 2026-10-27) or MODEL=seedance2 (Seedance 2.0,
+//   token-metered: about $0.30/s at 720p 9:16) instead of MiniMax H3; both take the aspect ratio from the start frame.
+//   AUDIO=on: native sound, with dialogue lip-synced when the prompt quotes the line (kling3, seedance2). Default off.
+//   DURATION=<s>: clip length (default 5; kling3 3-15, seedance2 4-15).
 // <start> / <end>: a 1080×1920 JPEG, or `pdf:<showcase story id>:<page>:<focus x 0-1>` to cut the frame from the
 // public example PDF (same 9:16 window render-video.mjs uses, page-number strip removed).
 // The prompt describes only the motion; the style guard below is always appended.
@@ -37,9 +41,17 @@ async function upload(file) {
   return public_url;
 }
 
-const body = { prompt: `${prompt} ${STYLE}`, image_url: await upload(await frame(startArg, "start")), duration: 5, aspect_ratio: "9:16" };
-if (endArg) body.end_image_url = await upload(await frame(endArg, "end"));
-const submit = await (await fetch(`${API}/minimax/h3/image-to-video`, { method: "POST", headers: { ...auth, "Content-Type": "application/json" }, body: JSON.stringify(body) })).json();
+const MODEL = process.env.MODEL ?? "minimax";
+const sound = process.env.AUDIO === "on";
+const duration = Number(process.env.DURATION ?? 5);
+const body = { prompt: `${prompt} ${STYLE}`, image_url: await upload(await frame(startArg, "start")), duration };
+const ENDPOINT = { minimax: "minimax/h3/image-to-video", kling3: "kling-video/v3.0/pro/image-to-video", seedance2: "bytedance/seedance-2.0/image-to-video" }[MODEL];
+if (!ENDPOINT) throw new Error(`unknown MODEL ${MODEL}`);
+if (MODEL === "minimax") body.aspect_ratio = "9:16";
+if (MODEL === "kling3") body.sound = sound ? "on" : "off";
+if (MODEL === "seedance2") Object.assign(body, { generate_audio: sound, resolution: "720p" });
+if (endArg) body[MODEL === "kling3" ? "last_image_url" : "end_image_url"] = await upload(await frame(endArg, "end"));
+const submit = await (await fetch(`${API}/${ENDPOINT}`, { method: "POST", headers: { ...auth, "Content-Type": "application/json" }, body: JSON.stringify(body) })).json();
 if (!submit.request_id) throw new Error(`submit failed: ${JSON.stringify(submit).slice(0, 300)}`);
 console.log(`submitted ${submit.request_id}`);
 for (let i = 0; i < 90; i++) {
