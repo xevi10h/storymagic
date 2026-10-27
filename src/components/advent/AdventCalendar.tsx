@@ -389,7 +389,7 @@ export default function AdventCalendar({ locale, devNow, doors, offer, reyesUnti
 
       <AdventBookBand locale={locale} child={child} nameIn={nameIn} deName={deName} offer={offer} variant="wide" />
 
-      <CharacterBuilder open={builderOpen} locale={locale} initialName={stored?.name ?? ""} onClose={() => setBuilderOpen(false)} onSaved={onCharacterSaved} />
+      <CharacterBuilder open={builderOpen} initialName={stored?.name ?? ""} onClose={() => setBuilderOpen(false)} onSaved={onCharacterSaved} />
     </div>
   );
 }

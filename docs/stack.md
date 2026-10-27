@@ -185,27 +185,42 @@ user `resend`); Email OTP length 6, expiry 3600; manual linking ON; Google provi
 `http://localhost:3013/**`. Templates "Magic Link" and "Change Email Address" = `supabase/templates/*.html`
 (+ `.subject.txt`).
 
-**Anti-abuse (Cloudflare Turnstile + daily cap):** `NEXT_PUBLIC_TURNSTILE_SITE_KEY` (Vercel, all envs,
-inlined at build → redeploy after changing; unset = no captcha). The Turnstile secret lives only in Supabase
-→ Auth → Attack Protection (enable only after the site key is deployed). Captcha tokens are sent on
-`signInAnonymously` and `signInWithOtp` (the only calls Supabase checks). `DAILY_PREVIEW_CAP` (default 300,
-0 = off): global per-UTC-day ceiling on new AI previews; ops alert at 80 % and 100 % via `OPS_ALERT_EMAIL`.
-
-**Create flow = invisible captcha + limit (2026-10-27, after 0 of ~55 Meta ad visitors passed the step-3 modal):**
-the guest sign-up never shows a captcha. `getBackgroundCaptchaToken()` renders Turnstile off-screen
-(`appearance: interaction-only`, 10 s timeout) and gives up as soon as Cloudflare wants an interaction
-(`before-interactive-callback`). Token accepted by Supabase → normal ("verified") guest. No token / refused token →
-`POST /api/auth/guest-session`: anonymous sign-up with the service role (GoTrue skips CAPTCHA for admin tokens,
-`verifyCaptcha` → `requireAdminCredentials`), user flagged `app_metadata.guest_captcha = "unverified"`
-(`src/lib/unverified-guest.ts`). Unverified guests get per-IP rolling-24 h caps in `rate_limits`
-(subject `rateLimitSubject("unverified:<ip>")`, no migration): 10 guest sessions, 3 character prepares, 3 AI portraits,
-**3 previews** (`/api/stories/[id]/generate`, refused → story back to draft + the "vuelve mañana" daily-cap screen).
-Verified guests and accounts keep the per-user limits. Every decision logs `[unverified] <action> allowed|refused ip=<hash8>`
-in Vercel (measure the share of unverified visitors there). Supabase's own "anonymous sign-ins per hour per IP" limit
-sees Vercel's IP for the fallback (shared): keep it high (Auth → Rate Limits; `rate_limit_anonymous_users` raised 30 → 300/h
-on 2026-10-27, owner's OK, via Management API). Email login (`getCaptchaToken`) is unchanged
-(overlay only if Cloudflare asks). Recommended: a dedicated **Invisible** Turnstile widget for Meapica (the current one is
-Managed and shared with Constrack); the code works with either.
+**Anti-abuse = Vercel BotID + per-IP caps + daily cap (2026-10-27, replaces Cloudflare Turnstile).** Why: Spanish ISPs
+block Cloudflare IPs during LaLiga matches (2026/27 season) and our ads deliver 20:00-23:00; `challenges.cloudflare.com` was
+the only Cloudflare dependency (and 0 of ~55 Meta ad visitors passed the old step-3 Turnstile modal). Nothing visible anywhere.
+- **BotID** (`botid` 1.5.11, Kasada; first-party script under `/149e9513-…/`, Vercel routes it in prod, `withBotId` in
+  `next.config.ts` for `next dev`; the middleware matcher skips that prefix). Browser: `src/instrumentation-client.ts`
+  → `initBotId` patches fetch/XHR for the same-origin routes in `src/lib/botid/routes.ts`. Server: `refuseBot()`
+  (`src/lib/botid/server.ts`) = one `checkBotId()` per call, **Deep Analysis** on every route (level set in code, must match
+  client and server; dashboard toggle not needed). Cost on our Pro plan: **$1 per 1,000 checks** (~3-4 per visitor who reaches a
+  preview ≈ $0.004); Basic would be free. Protected (POST): `/api/auth/guest-session`, `/api/auth/email-otp`,
+  `/api/characters/prepare`, `/api/characters/portrait`, `/api/stories/*/generate`. Bot → 403 `bot_detected`.
+  Logs: `[botid] <route> human|bot` (Vercel logs; also Firewall tab › BotID filter). `next dev` always answers human
+  (`BOTID_DEV_BYPASS=BAD-BOT npm run dev` forces bot); preview deployments run the real check. A request without the
+  headers (curl, headless scripts such as `e2e/_prod-smoke.mjs` or ad screen recordings on prod) is a bot in prod.
+  Env (server, optional): `BOTID_MODE=monitor` = log bots but let them through (emergency valve if real visitors get
+  403s; redeploy after changing). If `checkBotId()` itself fails, the request is allowed and logged.
+- **Guest sessions** only via `POST /api/auth/guest-session` (`src/lib/guest-session.ts`, 20 s deadline): BotID, then
+  anonymous sign-up with the service role. **Email sign-in** code/link only via `POST /api/auth/email-otp`
+  (`EmailSignIn.tsx`): BotID, 10/h per IP + 5/h per recipient (`email_otp_ip`, `email_otp_recipient`), then Supabase `/otp`
+  with the service role (link = token_hash → `/api/auth/confirm`, no PKCE). The guest "upgrade" (`updateUser({ email })`),
+  `verifyOtp`, Google OAuth stay in the browser (Supabase never captcha-checks those).
+- **Supabase CAPTCHA stays ON** (Auth → Attack Protection, Turnstile secret): service-role calls skip it
+  (supabase/auth `verifyCaptcha` → `requireAdminCredentials`), and the browser no longer calls `/signup` or `/otp`, so
+  no visitor ever needs Cloudflare. Keeping it on blocks anyone minting guests or sending OTPs straight to Supabase with the
+  public anon key, around BotID. Turning it off is not needed and would open that hole.
+- **Per-IP caps for every guest** (anonymous user; `src/lib/guest-caps.ts`, `rate_limits`, subject
+  `rateLimitSubject("guest:<ip>")`, rolling 24 h, no migration): 20 guest sessions, 20 character prepares, 20 AI portraits,
+  **8 previews** (refused → story back to draft + the "vuelve mañana" daily-cap screen). Generous because Spanish mobile
+  carriers share IPv4 (CGNAT). Accounts keep only the per-user limits. Plus in-memory 20 guest sessions/h per IP.
+- Supabase's own per-IP limits see Vercel's IP for these server-side calls (shared by every visitor): anonymous sign-ins
+  `rate_limit_anonymous_users` = 300/h (raised 2026-10-27), sign-ins/OTP per IP = Supabase default. We send
+  `Sb-Forwarded-For: <visitor ip>` (honoured only if Supabase enables it for the project).
+- `DAILY_PREVIEW_CAP` (default 300, 0 = off): global per-UTC-day ceiling on new AI previews; ops alert at 80 % and 100 %
+  via `OPS_ALERT_EMAIL`. Removed: `NEXT_PUBLIC_TURNSTILE_SITE_KEY` (delete from Vercel), `src/lib/captcha/turnstile.ts`,
+  the `guest_captcha = "unverified"` flag (old flagged guests are now ordinary guests).
+- Tests: `e2e/botid.spec.ts` (mocked: BotID headers on the protected calls, no `/signup`/`/otp` from the browser, 403 →
+  human-check message; desktop + Instagram iPhone UA).
 
 **Env (Vercel prod):** `ADMIN_EMAILS` (comma-separated; empty = nobody gets into `/admin`).
 `CRON_SECRET` also guards `/api/cron/purge-guests` (vercel.json, daily 03:40 UTC) and `/api/cron/upsell-reminders` (daily 08:00 UTC, `?dry_run=1`). Unsubscribe tokens are HMAC-signed with a key derived from `SUPABASE_SERVICE_ROLE_KEY`; commercial emails send `List-Unsubscribe` + `List-Unsubscribe-Post` via Resend headers. Guest-merge cookie
@@ -253,8 +268,8 @@ Code map: `docs/technical-architecture.md` › Ads tracking. No TikTok Pixel (Ti
 
 ## Domains (meapica.es primary since 2026-10-23)
 
-> **Live 2026-10-23 (`4c6cdbc`, promoted by hand):** Turnstile widget `0x4AAAAAAFLSoggPOt81EmD4` (shared with Constrack,
-> named "constrack.pro +1 (Spin)") now lists `meapica.es` + `www.meapica.es`. Vercel: `meapica.es` no redirect,
+> **Live 2026-10-23 (`4c6cdbc`, promoted by hand):** (Turnstile widget hostnames no longer matter since the BotID switch,
+> 2026-10-27.) Vercel: `meapica.es` no redirect,
 > `www.meapica.es` and `www.meapica.shop` 308 → `meapica.es`, `meapica.shop` no domain redirect (middleware 308s pages, `/api`
 > served). Supabase Site URL `https://meapica.es`. `vercel promote` restored auto-promotion
 > (`autoAssignCustomDomains: true`, no `lastRollbackTarget`): pushes to `main` go live again.

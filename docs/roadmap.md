@@ -9,7 +9,6 @@ The roadmap is divided into 6 phases, from foundation to scale. Each phase has c
 ## Domain move meapica.shop → meapica.es (2026-10-23)
 
 Code, docs, Resend, Supabase allow-list and GSC property done (see `docs/stack.md` › Domains). Remaining:
-- Before deploy (owner): Cloudflare › Turnstile › widget › Hostnames: add `meapica.es` (else login/preview captcha fails).
 - At deploy: Vercel env `NEXT_PUBLIC_SITE_URL`, `EMAIL_FROM`, `RESEND_API_KEY` (.es key); Vercel `meapica.es` redirect removed,
   `www.meapica.es`/`www.meapica.shop` → `meapica.es`; Supabase Site URL + SMTP sender `pedidos@meapica.es`.
 - Done after deploy (2026-10-23): GSC sitemap + Change of address .shop → .es; Bing `meapica.es` verified (DNS CNAME) + sitemap
@@ -17,10 +16,13 @@ Code, docs, Resend, Supabase allow-list and GSC property done (see `docs/stack.m
   "Send mail as" `hola@meapica.es`; Stripe live + test webhooks and Resend inbound webhook on `.es`; cana → `sc-domain:meapica.es`.
 - Also done 2026-10-23: Meta domain `meapica.es` verified (DNS TXT); Gelato webhook on `.es` (owner, by hand); `meapica.shop` is a Vercel domain-level 308 → `meapica.es`
   (incl. `/api`) since ~15:00.
-- Captcha in the create flow (2026-10-27, local, not deployed): background-only Turnstile + unverified-guest caps
-  (docs/stack.md › Anti-abuse). Owner, optional: dedicated Invisible Turnstile widget for meapica.es; check Supabase
-  Auth › Rate Limits › anonymous sign-ins per hour (the fallback signs up from Vercel's IP). After deploy: read the
-  `[unverified]` log lines and tune the caps.
+- Vercel BotID replaces Cloudflare Turnstile (2026-10-27, local on `local`, not deployed; docs/stack.md › Anti-abuse).
+  Deploy: (1) ship as usual (`push local:main`), no Supabase change: Supabase CAPTCHA stays ON (service-role calls skip it,
+  and it keeps blocking direct anon-key sign-ups), so a `vercel rollback` to the Turnstile build keeps working too;
+  (2) smoke on a real phone (headless browsers are likely flagged on prod): meapica.es → /create step 3 → Vercel logs `[botid] guest_session human`
+  + `prepare human`, email login code arrives; (3) delete `NEXT_PUBLIC_TURNSTILE_SITE_KEY` in Vercel (unused). If real
+  visitors get 403s: `BOTID_MODE=monitor` in Vercel prod + redeploy. After a few ad nights: read `[botid] … bot` share
+  and `[guest-cap] … refused` lines, tune the caps (src/lib/rate-limit.ts).
 - Still open:
   - Owner, in the Instagram app: @meapica_books website `meapica.shop/es` → `meapica.es/es`. TikTok bio link: owner (headless blocked).
     (Facebook page website and Merchant Center contact moved to `.es` on 2026-10-23.)

@@ -88,9 +88,14 @@ assert.equal(authErrorKey({ name: "AuthRetryableFetchError", status: 0 }), "netw
 assert.equal(authErrorKey({ code: "weird_new_code", message: "Something in English" }), "generic");
 assert.equal(authErrorKey(new TypeError("Failed to fetch")), "network");
 assert.equal(authErrorKey(null), "generic");
-// Supabase CAPTCHA protection refusal + our own Turnstile failure (CaptchaError)
+// Supabase CAPTCHA protection refusal + POST /api/auth/email-otp codes (BotID, SMTP, deadline)
 assert.equal(authErrorKey({ code: "captcha_failed", status: 400, message: "captcha protection: request disallowed (no captcha_token found)" }), "captchaFailed");
-assert.equal(authErrorKey({ name: "CaptchaError", message: "captcha_failed" }), "captchaFailed");
+assert.equal(authErrorKey({ code: "bot_detected", status: 403 }), "captchaFailed");
+assert.equal(authErrorKey({ code: "email_send_failed", status: 502 }), "emailSendFailed");
+assert.equal(authErrorKey({ code: "over_request_rate_limit", status: 429 }), "rateLimited");
+assert.equal(authErrorKey({ code: null, status: 429 }), "rateLimited");
+assert.equal(authErrorKey({ code: "unknown", status: 400 }), "generic");
+assert.equal(authErrorKey(new DOMException("deadline exceeded", "TimeoutError")), "network");
 assert.equal(isExistingAccountError({ code: "email_exists" }), true);
 assert.equal(isExistingAccountError({ message: "A user with this email address has already been registered" }), true);
 assert.equal(isExistingAccountError({ code: "manual_linking_disabled" }), true);

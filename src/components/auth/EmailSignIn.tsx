@@ -7,7 +7,7 @@ import { Button, Eyebrow, Spinner, cx, focusRing } from "@/components/ui";
 import { authErrorKey, isExistingAccountError, type AuthErrorKey } from "@/lib/auth/auth-errors";
 import { localizedPath, sanitizeNextPath } from "@/lib/auth/next-path";
 import { SUPPORT_EMAIL } from "@/lib/support";
-import { getCaptchaToken } from "@/lib/captcha/turnstile";
+import { withDeadline } from "@/lib/botid/deadline";
 
 export type SignInStep = "email" | "code";
 
@@ -18,6 +18,7 @@ const RESEND_COOLDOWN_SEC = 60;
 const CODE_MIN = 6;
 const CODE_MAX = 8; // project OTP length may be 6 (recommended) or 8
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const SEND_TIMEOUT_MS = 25_000;
 
 const inputClass =
   "h-12 w-full rounded-2xl border-2 border-line bg-surface px-4 text-base text-ink outline-none transition-colors placeholder:text-ink-muted/45 focus:border-brand disabled:opacity-60";
@@ -114,14 +115,20 @@ export default function EmailSignIn({ next, initialEmail = "", initialError = nu
       }
       // The email already has an account: log in to it, the guest's books follow.
     }
-    // Supabase CAPTCHA protection checks /otp (not /verify, PUT /user or OAuth).
-    const captchaToken = await getCaptchaToken({ prompt: t("captcha.prompt"), cancel: t("captcha.cancel"), locale });
-    const { error: otpError } = await supabase.auth.signInWithOtp({
-      email: address,
-      options: { emailRedirectTo: confirmUrl(), shouldCreateUser: true, data: { locale }, captchaToken },
-    });
-    if (otpError) {
-      setError(authErrorKey(otpError));
+    // Server-side send behind the invisible Vercel BotID check (POST /api/auth/email-otp).
+    const res = await withDeadline(
+      (signal) =>
+        fetch("/api/auth/email-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: address, locale, next: safeNext }),
+          signal,
+        }),
+      SEND_TIMEOUT_MS,
+    );
+    if (!res.ok) {
+      const body = (await res.json().catch(() => null)) as { error_code?: string } | null;
+      setError(authErrorKey({ code: body?.error_code ?? null, status: res.status }));
       return null;
     }
     return "login";

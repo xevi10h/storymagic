@@ -13,7 +13,8 @@ import { STORY_TEMPLATES } from "@/lib/create-store";
 import { ownedPortraitPath } from "@/lib/storage/illustration-urls";
 import { avatarAssetUrl } from "@/lib/character-look";
 import { DAILY_CAP_ERROR, claimDailyPreviewSlot } from "@/lib/preview-cap-server";
-import { checkUnverifiedCap, isUnverifiedGuest } from "@/lib/unverified-guest";
+import { checkGuestIpCap, isGuest } from "@/lib/guest-caps";
+import { refuseBot } from "@/lib/botid/server";
 
 // Book Plan (35–90 s, streamed) with the sheets, cover and first scenes rendered
 // while it streams; the request ends shortly after the plan does.
@@ -70,6 +71,10 @@ export async function POST(
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  // Vercel BotID (invisible): bot → 403 before the story is claimed.
+  const bot = await refuseBot("preview");
+  if (bot) return bot;
 
   // Rate limit: max 3 generations per 5 minutes
   const { checkRateLimit } = await import("@/lib/rate-limit");
@@ -129,14 +134,14 @@ export async function POST(
   // Global daily ceiling (bots can mint unlimited anonymous users): one slot per
   // preview actually started. Refused → back to draft, nothing is spent.
   if (!isMockGeneration()) {
-    // Guest without a passed Turnstile check: 3 paid previews per IP per 24 h. Checked
-    // after the claim, so a retry of a refused request never counts twice. Shown with
-    // the daily-cap screen (come back tomorrow, everything typed is kept).
-    if (isUnverifiedGuest(user)) {
-      const unverified = await checkUnverifiedCap(request, "unverified_preview");
-      if (!unverified.allowed) {
+    // Guests: 8 paid previews per IP per 24 h, second layer behind BotID. Checked after
+    // the claim, so a retry of a refused request never counts twice. Shown with the
+    // daily-cap screen (come back tomorrow, everything typed is kept).
+    if (isGuest(user)) {
+      const ipCap = await checkGuestIpCap(request, "guest_ip_preview");
+      if (!ipCap.allowed) {
         await db.from("stories").update({ status: "draft" }).eq("id", storyId).eq("user_id", user.id).eq("status", "generating");
-        return NextResponse.json({ error: DAILY_CAP_ERROR }, { status: 503, headers: { "Retry-After": String(unverified.retryAfterSeconds ?? 86_400) } });
+        return NextResponse.json({ error: DAILY_CAP_ERROR }, { status: 503, headers: { "Retry-After": String(ipCap.retryAfterSeconds ?? 86_400) } });
       }
     }
     const cap = await claimDailyPreviewSlot(db);

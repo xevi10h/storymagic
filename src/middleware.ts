@@ -219,7 +219,8 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Match all request paths except API routes, static files, and images
-    "/((?!api|ingest|_next/static|_next/image|favicon.ico|manifest\\.json|robots\\.txt|sitemap\\.xml|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|ico|mp3|wav|ogg|mp4|webm|woff2?|ttf|otf|pdf|txt|xml|json|jsonl|js|css|map)$).*)",
+    // Match all request paths except API routes, the PostHog and Vercel BotID proxies
+    // (next.config.ts), static files, and images
+    "/((?!api|ingest|149e9513-01fa-4fb0-aad4-566afd725d1b|_next/static|_next/image|favicon.ico|manifest\\.json|robots\\.txt|sitemap\\.xml|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|ico|mp3|wav|ogg|mp4|webm|woff2?|ttf|otf|pdf|txt|xml|json|jsonl|js|css|map)$).*)",
   ],
 };

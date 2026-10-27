@@ -48,6 +48,9 @@ const BY_CODE: Record<string, AuthErrorKey> = {
   user_banned: "blocked",
   request_timeout: "network",
   captcha_failed: "captchaFailed",
+  // Our own routes (POST /api/auth/email-otp): Vercel BotID refusal, SMTP failure.
+  bot_detected: "captchaFailed",
+  email_send_failed: "emailSendFailed",
 };
 
 /** Map any Supabase auth error (or thrown value) to a message key. */
@@ -56,8 +59,7 @@ export function authErrorKey(err: unknown): AuthErrorKey {
   const e = err as AuthLikeError;
   const code = typeof e.code === "string" ? e.code : "";
   if (code && BY_CODE[code]) return BY_CODE[code];
-  // Our own Turnstile failure (src/lib/captcha/turnstile.ts CaptchaError).
-  if (e.name === "CaptchaError") return "captchaFailed";
+  if (e.name === "TimeoutError") return "network";
 
   // Older servers / fetch failures carry no code: fall back on status + name.
   if (e.name === "AuthRetryableFetchError" || e.status === 0) return "network";

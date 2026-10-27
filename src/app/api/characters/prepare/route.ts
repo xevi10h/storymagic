@@ -21,7 +21,8 @@ import { avatarAssetPathSchema, avatarAssetUrl, characterLookShape } from "@/lib
 import { isMockGeneration } from "@/lib/ai/story-generator";
 import { createFulfilmentClient } from "@/lib/fulfilment/db";
 import { DAILY_CAP_ERROR, isDailyPreviewCapFull } from "@/lib/preview-cap-server";
-import { checkUnverifiedCap, isUnverifiedGuest } from "@/lib/unverified-guest";
+import { checkGuestIpCap, isGuest } from "@/lib/guest-caps";
+import { refuseBot } from "@/lib/botid/server";
 
 // The child sheet (gpt-image-2.5-flare, medium, 1536×1024) takes ~15–25 s and
 // runs in after(), which lives for this route's maxDuration.
@@ -92,6 +93,9 @@ export async function POST(request: Request) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  // Vercel BotID (invisible): bot → 403 before anything is reused or spent.
+  const bot = await refuseBot("prepare");
+  if (bot) return bot;
 
   if (input.photoPath) {
     if (!isPhotoUploadEnabled()) return NextResponse.json({ error: "photo_upload_disabled" }, { status: 400 });
@@ -140,10 +144,10 @@ export async function POST(request: Request) {
   if (!userLimit.allowed) {
     return NextResponse.json(RATE_LIMITED, { status: 429, headers: { "Retry-After": String(userLimit.retryAfterSeconds ?? 3600) } });
   }
-  // Guest without a passed Turnstile check: stricter per-IP daily cap (best effort for
-  // the client: without a prep the book pipeline renders the sheet itself, under its own cap).
-  if (isUnverifiedGuest(user)) {
-    const cap = await checkUnverifiedCap(request, "unverified_prepare");
+  // Guests: per-IP daily cap, second layer behind BotID (best effort for the client:
+  // without a prep the book pipeline renders the sheet itself, under its own cap).
+  if (isGuest(user)) {
+    const cap = await checkGuestIpCap(request, "guest_ip_prepare");
     if (!cap.allowed) {
       return NextResponse.json(RATE_LIMITED, { status: 429, headers: { "Retry-After": String(cap.retryAfterSeconds ?? 86_400) } });
     }

@@ -14,7 +14,6 @@ import { Button, ChoiceChip } from "@/components/ui";
 import { AVATAR_EYE_COLORS, AVATAR_HAIR_COLORS, AVATAR_SKIN_TONES, AVATAR_BASE_EYE_COLOR, ageBandFor, avatarBaseKey, isAvatarRendered } from "@/lib/avatar/manifest";
 import { formatChildName } from "@/lib/child-name";
 import { ensureGuestSession } from "@/lib/guest-session";
-import type { AdventLocale } from "@/lib/advent/render";
 
 const AGES = Array.from({ length: 11 }, (_, i) => i + 2); // 2–12, as on /create
 const NAME_MAX = 40;
@@ -22,13 +21,11 @@ const hexOf = <T extends { id: string; hex: string }>(list: readonly T[], id: st
 
 export default function CharacterBuilder({
   open,
-  locale,
   initialName,
   onClose,
   onSaved,
 }: {
   open: boolean;
-  locale: AdventLocale;
   initialName: string;
   onClose: () => void;
   onSaved: () => Promise<void> | void;
@@ -50,7 +47,7 @@ export default function CharacterBuilder({
     setError(null);
     setSaving(true);
     try {
-      await ensureGuestSession(locale);
+      await ensureGuestSession();
       const base = displayTraits(look);
       const res = await fetch("/api/characters", {
         method: "POST",

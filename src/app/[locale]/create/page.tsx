@@ -271,7 +271,7 @@ function CrearPageContent() {
       prepInFlight.current = snapshot;
       void (async () => {
         try {
-          await ensureGuestSession(locale);
+          await ensureGuestSession();
           const res = await fetch("/api/characters/prepare", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -302,7 +302,7 @@ function CrearPageContent() {
         }
       })();
     },
-    [setState, t, locale],
+    [setState, t],
   );
 
   const handleProtagonistNext = useCallback(() => {
@@ -325,7 +325,7 @@ function CrearPageContent() {
     setError(null);
     setCreateFailed(false);
     try {
-      await ensureGuestSession(locale);
+      await ensureGuestSession();
       const name = state.character.name.trim();
       // Pre-filled, editable on the next screen; addressed to the first name only.
       const dedication = state.dedication.trim() ? state.dedication : t("dedication.default", { name: firstName(name) });

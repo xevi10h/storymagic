@@ -36,13 +36,17 @@ const LIMITS: Record<string, RateLimitConfig> = {
   tool_pdf: { maxRequests: 40, windowSeconds: 3600 },
   // Gift voucher Checkout Sessions, per hashed IP (subject = rateLimitSubject("voucher:<ip>")).
   gift_voucher_checkout: { maxRequests: 10, windowSeconds: 3600 },
-  // Guests whose Turnstile check did not pass (src/lib/unverified-guest.ts), per hashed IP
-  // (subject = rateLimitSubject("unverified:<ip>")), rolling 24 h. Verified guests and
-  // accounts keep the per-user limits above.
-  unverified_guest_session: { maxRequests: 10, windowSeconds: 86_400 },
-  unverified_prepare: { maxRequests: 3, windowSeconds: 86_400 },
-  unverified_portrait: { maxRequests: 3, windowSeconds: 86_400 },
-  unverified_preview: { maxRequests: 3, windowSeconds: 86_400 },
+  // Every guest (anonymous user), per hashed IP (subject = rateLimitSubject("guest:<ip>")),
+  // rolling 24 h: second layer behind Vercel BotID (src/lib/guest-caps.ts). Accounts keep
+  // only the per-user limits above.
+  guest_ip_session: { maxRequests: 20, windowSeconds: 86_400 },
+  guest_ip_prepare: { maxRequests: 20, windowSeconds: 86_400 },
+  guest_ip_portrait: { maxRequests: 20, windowSeconds: 86_400 },
+  guest_ip_preview: { maxRequests: 8, windowSeconds: 86_400 },
+  // Email sign-in codes (POST /api/auth/email-otp): per hashed IP ("otp-ip:<ip>") and per
+  // recipient ("otp:<email>"), on top of Supabase's own per-email 60 s resend limit.
+  email_otp_ip: { maxRequests: 10, windowSeconds: 3600 },
+  email_otp_recipient: { maxRequests: 5, windowSeconds: 3600 },
 };
 
 /**

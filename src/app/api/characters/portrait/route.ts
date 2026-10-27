@@ -14,7 +14,8 @@ import { isOwnedPhotoPath, isPhotoUploadEnabled, isValidPhotoPath } from "@/lib/
 import { PhotoUnavailableError, deleteChildPhoto, loadChildPhoto } from "@/lib/privacy/child-photo";
 import { createFulfilmentClient } from "@/lib/fulfilment/db";
 import { DAILY_CAP_ERROR, isDailyPreviewCapFull } from "@/lib/preview-cap-server";
-import { checkUnverifiedCap, isUnverifiedGuest } from "@/lib/unverified-guest";
+import { checkGuestIpCap, isGuest } from "@/lib/guest-caps";
+import { refuseBot } from "@/lib/botid/server";
 
 // OpenAI portrait (gpt-image-2.5-flare, medium) takes ~15–25 s.
 export const maxDuration = 60;
@@ -128,6 +129,9 @@ export async function POST(request: Request) {
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    // Vercel BotID (invisible): bot → 403.
+    const bot = await refuseBot("portrait");
+    if (bot) return bot;
 
     // 3. Per-user durable fixed window (rate_limits table): 10 portraits/hour.
     const userLimit = await checkRateLimit(user.id, "generate_portrait");
@@ -157,9 +161,9 @@ export async function POST(request: Request) {
     if (await isDailyPreviewCapFull(createFulfilmentClient())) {
       return NextResponse.json({ error: DAILY_CAP_ERROR }, { status: 503 });
     }
-    // Guest without a passed Turnstile check: stricter per-IP daily cap.
-    if (isUnverifiedGuest(user)) {
-      const cap = await checkUnverifiedCap(request, "unverified_portrait");
+    // Guests: per-IP daily cap, second layer behind BotID.
+    if (isGuest(user)) {
+      const cap = await checkGuestIpCap(request, "guest_ip_portrait");
       if (!cap.allowed) {
         return NextResponse.json(RATE_LIMITED_RESPONSE, {
           status: 429,

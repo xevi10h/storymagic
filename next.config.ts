@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
+import { withBotId } from "botid/next/config";
 
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
@@ -65,4 +66,7 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withNextIntl(nextConfig);
+// Vercel BotID: first-party rewrites for its challenge script and proxy
+// (/149e9513-…/…). Vercel also routes these itself in production; the rewrites
+// make `next dev` work and keep the script on our own domain.
+export default withBotId(withNextIntl(nextConfig));

@@ -124,7 +124,7 @@ export default function PhotoUploadPanel({ name, photoPath, onPhotoChange }: Pho
         setError(err instanceof Error && err.message === "still_too_large" ? "too_large" : "unsupported_type");
         return;
       }
-      await ensureGuestSession(locale);
+      await ensureGuestSession();
       const body = new FormData();
       body.append("photo", jpeg, "photo.jpg");
       body.append("consent", "true");
