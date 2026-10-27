@@ -202,7 +202,8 @@ the guest sign-up never shows a captcha. `getBackgroundCaptchaToken()` renders T
 **3 previews** (`/api/stories/[id]/generate`, refused → story back to draft + the "vuelve mañana" daily-cap screen).
 Verified guests and accounts keep the per-user limits. Every decision logs `[unverified] <action> allowed|refused ip=<hash8>`
 in Vercel (measure the share of unverified visitors there). Supabase's own "anonymous sign-ins per hour per IP" limit
-sees Vercel's IP for the fallback (shared): keep it high (Auth → Rate Limits). Email login (`getCaptchaToken`) is unchanged
+sees Vercel's IP for the fallback (shared): keep it high (Auth → Rate Limits; `rate_limit_anonymous_users` raised 30 → 300/h
+on 2026-10-27, owner's OK, via Management API). Email login (`getCaptchaToken`) is unchanged
 (overlay only if Cloudflare asks). Recommended: a dedicated **Invisible** Turnstile widget for Meapica (the current one is
 Managed and shared with Constrack); the code works with either.
 
