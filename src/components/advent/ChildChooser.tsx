@@ -13,11 +13,17 @@ import type { AdventGender } from "@/lib/advent/render";
 
 const NAME_MAX = 40;
 
+/** The typed name as the stories use it ("" = nothing usable). */
+export function cleanChildName(raw: string): string {
+  return formatChildName(raw.replace(/[^\p{L}\p{M}\s'’-]/gu, "")).slice(0, NAME_MAX).trim();
+}
+
 export default function ChildChooser({
   prompt,
   nameInputRef,
   onCreate,
   onName,
+  onDraftChange,
   onCancel,
   savedName,
   onUseSaved,
@@ -27,6 +33,8 @@ export default function ChildChooser({
   nameInputRef: RefObject<HTMLInputElement | null>;
   onCreate: () => void;
   onName: (name: string, gender: AdventGender) => void;
+  /** The name typed so far, so the email sign-up below can use it without "Leer". */
+  onDraftChange?: (draft: { name: string; gender: AdventGender } | null) => void;
   onCancel?: () => void;
   /** Signed-in visitor with a saved character currently reading with a typed name. */
   savedName?: string;
@@ -41,9 +49,14 @@ export default function ChildChooser({
   const errorId = useId();
   const genderId = useId();
 
+  function report(nextName: string, nextGender: AdventGender | null) {
+    const clean = cleanChildName(nextName);
+    onDraftChange?.(clean ? { name: clean, gender: nextGender ?? "neutral" } : null);
+  }
+
   function submit(e: React.FormEvent) {
     e.preventDefault();
-    const clean = formatChildName(name.replace(/[^\p{L}\p{M}\s'’-]/gu, "")).slice(0, NAME_MAX).trim();
+    const clean = cleanChildName(name);
     if (!clean) {
       setError(true);
       nameInputRef.current?.focus();
@@ -88,32 +101,24 @@ export default function ChildChooser({
         <label htmlFor={nameId} className="text-sm font-semibold text-ink-soft">
           {t("nameLabel")}
         </label>
-        <div className="-mt-1.5 flex gap-2">
-          <input
-            ref={nameInputRef}
-            id={nameId}
-            type="text"
-            value={name}
-            maxLength={NAME_MAX}
-            autoComplete="off"
-            placeholder={t("namePlaceholder")}
-            aria-invalid={error || undefined}
-            aria-describedby={error ? errorId : undefined}
-            onChange={(e) => {
-              setName(e.target.value);
-              if (error) setError(false);
-            }}
-            className="min-w-0 flex-1 rounded-xl border-[1.5px] border-line bg-paper px-3 py-3 text-base text-ink placeholder:text-ink-muted focus:border-brand focus:outline-none"
-            data-testid="advent-name-input"
-          />
-          <button
-            type="submit"
-            className={cx("min-h-12 rounded-xl border-[1.5px] border-brand bg-brand-tint px-4 text-[15px] font-bold text-brand-text hover:bg-surface", focusRing)}
-            data-testid="advent-name-submit"
-          >
-            {t("read")}
-          </button>
-        </div>
+        <input
+          ref={nameInputRef}
+          id={nameId}
+          type="text"
+          value={name}
+          maxLength={NAME_MAX}
+          autoComplete="off"
+          placeholder={t("namePlaceholder")}
+          aria-invalid={error || undefined}
+          aria-describedby={error ? errorId : undefined}
+          onChange={(e) => {
+            setName(e.target.value);
+            report(e.target.value, gender);
+            if (error) setError(false);
+          }}
+          className="-mt-1.5 w-full rounded-xl border-[1.5px] border-line bg-paper px-3 py-3 text-base text-ink placeholder:text-ink-muted focus:border-brand focus:outline-none"
+          data-testid="advent-name-input"
+        />
         {error && (
           <p id={errorId} role="alert" className="-mt-1 text-sm text-error">
             {t("nameError")}
@@ -125,12 +130,28 @@ export default function ChildChooser({
           </span>
           <div role="radiogroup" aria-labelledby={genderId} className="grid grid-cols-3 gap-2">
             {(["girl", "boy", "neutral"] as const).map((g) => (
-              <ChoiceChip key={g} selected={gender === g} onClick={() => setGender(gender === g ? null : g)} className="!px-2 !text-[13px]">
+              <ChoiceChip
+                key={g}
+                selected={gender === g}
+                onClick={() => {
+                  const next = gender === g ? null : g;
+                  setGender(next);
+                  report(name, next);
+                }}
+                className="!px-2 !text-[13px]"
+              >
                 {t(g)}
               </ChoiceChip>
             ))}
           </div>
         </div>
+        <button
+          type="submit"
+          className={cx("min-h-12 rounded-xl border-[1.5px] border-brand bg-brand-tint px-4 text-[15px] font-bold text-brand-text hover:bg-surface", focusRing)}
+          data-testid="advent-name-submit"
+        >
+          {t("read")}
+        </button>
       </form>
       {savedName && onUseSaved && (
         <button

@@ -66,6 +66,8 @@ export default function AdventCalendar({ locale, devNow, doors, offer, reyesUnti
   const [selected, setSelected] = useState<number>(todayDoor ?? Math.max(openCount, 1));
   const [reading, setReading] = useState<number | null>(null);
   const [pickPrompt, setPickPrompt] = useState(false);
+  // "Solo su nombre" typed but not yet confirmed with its button: the sign-up uses it too.
+  const [draft, setDraft] = useState<{ name: string; gender: StoredNameChild["gender"] } | null>(null);
   const chooserRef = useRef<HTMLDivElement>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
 
@@ -155,6 +157,7 @@ export default function AdventCalendar({ locale, devNow, doors, offer, reyesUnti
     const next = { name, gender, override: true };
     writeStoredChild(next);
     setStored(next);
+    setDraft(null);
     setChoosing(false);
     setPickPrompt(false);
   }, []);
@@ -308,6 +311,7 @@ export default function AdventCalendar({ locale, devNow, doors, offer, reyesUnti
               nameInputRef={nameInputRef}
               onCreate={() => setBuilderOpen(true)}
               onName={chooseName}
+              onDraftChange={setDraft}
               onCancel={choosing && resolveChild(account, stored) ? () => setChoosing(false) : undefined}
               savedName={stored?.override && account?.character ? account.character.name : undefined}
               onUseSaved={backToSavedCharacter}
@@ -371,10 +375,13 @@ export default function AdventCalendar({ locale, devNow, doors, offer, reyesUnti
           <div className="order-4 lg:col-start-2 lg:row-start-2 lg:self-start">
             <AdventSignup
               locale={locale}
-              child={child}
+              child={child ?? (draft ? { source: "name", ...draft } : null)}
               portraitEmail={account?.portraitEmail ?? null}
               beforeStart={beforeStart}
               onNeedName={askForChild}
+              onSubscribed={() => {
+                if (!child && draft) chooseName(draft.name, draft.gender);
+              }}
             />
           </div>
         )}

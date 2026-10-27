@@ -21,12 +21,15 @@ export default function AdventSignup({
   portraitEmail,
   beforeStart,
   onNeedName,
+  onSubscribed,
 }: {
   locale: AdventLocale;
   child: AdventChild | null;
   portraitEmail: string | null;
   beforeStart: boolean;
   onNeedName: () => void;
+  /** After a successful sign-up (the page then keeps the name it was made with). */
+  onSubscribed?: () => void;
 }) {
   const t = useTranslations("advent.signup");
   // Prefilled with the account's own address once known; whatever is typed wins.
@@ -77,6 +80,7 @@ export default function AdventSignup({
       const body = (await res.json().catch(() => ({}))) as { state?: string };
       setPending(body.state === "pending");
       setPhase("done");
+      onSubscribed?.();
       trackEvent("advent_signup", { portrait: withPortrait, pending: body.state === "pending" });
       trackEvent("Lead", { content_name: "advent" });
     } catch {
