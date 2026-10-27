@@ -397,6 +397,7 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   In `video.json`: `img.video` = a clip in `clips/` (git-ignored, only the final `video.mp4` is committed), `full: true` plays a
   transition to its last frame, `ambientMode: "out"` on the beat before a transition, `titleTop` moves the hook label off a face.
   Zernio cannot delete Instagram or TikTok posts; replacing a published video means deleting those by hand.
+- **Overlay text kerning (2026-10-26):** `render-video.mjs` renders titles and captions with `font-kerning: none`: Fredoka's "IV" kerning made "IVA" read as "MA" in every earlier video with a price.
 - **Video encode:** H.264 CRF 25 (about 12 MB per minute). Page art is cut 9 % from the bottom (page-number badge) and the slow zoom runs
   on a 4x oversampled frame so it does not tremble.
 - **Keyword → private message (2026-10-06):** `node scripts/social/setup-automations.mjs [--create]`. Four Zernio comment automations,
@@ -413,7 +414,8 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   @meapica_libros + FB page, link `/es` with `utm_source=meta&utm_medium=paid&utm_campaign=reyes_q4-26&utm_content=<post date>`).
   Plan (owner 2026-10-26): non-seasonal warm-up now, Reyes from ~15 Nov. Warm-up ads: `120252257279350661`
   `..._ad_2026-10-28_no-otro-juguete` (Leo dinosaur video, copy without Navidad/Reyes) and `120252257290520661`
-  `..._ad_2026-11-01_llave-de-flor` (Noa bedtime video). Held back: `120252257165130661`
+  `..._ad_2026-11-01_llave-de-flor` (Noa bedtime video). Added 2026-10-27 (ACTIVE, owner's OK): `120252275455070661`
+  `..._ad_2026-10-27_soy-yo` («¡Soy yo!» Kling video via `video.url` in the `showcase` bucket, AI disclosure OPT_IN). Held back: `120252257165130661`
   `..._ad_2026-11-14_reyes-deadline_from-11-15` (switch on around 15 Nov). The first seasonal dinosaur ad (`120252257169270661`) was
   deleted (Zernio's ad list may still show it until it resyncs). Traffic, not Sales: the pixel saw only 11 InitiateCheckout / 24 AddToCart in 28 days, too few to learn on this budget.
   **Gotcha:** our app "Meapica Ads API" is in development mode, so Graph refuses to create creatives (`object_story_spec` →
@@ -421,6 +423,20 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   `adSetId` + `video: {id}` (Zernio adds `url_tags` `zrn={{ad.id}}` and opts out of every Advantage+ creative enhancement).
   No API field for AI-content disclosure was found; the copy says "Escena recreada". To go live: add a card, then set campaign,
   ad set and the two warm-up ads to ACTIVE (and an end date 14 days out); around 15 Nov turn on the Reyes ad.
+- **Q4 promotions on Meta (created PAUSED 2026-10-26, nothing spent):** five campaigns, one per promotion, each ABO
+  (`is_adset_budget_sharing_enabled: false`) with two ad sets at 5 €/day (hook A / hook B, identical targeting copied from
+  `120252257133430661`, `LANDING_PAGE_VIEWS`) scheduled to the promotion window, one ad each through Zernio (pixel
+  `1830635711690297` in `tracking_specs`, AI disclosure on, 9:16 default + 4:5 pinned to the feeds). Campaigns:
+  `mpc_meta_pack-reyes_es_q4-26` (`120252263165940661`, until 22 Nov), `mpc_meta_black-friday_es_q4-26` (`120252263170800661`,
+  23-30 Nov), `mpc_meta_paje-real_es_q4-26` (`120252263175190661`, 1-22 Dec), `mpc_meta_ultima-llamada_es_q4-26`
+  (`120252263180340661`, 15-22 Dec), `mpc_meta_pdf-regalo_es_q4-26` (`120252263184250661`, 23 Dec-5 Jan). Ad set and ad ids,
+  copy, hypotheses, read-out rule and activation checklist: `docs/ads/promotions-q4-2026.md`; ids also in
+  `docs/ads/promotions-q4-2026.ids.json`. Script: `scripts/ads/promos-q4.mjs structure|ads|verify` (Graph v26 for campaigns
+  and ad sets, Zernio `POST /v1/ads/create` attach shape for ads). Creatives: `docs/ads/creatives/promos/` (git-ignored,
+  rebuilt from `make-configs.py` + `scripts/social/render-video.mjs`). To go live: raise the 300 €/month spending limit
+  (Nov + Dec need about 350 € and 390 € with the warm-up), deploy Pack Reyes and the `reyes` world, then set campaign, ad
+  sets and ads to ACTIVE; the schedule starts and stops each one. Zernio now exposes `aiDisclosure` (Meta's "AI-generated
+  media" self-disclosure); the warm-up ads were created without it.
 - **TikTok Ads through Zernio (checked 2026-10-08):** the ad account is connected as a `tiktokads` account (Zernio id
   `6abe76003d9fcab2182a1c5a`, advertiser `7691596144782180404`, Business Center `7691596115342442502`, identity "Meapica").
   `GET /v1/ads/accounts?accountId=…` returns status and balances: cash 0, grant 0, no campaigns. Billing info
@@ -510,6 +526,24 @@ Order: apply the migration → deploy → run the setup script with the live key
   window in `src/lib/shipping.ts` (check: `node --experimental-strip-types src/lib/shipping.check.mjs`).
 - **Order matters:** apply the migration BEFORE deploying the code: the new `/api/newsletter` writes
   `reyes_reminder_consent_at`, so without the column every Reyes opt-in would fail with a 500.
+
+## Advent calendar (built 2026-10-27, not deployed)
+
+- Cron `/api/cron/advent` (vercel.json `*/15 6-11 * * *` UTC = 07:00–12:45 Madrid in December, `CRON_SECRET`;
+  `?dry_run=1`, `?limit=N` default 150 max 400, dev-only `?now=`). Sends only on 1–24 Dec (Spain date); several runs a
+  morning so a deferred batch goes out on the next one. Answers `{ migrationPending: true }` with 200 until migration
+  `20261027120000_advent_subscriptions` is applied.
+- Resend: one email per subscriber (attachments cannot go through `/emails/batch`), sequential, ≥ 150 ms apart (team
+  limit 10 req/s shared with the other crons), 40 MB max per email. `sendEmail` now takes `attachments`
+  (base64 `content`, `filename`, optional `content_id` for the inline portrait). No new env vars.
+- PDFs: `@react-pdf/renderer` (20×20 cm, `src/lib/advent/pdf.tsx`, embedded fonts, body type fitted per door); webp art →
+  JPEG with `sharp` (`src/lib/advent/assets.ts`, read from /public or fetched from `NEXT_PUBLIC_SITE_URL` on Vercel).
+  Measured locally: one door ≈ 0.3 s, the 25-page compilation ≈ 2–8 s (name-only PDFs are cached per run by
+  locale + door + name + gender). Email art: `GET /api/advent/art/{door}` (JPEG, long cache; Outlook ignores webp).
+- Routes: `GET /api/advent/me`, `POST /api/advent/subscribe`, `POST /api/advent/unsubscribe` (one-click + page),
+  `GET /api/advent/pdf`, `POST /api/characters` (character-only save, same validation as `POST /api/stories`).
+- **Deploy order:** apply the migration, then deploy. Account erasure also deletes `advent_subscriptions` (tolerates the
+  table missing).
 
 ## Creator programme (live 2026-10-23)
 
