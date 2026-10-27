@@ -17,9 +17,8 @@ await buildAd({
   ],
   line: { html: "Un regalo de los abuelos<br><em>que se queda para siempre.</em>", focus: 0.6 },
   captions: (t) => [
-    [`<div class="pill cap">«Ábrelo. La primera página<br>la he escrito yo.»</div>`, t.at(0, 0.1), t.end(0)],
-    [`<div class="pill cap">«Para Martín, que cuenta<br>estrellas antes de dormir…»</div>`, t.at(1, 0.1), t.end(2)],
-    [`<div class="pill cap">«¡Ay, mi niño!»</div>`, t.at(4, 2.5), t.end(4)],
+    { html: "«Ábrelo. La primera página<br>la he escrito yo.»", shot: 0 },
+    { html: "«Para Martín, que cuenta<br>estrellas antes de dormir…»", shot: [1, 2] },
+    { html: "«¡Ay, mi niño!»", shot: 4 },
   ],
-  riseAt: (t) => t.at(3),
 });

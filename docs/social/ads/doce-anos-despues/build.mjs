@@ -8,6 +8,7 @@ await buildAd({
   dir: DIR, story: "5f4ace1a-0f90-4e2c-bf72-9f2a15ff84a6", music: "calm-piano-1.mp3",
   shots: [
     { src: `${DIR}/clips/a.mp4`, ss: 0, t: 4.6, audio: true }, // she finds the worn book on the shelf
+    { src: `${ROOT}/docs/social/posts/2026-10-04/clips/p26.mp4`, ss: 0.5, t: 1.5 }, // real page 26 between two shots of her in the same framing (no jump cut)
     { src: `${DIR}/clips/b.mp4`, ss: 0.3, t: 4.7, audio: true }, // "Mamá y papá…", wipes an eye
     { page: 3, mode: "fit", px: 1240, t: 2.8, zoom: [1.0, 1.06], y: 0.5 }, // the real dedication page
     { src: `${ROOT}/docs/social/posts/2026-10-04/clips/p04.mp4`, ss: 0.4, t: 1.6 }, // real page 4, animated (already paid)
@@ -16,8 +17,7 @@ await buildAd({
   line: { html: "Hoy es un cuento.<br><em>Mañana, un recuerdo.</em>", focus: 0.6 },
   captions: (t) => [
     [`<div class="pill cap">Lo encontró 12 años después.</div>`, t.at(0, 0.1), t.end(0)],
-    [`<div class="pill cap">«Mamá y papá…»</div>`, t.at(1, 0.4), t.at(1, 2.8)],
-    [`<div class="pill cap">«¿Y esto, cariño?»</div>`, t.at(4, 0.3), t.end(4)],
+    { html: "«Mamá y papá…»", shot: 2 },
+    { html: "«¿Y esto, cariño?»", shot: 5 },
   ],
-  riseAt: (t) => t.at(2),
 });

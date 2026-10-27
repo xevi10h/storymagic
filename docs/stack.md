@@ -404,6 +404,9 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   account-wide on Instagram and Facebook: commenting or messaging `CUENTO` (ES) or `CONTE` (CA) sends a DM with a tracked button to the
   site and a short public reply. Captions of Instagram and Facebook posts end with the call to comment the keyword. Stats (triggered,
   delivered, link clicks) come back from the same script. Not available on TikTok, YouTube or Pinterest.
+  **All four PAUSED since 2026-10-27 (owner):** with `typoTolerance: true` the word "cuenta" matched CUENTO, so insults on the
+  ads ("basura de cuenta IA") got a link DM and a public "¡Enviado! Mira tus mensajes privados.". The script now creates them
+  with `typoTolerance: false`. Comments are answered by hand with owner-approved text (`reply.mjs`).
 - **Ads:** Meta ad account "Meapica Ads" (`act_2479938985822992`) is connected in Zernio and active, with a
   card on file (MasterCard ···· 4880, seen in Billing hub 2026-10-26) and a 300 €/month spending limit. Graph returns no
   `funding_source` and Zernio says billingStatus `missing` even so: check Billing hub, not those fields.
@@ -415,7 +418,7 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   Plan (owner 2026-10-26): non-seasonal warm-up now, Reyes from ~15 Nov. Warm-up ads: `120252257279350661`
   `..._ad_2026-10-28_no-otro-juguete` (Leo dinosaur video, copy without Navidad/Reyes) and `120252257290520661`
   `..._ad_2026-11-01_llave-de-flor` (Noa bedtime video). Added 2026-10-27 (ACTIVE, owner's OK): `120252275455070661`
-  `..._ad_2026-10-27_soy-yo` («¡Soy yo!» Kling video via `video.url` in the `showcase` bucket, AI disclosure OPT_IN). Held back: `120252257165130661`
+  `..._ad_2026-10-27_soy-yo` («¡Soy yo!» Kling video via `video.url` in the `showcase` bucket, AI disclosure OPT_IN; still the Leo version, the local `docs/social/ads/soy-yo/video.mp4` was recast to Martín on 2026-10-27 and is not uploaded). Held back: `120252257165130661`
   `..._ad_2026-11-14_reyes-deadline_from-11-15` (switch on around 15 Nov). The first seasonal dinosaur ad (`120252257169270661`) was
   deleted (Zernio's ad list may still show it until it resyncs). Traffic, not Sales: the pixel saw only 11 InitiateCheckout / 24 AddToCart in 28 days, too few to learn on this budget.
   **Gotcha:** our app "Meapica Ads API" is in development mode, so Graph refuses to create creatives (`object_story_spec` →

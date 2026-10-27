@@ -16,8 +16,7 @@ await buildAd({
   ],
   line: { html: "Que esta noche<br><em>sea su cuento.</em>", focus: 0.62 },
   captions: (t) => [
-    [`<div class="pill cap">«Un día dejará de pedirme<br>que le lea.»</div>`, t.at(0, 0.1), t.end(0)],
-    [`<div class="pill cap">«Noa… soy yo.»</div>`, t.at(2, 0.2), t.end(2)],
+    { html: "«Un día dejará de pedirme<br>que le lea.»", shot: 0 },
+    { html: "«Noa… soy yo.»", shot: 2 },
   ],
-  riseAt: (t) => t.at(3),
 });

@@ -32,7 +32,7 @@ Rules for every concept:
 - 12-20 s: he hugs her; she looks at the camera holder (his mum) and laughs.
 - 20-23 s: "Un regalo de los abuelos que se queda para siempre." + end card.
 
-## 4. "El hermano mayor" (new baby at home)
+## 4. "La hermana mayor" (new baby at home; folder docs/social/ads/hermana-mayor/, was hermano-mayor)
 - 0-3 s: everyone around a newborn; the 5-year-old alone on the sofa, watching. On-screen: "Desde que llegó su hermana, nadie le mira a él."
 - 3-14 s: dad sits next to him with a book: "Este es solo tuyo." The boy sees himself on the cover, smiles.
 - 14-20 s: later, he "reads" it to the baby, proud.
@@ -65,6 +65,26 @@ that the printed book branches.
 - 22-25 s: end card.
 - IP: do not name the "Elige tu propia aventura" series nor copy its cover design; a generic worn 90s paperback.
 - A 12-15 s cut-down (shots 1, 2, 5 + end card) for TikTok.
+
+## Recast for Spain (owner, 2026-10-27)
+Ads target Spain, so the families look typical of the Spanish audience (Mediterranean look) and only example books whose
+hero fits are used; the child matches the illustrated hero at the same age, the parents plausibly theirs.
+- «¡Soy yo!» (`ads/soy-yo/`): Martín (7, book 31ada3cf) and his dad. «Papá… ¡ese soy yo!» / «¡Y aquí también!».
+- «La hermana mayor» (`ads/hermana-mayor/`): Noa (4, book bc6e2dbd), her mum and a newborn brother. «Desde que llegó su
+  hermano, nadie la mira a ella.» / «Este es solo tuyo.» / «Mira. Esta soy yo.» / «En su cuento, la protagonista es ella.»
+  No dedication insert: Noa's real one is signed "Tu tía Marta" and here the book is mum's gift.
+- «Si decides entrar en la cueva…» (`ads/la-cueva/`): Aitana (6, book 5f4ace1a) and her dad, who is the boy with the torch
+  in 1994. «¡El barco! ¡Elige el barco!» / «¡Papá, salgo yo!» / «Antes elegías tu aventura. Ahora ella es la protagonista.»
+- The live Meta ad `..._ad_2026-10-27_soy-yo` still runs the earlier Leo video (uploaded copy); the local file is now Martín.
+
+## Sound, captions and cuts (owner, 2026-10-27, after watching with sound)
+All in `ads/_shared/build-ad.mjs`, so every ad gets it: only the voice comes from the Kling clips (ElevenLabs audio isolation,
+gated to the spoken lines, 50 ms fades at every edge); one levelled music bed + a quiet room tone run under the whole ad,
+ducked -4 dB with 1.2 s ramps while someone speaks, and the music start is offset so no cut lands on a phrase change.
+Spoken captions are timed from ElevenLabs speech-to-text word timestamps (first word to last word + 0.25 s), written as
+`{ html, shot }` entries. The first 0.4 s of every Kling clip (start hold) is never shown. Two shots of the same framing
+never cut together (a page insert goes between). Each build writes `.build/report.json`: caption-vs-word offsets checked
+on a fresh transcript of the final mix, words cut by a shot edge, and the bed's loudness step at every cut (target ≤ 3).
 
 ## Production
 - Start frames: fal flux-2 edit with the actor photos plus the real cover; then image-to-video with audio (lip sync)
