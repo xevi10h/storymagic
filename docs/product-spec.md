@@ -222,6 +222,24 @@ estimated delivery, second CTA, price + shipping zones line. Variants (`src/lib/
 Spanish only, noindex. Design: Claude Design canvas «Meapica · landing de anuncios» (owner-approved). Deviations for honesty:
 "Su cara en cada escena" (not "página") and "30 páginas y 12 escenas pintadas" (not "30 páginas pintadas").
 
+## Painting screen ready state + auto-open (`/create/{id}/generate`, 2026-10-28, local)
+
+Why: in prod 3 Meta ad visitors reached the painting screen, 2 got `preview_ready`, none opened `/preview`: on phones
+the big "Ver el libro de {name}" button was desktop-only and the dedication editor filled the screen.
+- **Ready button on every size:** when the preview is done the primary "Ver el libro de {name}" sits right under the
+  ready title, above the dedication (visible without scrolling at 390×844); the footer "Ver su libro" stays.
+- **Auto-open:** only when the preview finishes during this visit (POST answer or poll), never on a revisit of an
+  already-painted book (first status check already done). A notice under the button shows "Abriendo su cuento…" with a
+  3-second countdown (number + thin draining bar, static with `prefers-reduced-motion`) and "Quedarme aquí" (cancels for
+  this visit). Then `openBook()` runs as the buttons do (dedication flushed, one-shot reveal on the preview).
+- **Never while writing:** no countdown if focus is inside the dedication/sender fields or they were edited in the last
+  4 s; focusing or editing them during the countdown cancels it. Ready while the tab is hidden: the countdown starts when
+  the parent comes back (hiding the tab mid-countdown pauses it the same way). If the notice is off-screen it is scrolled
+  into view.
+- Code: `src/app/[locale]/create/[storyId]/generate/page.tsx` (`AUTO_OPEN_SECONDS`, `TYPING_GRACE_MS`), strings
+  `crear.generar.autoOpening` / `autoOpenStay` (4 locales), `.auto-open-drain` in `globals.css`. E2E: `e2e/creation-v2.spec.ts`
+  › "auto-open when the preview is ready" (390×844, Instagram iPhone UA, all APIs mocked).
+
 ## Home landing (`/[locale]`, brand refresh 2026-09-30)
 
 Built on `docs/brand.md` + `src/components/ui/*`; components in `src/components/landing/`. Section order

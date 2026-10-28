@@ -1097,6 +1097,8 @@
       "viewBook": "Voir le livre {deName}",
       "viewBookShort": "Voir le livre",
       "waitHint": "Vous l'ouvrirez ici dès qu'il sera peint",
+      "autoOpening": "Ouverture du livre…",
+      "autoOpenStay": "Rester ici",
       "errorTitleNamed": "Nous n'avons pas pu terminer le livre {deName}",
       "goBackToForm": "Revenir à l'aventure"
     },

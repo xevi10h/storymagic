@@ -1155,6 +1155,8 @@
       "viewBook": "Veure el llibre {deName}",
       "viewBookShort": "Veure el llibre",
       "waitHint": "L'obriràs aquí tan bon punt estigui pintat",
+      "autoOpening": "Obrint el seu conte…",
+      "autoOpenStay": "Quedar-me aquí",
       "errorTitleNamed": "El conte {deName} no s'ha pogut acabar",
       "goBackToForm": "Tornar a l'aventura"
     },

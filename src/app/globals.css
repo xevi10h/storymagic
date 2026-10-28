@@ -630,9 +630,12 @@ h1, h2, h3, h4 {
 .sheet-panel{animation:sheetUp .28s cubic-bezier(.2,.9,.3,1) both}
 @media (min-width:640px){.sheet-panel{animation:stepIn .22s ease both}}
 .progress-indeterminate{animation:indeterminate 1.6s ease-in-out infinite}
+@keyframes autoOpenDrain{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+.auto-open-drain{transform-origin:left;animation:autoOpenDrain 3s linear both}
 @media (prefers-reduced-motion: reduce){
   .step-in,.chapter-in,.cover-art-in,.sheet-backdrop,.sheet-panel{animation:none}
   .progress-indeterminate{animation:none;width:100%;opacity:.35}
+  .auto-open-drain{animation:none;opacity:.35}
 }
 
 body {

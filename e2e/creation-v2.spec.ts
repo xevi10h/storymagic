@@ -123,6 +123,11 @@ async function installMocks(page: Page): Promise<Mock> {
 
     // Read-only landing data (home page) — not part of this flow
     if (path.startsWith("/api/showcase")) return route.continue();
+    // Silent guest session (BotID-checked server-side since 783b08e): hand out the mock tokens.
+    if (path === "/api/auth/guest-session") {
+      const { access_token, refresh_token } = session();
+      return route.fulfill({ json: { access_token, refresh_token } });
+    }
     if (path === "/api/characters/prepare") return route.fulfill({ json: { characterPrepId: "prep-123" } });
     if (path === "/api/characters/photo") {
       if (req.method() === "DELETE") return route.fulfill({ json: { deleted: true } });
@@ -674,5 +679,89 @@ test.describe("child name display form", () => {
     await input.fill("pau-joan");
     await input.press("Enter");
     await expect(page.getByRole("heading", { level: 1 })).toContainText("Pau-Joan");
+  });
+});
+
+// Screen 4 → 5: when the preview gets ready during the visit, the book opens by itself after
+// a short cancellable countdown (2026-10-28: Meta ad visitors on phones never found the button).
+test.describe("auto-open when the preview is ready", () => {
+  const INSTAGRAM_UA =
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/22F76 Instagram 400.0.0.0.0 (iPhone16,2; iOS 18_5; es_ES; es; scale=3.00; 1179x2556; 0)";
+  const AUTO_WAIT_MS = 4500; // longer than the 3 s countdown
+  test.use({ ...VIEWPORTS.mobile, userAgent: INSTAGRAM_UA });
+
+  async function toPainting(page: Page) {
+    await freshStart(page, "es");
+    await fillName(page);
+    await pickBasics(page);
+    await next(page, "es");
+    await next(page, "es");
+    await chooseAdventure(page, "es");
+    await page.getByRole("button", { name: COPY.es.create }).click();
+    await page.waitForURL(new RegExp(`/es/create/${STORY_ID}/generate`));
+    await expect(page.getByRole("heading", { name: COPY.es.painting })).toBeVisible();
+  }
+
+  test("ready: big button above the fold, then opens the book", async ({ page }) => {
+    test.skip(PHOTO_FLAG, "flag-off suite");
+    test.setTimeout(120_000);
+    const errors = trackConsole(page);
+    await installMocks(page);
+    await toPainting(page);
+    const ready = page.getByTestId("ready-action");
+    await expect(ready).toBeVisible({ timeout: 30_000 });
+    await expect(ready.getByRole("button", { name: /Ver el libro de Lucía/ })).toBeInViewport({ ratio: 1 });
+    await expect(page.getByTestId("auto-open-notice")).toBeVisible();
+    await expect(page.getByTestId("auto-open-notice")).toContainText("Abriendo su cuento…");
+    await expect(page.getByTestId("auto-open-notice")).toBeInViewport({ ratio: 1 });
+    await page.screenshot({ path: `${SHOTS}/auto-open-ready-mobile.png` });
+    await page.waitForURL(new RegExp(`/create/${STORY_ID}/preview`), { timeout: 8_000 });
+    expect(errors).toEqual([]);
+  });
+
+  test("typing in the dedication prevents it", async ({ page }) => {
+    test.skip(PHOTO_FLAG, "flag-off suite");
+    test.setTimeout(120_000);
+    const mock = await installMocks(page);
+    await toPainting(page);
+    const textarea = page.locator("textarea");
+    await textarea.click();
+    await textarea.press("End");
+    await textarea.pressSequentially(" Te quiero.", { delay: 40 });
+    await expect(page.getByTestId("ready-action")).toBeVisible({ timeout: 30_000 });
+    await page.waitForTimeout(AUTO_WAIT_MS);
+    await expect(page.getByTestId("auto-open-notice")).toHaveCount(0);
+    expect(page.url()).toMatch(/\/generate$/);
+    await page.screenshot({ path: `${SHOTS}/auto-open-typing-mobile.png` });
+    // The edit is kept and the manual button still opens the book
+    await expect.poll(() => mock.dedication).toMatch(/Te quiero\.$/);
+    await page.getByTestId("ready-action").getByRole("button").first().click();
+    await page.waitForURL(new RegExp(`/create/${STORY_ID}/preview`));
+  });
+
+  test("“Quedarme aquí” cancels it, and a revisit never auto-opens", async ({ page }) => {
+    test.skip(PHOTO_FLAG, "flag-off suite");
+    test.setTimeout(120_000);
+    const errors = trackConsole(page);
+    await installMocks(page);
+    await toPainting(page);
+    // Scrolled down to read the dedication (no focus): the notice is brought into view
+    await page.mouse.wheel(0, 900);
+    const notice = page.getByTestId("auto-open-notice");
+    await expect(notice).toBeVisible({ timeout: 30_000 });
+    await expect(notice).toBeInViewport({ ratio: 1 });
+    await page.screenshot({ path: `${SHOTS}/auto-open-countdown-mobile.png` });
+    await notice.getByRole("button", { name: "Quedarme aquí" }).click();
+    await expect(notice).toHaveCount(0);
+    await page.waitForTimeout(AUTO_WAIT_MS);
+    expect(page.url()).toMatch(/\/generate$/);
+    await page.screenshot({ path: `${SHOTS}/auto-open-cancelled-mobile.png` });
+
+    await page.reload();
+    await expect(page.getByTestId("ready-action")).toBeVisible({ timeout: 15_000 });
+    await page.waitForTimeout(AUTO_WAIT_MS);
+    await expect(notice).toHaveCount(0);
+    expect(page.url()).toMatch(/\/generate$/);
+    expect(errors).toEqual([]);
   });
 });

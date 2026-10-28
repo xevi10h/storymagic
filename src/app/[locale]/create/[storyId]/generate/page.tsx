@@ -22,10 +22,19 @@ const POLL_INTERVAL_MS = 3000;
 const STUCK_TIMEOUT_MS = 480_000; // 8 min
 const SLOW_NOTICE_MS = 90_000; // measured ~40–50 s: past 90 s say honestly that it's taking longer
 
+// Auto-open (2026-10-28): when the preview becomes ready during this visit the book
+// opens by itself after a short, cancellable countdown. Never while the parent is
+// writing the dedication (focus inside it, or an edit in the last few seconds) or
+// while the tab is hidden (it starts when they come back).
+const AUTO_OPEN_SECONDS = 3;
+const TYPING_GRACE_MS = 4000;
+
 const DONE_STATUSES = new Set(["preview", "ready", "ordered", "shipped"]);
 
 type FailureKind = "failed" | "stuck" | "rate_limited" | "network" | "daily_cap";
 type GenerationPhase = "starting" | "generating" | "done" | "error";
+/** off = never / cancelled · waiting = ready while the tab was hidden · counting = notice on screen */
+type AutoOpenStage = "off" | "waiting" | "counting";
 
 interface ProgressScene {
   index: number;
@@ -115,9 +124,16 @@ export default function GenerarPage() {
   const [templateId, setTemplateId] = useState<string | null>(null);
   const [finalCover, setFinalCover] = useState<string | null>(null);
   const [leaving, setLeaving] = useState(false);
+  const [autoOpenStage, setAutoOpenStage] = useState<AutoOpenStage>("off");
+  const [autoOpenLeft, setAutoOpenLeft] = useState(AUTO_OPEN_SECONDS);
 
   const dedication = useDedicationAutosave(storyId);
-  const { init: initDedication } = dedication;
+  const { init: initDedication, update: updateDedication } = dedication;
+
+  const dedicationSectionRef = useRef<HTMLElement>(null);
+  const readyActionRef = useRef<HTMLDivElement>(null);
+  const lastEditAtRef = useRef(0);
+  const doneRef = useRef(false);
 
   const postInFlight = useRef(false);
   const autoPostFired = useRef(false);
@@ -167,7 +183,24 @@ export default function GenerarPage() {
     [stopPolling],
   );
 
-  const finish = useCallback(() => {
+  /** The parent is writing the dedication: focus inside it, or an edit a moment ago. */
+  const isWritingDedication = useCallback(() => {
+    const section = dedicationSectionRef.current;
+    const active = document.activeElement;
+    if (section && active && section.contains(active)) return true;
+    return Date.now() - lastEditAtRef.current < TYPING_GRACE_MS;
+  }, []);
+
+  /** Start the countdown if nothing speaks against it (called from events, never on revisits). */
+  const tryStartAutoOpen = useCallback(() => {
+    if (document.visibilityState === "hidden") return setAutoOpenStage("waiting");
+    if (isWritingDedication()) return setAutoOpenStage("off");
+    setAutoOpenLeft(AUTO_OPEN_SECONDS);
+    setAutoOpenStage("counting");
+  }, [isWritingDedication]);
+
+  /** `live`: the preview finished while the parent was on this page (not a revisit). */
+  const finish = useCallback((live: boolean) => {
     stopPolling();
     if (!mountedRef.current) return;
     // Funnel: the preview this browser was waiting for is ready (once per generation: the
@@ -179,9 +212,13 @@ export default function GenerarPage() {
       trackEvent("preview_ready", seconds >= 0 && seconds <= 900 ? { seconds } : undefined);
     }
     writeStartedAt(storyId, null);
+    // Arm once: the POST answer and the poll can both report "done".
+    const firstDone = !doneRef.current;
+    doneRef.current = true;
     setPhase("done");
+    if (live && firstDone) tryStartAutoOpen();
     void loadDetails(); // real cover for the ready state
-  }, [stopPolling, storyId, loadDetails]);
+  }, [stopPolling, storyId, loadDetails, tryStartAutoOpen]);
 
   const pollOnce = useCallback(async () => {
     const res = await fetch(`/api/stories/${storyId}?light=true`);
@@ -207,7 +244,7 @@ export default function GenerarPage() {
       if (!mountedRef.current) return;
       try {
         const { status } = await pollOnce();
-        if (DONE_STATUSES.has(status)) return finish();
+        if (DONE_STATUSES.has(status)) return finish(true);
         // The generate route reverts to "draft" on failure; trust it only
         // once our own POST is no longer in flight.
         if (status === "draft" && !postInFlight.current) return fail("failed");
@@ -226,7 +263,7 @@ export default function GenerarPage() {
         const res = await fetch(`/api/stories/${storyId}/generate`, { method: "POST" });
         postInFlight.current = false;
         if (!mountedRef.current) return;
-        if (res.ok) return finish();
+        if (res.ok) return finish(true);
         if (res.status === 409 && allowRecoveryRetry) return firePost(false);
         if (res.status === 429) return fail("rate_limited");
         if (res.status === 503) {
@@ -249,7 +286,8 @@ export default function GenerarPage() {
       try {
         const { status } = await pollOnce();
         if (!mountedRef.current) return;
-        if (DONE_STATUSES.has(status)) return finish();
+        // Already painted when the page opened (revisit): no auto-open.
+        if (DONE_STATUSES.has(status)) return finish(false);
         setFailure(null);
         setPhase("generating");
         if (status === "generating") {
@@ -309,6 +347,7 @@ export default function GenerarPage() {
   }, [dedication, storyId, router]);
 
   const openBook = useCallback(async () => {
+    setAutoOpenStage("off");
     setLeaving(true);
     await dedication.flush();
     try {
@@ -318,6 +357,63 @@ export default function GenerarPage() {
     }
     router.push(`/create/${storyId}/preview`);
   }, [dedication, storyId, router]);
+
+  const openBookRef = useRef(openBook);
+  useEffect(() => {
+    openBookRef.current = openBook;
+  }, [openBook]);
+
+  const cancelAutoOpen = useCallback(() => setAutoOpenStage("off"), []);
+
+  const handleDedicationChange = useCallback(
+    (patch: { dedication?: string; senderName?: string }) => {
+      lastEditAtRef.current = Date.now();
+      setAutoOpenStage("off");
+      updateDedication(patch);
+    },
+    [updateDedication],
+  );
+
+  // Ready while the tab was hidden: start the countdown once they come back.
+  useEffect(() => {
+    if (autoOpenStage !== "waiting") return;
+    const onVisible = () => {
+      if (document.visibilityState === "visible") tryStartAutoOpen();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
+  }, [autoOpenStage, tryStartAutoOpen]);
+
+  // Countdown: one tick per second; hiding the tab pauses it, touching the dedication cancels it.
+  useEffect(() => {
+    if (autoOpenStage !== "counting") return;
+    if (autoOpenLeft === AUTO_OPEN_SECONDS) {
+      // Countdown just (re)started: bring the notice into view if the parent had scrolled down.
+      const el = readyActionRef.current;
+      const r = el?.getBoundingClientRect();
+      if (el && r && (r.top < 0 || r.bottom > window.innerHeight)) {
+        const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        el.scrollIntoView({ block: "center", behavior: reduce ? "auto" : "smooth" });
+      }
+    }
+    const tick = setTimeout(() => {
+      if (autoOpenLeft > 1) setAutoOpenLeft(autoOpenLeft - 1);
+      else void openBookRef.current();
+    }, 1000);
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") setAutoOpenStage("waiting");
+    };
+    const onFocusIn = (e: FocusEvent) => {
+      if (e.target instanceof Node && dedicationSectionRef.current?.contains(e.target)) setAutoOpenStage("off");
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+    document.addEventListener("focusin", onFocusIn);
+    return () => {
+      clearTimeout(tick);
+      document.removeEventListener("visibilitychange", onVisibility);
+      document.removeEventListener("focusin", onFocusIn);
+    };
+  }, [autoOpenStage, autoOpenLeft]);
 
   const goToCreateStep = useCallback(
     async (step: number) => {
@@ -521,19 +617,45 @@ export default function GenerarPage() {
             </div>
           )}
           {done && (
-            <button
-              type="button"
-              onClick={() => void openBook()}
-              className="min-h-12 hidden items-center justify-center gap-2 rounded-full bg-create-primary px-8 py-3.5 text-[19px] font-bold leading-tight text-white shadow-lg shadow-create-primary/25 transition-colors hover:bg-create-primary-hover lg:flex"
-            >
-              {t("viewBook", nameArgs)}
-              <span aria-hidden className="material-symbols-outlined text-lg" data-icon="arrow_forward" />
-            </button>
+            // Phones too: right under the ready title, above the dedication (the footer
+            // button alone went unnoticed while the editor filled the screen).
+            <div ref={readyActionRef} className="flex flex-col gap-2" data-testid="ready-action">
+              <button
+                type="button"
+                onClick={() => void openBook()}
+                disabled={leaving}
+                className="min-h-12 flex items-center justify-center gap-2 rounded-full bg-create-primary px-8 py-3.5 text-[19px] font-bold leading-tight text-white shadow-lg shadow-create-primary/25 transition-colors hover:bg-create-primary-hover disabled:opacity-80"
+              >
+                {leaving ? <Spinner className="text-lg" /> : null}
+                {t("viewBook", nameArgs)}
+                {!leaving && <span aria-hidden className="material-symbols-outlined text-lg" data-icon="arrow_forward" />}
+              </button>
+              {autoOpenStage === "counting" && !leaving && (
+                <div role="status" className="flex items-center gap-3 rounded-2xl bg-white px-4 py-2.5 shadow-[0_1px_3px_rgba(58,36,24,.08)]" data-testid="auto-open-notice">
+                  <span aria-hidden className="flex size-7 shrink-0 items-center justify-center rounded-full bg-create-primary/10 text-sm font-bold tabular-nums text-brand-text">
+                    {autoOpenLeft}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold text-create-text-dark">{t("autoOpening")}</p>
+                    <div aria-hidden className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-create-neutral">
+                      <div className="auto-open-drain h-full w-full rounded-full bg-create-primary/70" style={{ animationDuration: `${AUTO_OPEN_SECONDS}s` }} />
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={cancelAutoOpen}
+                    className="min-h-11 shrink-0 rounded-full px-3 text-sm font-bold text-brand-text underline-offset-2 transition-colors hover:bg-surface hover:underline"
+                  >
+                    {t("autoOpenStay")}
+                  </button>
+                </div>
+              )}
+            </div>
           )}
         </section>
 
         {/* Dedication */}
-        <section aria-labelledby="dedication-title" className="flex flex-col gap-3">
+        <section ref={dedicationSectionRef} aria-labelledby="dedication-title" className="flex flex-col gap-3">
           <div>
             <h2 id="dedication-title" className="font-display text-xl font-bold text-create-text-dark sm:text-2xl">
               {t("dedicationTitle")}
@@ -546,7 +668,7 @@ export default function GenerarPage() {
               dedication={dedication.values.dedication}
               senderName={dedication.values.senderName}
               saveState={dedication.saveState}
-              onChange={dedication.update}
+              onChange={handleDedicationChange}
             />
           ) : (
             <div className="h-64 animate-pulse rounded-2xl border-2 border-line bg-surface" aria-hidden />

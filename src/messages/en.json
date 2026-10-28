@@ -1095,6 +1095,8 @@
       "viewBook": "See {name}'s book",
       "viewBookShort": "See the book",
       "waitHint": "You'll open it here as soon as it's painted",
+      "autoOpening": "Opening the book…",
+      "autoOpenStay": "Stay here",
       "errorTitleNamed": "We couldn't finish {name}'s book",
       "goBackToForm": "Back to the adventure"
     },

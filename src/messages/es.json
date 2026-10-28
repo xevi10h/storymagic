@@ -1137,6 +1137,8 @@
       "viewBook": "Ver el libro {deName}",
       "viewBookShort": "Ver su libro",
       "waitHint": "Lo abrirás aquí en cuanto esté pintado",
+      "autoOpening": "Abriendo su cuento…",
+      "autoOpenStay": "Quedarme aquí",
       "errorTitleNamed": "El cuento {deName} no ha podido terminarse",
       "goBackToForm": "Volver a la aventura"
     },
