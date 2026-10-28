@@ -484,11 +484,14 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   LANDING_PAGE_VIEWS, Advantage+ audience (age_min 25 hard, age_range 25-55 suggestion), Spain minus Canarias, Ceuta, Melilla
   (we do not ship there), Spanish locales, Advantage+ placements, DSA beneficiary/payor "Meapica". Ads (LEARN_MORE, IG
   @meapica_libros + FB page, link `/es` with `utm_source=meta&utm_medium=paid&utm_campaign=reyes_q4-26&utm_content=<post date>`).
-  Plan (owner 2026-10-26): non-seasonal warm-up now, Reyes from ~15 Nov. Warm-up ads ACTIVE since 2026-10-27 (owner's OK, «Sustituir los de Leo»):
-  `120252257290520661` `..._ad_2026-11-01_llave-de-flor` (Noa bedtime video), `120252277927030661` `..._ad_2026-10-27_soy-yo-martin`
-  (Martín and his dad) and `120252277969570661` `..._ad_2026-10-27_la-cueva-v2` (neutral "tu peque" copy: the video ends
-  with a girl; v1 `120252277938110661` said "tu hijo" and is PAUSED), both via Zernio `video.url` + `thumbnailUrl` in
-  `showcase/social/ads/2026-10-27-<slug>(.mp4|-thumb.jpg)`, AI disclosure OPT_IN, `utm_content=2026-10-27-<slug>`.
+  Plan (owner 2026-10-26): non-seasonal warm-up now, Reyes from ~15 Nov. Warm-up ads ACTIVE since 2026-10-28 (owner's OK),
+  each pointing at its own landing `/es/l/<slug>` with `utm_content=<old utm_content>-lp`: `120252294157130661`
+  `..._ad_2026-10-27_soy-yo-martin-lp` (→ `/es/l/soy-yo`), `120252294160180661` `..._ad_2026-10-27_la-cueva-v2-lp`
+  (→ `/es/l/la-cueva`) and `120252294170190661` `..._ad_2026-11-01_llave-de-flor-lp` (→ `/es/l/noa`). Same video, thumbnail,
+  copy and identity as the `/es` versions they replace, which are PAUSED: `120252277927030661` `..._soy-yo-martin` (Martín and
+  his dad), `120252277969570661` `..._la-cueva-v2` (neutral "tu peque" copy: the video ends with a girl; v1 `120252277938110661`
+  said "tu hijo", also PAUSED) and `120252257290520661` `..._llave-de-flor` (Noa bedtime video). Media: Zernio `video.url` +
+  `thumbnailUrl` in `showcase/social/ads/2026-10-27-<slug>(.mp4|-thumb.jpg)` (the `-lp` ads reuse the Meta video ids), AI disclosure OPT_IN.
   Least-AI slate, created PAUSED 2026-10-27 (owner's OK «súbelos en pausa») with `node scripts/ads/upload-slate.mjs`
   (ids in `docs/ads/slate-2026-10.ids.json`, AI disclosure OPT_IN, copy ends «Escena recreada con IA»): `120252283649270661`
   `..._soy-yo-real`, `120252283663430661` `..._la-abuela`, `120252283689660661` `..._ya-en-casa`, `120252283730690661`
