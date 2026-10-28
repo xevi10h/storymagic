@@ -4,6 +4,7 @@ import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "@/i18n/navigation";
+import { carriedParams } from "@/lib/tracking/attribution";
 import { normaliseHairstyle } from "@/lib/avatar/manifest";
 import {
   GLASSES_OPTIONS,
@@ -87,7 +88,7 @@ function CrearPageContent() {
     if (!templateParam && !characterIdParam) {
       const draft = readStoredDraft();
       if (!nameParam || (draft && formatChildName(draft.character.name) === nameParam)) {
-        router.replace("/create");
+        router.replace({ pathname: "/create", query: carriedParams(p.toString()) });
         setPrefillReady(true);
         return;
       }
@@ -133,8 +134,9 @@ function CrearPageContent() {
         // A saved character is complete (skip to step 2); a typed name still needs age + gender.
         currentStep: characterIdParam && character.name.trim() && basicsConfirmed.age && basicsConfirmed.gender ? 2 : 1,
       });
-      // Clean URL so a reload resumes the draft instead of re-applying the prefill
-      router.replace("/create");
+      // Clean URL so a reload resumes the draft instead of re-applying the prefill (the ad
+      // attribution params stay, so a reload still counts as the same Meta visit)
+      router.replace({ pathname: "/create", query: carriedParams(p.toString()) });
       setPrefillReady(true);
     })();
   }, [prefillReady, setState, router, searchParams]);

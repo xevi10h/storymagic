@@ -8,7 +8,7 @@ import { buttonClass } from "@/components/ui";
 import { MAX_NAME_LENGTH, deName, firstName } from "@/lib/creation-flow";
 import { formatChildName } from "@/lib/child-name";
 import { PRICING, formatPrice } from "@/lib/pricing";
-import { createPageHref, setHeroName, useHeroName } from "./HeroNameStore";
+import { createPageHref, currentCarriedParams, setHeroName, useHeroName } from "./HeroNameStore";
 
 /**
  * Last section of the landing: one emotional line + "¿Cómo se llama?". It shares the
@@ -31,7 +31,7 @@ export default function FinalCta() {
     e.preventDefault();
     const formatted = formatChildName(trimmed);
     setHeroName(formatted);
-    router.push(createPageHref(formatted));
+    router.push(createPageHref(formatted, currentCarriedParams()));
   }
 
   return (

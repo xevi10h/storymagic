@@ -363,7 +363,7 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   `src/lib/tracking/vercel-analytics.ts`, check `npx tsx src/lib/tracking/vercel-analytics.check.mts`): URLs keep only
   `utm_source` / `utm_campaign` / `utm_content`, story UUIDs → `[id]`, `/r/<code>` → `[code]`, `/preview/<token>` and
   `/gift-voucher/card/<token>` send nothing. Events (2 properties max on Pro: `source` + one): `landing_view` {page},
-  `cta_click` {placement hero|sticky}, `create_step` {step 1-6}, `photo_uploaded`, `preview_requested` {retry} (= our
+  `cta_click` {placement hero|sticky|ad_hero|ad_final}, `create_step` {step 1-6}, `photo_uploaded`, `preview_requested` {retry} (= our
   `generation_start`), `preview_shown` (= `preview_ready`), `checkout_started` {format} (= `InitiateCheckout`). `source` =
   `meta` when the landing URL has `utm_source=meta` or Zernio's `zrn`, else `other` (`funnelSource()` in `attribution.ts`; JS
   memory for the page load, no sessionStorage, same LSSI reasoning as the story attribution: a full reload or new tab
@@ -405,6 +405,20 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   Run now: `launchctl kickstart gui/$(id -u)/com.casmar.meapica-seo-weekly`.
   Disable: `launchctl bootout gui/$(id -u)/com.casmar.meapica-seo-weekly` (and delete the plist to make it permanent;
   re-enable with `launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.casmar.meapica-seo-weekly.plist`).
+
+## Paid-ad landings `/es/l/{slug}` (2026-10-28, local, not deployed)
+
+- **Route:** `src/app/[locale]/l/[slug]/page.tsx`, one template; variants in `src/lib/ad-landing.ts` (`soy-yo`, `la-cueva`, `noa`).
+  Spanish only: `generateStaticParams` returns es × slugs and `dynamicParams = false`, so `/ca|en|fr/l/*` and unknown slugs are 404.
+  SSG (ISR 1 h like the rest of `[locale]`). `noindex, follow`, no canonical, not in `sitemap.ts` (not blocked in robots, so
+  the noindex is read). Images: the ad's start frame cropped to the design box (`public/images/ads/{slug}/scene.webp`, served
+  through next/image avif/webp) + the real showcase cover art (`cover.webp`, 480², title drawn by `CoverFace`).
+- **Reused:** HeroNameStore (name shared with `MobileStickyCta`, which takes a `label`), hero messages (price, "Envío gratis",
+  preview line), `useDeliveryLine`, `buttonClass`, `Footer`, cookie banner. Meta ads must link to
+  `https://meapica.es/es/l/{slug}?utm_source=meta&...` (ads have to be recreated to change the link).
+- **Attribution:** `carriedParams()` (attribution.ts) keeps `utm_*` + `zrn` on every `/create` entry link (Hero, FinalCta,
+  sticky, BookCta, ad CTAs) and the `/create` prefill URL clean-up keeps them, so a reload of `/create` still reads
+  `utm_source=meta`. `landing_view` fires with `page=/es/l/{slug}` (verified headless 2026-10-28).
 
 ## Social (organic posts through Zernio, 2026-10-04)
 

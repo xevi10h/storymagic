@@ -1,7 +1,7 @@
 // Runnable check for the first-touch attribution parser (no deps, no test runner):
 //   node --experimental-strip-types src/lib/tracking/attribution.check.mjs
 import assert from "node:assert/strict";
-import { funnelSource, getFirstTouch, parseAttribution } from "./attribution.ts";
+import { carriedParams, funnelSource, getFirstTouch, parseAttribution } from "./attribution.ts";
 
 // UTMs (lower-cased, trimmed, capped), ad-click id name only, referrer host only.
 assert.deepEqual(
@@ -44,6 +44,14 @@ assert.equal(funnelSource("?zrn=120252257133430661&fbclid=x"), "meta");
 assert.equal(funnelSource("?utm_source=facebook&utm_medium=organic_social"), "other");
 assert.equal(funnelSource("?fbclid=x"), "other");
 assert.equal(funnelSource(""), "other");
+
+// Carried into /create: UTMs + zrn only (no click ids, no other params), empty values dropped.
+assert.deepEqual(
+  carriedParams("?utm_source=meta&utm_medium=paid&utm_campaign=q4&utm_content=soy-yo&utm_term=x&zrn=123&fbclid=SECRET&name=Leo&utm_source2=y"),
+  { utm_source: "meta", utm_medium: "paid", utm_campaign: "q4", utm_content: "soy-yo", zrn: "123" },
+);
+assert.deepEqual(carriedParams("?utm_source=%20&fbclid=x"), {});
+assert.deepEqual(carriedParams(""), {});
 
 // Server-side (no window): nothing captured.
 assert.equal(getFirstTouch(), null);

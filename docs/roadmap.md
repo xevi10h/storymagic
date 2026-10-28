@@ -111,6 +111,12 @@ test = 10 € for 38,107 people reached, 166 clicks, 1.56 s average watch, at mo
 - [ ] Giveaway with family-plan accounts where the entry is creating the free preview (not a follow).
 - [ ] Meta test optimised on `preview_ready`, replacing TikTok traffic spend (card on file since 2026-10-26; current Meta plan: `docs/ads/promotions-q4-2026.md`).
 
+## Next steps from the paid-ad landings (2026-10-28)
+
+- Deploy (owner's order), then recreate the Meta ads pointing at `/es/l/{slug}?utm_source=meta&…` (a link change needs a new ad).
+- Compare `landing_view → cta_click (ad_hero/ad_final) → create_step` per page with `scripts/vercel-funnel.mjs` after a week.
+- One variant per new ad (add to `src/lib/ad-landing.ts` + images); consider a short looping clip of the ad instead of the still.
+
 ## Meta promotions Q4 2026 (built 2026-10-26, all PAUSED)
 
 Plan, ids and checklist: `docs/ads/promotions-q4-2026.md`. Five promotions × two ads (A/B on the hook only), 10 €/day each, scheduled to their windows.

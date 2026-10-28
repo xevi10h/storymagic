@@ -5,7 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { buttonClass } from "@/components/ui";
 import { PRICING, formatPrice } from "@/lib/pricing";
-import { createPageHref, useHeroName } from "./HeroNameStore";
+import { useCreatePageHref, useHeroName } from "./HeroNameStore";
 import { trackEvent } from "@/lib/tracking/consent";
 
 /**
@@ -14,11 +14,12 @@ import { trackEvent } from "@/lib/tracking/consent";
  * closing name form (#final-cta) or the footer is on screen, so it never doubles
  * another primary CTA or covers the legal links.
  */
-export default function MobileStickyCta() {
+export default function MobileStickyCta({ label }: { label?: string } = {}) {
   const t = useTranslations("hero");
   const tPricing = useTranslations("pricing");
   const locale = useLocale();
   const name = useHeroName();
+  const createHref = useCreatePageHref(name);
   const [heroPassed, setHeroPassed] = useState(false);
   const [endVisible, setEndVisible] = useState(false);
 
@@ -70,7 +71,7 @@ export default function MobileStickyCta() {
 
   const visible = heroPassed && !endVisible;
   // ponytail: fixed short label; "Crear el libro de {name}" truncates at 19px on phones. The link still carries the name.
-  const ctaLabel = t("cta");
+  const ctaLabel = label ?? t("cta");
 
   return (
     <div
@@ -90,7 +91,7 @@ export default function MobileStickyCta() {
           <span className="block text-xs text-ink-muted">{tPricing("vatIncluded")}</span>
         </p>
         <Link
-          href={createPageHref(name)}
+          href={createHref}
           onClick={() => trackEvent("cta_click", { placement: "sticky" })}
           // 19px bold label (AA on --brand); tight gaps so "Crear el seu llibre" fits at 360px
           className={buttonClass({ className: "h-12 min-w-0 flex-1 gap-1.5! px-4! sm:flex-none sm:px-8!" })}

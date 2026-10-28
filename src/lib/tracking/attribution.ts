@@ -68,6 +68,23 @@ export function funnelSource(search: string): FunnelSource {
   return params.get("utm_source")?.trim().toLowerCase() === "meta" || params.has("zrn") ? "meta" : "other";
 }
 
+/** Parameters an entry link carries on to /create: the UTMs + Zernio's `zrn` (what funnelSource reads). */
+const CARRIED_KEYS = [...ATTRIBUTION_UTM_KEYS, "zrn"] as const;
+
+/**
+ * Pure: the attribution parameters of a landing URL to carry on into /create, so a reload or a
+ * Vercel page view of /create still reads `utm_source=meta`. Raw values (capped), never ad-click ids.
+ */
+export function carriedParams(search: string): Record<string, string> {
+  const params = new URLSearchParams(search);
+  const out: Record<string, string> = {};
+  for (const key of CARRIED_KEYS) {
+    const v = clean(params.get(key), ATTRIBUTION_MAX.value);
+    if (v) out[key] = v;
+  }
+  return out;
+}
+
 let firstTouch: Attribution | null = null;
 let firstTouchSource: FunnelSource | null = null;
 

@@ -9,7 +9,7 @@ import { buttonClass } from "@/components/ui";
 import { PRICING, formatPrice } from "@/lib/pricing";
 import { MAX_NAME_LENGTH, deName, firstName } from "@/lib/creation-flow";
 import { formatChildName } from "@/lib/child-name";
-import { createPageHref, setHeroName, useHeroName } from "./HeroNameStore";
+import { createPageHref, currentCarriedParams, setHeroName, useHeroName } from "./HeroNameStore";
 import { LANDING_EXAMPLE } from "./HowItWorksExample";
 import { trackEvent } from "@/lib/tracking/consent";
 
@@ -50,7 +50,7 @@ export default function Hero() {
     trackEvent("cta_click", { placement: "hero" });
     const formatted = formatChildName(name);
     setHeroName(formatted);
-    router.push(createPageHref(formatted));
+    router.push(createPageHref(formatted, currentCarriedParams()));
   }
 
   return (

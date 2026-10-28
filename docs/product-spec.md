@@ -212,6 +212,16 @@ Two more guides in the same registry (`src/lib/guides.ts`), **Catalan only** (ev
 - **robots.txt:** a second group names GPTBot, OAI-SearchBot, ChatGPT-User, PerplexityBot, Perplexity-User, ClaudeBot, Claude-SearchBot, Claude-User, Google-Extended, Applebot, Applebot-Extended and Bingbot, allowed with the same disallows as `*` (a named group replaces `*` for that bot). Tokens checked against each vendor's docs on 2026-10-19.
 - **Reviews:** `ProductJsonLd` keeps `reviews` unset. There is no reviews table and no real customer review yet (0 paid orders on 2026-10-12): never add Review/AggregateRating markup until genuine reviews exist.
 
+## Paid-ad landings (`/es/l/{slug}`, 2026-10-28, local)
+
+One page per Meta ad so the visitor lands on the scene and line they just watched: ad still (tagged "Escena recreada con IA")
+with the ad's quote, H1, "Desde 34,90 € · IVA incluido · Envío gratis" (from pricing), name field + "Crear su cuento"
+(→ `/create?name=…` + the ad's UTMs), the free-preview promise; below: 3 steps, the cover of the book in the video,
+estimated delivery, second CTA, price + shipping zones line. Variants (`src/lib/ad-landing.ts`): `soy-yo` (Martín,
+«Papá… ¡ese soy yo!»), `la-cueva` (Aitana, gamebook nostalgia), `noa` (bedtime «¿Qué abre una llave de flor?»).
+Spanish only, noindex. Design: Claude Design canvas «Meapica · landing de anuncios» (owner-approved). Deviations for honesty:
+"Su cara en cada escena" (not "página") and "30 páginas y 12 escenas pintadas" (not "30 páginas pintadas").
+
 ## Home landing (`/[locale]`, brand refresh 2026-09-30)
 
 Built on `docs/brand.md` + `src/components/ui/*`; components in `src/components/landing/`. Section order
