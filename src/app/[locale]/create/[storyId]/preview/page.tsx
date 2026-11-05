@@ -653,6 +653,9 @@ export default function PreviewPage() {
                 })}
               </p>
             )}
+            {showBuy && (
+              <SendPreviewEmail storyId={storyId} childName={childName} defaultEmail={needsAccount ? null : user?.email} />
+            )}
           </section>
         </div>
 
@@ -775,7 +778,7 @@ export default function PreviewPage() {
         </section>
       )}
 
-      {/* Secondary: decide later (save / share / email — three equal options) + short FAQ */}
+      {/* Secondary: decide later (save / share, two equal options) + short FAQ */}
       {showBuy && (
         <div className="mx-auto max-w-[1360px] px-4 pb-16 lg:px-8">
           <div className="mx-auto max-w-4xl space-y-12 border-t border-create-neutral pt-10">
@@ -783,7 +786,7 @@ export default function PreviewPage() {
               <h2 id="save-later-title" className="font-display text-xl font-bold text-secondary">
                 {tPurchase("secondaryTitle")}
               </h2>
-              <ul className="mt-4 grid divide-y divide-create-neutral overflow-hidden rounded-2xl bg-white ring-1 ring-create-neutral md:grid-cols-3 md:divide-x md:divide-y-0">
+              <ul className="mt-4 grid divide-y divide-create-neutral overflow-hidden rounded-2xl bg-white ring-1 ring-create-neutral md:grid-cols-2 md:divide-x md:divide-y-0">
                 <LaterOption
                   icon={needsAccount ? "bookmark_add" : "bookmark_added"}
                   title={needsAccount ? tPurchase("later.saveTitle") : tPurchase("later.savedTitle")}
@@ -799,17 +802,6 @@ export default function PreviewPage() {
                 </LaterOption>
                 <LaterOption icon="ios_share" title={tPurchase("later.shareTitle")} body={tPurchase("later.shareBody")}>
                   <SharePreviewButton storyId={storyId} childName={childName} childGender={story.characters.gender} fullWidth className={LATER_BUTTON} />
-                </LaterOption>
-                <LaterOption icon="mail" title={tPurchase("later.emailTitle")} body={tPurchase("later.emailBody")}>
-                  <SendPreviewEmail
-                    storyId={storyId}
-                    childName={childName}
-                    variant="inline"
-                    defaultEmail={needsAccount ? null : user?.email}
-                    offerReminder={isPreviewMode && !isOutdatedPreview}
-                    sendLabel={tPurchase("later.emailSend")}
-                    buttonClassName={LATER_BUTTON_INLINE}
-                  />
                 </LaterOption>
               </ul>
             </section>
@@ -874,14 +866,12 @@ export default function PreviewPage() {
   );
 }
 
-/** Secondary action in the "¿Lo decides más tarde?" options (same weight for all three). */
+/** Secondary action in the "¿Lo decides más tarde?" options (same weight for both). */
 const LATER_BUTTON_BASE =
   "inline-flex h-11 items-center justify-center gap-1.5 rounded-xl border-2 border-create-neutral bg-white px-4 text-sm font-bold text-secondary transition-colors hover:border-create-primary hover:text-brand-text disabled:opacity-60";
 const LATER_BUTTON = `${LATER_BUTTON_BASE} w-full`;
-/** The email option's button, beside its field */
-const LATER_BUTTON_INLINE = `${LATER_BUTTON_BASE} shrink-0`;
 
-/** One of the three "decide later" options: icon + title, one line, action at the foot. */
+/** One of the "decide later" options: icon + title, one line, action at the foot. */
 function LaterOption({ icon, title, body, children }: { icon: string; title: string; body: string; children: React.ReactNode }) {
   return (
     <li className="flex flex-col p-5 sm:p-6">

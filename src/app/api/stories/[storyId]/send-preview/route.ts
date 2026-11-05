@@ -15,7 +15,7 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 const bodySchema = z.object({
   email: z.string().trim().toLowerCase().email().max(254),
   locale: z.enum(["es", "ca", "en", "fr"]).default("es"),
-  /** The "recordádmelo por email" box (never pre-ticked) was ticked: consent to the reminders. */
+  /** The "Envíamelo y recuérdamelo" button was pressed (the plain send is beside it): consent to the reminders. */
   remind: z.literal(true).optional(),
 });
 
@@ -68,10 +68,10 @@ const COPY = {
  * read-only share link (/[locale]/preview/[token]): it opens in any browser, incl.
  * mail apps' in-app ones.
  *
- * The address is stored only when the parent also ticked "recordádmelo" (`remind`):
+ * The address is stored only when the parent pressed "Envíamelo y recuérdamelo" (`remind`):
  * that express consent (LSSI 21.1 / RGPD 6.1.a) is recorded in preview_reminders and
  * starts the abandoned-preview reminders (src/lib/marketing/preview-reminders.ts).
- * Without the tick nothing is stored and nothing else is ever sent.
+ * With the plain send nothing is stored and nothing else is ever sent.
  */
 export async function POST(request: Request, { params }: { params: Promise<{ storyId: string }> }) {
   const { storyId } = await params;

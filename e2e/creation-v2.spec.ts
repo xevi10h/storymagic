@@ -418,7 +418,7 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
         const checkoutText = await page.locator("#checkout-section").innerText();
         expect(checkoutText).toMatch(locale === "es" ? /IVA incl/ : /IVA incl/);
         await page.getByTestId("send-preview").locator("input[type=email]").fill("familia@example.com");
-        await page.getByTestId("send-preview").getByRole("button").click();
+        await page.getByTestId("send-preview-remind").click();
         await expect(page.getByTestId("send-preview-sent")).toBeVisible();
         await page.getByTestId("send-preview-sent").scrollIntoViewIfNeeded();
         await shot(page, `${tag}-6-email-sent`);

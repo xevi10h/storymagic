@@ -11,7 +11,7 @@ const HOUR_MS = 3_600_000;
  * Version of the consent text shown beside the checkbox (crear.sendPreview.remind* in
  * src/messages). Bump it whenever that text changes: it is stored with every consent.
  */
-export const PREVIEW_REMINDER_CONSENT_VERSION = "2026-10-03";
+export const PREVIEW_REMINDER_CONSENT_VERSION = "2026-11-05";
 
 export type ReminderStage = 1 | 2 | 3;
 
