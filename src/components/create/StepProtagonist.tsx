@@ -12,7 +12,7 @@ import {
   type CharacterData,
   type ProtagonistMode,
 } from "@/lib/create-store";
-import { isPhotoUploadEnabled } from "@/lib/creation-flow";
+import { isPhotoUploadEnabled, protagonistReadiness } from "@/lib/creation-flow";
 import CreationFooterNav from "./CreationFooterNav";
 import PhotoUploadPanel from "./PhotoUploadPanel";
 
@@ -20,9 +20,11 @@ interface StepProtagonistProps {
   character: CharacterData;
   protagonistMode: ProtagonistMode;
   photoPath: string | null;
+  photoTraitsConfirmed: boolean;
   onUpdateCharacter: (updates: Partial<CharacterData>) => void;
   onSetMode: (mode: ProtagonistMode) => void;
   onPhotoChange: (photoPath: string | null) => void;
+  onConfirmPhotoTraits: (confirmed: boolean) => void;
   onNext: () => void;
   onBack: () => void;
 }
@@ -124,9 +126,11 @@ export default function StepProtagonist({
   character,
   protagonistMode,
   photoPath,
+  photoTraitsConfirmed,
   onUpdateCharacter,
   onSetMode,
   onPhotoChange,
+  onConfirmPhotoTraits,
   onNext,
   onBack,
 }: StepProtagonistProps) {
@@ -136,7 +140,7 @@ export default function StepProtagonist({
   const mode: ProtagonistMode = photoEnabled ? protagonistMode : "avatar";
   const traits = toAvatarTraits(character);
   const name = character.name.trim();
-  const canContinue = mode === "avatar" || !!photoPath;
+  const readiness = protagonistReadiness({ protagonistMode: mode, photoPath, photoTraitsConfirmed }, photoEnabled);
   const [glassesShape, glassesFrame] =
     character.glasses === "none"
       ? (["none", "dark"] as const)
@@ -170,6 +174,140 @@ export default function StepProtagonist({
         </p>
       </div>
     </div>
+  );
+
+  // Same controls in both modes: in photo mode they are what the parent confirms after the upload.
+  const traitControls = (
+    <>
+      <SwatchGroup
+        id="skin"
+        label={t("skin")}
+        options={SKIN_TONES}
+        value={character.skinTone}
+        labelFor={(id) => td(`skinTones.${id}`)}
+        onChange={(skinTone) => onUpdateCharacter({ skinTone })}
+      />
+      <SwatchGroup
+        id="hairColor"
+        label={t("hairColor")}
+        options={HAIR_COLORS}
+        value={character.hairColor}
+        labelFor={(id) => td(`hairColors.${id}`)}
+        onChange={(hairColor) => onUpdateCharacter({ hairColor })}
+      />
+
+      <div className="flex flex-col gap-2.5 sm:col-span-2">
+        <span className="text-xs font-bold uppercase tracking-wide text-create-text" id="lbl-hairstyle">
+          {t("hairstyle")}
+        </span>
+        <div role="radiogroup" aria-labelledby="lbl-hairstyle" className="grid grid-cols-4 gap-2 lg:grid-cols-8">
+          {HAIRSTYLES[character.gender].filter((hs) => (AVATAR_HAIRSTYLES[character.gender] as readonly string[]).includes(hs.id)).map((hs) => {
+            const selected = character.hairstyle === hs.id;
+            return (
+              <button
+                key={hs.id}
+                type="button"
+                role="radio"
+                aria-checked={selected}
+                onClick={() => onUpdateCharacter({ hairstyle: hs.id })}
+                className={`flex flex-col items-center gap-1 rounded-xl border-2 bg-white p-1.5 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-create-primary ${
+                  selected ? "border-create-primary" : "border-create-neutral hover:border-create-primary/40"
+                }`}
+              >
+                <span className="aspect-square w-full overflow-hidden rounded-lg bg-[#fbeee2]">
+                  <ProtagonistAvatar look={{ ...traits, hairstyle: hs.id, glasses: "none" }} preloadNeighbours={false} className="h-full w-full" />
+                </span>
+                <span className={`text-[11px] font-bold leading-tight ${selected ? "text-brand-text" : "text-create-text"}`}>
+                  {td(`hairstyles.${hs.id}`)}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <SwatchGroup
+        id="eyes"
+        label={t("eyes")}
+        options={EYE_COLORS}
+        value={character.eyeColor}
+        labelFor={(id) => td(`eyeColors.${id}`)}
+        onChange={(eyeColor) => onUpdateCharacter({ eyeColor })}
+      />
+
+      <div className="flex flex-col gap-2.5">
+        <span className="text-xs font-bold uppercase tracking-wide text-create-text" id="lbl-glasses">
+          {t("glasses")}
+        </span>
+        <div role="radiogroup" aria-labelledby="lbl-glasses" className="flex flex-wrap gap-2">
+          {GLASSES_SHAPES.map((shape) => {
+            const selected = glassesShape === shape;
+            return (
+              <button
+                key={shape}
+                type="button"
+                role="radio"
+                aria-checked={selected}
+                onClick={() =>
+                  onUpdateCharacter({ glasses: shape === "none" ? "none" : `${shape}-${glassesFrame}` })
+                }
+                className={chip(selected)}
+              >
+                {t(`glasses_${shape}`)}
+              </button>
+            );
+          })}
+        </div>
+        {glassesShape !== "none" && (
+          <div role="radiogroup" aria-label={t("glassesFrame")} className="flex items-center gap-2.5">
+            {GLASSES_FRAMES.map((f) => {
+              const selected = glassesFrame === f.id;
+              return (
+                <button
+                  key={f.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  aria-label={t(`glassesFrame_${f.id}`)}
+                  title={t(`glassesFrame_${f.id}`)}
+                  onClick={() => onUpdateCharacter({ glasses: `${glassesShape}-${f.id}` })}
+                  className={`h-8 w-8 rounded-full border border-black/10 transition-transform focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-create-primary ${
+                    selected ? "ring-[3px] ring-create-primary ring-offset-2 ring-offset-white" : "hover:scale-105"
+                  }`}
+                  style={{ backgroundColor: f.color }}
+                />
+              );
+            })}
+            <span aria-hidden className="text-xs font-semibold text-create-text-sub" data-testid="selected-glasses-frame">
+              {t(`glassesFrame_${glassesFrame}`)}
+            </span>
+          </div>
+        )}
+      </div>
+
+      <div className="flex items-center justify-between gap-4 rounded-2xl border-2 border-create-neutral bg-white px-4 py-3 sm:col-span-2">
+        <span className="text-sm font-bold text-create-text" id="lbl-freckles">
+          {t("freckles")}
+        </span>
+        <button
+          type="button"
+          role="switch"
+          aria-checked={character.freckles}
+          aria-labelledby="lbl-freckles"
+          onClick={() => onUpdateCharacter({ freckles: !character.freckles })}
+          className={`relative h-7 w-12 shrink-0 rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-create-primary ${
+            character.freckles ? "bg-create-primary" : "bg-create-neutral"
+          }`}
+        >
+          <span
+            aria-hidden
+            className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow transition-[left] ${
+              character.freckles ? "left-6" : "left-1"
+            }`}
+          />
+        </button>
+      </div>
+    </>
   );
 
   return (
@@ -219,138 +357,34 @@ export default function StepProtagonist({
               aria-labelledby={photoEnabled ? "tab-avatar" : undefined}
               className="grid gap-6 sm:grid-cols-2"
             >
-              <SwatchGroup
-                id="skin"
-                label={t("skin")}
-                options={SKIN_TONES}
-                value={character.skinTone}
-                labelFor={(id) => td(`skinTones.${id}`)}
-                onChange={(skinTone) => onUpdateCharacter({ skinTone })}
-              />
-              <SwatchGroup
-                id="hairColor"
-                label={t("hairColor")}
-                options={HAIR_COLORS}
-                value={character.hairColor}
-                labelFor={(id) => td(`hairColors.${id}`)}
-                onChange={(hairColor) => onUpdateCharacter({ hairColor })}
-              />
-
-              <div className="flex flex-col gap-2.5 sm:col-span-2">
-                <span className="text-xs font-bold uppercase tracking-wide text-create-text" id="lbl-hairstyle">
-                  {t("hairstyle")}
-                </span>
-                <div role="radiogroup" aria-labelledby="lbl-hairstyle" className="grid grid-cols-4 gap-2 lg:grid-cols-8">
-                  {HAIRSTYLES[character.gender].filter((hs) => (AVATAR_HAIRSTYLES[character.gender] as readonly string[]).includes(hs.id)).map((hs) => {
-                    const selected = character.hairstyle === hs.id;
-                    return (
-                      <button
-                        key={hs.id}
-                        type="button"
-                        role="radio"
-                        aria-checked={selected}
-                        onClick={() => onUpdateCharacter({ hairstyle: hs.id })}
-                        className={`flex flex-col items-center gap-1 rounded-xl border-2 bg-white p-1.5 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-create-primary ${
-                          selected ? "border-create-primary" : "border-create-neutral hover:border-create-primary/40"
-                        }`}
-                      >
-                        <span className="aspect-square w-full overflow-hidden rounded-lg bg-[#fbeee2]">
-                          <ProtagonistAvatar look={{ ...traits, hairstyle: hs.id, glasses: "none" }} preloadNeighbours={false} className="h-full w-full" />
-                        </span>
-                        <span className={`text-[11px] font-bold leading-tight ${selected ? "text-brand-text" : "text-create-text"}`}>
-                          {td(`hairstyles.${hs.id}`)}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <SwatchGroup
-                id="eyes"
-                label={t("eyes")}
-                options={EYE_COLORS}
-                value={character.eyeColor}
-                labelFor={(id) => td(`eyeColors.${id}`)}
-                onChange={(eyeColor) => onUpdateCharacter({ eyeColor })}
-              />
-
-              <div className="flex flex-col gap-2.5">
-                <span className="text-xs font-bold uppercase tracking-wide text-create-text" id="lbl-glasses">
-                  {t("glasses")}
-                </span>
-                <div role="radiogroup" aria-labelledby="lbl-glasses" className="flex flex-wrap gap-2">
-                  {GLASSES_SHAPES.map((shape) => {
-                    const selected = glassesShape === shape;
-                    return (
-                      <button
-                        key={shape}
-                        type="button"
-                        role="radio"
-                        aria-checked={selected}
-                        onClick={() =>
-                          onUpdateCharacter({ glasses: shape === "none" ? "none" : `${shape}-${glassesFrame}` })
-                        }
-                        className={chip(selected)}
-                      >
-                        {t(`glasses_${shape}`)}
-                      </button>
-                    );
-                  })}
-                </div>
-                {glassesShape !== "none" && (
-                  <div role="radiogroup" aria-label={t("glassesFrame")} className="flex items-center gap-2.5">
-                    {GLASSES_FRAMES.map((f) => {
-                      const selected = glassesFrame === f.id;
-                      return (
-                        <button
-                          key={f.id}
-                          type="button"
-                          role="radio"
-                          aria-checked={selected}
-                          aria-label={t(`glassesFrame_${f.id}`)}
-                          title={t(`glassesFrame_${f.id}`)}
-                          onClick={() => onUpdateCharacter({ glasses: `${glassesShape}-${f.id}` })}
-                          className={`h-8 w-8 rounded-full border border-black/10 transition-transform focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-create-primary ${
-                            selected ? "ring-[3px] ring-create-primary ring-offset-2 ring-offset-white" : "hover:scale-105"
-                          }`}
-                          style={{ backgroundColor: f.color }}
-                        />
-                      );
-                    })}
-                    <span aria-hidden className="text-xs font-semibold text-create-text-sub" data-testid="selected-glasses-frame">
-                      {t(`glassesFrame_${glassesFrame}`)}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              <div className="flex items-center justify-between gap-4 rounded-2xl border-2 border-create-neutral bg-white px-4 py-3 sm:col-span-2">
-                <span className="text-sm font-bold text-create-text" id="lbl-freckles">
-                  {t("freckles")}
-                </span>
-                <button
-                  type="button"
-                  role="switch"
-                  aria-checked={character.freckles}
-                  aria-labelledby="lbl-freckles"
-                  onClick={() => onUpdateCharacter({ freckles: !character.freckles })}
-                  className={`relative h-7 w-12 shrink-0 rounded-full transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-create-primary ${
-                    character.freckles ? "bg-create-primary" : "bg-create-neutral"
-                  }`}
-                >
-                  <span
-                    aria-hidden
-                    className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow transition-[left] ${
-                      character.freckles ? "left-6" : "left-1"
-                    }`}
-                  />
-                </button>
-              </div>
+              {traitControls}
             </div>
           ) : (
-            <div id="panel-photo" role="tabpanel" aria-labelledby="tab-photo">
+            <div id="panel-photo" role="tabpanel" aria-labelledby="tab-photo" className="flex flex-col gap-6">
               <PhotoUploadPanel name={name} photoPath={photoPath} onPhotoChange={onPhotoChange} />
+              {/* The Character Bible (and so the story text) is written from these traits, never
+                  inferred from the photo: the parent confirms them so text and drawing agree. */}
+              {photoPath && (
+                <section aria-labelledby="photo-traits-title" className="flex flex-col gap-5" data-testid="photo-traits">
+                  <div>
+                    <h2 id="photo-traits-title" className="font-display text-lg font-bold text-create-text-dark">
+                      {t("photoTraitsTitle", { name })}
+                    </h2>
+                    <p className="mt-1 text-sm text-create-text-sub">{t("photoTraitsHint")}</p>
+                  </div>
+                  <div className="grid gap-6 sm:grid-cols-2">{traitControls}</div>
+                  <label className="flex cursor-pointer items-start gap-3 rounded-xl border-2 border-create-neutral bg-white p-3">
+                    <input
+                      type="checkbox"
+                      checked={photoTraitsConfirmed}
+                      onChange={(e) => onConfirmPhotoTraits(e.target.checked)}
+                      className="mt-0.5 h-5 w-5 shrink-0 accent-[var(--create-primary)]"
+                      data-testid="photo-traits-confirm"
+                    />
+                    <span className="text-sm font-bold leading-snug text-create-text">{t("photoTraitsConfirm", { name })}</span>
+                  </label>
+                </section>
+              )}
             </div>
           )}
 
@@ -371,8 +405,8 @@ export default function StepProtagonist({
       <CreationFooterNav
         onBack={onBack}
         onNext={onNext}
-        nextDisabled={!canContinue}
-        nextDisabledTooltip={t("photoRequired")}
+        nextDisabled={readiness !== "ready"}
+        nextDisabledTooltip={readiness === "traits_unconfirmed" ? t("photoTraitsRequired", { name }) : t("photoRequired")}
       />
     </>
   );

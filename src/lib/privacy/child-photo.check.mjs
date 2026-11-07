@@ -267,4 +267,27 @@ function fakeSupabase({ objects = {}, consents = [], failRemove = false } = {}) 
   assert.equal(broken.consents[0].deleted_at, null);
 }
 
+// Purge: the 24 h boundary of the public promise, and more photos than one remove() chunk.
+{
+  const now = Date.parse("2026-11-07T12:00:00Z");
+  const minutesAgo = (m) => new Date(now - m * 60_000).toISOString();
+  const p = (n) => `${USER}/aaaaaaaa-bbbb-4ccc-8ddd-${String(n).padStart(12, "0")}.jpg`;
+  const objects = {
+    [p(1)]: { created_at: minutesAgo(24 * 60 - 1), data: Buffer.from("a") }, // 23 h 59 min: kept
+    [p(2)]: { created_at: minutesAgo(24 * 60 + 1), data: Buffer.from("b") }, // 24 h 01 min: removed
+  };
+  for (let i = 10; i < 160; i++) objects[p(i)] = { created_at: minutesAgo(30 * 60), data: Buffer.from("x") };
+  const consents = Object.keys(objects).map((path, i) => ({
+    id: String(i + 1), user_id: USER, photo_path: path, created_at: objects[path].created_at, deleted_at: null,
+  }));
+  const db = fakeSupabase({ objects, consents });
+  const res = await photo.purgeExpiredChildPhotos(db, now);
+  assert.equal(res.failed, 0);
+  assert.equal(res.removed, 151, "150 old photos + the one just past 24 h, over two remove() chunks");
+  assert.equal(res.consentsMarked, 151);
+  assert.deepEqual(Object.keys(db.objects), [p(1)], "only the photo younger than 24 h survives");
+  assert.equal(db.consents.find((r) => r.photo_path === p(1)).deleted_at, null);
+  assert.ok(db.consents.find((r) => r.photo_path === p(2)).deleted_at);
+}
+
 console.log("child-photo checks passed");

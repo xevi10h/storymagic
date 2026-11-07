@@ -103,6 +103,9 @@ export function migrateCreateState(raw: unknown): CreateBookState {
     gender: rawConfirmed ? rawConfirmed.gender === true : legacyConfirmed,
   };
   if (!basicsConfirmed.age || !basicsConfirmed.gender) currentStep = 1;
+  // A photo draft past screen 2 without confirmed traits goes back to confirm them.
+  const photoMode = isV2 && raw.protagonistMode === "photo" && typeof raw.photoPath === "string";
+  if (photoMode && raw.photoTraitsConfirmed !== true && currentStep > 2) currentStep = 2;
 
   return {
     ...base,
@@ -113,6 +116,8 @@ export function migrateCreateState(raw: unknown): CreateBookState {
     character,
     protagonistMode: isV2 && raw.protagonistMode === "photo" ? "photo" : "avatar",
     photoPath: isV2 && typeof raw.photoPath === "string" ? raw.photoPath : null,
+    // Only meaningful with a photo: no photo → nothing was confirmed.
+    photoTraitsConfirmed: isV2 && typeof raw.photoPath === "string" && raw.photoTraitsConfirmed === true,
     characterPrepId: isV2 && typeof raw.characterPrepId === "string" ? raw.characterPrepId : null,
     characterPrepSnapshot:
       isV2 && typeof raw.characterPrepSnapshot === "string" ? raw.characterPrepSnapshot : null,
@@ -191,13 +196,32 @@ export function avatarAssetPathFor(c: CharacterData): string | null {
   return isAvatarRendered(traits) ? `/images/avatar/${avatarBaseKey(traits)}.webp` : null;
 }
 
+/**
+ * Can the parent leave the protagonist screen? Photo mode needs the photo AND the
+ * parent's confirmation of the traits: the Character Bible (and so every line of the
+ * story that describes the child) is written from those traits, so they must be the
+ * child in the photo, not the untouched defaults.
+ */
+export type ProtagonistReadiness = "ready" | "photo_missing" | "traits_unconfirmed";
+export function protagonistReadiness(
+  state: Pick<CreateBookState, "protagonistMode" | "photoPath" | "photoTraitsConfirmed">,
+  photoEnabled: boolean,
+): ProtagonistReadiness {
+  if (!photoEnabled || state.protagonistMode !== "photo") return "ready";
+  if (!state.photoPath) return "photo_missing";
+  return state.photoTraitsConfirmed ? "ready" : "traits_unconfirmed";
+}
+
 /** Body of POST /api/characters/prepare for a draft. */
-export function characterPrepareBody(state: Pick<CreateBookState, "character" | "protagonistMode" | "photoPath">) {
+export function characterPrepareBody(
+  state: Pick<CreateBookState, "character" | "protagonistMode" | "photoPath" | "photoTraitsConfirmed">,
+) {
   const usePhoto = state.protagonistMode === "photo" && !!state.photoPath;
   const avatarAssetPath = usePhoto ? null : avatarAssetPathFor(state.character);
   return {
     ...characterLookPayload(state.character),
-    ...(usePhoto ? { photoPath: state.photoPath } : {}),
+    // The server refuses a photo whose traits the parent did not confirm.
+    ...(usePhoto ? { photoPath: state.photoPath, photoTraitsConfirmed: state.photoTraitsConfirmed } : {}),
     ...(avatarAssetPath ? { avatarAssetPath } : {}),
   };
 }

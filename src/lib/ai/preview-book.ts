@@ -49,6 +49,7 @@ import type { CastMember, VisualCast } from "./visual-assets";
 import { uploadGeneratedImage } from "@/lib/supabase/storage";
 import { PREVIEW_ILLUSTRATION_COUNT } from "@/lib/pricing";
 import { ProviderUnavailableError } from "@/lib/fulfilment/provider-errors";
+import { finalFaceAnchor } from "./face-anchor";
 
 // ── Public types ─────────────────────────────────────────────────────────────
 
@@ -69,6 +70,8 @@ export interface PreviewProgress {
 export interface StoredSheet {
   ref: ImageReference;
   url: string;
+  /** A prepared child sheet drawn from the child's photo (the photo itself is deleted by then). */
+  fromPhoto?: boolean;
 }
 
 /** Stores one rendered image and returns its permanent URL. */
@@ -333,6 +336,9 @@ export class PreviewSession {
     const story = await expandScenes(architect, input);
     const visual = planToVisualCast(bookPlan);
     const shotList = planToShotList(bookPlan, frameForScene, visual);
+    // A missing sheet is fatal (no scene may be drawn without one).
+    const child = await this.childSheet;
+
     const plan: BookImagePlan = {
       version: 1,
       engine: "openai",
@@ -341,11 +347,8 @@ export class PreviewSession {
       world: visual.world,
       shots: shotList.shots,
       cover: shotList.cover,
-      avatarUrl: this.args.avatarUrl,
+      avatarUrl: finalFaceAnchor(this.args.avatarUrl, child),
     };
-
-    // A missing sheet is fatal (no scene may be drawn without one).
-    const child = await this.childSheet;
 
     // Companion sheet for the final cast: reuse the streamed one when it drew
     // every final companion identically and did not fail.

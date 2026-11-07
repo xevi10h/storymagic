@@ -645,22 +645,65 @@ test.describe("photo tab", () => {
     const upload = mock.requests.find((r) => r.path === "/api/characters/photo" && r.method === "POST");
     expect(String(upload?.body)).toContain('name="photo"');
     expect(String(upload?.body)).toContain("2026-09-27");
-    await shot(page, "es-mobile-2-photo-uploaded");
+    // The look is NOT taken from the photo: the parent confirms the traits the story is written from.
+    const traits = page.getByTestId("photo-traits");
+    const confirm = page.getByTestId("photo-traits-confirm");
+    await expect(traits).toBeVisible();
+    await expect(traits.getByRole("heading", { name: /Confirma cómo es Lucía/ })).toBeVisible();
+    await expect(confirm).not.toBeChecked();
+    await expect(page.getByRole("button", { name: /Siguiente/ })).toBeDisabled();
+    await expect(page.getByTestId("footer-hint")).toHaveText(/Confirma cómo es Lucía/);
+    await traits.getByRole("radio", { name: "Muy oscuro", exact: true }).click();
+    await traits.getByRole("radio", { name: "Negro", exact: true }).click();
+    await shot(page, "es-mobile-2-photo-traits");
+    await confirm.check();
     await expect(page.getByRole("button", { name: /Siguiente/ })).toBeEnabled();
+    await shot(page, "es-mobile-2-photo-uploaded");
 
-    // Next → the early child sheet is prepared from the private photo (no avatar asset)
+    // Next → the early child sheet is prepared from the private photo (no avatar asset) AND the confirmed traits
     await next(page, "es");
     await expect.poll(() => mock.requests.some((r) => r.path === "/api/characters/prepare")).toBe(true);
     const prep = mock.requests.find((r) => r.path === "/api/characters/prepare")!.body as Record<string, unknown>;
     expect(prep.photoPath).toBe(`${USER.id}/photo-abc.jpg`);
+    expect(prep.photoTraitsConfirmed).toBe(true);
+    expect(prep.skinTone).toBe("#523218");
+    expect(prep.hairColor).toBe("#2a2a2a");
     expect(prep.avatarAssetPath).toBeUndefined();
     await page.getByRole("button", { name: "Atrás" }).first().click();
     await expect(page.getByTestId("photo-uploaded")).toBeVisible();
+    await expect(confirm).toBeChecked(); // kept across Back
 
-    // Withdraw → DELETE, consent reset
+    // Withdraw → DELETE, consent and trait confirmation reset
     await page.getByRole("button", { name: /Quitar la foto/ }).click();
     await expect.poll(() => mock.requests.some((r) => r.path === "/api/characters/photo" && r.method === "DELETE")).toBe(true);
+    await expect(page.getByTestId("photo-traits")).toHaveCount(0);
     await expect(page.getByRole("checkbox")).not.toBeChecked();
+    await expect(page.getByRole("button", { name: /Siguiente/ })).toBeDisabled();
+
+    // A new photo needs its traits confirmed again
+    await page.getByRole("checkbox").check();
+    await page.getByTestId("photo-input").setInputFiles({ name: "nena2.png", mimeType: "image/png", buffer: png });
+    await expect(page.getByTestId("photo-uploaded")).toBeVisible();
+    await expect(page.getByTestId("photo-traits-confirm")).not.toBeChecked();
+    await expect(page.getByRole("button", { name: /Siguiente/ })).toBeDisabled();
+
+    // Confirm again → adventure → create: the story is written from the SAME confirmed traits, no avatar
+    await page.getByTestId("photo-traits-confirm").check();
+    await next(page, "es");
+    await chooseAdventure(page, "es");
+    await page.getByRole("button", { name: COPY.es.create }).click();
+    await page.waitForURL(new RegExp(`/es/create/${STORY_ID}/generate`));
+    const post = mock.requests.find((r) => r.path === "/api/stories")!.body as {
+      character: Record<string, unknown>;
+      avatarAssetPath?: string;
+    };
+    expect(post.character.skinTone).toBe("#523218");
+    expect(post.character.hairColor).toBe("#2a2a2a");
+    expect(post.avatarAssetPath).toBeUndefined();
+    const preps = mock.requests.filter((r) => r.path === "/api/characters/prepare");
+    const lastPrep = preps[preps.length - 1].body as Record<string, unknown>;
+    expect(lastPrep.photoPath).toBe(`${USER.id}/photo-abc.jpg`);
+    expect(lastPrep.skinTone).toBe(post.character.skinTone);
     expect(errors).toEqual([]);
   });
 });

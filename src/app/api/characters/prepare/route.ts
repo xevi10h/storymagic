@@ -1,5 +1,4 @@
 import { NextResponse, after } from "next/server";
-import { z } from "zod";
 import { createClient as createServiceClient, type SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { loadAvatarReference, renderChildSheet, type ImageReference } from "@/lib/ai/book-images";
@@ -15,9 +14,9 @@ import { providerOutageRetryAfter, tripOnProviderOutage } from "@/lib/ai/provide
 import { uploadGeneratedImage } from "@/lib/supabase/storage";
 import { checkMemoryRateLimit, checkRateLimit } from "@/lib/rate-limit";
 import { PhotoUnavailableError, deleteChildPhoto, loadChildPhoto } from "@/lib/privacy/child-photo";
-import { isOwnedPhotoPath, isPhotoUploadEnabled, isValidPhotoPath } from "@/lib/privacy/child-photo-policy";
+import { isOwnedPhotoPath, isPhotoUploadEnabled } from "@/lib/privacy/child-photo-policy";
 import { ownedPortraitPath } from "@/lib/storage/illustration-urls";
-import { avatarAssetPathSchema, avatarAssetUrl, characterLookShape } from "@/lib/character-look";
+import { avatarAssetUrl, prepareInputSchema } from "@/lib/character-look";
 import { isMockGeneration } from "@/lib/ai/story-generator";
 import { createFulfilmentClient } from "@/lib/fulfilment/db";
 import { DAILY_CAP_ERROR, isDailyPreviewCapFull } from "@/lib/preview-cap-server";
@@ -27,20 +26,6 @@ import { refuseBot } from "@/lib/botid/server";
 // The child sheet (gpt-image-2.5-flare, medium, 1536×1024) takes ~15–25 s and
 // runs in after(), which lives for this route's maxDuration.
 export const maxDuration = 120;
-
-const prepareInputSchema = z
-  .object({
-    // Same look fields as POST /api/stories (client: characterLookPayload), so the
-    // Bible hash of the prep equals the story's.
-    ...characterLookShape,
-    /** Pre-rendered watercolor avatar base, e.g. "/images/avatar/girl/light/brown-bob.webp" */
-    avatarAssetPath: avatarAssetPathSchema.optional(),
-    /** AI portrait from POST /api/characters/portrait (signed URL or path); only the caller's own is used */
-    portraitUrl: z.string().max(2000).optional(),
-    /** Object path in the private `child-photos` bucket ({userId}/{uuid}.jpg) */
-    photoPath: z.string().max(200).refine(isValidPhotoPath, "invalid photoPath").optional(),
-  })
-  .refine((d) => !(d.avatarAssetPath && d.portraitUrl), "Send either avatarAssetPath or portraitUrl, not both");
 
 
 const RATE_LIMITED = { error: "rate_limited", message: "Too many character generations. Please try again later." };
@@ -61,7 +46,7 @@ const PROVIDER_UNAVAILABLE = { error: "provider_unavailable" };
  * durable `generate_portrait` per-user limit) and the provider-outage breaker.
  *
  * Request:  { gender, age, skinTone?, hairColor?, eyeColor?, hairstyle?, favoriteColor?, glasses?, freckles?,
- *             avatarAssetPath? | portraitUrl?, photoPath? }
+ *             avatarAssetPath? | portraitUrl? | (photoPath + photoTraitsConfirmed: true) }
  * Response: 202 { characterPrepId, status: "rendering" | "ready" }
  *           200 { characterPrepId: null, status: "skipped" } in MOCK_MODE
  *           400 invalid input / photo_upload_disabled · 401 no session · 403 photo not the caller's ·

@@ -21,7 +21,9 @@ import {
   MAX_NAME_LENGTH,
   characterPrepareBody,
   firstName,
+  isPhotoUploadEnabled,
   migrateCreateState,
+  protagonistReadiness,
   storyCharacterBody,
   protagonistSnapshot,
   readStoredDraft,
@@ -222,7 +224,12 @@ function CrearPageContent() {
     [setState],
   );
   const setPhoto = useCallback(
-    (photoPath: string | null) => setState((prev) => ({ ...prev, photoPath })),
+    // A new (or removed) photo needs its traits confirmed again.
+    (photoPath: string | null) => setState((prev) => ({ ...prev, photoPath, photoTraitsConfirmed: false })),
+    [setState],
+  );
+  const confirmPhotoTraits = useCallback(
+    (photoTraitsConfirmed: boolean) => setState((prev) => ({ ...prev, photoTraitsConfirmed })),
     [setState],
   );
 
@@ -275,7 +282,7 @@ function CrearPageContent() {
           });
           if (res.status === 410) {
             // The photo was already used and deleted — ask for it again.
-            setState((prev) => ({ ...prev, photoPath: null }));
+            setState((prev) => ({ ...prev, photoPath: null, photoTraitsConfirmed: false }));
             setCreateFailed(false);
             setError(t("photo.errors.photo_unavailable"));
             return;
@@ -300,6 +307,7 @@ function CrearPageContent() {
   );
 
   const handleProtagonistNext = useCallback(() => {
+    if (protagonistReadiness(state, isPhotoUploadEnabled()) !== "ready") return;
     startCharacterPrep(state);
     setStep(3);
   }, [startCharacterPrep, state, setStep]);
@@ -417,9 +425,11 @@ function CrearPageContent() {
           character={state.character}
           protagonistMode={state.protagonistMode}
           photoPath={state.photoPath}
+          photoTraitsConfirmed={state.photoTraitsConfirmed}
           onUpdateCharacter={updateCharacter}
           onSetMode={setMode}
           onPhotoChange={setPhoto}
+          onConfirmPhotoTraits={confirmPhotoTraits}
           onNext={handleProtagonistNext}
           onBack={goBack}
         />

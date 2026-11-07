@@ -70,6 +70,12 @@ export interface CreateBookState {
   protagonistMode: ProtagonistMode;
   /** Private storage path returned by POST /api/characters/photo (never a public URL). */
   photoPath: string | null;
+  /**
+   * Photo mode: the parent confirmed the traits (skin, hair, eyes, glasses, freckles) after
+   * uploading. The Character Bible, and so the story text, is written from them, never
+   * inferred from the photo. Reset whenever the photo changes.
+   */
+  photoTraitsConfirmed: boolean;
   /** Background character-sheet job id from POST /api/characters/prepare. */
   characterPrepId: string | null;
   /** Snapshot of the traits/photo the prep job was started for (restart on change). */
@@ -201,6 +207,7 @@ export const INITIAL_STATE: CreateBookState = {
   },
   protagonistMode: "avatar",
   photoPath: null,
+  photoTraitsConfirmed: false,
   characterPrepId: null,
   characterPrepSnapshot: null,
   selectedTemplate: null,

@@ -5,6 +5,7 @@
 import { z } from "zod";
 import { AVATAR_GLASSES_OPTIONS, type AvatarGlasses } from "@/lib/avatar/manifest";
 import { getSiteUrl } from "@/lib/email/send";
+import { isValidPhotoPath } from "@/lib/privacy/child-photo-policy";
 
 export const glassesSchema = z.enum(AVATAR_GLASSES_OPTIONS as [AvatarGlasses, ...AvatarGlasses[]]);
 
@@ -32,6 +33,29 @@ export function isAvatarAssetPath(value: unknown): value is string {
 }
 
 export const avatarAssetPathSchema = z.string().max(200).regex(AVATAR_ASSET_PATH_RE, "avatarAssetPath must be under /images/avatar/");
+
+/** Body of POST /api/characters/prepare (client: characterPrepareBody in src/lib/creation-flow.ts). */
+export const prepareInputSchema = z
+  .object({
+    // Same look fields as POST /api/stories (client: characterLookPayload), so the
+    // Bible hash of the prep equals the story's.
+    ...characterLookShape,
+    /** Pre-rendered watercolor avatar base, e.g. "/images/avatar/girl/light/brown-bob.webp" */
+    avatarAssetPath: avatarAssetPathSchema.optional(),
+    /** AI portrait from POST /api/characters/portrait (signed URL or path); only the caller's own is used */
+    portraitUrl: z.string().max(2000).optional(),
+    /** Object path in the private `child-photos` bucket ({userId}/{uuid}.jpg) */
+    photoPath: z.string().max(200).refine(isValidPhotoPath, "invalid photoPath").optional(),
+    /**
+     * The parent confirmed the traits after uploading the photo (client: protagonistReadiness).
+     * The Bible, and so the story text, comes from those traits, never from the photo.
+     */
+    photoTraitsConfirmed: z.boolean().optional(),
+  })
+  .refine((d) => !(d.avatarAssetPath && d.portraitUrl), "Send either avatarAssetPath or portraitUrl, not both")
+  // A photo sheet is never drawn next to an avatar anchor (two faces) nor from unconfirmed defaults.
+  .refine((d) => !d.photoPath || (!d.avatarAssetPath && !d.portraitUrl), "A photo prep takes no avatar")
+  .refine((d) => !d.photoPath || d.photoTraitsConfirmed === true, "photoTraitsConfirmed required with photoPath");
 
 /**
  * Absolute URL the server downloads an avatar asset from: our own public site

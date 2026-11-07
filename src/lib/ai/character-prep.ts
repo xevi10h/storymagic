@@ -82,6 +82,8 @@ export interface PrepRow {
   avatar_ref: string | null;
   child_sheet_url: string | null;
   started_at: string;
+  /** Selected by resolvePreparedChildSheet only. */
+  had_photo?: boolean | null;
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -101,7 +103,7 @@ export async function resolvePreparedChildSheet(
   for (;;) {
     const { data, error } = await admin
       .from(CHARACTER_PREPS_TABLE)
-      .select("id, user_id, status, bible_hash, avatar_ref, child_sheet_url, started_at")
+      .select("id, user_id, status, bible_hash, avatar_ref, child_sheet_url, started_at, had_photo")
       .eq("id", opts.prepId)
       .eq("user_id", opts.userId)
       .maybeSingle<PrepRow>();
@@ -119,7 +121,7 @@ export async function resolvePreparedChildSheet(
       return null;
     }
     if (data.status === "ready" && data.child_sheet_url) {
-      return { ref: await loadReference(data.child_sheet_url), url: data.child_sheet_url };
+      return { ref: await loadReference(data.child_sheet_url), url: data.child_sheet_url, fromPhoto: data.had_photo === true };
     }
     if (data.status !== "rendering") return null;
     const deadAt = new Date(data.started_at).getTime() + PREP_STALE_MS;

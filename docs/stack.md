@@ -100,6 +100,34 @@ writes that path into their own character row — only possible for someone who 
 old public URL. A preview tab left open > 1 h shows broken images for pages not yet loaded
 (reload fixes it). `illustration_library` (unused cache table) was not migrated.
 
+## Child photo mode (built, OFF in prod)
+
+`NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED` is inlined at **build** time: changing it in Vercel does nothing until a new
+deployment is built. Off = no photo tab, upload/prepare-with-photo answer 400/404, and every public text says no photo
+is used (privacy sections 2/4/5/8 `…TextNoPhoto`, ad landings, home steps, `/about`, `/llms*.txt`, likeness guide).
+On = all of them switch to the photo wording in the same build. No migration is pending: bucket `child-photos`,
+`photo_consents`, `list_expired_child_photos` and `character_preps.had_photo` are in prod since 2026-09-27.
+
+Flow when on: upload (consent row, EXIF strip, private bucket) → parent confirms the traits (`photoTraitsConfirmed`)
+→ leaving screen 2 calls `POST /api/characters/prepare` with `photoPath` → OpenAI Images edits (`gpt-image-2.5-flare`,
+photo as the only reference) draws the child sheet → photo deleted right after; hourly `purge-photos` cron (≤ 24 h) →
+the story reuses that sheet and the final book anchors on it (`finalFaceAnchor`). Processor: OpenAI Ireland Ltd.
+(EEA customers' contracting party under the Services Agreement and DPA). Default API retention: abuse-monitoring logs
+up to 30 days; `/v1/images/edits` keeps no application state and both image models are on OpenAI's ZDR-compatible list,
+but image inputs flagged by OpenAI's CSAM classifier are kept for manual review even under ZDR (developers.openai.com
+› Your data, checked 2026-11-07).
+
+**Enable (owner first, then deploy):**
+1. Execute OpenAI's DPA (Ironclad form linked from openai.com/policies/data-processing-addendum) for the org that owns
+   `OPENAI_API_KEY`; complete the EIPD/DPIA (minors < 14 + generative AI); optionally ask OpenAI sales for ZDR on
+   the Images endpoints (approval-based). With ZDR approved, change the «hasta 30 días» lines (privacy section 5,
+   section 8, `crear.photo.modalText`, 4 locales) before enabling.
+2. Vercel prod env: `NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED=true`; `CRON_SECRET` already set (purge cron).
+3. Rebuild: push the commit to `main` (or `vercel --prod` of the current commit); the env change alone is not enough.
+4. Smoke with a phone (headless gets BotID 403): photo tab visible, upload → traits confirmation → preview; check that
+   `photo_consents` gets the row and `deleted_at` is set within minutes; `/es/legal#privacy` shows the photo section 8.
+5. Rollback: set the variable to `false` and rebuild; the purge cron keeps running either way.
+
 ## Payments — Stripe (2026-09-28)
 
 **Account:** Meapica has its own Stripe account (not Constrack's). Sandbox `acct_1UKcQsBD04FISl5u`
@@ -406,7 +434,10 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   Disable: `launchctl bootout gui/$(id -u)/com.casmar.meapica-seo-weekly` (and delete the plist to make it permanent;
   re-enable with `launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.casmar.meapica-seo-weekly.plist`).
 
-## Paid-ad landings `/es/l/{slug}` (2026-10-28, local, not deployed)
+## Paid-ad landings `/es/l/{slug}` (2026-10-28, live)
+
+- **Photo claims follow the flag (2026-11-07, 80071cb):** step 1 of `AD_LANDING_COPY.steps` offers «o sube una foto» only
+  while `isPhotoUploadEnabled()`. The Meta ad «Una foto suya…» is not code: edit or pause it while the flag is off.
 
 - **Route:** `src/app/[locale]/l/[slug]/page.tsx`, one template; variants in `src/lib/ad-landing.ts` (`soy-yo`, `la-cueva`, `noa`).
   Spanish only: `generateStaticParams` returns es × slugs and `dynamicParams = false`, so `/ca|en|fr/l/*` and unknown slugs are 404.
