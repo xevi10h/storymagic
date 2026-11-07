@@ -8,6 +8,8 @@
 // showcase book the ad shows. Prices, shipping and delivery come from pricing / shipping, never here.
 // Shared by client and server — no server-only imports here.
 
+import { isPhotoUploadEnabled } from "@/lib/privacy/child-photo-policy";
+
 export const AD_LANDING_LOCALES = ["es"] as const;
 export type AdLandingLocale = (typeof AD_LANDING_LOCALES)[number];
 
@@ -82,8 +84,11 @@ export const AD_LANDING_COPY = {
   aiTag: "Escena recreada con IA",
   cta: "Crear su cuento",
   stepsTitle: "Así funciona",
+  // Step 1 names the photo only while upload is on (same rule as HowItWorks' steps.look.textPhoto).
   steps: [
-    "Escribe su nombre y elige cómo es, o sube una foto",
+    isPhotoUploadEnabled()
+      ? "Escribe su nombre y elige cómo es, o sube una foto"
+      : "Escribe su nombre y elige cómo es: su piel, su pelo, sus gafas y sus pecas",
     "Elegís juntos su aventura",
     "Ves su cuento y decides. Pagas solo si te gusta",
   ],

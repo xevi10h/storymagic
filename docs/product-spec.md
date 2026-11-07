@@ -113,6 +113,7 @@ A seasonal world lives in `STORY_TEMPLATES` with `seasonal: true` and an optiona
 - Consent record per photo (`photo_consents`: user, time, `PHOTO_CONSENT_VERSION`, locale), kept after deletion as proof. Bump `PHOTO_CONSENT_VERSION` whenever the `crear.photo.checkbox` copy changes.
 - Withdrawal: `DELETE /api/characters/photo` or email to hola@meapica.es → deleted immediately.
 - Pending before enabling: DPIA/EIPD, OpenAI DPA, controller NIF/address in the privacy policy (`[NIF]`, `[DIRECCIÓN]` placeholders).
+- **Every public photo claim follows `isPhotoUploadEnabled()` (2026-11-07).** While off: privacy sections 2, 4, 5 and 8 render their `section{n}TextNoPhoto` sibling (no photo is asked for or processed; section 8 says so), the ad landings' step 1 (`AD_LANDING_COPY.steps`) and the home's `steps.look` name only the traits, and `/about`, `/llms*.txt` and the likeness guide state the no-photo truth. Turning the flag on (a rebuild, it is `NEXT_PUBLIC_`) switches all of them back to the photo wording at once. The Meta ad «Una foto suya…» is outside the code: edit or pause it while the flag is off.
 
 ## Upsells & Add-ons
 

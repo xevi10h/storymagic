@@ -5,6 +5,14 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { COPY_PARAMS } from "@/lib/product-facts";
+import { isPhotoUploadEnabled } from "@/lib/privacy/child-photo-policy";
+
+/**
+ * Privacy sections that describe the child-photo processing. While photo upload is off
+ * (NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED, build time) they render their `section{n}TextNoPhoto`
+ * sibling, so the policy never describes a processing we don't do.
+ */
+const PHOTO_PRIVACY_SECTIONS: ReadonlySet<number> = new Set([2, 4, 5, 8]);
 
 const BASE_URL = "https://meapica.es";
 
@@ -57,6 +65,7 @@ function LegalSection({
   sectionKey: string;
   sectionCount: number;
 }) {
+  const noPhoto = sectionKey === "privacy" && !isPhotoUploadEnabled();
   return (
     <div className="space-y-8">
       <p className="text-text-soft leading-relaxed">{t(`${sectionKey}.intro`)}</p>
@@ -66,7 +75,10 @@ function LegalSection({
             {t(`${sectionKey}.section${i + 1}Title`)}
           </h3>
           <p className="text-text-soft leading-relaxed">
-            {t(`${sectionKey}.section${i + 1}Text`, COPY_PARAMS)}
+            {t(
+              `${sectionKey}.section${i + 1}${noPhoto && PHOTO_PRIVACY_SECTIONS.has(i + 1) ? "TextNoPhoto" : "Text"}`,
+              COPY_PARAMS,
+            )}
           </p>
         </div>
       ))}
@@ -117,7 +129,7 @@ export default async function LegalPage({ params }: PageProps) {
                 {t(`${id}.title`)}
               </Heading>
               <p className="text-xs text-text-muted mb-8">
-                {t("lastUpdated", { date: "2026-11-05" })}
+                {t("lastUpdated", { date: "2026-11-07" })}
               </p>
               <LegalSection t={t} sectionKey={id} sectionCount={sectionCount} />
             </article>
