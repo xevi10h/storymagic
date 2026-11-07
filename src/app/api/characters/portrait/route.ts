@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { z } from "zod";
 import crypto from "node:crypto";
 import { createClient as createServiceClient } from "@supabase/supabase-js";
 import { buildCharacterBible, renderPortrait } from "@/lib/ai/book-images";
@@ -10,8 +9,7 @@ import { getMockPortraitUrl } from "@/lib/ai/mock-story";
 import { createClient } from "@/lib/supabase/server";
 import { checkRateLimit, checkMemoryRateLimit } from "@/lib/rate-limit";
 import { providerOutageRetryAfter, tripOnProviderOutage } from "@/lib/ai/provider-outage";
-import { isOwnedPhotoPath, isPhotoUploadEnabled, isValidPhotoPath } from "@/lib/privacy/child-photo-policy";
-import { PhotoUnavailableError, deleteChildPhoto, loadChildPhoto } from "@/lib/privacy/child-photo";
+import { portraitInputSchema } from "@/lib/character-look";
 import { createFulfilmentClient } from "@/lib/fulfilment/db";
 import { DAILY_CAP_ERROR, isDailyPreviewCapFull } from "@/lib/preview-cap-server";
 import { checkGuestIpCap, isGuest } from "@/lib/guest-caps";
@@ -19,33 +17,6 @@ import { refuseBot } from "@/lib/botid/server";
 
 // OpenAI portrait (gpt-image-2.5-flare, medium) takes ~15–25 s.
 export const maxDuration = 60;
-
-const portraitInputSchema = z.object({
-  childName: z.string().min(1).max(50),
-  gender: z.enum(["boy", "girl", "neutral"]),
-  age: z.number().int().min(1).max(12),
-  skinTone: z.string().max(20).optional(),
-  hairColor: z.string().max(20).optional(),
-  eyeColor: z.string().max(20).optional(),
-  hairstyle: z.string().max(30).optional(),
-  interests: z.array(z.string().max(50)).max(4).optional(),
-  favoriteColor: z.string().max(20).optional(),
-  favoriteCompanion: z.string().max(100).optional(),
-  futureDream: z.string().max(150).optional(),
-  city: z.string().max(100).optional(),
-  /**
-   * Optional child photo (POST /api/characters/photo → photoPath in the private
-   * child-photos bucket). Facial likeness only. Read server-side as bytes, never
-   * as a URL. Requires NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED=true.
-   */
-  photoPath: z.string().max(200).refine(isValidPhotoPath, "invalid photoPath").optional(),
-  /**
-   * true = the caller renders the early child character sheet with the photo next
-   * and deletes it itself (deleteChildPhoto). Default false: the photo is deleted
-   * as soon as the portrait is stored.
-   */
-  keepPhotoForSheet: z.boolean().optional(),
-});
 
 /**
  * POST /api/characters/portrait
@@ -59,16 +30,14 @@ const portraitInputSchema = z.object({
  * The image is stored in our own storage (versioned path) and saved by the UI
  * as character.avatar_url; the book's character sheets use it as the face anchor.
  *
- * With `photoPath`, the child's photo (private bucket, owned by the caller, consent
- * not withdrawn) is passed to OpenAI as a facial-likeness reference and deleted
- * right after the portrait is stored, unless `keepPhotoForSheet` (then the early
- * sheet step deletes it). A failed generation keeps the photo so the parent can
- * retry; the hourly purge deletes it within 24 h regardless.
+ * Never takes the child's photo (2026-11-07): the only photo path is POST
+ * /api/characters/prepare, which requires the parent's trait confirmation
+ * (photoTraitsConfirmed). A body with `photoPath` / `keepPhotoForSheet` is a 400
+ * (portraitInputSchema). The v2 UI does not call this route.
  *
- * Returns: { portraitUrl (24 h signed URL of portraits/<userId>/…), recraftStyleId: null, photoDeleted } (recraftStyleId kept
- * for UI compatibility; photoDeleted only when a photo was sent).
- * Errors: 400 invalid / photo_upload_disabled · 401 · 403 photo not the caller's ·
- * 410 photo_unavailable (deleted/withdrawn/purged → re-upload) · 429 · 503 · 500.
+ * Returns: { portraitUrl (24 h signed URL of portraits/<userId>/…), recraftStyleId: null } (recraftStyleId kept
+ * for UI compatibility).
+ * Errors: 400 invalid · 401 · 429 · 503 · 500.
  */
 const RATE_LIMITED_RESPONSE = {
   error: "rate_limited",
@@ -142,22 +111,13 @@ export async function POST(request: Request) {
       });
     }
 
-    const {
-      gender, age, skinTone, hairColor, eyeColor, hairstyle, favoriteColor, photoPath, keepPhotoForSheet,
-    } = parsed.data;
-
-    if (photoPath) {
-      if (!isPhotoUploadEnabled()) return NextResponse.json({ error: "photo_upload_disabled" }, { status: 400 });
-      if (!isOwnedPhotoPath(photoPath, user.id)) return NextResponse.json({ error: "forbidden" }, { status: 403 });
-    }
-    const photoResult = async () =>
-      photoPath ? { photoDeleted: keepPhotoForSheet ? false : (await deleteChildPhoto(photoPath, user.id)).ok } : {};
+    const { gender, age, skinTone, hairColor, eyeColor, hairstyle, favoriteColor } = parsed.data;
 
     if (process.env.MOCK_MODE === "true") {
-      return NextResponse.json({ portraitUrl: getMockPortraitUrl(), recraftStyleId: null, ...(await photoResult()) });
+      return NextResponse.json({ portraitUrl: getMockPortraitUrl(), recraftStyleId: null });
     }
 
-    // Global daily preview cap full: no paid portrait either (the photo is kept for a retry).
+    // Global daily preview cap full: no paid portrait either.
     if (await isDailyPreviewCapFull(createFulfilmentClient())) {
       return NextResponse.json({ error: DAILY_CAP_ERROR }, { status: 503 });
     }
@@ -172,9 +132,8 @@ export async function POST(request: Request) {
       }
     }
 
-    const photo = photoPath ? await loadChildPhoto(photoPath, user.id) : null;
     const bible = buildCharacterBible({ gender, age, skinTone, hairColor, eyeColor, hairstyle, favoriteColor });
-    const result = await renderPortrait(bible, photo, { label: `portrait user ${user.id.slice(0, 8)}`, deadline: Date.now() + 55_000 });
+    const result = await renderPortrait(bible, null, { label: `portrait user ${user.id.slice(0, 8)}`, deadline: Date.now() + 55_000 });
 
     const admin = createServiceClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -185,12 +144,8 @@ export async function POST(request: Request) {
     const portraitPath = await uploadGeneratedImage(admin, portraitFolder(user.id, crypto.randomUUID()), "portrait", result.image, result.mime);
     const portraitUrl = await getIllustrationUrl(portraitPath, { ttl: ILLUSTRATION_URL_TTL.creation, allow: userAccess({ userId: user.id }) });
     if (!portraitUrl) throw new Error(`Portrait stored but could not be signed: ${portraitPath}`);
-    // Owner decision: the photo lives only until the avatar exists.
-    return NextResponse.json({ portraitUrl, recraftStyleId: null, ...(await photoResult()) });
+    return NextResponse.json({ portraitUrl, recraftStyleId: null });
   } catch (error: unknown) {
-    if (error instanceof PhotoUnavailableError) {
-      return NextResponse.json({ error: "photo_unavailable" }, { status: 410 });
-    }
     // Message only — never the error object (it could carry request payloads).
     console.error(`[Portrait] Generation failed: ${error instanceof Error ? error.message : String(error)}`);
     // Never leak provider/backend error text to the client (parents see a

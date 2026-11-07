@@ -12,7 +12,7 @@ import {
   storyCharacterBody,
 } from "./creation-flow";
 import { INITIAL_STATE, type CreateBookState } from "./create-store";
-import { prepareInputSchema } from "./character-look";
+import { portraitInputSchema, prepareInputSchema } from "./character-look";
 import { bibleHash, prepBible } from "./ai/character-prep";
 import { SKIN_MAP, HAIR_COLOR_MAP } from "./ai/character-description";
 import { finalFaceAnchor } from "./ai/face-anchor";
@@ -82,6 +82,12 @@ assert.ok(
 );
 assert.ok(prepareInputSchema.safeParse(characterPrepareBody(draft())).success, "avatar prep unaffected");
 assert.ok(!prepareInputSchema.safeParse({ ...prepBody, photoPath: "../x.jpg" }).success, "bad photo path refused");
+
+// The legacy portrait route never takes a photo (no path around the trait confirmation).
+const portraitBody = { childName: "Lucía", ...look };
+assert.ok(portraitInputSchema.safeParse(portraitBody).success, "portrait without photo accepted");
+assert.ok(!portraitInputSchema.safeParse({ ...portraitBody, photoPath: PHOTO }).success, "portrait with photo refused");
+assert.ok(!portraitInputSchema.safeParse({ ...portraitBody, keepPhotoForSheet: true }).success, "keepPhotoForSheet refused");
 
 // ── Draft migration ──────────────────────────────────────────────────────────
 const persisted = (over: Record<string, unknown>) => ({ ...JSON.parse(JSON.stringify(confirmed)), currentStep: 3, ...over });

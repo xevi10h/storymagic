@@ -34,6 +34,28 @@ export function isAvatarAssetPath(value: unknown): value is string {
 
 export const avatarAssetPathSchema = z.string().max(200).regex(AVATAR_ASSET_PATH_RE, "avatarAssetPath must be under /images/avatar/");
 
+/**
+ * Body of POST /api/characters/portrait (legacy AI portrait, not called by the v2 UI).
+ * It never takes the child's photo: the only photo path is /api/characters/prepare,
+ * which requires the parent's trait confirmation. Any photo field is a 400.
+ */
+export const portraitInputSchema = z.object({
+  childName: z.string().min(1).max(50),
+  gender: z.enum(["boy", "girl", "neutral"]),
+  age: z.number().int().min(1).max(12),
+  skinTone: z.string().max(20).optional(),
+  hairColor: z.string().max(20).optional(),
+  eyeColor: z.string().max(20).optional(),
+  hairstyle: z.string().max(30).optional(),
+  interests: z.array(z.string().max(50)).max(4).optional(),
+  favoriteColor: z.string().max(20).optional(),
+  favoriteCompanion: z.string().max(100).optional(),
+  futureDream: z.string().max(150).optional(),
+  city: z.string().max(100).optional(),
+  photoPath: z.never().optional(),
+  keepPhotoForSheet: z.never().optional(),
+});
+
 /** Body of POST /api/characters/prepare (client: characterPrepareBody in src/lib/creation-flow.ts). */
 export const prepareInputSchema = z
   .object({
