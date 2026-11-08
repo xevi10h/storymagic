@@ -118,7 +118,7 @@ but image inputs flagged by OpenAI's CSAM classifier are kept for manual review 
 › Your data, checked 2026-11-07).
 
 **Enable (owner first, then deploy):**
-1. Execute OpenAI's DPA (Ironclad form linked from openai.com/policies/data-processing-addendum) for the org that owns
+1. EIPD done: `docs/dpia-child-photo.md` (2026-11-08). Execute OpenAI's DPA (Ironclad form linked from openai.com/policies/data-processing-addendum) for the org that owns
    `OPENAI_API_KEY`; complete the EIPD/DPIA (minors < 14 + generative AI); optionally ask OpenAI sales for ZDR on
    the Images endpoints (approval-based). With ZDR approved, change the «hasta 30 días» lines (privacy section 5,
    section 8, `crear.photo.modalText`, 4 locales) before enabling.
