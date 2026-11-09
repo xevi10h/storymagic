@@ -1235,7 +1235,7 @@
       "uploading": "Uploading…",
       "consentFirst": "Tick the box to choose the photo.",
       "drawing": "Drawing {name}…",
-      "drawingHint": "It takes about 30 seconds. Meanwhile, you can pick their favourite colour.",
+      "drawingHint": "It takes about 30 seconds.",
       "readyTitle": "This is how {name} will look in the book",
       "readyHint": "We've already deleted the photo. This drawing is the star of the whole story.",
       "tryAnother": "Try another photo",
@@ -1315,7 +1315,7 @@
       "explainer": "We use their photo to draw their character exactly as it will appear in the story. We use it only for that and delete it as soon as the character is created.",
       "moreInfo": "Learn more",
       "modalTitle": "What we do with the photo",
-      "modalText": "We use the photo only to draw your child's illustrated character, exactly as it will appear in their story. Before storing it we strip all its metadata, including location, and keep it in private storage that nobody accesses. We delete it as soon as the drawing is ready, usually in under a minute (always within 24 hours). The whole book, including the words that describe your child, is made from that drawing, never from the photo. We do not use it for facial recognition or any other purpose. You can withdraw your consent whenever you like by writing to hola@meapica.es. All the details are in the privacy policy.",
+      "modalText": "We use the photo only to draw your child's illustrated character, exactly as it will appear in their story. Before storing it we strip all its metadata, including location, and keep it in private storage. We delete it as soon as the drawing is ready, usually in under a minute (always within 24 hours). The whole book, including the words that describe your child, is made from that drawing, never from the photo. We do not use it for facial recognition or any other purpose. You can withdraw your consent whenever you like by writing to hola@meapica.es. All the details are in the privacy policy.",
       "modalClose": "Got it",
       "privacyLink": "Privacy policy",
       "errors": {

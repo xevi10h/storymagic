@@ -1295,7 +1295,7 @@
       "uploading": "Pujant…",
       "consentFirst": "Marca la casella per poder triar la foto.",
       "drawing": "Dibuixant {name}…",
-      "drawingHint": "Triga uns 30 segons. Mentrestant, pots triar el seu color preferit.",
+      "drawingHint": "Triga uns 30 segons.",
       "readyTitle": "Així serà {name} al seu llibre",
       "readyHint": "Ja hem esborrat la foto. Aquest dibuix és el que protagonitza tot el seu conte.",
       "tryAnother": "Provar amb una altra foto",
@@ -1375,7 +1375,7 @@
       "explainer": "Amb la seva foto dibuixem el seu personatge tal com sortirà al conte. La fem servir només per a això i l'esborrem tan bon punt el creem.",
       "moreInfo": "Més informació",
       "modalTitle": "Què fem amb la foto",
-      "modalText": "Fem servir la foto només per dibuixar el personatge il·lustrat del teu fill o filla, tal com apareixerà al seu conte. Abans de desar-la li traiem totes les metadades, inclosa la ubicació, i la guardem en un espai privat al qual no accedeix ningú. L'esborrem tan bon punt el dibuix és a punt, normalment en menys d'un minut (i sempre en menys de 24 hores). Tot el llibre, també el text que descriu el teu petit o petita, es fa a partir d'aquest dibuix, mai de la foto. No la fem servir per a reconeixement facial ni per a cap altra finalitat. Pots retirar el teu consentiment quan vulguis escrivint a hola@meapica.es. Tens tots els detalls a la política de privacitat.",
+      "modalText": "Fem servir la foto només per dibuixar el personatge il·lustrat del teu fill o filla, tal com apareixerà al seu conte. Abans de desar-la li traiem totes les metadades, inclosa la ubicació, i la guardem en un espai privat. L'esborrem tan bon punt el dibuix és a punt, normalment en menys d'un minut (i sempre en menys de 24 hores). Tot el llibre, també el text que descriu el teu petit o petita, es fa a partir d'aquest dibuix, mai de la foto. No la fem servir per a reconeixement facial ni per a cap altra finalitat. Pots retirar el teu consentiment quan vulguis escrivint a hola@meapica.es. Tens tots els detalls a la política de privacitat.",
       "modalClose": "Entesos",
       "privacyLink": "Política de privadesa",
       "errors": {
