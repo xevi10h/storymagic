@@ -1425,7 +1425,35 @@
       "otherCode": "Vous avez un autre code ?",
       "ownCodeNote": "Saisissez votre code sur la page de paiement.",
       "secondBookPromo": "Avec ce livre, le 2e en couverture souple est à {price} TVA incluse (code valable jusqu'au {until})",
-      "secondBookPromoBlackFriday": "Black Friday : avec ce livre, le 2e en couverture souple est à {price} TVA incluse (code valable jusqu'au {until})"
+      "secondBookPromoBlackFriday": "Black Friday : avec ce livre, le 2e en couverture souple est à {price} TVA incluse (code valable jusqu'au {until})",
+      "insideTitle": "À l'intérieur",
+      "insideOpenScene": "Voir la scène {n}",
+      "insideMore": "scènes de plus",
+      "trustMethods": "Carte, Bizum, Apple Pay ou Google Pay",
+      "promiseChoosePdf": "Le PDF, si : il arrive par e-mail ({price} TVA incluse)",
+      "promise": {
+        "onTime": {
+          "christmas": "À temps pour le réveillon de Noël et les Rois mages",
+          "reyes": "À temps pour les Rois mages"
+        },
+        "cutoff": {
+          "christmas": "Pour le réveillon, commandez jusqu'au {date}",
+          "reyes": "Pour les Rois mages, commandez jusqu'au {date}"
+        },
+        "cutoffToday": {
+          "christmas": "Pour le réveillon, commandez aujourd'hui",
+          "reyes": "Pour les Rois mages, commandez aujourd'hui"
+        },
+        "late": {
+          "christmas": "Le livre imprimé n'arrivera plus pour le réveillon",
+          "reyes": "Le livre imprimé n'arrivera plus pour les Rois mages"
+        }
+      },
+      "consentSheet": {
+        "title": "Avant de payer",
+        "accept": "J'accepte et je passe au paiement",
+        "cancel": "Retour"
+      }
     }
   },
   "checkout": {

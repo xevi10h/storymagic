@@ -17,7 +17,8 @@ import { useAuth } from "@/hooks/useAuth";
 import CreationHeader from "@/components/create/CreationHeader";
 import BookRevealOverlay from "@/components/create/BookRevealOverlay";
 import BookEditSheets, { type EditPanel } from "@/components/create/BookEditSheets";
-import PurchasePanel, { type ConsentState } from "@/components/purchase/PurchasePanel";
+import PurchasePanel, { type InsidePage } from "@/components/purchase/PurchasePanel";
+import Sheet from "@/components/create/Sheet";
 import PreviewFaq from "@/components/purchase/PreviewFaq";
 import { withTeaserEnd } from "@/lib/preview-teaser";
 import { getBookColors } from "@/lib/template-colors";
@@ -37,6 +38,9 @@ import { trackEvent } from "@/lib/tracking/consent";
 import { normalizeCode, REFERRAL_COOKIE } from "@/lib/promo-codes";
 
 // ── Types ──────────────────────────────────────────────────────────────────
+
+/** Which pay button was pressed: the panel's CTA or the mobile sticky bar. */
+type PayPlacement = "main" | "sticky";
 
 interface StoryData {
   id: string;
@@ -139,7 +143,8 @@ export default function PreviewPage() {
     const code = normalizeCode(raw ? decodeURIComponent(raw) : undefined);
     if (code) setLinkCode({ code, replaced: false });
   }, []);
-  const [consentState, setConsentState] = useState<ConsentState>("idle");
+  // Pay pressed with the withdrawal box unticked: the sheet asks for it (which button opened it).
+  const [consentPrompt, setConsentPrompt] = useState<PayPlacement | null>(null);
   const [editPanel, setEditPanel] = useState<EditPanel | null>(null);
   const isWide = useIsWide();
   const [downloadingPdf, setDownloadingPdf] = useState(false);
@@ -336,12 +341,26 @@ export default function PreviewPage() {
     setDraftMatches(readStoredDraft()?.createdStory?.id === storyId);
   }, [storyId]);
 
-  const chooseFormat = useCallback((next: BookFormat) => {
-    setFormat(next);
-    setFormatChosen(true);
-    // Picking a format is this shop's "add to cart" (Meta + TikTok funnel step).
-    trackEvent("AddToCart", { content_ids: [next], content_type: "product", value: PRICING[next].price / 100, currency: "EUR" });
-  }, []);
+  // Picking a format is this shop's "add to cart" (Meta + TikTok funnel step): once per story
+  // (the radio reports both click and change, and parents compare formats back and forth).
+  const addToCartSent = useRef(false);
+  const chooseFormat = useCallback(
+    (next: BookFormat) => {
+      setFormat(next);
+      setFormatChosen(true);
+      if (addToCartSent.current) return;
+      addToCartSent.current = true;
+      const key = `meapica_atc_${storyId}`;
+      try {
+        if (sessionStorage.getItem(key)) return;
+        sessionStorage.setItem(key, "1");
+      } catch {
+        // storage unavailable: the ref still keeps it to once per page view
+      }
+      trackEvent("AddToCart", { content_ids: [next], content_type: "product", value: PRICING[next].price / 100, currency: "EUR" });
+    },
+    [storyId],
+  );
 
   // Mobile sticky buy bar: shown while the main CTA is off-screen.
   const mainCtaRef = useRef<HTMLButtonElement | null>(null);
@@ -357,17 +376,21 @@ export default function PreviewPage() {
     return () => io.disconnect();
   }, [story?.status]);
 
-  const scrollToConsent = useCallback(() => {
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    document.getElementById("withdrawal-consent")?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
-  }, []);
-
-  const handleCheckout = useCallback(async () => {
-    if (!withdrawalConsent) {
-      setConsentState("missing");
-      scrollToConsent();
+  // Every press of a pay button is counted BEFORE validation (pay_click), and a press stopped
+  // by the unticked withdrawal box too (pay_blocked_consent): the sheet then asks for it.
+  // `fromSheet` = the parent accepted in that sheet just now (consent state not updated yet; the
+  // press was already counted when the sheet opened).
+  const handleCheckout = useCallback(async (placement: PayPlacement, fromSheet = false) => {
+    if (checkingOut) return;
+    const consented = fromSheet || withdrawalConsent;
+    const payload = { placement, format, consented, value: subtotal / 100, currency: "EUR" };
+    if (!fromSheet) trackEvent("pay_click", payload);
+    if (!consented) {
+      trackEvent("pay_blocked_consent", payload);
+      setConsentPrompt(placement);
       return;
     }
+    setConsentPrompt(null);
     setCheckingOut(true);
     setCheckoutError(null);
     trackEvent("InitiateCheckout", { content_ids: [format], content_type: "product" });
@@ -416,19 +439,26 @@ export default function PreviewPage() {
       );
       setCheckingOut(false);
     }
-  }, [storyId, format, addons, locale, withdrawalConsent, marketingOptOut, linkCode, t, scrollToConsent]);
+  }, [storyId, format, addons, subtotal, locale, withdrawalConsent, marketingOptOut, linkCode, checkingOut, t]);
 
-  // Mobile sticky bar: formats first; once chosen, the consent line (softly, never
-  // the red error), then straight to Stripe.
+  const acceptConsentAndPay = useCallback(() => {
+    const placement = consentPrompt ?? "main";
+    setWithdrawalConsent(true);
+    void handleCheckout(placement, true);
+  }, [consentPrompt, handleCheckout]);
+
+  // Mobile sticky bar: formats first ("Lo quiero" only scrolls, it is not a pay press), then pay.
   const handleStickyBuy = useCallback(() => {
     if (!formatChosen) return scrollToCheckout();
-    if (!withdrawalConsent) {
-      setConsentState("nudge");
-      scrollToConsent();
-      return;
-    }
-    void handleCheckout();
-  }, [formatChosen, withdrawalConsent, scrollToCheckout, scrollToConsent, handleCheckout]);
+    void handleCheckout("sticky");
+  }, [formatChosen, scrollToCheckout, handleCheckout]);
+
+  // "Por dentro" thumbnails: open that page in the viewer and bring the viewer into view.
+  const openPage = useCallback((index: number) => {
+    setCurrentPage(index);
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    document.getElementById("book-viewer")?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+  }, []);
 
   // The PDF lives in private storage: ask for a short-lived signed URL, then navigate to it.
   const handleDownloadPdf = useCallback(async () => {
@@ -563,6 +593,21 @@ export default function PreviewPage() {
     return EditLink;
   };
 
+  const sendPreviewEmail = (
+    <SendPreviewEmail storyId={storyId} childName={childName} defaultEmail={needsAccount ? null : user?.email} />
+  );
+  // The illustrated preview scenes (what they have already seen; the mockup shows the cover),
+  // first page of each picture.
+  const insidePages: InsidePage[] = [];
+  const seenImages = new Set<string>();
+  bookPages.forEach((p, index) => {
+    if (p.type === "scene" && p.imageUrl && !seenImages.has(p.imageUrl)) {
+      seenImages.add(p.imageUrl);
+      insidePages.push({ index, imageUrl: p.imageUrl });
+    }
+  });
+  insidePages.splice(PREVIEW_CLEAR_SCENES);
+
   const titleBlock = (
     <div className="min-w-0">
       <h1 className="font-display text-lg font-bold leading-snug text-create-text-dark sm:text-xl">
@@ -615,7 +660,7 @@ export default function PreviewPage() {
           <div className="pt-4 lg:pt-6">{titleBlock}</div>
 
           {/* Book viewer: on desktop as tall as the viewport allows (two square pages) */}
-          <section className="py-5 sm:py-8 lg:pt-5">
+          <section id="book-viewer" className="py-5 sm:py-8 lg:pt-5 scroll-mt-[calc(var(--creation-header-h,56px)+12px)]">
             <div
               className="mx-auto"
               style={showBuy ? { maxWidth: "min(100%, calc((100dvh - var(--creation-header-h, 56px) - 150px) * 2))" } : undefined}
@@ -653,9 +698,7 @@ export default function PreviewPage() {
                 })}
               </p>
             )}
-            {showBuy && (
-              <SendPreviewEmail storyId={storyId} childName={childName} defaultEmail={needsAccount ? null : user?.email} />
-            )}
+            {showBuy && isWide && sendPreviewEmail}
           </section>
         </div>
 
@@ -677,16 +720,15 @@ export default function PreviewPage() {
                 onToggleAddon={toggleAddon}
                 subtotal={subtotal}
                 consent={withdrawalConsent}
-                consentState={consentState}
-                onConsentChange={(checked) => {
-                  setWithdrawalConsent(checked);
-                  if (checked) setConsentState("idle");
-                }}
+                onConsentChange={setWithdrawalConsent}
                 marketingOptOut={marketingOptOut}
                 onMarketingOptOutChange={setMarketingOptOut}
                 checkingOut={checkingOut}
                 checkoutError={checkoutError}
-                onCheckout={() => void handleCheckout()}
+                onCheckout={() => void handleCheckout("main")}
+                insidePages={insidePages}
+                scenesToCome={Math.max(0, TOTAL_SCENE_COUNT - PREVIEW_CLEAR_SCENES)}
+                onOpenPage={openPage}
                 linkCode={linkCode}
                 onUseOwnCode={() => setLinkCode((c) => (c ? { ...c, replaced: true } : c))}
                 devTools={
@@ -706,9 +748,53 @@ export default function PreviewPage() {
                 }
               />
             </div>
+            {/* Mobile: "send it to me / remind me" after the buy panel, not between the book and the price */}
+            {!isWide && <div className="mt-6">{sendPreviewEmail}</div>}
           </aside>
         )}
       </main>
+
+      {showBuy && (
+        <Sheet
+          open={consentPrompt !== null}
+          title={tPurchase("consentSheet.title")}
+          onClose={() => setConsentPrompt(null)}
+          closeLabel={tPurchase("consentSheet.cancel")}
+          footer={
+            <div className="flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={acceptConsentAndPay}
+                disabled={checkingOut}
+                data-testid="consent-accept"
+                className="min-h-12 flex w-full items-center justify-center gap-2 rounded-2xl bg-create-primary px-5 py-3.5 text-[17px] font-bold leading-tight text-white shadow-lg shadow-create-primary/20 transition-all hover:bg-create-primary-hover active:scale-[0.98] disabled:opacity-60"
+              >
+                {checkingOut && <Spinner className="text-lg" />}
+                {tPurchase("consentSheet.accept")}
+              </button>
+              <button
+                type="button"
+                onClick={() => setConsentPrompt(null)}
+                className="h-11 w-full rounded-xl text-sm font-semibold text-create-text-sub transition-colors hover:text-brand-text"
+              >
+                {tPurchase("consentSheet.cancel")}
+              </button>
+            </div>
+          }
+        >
+          <p className="text-[15px] leading-relaxed text-create-text-dark" data-testid="consent-sheet-text">
+            {tPricing("withdrawal.label")}
+          </p>
+          <p className="mt-3 text-[13px] leading-snug text-create-text-sub">
+            {price(subtotal)} · {selectedFormatRequiresShipping ? tPurchase("ctaNotePhysical") : tPurchase("ctaNoteDigital")}
+          </p>
+          {checkoutError && (
+            <p className="mt-2 text-xs text-red-700" role="alert">
+              {checkoutError}
+            </p>
+          )}
+        </Sheet>
+      )}
 
       {isPreviewMode && (
         <BookEditSheets

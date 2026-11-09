@@ -13,8 +13,8 @@ const VIEWPORTS = {
 } as const;
 
 const COPY = {
-  es: { pdfOnly: /Solo el PDF/, required: /Marca la casilla/, outdated: /ya no se puede comprar/, recreate: /Crear de nuevo/, delivery: /Llega entre el/, teaser: /Lo que viene en la historia/ },
-  ca: { pdfOnly: /Només el PDF/, required: /Marca la casella/, outdated: /ja no es pot comprar/, recreate: /Crear de nou/, delivery: /Arriba entre el/, teaser: /El que ve a la història/ },
+  es: { pdfOnly: /Solo el PDF/, accept: "Acepto y voy al pago", back: "Volver", outdated: /ya no se puede comprar/, recreate: /Crear de nuevo/, delivery: /Llega entre el/, teaser: /Lo que viene en la historia/ },
+  ca: { pdfOnly: /Només el PDF/, accept: "Accepto i vaig al pagament", back: "Tornar", outdated: /ja no es pot comprar/, recreate: /Crear de nou/, delivery: /Arriba entre el/, teaser: /El que ve a la història/ },
 } as const;
 type Locale = keyof typeof COPY;
 
@@ -117,14 +117,18 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
         await format(page, "hardcover").click();
         await extra(page).click();
 
-        // No consent → blocked in place, message, no request.
+        // No consent → the sheet asks for it (no request); "Volver" closes it, nothing is ticked.
         await mainCta(page).click();
-        await expect(page.getByText(c.required)).toBeVisible();
+        await expect(page.getByTestId("consent-accept")).toHaveText(c.accept);
+        await expect(page.getByTestId("consent-sheet-text")).toBeVisible();
         expect(bodies).toHaveLength(0);
-        await page.screenshot({ path: `${SHOTS}/${locale}-${vpName}-consent-missing.png` });
+        await page.screenshot({ path: `${SHOTS}/${locale}-${vpName}-consent-sheet.png` });
+        await page.getByRole("dialog").getByText(c.back, { exact: true }).click();
+        await expect(page.getByTestId("consent-accept")).toHaveCount(0);
+        await expect(page.locator("#withdrawal-consent input")).not.toBeChecked();
 
+        // Ticked in the panel → straight to Stripe, no sheet.
         await page.locator("#withdrawal-consent input").check();
-        await expect(page.getByText(c.required)).toHaveCount(0);
         await mainCta(page).click();
         await page.waitForURL("**/__stripe_mock");
         expect(bodies).toHaveLength(1);
@@ -143,7 +147,7 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
       });
 
       if (vpName === "mobile") {
-        test(`sticky bar: formats first, then a soft consent nudge, never the error [${locale}]`, async ({ page }) => {
+        test(`sticky bar: formats first, then the consent sheet, accepted there → Stripe [${locale}]`, async ({ page }) => {
           const bodies = await mockApi(page, { withPlan: true });
           await page.goto(`/${locale}/create/${STORY_ID}/preview`);
           await section(page).waitFor();
@@ -152,22 +156,19 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
           // 1st tap: the format choice comes into view (below the sticky header).
           await sticky(page).click();
           await expect(page.locator("#formats")).toBeInViewport();
-          await expect(page.getByText(COPY[locale].required)).toHaveCount(0);
+          await expect(page.getByTestId("consent-accept")).toHaveCount(0);
           const top = await page.locator("#formats").evaluate((el) => el.getBoundingClientRect().top);
           const header = await page.locator("header").evaluate((el) => el.getBoundingClientRect().bottom);
           expect(top).toBeGreaterThanOrEqual(header);
-          // Choose → back to the top → the sticky now leads to the consent line, softly.
+          // Choose → back to the top → the sticky pays; without consent the sheet asks for it.
           await format(page, "softcover").click();
           await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
           await expect(sticky(page)).toBeVisible();
           await sticky(page).click();
-          await expect(page.locator("#withdrawal-consent")).toBeInViewport();
-          await expect(page.getByText(COPY[locale].required)).toHaveCount(0);
+          await expect(page.getByTestId("consent-accept")).toBeVisible();
           expect(bodies).toHaveLength(0);
-          // Consent given → the sticky (or the CTA now in view) goes straight to Stripe.
-          await page.locator("#withdrawal-consent input").check();
-          await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
-          await sticky(page).click();
+          // Accepting in the sheet is the express consent → Stripe.
+          await page.getByTestId("consent-accept").click();
           await page.waitForURL("**/__stripe_mock");
           expect(bodies[0]).toMatchObject({ format: "softcover", withdrawalConsent: true });
         });

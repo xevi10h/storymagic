@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import PurchasePanel, { type ConsentState } from "@/components/purchase/PurchasePanel";
+import PurchasePanel from "@/components/purchase/PurchasePanel";
 import { ReorderSheet } from "@/components/dashboard/OrdersTab";
 import { PRICING, type AddonId, type BookFormat } from "@/lib/pricing";
 
@@ -10,7 +10,6 @@ export function PurchaseHarness() {
   const [format, setFormat] = useState<BookFormat>("hardcover");
   const [addons, setAddons] = useState<Set<AddonId>>(new Set());
   const [consent, setConsent] = useState(false);
-  const [consentState, setConsentState] = useState<ConsentState>("idle");
   const [marketingOptOut, setMarketingOptOut] = useState(false);
   const [sent, setSent] = useState<string | null>(null);
   const [sheetStory, setSheetStory] = useState<string | null>(null);
@@ -38,11 +37,7 @@ export function PurchaseHarness() {
           }
           subtotal={PRICING[format].price}
           consent={consent}
-          consentState={consentState}
-          onConsentChange={(checked) => {
-            setConsent(checked);
-            if (checked) setConsentState("idle");
-          }}
+          onConsentChange={setConsent}
           marketingOptOut={marketingOptOut}
           onMarketingOptOutChange={setMarketingOptOut}
           checkingOut={false}
@@ -50,7 +45,7 @@ export function PurchaseHarness() {
           linkCode={linkCode}
           onUseOwnCode={() => setLinkCode({ ...linkCode, replaced: true })}
           onCheckout={() => {
-            if (!consent) return setConsentState("missing");
+            if (!consent) return setSent("blocked: withdrawal consent missing");
             setSent(JSON.stringify({ storyId: "fixture", format, addons: [...addons], locale: "es", withdrawalConsent: true, marketingOptOut, ownCode: linkCode.replaced }));
           }}
         />

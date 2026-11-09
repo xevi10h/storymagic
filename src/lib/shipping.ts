@@ -129,6 +129,28 @@ export function earliestPrintedCutoff(today: string, occasion: SeasonOccasion): 
     .sort()[0];
 }
 
+export type ArrivalPromise =
+  /** Ordered today, this format arrives for `occasion` (and every later one) if ordered by `lastOrderDate`. */
+  | { kind: "on_time"; occasion: SeasonOccasion; lastOrderDate: string; daysLeft: number }
+  /** Gift season, but every printed cut-off is over: only the PDF arrives in time. */
+  | { kind: "late"; occasion: SeasonOccasion }
+  | null;
+
+/**
+ * The order step's "llega a tiempo" promise for one printed format ordered today: the nearest
+ * occasion it still reaches, against the most conservative region cut-off (valid wherever in
+ * península / Baleares it ships). null outside the season (1 Nov – 5 Jan).
+ */
+export function arrivalPromise(today: string, format: PhysicalFormat): ArrivalPromise {
+  const season = giftSeason(today);
+  if (today < season.bannerFrom || today > season.ends) return null;
+  for (const occasion of SEASON_OCCASIONS) {
+    const earliest = formatDeadlines(today, format, occasion)[0];
+    if (earliest?.open) return { kind: "on_time", occasion, lastOrderDate: earliest.lastOrderDate, daysLeft: earliest.daysLeft };
+  }
+  return { kind: "late", occasion: today <= season.deliverBy.christmas ? "christmas" : "reyes" };
+}
+
 /** Days before the printed Reyes cut-off that the "Avísame" reminder goes out (src/lib/marketing/reyes-reminders.ts). */
 export const REYES_REMINDER_LEAD_DAYS = 5;
 

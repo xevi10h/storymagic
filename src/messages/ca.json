@@ -1483,7 +1483,35 @@
       "otherCode": "Tens un altre codi?",
       "ownCodeNote": "Escriu el teu codi a la pàgina de pagament.",
       "secondBookPromo": "Amb aquest llibre, el 2n en tapa tova et surt a {price} IVA inclòs (codi vàlid fins al {until})",
-      "secondBookPromoBlackFriday": "Black Friday: amb aquest llibre, el 2n en tapa tova et surt a {price} IVA inclòs (codi vàlid fins al {until})"
+      "secondBookPromoBlackFriday": "Black Friday: amb aquest llibre, el 2n en tapa tova et surt a {price} IVA inclòs (codi vàlid fins al {until})",
+      "insideTitle": "Per dins",
+      "insideOpenScene": "Veure l'escena {n}",
+      "insideMore": "escenes més",
+      "trustMethods": "Targeta, Bizum, Apple Pay o Google Pay",
+      "promiseChoosePdf": "El PDF sí: t'arriba per correu ({price} IVA inclòs)",
+      "promise": {
+        "onTime": {
+          "christmas": "A temps per a la nit de Nadal i Reis",
+          "reyes": "A temps per a Reis"
+        },
+        "cutoff": {
+          "christmas": "Per a la nit de Nadal, demana'l fins al {date}",
+          "reyes": "Per a Reis, demana'l fins al {date}"
+        },
+        "cutoffToday": {
+          "christmas": "Per a la nit de Nadal, demana'l avui",
+          "reyes": "Per a Reis, demana'l avui"
+        },
+        "late": {
+          "christmas": "Imprès ja no arriba per a la nit de Nadal",
+          "reyes": "Imprès ja no arriba per a Reis"
+        }
+      },
+      "consentSheet": {
+        "title": "Abans de pagar",
+        "accept": "Accepto i vaig al pagament",
+        "cancel": "Tornar"
+      }
     }
   },
   "checkout": {

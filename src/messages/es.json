@@ -1465,7 +1465,35 @@
       "otherCode": "¿Tienes otro código?",
       "ownCodeNote": "Escribe tu código en la página de pago.",
       "secondBookPromo": "Con este libro, el 2.º en tapa blanda te sale a {price} IVA incluido (código válido hasta el {until})",
-      "secondBookPromoBlackFriday": "Black Friday: con este libro, el 2.º en tapa blanda te sale a {price} IVA incluido (código válido hasta el {until})"
+      "secondBookPromoBlackFriday": "Black Friday: con este libro, el 2.º en tapa blanda te sale a {price} IVA incluido (código válido hasta el {until})",
+      "insideTitle": "Por dentro",
+      "insideOpenScene": "Ver la escena {n}",
+      "insideMore": "escenas más",
+      "trustMethods": "Tarjeta, Bizum, Apple Pay o Google Pay",
+      "promiseChoosePdf": "El PDF sí: te llega por email ({price} IVA incluido)",
+      "promise": {
+        "onTime": {
+          "christmas": "A tiempo para Nochebuena y Reyes",
+          "reyes": "A tiempo para Reyes"
+        },
+        "cutoff": {
+          "christmas": "Para Nochebuena, pídelo hasta el {date}",
+          "reyes": "Para Reyes, pídelo hasta el {date}"
+        },
+        "cutoffToday": {
+          "christmas": "Para Nochebuena, pídelo hoy",
+          "reyes": "Para Reyes, pídelo hoy"
+        },
+        "late": {
+          "christmas": "Impreso ya no llega para Nochebuena",
+          "reyes": "Impreso ya no llega para Reyes"
+        }
+      },
+      "consentSheet": {
+        "title": "Antes de pagar",
+        "accept": "Acepto y voy al pago",
+        "cancel": "Volver"
+      }
     }
   },
   "checkout": {

@@ -15,7 +15,7 @@ import {
   type AddonId,
   type BookFormat,
 } from "@/lib/pricing";
-import { useDeliveryLine, useSeasonNotice, useSecondBookPromo } from "./delivery";
+import { useArrivalPromise, useDeliveryLine, useSecondBookPromo } from "./delivery";
 import { Spinner } from "@/components/ui/Spinner";
 import { MarketingOptOut } from "./MarketingOptOut";
 import { CODE_PREFIX } from "@/lib/promo-codes";
@@ -29,8 +29,11 @@ const PDF_AS_LINK = true;
 
 const PRINTED_FORMATS = ["hardcover", "softcover"] as const;
 
-/** "idle" | "missing" (main CTA without consent: red) | "nudge" (sticky bar sent us here: soft). */
-export type ConsentState = "idle" | "missing" | "nudge";
+/** A page of the preview shown as a thumbnail in the panel (index into the viewer's pages). */
+export interface InsidePage {
+  index: number;
+  imageUrl: string;
+}
 
 interface PurchasePanelProps {
   childName: string;
@@ -47,7 +50,6 @@ interface PurchasePanelProps {
   onToggleAddon: (id: AddonId) => void;
   subtotal: number;
   consent: boolean;
-  consentState: ConsentState;
   onConsentChange: (checked: boolean) => void;
   /** "No quiero recibir ofertas…" (LSSI 21.2 opt-out at collection), never pre-ticked. */
   marketingOptOut: boolean;
@@ -67,6 +69,11 @@ interface PurchasePanelProps {
    */
   linkCode?: { code: string; replaced: boolean } | null;
   onUseOwnCode?: () => void;
+  /** Cover + the illustrated preview scenes, as thumbnails that open that page in the viewer. */
+  insidePages?: InsidePage[];
+  /** Illustrated scenes still to come (shown as "+N" after the thumbnails). */
+  scenesToCome?: number;
+  onOpenPage?: (index: number) => void;
 }
 
 function mockupFormat(format: BookFormat): BookMockupFormat {
@@ -92,7 +99,6 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
     onToggleAddon,
     subtotal,
     consent,
-    consentState,
     onConsentChange,
     marketingOptOut,
     onMarketingOptOutChange,
@@ -104,6 +110,9 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
     devTools,
     linkCode = null,
     onUseOwnCode,
+    insidePages = [],
+    scenesToCome = 0,
+    onOpenPage,
   },
   ctaRef,
 ) {
@@ -116,7 +125,7 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
 
   const isDigital = format === "digital_pdf";
   const delivery = useDeliveryLine(format);
-  const season = useSeasonNotice();
+  const promise = useArrivalPromise(format);
   const secondBookPromo = useSecondBookPromo();
   const extraSelected = addons.has("extra_copy");
   const gap = PRICING.hardcover.price - PRICING.softcover.price;
@@ -139,7 +148,7 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
       </div>
 
       {/* Their own cover, as the chosen format (animates on change) */}
-      <div className="relative mx-auto mt-2 w-full max-w-[340px] lg:mt-0">
+      <div className="relative mx-auto mt-1 w-full max-w-[270px] lg:mt-0 lg:max-w-[340px]">
         <BookMockup
           coverUrl={coverUrl}
           title={title}
@@ -161,8 +170,77 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
       </div>
       </div>
 
+      {/* The pages they have already seen, one tap from the viewer (nothing new is generated).
+          Mobile only: on desktop the book is right beside the panel. */}
+      {insidePages.length > 0 && (
+        <div className="mt-3 lg:hidden" data-testid="inside-pages">
+          <p className="mb-1.5 text-xs font-bold uppercase tracking-wide text-create-text-sub">{t("insideTitle")}</p>
+          <ul className="flex gap-2">
+            {insidePages.map((p, i) => (
+              <li key={p.index} className="min-w-0 flex-1">
+                <button
+                  type="button"
+                  onClick={() => onOpenPage?.(p.index)}
+                  aria-label={t("insideOpenScene", { n: i + 1 })}
+                  className="block aspect-square w-full overflow-hidden rounded-lg bg-create-neutral ring-1 ring-create-neutral transition hover:ring-2 hover:ring-create-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-create-primary"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element -- short-lived signed URLs, already loaded by the viewer */}
+                  <img src={p.imageUrl} alt="" loading="lazy" className="h-full w-full object-cover" />
+                </button>
+              </li>
+            ))}
+            {scenesToCome > 0 && (
+              <li className="min-w-0 flex-1">
+                <span className="flex aspect-square w-full flex-col items-center justify-center rounded-lg border-2 border-dashed border-create-neutral text-center leading-tight text-create-text-sub">
+                  <span className="text-base font-bold tabular-nums text-create-text-dark">+{scenesToCome}</span>
+                  <span className="px-1 text-[10.5px]">{t("insideMore")}</span>
+                </span>
+              </li>
+            )}
+          </ul>
+        </div>
+      )}
+
+      {/* "Llega a tiempo": the season promise for the chosen printed format (most conservative cut-off) */}
+      {!isDigital && promise && (
+        <div
+          data-testid="arrival-promise"
+          className={`mt-4 flex items-start gap-2.5 rounded-2xl px-3.5 py-3 text-[13px] leading-snug ${
+            promise.late ? "bg-create-neutral/70 text-create-text" : "bg-success/[0.08] text-create-text-dark"
+          }`}
+        >
+          <span
+            aria-hidden
+            className={`material-symbols-outlined mt-px text-[20px] ${promise.late ? "text-create-text-sub" : "text-success"}`}
+            data-icon={promise.late ? "schedule" : "redeem"}
+          />
+          <span className="min-w-0">
+            <span className="block font-bold">{promise.title}</span>
+            {delivery && (
+              <span className="block" data-testid="delivery-line">
+                {delivery} <span className="text-create-text-sub">({t("deliveryEstimate")})</span>
+              </span>
+            )}
+            {promise.detail && (
+              <Link href={CHRISTMAS_DELIVERY_PATH} className="text-create-text underline decoration-create-text-sub/40 underline-offset-2 hover:text-brand-text">
+                {promise.detail}
+              </Link>
+            )}
+            {promise.late && (
+              <button
+                type="button"
+                onClick={() => onChooseFormat("digital_pdf")}
+                className="mt-1 block text-left font-semibold text-secondary underline decoration-secondary/30 underline-offset-2 hover:text-brand-text"
+              >
+                {t("promiseChoosePdf", { price: price(PRICING.digital_pdf.price) })}
+              </button>
+            )}
+          </span>
+        </div>
+      )}
+
       {/* Format choice */}
-      <fieldset id="formats" className="mt-1 lg:mt-3 scroll-mt-[calc(var(--creation-header-h,56px)+12px)]">
+      <fieldset id="formats" className="mt-4 scroll-mt-[calc(var(--creation-header-h,56px)+12px)]">
         <legend className="mb-2 text-xs font-bold uppercase tracking-wide text-create-text-sub">{t("formatsLegend")}</legend>
         <div className="space-y-2">
           {rows.map((key) => {
@@ -252,7 +330,7 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
           </label>
         )}
 
-      {/* Delivery */}
+      {/* Delivery estimate for today's order + the Pack Reyes line */}
       <div className="mt-4 space-y-1 text-[13px] leading-snug">
         {isDigital ? (
           <p className="flex items-start gap-2 text-create-text">
@@ -260,24 +338,16 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
             {t("digitalDelivery")}
           </p>
         ) : (
-          <>
-            {delivery && (
-              <p className="flex items-start gap-2 font-semibold text-create-text-dark" data-testid="delivery-line">
-                <span aria-hidden className="material-symbols-outlined mt-px text-[17px] text-brand-text" data-icon="event_available" />
-                <span>
-                  {delivery} <span className="font-normal text-create-text-sub">({t("deliveryEstimate")})</span>
-                </span>
-              </p>
-            )}
-            <p className="pl-[25px] text-create-text-sub">{t("deliveryArea")}</p>
-          </>
-        )}
-        {season && (
-          <p className="pl-[25px]">
-            <Link href={CHRISTMAS_DELIVERY_PATH} className="font-semibold text-secondary underline decoration-secondary/30 underline-offset-2 hover:text-brand-text">
-              {season.text}
-            </Link>
-          </p>
+          // Outside the gift season the estimate stands alone (in season it sits in the promise card).
+          delivery &&
+          !promise && (
+            <p className="flex items-start gap-2 font-semibold text-create-text-dark" data-testid="delivery-line">
+              <span aria-hidden className="material-symbols-outlined mt-px text-[17px] text-brand-text" data-icon="event_available" />
+              <span>
+                {delivery} <span className="font-normal text-create-text-sub">({t("deliveryEstimate")})</span>
+              </span>
+            </p>
+          )
         )}
         {!isDigital && secondBookPromo && (
           <p className="flex items-start gap-2 pt-1 font-semibold text-create-text-dark" data-testid="second-book-promo">
@@ -289,31 +359,20 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
 
       {devTools}
 
-      {/* Consent (art. 103 m LGDCU): one plain line, never pre-ticked */}
+      {/* Consent (art. 103 c + m LGDCU): never pre-ticked. Unticked at the pay button, the page
+          asks for it in a sheet instead of blocking the button. */}
       <label
         id="withdrawal-consent"
-        className={`mt-4 flex cursor-pointer items-start gap-2.5 rounded-xl px-3 py-2.5 text-[12.5px] leading-snug text-create-text transition-colors scroll-mt-[calc(var(--creation-header-h,56px)+80px)] ${
-          consentState === "missing" && !consent
-            ? "bg-red-50 ring-1 ring-red-300"
-            : consentState === "nudge" && !consent
-              ? "bg-create-primary/[0.06] ring-2 ring-create-primary/40"
-              : "bg-create-neutral/60"
-        }`}
+        className="mt-4 flex cursor-pointer items-start gap-2.5 rounded-xl bg-create-neutral/60 px-3 py-2.5 text-[12.5px] leading-snug text-create-text scroll-mt-[calc(var(--creation-header-h,56px)+80px)]"
       >
         <input
           type="checkbox"
           checked={consent}
           onChange={(e) => onConsentChange(e.target.checked)}
           className="mt-0.5 h-[18px] w-[18px] shrink-0 accent-create-primary"
-          aria-describedby={consentState === "missing" && !consent ? "withdrawal-consent-error" : undefined}
         />
         <span>{tPricing("withdrawal.label")}</span>
       </label>
-      {consentState === "missing" && !consent && (
-        <p id="withdrawal-consent-error" className="mt-1.5 text-xs text-red-700" role="alert">
-          {tPricing("withdrawal.required")}
-        </p>
-      )}
       <MarketingOptOut checked={marketingOptOut} onChange={onMarketingOptOutChange} className="mt-2.5" />
 
       <button
@@ -359,31 +418,28 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
         </p>
       )}
 
-      {/* Print guarantee right under the pay button (terms section 5), printed formats only */}
-      {SHOW_REPRINT_GUARANTEE && !isDigital && (
-        <p
-          data-testid="reprint-guarantee"
-          className="mt-2.5 flex items-start justify-center gap-1.5 rounded-xl bg-success/[0.08] px-3 py-2 text-[12.5px] font-semibold leading-snug text-create-text-dark"
-        >
-          <span aria-hidden className="material-symbols-outlined mt-px text-[17px] text-success" data-icon="verified" />
-          <span>{t("trustReprint")}</span>
-        </p>
-      )}
-
-      {/* Verifiable trust only (no ratings, no counts) */}
-      <ul className="mt-4 space-y-1.5 border-t border-create-neutral pt-4 text-[13px] text-create-text">
-        <TrustLine icon="auto_stories">{t("trustPreview")}</TrustLine>
-        <TrustLine icon="lock">{t("trustPayment")}</TrustLine>
+      {/* Verifiable guarantees only (no ratings, no counts): payment, shipping, reprint, origin */}
+      <ul className="mt-4 space-y-2 border-t border-create-neutral pt-4 text-[13px] leading-snug text-create-text">
+        <TrustLine icon="lock">
+          {t("trustPayment")}
+          <span className="block text-xs text-create-text-sub">{t("trustMethods")}</span>
+        </TrustLine>
+        {!isDigital && <TrustLine icon="local_shipping">{t("deliveryArea")}</TrustLine>}
+        {SHOW_REPRINT_GUARANTEE && !isDigital && (
+          <TrustLine icon="verified" testId="reprint-guarantee">
+            {t("trustReprint")}
+          </TrustLine>
+        )}
         <TrustLine icon="home_pin">{t("trustMadeIn")}</TrustLine>
       </ul>
     </div>
   );
 });
 
-function TrustLine({ icon, children }: { icon: string; children: React.ReactNode }) {
+function TrustLine({ icon, children, testId }: { icon: string; children: React.ReactNode; testId?: string }) {
   return (
-    <li className="flex items-start gap-2">
-      <span aria-hidden className="material-symbols-outlined mt-px text-[17px] text-create-text-sub" data-icon={icon} />
+    <li className="flex items-start gap-2" data-testid={testId}>
+      <span aria-hidden className="material-symbols-outlined mt-px text-[17px] text-success" data-icon={icon} />
       <span>{children}</span>
     </li>
   );

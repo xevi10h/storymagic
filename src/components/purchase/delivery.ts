@@ -2,7 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { useSeasonToday, formatSeasonDate } from "@/components/seasonal/season-client";
-import { deliveryWindow, earliestPrintedCutoff, seasonBanner, type SeasonBanner } from "@/lib/shipping";
+import { arrivalPromise, deliveryWindow, earliestPrintedCutoff, seasonBanner, type SeasonBanner } from "@/lib/shipping";
 import { formatPrice, type BookFormat } from "@/lib/pricing";
 import { SECOND_BOOK_PRICE_CENTS, isBlackFridayWeek, secondBookIssuing, secondBookLastDay } from "@/lib/second-book";
 
@@ -45,4 +45,23 @@ export function useSecondBookPromo(): string | null {
   const cutoff = earliestPrintedCutoff(today, "reyes");
   if (!secondBookIssuing(today, cutoff)) return null;
   return t(isBlackFridayWeek(today) ? "secondBookPromoBlackFriday" : "secondBookPromo", { price: formatPrice(SECOND_BOOK_PRICE_CENTS, locale), until: formatSeasonDate(secondBookLastDay(cutoff), locale) });
+}
+
+/**
+ * The "llega a tiempo" promise for a printed format ordered today (1 Nov – 5 Jan), or null
+ * (PDF, outside the season, before hydration). `late` = only the PDF arrives in time.
+ */
+export function useArrivalPromise(format: BookFormat): { title: string; detail: string | null; late: boolean } | null {
+  const t = useTranslations("crear.purchase.promise");
+  const locale = useLocale();
+  const today = useSeasonToday(null);
+  if (!today || format === "digital_pdf") return null;
+  const promise = arrivalPromise(today, format);
+  if (!promise) return null;
+  if (promise.kind === "late") return { title: t(`late.${promise.occasion}`), detail: null, late: true };
+  const detail =
+    promise.daysLeft === 0
+      ? t(`cutoffToday.${promise.occasion}`)
+      : t(`cutoff.${promise.occasion}`, { date: formatSeasonDate(promise.lastOrderDate, locale) });
+  return { title: t(`onTime.${promise.occasion}`), detail, late: false };
 }

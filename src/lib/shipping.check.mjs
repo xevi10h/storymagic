@@ -92,3 +92,16 @@ console.log("shipping delivery window ✓");
   assert.deepEqual(reyesReminderWindow("2027-01-06"), { seasonStart: "2027-01-06", sendFrom: "2027-12-17", cutoff: "2027-12-22" });
 }
 console.log("reyes reminder window ✓");
+
+// ── Order step "llega a tiempo" promise (per format, conservative region) ──
+{
+  const { arrivalPromise } = await import("./shipping.ts");
+  assert.equal(arrivalPromise("2026-10-20", "hardcover"), null, "no promise before 1 Nov");
+  assert.deepEqual(arrivalPromise("2026-11-09", "hardcover"), { kind: "on_time", occasion: "christmas", lastOrderDate: "2026-12-10", daysLeft: 31 });
+  assert.deepEqual(arrivalPromise("2026-12-10", "softcover"), { kind: "on_time", occasion: "christmas", lastOrderDate: "2026-12-10", daysLeft: 0 });
+  assert.deepEqual(arrivalPromise("2026-12-11", "softcover"), { kind: "on_time", occasion: "reyes", lastOrderDate: "2026-12-22", daysLeft: 11 });
+  assert.deepEqual(arrivalPromise("2026-12-23", "hardcover"), { kind: "late", occasion: "christmas" }, "PDF still in time for Christmas");
+  assert.deepEqual(arrivalPromise("2026-12-30", "hardcover"), { kind: "late", occasion: "reyes" });
+  assert.equal(arrivalPromise("2027-01-06", "hardcover"), null, "season over on 6 Jan");
+}
+console.log("arrival promise ✓");

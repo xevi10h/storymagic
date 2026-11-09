@@ -1423,7 +1423,35 @@
       "otherCode": "Have another code?",
       "ownCodeNote": "Enter your code on the payment page.",
       "secondBookPromo": "With this book, a 2nd one in softcover is {price} VAT included (code valid until {until})",
-      "secondBookPromoBlackFriday": "Black Friday: with this book, a 2nd one in softcover is {price} VAT included (code valid until {until})"
+      "secondBookPromoBlackFriday": "Black Friday: with this book, a 2nd one in softcover is {price} VAT included (code valid until {until})",
+      "insideTitle": "Inside",
+      "insideOpenScene": "See scene {n}",
+      "insideMore": "more scenes",
+      "trustMethods": "Card, Bizum, Apple Pay or Google Pay",
+      "promiseChoosePdf": "The PDF will: it reaches your inbox ({price} VAT included)",
+      "promise": {
+        "onTime": {
+          "christmas": "In time for Christmas Eve and Three Kings' Day",
+          "reyes": "In time for Three Kings' Day"
+        },
+        "cutoff": {
+          "christmas": "For Christmas Eve, order by {date}",
+          "reyes": "For Three Kings' Day, order by {date}"
+        },
+        "cutoffToday": {
+          "christmas": "For Christmas Eve, order today",
+          "reyes": "For Three Kings' Day, order today"
+        },
+        "late": {
+          "christmas": "The printed book won't arrive for Christmas Eve",
+          "reyes": "The printed book won't arrive for Three Kings' Day"
+        }
+      },
+      "consentSheet": {
+        "title": "Before you pay",
+        "accept": "I agree, go to payment",
+        "cancel": "Back"
+      }
     }
   },
   "checkout": {
