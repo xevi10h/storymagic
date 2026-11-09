@@ -91,12 +91,15 @@ export default function MobileBookViewer({
   }, []);
   useEffect(() => () => cleanupRef.current?.(), []);
 
-  // Sync external page changes (keyboard, fullscreen) to the flip book
+  // Sync external page changes (keyboard, fullscreen, the order step's thumbnails) to the flip book.
+  // On phones (disableFlipByClick) page-flip's animated flip() ignores any point off the page
+  // corners, programmatic calls included, so the book jumps there with turnToPage() instead.
   useEffect(() => {
     if (flipBookRef.current && currentPage !== lastReportedPage.current) {
       const pageFlip = flipBookRef.current.pageFlip();
       if (pageFlip) {
-        pageFlip.flip(currentPage);
+        if (pageFlip.getSettings().disableFlipByClick) pageFlip.turnToPage(currentPage);
+        else pageFlip.flip(currentPage);
         lastReportedPage.current = currentPage;
       }
     }

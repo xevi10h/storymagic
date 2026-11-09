@@ -181,6 +181,7 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
                 <button
                   type="button"
                   onClick={() => onOpenPage?.(p.index)}
+                  data-page={p.index}
                   aria-label={t("insideOpenScene", { n: i + 1 })}
                   className="block aspect-square w-full overflow-hidden rounded-lg bg-create-neutral ring-1 ring-create-neutral transition hover:ring-2 hover:ring-create-primary/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-create-primary"
                 >
