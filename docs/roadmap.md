@@ -28,6 +28,21 @@ Code, docs, Resend, Supabase allow-list and GSC property done (see `docs/stack.m
     (Facebook page website and Merchant Center contact moved to `.es` on 2026-10-23.)
   - Renew `.shop` yearly (keep forever: printed QR codes).
 
+## Order step conversion (2026-11-09)
+
+Shipped: "llega a tiempo" card per format, "Por dentro" thumbnails, consent sheet instead of a blocking box, honest guarantees,
+`pay_click` / `pay_blocked_consent`, AddToCart once per story, `gift_redeem` instead of Purchase for 0 € orders, 1 h Checkout
+Sessions + "pedido a medias" reminder for consenting parents (docs/product-spec.md › Order step, docs/stack.md).
+- [ ] **Read the new funnel after ~7 days** (`node scripts/vercel-funnel.mjs --days 7`): step 6 → `pay_click` → `pay_blocked_consent`
+  → `checkout_started` → paid. If most presses are blocked by consent, revisit the sheet; if few press at all, the problem is price
+  or trust, not the box.
+- [ ] **Owner (legal):** confirm with the gestor/lawyer whether the withdrawal acknowledgement for the included PDF (art. 103 m)
+  may be given by the pay button itself instead of the box / "Acepto y voy al pago" sheet. Not changed without that.
+- [ ] Optional unticked "Avisadme si no termino el pedido" consent at the pay step for logged-in parents, so abandoned-checkout
+  emails reach more than the few who ticked the preview reminder (3 consents in total as of 2026-11-09).
+- [ ] Real reviews: the review-request emails (docs/product-spec.md › Customer reviews) are the only source; show a rating on the
+  order step only once there are real ones.
+
 ## Next up (2026-10-03, after the Phase 0 QA + SEO/GEO/social review)
 
 State measured 2026-10-03: 14 of 132 sitemap URLs indexed, 1 impression, 0 organic sessions, 0 orders; 9 social posts live, only the Facebook Reel got reach (223 views), 0 followers.

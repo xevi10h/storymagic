@@ -400,7 +400,8 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   `utm_source` / `utm_campaign` / `utm_content`, story UUIDs → `[id]`, `/r/<code>` → `[code]`, `/preview/<token>` and
   `/gift-voucher/card/<token>` send nothing. Events (2 properties max on Pro: `source` + one): `landing_view` {page},
   `cta_click` {placement hero|sticky|ad_hero|ad_final}, `create_step` {step 1-6}, `photo_uploaded`, `preview_requested` {retry} (= our
-  `generation_start`), `preview_shown` (= `preview_ready`), `checkout_started` {format} (= `InitiateCheckout`). `source` =
+  `generation_start`), `preview_shown` (= `preview_ready`), `checkout_started` {format} (= `InitiateCheckout`), and since
+  2026-11-09 `pay_click` / `pay_blocked_consent` {placement}. `source` =
   `meta` when the landing URL has `utm_source=meta` or Zernio's `zrn`, else `other` (`funnelSource()` in `attribution.ts`; JS
   memory for the page load, no sessionStorage, same LSSI reasoning as the story attribution: a full reload or new tab
   restarts it). All of it goes through the existing `trackEvent()` (consent.ts), which also forwards to PostHog with consent;
@@ -612,6 +613,35 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
 - **Meta CAPI logging (2026-10-03):** `sendMetaPurchase()` logs one line per outcome (`sent (live|test:CODE): events_received=1
   fbtrace_id=…`, `REJECTED …`, `NOT confirmed`, `FAILED`) and every skip reason. Vercel prod env vars are `sensitive`: `vercel env
   pull` returns them EMPTY, so an empty pulled value is not evidence of an empty secret.
+
+### Order step instrumentation + unfinished checkouts (2026-11-09)
+
+- **Events** (`trackEvent()`, same consent rules as every event: Vercel cookieless always, PostHog/GA4 with analytics consent,
+  Meta with ads consent): `pay_click` {placement main|sticky, format, consented, value, currency} on EVERY press of a pay button,
+  before any validation (the sticky "Lo quiero" that only scrolls to the formats is not a press); `pay_blocked_consent` (same
+  params) when that press was stopped by the unticked withdrawal box (the consent sheet opened). GA4 custom events of the same
+  name, Meta `trackCustom`, Vercel funnel events (`placement` property; `scripts/vercel-funnel.mjs` lists them between step 6 and
+  `checkout_started`). `InitiateCheckout` still fires only when the request to `/api/checkout` starts.
+- **AddToCart** fires once per story (ref + `sessionStorage` `meapica_atc_<storyId>`); before, the radio's click + change sent it
+  twice per tap and on every format change.
+- **0 € orders** (100 % gift / creator codes, `amount_total = 0`): never a `Purchase`. Browser (success page): `gift_redeem` (Meta
+  custom, GA4 `gift_redeem`, TikTok custom, PostHog), event id `gift_redeem_<session>`. Server (webhook): Meta CAPI and TikTok
+  Events API send `gift_redeem` with the same id (deduped); GA4 MP sends nothing for them (MP can't dedupe custom events; the
+  browser one counts). A paid gift-voucher sale stays a Purchase. Helper: `conversionFor()` in `src/lib/tracking/consent.ts`.
+- **Checkout Sessions expire after 1 h** (`expires_at`, Stripe default 24 h), derived from the 2-min idempotency bucket so a replay
+  sends identical params (`/api/checkout`). `checkout.session.expired` (already on the live endpoint) cancels the pending order and,
+  first expiry only, sets `preview_reminders.checkout_abandoned_at` for the story: the reminder cron then sends the NEXT reminder at
+  once with "pedido a medias" copy (still max 3 per story, quiet hours, waits while another order of the story is pending).
+- **Stripe recovery not used, on purpose:** `consent_collection.promotions` only works for a US business with US customers, Stripe's
+  automatic cart-recovery emails are a US invite-only beta for Payment Links, and a recovery URL creates a NEW session id with no
+  `orders` row (verified in test mode 2026-11-09: metadata copied, `recovered_from` set), which `recordPaidSession` would answer
+  with not_found → 500 forever. Our email links back to the preview, where `/api/checkout` creates the row and re-asks consent.
+
+### Deploy order — unfinished checkouts (2026-11-09)
+
+| Version | File | When |
+|---|---|---|
+| 20261109190000 | `preview_reminder_checkout_abandoned.sql` (`preview_reminders.checkout_abandoned_at`) | **before** the deploy (additive; the webhook and the reminder cron read/write it) |
 
 ### Referral + gift vouchers (2026-10-09)
 

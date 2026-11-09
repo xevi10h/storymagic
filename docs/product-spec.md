@@ -84,7 +84,7 @@ A seasonal world lives in `STORY_TEMPLATES` with `seasonal: true` and an optiona
 | `reyes` | Paje Real por una Noche / Patge Reial per una Nit | until **6 Jan 2027** (bump `availableUntil` every season) | Night of 5 Jan: Melchor, Gaspar and Baltasar have a problem (sleepy camels / runaway map / split sack) and name the child Royal Page to deliver before dawn. Ages 2–8. Folk tradition only. |
 
 - **Availability gate** `isTemplateAvailable(id|config, today = templateToday())` (`src/lib/create-store.ts`; `templateToday` = `spainToday()`, in dev the browser honours `?now=YYYY-MM-DD`). Applied ONLY at entry points: the world list (`getRecommendedTemplates`: hidden outside the window, listed first inside it, never takes the "Para su edad" badge), the `?template=` deep link (falls back to the normal list), a restored draft (selection + path cleared), `POST /api/stories` (410 `template_unavailable`, the create page shows `crear.errors.templateUnavailable` and returns to the world list) and the FIRST checkout `POST /api/checkout` (410 `template_unavailable`, preview page shows `crear.preview.templateUnavailable`). Never gated: `getTemplateConfig`, generation, fulfilment, PDF/downloads, dashboard, and **reorders** of a paid book (another printed copy is a reprint, not a new sale).
-- **Paywall:** printed Reyes orders get the same season notice as any book (`useSeasonNotice`: physical cut-off, then "el PDF sí llega" until 5 Jan). On 6 Jan the season banner is over, so the paywall shows only the normal delivery window (no explicit "won't arrive for Reyes" line).
+- **Paywall:** printed Reyes orders get the same season promise as any book (`useArrivalPromise` since 2026-11-09: "A tiempo para Reyes" + cut-off, then "Impreso ya no llega… El PDF sí" until 5 Jan). On 6 Jan the season banner is over, so the paywall shows only the normal delivery window (no explicit "won't arrive for Reyes" line).
 - **The Three Kings look the same in every book:** `src/lib/ai/template-cast.ts` (`TEMPLATE_FIXED_CAST.reyes`) — canonical ids/labels/visuals (Melchor: white beard, crimson + gold, ermine; Gaspar: auburn beard, emerald + gold; Baltasar: a Black man, short black beard, purple turban under a sapphire crown, royal blue + purple). The Book Plan prompt gets a FIXED CAST section and `normalizeBible` overwrites whatever the model wrote (by id, else by name for people; a single "Three Kings" group entry gets all three looks), so sheets, scenes, the frozen `imagePlan`, the final run and the QA judge use the same bytes.
 - Assets: cover `public/images/templates/reyes.jpg` (Recraft, `scripts/generate-template-images.mjs reyes`), path art `public/images/path/reyes/` (`scripts/generate-path-art.mjs`, 39/39 since 2026-10-27; a missing seed falls back to the gradient + icon card).
 - Check: `npx tsx src/lib/story-trees/trees.check.mts` (every tree valid, reyes 39 options in 4 locales, path-art descs without people or lettering, window, evergreen count = 10, Kings override).
@@ -155,7 +155,7 @@ All prices above (and the base book prices) are final VAT-inclusive consumer pri
 - **Site-wide banner** (`src/components/seasonal/SeasonalBanner.tsx`, rendered by the marketing `Navbar`): visible 1 Nov – 5 Jan, shows the nearest open cut-off, then promotes the PDF once no printed book arrives; hidden on the page itself; dismissible per message (localStorage `meapica.seasonBanner.dismissed`, try/catch + in-memory fallback).
 - **Dev preview**: append `?now=YYYY-MM-DD` to any page (ignored in production).
 - Linked from the footer and the `gifts/christmas` + `gifts/three-kings` SEO pages.
-- **Paywall delivery line** (2026-09-30): `deliveryWindow(today, format)` in `src/lib/shipping.ts` = the customer promise (`PROMISED_BUSINESS_DAYS`, 7–10 business days, not the measured Gelato days) counted from the day after the order, skipping weekends and Spanish national holidays (1/1, 6/1, Good Friday, 1/5, 15/8, 12/10, 1/11, 6/12, 8/12, 25/12). Shown per format next to the CTA as "Llega entre el X y el Y (fecha estimada)"; from 1 Nov the paywall also shows the season cut-off linking to this page.
+- **Paywall delivery line** (2026-09-30): `deliveryWindow(today, format)` in `src/lib/shipping.ts` = the customer promise (`PROMISED_BUSINESS_DAYS`, 7–10 business days, not the measured Gelato days) counted from the day after the order, skipping weekends and Spanish national holidays (1/1, 6/1, Good Friday, 1/5, 15/8, 12/10, 1/11, 6/12, 8/12, 25/12). Shown per format next to the CTA as "Llega entre el X y el Y (fecha estimada)"; from 1 Nov it sits inside the order step's "llega a tiempo" card (see Order step, 2026-11-09) with the selected format's cut-off linking to this page.
 
 ## Free Reyes printables (`/tools`, es + ca only, 2026-10-02)
 
@@ -270,6 +270,30 @@ Navbar links: Cómo funciona (`/#manifesto`), Cuentos (`/#catalog`), Ver un ejem
 
 When ads tracking is on (`NEXT_PUBLIC_META_PIXEL_ID` and/or `NEXT_PUBLIC_TIKTOK_PIXEL_ID` set), first-time visitors see a small cookie notice (bottom; a full-width bar below 1024 px, a bottom-left card from 1024 px that sits just above the creation footer so it never covers "Atrás") with **Rechazar / Aceptar** at equal weight and a link to `/legal#cookies`. As a bar the notice is one compact row (2026-10-27): a short line ("Cookies propias y de terceros para análisis y anuncios.") with "Más información" and "Configurar", and Rechazar / Aceptar beside it (third parties are named in the settings layer and in the cookie policy); on a 390 × 844 phone it stays below the hero CTA and its price line and it never covers a bottom bar: it publishes its height as `--cookie-banner-h` and the creation "next" bar, the preview buy bar and the landing sticky CTA sit on top of it (`body` keeps the same room at the end of the page). Rejecting keeps the site fully usable. "Configurar cookies" in the footer reopens it; withdrawing deletes the ad cookies. Only with consent: Meta and TikTok pixel events (view, story chosen, preview emailed, checkout started, purchase), the purchase sent server-side to Meta and TikTok, and the visit's UTMs attached to the order in Stripe. Legal texts (cookies + privacy, 4 locales) list Meta Platforms Ireland, TikTok Technology Limited and the consent basis.
 
+## Order step (screen 6) conversion pass (2026-11-09)
+
+Why: in the 21 days to 9 Nov, ~51 parents reached the formats and prices, 3-4 pressed pay, 1 paid. Benchmarked against
+Wonderbly, Librio and Hurra Héroes (none shows a Reyes date in the flow; all charge shipping at the cart).
+
+- **"Llega a tiempo" card** right above the formats (printed formats, 1 Nov – 5 Jan): "A tiempo para Nochebuena y Reyes" /
+  "A tiempo para Reyes", today's delivery window ("Llega entre el X y el Y (fecha estimada)") and the selected format's most
+  conservative cut-off ("Para Nochebuena, pídelo hasta el 10 de diciembre", "…pídelo hoy" on the last day), linking to
+  `/christmas-delivery`. After the last printed cut-off: "Impreso ya no llega para Reyes" + a one-tap "El PDF sí: te llega por email
+  (9,90 € IVA incluido)". Single source: `arrivalPromise(today, format)` in `src/lib/shipping.ts`. Outside the season only the
+  delivery line shows.
+- **"Por dentro"** (mobile only): the 3 illustrated preview scenes as thumbnails + "+9 escenas más"; a tap opens that page in the
+  viewer above. Nothing new is generated. The mockup is smaller on mobile so the formats come sooner.
+- **Withdrawal consent without a blocking box:** the unticked box stays right above the pay button (same text and version, art. 103 c
+  + m LGDCU: every printed format also delivers the PDF at once, digital content needs prior express consent). Pressing pay
+  without it no longer scrolls to a red error: a sheet "Antes de pagar" shows the same statement with **"Acepto y voy al pago"**
+  (the express act) and "Volver". The server still refuses checkout without `withdrawalConsent: true`.
+- **Guarantees, honest only** (no reviews exist yet, none invented): Stripe secure payment + the methods actually enabled on the live
+  account ("Tarjeta, Bizum, Apple Pay o Google Pay"), free shipping to península + Baleares, free reprint if it arrives damaged or
+  with a print defect, made in Barcelona / printed in Europe.
+- **"¿Lo pides más tarde?"** (send me the preview + remind me) moved below the buy panel on mobile (it sat between the book and the
+  price since d9bccf6); on desktop it stays under the book in the left column.
+- Prices unchanged; "IVA incluido" next to every price as before.
+
 ## Abandoned-preview reminders (2026-10-03)
 
 Where the parent previews the book (`/create/<id>/preview`), the "¿Lo decides más tarde?" › "Recíbelo por email" option sends
@@ -289,6 +313,11 @@ este cuento en 3 días…" with a link to the privacy policy. The account email 
   (`expired`). Max 3 emails per story ever (re-submitting never restarts a sequence). Unsubscribing suppresses the address for all
   commercial email (also the PDF → papel reminder).
 - Languages: es / ca / en / fr (story locale of the request). Kicker "Recordatorio" + seller identity in the footer (LSSI 20.1).
+- **Unfinished checkout (2026-11-09):** if a Checkout Session of the story expires unpaid (sessions last 1 h), the next reminder
+  goes out right away (next cron run, still outside 22:00-08:00) worded "Tu pedido del libro de X se quedó a medias… No te hemos
+  cobrado nada", CTA "Terminar mi pedido". It is one of the three, never a fourth, waits while another checkout of the story is
+  open, and only reaches parents who ticked the box. Stripe's own recovery emails and promotional-consent checkbox are US-only,
+  and nobody without that consent gets an abandoned-checkout email.
 
 ## Pack Reyes + Black Friday (2026-10-26)
 
