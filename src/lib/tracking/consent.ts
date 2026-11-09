@@ -96,6 +96,8 @@ const TIKTOK_EVENT: Record<string, string> = {
   Lead: "SubmitForm",
   InitiateCheckout: "InitiateCheckout",
   Purchase: "Purchase", // TikTok renamed CompletePayment → Purchase (2025)
+  // Custom (reporting only): a 0 € order paid in full by a gift / creator code. Never a Purchase.
+  gift_redeem: "gift_redeem",
 };
 
 // Our event names → GA4 recommended ecommerce events.
@@ -110,6 +112,12 @@ const GA4_EVENT: Record<string, string> = {
   // Custom funnel steps of /create/<id>/generate: the book starts being painted / its preview is ready.
   generation_start: "generation_start",
   preview_ready: "preview_ready",
+  // Custom: the pay button was pressed (before any validation), params { placement, format, consented }.
+  pay_click: "pay_click",
+  // Custom: that press was stopped by the unticked withdrawal-consent box (the confirm opened).
+  pay_blocked_consent: "pay_blocked_consent",
+  // Custom: a 0 € order (gift / creator code) completed. Kept out of `purchase` revenue.
+  gift_redeem: "gift_redeem",
 };
 
 /** Our events that are Meta standard events (fbq "track"); anything else goes through "trackCustom". */
@@ -172,3 +180,15 @@ function whenLoaded<T>(global: "fbq" | "ttq" | "gtag", send: (api: T) => void, a
 
 /** Shared by the success page (pixels, GA4 transaction_id) and the Stripe webhook (CAPI, Events API, Measurement Protocol). */
 export const purchaseEventId = (checkoutSessionId: string) => `purchase_${checkoutSessionId}`;
+/** Same, for a 0 € order (gift_redeem): its own id so it never dedupes against a Purchase. */
+export const giftRedeemEventId = (checkoutSessionId: string) => `gift_redeem_${checkoutSessionId}`;
+
+/**
+ * The conversion a settled order reports: a 0 € order (100 % gift / creator code) is a
+ * `gift_redeem`, never a revenue `Purchase`. A paid gift-voucher sale stays a Purchase.
+ */
+export function conversionFor(amountTotalCents: number | null | undefined, checkoutSessionId: string): { name: "Purchase" | "gift_redeem"; eventId: string } {
+  return (amountTotalCents ?? 0) > 0
+    ? { name: "Purchase", eventId: purchaseEventId(checkoutSessionId) }
+    : { name: "gift_redeem", eventId: giftRedeemEventId(checkoutSessionId) };
+}

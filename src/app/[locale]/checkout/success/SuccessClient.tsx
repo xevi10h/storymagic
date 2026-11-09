@@ -8,7 +8,7 @@ import { Spinner } from "@/components/ui/Spinner";
 import { BrandLoader } from "@/components/ui/BrandLoader";
 import { SUPPORT_EMAIL } from "@/lib/support";
 import { DELIVERY_PARAMS } from "@/lib/shipping";
-import { purchaseEventId, trackEvent } from "@/lib/tracking/consent";
+import { conversionFor, trackEvent } from "@/lib/tracking/consent";
 import { SecondBookCallout } from "@/components/dashboard/OrdersTab";
 
 interface OrderDetails {
@@ -155,13 +155,15 @@ export default function SuccessClient({
   }, []);
 
   // Ad conversion (Pixel). Same event_id as the server CAPI event, so Meta counts
-  // it once even on a reload of this page.
+  // it once even on a reload of this page. A 0 € order (gift / creator code) is a
+  // `gift_redeem`, never a Purchase: it is not revenue and must not train the ads.
   useEffect(() => {
     if (!verified || !sessionId || purchaseValue === null) return;
+    const conv = conversionFor(Math.round(purchaseValue * 100), sessionId);
     trackEvent(
-      "Purchase",
+      conv.name,
       { value: purchaseValue, currency: purchaseCurrency ?? "EUR", content_ids: format ? [format] : undefined, content_type: "product" },
-      purchaseEventId(sessionId),
+      conv.eventId,
     );
   }, [verified, sessionId, purchaseValue, purchaseCurrency, format]);
 

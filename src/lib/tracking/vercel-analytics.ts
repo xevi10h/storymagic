@@ -24,7 +24,9 @@ export type FunnelEvent =
   | "photo_uploaded"
   | "preview_requested"
   | "preview_shown"
-  | "checkout_started";
+  | "checkout_started"
+  | "pay_click"
+  | "pay_blocked_consent";
 
 type FunnelValue = string | number | boolean;
 
@@ -80,6 +82,10 @@ const FUNNEL: Record<string, { name: FunnelEvent; pick?: (p: Record<string, unkn
     name: "checkout_started",
     pick: (p) => ["format", Array.isArray(p.content_ids) ? p.content_ids[0] : undefined],
   },
+  // Every press of a pay button, before validation (main CTA or mobile sticky bar).
+  pay_click: { name: "pay_click", pick: (p) => ["placement", p.placement] },
+  // …and the presses stopped by the unticked withdrawal-consent box.
+  pay_blocked_consent: { name: "pay_blocked_consent", pick: (p) => ["placement", p.placement] },
 };
 
 const isValue = (v: unknown): v is FunnelValue =>

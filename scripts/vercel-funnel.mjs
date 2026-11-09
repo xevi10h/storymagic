@@ -42,6 +42,8 @@ const STEPS = [
   ["preview_shown", "Preview ready"],
   ["create_step:5", "Step 5 · book preview"],
   ["create_step:6", "Step 6 · order (formats in view)"],
+  ["pay_click", "Pressed a pay button (before validation)"],
+  ["pay_blocked_consent", "  stopped by the withdrawal box"],
   ["checkout_started", "Checkout started (Stripe)"],
 ];
 

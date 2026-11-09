@@ -1,9 +1,9 @@
-// TikTok Events API 2.0: server-side Purchase from the Stripe payment,
-// deduplicated with the browser pixel via event_id. Plain fetch. Server only.
+// TikTok Events API 2.0: server-side Purchase from the Stripe payment (custom `gift_redeem` for a
+// 0 € gift / creator-code order), deduplicated with the browser pixel via event_id. Plain fetch. Server only.
 
 import { createHash } from "node:crypto";
 import type Stripe from "stripe";
-import { purchaseEventId } from "./consent";
+import { conversionFor } from "./consent";
 
 const ENDPOINT = "https://business-api.tiktok.com/open_api/v1.3/event/track/";
 
@@ -21,6 +21,7 @@ function e164(phone: string): string {
  * Never throws: tracking must not fail a payment webhook.
  */
 export async function sendTikTokPurchase(session: Stripe.Checkout.Session): Promise<void> {
+  const conv = conversionFor(session.amount_total, session.id);
   const pixelId = process.env.NEXT_PUBLIC_TIKTOK_PIXEL_ID;
   const token = process.env.TIKTOK_EVENTS_TOKEN;
   const testCode = process.env.TIKTOK_TEST_EVENT_CODE;
@@ -28,7 +29,7 @@ export async function sendTikTokPurchase(session: Stripe.Checkout.Session): Prom
   if (meta.ads_consent !== "1") return; // no ads consent: nothing to send, by design
   if (!pixelId || !token) {
     // Consented purchase that can't be reported: say so instead of failing silently.
-    console.warn(`[tiktok-events] Purchase ${session.id} not sent: missing NEXT_PUBLIC_TIKTOK_PIXEL_ID / TIKTOK_EVENTS_TOKEN`);
+    console.warn(`[tiktok-events] ${conv.name} ${session.id} not sent: missing NEXT_PUBLIC_TIKTOK_PIXEL_ID / TIKTOK_EVENTS_TOKEN`);
     return;
   }
   // Test-mode payments only reach TikTok as test events (Events Manager › Test events).
@@ -42,9 +43,9 @@ export async function sendTikTokPurchase(session: Stripe.Checkout.Session): Prom
     ...(session.livemode ? {} : { test_event_code: testCode }),
     data: [
       {
-        event: "Purchase",
+        event: conv.name,
         event_time: Math.floor(Date.now() / 1000),
-        event_id: purchaseEventId(session.id),
+        event_id: conv.eventId,
         user: {
           email: email ? sha256(email) : undefined,
           phone: phone ? sha256(e164(phone)) : undefined,
@@ -75,8 +76,8 @@ export async function sendTikTokPurchase(session: Stripe.Checkout.Session): Prom
     });
     // TikTok answers 200 with a non-zero `code` on errors.
     const json = (await res.json().catch(() => null)) as { code?: number; message?: string } | null;
-    if (!res.ok || json?.code !== 0) console.error(`[tiktok-events] Purchase ${session.id} rejected: ${res.status} ${JSON.stringify(json)}`);
+    if (!res.ok || json?.code !== 0) console.error(`[tiktok-events] ${conv.name} ${session.id} rejected: ${res.status} ${JSON.stringify(json)}`);
   } catch (err) {
-    console.error(`[tiktok-events] Purchase ${session.id} failed:`, err);
+    console.error(`[tiktok-events] ${conv.name} ${session.id} failed:`, err);
   }
 }

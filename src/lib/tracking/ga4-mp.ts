@@ -39,6 +39,9 @@ export async function sendGa4Purchase(session: Stripe.Checkout.Session): Promise
   }
   // GA4 has no test-event mode: test-mode payments never reach the property.
   if (!session.livemode) return;
+  // A 0 € gift / creator-code order is not revenue: the success page reports it as
+  // `gift_redeem` (gtag). MP has no dedup for custom events, so the server sends nothing.
+  if ((session.amount_total ?? 0) <= 0) return;
   // Consent granted but gtag never set _ga (e.g. accepted on the checkout page itself):
   // the browser purchase on the success page still reports it.
   if (!meta.ga_cid) return;
