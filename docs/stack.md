@@ -643,6 +643,8 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
 |---|---|---|
 | 20261109190000 | `preview_reminder_checkout_abandoned.sql` (`preview_reminders.checkout_abandoned_at`) | **before** the deploy (additive; the webhook and the reminder cron read/write it) |
 
+Applied to production 2026-11-09 (Management API, version recorded in `supabase_migrations.schema_migrations`) before the deploy.
+
 ### Referral + gift vouchers (2026-10-09)
 
 - Webhook: no new event types. `checkout.session.completed` with `metadata.kind = gift_voucher` → voucher row +
