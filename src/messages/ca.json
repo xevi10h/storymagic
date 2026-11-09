@@ -993,7 +993,7 @@
       "section7Title": "7. Protecció de dades de menors",
       "section7Text": "No recollim dades directament de menors. Les dades del nen/a són proporcionades pel pare/mare o tutor legal que crea el llibre.",
       "section8Title": "8. Fotos de menors",
-      "section8Text": "Pujar una foto és opcional: també pots crear el personatge triant-ne els trets. Si la puges, la tractem només amb el consentiment exprés de la seva mare, pare o tutor legal i només per dibuixar el seu personatge il·lustrat (la seva fitxa de personatge a l'aquarel·la). Així la tractem: el teu navegador en redueix la mida abans d'enviar-la; el nostre servidor li treu totes les metadades, inclosa la ubicació GPS, i la desa en un emmagatzematge privat (Supabase) al qual només accedeix el nostre servidor, mai mitjançant un enllaç públic. Quan acabes de triar el protagonista, l'enviem a OpenAI Ireland Ltd., el nostre encarregat del tractament, juntament amb els trets que tu has confirmat, per dibuixar la seva fitxa de personatge. Esborrem la foto tan bon punt aquesta fitxa és a punt i, en qualsevol cas, en menys de 24 hores (un procés automàtic ho comprova cada hora). La pell, el cabell, els ulls, les ulleres i les pigues que descriu el conte els tries tu: no els deduïm de la foto. No la fem servir per a reconeixement facial, dades biomètriques ni cap altra finalitat. OpenAI no la fa servir per entrenar els seus models i la pot conservar fins a 30 dies als seus registres de detecció d'abusos (més temps només si la llei ho exigeix o si els seus sistemes de seguretat la marquen per revisar-la). La fitxa de personatge (una il·lustració, no la foto) es desa en privat amb el teu llibre, il·lustra la vista prèvia i el llibre final, i s'esborra quan esborres el teu compte; als comptes de convidat sense compra, després de 30 dies sense activitat. Pots retirar el teu consentiment en qualsevol moment amb el botó «Treure la foto» o escrivint a hola@meapica.es, i l'esborrarem immediatament. Guardem un registre del teu consentiment (data, versió del text acceptat i idioma) com a prova que el vas donar.",
+      "section8Text": "Pujar una foto és opcional: també pots crear el personatge triant-ne els trets. Si la puges, la tractem només amb el consentiment exprés de la seva mare, pare o tutor legal i només per dibuixar el seu personatge il·lustrat. Així la tractem: el teu navegador en redueix la mida abans d'enviar-la; el nostre servidor li treu totes les metadades, inclosa la ubicació GPS, i la desa en un emmagatzematge privat (Supabase) al qual només accedeix el nostre servidor, mai mitjançant un enllaç públic. Tan bon punt la puges, l'enviem a OpenAI Ireland Ltd., el nostre encarregat del tractament, perquè dibuixi el retrat il·lustrat del teu fill o filla, que veus a la pantalla abans de continuar. Esborrem la foto tan bon punt aquest dibuix és a punt, normalment en menys d'un minut, i en qualsevol cas en menys de 24 hores (un procés automàtic ho comprova cada hora). Els trets que descriu el conte (pell, cabell, ulls, ulleres, pigues) es llegeixen d'aquest dibuix, no de la foto. No la fem servir per a reconeixement facial, dades biomètriques ni cap altra finalitat. OpenAI no la fa servir per entrenar els seus models i la pot conservar fins a 30 dies als seus registres de detecció d'abusos (més temps només si la llei ho exigeix o si els seus sistemes de seguretat la marquen per revisar-la). El dibuix i la fitxa de personatge que se'n fa (il·lustracions, no la foto) es desen en privat amb el teu llibre, il·lustren la vista prèvia i el llibre final, i s'esborren quan esborres el teu compte; als comptes de convidat sense compra, després de 30 dies sense activitat. Pots retirar el teu consentiment en qualsevol moment escrivint a hola@meapica.es; si la foto encara no s'ha esborrat, l'esborrarem immediatament. Guardem un registre del teu consentiment (data, versió del text acceptat i idioma) com a prova que el vas donar.",
       "section8TextNoPhoto": "Avui no demanem ni acceptem fotos dels infants: el personatge es crea només amb els trets que tries (pell, cabell, pentinat, ulls, ulleres i pigues), de manera que no tractem cap imatge del teu fill o filla. Si algun dia oferim pujar una foto, serà opcional, només amb el consentiment de la seva mare, pare o tutor legal, i abans d'activar-ho explicarem aquí exactament com la tractem."
     },
     "terms": {
@@ -1286,21 +1286,21 @@
       "avatarNote": "Així apareixerà al seu llibre",
       "photoNote": "El dibuixarem a partir de la seva foto",
       "photoRequired": "Puja una foto o torna a «Crea'l tu»",
-      "photoTraitsTitle": "Confirma com és {name}",
-      "photoTraitsHint": "Amb aquests trets escrivim el seu conte, perquè el text digui el mateix que el dibuix. No els traiem de la foto: els tries tu.",
-      "photoTraitsConfirm": "Sí, {name} és així",
-      "photoTraitsRequired": "Confirma com és {name} per continuar"
+      "photoDrawingNote": "L'estem dibuixant a partir de la seva foto",
+      "photoDrawingRequired": "Espera que acabem de dibuixar {name}"
     },
     "photoUi": {
       "choosePhoto": "Triar una foto",
       "takePhoto": "Fer una foto",
       "uploading": "Pujant…",
-      "uploaded": "Foto pujada",
-      "uploadedHint": "Només la farem servir per dibuixar el seu personatge.",
-      "uploadedAlt": "Foto pujada",
-      "removing": "Traient…",
       "consentFirst": "Marca la casella per poder triar la foto.",
-      "removeFailed": "No hem pogut treure la foto. Torna-ho a provar."
+      "drawing": "Dibuixant {name}…",
+      "drawingHint": "Triga uns 30 segons. Mentrestant, pots triar el seu color preferit.",
+      "readyTitle": "Així serà {name} al seu llibre",
+      "readyHint": "Ja hem esborrat la foto. Aquest dibuix és el que protagonitza tot el seu conte.",
+      "tryAnother": "Provar amb una altra foto",
+      "retry": "Tornar-ho a provar",
+      "portraitAlt": "{name} dibuixat com al seu llibre"
     },
     "adventure": {
       "title": "Quina aventura viurà {name}?",
@@ -1371,14 +1371,13 @@
       "error": "No s'ha pogut enviar. Torna-ho a provar."
     },
     "photo": {
-      "checkbox": "Soc mare, pare o tutor legal i autoritzo que Meapica faci servir aquesta foto només per crear el seu personatge il·lustrat. La foto s'envia a OpenAI per dibuixar-lo i l'esborrem tan bon punt creem el seu personatge (i sempre en menys de 24 hores).",
-      "explainer": "Només la fem servir per dibuixar el seu personatge i l'esborrem tan bon punt el creem (i sempre en menys de 24 h).",
+      "checkbox": "Soc mare, pare o tutor legal i autoritzo que Meapica faci servir aquesta foto només per dibuixar el seu personatge. L'esborrem tan bon punt el creem (i sempre en menys de 24 h).",
+      "explainer": "Amb la seva foto dibuixem el seu personatge tal com sortirà al conte. La fem servir només per a això i l'esborrem tan bon punt el creem.",
       "moreInfo": "Més informació",
       "modalTitle": "Què fem amb la foto",
-      "modalText": "Fem servir la foto només per dibuixar el personatge il·lustrat del teu fill o filla: la seva fitxa de personatge a l'aquarel·la. La pell, el cabell, els ulls, les ulleres i les pigues els tries tu; no els traiem de la foto. Abans de desar-la li traiem totes les metadades, inclosa la ubicació, i la guardem en un espai privat. S'envia a OpenAI Ireland Ltd. per dibuixar el personatge; OpenAI no la fa servir per entrenar els seus models i la pot conservar fins a 30 dies per detectar abusos. L'esborrem tan bon punt creem el seu personatge (i sempre en menys de 24 hores). El llibre s'il·lustra només a partir del personatge dibuixat, mai de la foto. Pots retirar el teu consentiment quan vulguis i l'esborrarem a l'instant.",
+      "modalText": "Fem servir la foto només per dibuixar el personatge il·lustrat del teu fill o filla, tal com apareixerà al seu conte. Abans de desar-la li traiem totes les metadades, inclosa la ubicació, i la guardem en un espai privat al qual no accedeix ningú. L'esborrem tan bon punt el dibuix és a punt, normalment en menys d'un minut (i sempre en menys de 24 hores). Tot el llibre, també el text que descriu el teu petit o petita, es fa a partir d'aquest dibuix, mai de la foto. No la fem servir per a reconeixement facial ni per a cap altra finalitat. Pots retirar el teu consentiment quan vulguis escrivint a hola@meapica.es. Tens tots els detalls a la política de privacitat.",
       "modalClose": "Entesos",
       "privacyLink": "Política de privadesa",
-      "remove": "Treure la foto",
       "errors": {
         "consent_required": "Marca la casella d'autorització per poder fer servir la foto.",
         "too_large": "La foto pesa massa. Prova amb una altra de menys de 4 MB.",
@@ -1387,7 +1386,12 @@
         "too_small": "La foto és massa petita. Puja'n una on es vegi bé la seva cara.",
         "photo_unavailable": "La foto ja s'ha esborrat. Torna-la a pujar si la vols fer servir.",
         "rate_limited": "Has pujat moltes fotos seguides. Espera una estona i torna-ho a provar.",
-        "upload_failed": "No hem pogut pujar la foto. Torna-ho a provar."
+        "upload_failed": "No hem pogut pujar la foto. Torna-ho a provar.",
+        "provider_unavailable": "Ara mateix no podem dibuixar. Torna-ho a provar d'aquí a uns minuts.",
+        "daily_cap_reached": "Avui hem dibuixat moltíssims personatges i hem arribat al límit del dia. Torna demà, si us plau.",
+        "generation_failed": "No hem pogut dibuixar el seu personatge amb aquesta foto. Torna-ho a provar o prova amb una altra.",
+        "interrupted": "El dibuix es va interrompre i hem esborrat la foto. Torna-la a pujar per crear el seu personatge.",
+        "consent_version_mismatch": "Hem actualitzat aquest pas. Recarrega la pàgina i torna-ho a provar."
       }
     },
     "purchase": {

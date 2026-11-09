@@ -10,21 +10,28 @@ import {
   HAIR_COLORS,
   SKIN_TONES,
   type CharacterData,
+  type PhotoCharacter,
   type ProtagonistMode,
 } from "@/lib/create-store";
 import { isPhotoUploadEnabled, protagonistReadiness } from "@/lib/creation-flow";
 import CreationFooterNav from "./CreationFooterNav";
 import PhotoUploadPanel from "./PhotoUploadPanel";
+import PhotoPortraitCircle from "./PhotoPortraitCircle";
+import type { PhotoPortraitError } from "@/hooks/usePhotoPortrait";
 
 interface StepProtagonistProps {
   character: CharacterData;
   protagonistMode: ProtagonistMode;
   photoPath: string | null;
-  photoTraitsConfirmed: boolean;
+  /** The drawing made from the photo (valid for the current gender), or null. */
+  photoCharacter: PhotoCharacter | null;
+  photoDrawing: boolean;
+  photoError: PhotoPortraitError | null;
   onUpdateCharacter: (updates: Partial<CharacterData>) => void;
   onSetMode: (mode: ProtagonistMode) => void;
-  onPhotoChange: (photoPath: string | null) => void;
-  onConfirmPhotoTraits: (confirmed: boolean) => void;
+  onPhotoUploaded: (photoPath: string) => void;
+  onPhotoRetry: () => void;
+  onPhotoReset: () => void;
   onNext: () => void;
   onBack: () => void;
 }
@@ -126,11 +133,14 @@ export default function StepProtagonist({
   character,
   protagonistMode,
   photoPath,
-  photoTraitsConfirmed,
+  photoCharacter,
+  photoDrawing,
+  photoError,
   onUpdateCharacter,
   onSetMode,
-  onPhotoChange,
-  onConfirmPhotoTraits,
+  onPhotoUploaded,
+  onPhotoRetry,
+  onPhotoReset,
   onNext,
   onBack,
 }: StepProtagonistProps) {
@@ -140,7 +150,7 @@ export default function StepProtagonist({
   const mode: ProtagonistMode = photoEnabled ? protagonistMode : "avatar";
   const traits = toAvatarTraits(character);
   const name = character.name.trim();
-  const readiness = protagonistReadiness({ protagonistMode: mode, photoPath, photoTraitsConfirmed }, photoEnabled);
+  const readiness = protagonistReadiness({ protagonistMode: mode, character, photoCharacter }, photoEnabled);
   const [glassesShape, glassesFrame] =
     character.glasses === "none"
       ? (["none", "dark"] as const)
@@ -160,9 +170,7 @@ export default function StepProtagonist({
         data-testid="protagonist-portrait"
       >
         {mode === "photo" ? (
-          <span className="absolute inset-0 flex items-center justify-center text-create-primary/70">
-            <span aria-hidden className="material-symbols-outlined text-4xl lg:text-7xl" data-icon={photoPath ? "check_circle" : "add_a_photo"} />
-          </span>
+          <PhotoPortraitCircle name={name} photoCharacter={photoCharacter} drawing={photoDrawing} />
         ) : (
           <ProtagonistAvatar look={traits} alt={name} priority className="absolute inset-0 h-full w-full" />
         )}
@@ -170,13 +178,13 @@ export default function StepProtagonist({
       <div className="min-w-0 lg:text-center">
         <p className="truncate font-display text-xl font-bold text-create-text-dark lg:text-2xl">{name}</p>
         <p className="text-xs font-medium text-create-text-sub lg:text-sm">
-          {mode === "photo" ? t("photoNote") : t("avatarNote")}
+          {mode === "photo" && !photoCharacter ? (photoDrawing ? t("photoDrawingNote") : t("photoNote")) : t("avatarNote")}
         </p>
       </div>
     </div>
   );
 
-  // Same controls in both modes: in photo mode they are what the parent confirms after the upload.
+  // "Créalo tú" only: photo mode never shows (nor fills) the builder.
   const traitControls = (
     <>
       <SwatchGroup
@@ -361,30 +369,16 @@ export default function StepProtagonist({
             </div>
           ) : (
             <div id="panel-photo" role="tabpanel" aria-labelledby="tab-photo" className="flex flex-col gap-6">
-              <PhotoUploadPanel name={name} photoPath={photoPath} onPhotoChange={onPhotoChange} />
-              {/* The Character Bible (and so the story text) is written from these traits, never
-                  inferred from the photo: the parent confirms them so text and drawing agree. */}
-              {photoPath && (
-                <section aria-labelledby="photo-traits-title" className="flex flex-col gap-5" data-testid="photo-traits">
-                  <div>
-                    <h2 id="photo-traits-title" className="font-display text-lg font-bold text-create-text-dark">
-                      {t("photoTraitsTitle", { name })}
-                    </h2>
-                    <p className="mt-1 text-sm text-create-text-sub">{t("photoTraitsHint")}</p>
-                  </div>
-                  <div className="grid gap-6 sm:grid-cols-2">{traitControls}</div>
-                  <label className="flex cursor-pointer items-start gap-3 rounded-xl border-2 border-create-neutral bg-white p-3">
-                    <input
-                      type="checkbox"
-                      checked={photoTraitsConfirmed}
-                      onChange={(e) => onConfirmPhotoTraits(e.target.checked)}
-                      className="mt-0.5 h-5 w-5 shrink-0 accent-[var(--create-primary)]"
-                      data-testid="photo-traits-confirm"
-                    />
-                    <span className="text-sm font-bold leading-snug text-create-text">{t("photoTraitsConfirm", { name })}</span>
-                  </label>
-                </section>
-              )}
+              <PhotoUploadPanel
+                name={name}
+                photoPath={photoPath}
+                photoCharacter={photoCharacter}
+                drawing={photoDrawing}
+                drawError={photoError}
+                onUploaded={onPhotoUploaded}
+                onRetry={onPhotoRetry}
+                onReset={onPhotoReset}
+              />
             </div>
           )}
 
@@ -406,7 +400,7 @@ export default function StepProtagonist({
         onBack={onBack}
         onNext={onNext}
         nextDisabled={readiness !== "ready"}
-        nextDisabledTooltip={readiness === "traits_unconfirmed" ? t("photoTraitsRequired", { name }) : t("photoRequired")}
+        nextDisabledTooltip={photoDrawing ? t("photoDrawingRequired", { name }) : t("photoRequired")}
       />
     </>
   );

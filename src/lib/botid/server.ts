@@ -17,7 +17,7 @@ import { NextResponse } from "next/server";
 import { checkBotId } from "botid/server";
 import { BOTID_CHECK_LEVEL } from "./routes";
 
-export type BotIdRoute = "guest_session" | "email_otp" | "prepare" | "portrait" | "preview";
+export type BotIdRoute = "guest_session" | "email_otp" | "prepare" | "portrait" | "photo_portrait" | "preview";
 
 export const BOT_DETECTED_ERROR = "bot_detected";
 

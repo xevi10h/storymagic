@@ -12,7 +12,10 @@ import {
   GLASSES_OPTIONS,
   type CharacterData,
   type CreateBookState,
+  type PhotoCharacter,
 } from "@/lib/create-store";
+import { parsePhotoTraits } from "@/lib/photo-traits";
+import { isValidPhotoPath } from "@/lib/privacy/child-photo-policy";
 import { avatarBaseKey, avatarTraitsFromCharacter, isAvatarRendered, type AvatarGlasses } from "@/lib/avatar/manifest";
 import { STORAGE_KEY } from "@/hooks/usePersistedState";
 import { formatChildName } from "@/lib/child-name";
@@ -43,6 +46,14 @@ function isRecord(v: unknown): v is Record<string, unknown> {
 
 function str(v: unknown, fallback: string): string {
   return typeof v === "string" ? v : fallback;
+}
+
+function parsePhotoCharacter(v: unknown): PhotoCharacter | null {
+  if (!isRecord(v)) return null;
+  const gender = v.gender === "boy" || v.gender === "girl" || v.gender === "neutral" ? v.gender : null;
+  if (!gender || typeof v.portraitPath !== "string" || !v.portraitPath || typeof v.portraitUrl !== "string" || !v.portraitUrl) return null;
+  const traits = parsePhotoTraits(v.traits, gender);
+  return traits ? { portraitPath: v.portraitPath.slice(0, 2000), portraitUrl: v.portraitUrl.slice(0, 4000), traits, gender } : null;
 }
 
 /** v2 drafts before the avatar matrix stored "round" / "square" (no frame colour). */
@@ -103,9 +114,13 @@ export function migrateCreateState(raw: unknown): CreateBookState {
     gender: rawConfirmed ? rawConfirmed.gender === true : legacyConfirmed,
   };
   if (!basicsConfirmed.age || !basicsConfirmed.gender) currentStep = 1;
-  // A photo draft past screen 2 without confirmed traits goes back to confirm them.
-  const photoMode = isV2 && raw.protagonistMode === "photo" && typeof raw.photoPath === "string";
-  if (photoMode && raw.photoTraitsConfirmed !== true && currentStep > 2) currentStep = 2;
+  const protagonistMode = isV2 && raw.protagonistMode === "photo" ? "photo" : "avatar";
+  const photoCharacter = isV2 ? parsePhotoCharacter(raw.photoCharacter) : null;
+  // A photo draft past screen 2 without its drawing (pre-2026-11-09 drafts, reload mid-render)
+  // goes back to screen 2 to upload the photo again.
+  if (protagonistMode === "photo" && (!photoCharacter || photoCharacter.gender !== character.gender) && currentStep > 2) {
+    currentStep = 2;
+  }
 
   return {
     ...base,
@@ -114,10 +129,10 @@ export function migrateCreateState(raw: unknown): CreateBookState {
     basicsConfirmed,
     mode: raw.mode === "juntos" ? "juntos" : "solo",
     character,
-    protagonistMode: isV2 && raw.protagonistMode === "photo" ? "photo" : "avatar",
-    photoPath: isV2 && typeof raw.photoPath === "string" ? raw.photoPath : null,
-    // Only meaningful with a photo: no photo → nothing was confirmed.
-    photoTraitsConfirmed: isV2 && typeof raw.photoPath === "string" && raw.photoTraitsConfirmed === true,
+    protagonistMode,
+    // Kept so /create can delete a photo whose drawing never arrived (reload mid-render).
+    photoPath: isV2 && isValidPhotoPath(raw.photoPath) ? raw.photoPath : null,
+    photoCharacter,
     characterPrepId: isV2 && typeof raw.characterPrepId === "string" ? raw.characterPrepId : null,
     characterPrepSnapshot:
       isV2 && typeof raw.characterPrepSnapshot === "string" ? raw.characterPrepSnapshot : null,
@@ -196,41 +211,54 @@ export function avatarAssetPathFor(c: CharacterData): string | null {
   return isAvatarRendered(traits) ? `/images/avatar/${avatarBaseKey(traits)}.webp` : null;
 }
 
+type ProtagonistState = Pick<CreateBookState, "character" | "protagonistMode" | "photoCharacter">;
+
 /**
- * Can the parent leave the protagonist screen? Photo mode needs the photo AND the
- * parent's confirmation of the traits: the Character Bible (and so every line of the
- * story that describes the child) is written from those traits, so they must be the
- * child in the photo, not the untouched defaults.
+ * The photo-mode drawing, when it is what the book uses: photo mode, a drawing exists,
+ * and it was drawn for the gender currently chosen (screen 1 can change it afterwards).
  */
-export type ProtagonistReadiness = "ready" | "photo_missing" | "traits_unconfirmed";
-export function protagonistReadiness(
-  state: Pick<CreateBookState, "protagonistMode" | "photoPath" | "photoTraitsConfirmed">,
-  photoEnabled: boolean,
-): ProtagonistReadiness {
+export function activePhotoCharacter(state: ProtagonistState): PhotoCharacter | null {
+  const p = state.photoCharacter;
+  return state.protagonistMode === "photo" && p && p.gender === state.character.gender ? p : null;
+}
+
+/**
+ * The look the book is written from. Photo mode: the traits read from the drawing over
+ * the parent's own data (name, gender, age and favourite colour always come from the
+ * parent). Avatar mode: the builder's choices.
+ */
+export function protagonistLook(state: ProtagonistState): CharacterData {
+  const photo = activePhotoCharacter(state);
+  return photo ? { ...state.character, ...photo.traits } : state.character;
+}
+
+/**
+ * Can the parent leave the protagonist screen? Photo mode needs the drawing made from
+ * the photo: it is the face of the whole book, and the Character Bible (every line of
+ * the story that describes the child) is written from the traits read from it.
+ */
+export type ProtagonistReadiness = "ready" | "photo_missing";
+export function protagonistReadiness(state: ProtagonistState, photoEnabled: boolean): ProtagonistReadiness {
   if (!photoEnabled || state.protagonistMode !== "photo") return "ready";
-  if (!state.photoPath) return "photo_missing";
-  return state.photoTraitsConfirmed ? "ready" : "traits_unconfirmed";
+  return activePhotoCharacter(state) ? "ready" : "photo_missing";
+}
+
+/** Face anchor of the prepare and stories bodies: the photo drawing, else the avatar asset. */
+function anchorFields(state: ProtagonistState): { portraitUrl?: string; avatarAssetPath?: string } {
+  const photo = activePhotoCharacter(state);
+  if (photo) return { portraitUrl: photo.portraitPath };
+  const avatarAssetPath = avatarAssetPathFor(state.character);
+  return avatarAssetPath ? { avatarAssetPath } : {};
 }
 
 /** Body of POST /api/characters/prepare for a draft. */
-export function characterPrepareBody(
-  state: Pick<CreateBookState, "character" | "protagonistMode" | "photoPath" | "photoTraitsConfirmed">,
-) {
-  const usePhoto = state.protagonistMode === "photo" && !!state.photoPath;
-  const avatarAssetPath = usePhoto ? null : avatarAssetPathFor(state.character);
-  return {
-    ...characterLookPayload(state.character),
-    // The server refuses a photo whose traits the parent did not confirm.
-    ...(usePhoto ? { photoPath: state.photoPath, photoTraitsConfirmed: state.photoTraitsConfirmed } : {}),
-    ...(avatarAssetPath ? { avatarAssetPath } : {}),
-  };
+export function characterPrepareBody(state: ProtagonistState) {
+  return { ...characterLookPayload(protagonistLook(state)), ...anchorFields(state) };
 }
 
-/** `character` + avatar fields of POST /api/stories for a draft. */
-export function storyCharacterBody(state: Pick<CreateBookState, "character" | "protagonistMode" | "photoPath">) {
-  const c = state.character;
-  const usePhoto = state.protagonistMode === "photo" && !!state.photoPath;
-  const avatarAssetPath = usePhoto ? null : avatarAssetPathFor(c);
+/** `character` + face anchor fields of POST /api/stories for a draft. */
+export function storyCharacterBody(state: ProtagonistState) {
+  const c = protagonistLook(state);
   return {
     character: {
       ...characterLookPayload(c),
@@ -240,15 +268,15 @@ export function storyCharacterBody(state: Pick<CreateBookState, "character" | "p
       favoriteCompanion: c.favoriteCompanion,
       futureDream: c.futureDream,
     },
-    ...(avatarAssetPath ? { avatarAssetPath } : {}),
+    ...anchorFields(state),
   };
 }
 
 // ── Snapshots (change detection) ─────────────────────────────────────────────
 
 /** Traits that define how the protagonist looks (what the character prep depends on). */
-export function protagonistSnapshot(state: Pick<CreateBookState, "character" | "protagonistMode" | "photoPath">): string {
-  const c = state.character;
+export function protagonistSnapshot(state: ProtagonistState): string {
+  const c = protagonistLook(state);
   return JSON.stringify({
     gender: c.gender,
     age: c.age,
@@ -260,7 +288,7 @@ export function protagonistSnapshot(state: Pick<CreateBookState, "character" | "
     glasses: c.glasses,
     freckles: c.freckles,
     mode: state.protagonistMode,
-    photoPath: state.protagonistMode === "photo" ? state.photoPath : null,
+    portrait: activePhotoCharacter(state)?.portraitPath ?? null,
   });
 }
 

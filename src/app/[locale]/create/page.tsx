@@ -19,6 +19,7 @@ import {
 import {
   CREATE_PAGE_STEPS,
   MAX_NAME_LENGTH,
+  activePhotoCharacter,
   characterPrepareBody,
   firstName,
   isPhotoUploadEnabled,
@@ -30,6 +31,7 @@ import {
   storyInputSnapshot,
 } from "@/lib/creation-flow";
 import { usePersistedState, STORAGE_KEY } from "@/hooks/usePersistedState";
+import { usePhotoPortrait } from "@/hooks/usePhotoPortrait";
 import { ensureGuestSession } from "@/lib/guest-session";
 import { getFirstTouch } from "@/lib/tracking/attribution";
 import CreationHeader from "@/components/create/CreationHeader";
@@ -164,7 +166,9 @@ function CrearPageContent() {
   const canNavigate = useCallback(
     (step: number) => {
       if (step === 1) return true;
-      if (step === 2 || step === 3) return basicsDone;
+      if (step === 2) return basicsDone;
+      // Photo mode: screen 3 only once the drawing exists (same rule as the Next button).
+      if (step === 3) return basicsDone && protagonistReadiness(state, isPhotoUploadEnabled()) === "ready";
       // Screens 4–6 exist once the book was created from this exact draft
       return !!state.createdStory && state.createdStory.snapshot === storyInputSnapshot(state, locale);
     },
@@ -223,15 +227,15 @@ function CrearPageContent() {
     (protagonistMode: ProtagonistMode) => setState((prev) => ({ ...prev, protagonistMode })),
     [setState],
   );
-  const setPhoto = useCallback(
-    // A new (or removed) photo needs its traits confirmed again.
-    (photoPath: string | null) => setState((prev) => ({ ...prev, photoPath, photoTraitsConfirmed: false })),
-    [setState],
+  const { drawing: photoDrawing, error: photoError, draw: drawPortrait, reset: resetPhoto } = usePhotoPortrait(state, setState, hydrated);
+  const { gender, age, favoriteColor } = state.character;
+  const drawPhoto = useCallback(
+    (photoPath: string) => void drawPortrait(photoPath, { gender, age, favoriteColor }),
+    [drawPortrait, gender, age, favoriteColor],
   );
-  const confirmPhotoTraits = useCallback(
-    (photoTraitsConfirmed: boolean) => setState((prev) => ({ ...prev, photoTraitsConfirmed })),
-    [setState],
-  );
+  const retryPhoto = useCallback(() => {
+    if (state.photoPath) drawPhoto(state.photoPath);
+  }, [drawPhoto, state.photoPath]);
 
   // A restored draft can hold a seasonal world whose window has closed (e.g. Reyes
   // after 6 January): drop it and its path so the parent picks another world instead
@@ -280,13 +284,6 @@ function CrearPageContent() {
             // generate route can reuse this sheet.
             body: JSON.stringify(characterPrepareBody(snapshotState)),
           });
-          if (res.status === 410) {
-            // The photo was already used and deleted — ask for it again.
-            setState((prev) => ({ ...prev, photoPath: null, photoTraitsConfirmed: false }));
-            setCreateFailed(false);
-            setError(t("photo.errors.photo_unavailable"));
-            return;
-          }
           if (!res.ok) throw new Error(`prepare_${res.status}`);
           const data = (await res.json()) as { characterPrepId?: string };
           if (!data.characterPrepId) return;
@@ -303,7 +300,7 @@ function CrearPageContent() {
         }
       })();
     },
-    [setState, t],
+    [setState],
   );
 
   const handleProtagonistNext = useCallback(() => {
@@ -425,11 +422,14 @@ function CrearPageContent() {
           character={state.character}
           protagonistMode={state.protagonistMode}
           photoPath={state.photoPath}
-          photoTraitsConfirmed={state.photoTraitsConfirmed}
+          photoCharacter={activePhotoCharacter(state)}
+          photoDrawing={photoDrawing}
+          photoError={photoError}
           onUpdateCharacter={updateCharacter}
           onSetMode={setMode}
-          onPhotoChange={setPhoto}
-          onConfirmPhotoTraits={confirmPhotoTraits}
+          onPhotoUploaded={drawPhoto}
+          onPhotoRetry={retryPhoto}
+          onPhotoReset={resetPhoto}
           onNext={handleProtagonistNext}
           onBack={goBack}
         />

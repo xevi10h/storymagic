@@ -260,6 +260,26 @@ export function buildCompanionSheetPrompt(members: CastMember[]): string {
   ].join("\n\n");
 }
 
+// ── Photo-mode portrait ──────────────────────────────────────────────────────
+
+/**
+ * Photo mode (POST /api/characters/photo-portrait): the child's portrait drawn with the
+ * photo as the ONLY identity reference. No Bible identity text (skin, hair, eyes…): the
+ * photo is the truth, and the traits for the story are read from this drawing afterwards.
+ * Same framing as the avatar portrait (chest-up, centred, plain paper) so it fills the
+ * protagonist circle and works as the `portrait` reference of the character sheet. The
+ * outfit is the Bible's verbatim, so the sheet and the scenes dress the child the same way.
+ */
+export function buildPhotoPortraitPrompt(input: { age: number; genderWord: string; outfit: string }): string {
+  return [
+    `The ${ORDINALS[0]} attached image is a photo of the real child. It is the ONLY reference for how ${CHILD_LABEL} looks.`,
+    `Character portrait for a premium children's picture book: ${CHILD_LABEL}, a ${input.age}-year-old ${input.genderWord}, chest-up, centred, three-quarter view, warm friendly smile, on plain warm off-white watercolor paper.`,
+    `Draw ${CHILD_LABEL} so the family recognises them at a glance: take from the photo, faithfully, the face shape, the skin tone, the hair colour, the hair length and hairstyle, the eye colour, and glasses or freckles only if the photo shows them. Translate them into the storybook style with cute picture-book proportions; do NOT copy the photo's realism, lighting, background, pose, accessories or clothing.`,
+    `${CHILD_LABEL} is wearing ${input.outfit}.`,
+    WATERCOLOR_STYLE,
+  ].join("\n\n");
+}
+
 // ── Avatar portrait ──────────────────────────────────────────────────────────
 
 export function buildPortraitPrompt(bible: CharacterBible, roles: ReferenceRole[]): string {

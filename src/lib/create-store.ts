@@ -9,6 +9,7 @@
 
 import { AVATAR_GLASSES_OPTIONS, type AvatarGlasses } from "@/lib/avatar/manifest";
 import { parseDateOverride, spainToday } from "@/lib/shipping";
+import type { PhotoTraits } from "@/lib/photo-traits";
 
 export type CreationMode = "solo" | "juntos" | null;
 export type Gender = "boy" | "girl" | "neutral";
@@ -53,6 +54,16 @@ export interface StoryDecisions {
 
 export type ProtagonistMode = "avatar" | "photo";
 
+export interface PhotoCharacter {
+  /** Object path of the drawing (portraits/{userId}/…): what the prep and story bodies send. */
+  portraitPath: string;
+  /** Signed URL of the drawing (24 h) for the <img>; never sent to the API. */
+  portraitUrl: string;
+  traits: PhotoTraits;
+  /** Gender it was drawn for: changing it on screen 1 discards the drawing. */
+  gender: Gender;
+}
+
 export interface CreateBookState {
   /** Persisted draft schema version (see migrateCreateState in lib/creation-flow). */
   version: 2;
@@ -68,14 +79,18 @@ export interface CreateBookState {
   character: CharacterData;
   /** "avatar" = built from traits (default); "photo" = the parent uploaded a photo. */
   protagonistMode: ProtagonistMode;
-  /** Private storage path returned by POST /api/characters/photo (never a public URL). */
+  /**
+   * Private storage path returned by POST /api/characters/photo (never a public URL). Only
+   * set between the upload and the end of the drawing: the server deletes the photo right
+   * after drawing the portrait, and the client then clears it.
+   */
   photoPath: string | null;
   /**
-   * Photo mode: the parent confirmed the traits (skin, hair, eyes, glasses, freckles) after
-   * uploading. The Character Bible, and so the story text, is written from them, never
-   * inferred from the photo. Reset whenever the photo changes.
+   * Photo mode: the illustrated portrait drawn from the photo (POST /api/characters/photo-portrait)
+   * and the traits read from that drawing. Never written into `character`, so "Créalo tú" keeps
+   * the parent's own choices. Valid only for the gender it was drawn for.
    */
-  photoTraitsConfirmed: boolean;
+  photoCharacter: PhotoCharacter | null;
   /** Background character-sheet job id from POST /api/characters/prepare. */
   characterPrepId: string | null;
   /** Snapshot of the traits/photo the prep job was started for (restart on change). */
@@ -207,7 +222,7 @@ export const INITIAL_STATE: CreateBookState = {
   },
   protagonistMode: "avatar",
   photoPath: null,
-  photoTraitsConfirmed: false,
+  photoCharacter: null,
   characterPrepId: null,
   characterPrepSnapshot: null,
   selectedTemplate: null,

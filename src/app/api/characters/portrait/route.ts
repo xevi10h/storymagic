@@ -31,8 +31,8 @@ export const maxDuration = 60;
  * as character.avatar_url; the book's character sheets use it as the face anchor.
  *
  * Never takes the child's photo (2026-11-07): the only photo path is POST
- * /api/characters/prepare, which requires the parent's trait confirmation
- * (photoTraitsConfirmed). A body with `photoPath` / `keepPhotoForSheet` is a 400
+ * /api/characters/photo-portrait (photo-first drawing, no trait text). A body with
+ * `photoPath` / `keepPhotoForSheet` is a 400
  * (portraitInputSchema). The v2 UI does not call this route.
  *
  * Returns: { portraitUrl (24 h signed URL of portraits/<userId>/…), recraftStyleId: null } (recraftStyleId kept

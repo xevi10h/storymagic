@@ -1,109 +1,139 @@
-// Runnable check: photo mode builds the child's look from the traits the parent CONFIRMED
-// after uploading (never the untouched defaults, never inferred from the photo), the prepare
-// and stories bodies agree on them, the server refuses unconfirmed photo preps, and the final
-// book keeps the photo sheet as its face anchor.
+// Runnable check: photo mode (2026-11-09). The photo is turned into an illustrated portrait
+// (POST /api/characters/photo-portrait); the traits read FROM THAT DRAWING write the Character
+// Bible; the drawing is the face anchor of the prep, the story and the final book. The builder
+// ("Créalo tú") never receives the photo traits, and the prepare/stories bodies agree.
 //   npx tsx --tsconfig tsconfig.json src/lib/photo-mode.check.mts
 import assert from "node:assert/strict";
 import {
+  activePhotoCharacter,
   characterLookPayload,
   characterPrepareBody,
   migrateCreateState,
   protagonistReadiness,
+  protagonistSnapshot,
   storyCharacterBody,
 } from "./creation-flow";
-import { INITIAL_STATE, type CreateBookState } from "./create-store";
-import { portraitInputSchema, prepareInputSchema } from "./character-look";
+import { INITIAL_STATE, type CreateBookState, type PhotoCharacter } from "./create-store";
+import { photoPortraitInputSchema, portraitInputSchema, prepareInputSchema } from "./character-look";
 import { bibleHash, prepBible } from "./ai/character-prep";
 import { SKIN_MAP, HAIR_COLOR_MAP } from "./ai/character-description";
 import { finalFaceAnchor } from "./ai/face-anchor";
+import { defaultPhotoTraits, parsePhotoTraits, photoTraitOptions } from "./photo-traits";
+import { buildPhotoPortraitPrompt } from "./ai/image-prompts";
+import { AVATAR_HAIRSTYLES } from "./avatar/manifest";
 
-const PHOTO = "11111111-2222-4333-8444-555555555555/aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee.jpg";
+const USER = "11111111-2222-4333-8444-555555555555";
+const PHOTO = `${USER}/aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee.jpg`;
+const PORTRAIT = `portraits/${USER}/cccccccc-bbbb-4ccc-8ddd-eeeeeeeeeeee/portrait-1.png`;
+const drawing: PhotoCharacter = {
+  portraitPath: PORTRAIT,
+  portraitUrl: `https://example.supabase.co/storage/v1/object/sign/illustrations/${PORTRAIT}?token=x`,
+  gender: "girl",
+  traits: { skinTone: "#8d5524", hairColor: "#2a2a2a", eyeColor: "#5d4037", hairstyle: "curly", glasses: "round-dark", freckles: true },
+};
 const draft = (over: Partial<CreateBookState> = {}): CreateBookState => ({
   ...INITIAL_STATE,
-  character: { ...INITIAL_STATE.character, name: "Lucía", gender: "girl", age: 6 },
+  character: { ...INITIAL_STATE.character, name: "Lucía", gender: "girl", age: 6, favoriteColor: "#43A047" },
   basicsConfirmed: { age: true, gender: true },
   ...over,
 });
+const photoDraft = draft({ protagonistMode: "photo", photoCharacter: drawing });
 
-// ── Readiness: photo mode needs the photo AND confirmed traits ──────────────
+// ── Readiness: photo mode needs the drawing (for the current gender) ─────────
 assert.equal(protagonistReadiness(draft(), true), "ready", "avatar mode is always ready");
 assert.equal(protagonistReadiness(draft({ protagonistMode: "photo" }), true), "photo_missing");
-assert.equal(protagonistReadiness(draft({ protagonistMode: "photo", photoPath: PHOTO }), true), "traits_unconfirmed");
-assert.equal(protagonistReadiness(draft({ protagonistMode: "photo", photoPath: PHOTO, photoTraitsConfirmed: true }), true), "ready");
+assert.equal(protagonistReadiness(draft({ protagonistMode: "photo", photoPath: PHOTO }), true), "photo_missing", "an uploaded photo is not enough");
+assert.equal(protagonistReadiness(photoDraft, true), "ready");
 assert.equal(protagonistReadiness(draft({ protagonistMode: "photo" }), false), "ready", "flag off: the photo tab does not exist");
+const boy = { ...photoDraft, character: { ...photoDraft.character, gender: "boy" as const } };
+assert.equal(activePhotoCharacter(boy), null, "a drawing made for another gender is discarded");
+assert.equal(protagonistReadiness(boy, true), "photo_missing");
+assert.equal(activePhotoCharacter({ ...photoDraft, protagonistMode: "avatar" }), null, "avatar tab ignores the drawing");
 
-// ── The confirmed traits reach BOTH bodies, the photo sheet takes no avatar ──
-const confirmed = draft({
-  protagonistMode: "photo",
-  photoPath: PHOTO,
-  photoTraitsConfirmed: true,
-  character: {
-    ...draft().character,
-    skinTone: "#8d5524", // rich medium-dark brown (not the light default)
-    hairColor: "#2a2a2a", // jet-black (not the dark-brown default)
-    hairstyle: "curly",
-    eyeColor: "#2a2a2a",
-    glasses: "round-dark",
-    freckles: true,
-  },
-});
-const prepBody = characterPrepareBody(confirmed);
-const storyBody = storyCharacterBody(confirmed);
-assert.equal(prepBody.photoPath, PHOTO);
-assert.equal(prepBody.photoTraitsConfirmed, true);
-assert.ok(!("avatarAssetPath" in prepBody), "photo prep: no avatar anchor");
-assert.ok(!("avatarAssetPath" in storyBody), "photo story: no avatar anchor");
-const look = characterLookPayload(confirmed.character);
+// ── Bodies: drawing traits over the parent's data, the drawing as the anchor ─
+const prepBody = characterPrepareBody(photoDraft);
+const storyBody = storyCharacterBody(photoDraft);
+assert.equal(prepBody.portraitUrl, PORTRAIT, "prep anchors on the drawing (object path, not the signed URL)");
+assert.equal(storyBody.portraitUrl, PORTRAIT, "the story stores the drawing as avatar_url → finalFaceAnchor");
+assert.ok(!("avatarAssetPath" in prepBody) && !("avatarAssetPath" in storyBody), "no avatar asset in photo mode");
+assert.ok(!("photoPath" in prepBody), "the photo never reaches the prep");
+assert.equal(prepBody.skinTone, "#8d5524");
+assert.equal(prepBody.hairstyle, "curly");
+assert.equal(prepBody.gender, "girl", "gender from the parent");
+assert.equal(prepBody.age, 6, "age from the parent");
+assert.equal(prepBody.favoriteColor, "#43A047", "favourite colour from the parent");
+assert.equal(storyBody.character.name, "Lucía");
+const look = characterLookPayload({ ...photoDraft.character, ...drawing.traits });
 for (const k of Object.keys(look) as (keyof typeof look)[]) {
   assert.deepEqual(prepBody[k], look[k], `prepare ${k}`);
   assert.deepEqual(storyBody.character[k], look[k], `stories ${k}`);
 }
-assert.equal(prepBody.skinTone, "#8d5524");
+// The builder keeps the parent's own choices (switching tabs never leaks photo traits).
+assert.equal(photoDraft.character.skinTone, INITIAL_STATE.character.skinTone);
+const avatarBody = characterPrepareBody({ ...photoDraft, protagonistMode: "avatar" });
+assert.equal(avatarBody.skinTone, INITIAL_STATE.character.skinTone, "avatar tab: builder traits");
+assert.ok(!("portraitUrl" in avatarBody), "avatar tab: no drawing anchor");
 
-// The Bible (what the story text and every sheet are written from) says the confirmed traits.
+// The Bible says what the drawing shows, and prep + story hash the same.
 const bible = prepBible(prepareInputSchema.parse(prepBody));
 assert.ok(bible.description.includes(SKIN_MAP["#8d5524"]), bible.description);
 assert.ok(bible.description.includes(HAIR_COLOR_MAP["#2a2a2a"]), bible.description);
-assert.ok(!bible.description.includes(SKIN_MAP["#fce4d6"]), "never the default skin once confirmed");
-// Same traits → same hash on the story side (the prepared photo sheet is reused, not redrawn).
 assert.equal(bibleHash(prepBible(prepareInputSchema.parse({ ...storyBody.character }))), bibleHash(bible));
-// A changed trait → a different hash (the old sheet is not reused for a different child).
 assert.notEqual(bibleHash(prepBible({ ...look, skinTone: "#fce4d6" })), bibleHash(bible));
 
-// ── Server guard ─────────────────────────────────────────────────────────────
-assert.ok(prepareInputSchema.safeParse(prepBody).success, "confirmed photo prep accepted");
-assert.ok(!prepareInputSchema.safeParse({ ...prepBody, photoTraitsConfirmed: false }).success, "unconfirmed refused");
-const { photoTraitsConfirmed: _omit, ...withoutFlag } = prepBody;
-void _omit;
-assert.ok(!prepareInputSchema.safeParse(withoutFlag).success, "missing confirmation refused");
-assert.ok(
-  !prepareInputSchema.safeParse({ ...prepBody, avatarAssetPath: "/images/avatar/girl/big/dark/black-curly.webp" }).success,
-  "photo + avatar anchor refused",
-);
-assert.ok(prepareInputSchema.safeParse(characterPrepareBody(draft())).success, "avatar prep unaffected");
-assert.ok(!prepareInputSchema.safeParse({ ...prepBody, photoPath: "../x.jpg" }).success, "bad photo path refused");
+// Snapshot follows the drawing, not the builder.
+assert.notEqual(protagonistSnapshot(photoDraft), protagonistSnapshot({ ...photoDraft, photoCharacter: { ...drawing, portraitPath: `${PORTRAIT}x` } }));
+assert.notEqual(protagonistSnapshot(photoDraft), protagonistSnapshot({ ...photoDraft, protagonistMode: "avatar" }));
+assert.equal(protagonistSnapshot(photoDraft), protagonistSnapshot({ ...photoDraft, character: { ...photoDraft.character, skinTone: "#523218" } }), "builder edits don't touch a photo prep");
 
-// The legacy portrait route never takes a photo (no path around the trait confirmation).
+// ── Server schemas ───────────────────────────────────────────────────────────
+assert.ok(prepareInputSchema.safeParse(prepBody).success, "photo-mode prep accepted");
+assert.ok(!prepareInputSchema.safeParse({ ...prepBody, photoPath: PHOTO }).success, "prepare never takes a photo");
+assert.ok(!prepareInputSchema.safeParse({ ...prepBody, avatarAssetPath: "/images/avatar/girl/big/dark/black-curly.webp" }).success, "two anchors refused");
+assert.ok(prepareInputSchema.safeParse(characterPrepareBody(draft())).success, "avatar prep unaffected");
+assert.ok(photoPortraitInputSchema.safeParse({ photoPath: PHOTO, gender: "girl", age: 6 }).success);
+assert.ok(photoPortraitInputSchema.safeParse({ photoPath: PHOTO, gender: "girl", age: 6, favoriteColor: "#43A047" }).success);
+assert.ok(!photoPortraitInputSchema.safeParse({ photoPath: "../x.jpg", gender: "girl", age: 6 }).success, "bad photo path refused");
+assert.ok(!photoPortraitInputSchema.safeParse({ photoPath: PHOTO, gender: "girl", age: 13 }).success);
 const portraitBody = { childName: "Lucía", ...look };
-assert.ok(portraitInputSchema.safeParse(portraitBody).success, "portrait without photo accepted");
-assert.ok(!portraitInputSchema.safeParse({ ...portraitBody, photoPath: PHOTO }).success, "portrait with photo refused");
-assert.ok(!portraitInputSchema.safeParse({ ...portraitBody, keepPhotoForSheet: true }).success, "keepPhotoForSheet refused");
+assert.ok(portraitInputSchema.safeParse(portraitBody).success, "legacy portrait without photo accepted");
+assert.ok(!portraitInputSchema.safeParse({ ...portraitBody, photoPath: PHOTO }).success, "legacy portrait with photo refused");
+
+// ── Traits contract (what the vision read may answer) ────────────────────────
+for (const g of ["boy", "girl", "neutral"] as const) {
+  const o = photoTraitOptions(g);
+  assert.deepEqual(o.hairstyle, [...AVATAR_HAIRSTYLES[g]]);
+  for (const k of ["skinTone", "hairColor", "eyeColor"] as const) assert.ok(o[k].length > 0);
+  assert.ok(parsePhotoTraits(defaultPhotoTraits(g), g), `defaults valid for ${g}`);
+}
+assert.equal(parsePhotoTraits({ ...drawing.traits, hairstyle: "mohawk" }, "girl"), null, "hairstyle outside the gender's list refused");
+assert.equal(parsePhotoTraits({ ...drawing.traits, skinTone: "#c68642" }, "girl"), null, "legacy skin hex refused");
+assert.equal(parsePhotoTraits({ ...drawing.traits, freckles: "yes" }, "girl"), null);
+
+// ── Photo-first prompt: no identity text, the Bible outfit ───────────────────
+const p = buildPhotoPortraitPrompt({ age: 6, genderWord: "girl", outfit: prepBible(look).outfit });
+assert.ok(p.includes(prepBible(look).outfit), "same outfit as the Bible");
+for (const words of Object.values(SKIN_MAP)) assert.ok(!p.includes(words), `no skin text in the photo prompt (${words})`);
+for (const words of Object.values(HAIR_COLOR_MAP)) assert.ok(!p.includes(words), `no hair text in the photo prompt (${words})`);
 
 // ── Draft migration ──────────────────────────────────────────────────────────
-const persisted = (over: Record<string, unknown>) => ({ ...JSON.parse(JSON.stringify(confirmed)), currentStep: 3, ...over });
-assert.equal(migrateCreateState(persisted({})).currentStep, 3, "confirmed photo draft keeps its screen");
-assert.equal(migrateCreateState(persisted({})).photoTraitsConfirmed, true);
-const unconfirmed = migrateCreateState(persisted({ photoTraitsConfirmed: false }));
-assert.equal(unconfirmed.currentStep, 2, "unconfirmed photo draft goes back to confirm");
-assert.equal(migrateCreateState(persisted({ photoTraitsConfirmed: undefined })).currentStep, 2, "pre-confirmation drafts too");
-assert.equal(migrateCreateState(persisted({ photoPath: null })).photoTraitsConfirmed, false, "no photo → nothing confirmed");
-assert.equal(migrateCreateState(persisted({ protagonistMode: "avatar", photoTraitsConfirmed: false })).currentStep, 3, "avatar drafts untouched");
+const persisted = (over: Record<string, unknown>) => ({ ...JSON.parse(JSON.stringify(photoDraft)), currentStep: 3, ...over });
+assert.equal(migrateCreateState(persisted({})).currentStep, 3, "photo draft with its drawing keeps its screen");
+assert.deepEqual(migrateCreateState(persisted({})).photoCharacter, drawing);
+assert.equal(migrateCreateState(persisted({ photoCharacter: null })).currentStep, 2, "no drawing → back to screen 2");
+assert.equal(migrateCreateState(persisted({ photoCharacter: { ...drawing, traits: { ...drawing.traits, glasses: "huge" } } })).photoCharacter, null, "invalid drawing dropped");
+assert.equal(migrateCreateState(persisted({ photoCharacter: undefined, photoPath: PHOTO, photoTraitsConfirmed: true })).currentStep, 2, "pre-2026-11-09 drafts upload again");
+assert.equal(migrateCreateState(persisted({ photoPath: PHOTO })).photoPath, PHOTO, "a leftover photo path is kept so /create can delete it");
+assert.equal(migrateCreateState(persisted({ photoPath: "../evil.jpg" })).photoPath, null);
+assert.equal(migrateCreateState(persisted({ protagonistMode: "avatar", photoCharacter: null })).currentStep, 3, "avatar drafts untouched");
+assert.equal(
+  migrateCreateState(persisted({ character: { ...photoDraft.character, gender: "boy" } })).currentStep,
+  2,
+  "drawing of another gender → back to screen 2",
+);
 
 // ── Final book face anchor ───────────────────────────────────────────────────
-const sheet = "character-preps/aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee/sheet-child-1.jpg";
-assert.equal(finalFaceAnchor("/images/avatar/girl/big/dark/black-curly.webp", { url: sheet, fromPhoto: true }), "/images/avatar/girl/big/dark/black-curly.webp");
-assert.equal(finalFaceAnchor(null, { url: sheet, fromPhoto: true }), sheet, "photo mode: the photo sheet anchors the final book");
-assert.equal(finalFaceAnchor(null, { url: sheet }), null, "no photo, no avatar: unchanged (Bible only)");
-assert.equal(finalFaceAnchor(null, { url: sheet, fromPhoto: false }), null);
+assert.equal(finalFaceAnchor(PORTRAIT, { url: "character-preps/x/sheet-child-1.jpg" }), PORTRAIT, "the drawing anchors the final book");
+assert.equal(finalFaceAnchor(null, { url: "character-preps/x/sheet-child-1.jpg" }), null, "no anchor: Bible only (unchanged)");
 
 console.log("photo-mode checks passed");

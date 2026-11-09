@@ -1,7 +1,7 @@
 import { NextResponse, after } from "next/server";
 import { createClient as createServiceClient, type SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
-import { loadAvatarReference, renderChildSheet, type ImageReference } from "@/lib/ai/book-images";
+import { loadAvatarReference, renderChildSheet } from "@/lib/ai/book-images";
 import {
   CHARACTER_PREPS_TABLE,
   PREP_STALE_MS,
@@ -13,8 +13,6 @@ import {
 import { providerOutageRetryAfter, tripOnProviderOutage } from "@/lib/ai/provider-outage";
 import { uploadGeneratedImage } from "@/lib/supabase/storage";
 import { checkMemoryRateLimit, checkRateLimit } from "@/lib/rate-limit";
-import { PhotoUnavailableError, deleteChildPhoto, loadChildPhoto } from "@/lib/privacy/child-photo";
-import { isOwnedPhotoPath, isPhotoUploadEnabled } from "@/lib/privacy/child-photo-policy";
 import { ownedPortraitPath } from "@/lib/storage/illustration-urls";
 import { avatarAssetUrl, prepareInputSchema } from "@/lib/character-look";
 import { isMockGeneration } from "@/lib/ai/story-generator";
@@ -35,25 +33,22 @@ const PROVIDER_UNAVAILABLE = { error: "provider_unavailable" };
  * POST /api/characters/prepare
  *
  * Starts rendering the child's preview character sheet (child only: four
- * views + expressions) from the traits + avatar (+ optional private photo),
+ * views + expressions) from the traits + face anchor (pre-rendered avatar, or in
+ * photo mode the portrait drawn from the photo by POST /api/characters/photo-portrait),
  * BEFORE the story exists. Returns immediately; the render continues in
  * after(). Pass the returned id as `characterPrepId` to POST /api/stories and
  * the generate route reuses the sheet when the traits/avatar still match.
  *
- * Idempotent: the same traits + avatar + photo return the same prep (no new
+ * Idempotent: the same traits + anchor return the same prep (no new
  * render) while it is rendering or ready; a failed or dead prep is re-rendered.
  * Costs like a portrait, so it shares the portrait budget (IP window + the
  * durable `generate_portrait` per-user limit) and the provider-outage breaker.
  *
  * Request:  { gender, age, skinTone?, hairColor?, eyeColor?, hairstyle?, favoriteColor?, glasses?, freckles?,
- *             avatarAssetPath? | portraitUrl? | (photoPath + photoTraitsConfirmed: true) }
+ *             avatarAssetPath? | portraitUrl? }   (a photoPath is a 400: the photo never reaches the sheet)
  * Response: 202 { characterPrepId, status: "rendering" | "ready" }
  *           200 { characterPrepId: null, status: "skipped" } in MOCK_MODE
- *           400 invalid input / photo_upload_disabled · 401 no session · 403 photo not the caller's ·
- *           410 photo_unavailable (already used/deleted → re-upload) · 429 rate_limited · 503 provider_unavailable
- *
- * The photo is downloaded (bytes, ownership + open consent checked) BEFORE the
- * response, used only as a reference of this one render, then deleted.
+ *           400 invalid input · 401 no session · 429 rate_limited · 503 provider_unavailable
  */
 export async function POST(request: Request) {
   const outageRetryAfter = providerOutageRetryAfter();
@@ -82,23 +77,20 @@ export async function POST(request: Request) {
   const bot = await refuseBot("prepare");
   if (bot) return bot;
 
-  if (input.photoPath) {
-    if (!isPhotoUploadEnabled()) return NextResponse.json({ error: "photo_upload_disabled" }, { status: 400 });
-    if (!isOwnedPhotoPath(input.photoPath, user.id)) return NextResponse.json({ error: "forbidden" }, { status: 403 });
-  }
-  // Only the caller's own portrait (private bucket path) may anchor the sheet.
-  const portraitPath = input.portraitUrl ? ownedPortraitPath(input.portraitUrl, user.id) : null;
-  if (input.portraitUrl && !portraitPath) return NextResponse.json({ error: "Invalid input" }, { status: 400 });
-
+  // Before the portrait check: mock portraits are placeholder URLs, not stored portraits.
   if (isMockGeneration()) {
     return NextResponse.json({ characterPrepId: null, status: "skipped" });
   }
+
+  // Only the caller's own portrait (private bucket path) may anchor the sheet.
+  const portraitPath = input.portraitUrl ? ownedPortraitPath(input.portraitUrl, user.id) : null;
+  if (input.portraitUrl && !portraitPath) return NextResponse.json({ error: "Invalid input" }, { status: 400 });
 
   const admin = createServiceClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
   const bible = prepBible(input);
   const hash = bibleHash(bible);
   const avatarRef = input.avatarAssetPath ?? portraitPath;
-  const fingerprint = prepFingerprint(hash, avatarRef, input.photoPath ?? null);
+  const fingerprint = prepFingerprint(hash, avatarRef, null);
 
   // ── Idempotency: an equal prep that is ready or still rendering is reused ──
   const { data: existing, error: lookupErr } = await admin
@@ -138,27 +130,14 @@ export async function POST(request: Request) {
     }
   }
 
-  // The photo's bytes are read now (410 when already used/deleted/withdrawn, so the
-  // UI can ask for it again) and only live in this function's memory.
-  let photo: ImageReference | null = null;
-  if (input.photoPath) {
-    try {
-      photo = await loadChildPhoto(input.photoPath, user.id);
-    } catch (err) {
-      if (err instanceof PhotoUnavailableError) return NextResponse.json({ error: "photo_unavailable" }, { status: 410 });
-      console.error(`[Prepare] photo load failed: ${err instanceof Error ? err.message : "unknown"}`);
-      return NextResponse.json({ error: "prepare_failed" }, { status: 500 });
-    }
-  }
-
-  const prepId = existing ? await reclaim(admin, existing) : await insert(admin, user.id, fingerprint, hash, bible, avatarRef, !!input.photoPath);
+  const prepId = existing ? await reclaim(admin, existing) : await insert(admin, user.id, fingerprint, hash, bible, avatarRef);
   if (!prepId.claimed) {
     // Another request claimed it between our read and write: that one renders.
     return NextResponse.json({ characterPrepId: prepId.id, status: "rendering" }, { status: 202 });
   }
 
   const avatarUrl = input.avatarAssetPath ? avatarAssetUrl(input.avatarAssetPath) : portraitPath;
-  after(() => renderPrep(admin, prepId.id, user.id, { avatarUrl, photo, photoPath: input.photoPath ?? null }, bible));
+  after(() => renderPrep(admin, prepId.id, avatarUrl, bible));
   return NextResponse.json({ characterPrepId: prepId.id, status: "rendering" }, { status: 202 });
 }
 
@@ -173,11 +152,12 @@ async function insert(
   hash: string,
   bible: ReturnType<typeof prepBible>,
   avatarRef: string | null,
-  hadPhoto: boolean,
 ): Promise<{ id: string; claimed: boolean }> {
   const { data, error } = await admin
     .from(CHARACTER_PREPS_TABLE)
-    .insert({ user_id: userId, fingerprint, bible_hash: hash, bible, avatar_ref: avatarRef, had_photo: hadPhoto, status: "rendering" })
+    // had_photo stays false: since 2026-11-09 no sheet is drawn from a photo (the photo-mode
+    // drawing is a stored portrait, the avatar_ref, and anchors the final book as such).
+    .insert({ user_id: userId, fingerprint, bible_hash: hash, bible, avatar_ref: avatarRef, status: "rendering" })
     .select("id")
     .single<{ id: string }>();
   if (data) return { id: data.id, claimed: true };
@@ -204,17 +184,15 @@ async function reclaim(admin: SupabaseClient, row: PrepRow): Promise<{ id: strin
 async function renderPrep(
   admin: SupabaseClient,
   prepId: string,
-  userId: string,
-  anchors: { avatarUrl: string | null; photo: ImageReference | null; photoPath: string | null },
+  avatarUrl: string | null,
   bible: ReturnType<typeof prepBible>,
 ): Promise<void> {
   const started = Date.now();
-  const { photo, photoPath } = anchors;
   try {
     // A prep without the approved avatar would be reused as the book's child sheet:
     // failing here makes the story render its own (with the avatar) instead.
-    const avatar = await loadAvatarReference(anchors.avatarUrl);
-    const result = await renderChildSheet(bible, "preview", { avatar, photo }, { label: `prep ${prepId.slice(0, 8)}`, deadline: started + 110_000 });
+    const avatar = await loadAvatarReference(avatarUrl);
+    const result = await renderChildSheet(bible, "preview", { avatar }, { label: `prep ${prepId.slice(0, 8)}`, deadline: started + 110_000 });
     const url = await uploadGeneratedImage(admin, `character-preps/${prepId}`, "sheet-child", result.image, result.mime);
     const { error } = await admin
       .from(CHARACTER_PREPS_TABLE)
@@ -222,11 +200,6 @@ async function renderPrep(
       .eq("id", prepId);
     if (error) throw new Error(`character_preps update failed: ${error.message}`);
     console.log(`[Prepare] ${prepId} ready in ${((Date.now() - started) / 1000).toFixed(1)}s ($${result.costUsd.toFixed(3)})`);
-    // The photo's only job was the sheet's likeness: delete it now.
-    if (photoPath) {
-      const deleted = await deleteChildPhoto(photoPath, userId, admin);
-      if (!deleted.ok) console.error(`[Prepare] ${prepId} child photo deletion failed (the purge cron removes it)`);
-    }
   } catch (err) {
     tripOnProviderOutage(err);
     console.error(`[Prepare] ${prepId} failed:`, err instanceof Error ? err.message : err);

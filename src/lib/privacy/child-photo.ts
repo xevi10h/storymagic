@@ -1,12 +1,11 @@
 // Child photo storage — SERVER ONLY (service role).
 //
-// Lifecycle (owner decision 2026-09-27):
-//   POST /api/characters/photo    → normalizeChildPhoto → storeChildPhoto (+ consent row)
-//   POST /api/characters/portrait → loadChildPhoto (bytes, never a URL) → avatar
-//                                 → deleteChildPhoto (unless the early child sheet follows,
-//                                   whose step then calls deleteChildPhoto itself)
-//   DELETE /api/characters/photo  → deleteChildPhoto (consent withdrawn)
-//   GET /api/cron/purge-photos    → purgeExpiredChildPhotos (hourly, > 24 h)
+// Lifecycle (owner decision 2026-09-27, flow reworked 2026-11-09):
+//   POST /api/characters/photo          → normalizeChildPhoto → storeChildPhoto (+ consent row)
+//   POST /api/characters/photo-portrait → loadChildPhoto (bytes, never a URL) → illustrated
+//                                         portrait → deleteChildPhoto right after the render
+//   DELETE /api/characters/photo        → deleteChildPhoto (consent withdrawn / new photo)
+//   GET /api/cron/purge-photos          → purgeExpiredChildPhotos (hourly, > 24 h)
 //
 // Privacy rules: bytes never leave the server except to OpenAI (as request body);
 // no public/signed URL is ever created; logs carry only ids and counts, never
@@ -191,8 +190,8 @@ export async function loadChildPhoto(
  * (deleting an already-deleted photo is a no-op success) and never throws: a
  * failure is logged (ids only) and left to the hourly purge.
  *
- * Callers: the portrait route (right after the avatar), the early child sheet
- * step (right after the sheet), DELETE /api/characters/photo (withdrawal).
+ * Callers: the photo-portrait route (right after the drawing), DELETE
+ * /api/characters/photo (withdrawal), the purge cron.
  */
 export async function deleteChildPhoto(
   photoPath: string,

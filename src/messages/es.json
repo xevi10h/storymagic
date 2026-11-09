@@ -975,7 +975,7 @@
       "section7Title": "7. Protección de datos de menores",
       "section7Text": "No recogemos datos directamente de menores. Los datos del niño/a son proporcionados por el padre/madre o tutor legal que crea el libro.",
       "section8Title": "8. Fotos de menores",
-      "section8Text": "Subir una foto es opcional: también puedes crear el personaje eligiendo sus rasgos. Si la subes, la tratamos solo con el consentimiento expreso de su madre, padre o tutor legal y solo para dibujar su personaje ilustrado (su ficha de personaje en acuarela). Así la tratamos: tu navegador la reduce de tamaño antes de enviarla; nuestro servidor le quita todos los metadatos, incluida la ubicación GPS, y la guarda en un almacenamiento privado (Supabase) al que solo accede nuestro servidor, nunca mediante un enlace público. Cuando terminas de elegir el protagonista, la enviamos a OpenAI Ireland Ltd., nuestro encargado del tratamiento, junto con los rasgos que tú has confirmado, para dibujar su ficha de personaje. Borramos la foto en cuanto esa ficha está lista y, en cualquier caso, en menos de 24 horas (un proceso automático lo comprueba cada hora). La piel, el pelo, los ojos, las gafas y las pecas que describe el cuento los eliges tú: no los deducimos de la foto. No la usamos para reconocimiento facial, datos biométricos ni ninguna otra finalidad. OpenAI no la usa para entrenar sus modelos y puede conservarla hasta 30 días en sus registros de detección de abusos (más tiempo solo si la ley lo exige o si sus sistemas de seguridad la marcan para revisión). La ficha de personaje (una ilustración, no la foto) se guarda en privado con tu libro, ilustra la vista previa y el libro final, y se borra cuando borras tu cuenta; en las cuentas de invitado sin compra, tras 30 días sin actividad. Puedes retirar tu consentimiento en cualquier momento con el botón «Quitar la foto» o escribiendo a hola@meapica.es, y la borraremos de inmediato. Guardamos un registro de tu consentimiento (fecha, versión del texto aceptado e idioma) como prueba de que lo diste.",
+      "section8Text": "Subir una foto es opcional: también puedes crear el personaje eligiendo sus rasgos. Si la subes, la tratamos solo con el consentimiento expreso de su madre, padre o tutor legal y solo para dibujar su personaje ilustrado. Así la tratamos: tu navegador la reduce de tamaño antes de enviarla; nuestro servidor le quita todos los metadatos, incluida la ubicación GPS, y la guarda en un almacenamiento privado (Supabase) al que solo accede nuestro servidor, nunca mediante un enlace público. En cuanto la subes, la enviamos a OpenAI Ireland Ltd., nuestro encargado del tratamiento, para que dibuje el retrato ilustrado de tu hijo o hija, que ves en pantalla antes de continuar. Borramos la foto en cuanto ese dibujo está listo, normalmente en menos de un minuto, y en cualquier caso en menos de 24 horas (un proceso automático lo comprueba cada hora). Los rasgos que describe el cuento (piel, pelo, ojos, gafas, pecas) se leen de ese dibujo, no de la foto. No la usamos para reconocimiento facial, datos biométricos ni ninguna otra finalidad. OpenAI no la usa para entrenar sus modelos y puede conservarla hasta 30 días en sus registros de detección de abusos (más tiempo solo si la ley lo exige o si sus sistemas de seguridad la marcan para revisión). El dibujo y la ficha de personaje que se hace a partir de él (ilustraciones, no la foto) se guardan en privado con tu libro, ilustran la vista previa y el libro final, y se borran cuando borras tu cuenta; en las cuentas de invitado sin compra, tras 30 días sin actividad. Puedes retirar tu consentimiento en cualquier momento escribiendo a hola@meapica.es; si la foto aún no se ha borrado, la borraremos de inmediato. Guardamos un registro de tu consentimiento (fecha, versión del texto aceptado e idioma) como prueba de que lo diste.",
       "section8TextNoPhoto": "Hoy no pedimos ni aceptamos fotos de los niños: el personaje se crea solo con los rasgos que eliges (piel, pelo, peinado, ojos, gafas y pecas), así que no tratamos ninguna imagen de tu hijo o hija. Si algún día ofrecemos subir una foto, será opcional, solo con el consentimiento de su madre, padre o tutor legal, y antes de activarlo explicaremos aquí exactamente cómo la tratamos."
     },
     "terms": {
@@ -1268,21 +1268,21 @@
       "avatarNote": "Así aparecerá en su libro",
       "photoNote": "Lo dibujaremos a partir de su foto",
       "photoRequired": "Sube una foto o vuelve a «Créalo tú»",
-      "photoTraitsTitle": "Confirma cómo es {name}",
-      "photoTraitsHint": "Con estos rasgos escribimos su cuento, para que el texto diga lo mismo que el dibujo. No los sacamos de la foto: los eliges tú.",
-      "photoTraitsConfirm": "Sí, así es {name}",
-      "photoTraitsRequired": "Confirma cómo es {name} para continuar"
+      "photoDrawingNote": "Lo estamos dibujando a partir de su foto",
+      "photoDrawingRequired": "Espera a que terminemos de dibujar a {name}"
     },
     "photoUi": {
       "choosePhoto": "Elegir una foto",
       "takePhoto": "Hacer una foto",
       "uploading": "Subiendo…",
-      "uploaded": "Foto subida",
-      "uploadedHint": "Solo la usaremos para dibujar a {name}.",
-      "uploadedAlt": "Foto subida",
-      "removing": "Quitando…",
       "consentFirst": "Marca la casilla para poder elegir la foto.",
-      "removeFailed": "No hemos podido quitar la foto. Vuelve a intentarlo."
+      "drawing": "Dibujando a {name}…",
+      "drawingHint": "Tarda unos 30 segundos. Mientras, puedes elegir su color favorito.",
+      "readyTitle": "Así será {name} en su libro",
+      "readyHint": "Ya hemos borrado la foto. Este dibujo es el que protagoniza todo su cuento.",
+      "tryAnother": "Probar con otra foto",
+      "retry": "Volver a intentarlo",
+      "portraitAlt": "{name} dibujado como en su libro"
     },
     "adventure": {
       "title": "¿Qué aventura vivirá {name}?",
@@ -1353,14 +1353,13 @@
       "error": "No se ha podido enviar. Inténtalo de nuevo."
     },
     "photo": {
-      "checkbox": "Soy madre, padre o tutor legal y autorizo que Meapica use esta foto solo para crear su personaje ilustrado. La foto se envía a OpenAI para dibujarlo y la borramos en cuanto creamos su personaje (y siempre en menos de 24 horas).",
-      "explainer": "Solo la usamos para dibujar su personaje y la borramos en cuanto lo creamos (y siempre en menos de 24 h).",
+      "checkbox": "Soy madre, padre o tutor legal y autorizo que Meapica use esta foto solo para dibujar su personaje. La borramos en cuanto lo creamos (y siempre en menos de 24 h).",
+      "explainer": "Con su foto dibujamos su personaje tal y como saldrá en el cuento. La usamos solo para eso y la borramos en cuanto lo creamos.",
       "moreInfo": "Más información",
       "modalTitle": "Qué hacemos con la foto",
-      "modalText": "Usamos la foto solo para dibujar el personaje ilustrado de tu hijo o hija: su ficha de personaje en acuarela. Su piel, su pelo, sus ojos, sus gafas y sus pecas los eliges tú; no los sacamos de la foto. Antes de guardarla le quitamos todos los metadatos, incluida la ubicación, y la guardamos en un espacio privado. Se envía a OpenAI Ireland Ltd. para dibujar el personaje; OpenAI no la usa para entrenar sus modelos y puede conservarla hasta 30 días para detectar abusos. La borramos en cuanto creamos su personaje (y siempre en menos de 24 horas). El libro se ilustra solo a partir del personaje dibujado, nunca de la foto. Puedes retirar tu consentimiento cuando quieras y la borraremos al momento.",
+      "modalText": "Usamos la foto solo para dibujar el personaje ilustrado de tu hijo o hija, tal y como aparecerá en su cuento. Antes de guardarla le quitamos todos los metadatos, incluida la ubicación, y la guardamos en un espacio privado al que nadie accede. La borramos en cuanto el dibujo está listo, normalmente en menos de un minuto (y siempre en menos de 24 horas). Todo el libro, también el texto que describe a tu peque, se hace a partir de ese dibujo, nunca de la foto. No la usamos para reconocimiento facial ni para ninguna otra finalidad. Puedes retirar tu consentimiento cuando quieras escribiendo a hola@meapica.es. Tienes todos los detalles en la política de privacidad.",
       "modalClose": "Entendido",
       "privacyLink": "Política de privacidad",
-      "remove": "Quitar la foto",
       "errors": {
         "consent_required": "Marca la casilla de autorización para poder usar la foto.",
         "too_large": "La foto pesa demasiado. Prueba con otra de menos de 4 MB.",
@@ -1369,7 +1368,12 @@
         "too_small": "La foto es demasiado pequeña. Sube una en la que se vea bien su cara.",
         "photo_unavailable": "La foto ya se ha borrado. Súbela de nuevo si quieres usarla.",
         "rate_limited": "Has subido muchas fotos seguidas. Espera un rato y vuelve a probar.",
-        "upload_failed": "No hemos podido subir la foto. Vuelve a intentarlo."
+        "upload_failed": "No hemos podido subir la foto. Vuelve a intentarlo.",
+        "provider_unavailable": "Ahora mismo no podemos dibujar. Vuelve a intentarlo en unos minutos.",
+        "daily_cap_reached": "Hoy hemos dibujado muchísimos personajes y hemos llegado al límite del día. Vuelve mañana, por favor.",
+        "generation_failed": "No hemos podido dibujar su personaje con esta foto. Vuelve a intentarlo o prueba con otra.",
+        "interrupted": "El dibujo se interrumpió y hemos borrado la foto. Súbela de nuevo para crear su personaje.",
+        "consent_version_mismatch": "Hemos actualizado este paso. Recarga la página y vuelve a intentarlo."
       }
     },
     "purchase": {

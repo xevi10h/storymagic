@@ -933,7 +933,7 @@
       "section7Title": "7. Children's data protection",
       "section7Text": "We do not collect data directly from children. The child's data is provided by the parent or legal guardian who creates the book.",
       "section8Title": "8. Photos of children",
-      "section8Text": "Uploading a photo is optional: you can also create the character by choosing their features. If you upload one, we process it only with the explicit consent of the child's parent or legal guardian, and only to draw their illustrated character (their watercolour character sheet). This is how: your browser makes it smaller before sending it; our server removes all its metadata, including GPS location, and stores it in private storage (Supabase) that only our server can access, never through a public link. When you finish choosing the protagonist, we send it to OpenAI Ireland Ltd., our data processor, together with the features you confirmed, to draw the character sheet. We delete the photo as soon as that sheet is ready, and in any case within 24 hours (an automatic job checks every hour). The skin, hair, eyes, glasses and freckles the story describes are the ones you choose: we do not infer them from the photo. We do not use it for facial recognition, biometric data or any other purpose. OpenAI does not use it to train its models and may keep it for up to 30 days in its abuse-monitoring logs (longer only if the law requires it or its safety systems flag it for review). The character sheet (an illustration, not the photo) is kept privately with your book, illustrates the preview and the final book, and is deleted when you delete your account; for guest accounts with no purchase, after 30 days without activity. You can withdraw your consent at any time with the “Remove photo” button or by writing to hola@meapica.es, and we will delete it immediately. We keep a record of your consent (date, version of the accepted text and language) as proof that you gave it.",
+      "section8Text": "Uploading a photo is optional: you can also create the character by choosing their features. If you upload one, we process it only with the explicit consent of the child's parent or legal guardian, and only to draw their illustrated character. This is how: your browser makes it smaller before sending it; our server removes all its metadata, including GPS location, and stores it in private storage (Supabase) that only our server can access, never through a public link. As soon as you upload it, we send it to OpenAI Ireland Ltd., our data processor, to draw your child's illustrated portrait, which you see on screen before continuing. We delete the photo as soon as that drawing is ready, usually in under a minute, and in any case within 24 hours (an automatic job checks every hour). The features the story describes (skin, hair, eyes, glasses, freckles) are read from that drawing, not from the photo. We do not use it for facial recognition, biometric data or any other purpose. OpenAI does not use it to train its models and may keep it for up to 30 days in its abuse-monitoring logs (longer only if the law requires it or its safety systems flag it for review). The drawing and the character sheet made from it (illustrations, not the photo) are kept privately with your book, illustrate the preview and the final book, and are deleted when you delete your account; for guest accounts with no purchase, after 30 days without activity. You can withdraw your consent at any time by writing to hola@meapica.es; if the photo has not been deleted yet, we will delete it immediately. We keep a record of your consent (date, version of the accepted text and language) as proof that you gave it.",
       "section8TextNoPhoto": "We do not ask for or accept photos of children today: the character is created only from the features you choose (skin, hair, hairstyle, eyes, glasses and freckles), so we process no image of your child. If we ever offer photo upload, it will be optional, only with the consent of the child's parent or legal guardian, and before switching it on we will explain here exactly how we process it."
     },
     "terms": {
@@ -1226,21 +1226,21 @@
       "avatarNote": "This is how they'll appear in the book",
       "photoNote": "We'll draw them from their photo",
       "photoRequired": "Upload a photo or go back to “Design it”",
-      "photoTraitsTitle": "Confirm what {name} looks like",
-      "photoTraitsHint": "We write their story with these features, so the words match the drawing. We don't take them from the photo: you choose them.",
-      "photoTraitsConfirm": "Yes, that's {name}",
-      "photoTraitsRequired": "Confirm what {name} looks like to continue"
+      "photoDrawingNote": "We're drawing them from their photo",
+      "photoDrawingRequired": "Wait until we finish drawing {name}"
     },
     "photoUi": {
       "choosePhoto": "Choose a photo",
       "takePhoto": "Take a photo",
       "uploading": "Uploading…",
-      "uploaded": "Photo uploaded",
-      "uploadedHint": "We'll only use it to draw {name}.",
-      "uploadedAlt": "Uploaded photo",
-      "removing": "Removing…",
       "consentFirst": "Tick the box to choose the photo.",
-      "removeFailed": "We couldn't remove the photo. Please try again."
+      "drawing": "Drawing {name}…",
+      "drawingHint": "It takes about 30 seconds. Meanwhile, you can pick their favourite colour.",
+      "readyTitle": "This is how {name} will look in the book",
+      "readyHint": "We've already deleted the photo. This drawing is the star of the whole story.",
+      "tryAnother": "Try another photo",
+      "retry": "Try again",
+      "portraitAlt": "{name} drawn as in the book"
     },
     "adventure": {
       "title": "What adventure will {name} live?",
@@ -1311,14 +1311,13 @@
       "error": "We couldn't send it. Please try again."
     },
     "photo": {
-      "checkbox": "I am the child's parent or legal guardian and I allow Meapica to use this photo only to create their illustrated character. The photo is sent to OpenAI to draw it, and we delete it as soon as the character is created (always within 24 hours).",
-      "explainer": "We only use it to draw their character and delete it as soon as it's created (always within 24 h).",
+      "checkbox": "I am the child's parent or legal guardian and I allow Meapica to use this photo only to draw their character. We delete it as soon as the character is created (always within 24 h).",
+      "explainer": "We use their photo to draw their character exactly as it will appear in the story. We use it only for that and delete it as soon as the character is created.",
       "moreInfo": "Learn more",
       "modalTitle": "What we do with the photo",
-      "modalText": "We use the photo only to draw your child's illustrated character: their watercolour character sheet. Their skin, hair, eyes, glasses and freckles are the ones you choose; we don't take them from the photo. Before storing it we strip all its metadata, including location, and keep it in private storage. It is sent to OpenAI Ireland Ltd. to draw the character; OpenAI does not use it to train its models and may keep it for up to 30 days to detect abuse. We delete it as soon as the character is created (always within 24 hours). The book is illustrated only from the drawn character, never from the photo. You can withdraw your consent whenever you like and we will delete it right away.",
+      "modalText": "We use the photo only to draw your child's illustrated character, exactly as it will appear in their story. Before storing it we strip all its metadata, including location, and keep it in private storage that nobody accesses. We delete it as soon as the drawing is ready, usually in under a minute (always within 24 hours). The whole book, including the words that describe your child, is made from that drawing, never from the photo. We do not use it for facial recognition or any other purpose. You can withdraw your consent whenever you like by writing to hola@meapica.es. All the details are in the privacy policy.",
       "modalClose": "Got it",
       "privacyLink": "Privacy policy",
-      "remove": "Remove photo",
       "errors": {
         "consent_required": "Tick the consent box to use the photo.",
         "too_large": "The photo is too large. Try one under 4 MB.",
@@ -1327,7 +1326,12 @@
         "too_small": "The photo is too small. Upload one where their face is clearly visible.",
         "photo_unavailable": "The photo has already been deleted. Upload it again if you want to use it.",
         "rate_limited": "You've uploaded a lot of photos in a row. Wait a while and try again.",
-        "upload_failed": "We couldn't upload the photo. Please try again."
+        "upload_failed": "We couldn't upload the photo. Please try again.",
+        "provider_unavailable": "We can't draw right now. Please try again in a few minutes.",
+        "daily_cap_reached": "We've drawn a huge number of characters today and reached the daily limit. Please come back tomorrow.",
+        "generation_failed": "We couldn't draw their character from this photo. Try again or use another photo.",
+        "interrupted": "The drawing was interrupted and we deleted the photo. Upload it again to create their character.",
+        "consent_version_mismatch": "We've updated this step. Reload the page and try again."
       }
     },
     "purchase": {

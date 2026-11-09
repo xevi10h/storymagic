@@ -1,11 +1,12 @@
 // Child photo policy — pure, dependency-free (safe to import from client code
 // and from `node --experimental-strip-types` checks).
 //
-// Owner decision 2026-09-27: the child's photo is used ONLY to create the avatar
-// portrait and the early child character sheet, then deleted immediately. An
-// hourly cron purges any leftover older than PHOTO_MAX_AGE_HOURS. Preview and
-// final book never see the photo. Upload ships behind
-// NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED (default off) until the DPIA + OpenAI DPA exist.
+// Owner decision 2026-09-27 (flow reworked 2026-11-09): the child's photo is used
+// ONLY to draw the child's illustrated portrait (POST /api/characters/photo-portrait)
+// and is deleted the moment that drawing exists. An hourly cron purges any leftover
+// older than PHOTO_MAX_AGE_HOURS. The character sheet, the preview and the final book
+// never see the photo: they are anchored on the drawing. Upload ships behind
+// NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED (default off).
 
 export const CHILD_PHOTO_BUCKET = "child-photos";
 
@@ -14,7 +15,7 @@ export const CHILD_PHOTO_BUCKET = "child-photos";
  * that copy changes; the upload route rejects any other value so every consent
  * row points at the exact wording the parent accepted.
  */
-export const PHOTO_CONSENT_VERSION = "2026-09-27";
+export const PHOTO_CONSENT_VERSION = "2026-11-09";
 
 export const PHOTO_LOCALES = ["es", "ca", "en", "fr"] as const;
 export type PhotoLocale = (typeof PHOTO_LOCALES)[number];

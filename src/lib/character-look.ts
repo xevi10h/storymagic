@@ -36,8 +36,8 @@ export const avatarAssetPathSchema = z.string().max(200).regex(AVATAR_ASSET_PATH
 
 /**
  * Body of POST /api/characters/portrait (legacy AI portrait, not called by the v2 UI).
- * It never takes the child's photo: the only photo path is /api/characters/prepare,
- * which requires the parent's trait confirmation. Any photo field is a 400.
+ * It never takes the child's photo: the only photo path is /api/characters/photo-portrait.
+ * Any photo field is a 400.
  */
 export const portraitInputSchema = z.object({
   childName: z.string().min(1).max(50),
@@ -64,20 +64,27 @@ export const prepareInputSchema = z
     ...characterLookShape,
     /** Pre-rendered watercolor avatar base, e.g. "/images/avatar/girl/light/brown-bob.webp" */
     avatarAssetPath: avatarAssetPathSchema.optional(),
-    /** AI portrait from POST /api/characters/portrait (signed URL or path); only the caller's own is used */
-    portraitUrl: z.string().max(2000).optional(),
-    /** Object path in the private `child-photos` bucket ({userId}/{uuid}.jpg) */
-    photoPath: z.string().max(200).refine(isValidPhotoPath, "invalid photoPath").optional(),
     /**
-     * The parent confirmed the traits after uploading the photo (client: protagonistReadiness).
-     * The Bible, and so the story text, comes from those traits, never from the photo.
+     * The caller's own portrait (signed URL or object path): the photo-mode drawing from
+     * POST /api/characters/photo-portrait (or a legacy AI portrait). Only the caller's own is used.
      */
-    photoTraitsConfirmed: z.boolean().optional(),
+    portraitUrl: z.string().max(2000).optional(),
+    /** Not accepted since 2026-11-09: the photo is deleted once its portrait is drawn, the sheet anchors on that portrait. */
+    photoPath: z.never().optional(),
   })
-  .refine((d) => !(d.avatarAssetPath && d.portraitUrl), "Send either avatarAssetPath or portraitUrl, not both")
-  // A photo sheet is never drawn next to an avatar anchor (two faces) nor from unconfirmed defaults.
-  .refine((d) => !d.photoPath || (!d.avatarAssetPath && !d.portraitUrl), "A photo prep takes no avatar")
-  .refine((d) => !d.photoPath || d.photoTraitsConfirmed === true, "photoTraitsConfirmed required with photoPath");
+  .refine((d) => !(d.avatarAssetPath && d.portraitUrl), "Send either avatarAssetPath or portraitUrl, not both");
+
+/**
+ * Body of POST /api/characters/photo-portrait: the uploaded photo + what the parent chose
+ * on screen 1 (gender, age) and the favourite colour (the outfit's jacket). Nothing about
+ * the look: that comes from the photo.
+ */
+export const photoPortraitInputSchema = z.object({
+  photoPath: z.string().max(200).refine(isValidPhotoPath, "invalid photoPath"),
+  gender: characterLookShape.gender,
+  age: characterLookShape.age,
+  favoriteColor: characterLookShape.favoriteColor,
+});
 
 /**
  * Absolute URL the server downloads an avatar asset from: our own public site

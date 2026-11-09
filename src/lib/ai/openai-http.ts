@@ -202,6 +202,8 @@ export interface StructuredCallOptions<T> {
   model: string;
   system: string;
   user: string;
+  /** Images sent after the user text (data URIs or https URLs), e.g. for a vision read. */
+  images?: { url: string; detail: "low" | "high" | "auto" }[];
   /** Name reported to the API for the schema (a-z, 0-9, _ -). */
   schemaName: string;
   schema: z.ZodType<T>;
@@ -253,7 +255,12 @@ export async function callOpenAIStructured<T>(opts: StructuredCallOptions<T>): P
     model: opts.model,
     messages: [
       { role: "system", content: opts.system },
-      { role: "user", content: opts.user },
+      {
+        role: "user",
+        content: opts.images?.length
+          ? [{ type: "text", text: opts.user }, ...opts.images.map((image_url) => ({ type: "image_url", image_url }))]
+          : opts.user,
+      },
     ],
     response_format: {
       type: "json_schema",

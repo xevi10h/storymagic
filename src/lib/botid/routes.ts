@@ -25,5 +25,6 @@ export const BOTID_PROTECTED_ROUTES: ProtectedRoute[] = [
   POST("/api/auth/email-otp"),
   POST("/api/characters/prepare"),
   POST("/api/characters/portrait"),
+  POST("/api/characters/photo-portrait"),
   POST("/api/stories/*/generate"),
 ];

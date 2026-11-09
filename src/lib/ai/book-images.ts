@@ -20,6 +20,7 @@ import {
   buildCompanionSheetPrompt,
   buildExtraSheetPrompt,
   buildMainSheetPrompt,
+  buildPhotoPortraitPrompt,
   buildPortraitPrompt,
   buildRepairPrompt,
   buildScenePrompt,
@@ -359,7 +360,8 @@ export async function renderSheets(
 /**
  * Split layout, part 1: the child alone (four views + four expressions). Needs
  * only the Character Bible + face anchors, so it can run before the Book Plan.
- * `photo` only from POST /api/characters/prepare (deleted right after this render).
+ * `photo`: no app caller since 2026-11-09 (photo mode anchors on the portrait drawn
+ * from the photo); kept for scripts/photo-mode-spike.mts.
  */
 export async function renderChildSheet(
   bible: CharacterBible,
@@ -468,6 +470,29 @@ export async function renderPortrait(bible: CharacterBible, photo: ImageReferenc
     size: sizeFor("preview", "portrait"),
     prompt: buildPortraitPrompt(bible, roles),
     references: photo ? [photo] : [],
+    label: opts.label,
+    deadline: opts.deadline,
+  });
+}
+
+/**
+ * Photo mode: the child's portrait drawn from the photo (the only identity reference;
+ * src/lib/ai/image-prompts.ts buildPhotoPortraitPrompt). The outfit comes from the Bible
+ * built for the same gender/age/favourite colour, so the sheet that follows matches it.
+ */
+export async function renderPhotoPortrait(
+  photo: ImageReference,
+  child: { gender: CharacterDescriptionInput["gender"]; age: number; favoriteColor?: string },
+  opts: CallOptions,
+): Promise<OpenAIImageResult> {
+  const cfg = stageConfig("portrait");
+  const { age, genderWord, outfit } = buildCharacterBible(child);
+  return generateOpenAIImage({
+    model: cfg.model,
+    quality: cfg.quality,
+    size: sizeFor("preview", "portrait"),
+    prompt: buildPhotoPortraitPrompt({ age, genderWord, outfit }),
+    references: [photo],
     label: opts.label,
     deadline: opts.deadline,
   });
