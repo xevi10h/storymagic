@@ -59,6 +59,12 @@ const ART = (f: string) => `/images/path/space/${f}.webp`;
 const SCENE_ART = ["space-c1-ship", "space-c2ship-garden", "space-c2ship-bridge", "space-c2ship-engine"].map(ART);
 const COVER_ART = ART("space-c1-crystal");
 
+// Photo mode: the stored upload, the drawing made from it and the traits read from that drawing.
+const PHOTO_PATH = `9f1c2d3e-0000-4000-8000-000000000001/aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee.jpg`;
+const PORTRAIT_PATH = "portraits/9f1c2d3e-0000-4000-8000-000000000001/cccccccc-bbbb-4ccc-8ddd-eeeeeeeeeeee/portrait-1.png";
+const PORTRAIT_ART = "/images/avatar/girl/big/dark/black-afro.webp";
+const PHOTO_TRAITS = { skinTone: "#523218", hairColor: "#2a2a2a", eyeColor: "#5d4037", hairstyle: "afro", glasses: "none", freckles: false };
+
 function generatedText() {
   return {
     bookTitle: "Lucía y el jardín de las estrellas",
@@ -85,10 +91,12 @@ interface Mock {
   dedication: string | null;
   sender: string | null;
   favoriteColor: string | null;
+  /** POST /api/characters/photo-portrait answers 503 this many times before drawing */
+  photoPortraitFails: number;
 }
 
 async function installMocks(page: Page): Promise<Mock> {
-  const mock: Mock = { requests: [], lightCalls: 0, status: "draft", dedication: null, sender: null, favoriteColor: null };
+  const mock: Mock = { requests: [], lightCalls: 0, status: "draft", dedication: null, sender: null, favoriteColor: null, photoPortraitFails: 0 };
 
   await page.route(/\/auth\/v1\//, async (route: Route) => {
     const url = route.request().url();
@@ -131,7 +139,16 @@ async function installMocks(page: Page): Promise<Mock> {
     if (path === "/api/characters/prepare") return route.fulfill({ json: { characterPrepId: "prep-123" } });
     if (path === "/api/characters/photo") {
       if (req.method() === "DELETE") return route.fulfill({ json: { deleted: true } });
-      return route.fulfill({ json: { photoPath: `${USER.id}/photo-abc.jpg` } });
+      return route.fulfill({ json: { photoPath: PHOTO_PATH } });
+    }
+    if (path === "/api/characters/photo-portrait") {
+      // ~1.5 s like a (much faster) real drawing, so the "drawing" state is visible.
+      await new Promise((r) => setTimeout(r, 1500));
+      if (mock.photoPortraitFails > 0) {
+        mock.photoPortraitFails -= 1;
+        return route.fulfill({ status: 503, json: { error: "provider_unavailable" } });
+      }
+      return route.fulfill({ json: { portraitUrl: PORTRAIT_ART, portraitPath: PORTRAIT_PATH, traits: PHOTO_TRAITS } });
     }
     if (path === "/api/stories" && req.method() === "POST") {
       const b = body as { dedication?: string; senderName?: string; character?: { favoriteColor?: string } };
@@ -618,77 +635,81 @@ test.describe("photo tab", () => {
     await expect(page.getByText(/Sube una foto/)).toHaveCount(0);
   });
 
-  test("photo tab visible and consent-gated when the flag is on", async ({ page }) => {
+  test("photo tab: consent, upload, drawing shown in the circle, no selectors", async ({ page }) => {
     test.skip(!PHOTO_FLAG, "needs NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED=true");
     const errors = trackConsole(page);
     const mock = await installMocks(page);
+    mock.photoPortraitFails = 1; // the first drawing fails once: retry with the same photo
     await freshStart(page, "es");
     await fillName(page);
     await pickBasics(page);
     await next(page, "es");
     await page.getByRole("tab", { name: /Sube una foto/ }).click();
+    const panel = page.getByTestId("photo-panel");
     const choose = page.getByRole("button", { name: /Elegir una foto/ });
     await expect(choose).toBeDisabled();
     await expect(page.getByRole("checkbox")).not.toBeChecked();
+    await expect(panel).not.toContainText(/OpenAI/);
     await expect(page.getByRole("button", { name: /Siguiente/ })).toBeDisabled();
+    await expect(page.getByRole("radiogroup", { name: /Piel/i })).toHaveCount(0); // no builder in photo mode
     await shot(page, "es-mobile-2-photo-consent");
     await page.getByRole("checkbox").check();
     await expect(choose).toBeEnabled();
 
-    // Upload: client re-encodes to JPEG and posts field "photo"
+    // Upload: client re-encodes to JPEG and posts field "photo" with the current consent version
     const png = Buffer.from(
       "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAAAPUlEQVR42u3BAQ0AAADCoPdPbQ8HFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPwZgAAB4JYwmgAAAABJRU5ErkJggg==",
       "base64",
     );
     await page.getByTestId("photo-input").setInputFiles({ name: "nena.png", mimeType: "image/png", buffer: png });
-    await expect(page.getByTestId("photo-uploaded")).toBeVisible();
+    await expect(page.getByTestId("photo-drawing")).toBeVisible();
+    await expect(page.getByTestId("photo-portrait-drawing")).toBeVisible();
+    await expect(page.getByRole("button", { name: /Siguiente/ })).toBeDisabled();
+    await shot(page, "es-mobile-2-photo-drawing");
     const upload = mock.requests.find((r) => r.path === "/api/characters/photo" && r.method === "POST");
     expect(String(upload?.body)).toContain('name="photo"');
-    expect(String(upload?.body)).toContain("2026-09-27");
-    // The look is NOT taken from the photo: the parent confirms the traits the story is written from.
-    const traits = page.getByTestId("photo-traits");
-    const confirm = page.getByTestId("photo-traits-confirm");
-    await expect(traits).toBeVisible();
-    await expect(traits.getByRole("heading", { name: /Confirma cómo es Lucía/ })).toBeVisible();
-    await expect(confirm).not.toBeChecked();
-    await expect(page.getByRole("button", { name: /Siguiente/ })).toBeDisabled();
-    await expect(page.getByTestId("footer-hint")).toHaveText(/Confirma cómo es Lucía/);
-    await traits.getByRole("radio", { name: "Muy oscuro", exact: true }).click();
-    await traits.getByRole("radio", { name: "Negro", exact: true }).click();
-    await shot(page, "es-mobile-2-photo-traits");
-    await confirm.check();
-    await expect(page.getByRole("button", { name: /Siguiente/ })).toBeEnabled();
-    await shot(page, "es-mobile-2-photo-uploaded");
+    expect(String(upload?.body)).toContain("2026-11-09");
+    const drawReq = mock.requests.find((r) => r.path === "/api/characters/photo-portrait")!.body as Record<string, unknown>;
+    expect(drawReq).toMatchObject({ photoPath: PHOTO_PATH, gender: "girl" });
 
-    // Next → the early child sheet is prepared from the private photo (no avatar asset) AND the confirmed traits
+    // First drawing fails → friendly message + retry with the same photo
+    await expect(page.getByTestId("photo-retry")).toBeVisible({ timeout: 10000 });
+    await expect(panel.getByRole("alert")).toContainText(/no podemos dibujar/i);
+    await page.getByTestId("photo-retry").click();
+    await expect(page.getByTestId("photo-portrait-image")).toBeVisible({ timeout: 10000 });
+    expect(mock.requests.filter((r) => r.path === "/api/characters/photo-portrait")).toHaveLength(2);
+    await expect(page.getByTestId("photo-ready")).toContainText(/Así será Lucía/);
+    await expect(page.getByRole("button", { name: /Siguiente/ })).toBeEnabled();
+    await expect(page.getByRole("radiogroup", { name: /Piel/i })).toHaveCount(0);
+    await shot(page, "es-mobile-2-photo-ready");
+
+    // "Créalo tú" keeps the builder's own choices (the drawing's traits never leak into it)
+    await page.getByRole("tab", { name: /Créalo tú/ }).click();
+    await expect(page.getByTestId("selected-skin")).not.toHaveText(/Muy oscuro/);
+    await page.getByRole("tab", { name: /Sube una foto/ }).click();
+    await expect(page.getByTestId("photo-portrait-image")).toBeVisible();
+
+    // Next → the prep anchors on the drawing with the drawing's traits, never the photo
     await next(page, "es");
     await expect.poll(() => mock.requests.some((r) => r.path === "/api/characters/prepare")).toBe(true);
     const prep = mock.requests.find((r) => r.path === "/api/characters/prepare")!.body as Record<string, unknown>;
-    expect(prep.photoPath).toBe(`${USER.id}/photo-abc.jpg`);
-    expect(prep.photoTraitsConfirmed).toBe(true);
-    expect(prep.skinTone).toBe("#523218");
-    expect(prep.hairColor).toBe("#2a2a2a");
+    expect(prep.portraitUrl).toBe(PORTRAIT_PATH);
+    expect(prep.photoPath).toBeUndefined();
+    expect(prep.skinTone).toBe(PHOTO_TRAITS.skinTone);
+    expect(prep.hairstyle).toBe(PHOTO_TRAITS.hairstyle);
     expect(prep.avatarAssetPath).toBeUndefined();
-    await page.getByRole("button", { name: "Atrás" }).first().click();
-    await expect(page.getByTestId("photo-uploaded")).toBeVisible();
-    await expect(confirm).toBeChecked(); // kept across Back
 
-    // Withdraw → DELETE, consent and trait confirmation reset
-    await page.getByRole("button", { name: /Quitar la foto/ }).click();
-    await expect.poll(() => mock.requests.some((r) => r.path === "/api/characters/photo" && r.method === "DELETE")).toBe(true);
-    await expect(page.getByTestId("photo-traits")).toHaveCount(0);
+    // Back: the drawing is kept; "Probar con otra foto" starts over with a fresh consent
+    await page.getByRole("button", { name: "Atrás" }).first().click();
+    await expect(page.getByTestId("photo-portrait-image")).toBeVisible();
+    await page.getByTestId("photo-try-another").click();
     await expect(page.getByRole("checkbox")).not.toBeChecked();
     await expect(page.getByRole("button", { name: /Siguiente/ })).toBeDisabled();
-
-    // A new photo needs its traits confirmed again
     await page.getByRole("checkbox").check();
     await page.getByTestId("photo-input").setInputFiles({ name: "nena2.png", mimeType: "image/png", buffer: png });
-    await expect(page.getByTestId("photo-uploaded")).toBeVisible();
-    await expect(page.getByTestId("photo-traits-confirm")).not.toBeChecked();
-    await expect(page.getByRole("button", { name: /Siguiente/ })).toBeDisabled();
+    await expect(page.getByTestId("photo-portrait-image")).toBeVisible({ timeout: 10000 });
 
-    // Confirm again → adventure → create: the story is written from the SAME confirmed traits, no avatar
-    await page.getByTestId("photo-traits-confirm").check();
+    // Adventure → create: the story is written from the drawing's traits and anchored on the drawing
     await next(page, "es");
     await chooseAdventure(page, "es");
     await page.getByRole("button", { name: COPY.es.create }).click();
@@ -696,15 +717,35 @@ test.describe("photo tab", () => {
     const post = mock.requests.find((r) => r.path === "/api/stories")!.body as {
       character: Record<string, unknown>;
       avatarAssetPath?: string;
+      portraitUrl?: string;
     };
-    expect(post.character.skinTone).toBe("#523218");
-    expect(post.character.hairColor).toBe("#2a2a2a");
+    expect(post.character.skinTone).toBe(PHOTO_TRAITS.skinTone);
+    expect(post.character.hairColor).toBe(PHOTO_TRAITS.hairColor);
+    expect(post.portraitUrl).toBe(PORTRAIT_PATH);
     expect(post.avatarAssetPath).toBeUndefined();
-    const preps = mock.requests.filter((r) => r.path === "/api/characters/prepare");
-    const lastPrep = preps[preps.length - 1].body as Record<string, unknown>;
-    expect(lastPrep.photoPath).toBe(`${USER.id}/photo-abc.jpg`);
-    expect(lastPrep.skinTone).toBe(post.character.skinTone);
-    expect(errors).toEqual([]);
+    // Only the deliberate 503 of the first drawing (HTTP line + the browser console line).
+    expect(errors.filter((e) => !e.includes("/api/characters/photo-portrait") && !e.includes("status of 503"))).toEqual([]);
+  });
+
+  test("photo tab: a reload mid-drawing deletes the photo and asks for it again", async ({ page }) => {
+    test.skip(!PHOTO_FLAG, "needs NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED=true");
+    const mock = await installMocks(page);
+    await freshStart(page, "es");
+    await fillName(page);
+    await pickBasics(page);
+    await next(page, "es");
+    await page.getByRole("tab", { name: /Sube una foto/ }).click();
+    // What a reload mid-drawing leaves behind: the photo path without its drawing.
+    await page.evaluate((photoPath) => {
+      const key = "meapica_create_state";
+      const draft = JSON.parse(localStorage.getItem(key) ?? "{}");
+      localStorage.setItem(key, JSON.stringify({ ...draft, photoPath, photoCharacter: null }));
+    }, PHOTO_PATH);
+    await page.reload();
+    await expect.poll(() => mock.requests.some((r) => r.path === "/api/characters/photo" && r.method === "DELETE")).toBe(true);
+    await expect(page.getByTestId("photo-panel").getByRole("alert")).toContainText(/se interrumpió/);
+    await expect(page.getByRole("checkbox")).not.toBeChecked();
+    await expect(page.getByRole("button", { name: /Siguiente/ })).toBeDisabled();
   });
 });
 

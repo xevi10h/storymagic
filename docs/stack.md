@@ -100,18 +100,25 @@ writes that path into their own character row — only possible for someone who 
 old public URL. A preview tab left open > 1 h shows broken images for pages not yet loaded
 (reload fixes it). `illustration_library` (unused cache table) was not migrated.
 
-## Child photo mode (built, OFF in prod)
+## Child photo mode (ON in prod since 2026-11-08)
 
 `NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED` is inlined at **build** time: changing it in Vercel does nothing until a new
-deployment is built. Off = no photo tab, upload/prepare-with-photo answer 400/404, and every public text says no photo
+deployment is built. Off = no photo tab, upload/photo-portrait answer 400/404, and every public text says no photo
 is used (privacy sections 2/4/5/8 `…TextNoPhoto`, ad landings, home steps, `/about`, `/llms*.txt`, likeness guide).
 On = all of them switch to the photo wording in the same build. No migration is pending: bucket `child-photos`,
 `photo_consents`, `list_expired_child_photos` and `character_preps.had_photo` are in prod since 2026-09-27.
 
-Flow when on: upload (consent row, EXIF strip, private bucket) → parent confirms the traits (`photoTraitsConfirmed`)
-→ leaving screen 2 calls `POST /api/characters/prepare` with `photoPath` → OpenAI Images edits (`gpt-image-2.5-flare`,
-photo as the only reference) draws the child sheet → photo deleted right after; hourly `purge-photos` cron (≤ 24 h) →
-the story reuses that sheet and the final book anchors on it (`finalFaceAnchor`). Processor: OpenAI Ireland Ltd.
+Flow when on (reworked 2026-11-09): upload (consent row `PHOTO_CONSENT_VERSION` 2026-11-09, EXIF strip, private bucket)
+→ `POST /api/characters/photo-portrait` (maxDuration 90; same guards as the portrait route + BotID route `photo_portrait`,
+registered in `src/lib/botid/routes.ts`) → OpenAI Images edits (`PORTRAIT_IMAGE_*`, default `gpt-image-2.5-flare` medium
+1024², `buildPhotoPortraitPrompt`: photo as the only identity reference, Bible outfit) → photo deleted the moment the render
+returns (a failed render keeps it for a retry; hourly `purge-photos` cron ≤ 24 h either way) → drawing stored in
+`portraits/{uid}/…` → traits read from the drawing (`deriveTraitsFromPortrait`, `PHOTO_TRAITS_MODEL`, default `gpt-5.4-mini`,
+strict schema of builder ids; defaults + log on failure) → response `{ portraitUrl, portraitPath, traits }`. The parent sees the
+drawing in the protagonist circle; prepare and stories receive `portraitUrl` (the drawing is the face anchor of the sheet and,
+as `characters.avatar_url`, of the final book via `finalFaceAnchor`) and the drawing's traits (Bible text). Prepare refuses
+`photoPath`. Cost per photo portrait (real run 2026-11-09): image $0.027 + traits $0.0016, ~17 s. MOCK_MODE returns a picsum
+drawing + builder-default traits and still deletes the photo. Processor: OpenAI Ireland Ltd.
 (EEA customers' contracting party under the Services Agreement and DPA). Default API retention: abuse-monitoring logs
 up to 30 days; `/v1/images/edits` keeps no application state and both image models are on OpenAI's ZDR-compatible list,
 but image inputs flagged by OpenAI's CSAM classifier are kept for manual review even under ZDR (developers.openai.com
@@ -124,7 +131,7 @@ but image inputs flagged by OpenAI's CSAM classifier are kept for manual review 
    section 8, `crear.photo.modalText`, 4 locales) before enabling.
 2. Vercel prod env: `NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED=true`; `CRON_SECRET` already set (purge cron).
 3. Rebuild: push the commit to `main` (or `vercel --prod` of the current commit); the env change alone is not enough.
-4. Smoke with a phone (headless gets BotID 403): photo tab visible, upload → traits confirmation → preview; check that
+4. Smoke with a phone (headless gets BotID 403): photo tab visible, upload → drawing in the circle → preview; check that
    `photo_consents` gets the row and `deleted_at` is set within minutes; `/es/legal#privacy` shows the photo section 8.
 5. Rollback: set the variable to `false` and rebuild; the purge cron keeps running either way.
 
