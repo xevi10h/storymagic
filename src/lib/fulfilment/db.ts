@@ -54,6 +54,8 @@ export type PreviewReminderRow = {
   last_sent_at: string | null;
   stopped_at: string | null;
   stop_reason: "purchased" | "unsubscribed" | "expired" | "story_unavailable" | null;
+  /** Last unpaid expiry of a Checkout Session of the story (the next reminder goes out at once). */
+  checkout_abandoned_at: string | null;
   created_at: string;
   updated_at: string;
 };

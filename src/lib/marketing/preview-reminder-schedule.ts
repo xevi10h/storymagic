@@ -31,7 +31,8 @@ export const QUIET_HOURS = { from: 22, to: 8 } as const;
 export type ReminderStopReason = "purchased" | "unsubscribed" | "expired" | "story_unavailable";
 
 export type ReminderDecision =
-  | { action: "send"; stage: ReminderStage }
+  /** `checkout`: sent early because a checkout of the story expired unpaid (worded for that). */
+  | { action: "send"; stage: ReminderStage; checkout?: boolean }
   | { action: "wait" }
   | { action: "stop"; reason: ReminderStopReason };
 
@@ -51,6 +52,12 @@ export interface ReminderFacts {
   hasPaidOrder: boolean;
   /** The address is in email_suppressions. */
   suppressed: boolean;
+  /** Last unpaid Checkout Session expiry of the story (ms), null = none. */
+  checkoutAbandonedAt?: number | null;
+  /** Last reminder sent (ms), null = none yet. */
+  lastSentAt?: number | null;
+  /** A checkout of the story is still open (pending order): the parent may be paying right now. */
+  hasOpenCheckout?: boolean;
 }
 
 /** The reminder due at `now` for a sequence at `stage`, skipping the ones already overtaken. */
@@ -69,6 +76,13 @@ export function reminderDecision(facts: ReminderFacts): ReminderDecision {
   if (facts.storyStatus === null || !PREVIEW_STATUSES.has(facts.storyStatus)) return { action: "stop", reason: "story_unavailable" };
   if (facts.stage >= 3) return { action: "wait" }; // sequence complete: nothing left to send
   if (facts.now - facts.consentAt > REMINDER_EXPIRY_MS) return { action: "stop", reason: "expired" };
+  // A checkout left unpaid pulls the next reminder forward (still one of the three), unless a
+  // reminder already went out after it or another checkout of the story is open.
+  const abandoned = facts.checkoutAbandonedAt ?? null;
+  if (abandoned !== null && abandoned <= facts.now && (facts.lastSentAt == null || facts.lastSentAt < abandoned)) {
+    if (facts.hasOpenCheckout) return { action: "wait" };
+    return { action: "send", stage: (facts.stage + 1) as ReminderStage, checkout: true };
+  }
   const stage = dueStage(facts.stage, facts.consentAt, facts.now);
   return stage ? { action: "send", stage } : { action: "wait" };
 }

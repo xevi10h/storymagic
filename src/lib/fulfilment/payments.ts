@@ -267,14 +267,35 @@ export async function recordPaidSession(
   return { state: "paid", order, processedHere, followUpError };
 }
 
-/** checkout.session.expired → cancel the order if it never got paid. */
-export async function recordExpiredSession(supabase: FulfilmentClient, sessionId: string): Promise<void> {
+/**
+ * An unpaid checkout.session.expired → the story's open reminder sequence, if the parent
+ * consented to one (preview_reminders, src/lib/marketing/preview-reminders.ts), sends its next email at once worded for the unfinished order. Never
+ * throws: a failure only loses that early email (the sequence carries on as scheduled).
+ */
+export async function markCheckoutAbandoned(supabase: FulfilmentClient, storyId: string, at: Date = new Date()): Promise<void> {
   const { error } = await supabase
+    .from("preview_reminders")
+    .update({ checkout_abandoned_at: at.toISOString(), updated_at: at.toISOString() })
+    .eq("story_id", storyId)
+    .is("stopped_at", null)
+    .lt("stage", 3);
+  if (error) console.error(`[preview-reminders] Could not record the unpaid checkout of story ${storyId}: ${error.message}`);
+}
+
+/**
+ * checkout.session.expired → cancel the order if it never got paid, and (first expiry only)
+ * let the story's reminder sequence, if the parent consented to one, send its next email now.
+ */
+export async function recordExpiredSession(supabase: FulfilmentClient, sessionId: string): Promise<void> {
+  const { data: cancelled, error } = await supabase
     .from("orders")
     .update({ status: "cancelled" })
     .eq("stripe_checkout_session_id", sessionId)
-    .eq("status", "pending");
+    .eq("status", "pending")
+    .select("story_id");
   if (error) throw new Error(`Failed to cancel order for session ${sessionId}: ${error.message}`);
+  const storyId = cancelled?.[0]?.story_id;
+  if (storyId) await markCheckoutAbandoned(supabase, storyId);
 }
 
 /**

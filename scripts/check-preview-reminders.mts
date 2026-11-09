@@ -50,6 +50,39 @@ assert.deepEqual(reminderDecision(facts({ stage: 3, now: T0 + 80 * HOUR })), { a
 // An unsubscribed buyer is recorded as unsubscribed (the stricter reason).
 assert.deepEqual(reminderDecision(facts({ suppressed: true, hasPaidOrder: true })), { action: "stop", reason: "unsubscribed" });
 
+// ── Unpaid checkout: pulls the next reminder forward, never a 4th email ──────
+const abandoned = T0 + 90 * 60_000;
+assert.deepEqual(
+  reminderDecision(facts({ now: abandoned + 60_000, checkoutAbandonedAt: abandoned, lastSentAt: null })),
+  { action: "send", stage: 1, checkout: true },
+  "first reminder goes out at once, worded for the order",
+);
+assert.deepEqual(
+  reminderDecision(facts({ stage: 1, now: T0 + 3 * HOUR, checkoutAbandonedAt: T0 + 2 * HOUR, lastSentAt: T0 + HOUR })),
+  { action: "send", stage: 2, checkout: true },
+  "after reminder 1, the abandoned checkout brings reminder 2 forward",
+);
+assert.deepEqual(
+  reminderDecision(facts({ stage: 1, now: T0 + 3 * HOUR, checkoutAbandonedAt: T0 + HOUR, lastSentAt: T0 + 2 * HOUR })),
+  { action: "wait" },
+  "a reminder sent after the abandonment already covered it",
+);
+assert.deepEqual(
+  reminderDecision(facts({ now: abandoned + 60_000, checkoutAbandonedAt: abandoned, hasOpenCheckout: true })),
+  { action: "wait" },
+  "another checkout is open: the parent may be paying",
+);
+assert.deepEqual(
+  reminderDecision(facts({ stage: 3, now: T0 + 80 * HOUR, checkoutAbandonedAt: T0 + 79 * HOUR, lastSentAt: T0 + 72 * HOUR })),
+  { action: "wait" },
+  "never a fourth email",
+);
+assert.deepEqual(
+  reminderDecision(facts({ now: abandoned + 60_000, checkoutAbandonedAt: abandoned, hasPaidOrder: true })),
+  { action: "stop", reason: "purchased" },
+  "paid since: stop wins",
+);
+
 // ── Quiet hours (Spain) ─────────────────────────────────────────────────────
 assert.equal(madridHour(Date.parse("2026-10-05T20:30:00Z")), 22, "CEST = UTC+2");
 assert.equal(isQuietHour(Date.parse("2026-10-05T20:30:00Z")), true);
@@ -96,6 +129,20 @@ for (const locale of ["es", "ca", "en", "fr"] as const) {
     assert.ok(!mail.text.includes("<strong>"), `${where} plain text has no markup`);
   }
 }
+// Unpaid-checkout wording (4 locales): its own subject + CTA, prices with VAT, same legal footer.
+const CHECKOUT_CTA = { es: "Terminar mi pedido", ca: "Acabar la comanda", en: "Finish my order", fr: "Terminer ma commande" } as const;
+for (const locale of ["es", "ca", "en", "fr"] as const) {
+  const mail = buildPreviewReminderEmail({ locale, stage: 1, childName: "Olívia", childGender: "girl", previewUrl: PREVIEW, coverUrl: COVER, deadline: october, unsubscribeUrl: UNSUB, checkout: true });
+  assert.ok(mail.subject.includes("Olívia") && mail.text.includes(`${CHECKOUT_CTA[locale]}: ${PREVIEW}`), `${locale} checkout subject + CTA`);
+  assert.ok(mail.text.includes(VAT[locale]), `${locale} checkout prices carry VAT`);
+  assert.ok(mail.html.includes(UNSUB.replace("&", "&amp;")) && mail.html.includes("NIF 41649433K"), `${locale} checkout legal footer`);
+  assert.ok(!/[—–]/.test(mail.subject + mail.text), `${locale} checkout no dashes`);
+}
+assert.equal(
+  buildPreviewReminderEmail({ locale: "es", stage: 2, childName: "Lucía", childGender: "girl", previewUrl: PREVIEW, coverUrl: null, deadline: null, unsubscribeUrl: UNSUB, checkout: true }).subject,
+  "Tu pedido del libro de Lucía se quedó a medias",
+);
+
 // Catalan grammar + HTML escaping of the name; no cover, no deadline.
 const ca = buildPreviewReminderEmail({
   locale: "ca",

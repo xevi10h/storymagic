@@ -48,7 +48,10 @@ export interface PreviewReminderSummary {
   claimedElsewhere: number;
 }
 
-type ReminderScanRow = Pick<PreviewReminderRow, "id" | "story_id" | "email" | "locale" | "consent_at" | "stage" | "last_sent_at">;
+type ReminderScanRow = Pick<
+  PreviewReminderRow,
+  "id" | "story_id" | "email" | "locale" | "consent_at" | "stage" | "last_sent_at" | "checkout_abandoned_at"
+>;
 
 interface StoryFacts {
   status: string;
@@ -131,7 +134,7 @@ export async function runPreviewReminders(
   // Everything that may be due (first reminder at +1 h) or must be closed.
   const { data, error } = await supabase
     .from("preview_reminders")
-    .select("id, story_id, email, locale, consent_at, stage, last_sent_at")
+    .select("id, story_id, email, locale, consent_at, stage, last_sent_at, checkout_abandoned_at")
     .is("stopped_at", null)
     .lt("stage", 3)
     .lte("consent_at", new Date(now - REMINDER_OFFSETS_MS[1]).toISOString())
@@ -145,6 +148,8 @@ export async function runPreviewReminders(
   const storyIds = [...new Set(rows.map((r) => r.story_id))];
   const stories = new Map<string, StoryFacts>();
   const paidStories = new Set<string>();
+  // A checkout still open (pending order): an "order left half-way" email waits for it.
+  const openCheckoutStories = new Set<string>();
   for (let i = 0; i < storyIds.length; i += 100) {
     const chunk = storyIds.slice(i, i + 100);
     const { data: storyRows, error: storyErr } = await supabase
@@ -170,6 +175,13 @@ export async function runPreviewReminders(
       .is("refunded_at", null);
     if (orderErr) throw new Error(`preview_reminders orders: ${orderErr.message}`);
     for (const o of orderRows ?? []) if (o.story_id) paidStories.add(o.story_id);
+    const { data: pendingRows, error: pendingErr } = await supabase
+      .from("orders")
+      .select("story_id")
+      .in("story_id", chunk)
+      .eq("status", "pending");
+    if (pendingErr) throw new Error(`preview_reminders pending orders: ${pendingErr.message}`);
+    for (const o of pendingRows ?? []) if (o.story_id) openCheckoutStories.add(o.story_id);
   }
   const suppressed = await suppressedAmong(
     supabase,
@@ -199,6 +211,9 @@ export async function runPreviewReminders(
       storyStatus: story?.status ?? null,
       hasPaidOrder: paidStories.has(row.story_id),
       suppressed: suppressed.has(row.email),
+      checkoutAbandonedAt: row.checkout_abandoned_at ? Date.parse(row.checkout_abandoned_at) : null,
+      lastSentAt: row.last_sent_at ? Date.parse(row.last_sent_at) : null,
+      hasOpenCheckout: openCheckoutStories.has(row.story_id),
     });
     if (decision.action === "stop") {
       await stop(row, decision.reason);
@@ -247,13 +262,13 @@ export async function runPreviewReminders(
         await stop(row, "unsubscribed");
         continue;
       }
-      ok = await sendReminder(row, story, decision.stage, { site, deadline });
+      ok = await sendReminder(row, story, decision.stage, { site, deadline, checkout: decision.checkout === true });
     } catch (err) {
       console.error(`[preview-reminders] ${row.id} failed: ${err instanceof Error ? err.message : "unknown"}`);
     }
     if (ok) {
       summary.sent++;
-      console.log(`[preview-reminders] Sent reminder ${decision.stage} for story ${row.story_id}`);
+      console.log(`[preview-reminders] Sent reminder ${decision.stage}${decision.checkout ? " (checkout left unpaid)" : ""} for story ${row.story_id}`);
     } else {
       summary.failed++;
       // Release the claim so the next run retries (only if nothing else moved it meanwhile).
@@ -272,7 +287,7 @@ async function sendReminder(
   row: ReminderScanRow,
   story: StoryFacts,
   stage: ReminderStage,
-  ctx: { site: string; deadline: ReminderDeadline },
+  ctx: { site: string; deadline: ReminderDeadline; checkout: boolean },
 ): Promise<boolean> {
   const links = unsubscribeLinks(row.email, row.locale);
   if (!links) return false; // no unsubscribe link, no commercial email
@@ -286,6 +301,7 @@ async function sendReminder(
     coverUrl: story.cover ? previewCoverImageUrl(ctx.site, token) : null,
     deadline: ctx.deadline,
     unsubscribeUrl: links.pageUrl,
+    checkout: ctx.checkout,
   });
   return sendEmail({ to: row.email, subject: built.subject, html: built.html, text: built.text, headers: links.headers });
 }

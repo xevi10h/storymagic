@@ -49,6 +49,8 @@ export interface PreviewReminderContext {
   deadline: ReminderDeadline;
   /** Unsubscribe page for the recipient (required: no link, no email). */
   unsubscribeUrl: string;
+  /** Sent early because a checkout of the story expired unpaid: "your order was left half-way". */
+  checkout?: boolean;
 }
 
 interface StageCopy {
@@ -72,6 +74,8 @@ interface Prices {
 interface ReminderStrings {
   kicker: string;
   stages: Record<ReminderStage, StageCopy>;
+  /** Copy of the reminder pulled forward by an unpaid checkout (whatever its stage). */
+  checkout: StageCopy & { cta: string };
   occasion: Record<SeasonOccasion, string>;
   deadlinePrinted: (p: { occasion: string; date: string }) => string;
   deadlinePdf: (p: { occasion: string }) => string;
@@ -109,6 +113,15 @@ const CONTENT: Record<Locale, ReminderStrings> = {
           "Este es el último correo que te mandamos sobre este cuento. La vista previa sigue disponible unos días más, por si quieres terminarlo.",
         ],
       },
+    },
+    checkout: {
+      subject: (p) => `Tu pedido del libro ${p.deName} se quedó a medias`,
+      heading: (p) => `El libro ${p.deName} está a un paso`,
+      paragraphs: (p) => [
+        "Empezaste a pedirlo, pero el pago no llegó a completarse. No te hemos cobrado nada.",
+        `Lo tienes guardado tal como lo dejaste: eliges el formato y en un par de minutos está pedido. Tapa blanda por ${p.softcover} o tapa dura por ${p.hardcover}, IVA incluido y envío gratis.`,
+      ],
+      cta: "Terminar mi pedido",
     },
     occasion: { christmas: "Nochebuena", reyes: "Reyes" },
     deadlinePrinted: (p) =>
@@ -148,6 +161,15 @@ const CONTENT: Record<Locale, ReminderStrings> = {
         ],
       },
     },
+    checkout: {
+      subject: (p) => `La comanda del llibre ${p.deName} s'ha quedat a mitges`,
+      heading: (p) => `El llibre ${p.deName} és a un pas`,
+      paragraphs: (p) => [
+        "Vas començar a demanar-lo, però el pagament no es va completar. No t'hem cobrat res.",
+        `El tens desat tal com el vas deixar: tries el format i en un parell de minuts està demanat. Tapa tova per ${p.softcover} o tapa dura per ${p.hardcover}, IVA inclòs i enviament gratuït.`,
+      ],
+      cta: "Acabar la comanda",
+    },
     occasion: { christmas: "la nit de Nadal", reyes: "Reis" },
     deadlinePrinted: (p) =>
       `Si és un regal per a ${p.occasion}, demana el llibre imprès abans del <strong>${p.date}</strong> perquè arribi a temps (península i Balears). El PDF arriba per correu després del pagament.`,
@@ -185,6 +207,15 @@ const CONTENT: Record<Locale, ReminderStrings> = {
           "This is the last email we'll send you about this story. The preview stays available for a few more days in case you want to finish it.",
         ],
       },
+    },
+    checkout: {
+      subject: (p) => `Your order for ${p.name}'s book wasn't finished`,
+      heading: (p) => `${p.name}'s book is one step away`,
+      paragraphs: (p) => [
+        "You started ordering it, but the payment didn't go through. You haven't been charged.",
+        `It's saved just as you left it: pick the format and it's ordered in a couple of minutes. Softcover for ${p.softcover} or hardcover for ${p.hardcover}, VAT included and free delivery.`,
+      ],
+      cta: "Finish my order",
     },
     occasion: { christmas: "Christmas Eve", reyes: "Three Kings' Day" },
     deadlinePrinted: (p) =>
@@ -224,6 +255,15 @@ const CONTENT: Record<Locale, ReminderStrings> = {
         ],
       },
     },
+    checkout: {
+      subject: (p) => `Votre commande du livre ${p.deName} n'est pas terminée`,
+      heading: (p) => `Le livre ${p.deName} est à un pas`,
+      paragraphs: (p) => [
+        "Vous avez commencé à le commander, mais le paiement n'a pas abouti. Rien ne vous a été débité.",
+        `Il est enregistré tel que vous l'avez laissé : choisissez le format et il est commandé en deux minutes. Couverture souple à ${p.softcover} ou rigide à ${p.hardcover}, TVA incluse et livraison offerte.`,
+      ],
+      cta: "Terminer ma commande",
+    },
     occasion: { christmas: "le réveillon de Noël", reyes: "les Rois mages" },
     deadlinePrinted: (p) =>
       `Si c'est un cadeau pour ${p.occasion}, commandez le livre imprimé avant le <strong>${p.date}</strong> pour qu'il arrive à temps (Espagne péninsulaire et Baléares). Le PDF arrive par e-mail après le paiement.`,
@@ -253,7 +293,8 @@ const stripStrong = (s: string) => s.replace(/<\/?strong>/g, "");
 export function buildPreviewReminderEmail(ctx: PreviewReminderContext): BuiltEmail {
   const loc = resolveLocale(ctx.locale);
   const s = CONTENT[loc];
-  const stage = s.stages[ctx.stage];
+  const stage = ctx.checkout ? s.checkout : s.stages[ctx.stage];
+  const cta = ctx.checkout ? s.checkout.cta : s.cta;
   const name = ctx.childName.trim();
   const plain: Names = { name, deName: deName(name, loc, ctx.childGender) };
   const html: Names = { name: escapeHtml(plain.name), deName: escapeHtml(plain.deName) };
@@ -288,12 +329,12 @@ export function buildPreviewReminderEmail(ctx: PreviewReminderContext): BuiltEma
       heading: stage.heading(html),
       image: ctx.coverUrl ? { url: ctx.coverUrl, alt: s.coverAlt(html), href: ctx.previewUrl } : undefined,
       paragraphs: paragraphsHtml,
-      cta: { label: escapeHtml(s.cta), url: ctx.previewUrl },
+      cta: { label: escapeHtml(cta), url: ctx.previewUrl },
       signoff: s.signoff,
       lang: loc,
       footerNoteHtml: footerHtml,
     }),
-    text: [s.kicker.toUpperCase(), stage.heading(plain), ...paragraphsText, `${s.cta}: ${ctx.previewUrl}`, "---", s.signoff, footerText].join("\n\n"),
+    text: [s.kicker.toUpperCase(), stage.heading(plain), ...paragraphsText, `${cta}: ${ctx.previewUrl}`, "---", s.signoff, footerText].join("\n\n"),
     commercial: true,
   };
 }

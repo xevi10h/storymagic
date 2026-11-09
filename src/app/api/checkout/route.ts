@@ -71,9 +71,20 @@ function attributionMetadata(request: Request): Record<string, string> {
 /** ponytail: 2-min idempotency window — a double click reuses the session; a
  * deliberate second purchase after 2 min gets a new one. Per-click client keys
  * if that window ever proves too short. */
-function idempotencyKey(parts: string[]): string {
-  const bucket = Math.floor(Date.now() / 120_000);
+const IDEMPOTENCY_WINDOW_MS = 120_000;
+function idempotencyKey(parts: string[], bucket: number): string {
   return `checkout-${createHash("sha256").update([...parts, bucket].join("|")).digest("hex").slice(0, 40)}`;
+}
+
+/**
+ * Checkout Sessions expire 1 h after the click (Stripe's default is 24 h): the order is
+ * cancelled and the abandoned-checkout email (src/lib/marketing/checkout-recovery.ts) can go
+ * out the same day. Derived from the idempotency bucket, never from Date.now(): a replay with
+ * the same key must send byte-identical params or Stripe rejects it. Stripe's minimum is 30 min.
+ */
+const CHECKOUT_TTL_S = 60 * 60;
+function sessionExpiresAt(bucket: number): number {
+  return Math.floor(((bucket + 1) * IDEMPOTENCY_WINDOW_MS) / 1000) + CHECKOUT_TTL_S;
 }
 
 export async function POST(request: Request) {
@@ -205,6 +216,7 @@ export async function POST(request: Request) {
     const preAppliedPromo = secondBookPromo ?? referralPromotionCodeId;
 
     const attribution = attributionMetadata(request);
+    const bucket = Math.floor(Date.now() / IDEMPOTENCY_WINDOW_MS);
     const planFor = (referralPromotionCodeId: string | null) => buildCheckoutSession({
       catalog,
       storyId,
@@ -222,6 +234,7 @@ export async function POST(request: Request) {
       const p = planFor(promo);
       // Ad attribution for the webhook (Meta CAPI) and UTMs: only with advertising consent.
       p.params.metadata = { ...p.params.metadata, ...attribution };
+      p.params.expires_at = sessionExpiresAt(bucket);
       return {
         plan: p,
         request: () =>
@@ -236,7 +249,7 @@ export async function POST(request: Request) {
               // Attribution and the pre-applied code are part of the key: same key + different params is a Stripe error.
               JSON.stringify(attribution),
               promo ?? "",
-            ]),
+            ], bucket),
           }),
       };
     };
