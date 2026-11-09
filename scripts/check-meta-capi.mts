@@ -4,6 +4,7 @@ import assert from "node:assert";
 import { createHash } from "node:crypto";
 import type Stripe from "stripe";
 import { sendMetaPurchase } from "../src/lib/tracking/meta-capi.ts";
+import { conversionFor } from "../src/lib/tracking/consent.ts";
 
 const sha = (v: string) => createHash("sha256").update(v).digest("hex");
 // Every outcome must leave a log line: capture them.
@@ -79,5 +80,21 @@ globalThis.fetch = (async () => {
 }) as typeof fetch;
 await sendMetaPurchase(session({ ads_consent: "1" })); // must not throw: a webhook can't fail on tracking
 assert.match(lastLog(), /^error: .*FAILED .*network down/);
+
+// 0 € order (100 % gift / creator code): gift_redeem with its own id, never a Purchase.
+assert.deepEqual(conversionFor(0, "cs_x"), { name: "gift_redeem", eventId: "gift_redeem_cs_x" });
+assert.deepEqual(conversionFor(null, "cs_x"), { name: "gift_redeem", eventId: "gift_redeem_cs_x" });
+assert.deepEqual(conversionFor(3490, "cs_x"), { name: "Purchase", eventId: "purchase_cs_x" });
+reply = () => Response.json({ events_received: 1, fbtrace_id: "TRACE3" });
+globalThis.fetch = (async (url: string, init: RequestInit) => {
+  calls.push({ url, body: JSON.parse(String(init.body)) });
+  return reply();
+}) as typeof fetch;
+const before = calls.length;
+await sendMetaPurchase({ ...session({ ads_consent: "1" }), amount_total: 0 } as Stripe.Checkout.Session);
+const gift = calls[before].body.data[0];
+assert.equal(gift.event_name, "gift_redeem", "0 € order is not a Purchase");
+assert.equal(gift.event_id, "gift_redeem_cs_test_abc");
+assert.equal(gift.custom_data.value, 0);
 
 process.stdout.write("meta-capi checks OK\n");
