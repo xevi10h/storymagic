@@ -146,6 +146,21 @@ function outfitFor(age: number, favoriteColor: string | undefined): string {
   return `a plain ${color} hooded jacket worn open over a white-and-navy striped t-shirt, ${bottoms} and white canvas sneakers`;
 }
 
+// ── Photo mode without readable traits ───────────────────────────────────────
+
+/**
+ * Sentinel trait value (stored in characters.skin_tone / hair_color / eye_color like any
+ * other value) meaning "the look is the reference portrait, describe no physical trait".
+ * Written only by protagonistLook() (src/lib/creation-flow.ts) when the traits could not be
+ * read from the photo-mode drawing. Every other reader treats it as an unknown value and
+ * falls back to its defaults, like the legacy "medium" / "brown" values.
+ */
+export const PORTRAIT_LOOK = "portrait";
+
+export function isPortraitLook(input: Pick<CharacterDescriptionInput, "skinTone">): boolean {
+  return input.skinTone === PORTRAIT_LOOK;
+}
+
 // ── Public API ──────────────────────────────────────────────────────────────
 
 /** Builds the immutable Character Bible. Deterministic: same input → same bytes. */
@@ -153,6 +168,15 @@ export function buildCharacterBible(input: CharacterDescriptionInput): Character
   const genderWord = input.gender === "boy" ? "boy" : input.gender === "girl" ? "girl" : "child";
   const possessive = input.gender === "boy" ? "his" : input.gender === "girl" ? "her" : "their";
   const age = Math.max(1, Math.min(12, Math.round(input.age)));
+
+  const article = age === 8 || age === 11 ? "an" : "a";
+  const outfit = outfitFor(age, input.favoriteColor);
+  if (isPortraitLook(input)) {
+    // Photo mode whose traits could not be read from the drawing: no physical trait at all,
+    // the reference portrait / child sheet is the only identity source.
+    const identity = `${article} ${age}-year-old ${genderWord} who looks exactly like the child in the reference portrait (copy the face and every visible feature from it, add nothing it does not show)`;
+    return { version: 1, gender: input.gender, age, genderWord, identity, outfit, description: `${identity}; wearing ${outfit}` };
+  }
 
   const traits: string[] = [];
   const skin = input.skinTone ? SKIN_MAP[input.skinTone.toLowerCase()] : undefined;
@@ -166,9 +190,7 @@ export function buildCharacterBible(input: CharacterDescriptionInput): Character
   if (input.freckles) traits.push(`a sprinkle of freckles across ${possessive} nose`);
 
   const last = traits.pop() as string;
-  const article = age === 8 || age === 11 ? "an" : "a";
   const identity = `${article} ${age}-year-old ${genderWord} with ${traits.join(", ")} and ${last}`;
-  const outfit = outfitFor(age, input.favoriteColor);
   return {
     version: 1,
     gender: input.gender,

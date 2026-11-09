@@ -935,7 +935,7 @@
       "section7Title": "7. Protection des données des mineurs",
       "section7Text": "Nous ne collectons pas de données directement auprès des mineurs. Les données de l'enfant sont fournies par le parent ou tuteur légal qui crée le livre.",
       "section8Title": "8. Photos d'enfants",
-      "section8Text": "Envoyer une photo est facultatif : vous pouvez aussi créer le personnage en choisissant ses traits. Si vous en envoyez une, nous la traitons uniquement avec le consentement exprès de sa mère, de son père ou de son tuteur légal, et uniquement pour dessiner son personnage illustré. Voici comment : votre navigateur la réduit avant de l'envoyer ; notre serveur supprime toutes ses métadonnées, y compris la localisation GPS, et la conserve dans un stockage privé (Supabase) auquel seul notre serveur a accès, jamais via un lien public. Dès que vous l'envoyez, nous la transmettons à OpenAI Ireland Ltd., notre sous-traitant, pour dessiner le portrait illustré de votre enfant, que vous voyez à l'écran avant de continuer. Nous supprimons la photo dès que ce dessin est prêt, généralement en moins d'une minute, et dans tous les cas en moins de 24 heures (un processus automatique vérifie chaque heure). Les traits que décrit l'histoire (teint, cheveux, yeux, lunettes, taches de rousseur) sont lus sur ce dessin, pas sur la photo. Nous ne l'utilisons ni pour la reconnaissance faciale, ni pour des données biométriques, ni pour aucune autre finalité. OpenAI ne l'utilise pas pour entraîner ses modèles et peut la conserver jusqu'à 30 jours dans ses journaux de détection des abus (plus longtemps seulement si la loi l'exige ou si ses systèmes de sécurité la signalent pour vérification). Le dessin et la fiche de personnage réalisée à partir de lui (des illustrations, pas la photo) sont conservés en privé avec votre livre, illustrent l'aperçu et le livre final, et sont supprimés quand vous supprimez votre compte ; pour les comptes invités sans achat, après 30 jours d'inactivité. Vous pouvez retirer votre consentement à tout moment en écrivant à hola@meapica.es ; si la photo n'a pas encore été supprimée, nous la supprimerons immédiatement. Nous conservons une trace de votre consentement (date, version du texte accepté et langue) comme preuve que vous l'avez donné.",
+      "section8Text": "Envoyer une photo est facultatif : vous pouvez aussi créer le personnage en choisissant ses traits. Si vous en envoyez une, nous la traitons uniquement avec le consentement exprès de sa mère, de son père ou de son tuteur légal, et uniquement pour dessiner son personnage illustré. Voici comment : votre navigateur la réduit avant de l'envoyer ; notre serveur supprime toutes ses métadonnées, y compris la localisation GPS, et la conserve dans un stockage privé (Supabase) auquel seul notre serveur a accès, jamais via un lien public. Quand vous appuyez sur « Créer son personnage », nous la transmettons à OpenAI Ireland Ltd., notre sous-traitant, pour dessiner le portrait illustré de votre enfant, que vous voyez à l'écran avant de continuer. Nous supprimons la photo dès que ce dessin est prêt, généralement en moins d'une minute ; si vous ne créez pas le personnage, dans tous les cas en moins de 24 heures (un processus automatique vérifie chaque heure). Les traits que décrit l'histoire (teint, cheveux, yeux, lunettes, taches de rousseur) sont lus sur ce dessin, pas sur la photo. Nous ne l'utilisons ni pour la reconnaissance faciale, ni pour des données biométriques, ni pour aucune autre finalité. OpenAI ne l'utilise pas pour entraîner ses modèles et peut la conserver jusqu'à 30 jours dans ses journaux de détection des abus (plus longtemps seulement si la loi l'exige ou si ses systèmes de sécurité la signalent pour vérification). Le dessin et la fiche de personnage réalisée à partir de lui (des illustrations, pas la photo) sont conservés en privé avec votre livre, illustrent l'aperçu et le livre final, et sont supprimés quand vous supprimez votre compte ; pour les comptes invités sans achat, après 30 jours d'inactivité. Vous pouvez retirer votre consentement à tout moment avec le bouton « Retirer la photo » avant de créer le personnage ou en écrivant à hola@meapica.es ; si la photo n'a pas encore été supprimée, nous la supprimerons immédiatement. Nous conservons une trace de votre consentement (date, version du texte accepté et langue) comme preuve que vous l'avez donné.",
       "section8TextNoPhoto": "Aujourd'hui, nous ne demandons ni n'acceptons de photos d'enfants : le personnage est créé uniquement à partir des traits que vous choisissez (teint, cheveux, coiffure, yeux, lunettes et taches de rousseur), nous ne traitons donc aucune image de votre enfant. Si un jour nous proposons d'envoyer une photo, ce sera facultatif, uniquement avec le consentement de sa mère, de son père ou de son tuteur légal, et avant de l'activer nous expliquerons ici précisément comment nous la traitons."
     },
     "terms": {
@@ -1242,7 +1242,21 @@
       "readyHint": "Nous avons déjà supprimé la photo. C'est ce dessin qui sera le héros de toute son histoire.",
       "tryAnother": "Essayer une autre photo",
       "retry": "Réessayer",
-      "portraitAlt": "{name} dessiné comme dans son livre"
+      "portraitAlt": "{name} dessiné comme dans son livre",
+      "photoReadyTitle": "Nous avons sa photo",
+      "photoReadyHint": "Quand vous voulez, nous créons son personnage. Cela prend environ 30 secondes.",
+      "create": "Créer son personnage",
+      "removePhoto": "Retirer la photo",
+      "photoThumbAlt": "Photo envoyée",
+      "loadingTitle": "Nous créons {name}",
+      "loading1": "Nous mélangeons les couleurs…",
+      "loading2": "Nous dessinons ses cheveux…",
+      "loading3": "Nous cherchons son sourire…",
+      "loading4": "Nous peignons ses yeux…",
+      "loading5": "L'aquarelle sèche…",
+      "revealTitle": "Voici {name} !",
+      "revealHint": "Voilà son apparence dans toute son histoire. Nous avons déjà supprimé la photo.",
+      "revealContinue": "J'adore ! Continuer"
     },
     "adventure": {
       "title": "Quelle aventure vivra {name} ?",
@@ -1332,7 +1346,6 @@
         "provider_unavailable": "Nous ne pouvons pas dessiner pour le moment. Réessayez dans quelques minutes.",
         "daily_cap_reached": "Nous avons dessiné énormément de personnages aujourd'hui et atteint la limite du jour. Revenez demain, s'il vous plaît.",
         "generation_failed": "Nous n'avons pas pu dessiner son personnage avec cette photo. Réessayez ou essayez-en une autre.",
-        "interrupted": "Le dessin a été interrompu et nous avons supprimé la photo. Envoyez-la à nouveau pour créer son personnage.",
         "consent_version_mismatch": "Nous avons mis à jour cette étape. Rechargez la page et réessayez."
       }
     },

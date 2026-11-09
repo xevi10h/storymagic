@@ -975,7 +975,7 @@
       "section7Title": "7. Protección de datos de menores",
       "section7Text": "No recogemos datos directamente de menores. Los datos del niño/a son proporcionados por el padre/madre o tutor legal que crea el libro.",
       "section8Title": "8. Fotos de menores",
-      "section8Text": "Subir una foto es opcional: también puedes crear el personaje eligiendo sus rasgos. Si la subes, la tratamos solo con el consentimiento expreso de su madre, padre o tutor legal y solo para dibujar su personaje ilustrado. Así la tratamos: tu navegador la reduce de tamaño antes de enviarla; nuestro servidor le quita todos los metadatos, incluida la ubicación GPS, y la guarda en un almacenamiento privado (Supabase) al que solo accede nuestro servidor, nunca mediante un enlace público. En cuanto la subes, la enviamos a OpenAI Ireland Ltd., nuestro encargado del tratamiento, para que dibuje el retrato ilustrado de tu hijo o hija, que ves en pantalla antes de continuar. Borramos la foto en cuanto ese dibujo está listo, normalmente en menos de un minuto, y en cualquier caso en menos de 24 horas (un proceso automático lo comprueba cada hora). Los rasgos que describe el cuento (piel, pelo, ojos, gafas, pecas) se leen de ese dibujo, no de la foto. No la usamos para reconocimiento facial, datos biométricos ni ninguna otra finalidad. OpenAI no la usa para entrenar sus modelos y puede conservarla hasta 30 días en sus registros de detección de abusos (más tiempo solo si la ley lo exige o si sus sistemas de seguridad la marcan para revisión). El dibujo y la ficha de personaje que se hace a partir de él (ilustraciones, no la foto) se guardan en privado con tu libro, ilustran la vista previa y el libro final, y se borran cuando borras tu cuenta; en las cuentas de invitado sin compra, tras 30 días sin actividad. Puedes retirar tu consentimiento en cualquier momento escribiendo a hola@meapica.es; si la foto aún no se ha borrado, la borraremos de inmediato. Guardamos un registro de tu consentimiento (fecha, versión del texto aceptado e idioma) como prueba de que lo diste.",
+      "section8Text": "Subir una foto es opcional: también puedes crear el personaje eligiendo sus rasgos. Si la subes, la tratamos solo con el consentimiento expreso de su madre, padre o tutor legal y solo para dibujar su personaje ilustrado. Así la tratamos: tu navegador la reduce de tamaño antes de enviarla; nuestro servidor le quita todos los metadatos, incluida la ubicación GPS, y la guarda en un almacenamiento privado (Supabase) al que solo accede nuestro servidor, nunca mediante un enlace público. Cuando pulsas «Crear su personaje», la enviamos a OpenAI Ireland Ltd., nuestro encargado del tratamiento, para que dibuje el retrato ilustrado de tu hijo o hija, que ves en pantalla antes de continuar. Borramos la foto en cuanto ese dibujo está listo, normalmente en menos de un minuto; si no llegas a crear el personaje, en cualquier caso en menos de 24 horas (un proceso automático lo comprueba cada hora). Los rasgos que describe el cuento (piel, pelo, ojos, gafas, pecas) se leen de ese dibujo, no de la foto. No la usamos para reconocimiento facial, datos biométricos ni ninguna otra finalidad. OpenAI no la usa para entrenar sus modelos y puede conservarla hasta 30 días en sus registros de detección de abusos (más tiempo solo si la ley lo exige o si sus sistemas de seguridad la marcan para revisión). El dibujo y la ficha de personaje que se hace a partir de él (ilustraciones, no la foto) se guardan en privado con tu libro, ilustran la vista previa y el libro final, y se borran cuando borras tu cuenta; en las cuentas de invitado sin compra, tras 30 días sin actividad. Puedes retirar tu consentimiento en cualquier momento con el botón «Quitar la foto» antes de crear el personaje o escribiendo a hola@meapica.es; si la foto aún no se ha borrado, la borraremos de inmediato. Guardamos un registro de tu consentimiento (fecha, versión del texto aceptado e idioma) como prueba de que lo diste.",
       "section8TextNoPhoto": "Hoy no pedimos ni aceptamos fotos de los niños: el personaje se crea solo con los rasgos que eliges (piel, pelo, peinado, ojos, gafas y pecas), así que no tratamos ninguna imagen de tu hijo o hija. Si algún día ofrecemos subir una foto, será opcional, solo con el consentimiento de su madre, padre o tutor legal, y antes de activarlo explicaremos aquí exactamente cómo la tratamos."
     },
     "terms": {
@@ -1282,7 +1282,21 @@
       "readyHint": "Ya hemos borrado la foto. Este dibujo es el que protagoniza todo su cuento.",
       "tryAnother": "Probar con otra foto",
       "retry": "Volver a intentarlo",
-      "portraitAlt": "{name} dibujado como en su libro"
+      "portraitAlt": "{name} dibujado como en su libro",
+      "photoReadyTitle": "Ya tenemos su foto",
+      "photoReadyHint": "Cuando quieras, creamos su personaje. Tarda unos 30 segundos.",
+      "create": "Crear su personaje",
+      "removePhoto": "Quitar la foto",
+      "photoThumbAlt": "Foto subida",
+      "loadingTitle": "Creando a {name}",
+      "loading1": "Mezclando colores…",
+      "loading2": "Dibujando su pelo…",
+      "loading3": "Buscando su sonrisa…",
+      "loading4": "Pintando sus ojos…",
+      "loading5": "Secando la acuarela…",
+      "revealTitle": "¡Aquí está {name}!",
+      "revealHint": "Así saldrá en todo su cuento. Ya hemos borrado la foto.",
+      "revealContinue": "¡Me encanta! Seguir"
     },
     "adventure": {
       "title": "¿Qué aventura vivirá {name}?",
@@ -1372,7 +1386,6 @@
         "provider_unavailable": "Ahora mismo no podemos dibujar. Vuelve a intentarlo en unos minutos.",
         "daily_cap_reached": "Hoy hemos dibujado muchísimos personajes y hemos llegado al límite del día. Vuelve mañana, por favor.",
         "generation_failed": "No hemos podido dibujar su personaje con esta foto. Vuelve a intentarlo o prueba con otra.",
-        "interrupted": "El dibujo se interrumpió y hemos borrado la foto. Súbela de nuevo para crear su personaje.",
         "consent_version_mismatch": "Hemos actualizado este paso. Recarga la página y vuelve a intentarlo."
       }
     },

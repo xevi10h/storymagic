@@ -38,6 +38,15 @@ import path from "node:path";
 import { toServerFetchUrl } from "@/lib/storage/illustration-urls";
 import { isIllustrationRef } from "@/lib/storage/illustration-refs";
 import { avatarAssetUrl, isAvatarAssetPath } from "@/lib/character-look";
+import {
+  ageBandFor,
+  avatarBaseKey,
+  isAvatarRendered,
+  type AvatarGender,
+  type AvatarHairColor,
+  type AvatarHairstyle,
+  type AvatarSkinTone,
+} from "@/lib/avatar/manifest";
 import { describeError, fetchWithRetry } from "./net-retry";
 import type { QAVerdict } from "./qa-judge";
 
@@ -476,23 +485,54 @@ export async function renderPortrait(bible: CharacterBible, photo: ImageReferenc
 }
 
 /**
- * Photo mode: the child's portrait drawn from the photo (the only identity reference;
- * src/lib/ai/image-prompts.ts buildPhotoPortraitPrompt). The outfit comes from the Bible
- * built for the same gender/age/favourite colour, so the sheet that follows matches it.
+ * Style references of a photo-mode portrait: two pre-rendered "Créalo tú" avatars of the same
+ * gender and age band, deliberately two different-looking children (light / dark skin, different
+ * hair) so the model takes the series' style from them and never one child's identity.
+ */
+const STYLE_REF_LOOKS: Record<AvatarGender, { skinTone: AvatarSkinTone; hairColor: AvatarHairColor; hairstyle: string }[]> = {
+  boy: [
+    { skinTone: "medium-light", hairColor: "brown", hairstyle: "short" },
+    { skinTone: "dark", hairColor: "black", hairstyle: "curly" },
+  ],
+  girl: [
+    { skinTone: "light", hairColor: "blonde", hairstyle: "ponytail" },
+    { skinTone: "dark", hairColor: "black", hairstyle: "braids" },
+  ],
+  neutral: [
+    { skinTone: "medium-light", hairColor: "red", hairstyle: "bob" },
+    { skinTone: "dark", hairColor: "black", hairstyle: "short" },
+  ],
+};
+
+export function photoStyleRefPaths(gender: AvatarGender, age: number): string[] {
+  const ageBand = ageBandFor(age);
+  return STYLE_REF_LOOKS[gender]
+    .map((l) => ({ gender, ageBand, ...l, hairstyle: l.hairstyle as AvatarHairstyle }))
+    .filter((t) => isAvatarRendered(t))
+    .map((t) => `/images/avatar/${avatarBaseKey(t)}.webp`);
+}
+
+/**
+ * Photo mode: the child's portrait drawn from the photo (identity reference) in the style of the
+ * avatar matrix (style references), src/lib/ai/image-prompts.ts buildPhotoPortraitPrompt.
  */
 export async function renderPhotoPortrait(
   photo: ImageReference,
-  child: { gender: CharacterDescriptionInput["gender"]; age: number; favoriteColor?: string },
+  child: { gender: CharacterDescriptionInput["gender"]; age: number },
   opts: CallOptions,
 ): Promise<OpenAIImageResult> {
   const cfg = stageConfig("portrait");
-  const { age, genderWord, outfit } = buildCharacterBible(child);
+  const { age, genderWord } = buildCharacterBible(child);
+  // A style reference that fails to load is skipped (the prompt still describes the series).
+  const styleRefs = (
+    await Promise.all(photoStyleRefPaths(child.gender, child.age).map((p) => loadAvatarReference(p).catch(() => null)))
+  ).filter((r): r is ImageReference => !!r);
   return generateOpenAIImage({
     model: cfg.model,
     quality: cfg.quality,
     size: sizeFor("preview", "portrait"),
-    prompt: buildPhotoPortraitPrompt({ age, genderWord, outfit }),
-    references: [photo],
+    prompt: buildPhotoPortraitPrompt({ age, genderWord, styleRefs: styleRefs.length }),
+    references: [photo, ...styleRefs],
     label: opts.label,
     deadline: opts.deadline,
   });

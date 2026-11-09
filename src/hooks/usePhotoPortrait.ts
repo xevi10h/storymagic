@@ -1,25 +1,18 @@
 "use client";
 
-// Photo mode on /create: turns an uploaded photo into the child's illustrated portrait
-// (POST /api/characters/photo-portrait) and keeps the draft consistent around it.
-// Lives at page level (not in the photo panel) so the drawing survives switching tabs
-// or screens while it is being painted.
+// Photo mode on /create: upload (step A) → "Crear su personaje" → drawing (step B, dark
+// loading overlay) → reveal (step C, modal) via POST /api/characters/photo-portrait.
+// Lives at page level (not in the photo panel) so a drawing in progress survives switching
+// tabs or screens.
 
 import { useCallback, useEffect, useRef, useState, type Dispatch, type SetStateAction } from "react";
 import type { CreateBookState, Gender } from "@/lib/create-store";
-import { isPhotoUploadEnabled } from "@/lib/creation-flow";
 import { parsePhotoTraits } from "@/lib/photo-traits";
 import { ensureGuestSession } from "@/lib/guest-session";
 import { trackEvent } from "@/lib/tracking/consent";
 
 /** Parent-facing error codes (crear.photo.errors.*). */
-export type PhotoPortraitError =
-  | "photo_unavailable"
-  | "rate_limited"
-  | "provider_unavailable"
-  | "daily_cap_reached"
-  | "generation_failed"
-  | "interrupted";
+export type PhotoPortraitError = "photo_unavailable" | "rate_limited" | "provider_unavailable" | "daily_cap_reached" | "generation_failed";
 
 /** Portrait (~15–25 s) + traits read; past this the request is considered lost. */
 const DRAW_TIMEOUT_MS = 100_000;
@@ -32,7 +25,7 @@ function mapError(code: unknown, status: number): PhotoPortraitError {
   return "generation_failed";
 }
 
-/** Best effort: the photo is gone server-side after any drawing, and the hourly purge is the backstop. */
+/** Best effort: a photo never drawn is also removed by the hourly purge (≤ 24 h). */
 function deletePhoto(photoPath: string) {
   void fetch("/api/characters/photo", {
     method: "DELETE",
@@ -41,22 +34,38 @@ function deletePhoto(photoPath: string) {
   }).catch(() => {});
 }
 
-export function usePhotoPortrait(
-  state: CreateBookState,
-  setState: Dispatch<SetStateAction<CreateBookState>>,
-  hydrated: boolean,
-) {
+export function usePhotoPortrait(state: CreateBookState, setState: Dispatch<SetStateAction<CreateBookState>>) {
   const [drawing, setDrawing] = useState(false);
   const [error, setError] = useState<PhotoPortraitError | null>(null);
+  /** Step C: the drawing made in this visit, shown in the reveal modal until the parent continues. */
+  const [revealOpen, setRevealOpen] = useState(false);
+  /** Local thumbnail of the uploaded photo (object URL, never persisted nor sent anywhere). */
+  const [preview, setPreview] = useState<string | null>(null);
   const inFlight = useRef(false);
 
+  useEffect(() => {
+    return () => {
+      if (preview) URL.revokeObjectURL(preview);
+    };
+  }, [preview]);
+
+  /** Step A: the photo is stored; nothing is drawn until the parent asks for it. */
+  const uploaded = useCallback(
+    (photoPath: string, thumbnail: Blob | null) => {
+      setError(null);
+      setPreview(thumbnail ? URL.createObjectURL(thumbnail) : null);
+      setState((prev) => ({ ...prev, photoPath, photoCharacter: null }));
+    },
+    [setState],
+  );
+
+  /** Step B: draw. One request at a time (double clicks, retries). */
   const draw = useCallback(
     async (photoPath: string, child: { gender: Gender; age: number; favoriteColor: string }) => {
       if (inFlight.current) return;
       inFlight.current = true;
       setDrawing(true);
       setError(null);
-      setState((prev) => ({ ...prev, photoPath, photoCharacter: null }));
       try {
         await ensureGuestSession();
         const res = await fetch("/api/characters/photo-portrait", {
@@ -66,16 +75,23 @@ export function usePhotoPortrait(
           body: JSON.stringify({ photoPath, gender: child.gender, age: child.age, favoriteColor: child.favoriteColor || undefined }),
         });
         const data = (await res.json().catch(() => ({}))) as { portraitUrl?: unknown; portraitPath?: unknown; traits?: unknown; error?: unknown };
-        const traits = res.ok ? parsePhotoTraits(data.traits, child.gender) : null;
-        if (res.ok && traits && typeof data.portraitUrl === "string" && typeof data.portraitPath === "string") {
+        // null = the server could not read the traits: neutral look (explicit, see protagonistLook).
+        const traits = data.traits === null ? null : parsePhotoTraits(data.traits, child.gender);
+        const traitsOk = data.traits === null || traits !== null;
+        if (res.ok && traitsOk && typeof data.portraitUrl === "string" && typeof data.portraitPath === "string") {
           const photoCharacter = { portraitUrl: data.portraitUrl, portraitPath: data.portraitPath, traits, gender: child.gender };
           // The server deleted the photo: from now on only the drawing exists.
           setState((prev) => (prev.photoPath === photoPath ? { ...prev, photoPath: null, photoCharacter } : prev));
+          setPreview(null);
+          setRevealOpen(true);
           trackEvent("photo_portrait_ready");
           return;
         }
         const code = res.ok ? "generation_failed" : mapError(data.error, res.status);
-        if (code === "photo_unavailable") setState((prev) => (prev.photoPath === photoPath ? { ...prev, photoPath: null } : prev));
+        if (code === "photo_unavailable") {
+          setState((prev) => (prev.photoPath === photoPath ? { ...prev, photoPath: null } : prev));
+          setPreview(null);
+        }
         setError(code);
       } catch (err) {
         console.warn("[create] photo portrait failed:", err);
@@ -88,30 +104,17 @@ export function usePhotoPortrait(
     [setState],
   );
 
-  /** "Probar con otra foto": back to a fresh consent + upload; any leftover photo is deleted. */
+  /** "Quitar la foto" / "Probar con otra foto": back to a fresh consent + upload; a stored photo is deleted now. */
   const reset = useCallback(() => {
     if (inFlight.current) return;
     setError(null);
-    setState((prev) => {
-      if (prev.photoPath) deletePhoto(prev.photoPath);
-      return { ...prev, photoPath: null, photoCharacter: null };
-    });
-  }, [setState]);
+    setRevealOpen(false);
+    setPreview(null);
+    if (state.photoPath) deletePhoto(state.photoPath);
+    setState((prev) => ({ ...prev, photoPath: null, photoCharacter: null }));
+  }, [setState, state.photoPath]);
 
-  // A photo left in a restored draft means its drawing never arrived (reload or tab closed
-  // mid-drawing): delete it and ask for the photo again, once per page load.
-  const restoredChecked = useRef(false);
-  const restoredPhoto = state.photoPath;
-  useEffect(() => {
-    if (!hydrated || restoredChecked.current) return;
-    restoredChecked.current = true;
-    if (!restoredPhoto || inFlight.current) return;
-    deletePhoto(restoredPhoto);
-    setState((prev) => (prev.photoPath === restoredPhoto ? { ...prev, photoPath: null } : prev));
-    if (isPhotoUploadEnabled()) setError("interrupted");
-    // Only the draft as restored on load matters, not later uploads.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hydrated]);
+  const closeReveal = useCallback(() => setRevealOpen(false), []);
 
-  return { drawing, error, draw, reset };
+  return { drawing, error, revealOpen, preview, uploaded, draw, reset, closeReveal };
 }

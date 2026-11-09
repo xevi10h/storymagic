@@ -17,21 +17,32 @@ import { isPhotoUploadEnabled, protagonistReadiness } from "@/lib/creation-flow"
 import CreationFooterNav from "./CreationFooterNav";
 import PhotoUploadPanel from "./PhotoUploadPanel";
 import PhotoPortraitCircle from "./PhotoPortraitCircle";
+import PhotoCreateOverlay from "./PhotoCreateOverlay";
 import type { PhotoPortraitError } from "@/hooks/usePhotoPortrait";
+
+/** Photo mode state + actions (page-level usePhotoPortrait). */
+export interface PhotoModeProps {
+  /** Uploaded photo not drawn yet (step A); null once drawn or removed. */
+  path: string | null;
+  /** The drawing made from the photo (valid for the current gender), or null. */
+  character: PhotoCharacter | null;
+  drawing: boolean;
+  error: PhotoPortraitError | null;
+  /** Local thumbnail of the uploaded photo (object URL) */
+  preview: string | null;
+  revealOpen: boolean;
+  onUploaded: (photoPath: string, thumbnail: Blob | null) => void;
+  onCreate: () => void;
+  onReset: () => void;
+  onCloseReveal: () => void;
+}
 
 interface StepProtagonistProps {
   character: CharacterData;
   protagonistMode: ProtagonistMode;
-  photoPath: string | null;
-  /** The drawing made from the photo (valid for the current gender), or null. */
-  photoCharacter: PhotoCharacter | null;
-  photoDrawing: boolean;
-  photoError: PhotoPortraitError | null;
+  photo: PhotoModeProps;
   onUpdateCharacter: (updates: Partial<CharacterData>) => void;
   onSetMode: (mode: ProtagonistMode) => void;
-  onPhotoUploaded: (photoPath: string) => void;
-  onPhotoRetry: () => void;
-  onPhotoReset: () => void;
   onNext: () => void;
   onBack: () => void;
 }
@@ -132,15 +143,9 @@ function SwatchGroup({
 export default function StepProtagonist({
   character,
   protagonistMode,
-  photoPath,
-  photoCharacter,
-  photoDrawing,
-  photoError,
+  photo,
   onUpdateCharacter,
   onSetMode,
-  onPhotoUploaded,
-  onPhotoRetry,
-  onPhotoReset,
   onNext,
   onBack,
 }: StepProtagonistProps) {
@@ -150,6 +155,8 @@ export default function StepProtagonist({
   const mode: ProtagonistMode = photoEnabled ? protagonistMode : "avatar";
   const traits = toAvatarTraits(character);
   const name = character.name.trim();
+  const photoCharacter = photo.character;
+  const photoDrawing = photo.drawing;
   const readiness = protagonistReadiness({ protagonistMode: mode, character, photoCharacter }, photoEnabled);
   const [glassesShape, glassesFrame] =
     character.glasses === "none"
@@ -369,16 +376,7 @@ export default function StepProtagonist({
             </div>
           ) : (
             <div id="panel-photo" role="tabpanel" aria-labelledby="tab-photo" className="flex flex-col gap-6">
-              <PhotoUploadPanel
-                name={name}
-                photoPath={photoPath}
-                photoCharacter={photoCharacter}
-                drawing={photoDrawing}
-                drawError={photoError}
-                onUploaded={onPhotoUploaded}
-                onRetry={onPhotoRetry}
-                onReset={onPhotoReset}
-              />
+              <PhotoUploadPanel name={name} photo={photo} />
             </div>
           )}
 
@@ -395,6 +393,18 @@ export default function StepProtagonist({
           />
         </div>
       </main>
+
+      {mode === "photo" && (
+        <PhotoCreateOverlay
+          name={name}
+          drawing={photoDrawing}
+          revealOpen={photo.revealOpen && !!photoCharacter}
+          preview={photo.preview}
+          portraitUrl={photoCharacter?.portraitUrl ?? null}
+          onContinue={photo.onCloseReveal}
+          onTryAnother={photo.onReset}
+        />
+      )}
 
       <CreationFooterNav
         onBack={onBack}

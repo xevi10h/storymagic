@@ -6,6 +6,7 @@
 import assert from "node:assert/strict";
 import {
   activePhotoCharacter,
+  builderColours,
   characterLookPayload,
   characterPrepareBody,
   migrateCreateState,
@@ -16,11 +17,14 @@ import {
 import { INITIAL_STATE, type CreateBookState, type PhotoCharacter } from "./create-store";
 import { photoPortraitInputSchema, portraitInputSchema, prepareInputSchema } from "./character-look";
 import { bibleHash, prepBible } from "./ai/character-prep";
-import { SKIN_MAP, HAIR_COLOR_MAP } from "./ai/character-description";
+import { SKIN_MAP, HAIR_COLOR_MAP, EYE_COLOR_MAP, PORTRAIT_LOOK, buildCharacterBible, isPortraitLook } from "./ai/character-description";
+import { buildPlanChildDescription } from "./ai/book-plan";
 import { finalFaceAnchor } from "./ai/face-anchor";
 import { defaultPhotoTraits, parsePhotoTraits, photoTraitOptions } from "./photo-traits";
-import { buildPhotoPortraitPrompt } from "./ai/image-prompts";
-import { AVATAR_HAIRSTYLES } from "./avatar/manifest";
+import { AVATAR_FRAME, buildPhotoPortraitPrompt } from "./ai/image-prompts";
+import { photoStyleRefPaths } from "./ai/book-images";
+import { AVATAR_HAIRSTYLES, ageBandFor } from "./avatar/manifest";
+import { existsSync } from "node:fs";
 
 const USER = "11111111-2222-4333-8444-555555555555";
 const PHOTO = `${USER}/aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee.jpg`;
@@ -110,9 +114,20 @@ assert.equal(parsePhotoTraits({ ...drawing.traits, hairstyle: "mohawk" }, "girl"
 assert.equal(parsePhotoTraits({ ...drawing.traits, skinTone: "#c68642" }, "girl"), null, "legacy skin hex refused");
 assert.equal(parsePhotoTraits({ ...drawing.traits, freckles: "yes" }, "girl"), null);
 
-// ── Photo-first prompt: no identity text, the Bible outfit ───────────────────
-const p = buildPhotoPortraitPrompt({ age: 6, genderWord: "girl", outfit: prepBible(look).outfit });
-assert.ok(p.includes(prepBible(look).outfit), "same outfit as the Bible");
+// ── Photo portrait: photo = identity, avatar matrix = style, no identity text ─
+const p = buildPhotoPortraitPrompt({ age: 6, genderWord: "girl", styleRefs: 2 });
+assert.ok(p.includes("FIRST attached image is a photo"), p);
+assert.ok(p.includes("SECOND to THIRD attached images are character portraits"), p);
+assert.ok(p.includes(AVATAR_FRAME), "same composition as the avatar matrix");
+assert.ok(!buildPhotoPortraitPrompt({ age: 6, genderWord: "girl", styleRefs: 0 }).includes("SECOND"), "no style refs → no dangling role");
+for (const g of ["boy", "girl", "neutral"] as const) {
+  for (const age of [3, 9]) {
+    const refs = photoStyleRefPaths(g, age);
+    assert.equal(refs.length, 2, `${g} ${age}: two rendered style refs`);
+    for (const r of refs) assert.ok(existsSync(`public${r}`), `${r} exists`);
+    assert.ok(refs.every((r) => r.includes(`/${ageBandFor(age)}/`)), "same age band");
+  }
+}
 for (const words of Object.values(SKIN_MAP)) assert.ok(!p.includes(words), `no skin text in the photo prompt (${words})`);
 for (const words of Object.values(HAIR_COLOR_MAP)) assert.ok(!p.includes(words), `no hair text in the photo prompt (${words})`);
 
@@ -131,6 +146,37 @@ assert.equal(
   2,
   "drawing of another gender → back to screen 2",
 );
+
+// ── Traits unreadable → neutral look (owner decision 2026-11-09) ─────────────
+const neutralDraft = draft({ protagonistMode: "photo", photoCharacter: { ...drawing, traits: null } });
+assert.equal(protagonistReadiness(neutralDraft, true), "ready", "a drawing without readable traits is still the child");
+const nPrep = characterPrepareBody(neutralDraft);
+const nStory = storyCharacterBody(neutralDraft);
+assert.equal(nPrep.portraitUrl, PORTRAIT, "neutral: still anchored on the drawing");
+assert.equal(nPrep.skinTone, PORTRAIT_LOOK, "neutral marker travels in the single builders");
+const nBible = prepBible(prepareInputSchema.parse(nPrep));
+const traitWords = [
+  ...Object.values(SKIN_MAP), ...Object.values(HAIR_COLOR_MAP), ...Object.values(EYE_COLOR_MAP),
+  "skin", "hair", "eyes", "glasses", "freckles", "curls", "braids", "ponytail", "bob", "afro",
+];
+for (const w of traitWords) assert.ok(!nBible.identity.includes(w), `neutral Bible names no trait ("${w}"): ${nBible.identity}`);
+assert.ok(nBible.identity.includes("reference portrait"), nBible.identity);
+assert.ok(nBible.description.includes(nBible.outfit), "the outfit stays (the drawing wears it)");
+// prepare ≡ stories ≡ generate route (StoryInput from the stored character row, defaults applied)
+assert.equal(bibleHash(prepBible(prepareInputSchema.parse({ ...nStory.character }))), bibleHash(nBible), "prepare ≡ stories hash");
+const storedRow = { gender: nStory.character.gender, age: nStory.character.age, skinTone: nStory.character.skinTone, hairColor: nStory.character.hairColor, eyeColor: nStory.character.eyeColor, hairstyle: nStory.character.hairstyle, favoriteColor: nStory.character.favoriteColor, glasses: nStory.character.glasses, freckles: nStory.character.freckles };
+assert.equal(bibleHash(buildCharacterBible(storedRow)), bibleHash(nBible), "generate route rebuilds the same neutral Bible");
+assert.equal(buildPlanChildDescription({ ...storedRow, childName: "Lucía" } as Parameters<typeof buildPlanChildDescription>[0]), nBible.description, "scene prompts use the neutral text too");
+assert.notEqual(bibleHash(nBible), bibleHash(bible), "neutral ≠ read traits (no stale prep reuse)");
+// Persisted + restored as the explicit null state, never as builder defaults
+assert.equal(migrateCreateState({ ...JSON.parse(JSON.stringify(neutralDraft)), currentStep: 3 }).photoCharacter?.traits, null);
+assert.equal(migrateCreateState({ ...JSON.parse(JSON.stringify(neutralDraft)), currentStep: 3 }).currentStep, 3);
+// The marker never reaches the builder ("Créalo tú", dashboard character reuse)
+assert.deepEqual(builderColours({ skinTone: PORTRAIT_LOOK, hairColor: PORTRAIT_LOOK, eyeColor: "#1976d2" }, INITIAL_STATE.character), {
+  skinTone: INITIAL_STATE.character.skinTone, hairColor: INITIAL_STATE.character.hairColor, eyeColor: "#1976d2",
+});
+assert.equal(migrateCreateState({ ...JSON.parse(JSON.stringify(draft())), character: { ...draft().character, skinTone: PORTRAIT_LOOK } }).character.skinTone, INITIAL_STATE.character.skinTone);
+assert.ok(!isPortraitLook(prepBody), "read traits are not neutral");
 
 // ── Final book face anchor ───────────────────────────────────────────────────
 assert.equal(finalFaceAnchor(PORTRAIT, { url: "character-preps/x/sheet-child-1.jpg" }), PORTRAIT, "the drawing anchors the final book");

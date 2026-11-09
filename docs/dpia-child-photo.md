@@ -19,17 +19,17 @@ La AEPD exige EIPD cuando concurren dos o más criterios de su lista (art. 35.4)
 | Base jurídica | Consentimiento explícito del titular de la patria potestad (art. 6.1.a RGPD y art. 7 LOPDGDD para menores de 14). Casilla obligatoria, sin premarcar, con versión del texto guardada (`photo_consents`, versión `2026-11-09`). El texto de la casilla y la explicación del flujo no nombran terceros; el encargado y sus plazos se informan en la política de privacidad (art. 13 RGPD), enlazada desde «Más información». |
 | Encargado | OpenAI Ireland Ltd. (API de imágenes, modelo `gpt-image-2.5-flare`), bajo su Data Processing Addendum. Almacenamiento: Supabase (bucket privado `child-photos`, UE). Alojamiento web: Vercel. |
 | Transferencias | Posibles a EE. UU. por soporte y subencargados de OpenAI: Marco de Privacidad UE-EE. UU. y cláusulas contractuales tipo del DPA. |
-| Conservación | La foto se borra en cuanto el dibujo vuelve de OpenAI, a los pocos segundos de subirla (unos 15-20 s); si el dibujo falla se conserva para reintentar y un proceso horario borra cualquier resto con más de 24 h. OpenAI puede conservar registros de abuso hasta 30 días, y conserva para revisión manual las imágenes que su clasificador de abuso infantil marque. El registro de consentimiento se conserva como prueba. |
+| Conservación | La foto se borra en cuanto el dibujo vuelve de OpenAI, unos 15-20 s después de que el adulto pulse «Crear su personaje»; si no lo pulsa o el dibujo falla, se conserva (para crearlo o reintentar) hasta que la quita con «Quitar la foto» o hasta el proceso horario que borra cualquier resto con más de 24 h. OpenAI puede conservar registros de abuso hasta 30 días, y conserva para revisión manual las imágenes que su clasificador de abuso infantil marque. El registro de consentimiento se conserva como prueba. |
 | Quién accede | Nadie de Meapica ve la foto en el flujo normal. El bucket es privado y solo lo lee el servidor. |
 
-Flujo (desde el 9-11-2026): subida con consentimiento → el servidor pide a OpenAI el retrato ilustrado con la foto como única referencia → la foto se borra → de ese dibujo (nunca de la foto) se leen los rasgos para el texto del cuento → el adulto ve el dibujo antes de continuar y puede probar con otra foto → la ficha de personaje, el cuento y el libro impreso usan solo el dibujo.
+Flujo (desde el 9-11-2026): subida con consentimiento → el adulto pulsa «Crear su personaje» → el servidor pide a OpenAI el retrato ilustrado con la foto como única referencia → la foto se borra → de ese dibujo (nunca de la foto) se leen los rasgos para el texto del cuento → el adulto ve el dibujo antes de continuar y puede probar con otra foto → la ficha de personaje, el cuento y el libro impreso usan solo el dibujo.
 
 ## 3. Necesidad y proporcionalidad
 
 - La foto es opcional. El cuento se puede crear igual eligiendo rasgos, sin foto.
 - Se usa una sola foto, para un solo fin, y se borra en segundos, en cuanto existe el dibujo (máximo 24 h).
 - No se usa para entrenar modelos (la API de OpenAI no entrena con datos de clientes por defecto) ni para identificar, perfilar o hacer marketing.
-- El texto del cuento no se deduce de la foto: los rasgos se leen del dibujo ya generado (una ilustración), con una lista cerrada de opciones (las mismas de «Créalo tú»), cuando la foto ya está borrada. Nunca se infieren género ni edad, que indica el adulto.
+- El texto del cuento no se deduce de la foto: los rasgos se leen del dibujo ya generado (una ilustración), con una lista cerrada de opciones (las mismas de «Créalo tú»), cuando la foto ya está borrada. Nunca se infieren género ni edad, que indica el adulto. Si los rasgos no se pueden leer, el texto no describe ningún rasgo físico y el dibujo es la única referencia.
 
 ## 4. Riesgos y medidas
 

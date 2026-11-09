@@ -263,21 +263,43 @@ export function buildCompanionSheetPrompt(members: CastMember[]): string {
 // ── Photo-mode portrait ──────────────────────────────────────────────────────
 
 /**
- * Photo mode (POST /api/characters/photo-portrait): the child's portrait drawn with the
- * photo as the ONLY identity reference. No Bible identity text (skin, hair, eyes…): the
- * photo is the truth, and the traits for the story are read from this drawing afterwards.
- * Same framing as the avatar portrait (chest-up, centred, plain paper) so it fills the
- * protagonist circle and works as the `portrait` reference of the character sheet. The
- * outfit is the Bible's verbatim, so the sheet and the scenes dress the child the same way.
+ * Same composition as the pre-rendered "Créalo tú" avatars (scripts/avatar/generate-matrix.mjs
+ * CANONICAL_FRAME), so a photo-mode drawing sits in the protagonist circle exactly like an avatar.
  */
-export function buildPhotoPortraitPrompt(input: { age: number; genderWord: string; outfit: string }): string {
+export const AVATAR_FRAME =
+  "Composition like a school ID photo taken from a little further away: the whole head and shoulders plus the upper chest, centred, " +
+  "with a wide empty margin of plain paper above the head and on both sides (the head is small, roughly the middle third of the picture). " +
+  "Strictly FRONT view: facing the viewer straight on, head perfectly level, eyes looking directly at the viewer, symmetrical face, gentle closed-mouth smile. " +
+  "Wearing a plain crew-neck white-and-navy striped t-shirt. Plain flat warm off-white watercolor paper background everywhere, no scenery, no props.";
+
+/**
+ * Photo mode (POST /api/characters/photo-portrait). Two kinds of reference with opposite
+ * jobs (2026-11-09, after a first version came out as a realistic portrait of a real child):
+ *   1. the photo: IDENTITY only (face shape, skin tone, hair colour/length/style, eye colour,
+ *      glasses, freckles), never its realism, lighting, pose or clothes;
+ *   2. `styleRefs` pre-rendered avatars of the same gender and age band (deliberately of
+ *      different children): STYLE only (simplification, proportions, line, palette, paper),
+ *      never their identity.
+ * The result must read as one more character of the avatar matrix, which is what the
+ * character sheet and every scene are drawn from. No Bible identity text: the traits for the
+ * story are read from this drawing afterwards.
+ */
+export function buildPhotoPortraitPrompt(input: { age: number; genderWord: string; styleRefs: number }): string {
+  const styleImages =
+    input.styleRefs === 1 ? `The ${ORDINALS[1]} attached image is` : `The ${ORDINALS[1]} to ${ORDINALS[input.styleRefs]} attached images are`;
+  const styleLine =
+    input.styleRefs > 0
+      ? `${styleImages} character portraits from this same picture book, of OTHER children. Use them ONLY as the style guide: draw ${CHILD_LABEL} as one more character of exactly that series, with the same level of simplification (simple rounded shapes, soft simplified facial features, small simple nose, dot-like eye highlights), the same rounded child proportions and head size, the same delicate ink line, the same muted watercolor palette, washes and paper. Do NOT copy their faces, skin, hair, eyes or any other identity detail.`
+      : "";
   return [
-    `The ${ORDINALS[0]} attached image is a photo of the real child. It is the ONLY reference for how ${CHILD_LABEL} looks.`,
-    `Character portrait for a premium children's picture book: ${CHILD_LABEL}, a ${input.age}-year-old ${input.genderWord}, chest-up, centred, three-quarter view, warm friendly smile, on plain warm off-white watercolor paper.`,
-    `Draw ${CHILD_LABEL} so the family recognises them at a glance: take from the photo, faithfully, the face shape, the skin tone, the hair colour, the hair length and hairstyle, the eye colour, and glasses or freckles only if the photo shows them. Translate them into the storybook style with cute picture-book proportions; do NOT copy the photo's realism, lighting, background, pose, accessories or clothing.`,
-    `${CHILD_LABEL} is wearing ${input.outfit}.`,
+    `The ${ORDINALS[0]} attached image is a photo of the real child. Use it ONLY for who ${CHILD_LABEL} is: face shape, skin tone (exactly as dark or as light as in the photo, never lightened), hair colour, hair length and hairstyle, eye colour, and glasses or freckles only if the photo shows them. Never copy its photographic realism, detail level, lighting, background, pose or clothing.`,
+    styleLine,
+    `Children's picture-book character avatar: ${CHILD_LABEL}, a ${input.age}-year-old ${input.genderWord}, stylised like the series (not a realistic portrait, not a detailed painting of a real face), recognisable to the family by the identity details above.`,
+    AVATAR_FRAME,
     WATERCOLOR_STYLE,
-  ].join("\n\n");
+  ]
+    .filter(Boolean)
+    .join("\n\n");
 }
 
 // ── Avatar portrait ──────────────────────────────────────────────────────────

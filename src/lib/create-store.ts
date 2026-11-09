@@ -59,7 +59,11 @@ export interface PhotoCharacter {
   portraitPath: string;
   /** Signed URL of the drawing (24 h) for the <img>; never sent to the API. */
   portraitUrl: string;
-  traits: PhotoTraits;
+  /**
+   * Traits read from the drawing, or null when they could not be read: the Bible then
+   * describes no physical trait (PORTRAIT_LOOK) and the drawing is the only identity source.
+   */
+  traits: PhotoTraits | null;
   /** Gender it was drawn for: changing it on screen 1 discards the drawing. */
   gender: Gender;
 }

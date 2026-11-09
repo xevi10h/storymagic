@@ -31,8 +31,10 @@ export const maxDuration = 90;
  * (sent as `portraitUrl` to /api/characters/prepare and /api/stories); the traits only
  * write the Character Bible text.
  *
- * Request:  { photoPath, gender, age, favoriteColor? }
- * Response: 200 { portraitUrl (24 h signed URL), portraitPath (portraits/<uid>/…), traits }
+ * Request:  { photoPath, gender, age, favoriteColor? (accepted, unused: the drawing wears the
+ *            avatars' striped t-shirt, the sheet adds the Bible outfit like in avatar mode) }
+ * Response: 200 { portraitUrl (24 h signed URL), portraitPath (portraits/<uid>/…), traits | null }
+ *           (traits null = not readable from the drawing → the client uses the neutral look)
  * Errors:   400 invalid / photo_upload_disabled · 401 · 403 bot / not the caller's photo ·
  *           410 photo_unavailable (already used, withdrawn or purged → upload again) ·
  *           429 rate_limited · 503 provider_unavailable / daily cap · 500 generation_failed
@@ -67,7 +69,7 @@ export async function POST(request: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid input", details: parsed.error.flatten().fieldErrors }, { status: 400 });
   }
-  const { photoPath, gender, age, favoriteColor } = parsed.data;
+  const { photoPath, gender, age } = parsed.data;
 
   const supabase = await createClient();
   const {
@@ -121,7 +123,7 @@ export async function POST(request: Request) {
     }
 
     const started = Date.now();
-    const render = await renderPhotoPortrait(photo, { gender, age, favoriteColor }, { label, deadline: started + 65_000 });
+    const render = await renderPhotoPortrait(photo, { gender, age }, { label, deadline: started + 65_000 });
 
     // The photo's only job is done: delete it before anything else can fail.
     const deleted = await deleteChildPhoto(photoPath, user.id, admin);
@@ -137,7 +139,7 @@ export async function POST(request: Request) {
     if (!portraitUrl) throw new Error(`Portrait stored but could not be signed: ${portraitPath}`);
 
     console.log(
-      `[PhotoPortrait] ${label} ready in ${((Date.now() - started) / 1000).toFixed(1)}s · image $${render.costUsd.toFixed(4)} · traits $${read.costUsd.toFixed(4)}${read.fallback ? " (defaults)" : ""}`,
+      `[PhotoPortrait] ${label} ready in ${((Date.now() - started) / 1000).toFixed(1)}s · image $${render.costUsd.toFixed(4)} · traits $${read.costUsd.toFixed(4)}${read.traits ? "" : " (traits unreadable: neutral look)"}`,
     );
     return NextResponse.json({ portraitUrl, portraitPath, traits: read.traits });
   } catch (error: unknown) {

@@ -109,15 +109,16 @@ On = all of them switch to the photo wording in the same build. No migration is 
 `photo_consents`, `list_expired_child_photos` and `character_preps.had_photo` are in prod since 2026-09-27.
 
 Flow when on (reworked 2026-11-09): upload (consent row `PHOTO_CONSENT_VERSION` 2026-11-09, EXIF strip, private bucket)
+→ the parent presses «Crear su personaje» (an unused upload stays until the hourly purge, ≤ 24 h, or «Quitar la foto»)
 → `POST /api/characters/photo-portrait` (maxDuration 90; same guards as the portrait route + BotID route `photo_portrait`,
 registered in `src/lib/botid/routes.ts`) → OpenAI Images edits (`PORTRAIT_IMAGE_*`, default `gpt-image-2.5-flare` medium
-1024², `buildPhotoPortraitPrompt`: photo as the only identity reference, Bible outfit) → photo deleted the moment the render
+1024², `buildPhotoPortraitPrompt`: photo = identity only, 2 pre-rendered avatars of the same gender/age band = style only, avatar composition) → photo deleted the moment the render
 returns (a failed render keeps it for a retry; hourly `purge-photos` cron ≤ 24 h either way) → drawing stored in
 `portraits/{uid}/…` → traits read from the drawing (`deriveTraitsFromPortrait`, `PHOTO_TRAITS_MODEL`, default `gpt-5.4-mini`,
-strict schema of builder ids; defaults + log on failure) → response `{ portraitUrl, portraitPath, traits }`. The parent sees the
+strict schema of builder ids; on failure `traits: null` = neutral Bible via the `PORTRAIT_LOOK` marker) → response `{ portraitUrl, portraitPath, traits }`. The parent sees the
 drawing in the protagonist circle; prepare and stories receive `portraitUrl` (the drawing is the face anchor of the sheet and,
 as `characters.avatar_url`, of the final book via `finalFaceAnchor`) and the drawing's traits (Bible text). Prepare refuses
-`photoPath`. Cost per photo portrait (real run 2026-11-09): image $0.027 + traits $0.0016, ~17 s. MOCK_MODE returns a picsum
+`photoPath`. Cost per photo portrait (real run 2026-11-09, 3 references): image $0.044 + traits $0.0014, ~15 s. MOCK_MODE returns a picsum
 drawing + builder-default traits and still deletes the photo. Processor: OpenAI Ireland Ltd.
 (EEA customers' contracting party under the Services Agreement and DPA). Default API retention: abuse-monitoring logs
 up to 30 days; `/v1/images/edits` keeps no application state and both image models are on OpenAI's ZDR-compatible list,

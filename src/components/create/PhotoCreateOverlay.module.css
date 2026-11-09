@@ -1,0 +1,87 @@
+/*
+ * Photo mode, steps B and C (PhotoCreateOverlay): the room goes dark while the child is
+ * painted, then the drawing appears like a watercolour wash blooming on paper, circled by a
+ * hand-drawn ink ring. No glow, no sparkles: paper, ink and pigment, like the book.
+ */
+.backdrop {
+  background: rgb(20 13 9 / 0.97); /* --ink, near black: the page disappears */
+  animation: fadeIn 0.3s ease both;
+}
+
+.stage {
+  animation: fadeIn 0.3s ease both;
+}
+
+/* Step B: the photo, barely visible under the dark, while the mark draws itself */
+.ghost {
+  opacity: 0.16;
+  filter: grayscale(1) blur(1px);
+}
+
+.message {
+  animation: messageIn 0.5s ease both;
+}
+
+/* Step C: the drawing blooms from the centre like wet pigment, then settles */
+.portrait {
+  animation: bloom 1.6s cubic-bezier(0.22, 0.8, 0.24, 1) both;
+}
+
+.ring {
+  fill: none;
+  stroke: #fff8f0; /* --paper */
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  opacity: 0.85;
+  animation: drawRing 1.4s 0.35s ease-out forwards;
+}
+
+.title {
+  animation: rise 0.7s 0.9s ease both;
+}
+
+.actions {
+  animation: rise 0.7s 1.15s ease both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes messageIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes bloom {
+  0% { clip-path: circle(0% at 50% 52%); filter: blur(10px) saturate(0.6); transform: scale(0.94); }
+  55% { filter: blur(2px) saturate(0.9); }
+  100% { clip-path: circle(75% at 50% 52%); filter: none; transform: none; }
+}
+
+@keyframes drawRing {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .backdrop,
+  .stage,
+  .message,
+  .portrait,
+  .title,
+  .actions {
+    animation: none;
+  }
+  .ring {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}

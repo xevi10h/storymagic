@@ -64,6 +64,11 @@ const PHOTO_PATH = `9f1c2d3e-0000-4000-8000-000000000001/aaaaaaaa-bbbb-4ccc-8ddd
 const PORTRAIT_PATH = "portraits/9f1c2d3e-0000-4000-8000-000000000001/cccccccc-bbbb-4ccc-8ddd-eeeeeeeeeeee/portrait-1.png";
 const PORTRAIT_ART = "/images/avatar/girl/big/dark/black-afro.webp";
 const PHOTO_TRAITS = { skinTone: "#523218", hairColor: "#2a2a2a", eyeColor: "#5d4037", hairstyle: "afro", glasses: "none", freckles: false };
+/** 256×256 PNG for the photo input (the client re-encodes it to JPEG). */
+const PNG = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAAAPUlEQVR42u3BAQ0AAADCoPdPbQ8HFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPwZgAAB4JYwmgAAAABJRU5ErkJggg==",
+  "base64",
+);
 
 function generatedText() {
   return {
@@ -93,10 +98,12 @@ interface Mock {
   favoriteColor: string | null;
   /** POST /api/characters/photo-portrait answers 503 this many times before drawing */
   photoPortraitFails: number;
+  /** POST /api/characters/photo-portrait answers traits: null (unreadable → neutral look) */
+  photoTraitsNull: boolean;
 }
 
 async function installMocks(page: Page): Promise<Mock> {
-  const mock: Mock = { requests: [], lightCalls: 0, status: "draft", dedication: null, sender: null, favoriteColor: null, photoPortraitFails: 0 };
+  const mock: Mock = { requests: [], lightCalls: 0, status: "draft", dedication: null, sender: null, favoriteColor: null, photoPortraitFails: 0, photoTraitsNull: false };
 
   await page.route(/\/auth\/v1\//, async (route: Route) => {
     const url = route.request().url();
@@ -148,7 +155,7 @@ async function installMocks(page: Page): Promise<Mock> {
         mock.photoPortraitFails -= 1;
         return route.fulfill({ status: 503, json: { error: "provider_unavailable" } });
       }
-      return route.fulfill({ json: { portraitUrl: PORTRAIT_ART, portraitPath: PORTRAIT_PATH, traits: PHOTO_TRAITS } });
+      return route.fulfill({ json: { portraitUrl: PORTRAIT_ART, portraitPath: PORTRAIT_PATH, traits: mock.photoTraitsNull ? null : PHOTO_TRAITS } });
     }
     if (path === "/api/stories" && req.method() === "POST") {
       const b = body as { dedication?: string; senderName?: string; character?: { favoriteColor?: string } };
@@ -228,9 +235,10 @@ async function shot(page: Page, name: string) {
 
 async function freshStart(page: Page, locale: Locale) {
   // Not the landing: its showcase images depend on the prod `showcase` bucket (deploy step).
-  await page.goto(`/${locale}/create`);
+  // domcontentloaded: a slow image optimisation in the dev server must not stall the "load" event.
+  await page.goto(`/${locale}/create`, { waitUntil: "domcontentloaded" });
   await page.evaluate(() => localStorage.clear());
-  await page.goto(`/${locale}/create`);
+  await page.goto(`/${locale}/create`, { waitUntil: "domcontentloaded" });
   await expect(page.getByTestId("live-cover")).toBeVisible();
 }
 
@@ -635,11 +643,11 @@ test.describe("photo tab", () => {
     await expect(page.getByText(/Sube una foto/)).toHaveCount(0);
   });
 
-  test("photo tab: consent, upload, drawing shown in the circle, no selectors", async ({ page }) => {
+  test("photo tab: consent, upload, create, dark loading, reveal modal, no selectors", async ({ page }) => {
     test.skip(!PHOTO_FLAG, "needs NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED=true");
     const errors = trackConsole(page);
     const mock = await installMocks(page);
-    mock.photoPortraitFails = 1; // the first drawing fails once: retry with the same photo
+    mock.photoPortraitFails = 1; // the first drawing fails once: create again with the same photo
     await freshStart(page, "es");
     await fillName(page);
     await pickBasics(page);
@@ -656,27 +664,45 @@ test.describe("photo tab", () => {
     await page.getByRole("checkbox").check();
     await expect(choose).toBeEnabled();
 
-    // Upload: client re-encodes to JPEG and posts field "photo" with the current consent version
-    const png = Buffer.from(
-      "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAAAPUlEQVR42u3BAQ0AAADCoPdPbQ8HFAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPwZgAAB4JYwmgAAAABJRU5ErkJggg==",
-      "base64",
-    );
-    await page.getByTestId("photo-input").setInputFiles({ name: "nena.png", mimeType: "image/png", buffer: png });
-    await expect(page.getByTestId("photo-drawing")).toBeVisible();
-    await expect(page.getByTestId("photo-portrait-drawing")).toBeVisible();
-    await expect(page.getByRole("button", { name: /Siguiente/ })).toBeDisabled();
-    await shot(page, "es-mobile-2-photo-drawing");
+    // Step A: upload only; nothing is drawn until "Crear su personaje"
+    await page.getByTestId("photo-input").setInputFiles({ name: "nena.png", mimeType: "image/png", buffer: PNG });
+    await expect(page.getByTestId("photo-uploaded")).toBeVisible();
+    await expect(page.getByTestId("photo-uploaded").getByRole("img")).toBeVisible(); // thumbnail
     const upload = mock.requests.find((r) => r.path === "/api/characters/photo" && r.method === "POST");
     expect(String(upload?.body)).toContain('name="photo"');
     expect(String(upload?.body)).toContain("2026-11-09");
+    await page.waitForTimeout(400);
+    expect(mock.requests.filter((r) => r.path === "/api/characters/photo-portrait")).toHaveLength(0);
+    await expect(page.getByRole("button", { name: /Siguiente/ })).toBeDisabled();
+    await shot(page, "es-mobile-2-photo-step-a");
+
+    // Step B: a double click starts ONE drawing; the page goes dark with the loading state
+    await page.getByTestId("photo-create").dblclick();
+    await expect(page.getByTestId("photo-loading")).toBeVisible();
+    await expect(page.getByTestId("photo-loading")).toContainText(/Creando a Lucía/);
+    await shot(page, "es-mobile-2-photo-step-b");
+    expect(mock.requests.filter((r) => r.path === "/api/characters/photo-portrait")).toHaveLength(1);
     const drawReq = mock.requests.find((r) => r.path === "/api/characters/photo-portrait")!.body as Record<string, unknown>;
     expect(drawReq).toMatchObject({ photoPath: PHOTO_PATH, gender: "girl" });
 
-    // First drawing fails → friendly message + retry with the same photo
-    await expect(page.getByTestId("photo-retry")).toBeVisible({ timeout: 10000 });
+    // First drawing fails → overlay closes, friendly message, the same photo can be used again
+    await expect(page.getByTestId("photo-overlay")).toHaveCount(0, { timeout: 10000 });
     await expect(panel.getByRole("alert")).toContainText(/no podemos dibujar/i);
-    await page.getByTestId("photo-retry").click();
-    await expect(page.getByTestId("photo-portrait-image")).toBeVisible({ timeout: 10000 });
+    await page.getByTestId("photo-create").click();
+
+    // Step C: reveal modal, focus on the primary button, Esc continues
+    await expect(page.getByTestId("photo-reveal")).toBeVisible({ timeout: 10000 });
+    await expect(page.getByTestId("photo-reveal")).toContainText(/Aquí está Lucía/);
+    await expect(page.getByTestId("photo-reveal-continue")).toBeFocused();
+    await page.keyboard.press("Tab");
+    await expect(page.getByTestId("photo-reveal-try-another")).toBeFocused();
+    await page.keyboard.press("Tab");
+    await expect(page.getByTestId("photo-reveal-continue")).toBeFocused(); // focus trapped
+    await page.waitForTimeout(1600); // let the reveal animation finish
+    await shot(page, "es-mobile-2-photo-step-c");
+    await page.keyboard.press("Escape");
+    await expect(page.getByTestId("photo-overlay")).toHaveCount(0);
+    await expect(page.getByTestId("photo-portrait-image")).toBeVisible();
     expect(mock.requests.filter((r) => r.path === "/api/characters/photo-portrait")).toHaveLength(2);
     await expect(page.getByTestId("photo-ready")).toContainText(/Así será Lucía/);
     await expect(page.getByRole("button", { name: /Siguiente/ })).toBeEnabled();
@@ -706,8 +732,10 @@ test.describe("photo tab", () => {
     await expect(page.getByRole("checkbox")).not.toBeChecked();
     await expect(page.getByRole("button", { name: /Siguiente/ })).toBeDisabled();
     await page.getByRole("checkbox").check();
-    await page.getByTestId("photo-input").setInputFiles({ name: "nena2.png", mimeType: "image/png", buffer: png });
-    await expect(page.getByTestId("photo-portrait-image")).toBeVisible({ timeout: 10000 });
+    await page.getByTestId("photo-input").setInputFiles({ name: "nena2.png", mimeType: "image/png", buffer: PNG });
+    await page.getByTestId("photo-create").click();
+    await page.getByTestId("photo-reveal-continue").click({ timeout: 10000 });
+    await expect(page.getByTestId("photo-portrait-image")).toBeVisible();
 
     // Adventure → create: the story is written from the drawing's traits and anchored on the drawing
     await next(page, "es");
@@ -727,7 +755,39 @@ test.describe("photo tab", () => {
     expect(errors.filter((e) => !e.includes("/api/characters/photo-portrait") && !e.includes("status of 503"))).toEqual([]);
   });
 
-  test("photo tab: a reload mid-drawing deletes the photo and asks for it again", async ({ page }) => {
+  test("photo tab: traits unreadable → neutral look, still anchored on the drawing", async ({ page }) => {
+    test.skip(!PHOTO_FLAG, "needs NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED=true");
+    const errors = trackConsole(page);
+    const mock = await installMocks(page);
+    mock.photoTraitsNull = true;
+    await freshStart(page, "es");
+    await fillName(page);
+    await pickBasics(page);
+    await next(page, "es");
+    await page.getByRole("tab", { name: /Sube una foto/ }).click();
+    await page.getByRole("checkbox").check();
+    await page.getByTestId("photo-input").setInputFiles({ name: "nena.png", mimeType: "image/png", buffer: PNG });
+    await page.getByTestId("photo-create").click();
+    await page.getByTestId("photo-reveal-continue").click({ timeout: 10000 });
+    await expect(page.getByTestId("photo-portrait-image")).toBeVisible();
+    await expect(page.getByRole("button", { name: /Siguiente/ })).toBeEnabled();
+    await next(page, "es");
+    await expect.poll(() => mock.requests.some((r) => r.path === "/api/characters/prepare")).toBe(true);
+    const prep = mock.requests.find((r) => r.path === "/api/characters/prepare")!.body as Record<string, unknown>;
+    expect(prep).toMatchObject({ portraitUrl: PORTRAIT_PATH, skinTone: "portrait", hairColor: "portrait", eyeColor: "portrait", glasses: "none", freckles: false });
+    await chooseAdventure(page, "es");
+    await page.getByRole("button", { name: COPY.es.create }).click();
+    await page.waitForURL(new RegExp(`/es/create/${STORY_ID}/generate`));
+    const post = mock.requests.find((r) => r.path === "/api/stories")!.body as { character: Record<string, unknown>; portraitUrl?: string };
+    expect(post.portraitUrl).toBe(PORTRAIT_PATH);
+    for (const k of ["skinTone", "hairColor", "eyeColor", "glasses", "freckles", "hairstyle"]) expect(post.character[k]).toEqual(prep[k]);
+    const draft = await page.evaluate(() => JSON.parse(localStorage.getItem("meapica_create_state") ?? "{}"));
+    expect(draft.photoCharacter.traits).toBeNull();
+    expect(draft.character.skinTone).not.toBe("portrait");
+    expect(errors).toEqual([]);
+  });
+
+  test("photo tab: an uploaded photo survives a reload until created or removed", async ({ page }) => {
     test.skip(!PHOTO_FLAG, "needs NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED=true");
     const mock = await installMocks(page);
     await freshStart(page, "es");
@@ -735,15 +795,15 @@ test.describe("photo tab", () => {
     await pickBasics(page);
     await next(page, "es");
     await page.getByRole("tab", { name: /Sube una foto/ }).click();
-    // What a reload mid-drawing leaves behind: the photo path without its drawing.
-    await page.evaluate((photoPath) => {
-      const key = "meapica_create_state";
-      const draft = JSON.parse(localStorage.getItem(key) ?? "{}");
-      localStorage.setItem(key, JSON.stringify({ ...draft, photoPath, photoCharacter: null }));
-    }, PHOTO_PATH);
-    await page.reload();
+    await page.getByRole("checkbox").check();
+    await page.getByTestId("photo-input").setInputFiles({ name: "nena.png", mimeType: "image/png", buffer: PNG });
+    await expect(page.getByTestId("photo-uploaded")).toBeVisible();
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await expect(page.getByTestId("photo-uploaded")).toBeVisible();
+    await expect(page.getByTestId("photo-create")).toBeEnabled();
+    // "Quitar la foto" deletes it now and asks for a fresh consent
+    await page.getByTestId("photo-remove").click();
     await expect.poll(() => mock.requests.some((r) => r.path === "/api/characters/photo" && r.method === "DELETE")).toBe(true);
-    await expect(page.getByTestId("photo-panel").getByRole("alert")).toContainText(/se interrumpió/);
     await expect(page.getByRole("checkbox")).not.toBeChecked();
     await expect(page.getByRole("button", { name: /Siguiente/ })).toBeDisabled();
   });

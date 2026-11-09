@@ -9,23 +9,7 @@ import { trackEvent } from "@/lib/tracking/consent";
 import { buttonClass } from "@/components/ui";
 import Sheet from "./Sheet";
 import { Spinner } from "@/components/ui/Spinner";
-import type { PhotoCharacter } from "@/lib/create-store";
-import type { PhotoPortraitError } from "@/hooks/usePhotoPortrait";
-
-interface PhotoUploadPanelProps {
-  name: string;
-  /** Uploaded photo still waiting for (or after a failed) drawing; null once drawn. */
-  photoPath: string | null;
-  photoCharacter: PhotoCharacter | null;
-  drawing: boolean;
-  drawError: PhotoPortraitError | null;
-  /** The photo is stored: the page draws the portrait from it. */
-  onUploaded: (photoPath: string) => void;
-  /** Draw again from the same photo (it is kept when a drawing fails). */
-  onRetry: () => void;
-  /** "Probar con otra foto": drops the drawing (and any leftover photo). */
-  onReset: () => void;
-}
+import type { PhotoModeProps } from "./StepProtagonist";
 
 /** Server error codes with a parent-facing message (crear.photo.errors.*). */
 const KNOWN_ERRORS = new Set([
@@ -100,22 +84,16 @@ async function toUploadJpeg(file: File): Promise<Blob> {
 }
 
 /**
- * "Sube una foto" tab. Consent is an explicit, unchecked checkbox; nothing is
- * uploaded before it is ticked. The photo goes to a private bucket via
- * POST /api/characters/photo, the page then draws the child from it
- * (POST /api/characters/photo-portrait, which deletes the photo) and this panel
- * shows the result. "Probar con otra foto" starts over with a fresh consent.
+ * "Sube una foto" tab, three steps:
+ *   A  consent (explicit, unchecked) → upload to the private bucket (POST /api/characters/photo)
+ *      → thumbnail + "Crear su personaje". Nothing is drawn before that click.
+ *   B  the page draws the child (POST /api/characters/photo-portrait, which deletes the photo);
+ *      PhotoCreateOverlay shows the dark loading state.
+ *   C  the reveal modal; afterwards this panel shows "Así será {name}" + "Probar con otra foto".
+ * "Quitar la foto" / "Probar con otra foto" start over with a fresh consent (a stored photo is
+ * deleted at once; one never drawn is purged within 24 h anyway).
  */
-export default function PhotoUploadPanel({
-  name,
-  photoPath,
-  photoCharacter,
-  drawing,
-  drawError,
-  onUploaded,
-  onRetry,
-  onReset,
-}: PhotoUploadPanelProps) {
+export default function PhotoUploadPanel({ name, photo }: { name: string; photo: PhotoModeProps }) {
   const t = useTranslations("crear.photo");
   const tu = useTranslations("crear.photoUi");
   const locale = useLocale();
@@ -126,6 +104,7 @@ export default function PhotoUploadPanel({
   const [infoOpen, setInfoOpen] = useState(false);
   const cameraRef = useRef<HTMLInputElement | null>(null);
   const galleryRef = useRef<HTMLInputElement | null>(null);
+  const { path: photoPath, character: photoCharacter, drawing } = photo;
 
   async function upload(file: File) {
     setError(null);
@@ -154,7 +133,7 @@ export default function PhotoUploadPanel({
         return;
       }
       trackEvent("photo_uploaded");
-      onUploaded(data.photoPath);
+      photo.onUploaded(data.photoPath, jpeg);
     } catch (err) {
       console.warn("[create] photo upload failed:", err);
       setError("upload_failed");
@@ -166,7 +145,7 @@ export default function PhotoUploadPanel({
   function startOver() {
     setError(null);
     setConsent(false); // a new photo needs a fresh consent
-    onReset();
+    photo.onReset();
   }
 
   const onFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -175,9 +154,7 @@ export default function PhotoUploadPanel({
     if (file) void upload(file);
   };
 
-  const shownError = error ?? drawError;
-  // A drawing failed but the photo is still stored: offer to try again with it.
-  const canRetry = !drawing && !!photoPath && !!drawError && drawError !== "photo_unavailable";
+  const shownError = error ?? photo.error;
 
   const buttonBase =
     "flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-[19px] leading-tight font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-create-primary disabled:cursor-not-allowed disabled:opacity-40";
@@ -210,26 +187,44 @@ export default function PhotoUploadPanel({
             {tu("tryAnother")}
           </button>
         </div>
-      ) : drawing ? (
-        <div className="flex items-center gap-4 rounded-xl bg-create-bg p-4" role="status" data-testid="photo-drawing">
-          <Spinner className="shrink-0 text-2xl text-create-primary" />
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-bold text-create-text-dark">{tu("drawing", { name })}</p>
-            <p className="text-xs text-create-text-sub">{tu("drawingHint")}</p>
+      ) : photoPath ? (
+        <div className="flex flex-col gap-4" data-testid="photo-uploaded">
+          <div className="flex items-center gap-4 rounded-xl bg-create-bg p-3">
+            {photo.preview ? (
+              // eslint-disable-next-line @next/next/no-img-element -- local object URL, never uploaded as-is
+              <img src={photo.preview} alt={tu("photoThumbAlt")} className="h-20 w-20 shrink-0 rounded-xl object-cover" />
+            ) : (
+              <span className="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl bg-create-neutral">
+                <span aria-hidden className="material-symbols-outlined text-3xl text-create-text-sub" data-icon="photo" />
+              </span>
+            )}
+            <div className="min-w-0 flex-1">
+              <p className="text-base font-bold text-create-text-dark">{tu("photoReadyTitle")}</p>
+              <p className="text-sm text-create-text-sub">{tu("photoReadyHint")}</p>
+            </div>
           </div>
-        </div>
-      ) : canRetry ? (
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <button type="button" onClick={onRetry} className={`${buttonBase} bg-create-primary text-white hover:bg-create-primary-hover`} data-testid="photo-retry">
-            {tu("retry")}
-          </button>
-          <button
-            type="button"
-            onClick={startOver}
-            className={`${buttonBase} border-2 border-create-primary/30 bg-white text-brand-text hover:border-create-primary`}
-          >
-            {tu("tryAnother")}
-          </button>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <button
+              type="button"
+              onClick={photo.onCreate}
+              disabled={drawing}
+              aria-busy={drawing}
+              className={`${buttonBase} bg-create-primary text-white hover:bg-create-primary-hover`}
+              data-testid="photo-create"
+            >
+              {drawing ? <Spinner className="text-lg" /> : <span aria-hidden className="material-symbols-outlined text-lg" data-icon="brush" />}
+              {tu("create")}
+            </button>
+            <button
+              type="button"
+              onClick={startOver}
+              disabled={drawing}
+              className={`${buttonBase} border-2 border-create-primary/30 bg-white text-brand-text hover:border-create-primary sm:flex-none sm:px-6`}
+              data-testid="photo-remove"
+            >
+              {tu("removePhoto")}
+            </button>
+          </div>
         </div>
       ) : (
         <>
@@ -303,11 +298,7 @@ export default function PhotoUploadPanel({
             <Link href="/legal" className="text-sm font-bold text-brand-text hover:underline">
               {t("privacyLink")}
             </Link>
-            <button
-              type="button"
-              onClick={() => setInfoOpen(false)}
-              className={buttonClass({ size: "sm" })}
-            >
+            <button type="button" onClick={() => setInfoOpen(false)} className={buttonClass({ size: "sm" })}>
               {t("modalClose")}
             </button>
           </div>

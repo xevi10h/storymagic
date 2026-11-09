@@ -15,6 +15,7 @@ import {
   type PhotoCharacter,
 } from "@/lib/create-store";
 import { parsePhotoTraits } from "@/lib/photo-traits";
+import { PORTRAIT_LOOK } from "@/lib/ai/character-description";
 import { isValidPhotoPath } from "@/lib/privacy/child-photo-policy";
 import { avatarBaseKey, avatarTraitsFromCharacter, isAvatarRendered, type AvatarGlasses } from "@/lib/avatar/manifest";
 import { STORAGE_KEY } from "@/hooks/usePersistedState";
@@ -48,12 +49,27 @@ function str(v: unknown, fallback: string): string {
   return typeof v === "string" ? v : fallback;
 }
 
+/**
+ * Builder colours of a stored/loaded character with the PORTRAIT_LOOK marker replaced by the
+ * defaults (a photo-mode book without readable traits stores it in characters.*; reusing that
+ * character in "Créalo tú" must not carry it into an avatar-mode Bible).
+ */
+export function builderColours(
+  c: { skinTone?: unknown; hairColor?: unknown; eyeColor?: unknown },
+  fallback: Pick<CharacterData, "skinTone" | "hairColor" | "eyeColor">,
+): Pick<CharacterData, "skinTone" | "hairColor" | "eyeColor"> {
+  const pick = (v: unknown, d: string) => (typeof v === "string" && v && v !== PORTRAIT_LOOK ? v : d);
+  return { skinTone: pick(c.skinTone, fallback.skinTone), hairColor: pick(c.hairColor, fallback.hairColor), eyeColor: pick(c.eyeColor, fallback.eyeColor) };
+}
+
 function parsePhotoCharacter(v: unknown): PhotoCharacter | null {
   if (!isRecord(v)) return null;
   const gender = v.gender === "boy" || v.gender === "girl" || v.gender === "neutral" ? v.gender : null;
   if (!gender || typeof v.portraitPath !== "string" || !v.portraitPath || typeof v.portraitUrl !== "string" || !v.portraitUrl) return null;
-  const traits = parsePhotoTraits(v.traits, gender);
-  return traits ? { portraitPath: v.portraitPath.slice(0, 2000), portraitUrl: v.portraitUrl.slice(0, 4000), traits, gender } : null;
+  // traits: null is the explicit "not readable" state (neutral look); anything else must be valid.
+  const traits = v.traits === null ? null : parsePhotoTraits(v.traits, gender);
+  if (v.traits !== null && !traits) return null;
+  return { portraitPath: v.portraitPath.slice(0, 2000), portraitUrl: v.portraitUrl.slice(0, 4000), traits, gender };
 }
 
 /** v2 drafts before the avatar matrix stored "round" / "square" (no frame colour). */
@@ -80,6 +96,8 @@ export function migrateCreateState(raw: unknown): CreateBookState {
     name: str(rawChar.name, "").slice(0, MAX_NAME_LENGTH),
     // UI offers 2–12 (older drafts could hold 1)
     age: typeof rawChar.age === "number" ? Math.min(12, Math.max(2, Math.round(rawChar.age))) : base.character.age,
+    // The photo-mode neutral marker never belongs to the builder's own choices.
+    ...builderColours(rawChar, base.character),
     glasses: migrateGlasses(glasses),
     freckles: rawChar.freckles === true,
     // Only palette colours (or "" = no preference) survive
@@ -229,7 +247,10 @@ export function activePhotoCharacter(state: ProtagonistState): PhotoCharacter | 
  */
 export function protagonistLook(state: ProtagonistState): CharacterData {
   const photo = activePhotoCharacter(state);
-  return photo ? { ...state.character, ...photo.traits } : state.character;
+  if (!photo) return state.character;
+  if (photo.traits) return { ...state.character, ...photo.traits };
+  // Traits unreadable: a neutral look (no physical trait in the Bible; the drawing is the only source).
+  return { ...state.character, skinTone: PORTRAIT_LOOK, hairColor: PORTRAIT_LOOK, eyeColor: PORTRAIT_LOOK, glasses: "none", freckles: false };
 }
 
 /**

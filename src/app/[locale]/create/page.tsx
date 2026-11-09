@@ -20,6 +20,7 @@ import {
   CREATE_PAGE_STEPS,
   MAX_NAME_LENGTH,
   activePhotoCharacter,
+  builderColours,
   characterPrepareBody,
   firstName,
   isPhotoUploadEnabled,
@@ -114,9 +115,7 @@ function CrearPageContent() {
               name: formatChildName(ch.name ?? ""),
               gender: ch.gender ?? "boy",
               age: ch.age ?? 6,
-              hairColor: ch.hair_color ?? INITIAL_STATE.character.hairColor,
-              eyeColor: ch.eye_color ?? INITIAL_STATE.character.eyeColor,
-              skinTone: ch.skin_tone ?? INITIAL_STATE.character.skinTone,
+              ...builderColours({ skinTone: ch.skin_tone, hairColor: ch.hair_color, eyeColor: ch.eye_color }, INITIAL_STATE.character),
               hairstyle: ch.hairstyle ?? "short",
               glasses: GLASSES_OPTIONS.includes(ch.glasses) ? ch.glasses : "none",
               freckles: ch.freckles === true,
@@ -227,15 +226,12 @@ function CrearPageContent() {
     (protagonistMode: ProtagonistMode) => setState((prev) => ({ ...prev, protagonistMode })),
     [setState],
   );
-  const { drawing: photoDrawing, error: photoError, draw: drawPortrait, reset: resetPhoto } = usePhotoPortrait(state, setState, hydrated);
+  const photo = usePhotoPortrait(state, setState);
+  const { draw: drawPortrait } = photo;
   const { gender, age, favoriteColor } = state.character;
-  const drawPhoto = useCallback(
-    (photoPath: string) => void drawPortrait(photoPath, { gender, age, favoriteColor }),
-    [drawPortrait, gender, age, favoriteColor],
-  );
-  const retryPhoto = useCallback(() => {
-    if (state.photoPath) drawPhoto(state.photoPath);
-  }, [drawPhoto, state.photoPath]);
+  const createPhotoCharacter = useCallback(() => {
+    if (state.photoPath) void drawPortrait(state.photoPath, { gender, age, favoriteColor });
+  }, [drawPortrait, state.photoPath, gender, age, favoriteColor]);
 
   // A restored draft can hold a seasonal world whose window has closed (e.g. Reyes
   // after 6 January): drop it and its path so the parent picks another world instead
@@ -421,15 +417,20 @@ function CrearPageContent() {
         <StepProtagonist
           character={state.character}
           protagonistMode={state.protagonistMode}
-          photoPath={state.photoPath}
-          photoCharacter={activePhotoCharacter(state)}
-          photoDrawing={photoDrawing}
-          photoError={photoError}
+          photo={{
+            path: state.photoPath,
+            character: activePhotoCharacter(state),
+            drawing: photo.drawing,
+            error: photo.error,
+            preview: photo.preview,
+            revealOpen: photo.revealOpen,
+            onUploaded: photo.uploaded,
+            onCreate: createPhotoCharacter,
+            onReset: photo.reset,
+            onCloseReveal: photo.closeReveal,
+          }}
           onUpdateCharacter={updateCharacter}
           onSetMode={setMode}
-          onPhotoUploaded={drawPhoto}
-          onPhotoRetry={retryPhoto}
-          onPhotoReset={resetPhoto}
           onNext={handleProtagonistNext}
           onBack={goBack}
         />

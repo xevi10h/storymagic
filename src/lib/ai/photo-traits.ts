@@ -8,7 +8,7 @@ import sharp from "sharp";
 import { z } from "zod";
 import { callOpenAIStructured } from "./openai-http";
 import { EYE_COLOR_MAP, HAIR_COLOR_MAP, SKIN_MAP, glassesDescription, hairDescription } from "./character-description";
-import { defaultPhotoTraits, photoTraitOptions, type PhotoTraits } from "@/lib/photo-traits";
+import { photoTraitOptions, type PhotoTraits } from "@/lib/photo-traits";
 import type { Gender } from "@/lib/create-store";
 import type { AvatarGlasses } from "@/lib/avatar/manifest";
 
@@ -52,15 +52,15 @@ function prompt(gender: Gender): string {
 }
 
 /**
- * Traits read from the drawing. Never throws: when the read fails the builder defaults are
- * returned (`fallback: true`, logged) so the parent still gets the drawing, which remains
- * the face anchor of the whole book.
+ * Traits read from the drawing. Never throws: when the read fails `traits` is null (logged)
+ * and the Bible describes no physical trait (PORTRAIT_LOOK); the drawing, face anchor of
+ * the whole book, is then the only identity source.
  */
 export async function deriveTraitsFromPortrait(
   drawing: Buffer,
   gender: Gender,
   opts: { label: string },
-): Promise<{ traits: PhotoTraits; fallback: boolean; costUsd: number }> {
+): Promise<{ traits: PhotoTraits | null; costUsd: number }> {
   try {
     const jpeg = await sharp(drawing).resize(READ_EDGE, READ_EDGE, { fit: "inside", withoutEnlargement: true }).jpeg({ quality: 85 }).toBuffer();
     const result = await callOpenAIStructured({
@@ -74,9 +74,9 @@ export async function deriveTraitsFromPortrait(
       timeoutMs: 25_000,
       label: opts.label,
     });
-    return { traits: { ...result.data, glasses: result.data.glasses as AvatarGlasses }, fallback: false, costUsd: result.costUsd ?? 0 };
+    return { traits: { ...result.data, glasses: result.data.glasses as AvatarGlasses }, costUsd: result.costUsd ?? 0 };
   } catch (err) {
-    console.error(`[PhotoTraits] ${opts.label} read failed, builder defaults used: ${err instanceof Error ? err.message : String(err)}`);
-    return { traits: defaultPhotoTraits(gender), fallback: true, costUsd: 0 };
+    console.error(`[PhotoTraits] ${opts.label} read failed, neutral look (no traits): ${err instanceof Error ? err.message : String(err)}`);
+    return { traits: null, costUsd: 0 };
   }
 }
