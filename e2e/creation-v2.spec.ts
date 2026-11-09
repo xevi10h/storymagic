@@ -787,6 +787,28 @@ test.describe("photo tab", () => {
     expect(errors).toEqual([]);
   });
 
+  test("entry link ?mode=photo: name first, then screen 2 on the photo tab, UTMs kept", async ({ page }) => {
+    await installMocks(page);
+    await page.goto("/es/create", { waitUntil: "domcontentloaded" });
+    await page.evaluate(() => localStorage.clear());
+    await page.goto("/es/create?mode=photo&utm_source=meta&utm_campaign=pack-reyes-v2_q4-26&utm_content=foto-a-cuento", { waitUntil: "domcontentloaded" });
+    await expect(page.getByTestId("live-cover")).toBeVisible(); // screen 1 is not skipped
+    await expect.poll(() => new URL(page.url()).searchParams.get("mode")).toBeNull();
+    const url = new URL(page.url());
+    expect(url.searchParams.get("utm_source")).toBe("meta");
+    expect(url.searchParams.get("utm_content")).toBe("foto-a-cuento");
+    await fillName(page);
+    await pickBasics(page);
+    await next(page, "es");
+    if (PHOTO_FLAG) {
+      await expect(page.getByRole("tab", { name: /Sube una foto/ })).toHaveAttribute("aria-selected", "true");
+      await expect(page.getByTestId("photo-panel")).toBeVisible();
+    } else {
+      await expect(page.getByRole("tab")).toHaveCount(0); // flag off: the param is ignored
+      await expect(page.getByTestId("photo-panel")).toHaveCount(0);
+    }
+  });
+
   test("photo tab: an uploaded photo survives a reload until created or removed", async ({ page }) => {
     test.skip(!PHOTO_FLAG, "needs NEXT_PUBLIC_PHOTO_UPLOAD_ENABLED=true");
     const mock = await installMocks(page);

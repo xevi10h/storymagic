@@ -20,6 +20,7 @@ import {
   CREATE_PAGE_STEPS,
   MAX_NAME_LENGTH,
   activePhotoCharacter,
+  applyEntryMode,
   builderColours,
   characterPrepareBody,
   firstName,
@@ -143,6 +144,18 @@ function CrearPageContent() {
       setPrefillReady(true);
     })();
   }, [prefillReady, setState, router, searchParams]);
+
+  // ?mode=photo (Meta ad "Una foto suya…"): screen 2 opens on the photo tab (applyEntryMode).
+  // Read once from the entry URL (the prefill above may already have cleaned it), applied once the
+  // draft is restored, then dropped from the URL keeping the attribution params (utm_*, zrn).
+  const entryMode = useRef(searchParams.get("mode"));
+  useEffect(() => {
+    if (!hydrated || !prefillReady || entryMode.current === null) return;
+    const mode = entryMode.current;
+    entryMode.current = null;
+    setState((prev) => applyEntryMode(prev, mode, isPhotoUploadEnabled()));
+    if (searchParams.has("mode")) router.replace({ pathname: "/create", query: carriedParams(searchParams.toString()) });
+  }, [hydrated, prefillReady, setState, router, searchParams]);
 
   // ── Navigation ─────────────────────────────────────────────────────────────
 

@@ -34,7 +34,7 @@ Landing Page
 ### Landing Page
 
 **Stitch screen:** `5325a3cce1324a368453343affe3ef20`
-**Purpose:** Convert visitors into story creators. Entry links: `/create`, `/create?template={id}&from=catalog|seo` (world pre-chosen on screen 3), `/create?characterId={id}` (dashboard: reuse a saved character).
+**Purpose:** Convert visitors into story creators. Entry links: `/create`, `/create?template={id}&from=catalog|seo` (world pre-chosen on screen 3), `/create?characterId={id}` (dashboard: reuse a saved character), `/create?mode=photo` (Meta ad "Una foto suya…", 2026-11-09: screen 1 as usual, screen 2 opens on the "Sube una foto" tab; applied to a fresh draft or one still on screens 1–2 with no book created, ignored while photo upload is off; the param is dropped from the URL and the UTMs kept, so the ad is told apart by `utm_content`).
 
 ---
 

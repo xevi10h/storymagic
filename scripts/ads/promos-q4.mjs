@@ -104,8 +104,10 @@ const names = (p) => ({
   adset: (v) => `mpc_meta_${p.slug}_es_q4-26_as_hook-${v}_broad-25-55`,
   ad: (v) => `mpc_meta_${p.slug}_es_q4-26_ad_hook-${v}_${p.hooks[v].name}`,
 });
+// A hook can send people somewhere else than the promotion's link: `hooks.b.link` (e.g. the photo hook
+// → /es/create?mode=photo, the photo tab preselected). UTMs are added the same way to either.
 export const landing = (p, v) => {
-  const u = new URL(p.link);
+  const u = new URL(p.hooks[v].link ?? p.link);
   for (const [k, val] of Object.entries({ utm_source: "meta", utm_medium: "paid", utm_campaign: `${p.slug}_q4-26`, utm_content: names(p).ad(v) })) u.searchParams.set(k, val);
   return u.toString();
 };

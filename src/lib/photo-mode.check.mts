@@ -6,6 +6,7 @@
 import assert from "node:assert/strict";
 import {
   activePhotoCharacter,
+  applyEntryMode,
   builderColours,
   characterLookPayload,
   characterPrepareBody,
@@ -177,6 +178,16 @@ assert.deepEqual(builderColours({ skinTone: PORTRAIT_LOOK, hairColor: PORTRAIT_L
 });
 assert.equal(migrateCreateState({ ...JSON.parse(JSON.stringify(draft())), character: { ...draft().character, skinTone: PORTRAIT_LOOK } }).character.skinTone, INITIAL_STATE.character.skinTone);
 assert.ok(!isPortraitLook(prepBody), "read traits are not neutral");
+
+// ── Entry link /create?mode=photo ────────────────────────────────────────────
+assert.equal(applyEntryMode(INITIAL_STATE, "photo", true).protagonistMode, "photo", "fresh draft → photo tab");
+assert.equal(applyEntryMode(INITIAL_STATE, "photo", true).currentStep, 1, "screen 1 is never skipped");
+assert.equal(applyEntryMode(INITIAL_STATE, "photo", false), INITIAL_STATE, "flag off: ignored");
+assert.equal(applyEntryMode(INITIAL_STATE, "avatar", true), INITIAL_STATE, "unknown modes ignored");
+assert.equal(applyEntryMode(INITIAL_STATE, null, true), INITIAL_STATE);
+assert.equal(applyEntryMode(draft({ currentStep: 2 }), "photo", true).protagonistMode, "photo", "draft on screen 2 → photo tab");
+assert.equal(applyEntryMode(draft({ currentStep: 3 }), "photo", true).protagonistMode, "avatar", "a parent past screen 2 keeps their mode");
+assert.equal(applyEntryMode(draft({ createdStory: { id: "x", snapshot: "y" } }), "photo", true).protagonistMode, "avatar", "a created book keeps its mode");
 
 // ── Final book face anchor ───────────────────────────────────────────────────
 assert.equal(finalFaceAnchor(PORTRAIT, { url: "character-preps/x/sheet-child-1.jpg" }), PORTRAIT, "the drawing anchors the final book");

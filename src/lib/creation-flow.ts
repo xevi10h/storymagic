@@ -165,6 +165,19 @@ export function migrateCreateState(raw: unknown): CreateBookState {
 }
 
 /**
+ * Entry links can preselect the protagonist mode: `/create?mode=photo` (the Meta ad "Una foto
+ * suya…") opens screen 2 on the "Sube una foto" tab. Screen 1 (name, age, gender) is never
+ * skipped. Applied to a fresh draft or one still on screens 1–2 without a book created from it;
+ * a parent who already went further keeps the mode they built the book with. Ignored while
+ * photo upload is off.
+ */
+export function applyEntryMode(state: CreateBookState, mode: string | null, photoEnabled: boolean): CreateBookState {
+  if (mode !== "photo" || !photoEnabled || state.protagonistMode === "photo") return state;
+  if (state.currentStep > 2 || state.createdStory) return state;
+  return { ...state, protagonistMode: "photo" };
+}
+
+/**
  * Read-modify-write the persisted draft from outside /create (wait + preview
  * screens). With `forStoryId`, only touches the draft that created that story.
  */
