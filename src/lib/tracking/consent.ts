@@ -125,17 +125,46 @@ const META_STANDARD = new Set(["ViewContent", "AddToCart", "Lead", "InitiateChec
 /** Funnel-only events (Vercel Web Analytics + PostHog): never sent to the ad pixels. */
 const NOT_FOR_ADS = new Set(["landing_view", "cta_click", "create_step", "photo_uploaded"]);
 
-/** Meta-style params → GA4's (`items`; `transaction_id` = the shared event id, deduped with the server purchase). */
-function toGa4Params(params: Record<string, unknown> = {}, eventId?: string): Record<string, unknown> {
+/**
+ * Meta-style params → GA4's ecommerce shape (developers.google.com/analytics/devguides/collection/ga4/reference/events):
+ * `value` + `currency` pass through, `items` is built from content_ids, and `transaction_id` =
+ * the shared event id (deduped with the server purchase). An event with one item and a value
+ * gives that item its unit `price`, so `value` = Σ price × quantity as GA4 expects and item
+ * revenue is not 0 (same item the Measurement Protocol purchase sends, lib/tracking/ga4-mp.ts).
+ */
+export function toGa4Params(params: Record<string, unknown> = {}, eventId?: string): Record<string, unknown> {
   const { content_ids, content_name, ...rest } = params;
   delete rest.content_type; // Meta-only
   const ids = Array.isArray(content_ids) ? (content_ids as string[]) : [];
+  const unitPrice = ids.length === 1 && typeof rest.value === "number" ? { price: rest.value } : {};
   return {
     ...rest,
     ...(content_name ? { lead_source: content_name } : {}),
-    ...(ids.length ? { items: ids.map((id) => ({ item_id: id, item_name: id, quantity: 1 })) } : {}),
+    ...(ids.length ? { items: ids.map((id) => ({ item_id: id, item_name: id, ...unitPrice, quantity: 1 })) } : {}),
     ...(eventId ? { transaction_id: eventId } : {}),
   };
+}
+
+// A conversion (an event with an id: the order's Purchase on /checkout/success) is reported once
+// per page URL. The success page fires it on mount, so a reload, a restored tab or the back button
+// would send it again; Meta, TikTok and GA4 dedupe on the id, but only within their own windows,
+// and PostHog not at all. Once a consented tool has actually been called, the URL gets a marker
+// (history.replaceState: Next keeps it across reloads and in the history entry). Nothing is
+// stored on the device, so the cookie policy is unchanged; a copy of the original link opened
+// elsewhere still falls back on the platforms' own dedup.
+const SENT_PARAM = "ev";
+/** Event ids handed to a tool in this page load (in memory only). */
+const dispatching = new Set<string>();
+
+function wasSent(eventId: string): boolean {
+  return new URLSearchParams(window.location.search).get(SENT_PARAM) === eventId;
+}
+
+function markSent(eventId: string) {
+  if (wasSent(eventId)) return;
+  const url = new URL(window.location.href);
+  url.searchParams.set(SENT_PARAM, eventId);
+  window.history.replaceState(null, "", url);
 }
 
 /** Meta-style params → TikTok's (`contents` instead of `content_ids`). */
@@ -156,17 +185,36 @@ export function trackEvent(name: string, params?: Record<string, unknown>, event
   const consent = getConsent();
   const analytics = consentAllows(consent, "analytics");
   const ads = consentAllows(consent, "ads");
-  if (POSTHOG_KEY && analytics) capturePosthog(name, params);
+  // Conversions (events with an id) go out once per page URL: see wasSent / markSent above.
+  // `dispatching` covers the gap until a tool has loaded (an effect that runs twice, a re-mount).
+  if (eventId && (wasSent(eventId) || dispatching.has(eventId))) return;
+  if (eventId && (analytics || ads)) dispatching.add(eventId);
+  const sent = () => {
+    if (eventId) markSent(eventId);
+  };
+  if (POSTHOG_KEY && analytics) {
+    capturePosthog(name, params);
+    sent();
+  }
   if (META_PIXEL_ID && ads && !NOT_FOR_ADS.has(name)) {
-    whenLoaded("fbq", (fbq: Fbq) => fbq(META_STANDARD.has(name) ? "track" : "trackCustom", name, params ?? {}, eventId ? { eventID: eventId } : undefined));
+    whenLoaded("fbq", (fbq: Fbq) => {
+      fbq(META_STANDARD.has(name) ? "track" : "trackCustom", name, params ?? {}, eventId ? { eventID: eventId } : undefined);
+      sent();
+    });
   }
   const tiktokEvent = TIKTOK_EVENT[name];
   if (TIKTOK_PIXEL_ID && ads && tiktokEvent) {
-    whenLoaded("ttq", (ttq: Ttq) => ttq.track(tiktokEvent, toTikTokParams(params), eventId ? { event_id: eventId } : undefined));
+    whenLoaded("ttq", (ttq: Ttq) => {
+      ttq.track(tiktokEvent, toTikTokParams(params), eventId ? { event_id: eventId } : undefined);
+      sent();
+    });
   }
   const ga4Event = GA4_EVENT[name];
   if (GA4_ID && analytics && ga4Event) {
-    whenLoaded("gtag", (gtag: Gtag) => gtag("event", ga4Event, toGa4Params(params, ga4Event === "purchase" ? eventId : undefined)));
+    whenLoaded("gtag", (gtag: Gtag) => {
+      gtag("event", ga4Event, toGa4Params(params, ga4Event === "purchase" ? eventId : undefined));
+      sent();
+    });
   }
 }
 
