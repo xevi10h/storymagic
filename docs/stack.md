@@ -375,6 +375,14 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   begin_checkout, generate_lead, purchase (via `trackEvent()`). Server purchase: GA4 Measurement Protocol (EU endpoint
   `region1.google-analytics.com/mp/collect`) from the Stripe webhook, only with consent + `_ga` client id + live mode;
   dedup with the browser purchase via `transaction_id = purchase_<checkout session id>`. Check: `npx tsx scripts/check-ga4-mp.mts`.
+  **Revenue 0 € in GA4 (diagnosed 2026-11-10):** the 9 `purchase` events recorded until then are, one to one by
+  `transaction_id`, the nine 0 € live orders paid with gift / creator codes (value 0 was correct); the only paid live order
+  (2026-11-03, 34,90 €) was made without analytics consent, so by design nothing was sent. Since `955ab08` (prod 2026-11-09) a
+  0 € order is a `gift_redeem`, not a `purchase`. Since 2026-11-10 the browser `purchase` also gives its item a unit `price`
+  (`toGa4Params`, value = Σ price × quantity as the GA4 spec asks; item revenue was 0 without it) and a conversion fires once per
+  page URL: after the first consented send `trackEvent()` adds `?ev=<event id>` to the URL (`history.replaceState`, nothing stored
+  on the device), so a reload or a restored tab does not send it again. GA4 revenue only ever covers buyers who accepted
+  analytics cookies: for totals use the orders table / Stripe.
 - **Env (Vercel production):** `NEXT_PUBLIC_GA4_ID` (build-time; unset = GA4 off), `GA4_API_SECRET` (MP secret "stripe-webhook",
   copy at `~/.config/meapica/ga4_api_secret`).
 - **PostHog (2026-10-02):** EU cloud, project `291845` "Meapica" (Europe/Madrid), https://eu.posthog.com/project/291845. Product
@@ -413,6 +421,12 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
   (debug script, nothing sent); Vercel's script ignores headless browsers (`navigator.webdriver`).
 - **cana:** project key `meapica` in `~/.config/casmar-analytics/sites.json`, GSC site `sc-domain:meapica.es` since 2026-10-23
   (`cana gsc …` / `cana ga4 …` from this repo).
+- **en / fr temporarily `noindex, follow` (2026-11-10, owner decision; revert January 2027):** one switch,
+  `NOINDEX_LOCALES` in `src/lib/seo-index.ts` (`["en", "fr"]`; revert = `[]`). It drives the robots meta of every page of
+  those locales (locale layout), the hreflang of every page (`hreflangAlternates()` / `isIndexableLocale()`: es, ca and
+  x-default only) and the sitemap (`INDEXABLE_LOCALES`). Pages still work for visitors. Rule that keeps it working: an
+  indexable page must not set its own `robots` metadata (Next merges metadata shallowly, a page-level `robots` replaces the
+  layout's); `/legal` no longer does.
 - **IndexNow:** key file `public/2ecdea1c8139eed8afa1e608880f24f7.txt`; after a deploy run `node scripts/indexnow-ping.mjs`
   (pings api.indexnow.org with every sitemap URL; `--dry-run` to count). Bing recognises it (IndexNow page: 90 URLs, source Self, 2026-10-09).
 - **Bing Webmaster Tools (2026-10-19):** `meapica.shop/` is verified in the shared Casmar Bing account (with atalaya.watch, constrack.pro,
@@ -750,7 +764,7 @@ Recommended: apply the migration, then deploy, then run `?dry_run=1` once to see
 
 ## Product feeds — Google Merchant Center + ChatGPT (2026-10-02)
 
-- **URLs (static, rebuilt each deploy):** `https://meapica.shop/feeds/google-merchant.xml` (RSS 2.0 + `g:` namespace) and
+- **URLs (static, re-rendered at most hourly since 2026-11-10, `revalidate = 3600`):** `https://meapica.shop/feeds/google-merchant.xml` (RSS 2.0 + `g:` namespace) and
   `https://meapica.shop/feeds/openai-products.jsonl` (ChatGPT product feed spec, same data). Not in the sitemap, `X-Robots-Tag: noindex`,
   allowed by robots, outside the locale middleware (matcher skips `.xml` / `.jsonl`).
 - **Code:** `src/lib/merchant-feed.ts` (builders, all facts from pricing / product-facts / shipping), routes in `src/app/feeds/*/route.ts`.
@@ -761,10 +775,23 @@ Recommended: apply the migration, then deploy, then run `?dry_run=1` once to see
   brand Meapica, `google_product_category` 543543 Print Books / 543542 E-books, age_group kids, is_bundle no. Shipping in the feed:
   free, ES postcodes 01000-34999, 36000-37999, 39000-50999 (no Canarias/Ceuta/Melilla), handling 2-4 + transit 5-6 business days
   (= the 7-10 day promise; the split is an estimate). Because the feed sends a shipping price, Merchant Center ignores account
-  shipping settings for these items. Story worlds are not items: `/themes/*` only shows the "desde" price.
+  shipping settings for these items.
+- **Story-world items (2026-11-10): 17 items in season, 15 out of it.** On top of the 3 format items, one item per world with
+  its own landing page and printed format: `FEED_WORLDS` = every slug of `THEME_TEMPLATE` (dinosaurs, space, pirates,
+  superheroes, magic-forest, safari → `/es/themes/<slug>`) + the seasonal Reyes edition (`/es/gifts/three-kings`, block
+  `ReyesEdition`). Ids `meapica-<world>-<hardcover|softcover>`, title "Cuento personalizado de dinosaurios con su nombre ·
+  Tapa dura 20 × 20 cm (incluye PDF)", description opens with the story title and synopsis, ages from the template. Same price,
+  shipping and attributes as the format items. Rules kept by `check-merchant-feed.mts`: an item exists only if its landing page
+  names the world and quotes both printed prices (`{hardcover}` / `{softcover}` in its copy), and the Reyes items are listed
+  only while `isTemplateAvailable("reyes")` (last order day 6 Jan; gone on the 7th without a deploy). Chef, castle, inventor
+  and candy have no theme page yet, so no item: adding a slug to `THEME_TEMPLATE` (+ its `WORLD_SUBJECT` title fragment and
+  images) adds its two items. No `item_group_id`: hardcover / softcover is not one of Google's variant attributes.
 - **Images:** `public/images/feed/*.jpg` 1500 × 1500, the Noa showcase book in the site's own mockup + its cover art, with the IPTC
   `DigitalSourceType = trainedAlgorithmicMedia` XMP tag Google requires on AI-generated images. Rebuild (dev server on 3013):
   `npx tsx --tsconfig tsconfig.json scripts/build-merchant-feed-images.mts` (uses `/es/dev/book-mockup` with `cover/title/name/spine/panorama/scale` params).
+  World images (`meapica-<world>-hardcover|softcover|art.jpg`, 21 files): same mockup with the newest real example book of that
+  world from `/api/showcase` (dinosaurs, space, pirates, magic-forest), else the world's own art with the story title and no
+  child name (superheroes, safari, reyes). Rebuild only those: append `http://localhost:3013 worlds` to the command.
 
 **Status 2026-10-02: LIVE.** Account `5865149718` "Meapica", domain claimed, free listings ENABLED (ES). Data source
 `10756117518` (daily fetch 06:00 Madrid), return policy `9351866615` (NO_RETURNS), customer service hola@meapica.shop.

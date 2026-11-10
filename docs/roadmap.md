@@ -6,6 +6,25 @@ The roadmap is divided into 6 phases, from foundation to scale. Each phase has c
 
 ---
 
+## January 2027: undo the Christmas 2026 temporary changes (dated 2026-11-10)
+
+Shipped for the Christmas / Reyes 2026 campaign after the SEO audit of 2026-11-10. Both are temporary by owner decision:
+
+- [ ] **From 7 January 2027: revert the en/fr noindex.** Set `NOINDEX_LOCALES` to `[]` in `src/lib/seo-index.ts` (one line: robots meta,
+  hreflang and sitemap follow). Then resubmit `sitemap.xml` in Search Console and request indexing of `/en` and `/fr`. Only if es/ca
+  coverage is healthy by then (check URL Inspection for the es money pages first); otherwise keep it and re-date this item.
+- [ ] **From 7 January 2027: remove the home Christmas / Reyes block.** Delete the `HomeSeasonBlock` import and its line in
+  `src/app/[locale]/page.tsx`, the file `src/components/seasonal/HomeSeasonBlock.tsx` and `seo.home.season` in the 4 message files.
+  (It already renders nothing after 5 January, so this is clean-up, not an emergency.)
+- [ ] Before the next season (October 2027): bump `availableUntil` of the Reyes world in `src/lib/create-store.ts`; the Reyes block on
+  `/gifts/three-kings` and its two Merchant feed items come back by themselves.
+- [ ] After the deploy of 2026-11-10 (owner / browser-session): Merchant Center › fetch the feed again and check the 14 new items are
+  approved; Search Console › request indexing of `/es/gifts/three-kings`, `/es`, `/es/gifts/christmas`, `/es/christmas-delivery`,
+  the six `/es/themes/*` and `/ca/gifts/three-kings`; resubmit the sitemap.
+- Ideas from that audit not done (out of the approved scope): theme pages for chef, castle, inventor and candy (each would add two
+  feed items), "Alternativas a Hurra Héroes" section on `/compare`, birthday and 5-7 titles, descriptive `alt` on hub cards,
+  Product JSON-LD only where both prices are visible.
+
 ## Domain move meapica.shop → meapica.es (2026-10-23)
 
 Code, docs, Resend, Supabase allow-list and GSC property done (see `docs/stack.md` › Domains). Remaining:
