@@ -11,10 +11,18 @@
     },
     "gifts": {
       "three-kings": {
-        "metaTitle": "Regal de Reis personalitzat: el seu conte | Meapica",
+        "metaTitle": "Conte personalitzat de Reis amb el seu nom | Meapica",
         "metaDescription": "Un conte de Reis amb el seu nom a la portada i la seva cara pintada a l'aquarel·la. Vista prèvia gratuïta. Tapa dura o tova, enviament gratuït.",
-        "h1": "Regal de Reis personalitzat: el conte amb el seu nom i la seva cara",
+        "h1": "Conte personalitzat de Reis: amb el seu nom i la seva cara",
         "heroIntro": "El matí del 6 de gener, entre les sabates i el paper de regal, hi ha un llibre amb el seu nom a la portada. L'obre, es reconeix a la primera pàgina i et busca amb la mirada. Aquest any, que els Reis li portin el seu conte.",
+        "edition": {
+          "kicker": "Edició de Reis",
+          "heading": "«{title}»: el conte de Reis amb el seu nom",
+          "text": "Aquesta campanya hi ha una història escrita per a la nit del 5 de gener. Melcior, Gaspar i Baltasar arriben amb els camells, tenen un problema i el nomenen Patge Reial per repartir els regals abans que es faci de dia. Tu tries què troba a la finestra, quin Rei l'acompanya i quin problema resolen: uns camells dormilegues, un mapa volador o un sac descosit.",
+          "until": "Es pot demanar fins al {date}",
+          "cta": "Crear el seu conte de Reis",
+          "imageAlt": "Il·lustració del conte personalitzat de Reis «{title}»"
+        },
         "bodyHeading": "Per què un conte personalitzat és un bon regal de Reis",
         "bodyParagraphs": [
           "Les joguines de moda duren una temporada. Un llibre on surt el seu nom, la seva cara pintada a l'aquarel·la i l'aventura que has triat per a ell es queda a la prestatgeria, es rellegeix cada nit durant setmanes i, d'aquí a uns anys, serà dels pocs regals d'aquells Reis que encara recordarà.",
@@ -600,6 +608,19 @@
       "themeHeading": "Contes per temàtica"
     },
     "home": {
+      "season": {
+        "kicker": "Nadal i Reis",
+        "title": "Contes personalitzats per regalar per Nadal i Reis",
+        "intro": "Un llibre amb el seu nom a la portada, sota l'arbre, al costat del tió o entre les sabates el matí de Reis. Aquestes són les dates perquè el llibre imprès arribi a temps.",
+        "christmasTitle": "Conte personalitzat de Nadal",
+        "christmasText": "Per obrir la nit de Nadal, amb el seu nom i la seva cara a cada pàgina.",
+        "reyesTitle": "Conte personalitzat de Reis",
+        "reyesText": "Amb l'edició especial de Reis «{title}», només aquesta campanya.",
+        "reyesTextEvergreen": "El regal que trobarà entre les sabates el matí del 6 de gener.",
+        "deliveryKicker": "Tots els formats",
+        "deliveryTitle": "Dates límit d'entrega per Nadal i Reis",
+        "deliveryText": "Fins a quin dia pots demanar cada format perquè arribi a temps."
+      },
       "whatIs": {
         "title": "Què és un conte personalitzat?",
         "paragraphs": [
@@ -686,7 +707,7 @@
         "metaTitle": "Contes personalitzats per temàtica | Meapica",
         "metaDescription": "Dinosaures, espai, pirates, superherois i més. Tria l’aventura preferida del teu fill i converteix-lo en el protagonista.",
         "h1": "Contes personalitzats per temàtica",
-        "intro": "Dinosaures, estrelles, mars o boscos màgics. Tria el món que més el fascina i crea un conte únic on el teu fill viu l’aventura."
+        "intro": "Dinosaures, estrelles, mars o boscos màgics. Tria el món que més el fascina i crea un dels nostres <home>contes personalitzats</home>, únic, on el teu fill viu l’aventura."
       }
     }
   },

@@ -10,6 +10,7 @@ import MobileStickyCta from "@/components/landing/MobileStickyCta";
 import { ArticleJsonLd, BreadcrumbJsonLd } from "@/components/seo/JsonLd";
 import { getPost, getLocalesForSlug, blogOgImageUrl, getAllPublishedPostRefs } from "@/lib/blog";
 import { seoPath } from "@/lib/seo-landing";
+import { isIndexableLocale } from "@/lib/seo-index";
 import { PRICING, formatPrice } from "@/lib/pricing";
 import { buttonClass, cx, focusRing } from "@/components/ui";
 import { Breadcrumbs } from "@/components/seo-landing/MarketingHeader";
@@ -52,7 +53,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const url = `${BASE_URL}/${locale}${path}`;
 
   // Only emit hreflang for locales where this post is actually published.
-  const locales = await getLocalesForSlug(slug);
+  const locales = (await getLocalesForSlug(slug)).filter(isIndexableLocale);
   const languages: Record<string, string> = {};
   for (const loc of locales) languages[loc] = `${BASE_URL}/${loc}${path}`;
   if (locales.includes("es")) languages["x-default"] = `${BASE_URL}/es${path}`;

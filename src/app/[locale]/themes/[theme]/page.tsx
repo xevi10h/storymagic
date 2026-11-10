@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { routing } from "@/i18n/routing";
+import { hreflangAlternates } from "@/lib/seo-index";
 import SeoLandingPage from "@/components/seo-landing/SeoLandingPage";
 import { SEO_THEME_SLUGS, isValidSeoSlug, seoPath } from "@/lib/seo-landing";
 
@@ -23,9 +23,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const path = seoPath(TYPE, theme);
   const url = `${BASE_URL}/${locale}${path}`;
 
-  const languages: Record<string, string> = {};
-  for (const loc of routing.locales) languages[loc] = `${BASE_URL}/${loc}${path}`;
-  languages["x-default"] = `${BASE_URL}/${routing.defaultLocale}${path}`;
+  const languages = hreflangAlternates(BASE_URL, path);
 
   const title = t(`${TYPE}.${theme}.metaTitle`);
   const description = t(`${TYPE}.${theme}.metaDescription`);

@@ -4,6 +4,7 @@ import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { clientMessages } from "@/i18n/client-messages";
+import { isIndexableLocale } from "@/lib/seo-index";
 import Tracking from "@/components/tracking/Tracking";
 import VercelAnalytics from "@/components/tracking/VercelAnalytics";
 import RootDocument from "@/app/_components/RootDocument";
@@ -68,13 +69,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
     // index/follow is the default, so no explicit "index, follow" robots tag: it
     // would sit next to the "noindex" Next injects on 404s (two conflicting tags).
-    robots: {
-      googleBot: {
-        "max-video-preview": -1,
-        "max-image-preview": "large",
-        "max-snippet": -1,
-      },
-    },
+    // Locales in NOINDEX_LOCALES (temporary, lib/seo-index.ts) answer "noindex, follow".
+    // Metadata merges shallowly: a page that sets its own `robots` replaces this one, so
+    // indexable pages must not set `robots` at all.
+    robots: isIndexableLocale(locale)
+      ? {
+          googleBot: {
+            "max-video-preview": -1,
+            "max-image-preview": "large",
+            "max-snippet": -1,
+          },
+        }
+      : { index: false, follow: true, googleBot: { index: false, follow: true } },
   };
 }
 

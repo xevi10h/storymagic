@@ -13,7 +13,7 @@ import DeadlineCards from "@/components/seasonal/DeadlineCards";
 import CustomerReviews from "@/components/reviews/CustomerReviews";
 import { getReviewSummary } from "@/lib/reviews/published";
 import { Heading, buttonClass, cx, focusRing } from "@/components/ui";
-import { STORY_TEMPLATES } from "@/lib/create-store";
+import { STORY_TEMPLATES, isTemplateAvailable } from "@/lib/create-store";
 import { getShowcaseStories } from "@/lib/showcase";
 import { PRICING, formatPrice } from "@/lib/pricing";
 import {
@@ -30,6 +30,7 @@ import { factParams } from "@/lib/product-facts";
 import { isToolLocale, toolPath } from "@/lib/tools/registry";
 import { GUIDES, GUIDE_LINK_LABELS, contextGuides } from "@/lib/guides";
 import { Breadcrumbs, PageHero, kicker, marketingH1, marketingLead } from "./MarketingHeader";
+import ReyesEdition, { REYES_TEMPLATE_ID } from "./ReyesEdition";
 
 const BASE_URL = "https://meapica.es";
 
@@ -67,7 +68,12 @@ export default async function SeoLandingPage({ type, slug, locale }: Props) {
   const ctaLabel = th("cta");
   const fromPrice = formatPrice(Math.min(PRICING.softcover.price, PRICING.hardcover.price), locale);
 
-  const featured = featuredTemplateIds(type, slug)
+  const today = spainToday();
+  // Reyes gift page, while the seasonal Reyes edition can be ordered: that story leads the page
+  // (hero cover, its own product block, first card). Same card count as the other gift pages.
+  const reyesOnSale = type === "gifts" && slug === "three-kings" && isTemplateAvailable(REYES_TEMPLATE_ID, today);
+  const evergreenIds = featuredTemplateIds(type, slug);
+  const featured = (reyesOnSale ? [REYES_TEMPLATE_ID, ...evergreenIds.slice(0, -1)] : evergreenIds)
     .map((id) => STORY_TEMPLATES.find((tpl) => tpl.id === id))
     .filter((tpl): tpl is (typeof STORY_TEMPLATES)[number] => Boolean(tpl));
 
@@ -84,7 +90,6 @@ export default async function SeoLandingPage({ type, slug, locale }: Props) {
   });
 
   // Per-page FAQ. Answers may quote product facts and this season's order-by dates.
-  const today = spainToday();
   const cutoffDate = (occasion: "christmas" | "reyes") =>
     new Intl.DateTimeFormat(INTL_LOCALE[locale] ?? "es-ES", { timeZone: "UTC", day: "numeric", month: "long" }).format(
       new Date(`${earliestPrintedCutoff(today, occasion)}T00:00:00Z`),
@@ -222,6 +227,8 @@ export default async function SeoLandingPage({ type, slug, locale }: Props) {
             </div>
           </div>
         </PageHero>
+
+        {reyesOnSale && <ReyesEdition locale={locale} />}
 
         {/* Body copy + what makes it special */}
         <section aria-labelledby="seo-body-title" className="border-y border-line bg-surface px-4 py-16 sm:px-6 sm:py-24">

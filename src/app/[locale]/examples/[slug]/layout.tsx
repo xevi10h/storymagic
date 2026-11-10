@@ -4,6 +4,7 @@ import { routing } from "@/i18n/routing";
 import { findShowcaseRef, getShowcaseBook, getShowcaseRefs, showcaseEditions, showcaseRedirectTarget } from "@/lib/showcase";
 import { isStoryUuid, showcasePath } from "@/lib/showcase-slug";
 import { SITE_URL } from "@/lib/product-facts";
+import { isIndexableLocale } from "@/lib/seo-index";
 import { EXAMPLE_COPY, asLoc } from "./copy";
 
 type Props = {
@@ -45,6 +46,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // hreflang: the same book's edition in each locale (each has its own slug).
   const languages: Record<string, string> = {};
   for (const edition of await showcaseEditions(ref.groupId)) {
+    if (!isIndexableLocale(edition.locale)) continue;
     languages[edition.locale] = `${SITE_URL}/${edition.locale}${showcasePath(edition.slug)}`;
   }
   if (languages[routing.defaultLocale]) languages["x-default"] = languages[routing.defaultLocale];

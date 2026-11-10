@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
+import { INDEXABLE_LOCALES } from "@/lib/seo-index";
 import { Link } from "@/i18n/navigation";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
@@ -25,7 +26,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   // only once it has a published post; an empty "coming soon" index is noindex.
   const blogLocales = await getBlogLocales();
   const languages: Record<string, string> = {};
-  for (const loc of routing.locales) {
+  for (const loc of INDEXABLE_LOCALES) {
     if (blogLocales.includes(loc)) languages[loc] = `${BASE_URL}/${loc}${PATH}`;
   }
   if (blogLocales.includes(routing.defaultLocale)) {

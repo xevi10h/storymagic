@@ -15,6 +15,14 @@
         "metaDescription": "A Three Kings' Day book where your child is the hero: their name, a watercolour portrait and the story you choose. Free shipping in Spain.",
         "h1": "A personalised Three Kings' Day gift: the book where your child is the hero",
         "heroIntro": "On the morning of 6 January, among the shoes by the window and the wrapping paper, one gift has their name on the cover. A printed book where your child lives the adventure, painted in watercolour on every page.",
+        "edition": {
+          "kicker": "Three Kings edition",
+          "heading": "“{title}”: the Three Kings story with their name",
+          "text": "This season there is a story written for the night of 5 January. Melchior, Caspar and Balthazar arrive with their camels, have a problem and name your child their Royal Page to deliver every present before dawn. You choose what appears at the window, which King comes along and which problem they solve: sleepy camels, a flying map or a torn sack.",
+          "until": "Available to order until {date}",
+          "cta": "Create their Three Kings book",
+          "imageAlt": "Illustration from the personalised Three Kings story “{title}”"
+        },
         "bodyHeading": "Why a personalised book works for Three Kings' Day",
         "bodyParagraphs": [
           "By February most Epiphany toys are at the bottom of the box. A book with their name on the cover stays on the shelf. It is the one they bring to you at bedtime and ask for again, because the child on every page looks like them and the adventure is theirs.",
@@ -572,6 +580,19 @@
       "themeHeading": "Books by theme"
     },
     "home": {
+      "season": {
+        "kicker": "Christmas and Three Kings",
+        "title": "Personalised books to give at Christmas and Three Kings",
+        "intro": "A book with their name on the cover, under the tree or by their shoes on the morning of 6 January. These are the dates for the printed book to arrive in time.",
+        "christmasTitle": "Personalised Christmas book",
+        "christmasText": "To open on Christmas Eve, with their name and face on every page.",
+        "reyesTitle": "Personalised Three Kings book",
+        "reyesText": "With this season's Three Kings edition, “{title}”.",
+        "reyesTextEvergreen": "The present waiting by their shoes on the morning of 6 January.",
+        "deliveryKicker": "Every format",
+        "deliveryTitle": "Christmas and Three Kings delivery deadlines",
+        "deliveryText": "The last day to order each format so it arrives in time."
+      },
       "whatIs": {
         "title": "What is a personalised storybook?",
         "paragraphs": [

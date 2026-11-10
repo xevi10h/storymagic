@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { routing } from "@/i18n/routing";
+import { hreflangAlternates } from "@/lib/seo-index";
 import { Link } from "@/i18n/navigation";
 import Navbar from "@/components/landing/Navbar";
 import Footer from "@/components/landing/Footer";
@@ -42,9 +42,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "christmasDelivery" });
   const url = `${BASE_URL}/${locale}${PATH}`;
-  const languages: Record<string, string> = {};
-  for (const loc of routing.locales) languages[loc] = `${BASE_URL}/${loc}${PATH}`;
-  languages["x-default"] = `${BASE_URL}/${routing.defaultLocale}${PATH}`;
+  const languages = hreflangAlternates(BASE_URL, PATH);
   const title = t("metaTitle", seasonYears());
   const description = t("metaDescription");
   return {

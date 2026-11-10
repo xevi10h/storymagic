@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { routing } from "@/i18n/routing";
+import { INDEXABLE_LOCALES, hreflangAlternates, isIndexableLocale } from "@/lib/seo-index";
 import { allSeoPaths } from "@/lib/seo-landing";
 import { getAllPublishedPostRefs } from "@/lib/blog";
 import { CHRISTMAS_DELIVERY_PATH } from "@/lib/shipping";
@@ -12,18 +13,15 @@ import { showcasePath } from "@/lib/showcase-slug";
 
 const BASE_URL = "https://meapica.es";
 
-// We only ship to Spain: until the es/ca pages are indexed, en/fr stay out of the sitemap so the
-// crawl budget of a young domain is not spent on them. The pages still exist, stay indexable and
-// keep their hreflang; add the locales back here once es/ca coverage is healthy.
-const SITEMAP_LOCALES: readonly string[] = ["es", "ca"];
+// Locales listed in the sitemap and in its hreflang annotations: the indexable ones. en/fr are
+// noindex for now (we only ship to Spain); the single switch is NOINDEX_LOCALES in lib/seo-index.ts.
+const SITEMAP_LOCALES = INDEXABLE_LOCALES;
 
-function buildAlternates(path: string): Record<string, string> {
-  const languages: Record<string, string> = {};
-  for (const locale of routing.locales) {
-    languages[locale] = `${BASE_URL}/${locale}${path}`;
-  }
-  languages["x-default"] = `${BASE_URL}/${routing.defaultLocale}${path}`;
-  return languages;
+const buildAlternates = (path: string) => hreflangAlternates(BASE_URL, path);
+
+/** hreflang maps built from data (blog posts, example books) list indexable locales only. */
+function indexableOnly(languages: Record<string, string>): Record<string, string> {
+  return Object.fromEntries(Object.entries(languages).filter(([key]) => key === "x-default" || isIndexableLocale(key)));
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -133,7 +131,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         ...(lastModified ? { lastModified } : {}),
         changeFrequency: "weekly",
         priority: 0.6,
-        alternates: { languages: blogLanguages },
+        alternates: { languages: indexableOnly(blogLanguages) },
       });
     }
 
@@ -159,7 +157,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         ...(r.updatedAt ? { lastModified: new Date(r.updatedAt) } : {}),
         changeFrequency: "monthly",
         priority: 0.6,
-        alternates: { languages },
+        alternates: { languages: indexableOnly(languages) },
       });
     }
   } catch (error) {
@@ -182,7 +180,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         url: `${BASE_URL}/${ref.locale}${showcasePath(ref.slug)}`,
         changeFrequency: "monthly",
         priority: 0.6,
-        alternates: { languages },
+        alternates: { languages: indexableOnly(languages) },
       });
     }
   } catch (error) {

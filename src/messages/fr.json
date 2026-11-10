@@ -15,6 +15,14 @@
         "metaDescription": "Pour la fête des Rois, un livre personnalisé où votre enfant est le héros : son prénom, son portrait à l'aquarelle. Aperçu gratuit avant de payer.",
         "h1": "Cadeau des Rois personnalisé : le conte dont votre enfant est le héros",
         "heroIntro": "Le matin du 6 janvier, entre les paquets déposés près des chaussures, il y a un livre avec son prénom sur la couverture. Il le reconnaît avant même de l'ouvrir.",
+        "edition": {
+          "kicker": "Édition des Rois",
+          "heading": "« {title} » : le conte des Rois mages à son prénom",
+          "text": "Cette saison, une histoire est écrite pour la nuit du 5 janvier. Melchior, Gaspard et Balthazar arrivent avec leurs chameaux, ont un problème et nomment votre enfant Page royal pour distribuer les cadeaux avant l'aube. Vous choisissez ce qu'il trouve à la fenêtre, quel Roi l'accompagne et quel problème ils résolvent : des chameaux endormis, une carte volante ou un sac décousu.",
+          "until": "Disponible à la commande jusqu'au {date}",
+          "cta": "Créer son conte des Rois",
+          "imageAlt": "Illustration du conte personnalisé des Rois mages « {title} »"
+        },
         "bodyHeading": "Pourquoi un livre personnalisé pour la fête des Rois",
         "bodyParagraphs": [
           "En Espagne, ce sont les Rois mages qui apportent les cadeaux, dans la nuit du 5 au 6 janvier. Au milieu des jouets, un livre où votre enfant vit sa propre aventure tient une place à part : on le relit le soir même, puis en février, puis l'année suivante.",
@@ -568,6 +576,19 @@
       "themeHeading": "Contes par thème"
     },
     "home": {
+      "season": {
+        "kicker": "Noël et les Rois",
+        "title": "Des contes personnalisés à offrir pour Noël et les Rois",
+        "intro": "Un livre avec son prénom sur la couverture, sous le sapin ou près de ses chaussures le matin du 6 janvier. Voici les dates pour que le livre imprimé arrive à temps.",
+        "christmasTitle": "Conte personnalisé de Noël",
+        "christmasText": "À ouvrir le soir de Noël, avec son prénom et son visage à chaque page.",
+        "reyesTitle": "Conte personnalisé des Rois mages",
+        "reyesText": "Avec l'édition des Rois de cette saison, « {title} ».",
+        "reyesTextEvergreen": "Le cadeau qui l'attend près de ses chaussures le matin du 6 janvier.",
+        "deliveryKicker": "Tous les formats",
+        "deliveryTitle": "Dates limites de livraison pour Noël et les Rois",
+        "deliveryText": "Jusqu'à quel jour commander chaque format pour qu'il arrive à temps."
+      },
       "whatIs": {
         "title": "Qu'est-ce qu'un livre personnalisé ?",
         "paragraphs": [

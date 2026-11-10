@@ -6,6 +6,8 @@
 // and out of hreflang (x-default = es, which every page has). Shared by client and
 // server — no server-only imports here.
 
+import { isIndexableLocale } from "./seo-index";
+
 export type GuideId = "catalan" | "likeness" | "compare" | "tio" | "catalanAges" | "about";
 
 interface GuideConfig {
@@ -57,11 +59,14 @@ export function guidesForLocale(locale: string): GuideId[] {
   return GUIDE_IDS.filter((id) => GUIDES[id].listed !== false && isGuideLocale(id, locale));
 }
 
-/** hreflang map: only the locales the page exists in; x-default = es, or the page's one locale when it has no es edition. */
+/**
+ * hreflang map: only the indexable locales the page exists in (lib/seo-index.ts leaves en/fr out
+ * for now); x-default = es, or the page's one locale when it has no es edition.
+ */
 export function guideAlternates(baseUrl: string, id: GuideId): Record<string, string> {
   const { path, locales } = GUIDES[id];
   const languages: Record<string, string> = {};
-  for (const loc of locales) languages[loc] = `${baseUrl}/${loc}${path}`;
+  for (const loc of locales.filter(isIndexableLocale)) languages[loc] = `${baseUrl}/${loc}${path}`;
   languages["x-default"] = `${baseUrl}/${locales.includes("es") ? "es" : locales[0]}${path}`;
   return languages;
 }

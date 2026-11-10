@@ -11,10 +11,18 @@
     },
     "gifts": {
       "three-kings": {
-        "metaTitle": "Regalo de Reyes personalizado para niños | Meapica",
-        "metaDescription": "El cuento que encontrará la mañana de Reyes: su nombre en la portada, su cara pintada en acuarela y la aventura que eliges tú. Envío gratis.",
-        "h1": "Regalo de Reyes personalizado: un cuento con su nombre y su cara",
+        "metaTitle": "Cuento personalizado de Reyes Magos para niños | Meapica",
+        "metaDescription": "Cuento personalizado de Reyes Magos: su nombre en la portada, su cara pintada en acuarela y la aventura que eliges tú. Con edición especial de Reyes.",
+        "h1": "Cuento personalizado de Reyes Magos con su nombre y su cara",
         "heroIntro": "La mañana del 6 de enero, junto a los zapatos, un libro con su nombre en la portada. Su cara pintada en acuarela, la aventura que eliges tú y una dedicatoria firmada por los Reyes Magos.",
+        "edition": {
+          "kicker": "Edición de Reyes",
+          "heading": "«{title}»: el cuento de Reyes Magos con su nombre",
+          "text": "Esta campaña hay una historia escrita para la noche del 5 de enero. Melchor, Gaspar y Baltasar llegan con sus camellos, tienen un problema y le nombran Paje Real para repartir los regalos antes del amanecer. Tú eliges qué encuentra en la ventana, qué Rey le acompaña y qué problema resuelven: unos camellos dormilones, un mapa volador o un saco descosido.",
+          "until": "Se puede pedir hasta el {date}",
+          "cta": "Crear su cuento de Reyes",
+          "imageAlt": "Ilustración del cuento personalizado de Reyes Magos «{title}»"
+        },
         "bodyHeading": "Por qué un cuento personalizado es el mejor regalo de Reyes",
         "bodyParagraphs": [
           "Los juguetes de Reyes duran lo que dura enero. Un cuento con su nombre en la portada y en cada página se queda en la estantería, se relee cada noche y, con los años, cuenta quién era de pequeño.",
@@ -587,6 +595,19 @@
       "themeHeading": "Cuentos por temática"
     },
     "home": {
+      "season": {
+        "kicker": "Navidad y Reyes",
+        "title": "Cuentos personalizados para regalar en Navidad y Reyes",
+        "intro": "Un libro con su nombre en la portada, debajo del árbol o junto a los zapatos la mañana de Reyes. Estas son las fechas para que el libro impreso llegue a tiempo.",
+        "christmasTitle": "Cuento personalizado de Navidad",
+        "christmasText": "Para abrir en Nochebuena, con su nombre y su cara en cada página.",
+        "reyesTitle": "Cuento personalizado de Reyes Magos",
+        "reyesText": "Con la edición especial de Reyes «{title}», solo esta campaña.",
+        "reyesTextEvergreen": "El regalo que encontrará junto a los zapatos la mañana del 6 de enero.",
+        "deliveryKicker": "Todos los formatos",
+        "deliveryTitle": "Fechas límite de entrega para Navidad y Reyes",
+        "deliveryText": "Hasta qué día puedes pedir cada formato para que llegue a tiempo."
+      },
       "whatIs": {
         "title": "¿Qué es un cuento personalizado?",
         "paragraphs": [
@@ -601,7 +622,7 @@
         "metaTitle": "Regalos personalizados para niños | Meapica",
         "metaDescription": "Regalos personalizados para niños en cada ocasión: Reyes, Navidad, Sant Jordi, cumpleaños o comunión. Un cuento donde tu hijo es el protagonista.",
         "h1": "Regalos personalizados para niños, para cada ocasión",
-        "intro": "Un cuento donde tu hijo es el héroe es el regalo que se recuerda. Elige la ocasión y crea uno de nuestros <home>cuentos personalizados</home>: una edición única, impresa y pensada para guardar toda la vida."
+        "intro": "Un cuento donde tu hijo es el héroe es el regalo que se recuerda. Elige la ocasión y crea uno de nuestros <home>cuentos personalizados para niños</home>: una edición única, impresa y pensada para guardar toda la vida."
       },
       "ages": {
         "metaTitle": "Libros personalizados para niños de {ageMin} a {ageMax} años | Meapica",
@@ -668,7 +689,7 @@
         "metaTitle": "Cuentos personalizados por temática | Meapica",
         "metaDescription": "Dinosaurios, espacio, piratas, superhéroes y más. Elige la aventura favorita de tu hijo y conviértelo en su protagonista.",
         "h1": "Cuentos personalizados por temática",
-        "intro": "Dinosaurios, estrellas, mares o bosques mágicos. Elige el mundo que más le fascina y crea un cuento único donde tu hijo vive la aventura."
+        "intro": "Dinosaurios, estrellas, mares o bosques mágicos. Elige el mundo que más le fascina y crea uno de nuestros <home>cuentos personalizados</home>, único, donde tu hijo vive la aventura."
       }
     }
   },

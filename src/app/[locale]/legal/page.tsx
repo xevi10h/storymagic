@@ -3,7 +3,7 @@ import Navbar from "@/components/landing/Navbar";
 import { FAQJsonLd } from "@/components/seo/JsonLd";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { routing } from "@/i18n/routing";
+import { hreflangAlternates } from "@/lib/seo-index";
 import { COPY_PARAMS } from "@/lib/product-facts";
 import { isPhotoUploadEnabled } from "@/lib/privacy/child-photo-policy";
 
@@ -25,11 +25,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const t = await getTranslations({ locale, namespace: "legal.terms" });
   const canonicalUrl = `${BASE_URL}/${locale}/legal`;
 
-  const languages: Record<string, string> = {};
-  for (const loc of routing.locales) {
-    languages[loc] = `${BASE_URL}/${loc}/legal`;
-  }
-  languages["x-default"] = `${BASE_URL}/${routing.defaultLocale}/legal`;
+  const languages = hreflangAlternates(BASE_URL, "/legal");
 
   const descriptionMap: Record<string, string> = {
     es: "Aviso legal, privacidad, condiciones de uso, cookies, envíos y preguntas frecuentes de Meapica: quién vende, qué datos tratamos y cómo llega tu cuento a casa.",
@@ -48,10 +44,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     },
     // Own og:url (the layout's would say /{locale}); same shape as the other pages.
     openGraph: { title: t("title"), description, url: canonicalUrl, type: "website" },
-    robots: {
-      index: true,
-      follow: true,
-    },
+    // No `robots` here: index/follow is the default, and a page-level `robots` would replace
+    // the locale layout's (which carries the temporary en/fr noindex, lib/seo-index.ts).
   };
 }
 

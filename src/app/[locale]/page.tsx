@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { setRequestLocale } from "next-intl/server";
-import { routing } from "@/i18n/routing";
+import { hreflangAlternates } from "@/lib/seo-index";
 import Navbar from "@/components/landing/Navbar";
 import Hero from "@/components/landing/Hero";
 import HowItWorks from "@/components/landing/HowItWorks";
@@ -19,6 +19,8 @@ import WaitlistPage from "@/components/waitlist/WaitlistPage";
 import { OrganizationJsonLd, ProductJsonLd } from "@/components/seo/JsonLd";
 import DevResetCreateState from "@/components/dev/DevResetCreateState";
 import CustomerReviews from "@/components/reviews/CustomerReviews";
+// Christmas / Reyes 2026 block: remove this import and its line below in January 2027.
+import HomeSeasonBlock from "@/components/seasonal/HomeSeasonBlock";
 import { ADDON_ENABLED } from "@/lib/pricing";
 import { getReviewSummary } from "@/lib/reviews/published";
 import { SITE_URL } from "@/lib/product-facts";
@@ -34,9 +36,7 @@ type Props = {
 /** Canonical + hreflang of the home (title, description and OG come from the locale layout). */
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
-  const languages: Record<string, string> = {};
-  for (const loc of routing.locales) languages[loc] = `${SITE_URL}/${loc}`;
-  languages["x-default"] = `${SITE_URL}/${routing.defaultLocale}`;
+  const languages = hreflangAlternates(SITE_URL, "");
   return { alternates: { canonical: `${SITE_URL}/${locale}`, languages } };
 }
 
@@ -72,6 +72,7 @@ export default async function Home({ params }: Props) {
             objections (FAQ) → close with their name. */}
         <Hero />
         <HowItWorks />
+        <HomeSeasonBlock locale={locale} />
         <Moments />
         <BookCollection />
         <UniqueEdition />
