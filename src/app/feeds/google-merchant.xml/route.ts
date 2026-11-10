@@ -1,9 +1,11 @@
 import { buildGoogleMerchantXml } from "@/lib/merchant-feed";
 
 // Google Merchant Center product feed (RSS 2.0 + g: namespace), fetched daily by a
-// scheduled fetch (docs/stack.md → Merchant Center). Built from constants only, so it
-// is rendered once at build time and changes with each deploy.
+// scheduled fetch (docs/stack.md → Merchant Center). Built from constants and today's date
+// (the seasonal Reyes edition is listed only while it can be ordered): static, re-rendered
+// at most hourly so that edition leaves the feed without a deploy.
 export const dynamic = "force-static";
+export const revalidate = 3600;
 
 export function GET() {
   return new Response(buildGoogleMerchantXml(), {

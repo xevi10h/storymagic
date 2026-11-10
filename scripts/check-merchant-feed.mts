@@ -13,6 +13,10 @@ import sharp from "sharp";
 import {
   FEED_FORMATS,
   FEED_IMAGES,
+  FEED_WORLDS,
+  FEED_WORLD_FORMATS,
+  REYES_FEED_WORLD,
+  feedWorldImages,
   buildFeedItems,
   buildGoogleMerchantXml,
   buildOpenAiJsonl,
@@ -21,13 +25,50 @@ import {
 } from "../src/lib/merchant-feed";
 import { PRICING, STRIPE_CATALOG } from "../src/lib/pricing";
 import { DELIVERY_BUSINESS_DAYS, SITE_URL } from "../src/lib/product-facts";
+import { getTemplateConfig, isTemplateAvailable } from "../src/lib/create-store";
+import { THEME_TEMPLATE } from "../src/lib/seo-landing";
+import es from "../src/messages/es.json" with { type: "json" };
 
 const items = buildFeedItems();
 const xml = buildGoogleMerchantXml(items);
 
 // ── Items ────────────────────────────────────────────────────────────────────
-assert.equal(items.length, FEED_FORMATS.length, "one item per format");
+const worldsOnSale = FEED_WORLDS.filter((w) => isTemplateAvailable(w.templateId));
+assert.equal(items.length, FEED_FORMATS.length + worldsOnSale.length * FEED_WORLD_FORMATS.length, "one item per format + one per world on sale and printed format");
 assert.equal(new Set(items.map((i) => i.id)).size, items.length, "unique ids");
+assert.equal(new Set(items.map((i) => i.title)).size, items.length, "unique titles");
+
+// ── Story worlds: only what can be bought, each on a page that shows it and its prices ──
+assert.deepEqual(FEED_WORLDS.map((w) => w.key), [...Object.keys(THEME_TEMPLATE), REYES_FEED_WORLD.key], "worlds = theme pages + Reyes");
+const seoCopy = es.seo as unknown as { themes: Record<string, unknown>; gifts: Record<string, { edition?: unknown }> };
+for (const world of worldsOnSale) {
+  const where = `[world ${world.key}]`;
+  const template = getTemplateConfig(world.templateId);
+  assert.ok(template, `${where} template exists`);
+  const own = items.filter((i) => i.world === world.key);
+  assert.deepEqual(own.map((i) => i.format), [...FEED_WORLD_FORMATS], `${where} one item per printed format`);
+  for (const item of own) {
+    assert.equal(item.link, `${SITE_URL}/es${world.path}`, `${where} links to its own landing page`);
+    assert.ok(item.printed, `${where} printed`);
+    assert.ok(item.description.includes(template.title), `${where} description names the story`);
+    assert.ok(!/para niños con su nombre/.test(item.title), `${where} title names the world`);
+  }
+  if (world === REYES_FEED_WORLD) {
+    // ReyesEdition (components/seo-landing) renders the story title and both printed prices.
+    assert.ok(seoCopy.gifts["three-kings"].edition, `${where} the Reyes page has its edition block copy`);
+  } else {
+    // Theme pages quote both printed prices in their copy ({hardcover} / {softcover} facts).
+    const copy = JSON.stringify(seoCopy.themes[world.key] ?? {});
+    for (const f of FEED_WORLD_FORMATS) assert.ok(copy.includes(`{${f}}`), `${where} landing page copy quotes the ${f} price`);
+  }
+}
+// Out of its window the seasonal edition is not for sale, so it is not in the feed.
+const reyes = getTemplateConfig(REYES_FEED_WORLD.templateId);
+assert.ok(reyes?.availableUntil, "Reyes has an end date");
+const dayAfter = new Date(`${reyes.availableUntil}T00:00:00Z`);
+dayAfter.setUTCDate(dayAfter.getUTCDate() + 1);
+assert.ok(buildFeedItems(reyes.availableUntil).some((i) => i.world === REYES_FEED_WORLD.key), "Reyes listed on its last order day");
+assert.ok(!buildFeedItems(dayAfter.toISOString().slice(0, 10)).some((i) => i.world === REYES_FEED_WORLD.key), "Reyes gone the day after");
 
 for (const item of items) {
   const where = `[${item.id}]`;
@@ -101,7 +142,8 @@ lines.forEach((line, i) => {
 assert.deepEqual(buildOpenAiRecords(items).map((r) => r.item_id), items.map((i) => i.id));
 
 // ── Image files (built by scripts/build-merchant-feed-images.mts) ─────────────
-for (const rel of Object.values(FEED_IMAGES)) {
+const imageFiles = [...Object.values(FEED_IMAGES), ...FEED_WORLDS.flatMap((w) => Object.values(feedWorldImages(w.key)))];
+for (const rel of imageFiles) {
   const file = path.join(process.cwd(), "public", rel);
   assert.ok(existsSync(file), `missing ${rel}`);
   const meta = await sharp(file).metadata();

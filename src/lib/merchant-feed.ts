@@ -2,12 +2,20 @@
 // fetched daily by a scheduled fetch) and the ChatGPT product feed (JSONL, same data).
 // Served by src/app/feeds/*/route.ts; validated by scripts/check-merchant-feed.mts.
 //
-// One item per sellable format (hardcover, softcover, PDF), the same three offers and
-// skus the home page's Product JSON-LD declares (components/seo/JsonLd.tsx), all linking
-// to the Spanish home page, which shows every price. Story worlds are not separate items:
-// the /themes pages only show the "desde" price, and Google requires the landing page to
-// show the item's own price. Every fact is derived from product-facts / pricing /
-// shipping: change the fact there, never here. Shared by client and server.
+// Two families of items, all of them things a visitor can buy today:
+// - the three sellable formats (hardcover, softcover, PDF): the same offers and skus the home
+//   page's Product JSON-LD declares (components/seo/JsonLd.tsx), linking to the Spanish home
+//   page, which shows every price;
+// - one printed item per story world and printed format, for every world that has its own
+//   landing page (/es/themes/<slug>, lib/seo-landing.ts) plus the seasonal Reyes edition
+//   (/es/gifts/three-kings) while it can be ordered. Google requires the landing page to
+//   show the item itself and its price: those pages name the world and quote the hardcover
+//   and softcover prices with "IVA incluido". A world without a landing page gets no item
+//   (add its /themes page first, then it appears here by itself).
+// Hardcover and softcover are separate items, not variants of an item group: Google's
+// variant attributes are colour, size, material, pattern, age group and gender.
+// Every fact is derived from product-facts / pricing / shipping / create-store: change the
+// fact there, never here. Shared by client and server.
 
 import {
   AGE_MAX,
@@ -27,6 +35,8 @@ import {
   SHIPPING_COST_CENTS,
   SITE_URL,
 } from "./product-facts";
+import { getTemplateConfig, isTemplateAvailable, templateToday } from "./create-store";
+import { THEME_TEMPLATE, seoPath } from "./seo-landing";
 
 export type FeedFormat = keyof typeof BOOK_FORMATS;
 export const FEED_FORMATS: FeedFormat[] = ["hardcover", "softcover", "digital_pdf"];
@@ -49,6 +59,51 @@ export const FEED_RETURN_POLICY_URL = `${SITE_URL}/es/legal`;
 const GOOGLE_CATEGORY = { printed: "543543", digital: "543542" } as const; // Media > Books > Print Books / E-books
 const OPENAI_CATEGORY = { printed: "Media > Books > Print Books", digital: "Media > Books > E-books" } as const;
 
+/** Printed formats: the ones a story-world item is sold in. */
+export const FEED_WORLD_FORMATS = ["hardcover", "softcover"] as const satisfies readonly FeedFormat[];
+
+/**
+ * How each world reads after "Cuento personalizado …" in an item title (Spanish feed).
+ * Keys are STORY_TEMPLATES ids. A world listed in THEME_TEMPLATE without an entry here
+ * fails scripts/check-merchant-feed.mts, so a new theme page cannot ship a nameless item.
+ */
+const WORLD_SUBJECT: Record<string, string> = {
+  dinosaurs: "de dinosaurios",
+  space: "del espacio",
+  pirates: "de piratas",
+  superhero: "de superhéroes",
+  forest: "del bosque mágico",
+  safari: "de safari",
+  reyes: "de Reyes Magos",
+};
+
+export interface FeedWorld {
+  /** Stable id fragment: the theme slug ("magic-forest"), or the template id for Reyes. */
+  key: string;
+  /** STORY_TEMPLATES id. */
+  templateId: string;
+  /** Landing page (no locale prefix) that shows this world and both printed prices. */
+  path: string;
+}
+
+/** Seasonal Reyes edition ("Paje Real por una Noche"): shown on the Reyes gift page. */
+export const REYES_FEED_WORLD: FeedWorld = { key: "reyes", templateId: "reyes", path: seoPath("gifts", "three-kings") };
+
+/** Every world that can have feed items (images are built for all of them, in or out of season). */
+export const FEED_WORLDS: FeedWorld[] = [
+  ...Object.entries(THEME_TEMPLATE).map(([slug, templateId]) => ({ key: slug, templateId, path: seoPath("themes", slug) })),
+  REYES_FEED_WORLD,
+];
+
+/** Public paths of a world's feed images (built by scripts/build-merchant-feed-images.mts). */
+export function feedWorldImages(key: string) {
+  return {
+    hardcover: `/images/feed/meapica-${key}-hardcover.jpg`,
+    softcover: `/images/feed/meapica-${key}-softcover.jpg`,
+    art: `/images/feed/meapica-${key}-art.jpg`,
+  } as const;
+}
+
 export interface FeedShipping {
   country: "ES";
   /** Postal code range "01000-34999" (Google syntax); absent = whole country. */
@@ -62,6 +117,8 @@ export interface FeedShipping {
 export interface FeedItem {
   id: string;
   format: FeedFormat;
+  /** Story world of the item (FeedWorld.key); null = the generic "any world" item. */
+  world: string | null;
   printed: boolean;
   title: string;
   description: string;
@@ -105,8 +162,12 @@ const FORMAT_COPY: Record<FeedFormat, { title: string; productType: string; lead
 /** "menos de una hora" for the PDF delivery promise. */
 const PDF_DELIVERY = PDF_DELIVERY_MAX_MINUTES === 60 ? "menos de una hora" : `menos de ${PDF_DELIVERY_MAX_MINUTES} minutos`;
 
-function description(format: FeedFormat, printed: boolean): string {
-  const book = `Cuento infantil personalizado de ${AGE_MIN} a ${AGE_MAX} años: el nombre del niño o la niña en la portada y en la historia, su retrato a acuarela y la aventura que eliges entre varios mundos. ${BOOK_INNER_PAGES} páginas con ${BOOK_SCENES} escenas ilustradas, formato cuadrado de ${BOOK_SIZE_CM} × ${BOOK_SIZE_CM} cm.`;
+/** The story world of a world item: title, one-line synopsis and its own age range (STORY_TEMPLATES). */
+type FeedStory = { title: string; description: string; ageMin: number; ageMax: number };
+
+function description(format: FeedFormat, printed: boolean, story?: FeedStory): string {
+  const lead = story ? `${FORMAT_COPY[format].lead} Historia: «${story.title}». ${story.description}` : FORMAT_COPY[format].lead;
+  const book = `Cuento infantil personalizado de ${story?.ageMin ?? AGE_MIN} a ${story?.ageMax ?? AGE_MAX} años: el nombre del niño o la niña en la portada y en la historia, su retrato a acuarela y ${story ? "los tres capítulos que eliges tú" : "la aventura que eliges entre varios mundos"}. ${BOOK_INNER_PAGES} páginas con ${BOOK_SCENES} escenas ilustradas, formato cuadrado de ${BOOK_SIZE_CM} × ${BOOK_SIZE_CM} cm.`;
   const preview = "Antes de pagar ves la portada, el retrato y las primeras escenas de su cuento.";
   const delivery = printed
     ? `Papel de ${BOOK_PAPER_GSM} g. Impreso bajo demanda en Europa. Envío gratis a España peninsular y Baleares en ${DELIVERY_BUSINESS_DAYS.min}-${DELIVERY_BUSINESS_DAYS.max} días laborables; el PDF llega por correo normalmente en ${PDF_DELIVERY}.`
@@ -114,21 +175,22 @@ function description(format: FeedFormat, printed: boolean): string {
   const returns = printed
     ? `Al ser un libro hecho a medida no admite devoluciones; si llega con un defecto de impresión o dañado en el envío, avísanos en los ${DEFECT_CLAIM_DAYS} días siguientes y te enviamos otro sin coste.`
     : "Al ser un contenido digital personalizado no admite devoluciones.";
-  return [FORMAT_COPY[format].lead, book, preview, delivery, returns].join(" ");
+  return [lead, book, preview, delivery, returns].join(" ");
 }
 
-function highlights(printed: boolean): string[] {
+function highlights(printed: boolean, story?: FeedStory): string[] {
   return [
+    ...(story ? [`Historia «${story.title}»`] : []),
     "El nombre y el retrato a acuarela del niño o la niña",
     `${BOOK_INNER_PAGES} páginas y ${BOOK_SCENES} escenas ilustradas`,
-    `Para niños de ${AGE_MIN} a ${AGE_MAX} años`,
+    `Para niños de ${story?.ageMin ?? AGE_MIN} a ${story?.ageMax ?? AGE_MAX} años`,
     printed
       ? `Envío gratis a España peninsular y Baleares en ${DELIVERY_BUSINESS_DAYS.min}-${DELIVERY_BUSINESS_DAYS.max} días laborables`
       : `PDF por correo, normalmente en ${PDF_DELIVERY}`,
   ];
 }
 
-function details(format: FeedFormat, printed: boolean): FeedItem["details"] {
+function details(format: FeedFormat, printed: boolean, story?: FeedStory): FeedItem["details"] {
   const s = "Características";
   const binding: Record<FeedFormat, string> = { hardcover: "Tapa dura", softcover: "Tapa blanda", digital_pdf: "PDF digital" };
   return [
@@ -137,7 +199,8 @@ function details(format: FeedFormat, printed: boolean): FeedItem["details"] {
     { section: s, name: "Escenas ilustradas", value: String(BOOK_SCENES) },
     { section: s, name: "Tamaño", value: `${BOOK_SIZE_CM} × ${BOOK_SIZE_CM} cm` },
     ...(printed ? [{ section: s, name: "Papel", value: `${BOOK_PAPER_GSM} g/m²` }] : []),
-    { section: s, name: "Edad", value: `${AGE_MIN}-${AGE_MAX} años` },
+    { section: s, name: "Edad", value: `${story?.ageMin ?? AGE_MIN}-${story?.ageMax ?? AGE_MAX} años` },
+    ...(story ? [{ section: s, name: "Historia", value: story.title }] : []),
   ];
 }
 
@@ -157,13 +220,52 @@ function shipping(printed: boolean): FeedShipping[] {
   }];
 }
 
-export function buildFeedItems(): FeedItem[] {
+/** Items of one story world: one per printed format, linking to the world's own landing page. */
+function worldItems(world: FeedWorld): FeedItem[] {
+  const template = getTemplateConfig(world.templateId);
+  const subject = WORLD_SUBJECT[world.templateId];
+  if (!template || !subject) throw new Error(`[merchant-feed] world "${world.key}" has no template or no title subject`);
+  const images = feedWorldImages(world.key);
+  return FEED_WORLD_FORMATS.map((format) => {
+    const { priceCents } = BOOK_FORMATS[format];
+    return {
+      id: `meapica-${world.key}-${format}`,
+      format,
+      world: world.key,
+      printed: true,
+      title: FORMAT_COPY[format].title.replace("para niños", subject),
+      description: description(format, true, template),
+      link: `${FEED_LANDING_URL}${world.path}`,
+      imageLink: abs(images[format]),
+      additionalImageLinks: [abs(images.art)],
+      priceCents,
+      googleCategory: GOOGLE_CATEGORY.printed,
+      openaiCategory: OPENAI_CATEGORY.printed,
+      productType: `${FORMAT_COPY[format].productType} > ${template.title}`,
+      highlights: highlights(true, template),
+      details: details(format, true, template),
+      shipping: shipping(true),
+    };
+  });
+}
+
+/**
+ * Every item of the feeds. `today` (YYYY-MM-DD, Europe/Madrid) decides whether a seasonal
+ * world is on sale: the Reyes edition leaves the feed the day after its last order day.
+ */
+export function buildFeedItems(today: string = templateToday()): FeedItem[] {
+  return [...formatItems(), ...FEED_WORLDS.filter((w) => isTemplateAvailable(w.templateId, today)).flatMap(worldItems)];
+}
+
+/** The three formats of the generic book (any world), linking to the Spanish home page. */
+function formatItems(): FeedItem[] {
   return FEED_FORMATS.map((format) => {
     const { priceCents, printed } = BOOK_FORMATS[format];
     return {
       // Same sku as the home page's Product JSON-LD offers.
       id: `meapica-${format.replace("_", "-")}`,
       format,
+      world: null,
       printed,
       title: FORMAT_COPY[format].title,
       description: description(format, printed),

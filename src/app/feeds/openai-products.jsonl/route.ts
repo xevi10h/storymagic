@@ -1,8 +1,9 @@
 import { buildOpenAiJsonl } from "@/lib/merchant-feed";
 
 // ChatGPT product feed (developers.openai.com/commerce/specs/feed, JSONL): the same
-// items as the Google Merchant feed. Rendered at build time from constants.
+// items as the Google Merchant feed. Static, re-rendered at most hourly (seasonal items).
 export const dynamic = "force-static";
+export const revalidate = 3600;
 
 export function GET() {
   return new Response(buildOpenAiJsonl(), {
