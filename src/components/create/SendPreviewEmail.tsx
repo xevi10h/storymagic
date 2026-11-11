@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { trackEvent } from "@/lib/tracking/consent";
@@ -10,9 +10,17 @@ interface SendPreviewEmailProps {
   childName: string;
   /** The signed-in account's address, prefilled (the parent can change it). */
   defaultEmail?: string | null;
+  /**
+   * false = the preview is still painting (waiting screen): the address is held and the link
+   * goes out the moment this turns true. With "Envíamelo y recuérdamelo" the consent is
+   * stored right away, so the reminders still arrive if the parent closes the tab.
+   */
+  ready?: boolean;
+  /** An address is being held for the ready moment: the parent must keep this mounted. */
+  onQueued?: () => void;
 }
 
-type Status = "idle" | "sending" | "sent" | "error" | "invalid" | "rate_limited";
+type Status = "idle" | "sending" | "queued" | "sent" | "error" | "invalid" | "rate_limited";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -22,7 +30,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  * (LSSI 21.1 / RGPD 6.1.a), recorded by the server; the plain send beside it keeps the
  * link free of any reminder.
  */
-export default function SendPreviewEmail({ storyId, childName, defaultEmail }: SendPreviewEmailProps) {
+export default function SendPreviewEmail({ storyId, childName, defaultEmail, ready = true, onQueued }: SendPreviewEmailProps) {
   const t = useTranslations("crear.sendPreview");
   const locale = useLocale();
   const uid = useId();
@@ -32,17 +40,63 @@ export default function SendPreviewEmail({ storyId, childName, defaultEmail }: S
   const [status, setStatus] = useState<Status>("idle");
   /** The server stored the reminder consent (false: not asked, already unsubscribed, or it could not be stored). */
   const [reminderOn, setReminderOn] = useState(false);
+  /** Held while painting; sent once when `ready` turns true. */
+  const [pending, setPending] = useState<{ email: string; remind: boolean } | null>(null);
+  const pendingSent = useRef(false);
+
+  const post = (value: string, remind: boolean) =>
+    fetch(`/api/stories/${storyId}/send-preview`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: value, locale, ...(remind ? { remind: true } : {}) }),
+      keepalive: true, // the waiting screen may navigate to the book while this is in flight
+    });
+
+  useEffect(() => {
+    if (!ready || !pending || pendingSent.current) return;
+    pendingSent.current = true;
+    void post(pending.email, pending.remind)
+      .then((res) => {
+        if (res.ok) setStatus("sent");
+      })
+      .catch((err) => console.warn("[preview] deferred preview email failed:", err));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fire once per held address
+  }, [ready, pending]);
 
   const send = async (remind: boolean) => {
     const value = email.trim();
     if (!EMAIL_RE.test(value)) return setStatus("invalid");
     setStatus("sending");
+    if (!ready) {
+      // Painting: store the consent now (reminders only), send the link when the book is ready.
+      try {
+        let reminder = false;
+        if (remind) {
+          const res = await fetch(`/api/stories/${storyId}/send-preview`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: value, locale, remind: true }),
+          });
+          if (res.status === 429) return setStatus("rate_limited");
+          if (res.status === 400) return setStatus("invalid");
+          // 404: it finished in the meantime (status no longer "generating"); the held send covers it.
+          // The held send (also with `remind`) records the consent then.
+          if (!res.ok && res.status !== 404) throw new Error(`send_preview_${res.status}`);
+          reminder = res.status === 404 || ((await res.json().catch(() => null)) as { reminder?: boolean } | null)?.reminder === true;
+        }
+        setReminderOn(reminder);
+        setPending({ email: value, remind });
+        onQueued?.();
+        trackEvent("Lead", { content_name: reminder ? "preview_reminder" : "send_preview" });
+        setStatus("queued");
+      } catch (err) {
+        console.warn("[preview] send preview email failed:", err);
+        setStatus("error");
+      }
+      return;
+    }
     try {
-      const res = await fetch(`/api/stories/${storyId}/send-preview`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: value, locale, ...(remind ? { remind: true } : {}) }),
-      });
+      const res = await post(value, remind);
       if (res.status === 429) return setStatus("rate_limited");
       if (res.status === 400) return setStatus("invalid");
       if (!res.ok) throw new Error(`send_preview_${res.status}`);
@@ -57,7 +111,7 @@ export default function SendPreviewEmail({ storyId, childName, defaultEmail }: S
     }
   };
 
-  if (status === "sent") {
+  if (status === "sent" || status === "queued") {
     return (
       <p
         className="mx-auto mt-5 flex max-w-xl items-center gap-2 rounded-2xl bg-create-bg px-4 py-3 text-sm font-medium text-create-text"
@@ -65,7 +119,9 @@ export default function SendPreviewEmail({ storyId, childName, defaultEmail }: S
         data-testid="send-preview-sent"
       >
         <span aria-hidden className="material-symbols-outlined shrink-0 text-lg text-brand-text" data-icon="mark_email_read" />
-        <span className="min-w-0 break-words">{t(reminderOn ? "sentReminder" : "sent", { email: email.trim() })}</span>
+        <span className="min-w-0 break-words">{status === "queued"
+            ? t(reminderOn ? "queuedReminder" : "queued", { email: email.trim() })
+            : t(reminderOn ? "sentReminder" : "sent", { email: email.trim() })}</span>
       </p>
     );
   }
@@ -82,9 +138,9 @@ export default function SendPreviewEmail({ storyId, childName, defaultEmail }: S
       data-testid="send-preview"
     >
       <label htmlFor={`${uid}-email`} className="block font-display text-base font-bold text-create-text-dark">
-        {t("title", { name: childName })}
+        {t(ready ? "title" : "titleWaiting", { name: childName })}
       </label>
-      <p className="mt-0.5 text-sm text-create-text-sub">{t("hint")}</p>
+      <p className="mt-0.5 text-sm text-create-text-sub">{t(ready ? "hint" : "hintWaiting")}</p>
       <div className="mt-3 flex flex-col gap-2 sm:flex-row">
         <input
           id={`${uid}-email`}

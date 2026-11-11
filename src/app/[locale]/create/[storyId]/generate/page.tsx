@@ -12,6 +12,8 @@ import { useDedicationAutosave } from "@/hooks/useDedicationAutosave";
 import { deName, patchStoredDraft, type NameGender } from "@/lib/creation-flow";
 import { Spinner } from "@/components/ui/Spinner";
 import { trackEvent } from "@/lib/tracking/consent";
+import SendPreviewEmail from "@/components/create/SendPreviewEmail";
+import { useAuth } from "@/hooks/useAuth";
 
 // Screen 4 — "Mientras se pinta": real preview progress (cover first, then
 // scenes as they are painted) while the parent writes the dedication.
@@ -131,6 +133,10 @@ export default function GenerarPage() {
   const { init: initDedication, update: updateDedication } = dedication;
 
   const dedicationSectionRef = useRef<HTMLElement>(null);
+  /** The optional email box: writing in it holds the auto-open like the dedication does. */
+  const emailBoxRef = useRef<HTMLDivElement>(null);
+  /** The parent used the email box: it stays after "done" (a held address is sent then). */
+  const [emailTouched, setEmailTouched] = useState(false);
   const readyActionRef = useRef<HTMLDivElement>(null);
   const lastEditAtRef = useRef(0);
   const doneRef = useRef(false);
@@ -188,6 +194,7 @@ export default function GenerarPage() {
     const section = dedicationSectionRef.current;
     const active = document.activeElement;
     if (section && active && section.contains(active)) return true;
+    if (active && emailBoxRef.current?.contains(active)) return true;
     return Date.now() - lastEditAtRef.current < TYPING_GRACE_MS;
   }, []);
 
@@ -404,7 +411,9 @@ export default function GenerarPage() {
       if (document.visibilityState === "hidden") setAutoOpenStage("waiting");
     };
     const onFocusIn = (e: FocusEvent) => {
-      if (e.target instanceof Node && dedicationSectionRef.current?.contains(e.target)) setAutoOpenStage("off");
+      if (e.target instanceof Node && (dedicationSectionRef.current?.contains(e.target) || emailBoxRef.current?.contains(e.target))) {
+        setAutoOpenStage("off");
+      }
     };
     document.addEventListener("visibilitychange", onVisibility);
     document.addEventListener("focusin", onFocusIn);
@@ -445,6 +454,7 @@ export default function GenerarPage() {
   const completed = (coverUrl ? 1 : 0) + Math.min(scenesDone, total);
   const pct = known ? Math.round((completed / (total + 1)) * 100) : null;
   const name = childName;
+  const { user } = useAuth();
   const nameArgs = { name, deName: deName(name, locale, childGender) };
 
   // ── Error state ─────────────────────────────────────────────────────────────
@@ -614,6 +624,18 @@ export default function GenerarPage() {
                   })}
                 </ol>
               )}
+            </div>
+          )}
+          {/* Optional, never a gate: the minute of painting is when they have a hand free. */}
+          {(!done || emailTouched) && name && (
+            <div ref={emailBoxRef} onFocusCapture={() => setEmailTouched(true)} className="[&>form]:mt-0 [&>p]:mt-0">
+              <SendPreviewEmail
+                storyId={storyId}
+                childName={name}
+                defaultEmail={!user || user.is_anonymous ? null : user.email}
+                ready={done}
+                onQueued={() => setEmailTouched(true)}
+              />
             </div>
           )}
           {done && (

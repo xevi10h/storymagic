@@ -302,6 +302,17 @@ Wonderbly, Librio and Hurra Héroes (none shows a Reyes date in the flow; all ch
   price since d9bccf6); on desktop it stays under the book in the left column.
 - Prices unchanged; "IVA incluido" next to every price as before.
 
+### Order step, 2026-11-11 (audit: 20 saw the formats in 2 days, 3 pressed pay; nobody was stopped by the consent)
+- **Softcover preselected** (`DEFAULT_BOOK_FORMAT`): the CTA now says 34,90 €, the same "desde" price as the sticky bar; hardcover
+  stays first as the upgrade ("Solo 15,00 € más que la blanda").
+- **Ways out after the doubts**: FAQ → "¿Lo decides más tarde?" → (phones) the email box, all below the price.
+- **Email while painting**: the email box is offered on the painting screen ("¿Te lo guardamos?"). Same consent text and version
+  (2026-11-05): "Envíamelo y recuérdamelo" stores `preview_reminders` at once (reminders still arrive if the tab is closed; the
+  first one 1 h later carries the link), the link itself is sent when the preview is ready. "Enviar solo el enlace" stores nothing
+  and is sent from the page when ready.
+- Not changed on purpose: Stripe keeps phone (carrier on a failed delivery; Checkout can only require it or drop it) and the
+  optional NIF field (a collapsed "comprar como empresa" box, no friction for consumers).
+
 ## Abandoned-preview reminders (2026-10-03)
 
 Where the parent previews the book (`/create/<id>/preview`), the "¿Lo decides más tarde?" › "Recíbelo por email" option sends

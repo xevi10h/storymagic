@@ -1341,7 +1341,11 @@
       "remindPrivacy": "Privacy",
       "invalid": "Check the email address.",
       "rateLimited": "We've already sent it several times. Try again later.",
-      "error": "We couldn't send it. Please try again."
+      "error": "We couldn't send it. Please try again.",
+      "titleWaiting": "Shall we save it for you?",
+      "hintWaiting": "Leave your email and we'll send you the link to the book as soon as it's ready.",
+      "queued": "We'll send it to {email} as soon as it's ready.",
+      "queuedReminder": "We'll send it to {email} as soon as it's ready, and remind you at most 3 times."
     },
     "photo": {
       "checkbox": "I am the child's parent or legal guardian and I allow Meapica to use this photo only to draw their character. We delete it as soon as the character is created (always within 24 h).",

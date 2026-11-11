@@ -1401,7 +1401,11 @@
       "remindPrivacy": "Privacitat",
       "invalid": "Revisa el correu.",
       "rateLimited": "Ja te l'hem enviada diverses vegades. Prova-ho més tard.",
-      "error": "No s'ha pogut enviar. Torna-ho a provar."
+      "error": "No s'ha pogut enviar. Torna-ho a provar.",
+      "titleWaiting": "Te'l guardem?",
+      "hintWaiting": "Deixa'ns el teu email i t'enviarem l'enllaç al seu llibre tan bon punt estigui llest.",
+      "queued": "T'ho enviarem a {email} tan bon punt estigui llest.",
+      "queuedReminder": "T'ho enviarem a {email} tan bon punt estigui llest, i t'ho recordarem com a màxim 3 vegades."
     },
     "photo": {
       "checkbox": "Soc mare, pare o tutor legal i autoritzo que Meapica faci servir aquesta foto només per dibuixar el seu personatge. L'esborrem tan bon punt el creem (i sempre en menys de 24 h).",

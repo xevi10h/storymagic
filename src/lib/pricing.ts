@@ -167,8 +167,8 @@ export function isAddonEnabled(id: string): id is AddonId {
   return id in ADDONS && ADDON_ENABLED[id as AddonId];
 }
 
-/** Default format pre-selected on the paywall (hero product). */
-export const DEFAULT_BOOK_FORMAT: BookFormat = "hardcover";
+/** Default format pre-selected on the paywall: the "desde" price, so the button matches the sticky bar (decision 2026-11-11; hardcover is the upgrade). */
+export const DEFAULT_BOOK_FORMAT: BookFormat = "softcover";
 
 /**
  * Format a price in cents as a localized currency string, e.g. 4990 → "49,90 €"

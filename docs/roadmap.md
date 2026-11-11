@@ -52,9 +52,13 @@ Code, docs, Resend, Supabase allow-list and GSC property done (see `docs/stack.m
 Shipped: "llega a tiempo" card per format, "Por dentro" thumbnails, consent sheet instead of a blocking box, honest guarantees,
 `pay_click` / `pay_blocked_consent`, AddToCart once per story, `gift_redeem` instead of Purchase for 0 € orders, 1 h Checkout
 Sessions + "pedido a medias" reminder for consenting parents (docs/product-spec.md › Order step, docs/stack.md).
-- [ ] **Read the new funnel after ~7 days** (`node scripts/vercel-funnel.mjs --days 7`): step 6 → `pay_click` → `pay_blocked_consent`
-  → `checkout_started` → paid. If most presses are blocked by consent, revisit the sheet; if few press at all, the problem is price
-  or trust, not the box.
+- [x] **First read 2026-11-11** (2 days): 20 saw step 6, 3 `pay_click`, 0 `pay_blocked_consent`, 3 checkouts, 1 paid. The
+  problem is price/trust before the press, not the box. Shipped the same day: softcover preselected, FAQ before the ways out,
+  email box on the painting screen (docs/product-spec.md › Order step, 2026-11-11).
+- [ ] **Read again 2026-11-16** (`node scripts/vercel-funnel.mjs --since 2026-11-11T20:00:00Z`) and `preview_reminders` count
+  (was 4 rows ever on 2026-11-11).
+- [ ] **Real photos of the printed book** on the order step (next to the formats) and the landing: showcase books Noa/Leo arrive
+  12-16 Nov; ask the 4 creators who got gift books for photos. Biggest trust gap found in the audit (only a drawn 3D mockup).
 - [ ] **Owner (legal):** confirm with the gestor/lawyer whether the withdrawal acknowledgement for the included PDF (art. 103 m)
   may be given by the pay button itself instead of the box / "Acepto y voy al pago" sheet. Not changed without that.
 - [ ] Optional unticked "Avisadme si no termino el pedido" consent at the pay step for logged-in parents, so abandoned-checkout

@@ -130,7 +130,7 @@ export default function PreviewPage() {
   const [checkingOut, setCheckingOut] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   // The sticky bar only pays once the parent has picked a format themselves
-  // (the pre-selected hardcover does not count); until then it shows the formats.
+  // (the pre-selected format does not count); until then it shows the formats.
   const [formatChosen, setFormatChosen] = useState(false);
   // Express consent to lose the withdrawal right (art. 103 c + m LGDCU): never pre-ticked.
   const [withdrawalConsent, setWithdrawalConsent] = useState(false);
@@ -748,8 +748,6 @@ export default function PreviewPage() {
                 }
               />
             </div>
-            {/* Mobile: "send it to me / remind me" after the buy panel, not between the book and the price */}
-            {!isWide && <div className="mt-6">{sendPreviewEmail}</div>}
           </aside>
         )}
       </main>
@@ -864,10 +862,12 @@ export default function PreviewPage() {
         </section>
       )}
 
-      {/* Secondary: decide later (save / share, two equal options) + short FAQ */}
+      {/* Secondary: short FAQ first (doubts before paying), then the ways out (decide later:
+          save / share, and on phones the email reminder), below the price, never above it. */}
       {showBuy && (
         <div className="mx-auto max-w-[1360px] px-4 pb-16 lg:px-8">
           <div className="mx-auto max-w-4xl space-y-12 border-t border-create-neutral pt-10">
+            <PreviewFaq />
             <section aria-labelledby="save-later-title" data-testid="decide-later">
               <h2 id="save-later-title" className="font-display text-xl font-bold text-secondary">
                 {tPurchase("secondaryTitle")}
@@ -891,7 +891,7 @@ export default function PreviewPage() {
                 </LaterOption>
               </ul>
             </section>
-            <PreviewFaq />
+            {!isWide && sendPreviewEmail}
           </div>
         </div>
       )}

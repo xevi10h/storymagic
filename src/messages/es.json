@@ -1383,7 +1383,11 @@
       "remindPrivacy": "Privacidad",
       "invalid": "Revisa el email.",
       "rateLimited": "Ya te la hemos enviado varias veces. Prueba más tarde.",
-      "error": "No se ha podido enviar. Inténtalo de nuevo."
+      "error": "No se ha podido enviar. Inténtalo de nuevo.",
+      "titleWaiting": "¿Te lo guardamos?",
+      "hintWaiting": "Déjanos tu email y te enviamos el enlace a su libro en cuanto esté listo.",
+      "queued": "Te lo enviaremos a {email} en cuanto esté listo.",
+      "queuedReminder": "Te lo enviaremos a {email} en cuanto esté listo, y te lo recordaremos como mucho 3 veces."
     },
     "photo": {
       "checkbox": "Soy madre, padre o tutor legal y autorizo que Meapica use esta foto solo para dibujar su personaje. La borramos en cuanto lo creamos (y siempre en menos de 24 h).",

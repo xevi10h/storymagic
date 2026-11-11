@@ -105,7 +105,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ sto
     .eq("id", storyId)
     .eq("user_id", user.id)
     .single();
-  if (!story || !(SHAREABLE_STORY_STATUSES as readonly string[]).includes(story.status)) {
+  // Still painting (the parent left the email on the waiting screen): nothing can be sent yet.
+  const painting = story?.status === "generating";
+  if (!story || (!painting && !(SHAREABLE_STORY_STATUSES as readonly string[]).includes(story.status))) {
     return NextResponse.json({ error: "not_found" }, { status: 404 });
   }
 
@@ -121,6 +123,23 @@ export async function POST(request: Request, { params }: { params: Promise<{ sto
   if (!checkMemoryRateLimit(`send_preview:${clientIp}`, { maxRequests: 10, windowSeconds: 3600 }).allowed) {
     return NextResponse.json({ error: "rate_limited" }, { status: 429 });
   }
+
+  // While painting: store the reminder consent now (so a parent who closes the tab still
+  // gets the reminders, the first one 1 h later, with the link), send nothing. The waiting
+  // screen posts again once the preview is ready, and that call sends the link. A plain
+  // send ("solo el enlace") is never stored: the client holds it until the preview is ready.
+  if (painting) {
+    if (!remind) return NextResponse.json({ error: "not_ready" }, { status: 409 });
+    let reminder = false;
+    try {
+      const db = createFulfilmentClient();
+      reminder = !(await isSuppressed(db, email)) && (await recordPreviewReminderConsent(db, { storyId: story.id, email, locale }));
+    } catch (err) {
+      console.error(`[send-preview] Reminder consent not recorded for story ${story.id}: ${err instanceof Error ? err.message : "unknown"}`);
+    }
+    return NextResponse.json({ sent: false, queued: true, reminder });
+  }
+
   const rl = await checkRateLimit(user.id, "send_preview");
   if (!rl.allowed) {
     return NextResponse.json({ error: "rate_limited" }, { status: 429 });

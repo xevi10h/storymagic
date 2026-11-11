@@ -95,13 +95,17 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
         await section(page).waitFor();
         await section(page).scrollIntoViewIfNeeded();
 
-        // Hardcover pre-selected; delivery date next to the CTA; VAT next to every price.
-        await expect(format(page, "hardcover").locator("input")).toBeChecked();
+        // Softcover pre-selected (the "desde" price of the sticky bar); delivery date next to
+        // the CTA; VAT next to every price.
+        await expect(format(page, "softcover").locator("input")).toBeChecked();
+        await expect(mainCta(page)).toContainText(/34,90\s*€/);
         await expect(section(page).getByTestId("delivery-line")).toContainText(c.delivery);
         await expect(format(page, "hardcover")).toContainText(/49,90\s*€/);
         await expect(format(page, "hardcover")).toContainText(/IVA incl/);
 
         // Extra copy follows the book's format.
+        await expect(extra(page)).toContainText("19,90");
+        await format(page, "hardcover").click();
         await expect(extra(page)).toContainText("29,90");
         await format(page, "softcover").click();
         await expect(extra(page)).toContainText("19,90");
@@ -144,6 +148,23 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
         // The old blank padlock page ("Desbloquear cuento") is gone; the printed book closes the preview.
         await expect(page.getByText(/Desbloquear cuento|Desbloquejar conte/)).toHaveCount(0);
         await expect(page.getByTestId("checkout-cta")).toHaveCount(1);
+      });
+
+      test(`ways out come after the FAQ, below the price [${locale} ${vpName}]`, async ({ page }) => {
+        await mockApi(page, { withPlan: true });
+        await page.goto(`/${locale}/create/${STORY_ID}/preview`);
+        await section(page).waitFor();
+        await page.waitForTimeout(3500); // one-shot reveal overlay
+        const y = (sel: string) => page.locator(sel).first().evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
+        const cta = await y('[data-testid="checkout-cta"]');
+        const faq = await y('[aria-labelledby="preview-faq-title"]');
+        const later = await y('[data-testid="decide-later"]');
+        expect(cta).toBeLessThan(faq);
+        expect(faq).toBeLessThan(later);
+        // Phones: the email reminder is the last block; desktop keeps it under the book.
+        if (vpName === "mobile") expect(later).toBeLessThan(await y('[data-testid="send-preview"]'));
+        await expect(page.getByTestId("send-preview")).toHaveCount(1);
+        await page.screenshot({ path: `${SHOTS}/${locale}-${vpName}-full.png`, fullPage: true });
       });
 
       if (vpName === "mobile") {

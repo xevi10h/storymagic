@@ -1343,7 +1343,11 @@
       "remindPrivacy": "Confidentialité",
       "invalid": "Vérifiez l'adresse e-mail.",
       "rateLimited": "Nous l'avons déjà envoyé plusieurs fois. Réessayez plus tard.",
-      "error": "L'envoi a échoué. Veuillez réessayer."
+      "error": "L'envoi a échoué. Veuillez réessayer.",
+      "titleWaiting": "On vous le garde ?",
+      "hintWaiting": "Laissez votre email et nous vous enverrons le lien vers le livre dès qu'il sera prêt.",
+      "queued": "Nous l'enverrons à {email} dès qu'il sera prêt.",
+      "queuedReminder": "Nous l'enverrons à {email} dès qu'il sera prêt, et vous le rappellerons au maximum 3 fois."
     },
     "photo": {
       "checkbox": "Je suis la mère, le père ou le tuteur légal de l'enfant et j'autorise Meapica à utiliser cette photo uniquement pour dessiner son personnage. Nous la supprimons dès qu'il est créé (toujours en moins de 24 h).",

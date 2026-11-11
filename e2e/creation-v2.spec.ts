@@ -885,6 +885,46 @@ test.describe("auto-open when the preview is ready", () => {
     expect(errors).toEqual([]);
   });
 
+  test("email left while painting: consent stored now, link sent once ready", async ({ page }) => {
+    test.skip(PHOTO_FLAG, "flag-off suite");
+    test.setTimeout(120_000);
+    const errors = trackConsole(page);
+    const mock = await installMocks(page);
+    await toPainting(page);
+    const box = page.getByTestId("send-preview");
+    await expect(box).toContainText("¿Te lo guardamos?");
+    await page.screenshot({ path: `${SHOTS}/painting-email-form-mobile.png` });
+    await box.locator("input[type=email]").fill("familia@example.com");
+    await page.getByTestId("send-preview-remind").click();
+    await expect(page.getByTestId("send-preview-sent")).toContainText("en cuanto esté listo");
+    const sends = () => mock.requests.filter((r) => r.path === `/api/stories/${STORY_ID}/send-preview`);
+    expect(sends()).toHaveLength(1);
+    expect(sends()[0].body).toMatchObject({ email: "familia@example.com", locale: "es", remind: true });
+    await page.screenshot({ path: `${SHOTS}/painting-email-queued-mobile.png` });
+    // Ready: the held address goes out once, the confirmation stays, the book still auto-opens.
+    await expect(page.getByTestId("ready-action")).toBeVisible({ timeout: 30_000 });
+    await expect.poll(() => sends().length).toBe(2);
+    expect(sends()[1].body).toMatchObject({ email: "familia@example.com", remind: true });
+    await page.waitForURL(new RegExp(`/create/${STORY_ID}/preview`), { timeout: 10_000 });
+    expect(sends()).toHaveLength(2);
+    expect(errors).toEqual([]);
+  });
+
+  test("typing in the email box holds the auto-open and keeps the box", async ({ page }) => {
+    test.skip(PHOTO_FLAG, "flag-off suite");
+    test.setTimeout(120_000);
+    await installMocks(page);
+    await toPainting(page);
+    const input = page.getByTestId("send-preview").locator("input[type=email]");
+    await input.click();
+    await input.pressSequentially("fam", { delay: 40 });
+    await expect(page.getByTestId("ready-action")).toBeVisible({ timeout: 30_000 });
+    await page.waitForTimeout(AUTO_WAIT_MS);
+    await expect(page.getByTestId("auto-open-notice")).toHaveCount(0);
+    expect(page.url()).toMatch(/\/generate$/);
+    await expect(input).toHaveValue("fam");
+  });
+
   test("typing in the dedication prevents it", async ({ page }) => {
     test.skip(PHOTO_FLAG, "flag-off suite");
     test.setTimeout(120_000);

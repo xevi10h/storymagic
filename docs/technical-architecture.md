@@ -445,7 +445,7 @@ src/
 │   │       ├── complete/route.ts         — POST: advance resumable fulfilment (lib/fulfilment)
 │   │       ├── title/route.ts            — POST: update story title
 │   │       ├── dedication/route.ts       — PATCH: verbatim dedication + sender (until ordered)
-│   │       ├── send-preview/route.ts     — POST: "Envíame la preview" email with the share link (3/h per user, address not stored)
+│   │       ├── send-preview/route.ts     — POST: "Envíame la preview" email with the share link (3/h per user, address not stored); story still `generating` + `remind` → consent stored, nothing sent, `{ queued: true }` (plain send → 409)
 │   │       ├── share/route.ts            — POST: owner-only → { url, path, expiresAt } read-only share link (30/10 min per user, in-memory). Stateless HMAC token: minting writes/publishes nothing. SharePreviewButton prefetches it once per page (deduped across its instances) so iOS opens the share sheet within the tap
 │   │       └── pdf/route.ts              — GET: owner + paid order → { url } (10-min signed Storage URL); never renders
 │   ├── checkout/route.ts                 — POST: create Stripe session (tax, invoice, consent, idempotent)
