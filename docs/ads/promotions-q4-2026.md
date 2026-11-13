@@ -61,6 +61,12 @@ ad `..._ad_hook-<a|b>_<hook name>`.
 
 ## 2. Black Friday (`black-friday`)
 
+> **Offer changed 2026-11-13 (owner):** Black Friday is now **20 % off the first book** (PDF 7,92 / softcover 27,92 /
+> hardcover 39,92 € IVA incluido, from 13 Nov to 30 Nov 23:59, `src/lib/black-friday.ts`) **plus** the 2nd book at 19,90 €
+> (Pack Reyes, unchanged), with a struck-through list price and the 30-day lowest price on the site. The paused ads below
+> (copy "el 2.º a 19,90 €", "no price cut, never a struck-through price") **no longer match the offer**: do not activate them
+> as they are; rebuild the copy/videos first. Meta was not touched.
+
 - **Offer:** the same Pack Reyes, presented as our Black Friday. No price cut, never "rebaja", never a struck-through
   price (the site's banner says "Black Friday: el 2.º libro en tapa blanda a 19,90 € IVA incluido" that week).
 - **Window:** **23 Nov 2026 00:00 → 30 Nov 2026 23:59**.

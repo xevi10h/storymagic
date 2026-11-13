@@ -168,6 +168,31 @@ Seller on invoices: Xavier Huix Trenco (autónomo), NIF 41649433K, Carrer Aribau
   `charge.dispute.created`); a NEW endpoint prints its signing secret once. **The last two events are
   new (2026-09-30): add them to the existing live + test endpoints (or re-run the script).**
 
+**Black Friday 2026 (owner 2026-11-13, `src/lib/black-friday.ts` = single source of the window):** coupon
+`meapica_black_friday_2026` (20 % `percent_off`, `duration: once`, applies_to = the three book format Products resolved by
+lookup key `meapica_{digital_pdf,softcover,hardcover}`, so never extra copies / upgrades / vouchers; `redeem_by` =
+2026-11-30T22:59:59Z = 30 Nov 23:59:59 Madrid) + promotion code `BLACKFRIDAY` (`expires_at` = same instant,
+metadata `kind: black_friday`). Created by `STRIPE_KEY=sk_… npx tsx --tsconfig tsconfig.json scripts/stripe-setup-black-friday.mts [--dry-run]`
+(idempotent, creates only those two objects). **TEST: created 2026-11-13** (`promo_1UbHFaBD04FISl5uO3wrLbfW`). **LIVE: not
+created yet — run it with the live key BEFORE deploying the branch** (live dry run 2026-11-13: products resolve, no
+`BLACKFRIDAY` clash). Without it the site shows the Black Friday price but checkout charges the list price and
+`alertOperator` emails "Black Friday code refused/missing". End-to-end check against TEST (real sessions, expired at once):
+`STRIPE_ENVIRONMENT=test STRIPE_SECRET_KEY_TEST=… npx tsx --tsconfig tsconfig.json scripts/check-black-friday-checkout.mts`
+(PDF 7,92 · softcover 27,92 · hardcover 39,92 · softcover + extra copy 47,82 · hardcover + extra copy 69,82 €, verified 2026-11-13).
+- Window: Spain dates 2026-11-13 → 2026-11-30 for rendering (`isBlackFriday(today)`), instants for checkout
+  (`isBlackFridayAt(Date.now())`, never a UTC date). The [locale] layout passes its render date to client components
+  (`SeasonTodayProvider` in `src/components/seasonal/SalePrice.tsx`), so the sale price is in the ISR HTML and the live client
+  date corrects it after hydration. Everything reverts on 1 Dec 00:00 Madrid without a deploy (pages hourly ISR,
+  `/llms.txt` + `/llms-full.txt` moved to hourly, feeds hourly, coupon `redeem_by`).
+- Pre-applied in `/api/checkout` (first book only: never reorders / post-purchase offers / `ownCode`) through
+  `orderPromoCandidates`: the eligible code with the biggest saving on the book line goes first, the others are fallbacks
+  when Stripe refuses one (softcover: Pack Reyes 15 € > friend referral 10 € > BF 6,98 € > creator 10 %; hardcover:
+  referral 10 € > BF 9,98 € > creator; PDF: BF > creator). Creator link + BF: BF is applied and
+  `metadata.creator_code` = the creator's code, so `recordOrderPromotion` still books the commission (10 % of the paid
+  amount ex-VAT) and `scripts/social/creator-commissions.mjs` counts it.
+- Known, accepted gap: `BLACKFRIDAY` typed by hand on a full-price reorder of the same format is accepted by Stripe (same
+  Product; Stripe has no per-session exclusion). Not advertised anywhere on the site.
+
 **Endpoints:** both modes point at `https://meapica.es/api/webhooks/stripe` (moved 2026-10-23: live
 `we_1UKekqAyKcfLUpfGWsbB0sRn` from `.shop`, test from `meapica.com`); the route verifies with
 `STRIPE_WEBHOOK_SECRET_LIVE` and `STRIPE_WEBHOOK_SECRET_TEST` and ignores events whose mode ≠
@@ -763,6 +788,12 @@ backfill → check `/admin/creators`.
 Recommended: apply the migration, then deploy, then run `?dry_run=1` once to see how many orders are due.
 
 ## Product feeds — Google Merchant Center + ChatGPT (2026-10-02)
+
+Black Friday 2026: while `isBlackFriday(today)` every item carries `sale_price` (Google also
+`sale_price_effective_date` = `2026-11-13T00:00+0100/2026-11-30T23:59+0100`, so Google stops it at the end even with a
+stale fetch); `price` stays the list price. ChatGPT has no date field: `sale_price` disappears on the first hourly rebuild
+after the end. The linked landing pages show both prices (home hero/quality/FAQ, `/es/themes/*` "desde" + FAQ prices,
+`/es/gifts/three-kings` format prices). Checked by `scripts/check-merchant-feed.mts`.
 
 - **URLs (static, re-rendered at most hourly since 2026-11-10, `revalidate = 3600`):** `https://meapica.shop/feeds/google-merchant.xml` (RSS 2.0 + `g:` namespace) and
   `https://meapica.shop/feeds/openai-products.jsonl` (ChatGPT product feed spec, same data). Not in the sitemap, `X-Robots-Tag: noindex`,

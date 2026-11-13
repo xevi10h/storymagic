@@ -351,9 +351,29 @@ este cuento en 3 días…" with a link to the privacy policy. The account email 
 - **Applied by itself** at checkout when the holder (same account or email) picks softcover and is not typing their own code
   nor holding a voucher/creator credit; it beats a /r link code.
 - **Before purchase:** a paywall line ("Con este libro, el 2.º en tapa blanda te sale a 19,90 € IVA incluido") and the season
-  banner (from 1 Nov). **Black Friday 23–30 Nov** (`SECOND_BOOK_BLACK_FRIDAY`): no price cut, the same pack leads the banner
-  and the paywall line as the Black Friday offer; a dismissed banner shows once more that week.
+  banner (from 1 Nov). Since 2026-11-13 Black Friday is its own offer (below); the pack runs alongside it unchanged and the
+  two never stack on one order (on softcover the pack code wins, 15 € > 6,98 €).
 - Known gap: refunding the earning order does not revoke its code.
+
+## Black Friday 2026: −20 % on the first book (owner 2026-11-13)
+
+- **Offer:** 20 % off the book format line of a first book from deploy (13 Nov) to **30 Nov 23:59 Madrid**: PDF 9,90 → 7,92 €,
+  softcover 34,90 → 27,92 €, hardcover 49,90 → 39,92 € (IVA incluido). Not on extra copies (19,90 / 29,90 € stay), PDF →
+  print upgrades, post-purchase offers, reorders, gift vouchers or the 19,90 € Pack Reyes. One code per order.
+  Rules + window: `src/lib/black-friday.ts` (+ `black-friday.check.mjs`); Stripe objects in docs/stack.md.
+- **Shown:** order screen (struck list price + sale price per format, "IVA incluido", Omnibus line «Precio más bajo de los
+  últimos 30 días: 34,90 €», a "Black Friday −20 % · hasta el 30/11" label, the end date and "no acumulable" under the pay
+  button, the button total at the sale price); "desde" teasers with the struck list price (home hero, home sticky bar,
+  story cards, quality block, preview sticky bar and book teaser, `/es/l/*`, theme / gift / hub pages); FAQ prices and
+  "Libro impreso desde" quote the price paid that day; the season banner leads with "Black Friday: −20 % en su cuento hasta el
+  30 de noviembre" (cut-off as the secondary line, links to /create; a dismissed banner shows once more). Home Product
+  JSON-LD: sale `price` + `StrikethroughPrice` list price, `validFrom` / `priceValidUntil`. Feeds and `llms.txt`: see stack.
+- **Codes:** applied automatically. "¿Tienes una tarjeta regalo u otro código?" (every buyer, during the window) drops it so
+  Stripe shows its code field (gift voucher recipients, AMPA codes); "Volver al −20 %" undoes it. A friend's referral code
+  (10 €) beats it on printed books and the panel says so; a creator's code (10 %) loses to it but the creator still earns the
+  commission (`metadata.creator_code`). A creator code typed by hand in Stripe replaces the 20 % only if the buyer chose
+  "otro código" first (the note says it does not combine).
+- **Reverts by itself** on 1 Dec 00:00 Madrid (no deploy). An order paid at the Black Friday price still earns the Pack Reyes code.
 
 ## Advent calendar (`/advent`, es + ca only, live since 2026-10-27, commit 982f9e9)
 

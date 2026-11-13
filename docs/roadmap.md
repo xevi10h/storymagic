@@ -155,6 +155,17 @@ test = 10 € for 38,107 people reached, 166 clicks, 1.56 s average watch, at mo
 - Compare `landing_view → cta_click (ad_hero/ad_final) → create_step` per page with `scripts/vercel-funnel.mjs` after a week.
 - One variant per new ad (add to `src/lib/ad-landing.ts` + images); consider a short looping clip of the ad instead of the still.
 
+## Black Friday 2026 −20 % (built 2026-11-13, branch `feat/black-friday-20`)
+
+- [ ] Owner, BEFORE the deploy: `STRIPE_KEY=<live key> npx tsx --tsconfig tsconfig.json scripts/stripe-setup-black-friday.mts`
+  (creates the 20 % coupon + `BLACKFRIDAY` on live; dry run already clean). Then deploy and buy-check one PDF in live (7,92 €).
+- [ ] Meta: the paused `black-friday` campaign copy («el 2.º a 19,90 €», "never a struck-through price") no longer matches the
+  offer: new ads needed (20 % + 2.º a 19,90 €) before activating it. See `docs/ads/promotions-q4-2026.md` § 2.
+- [ ] 1 Dec: confirm the revert in production (banner, `/es` prices, JSON-LD, `/feeds/google-merchant.xml` without
+  `sale_price`, `/llms.txt`), and that no Black Friday order is missing a creator commission (`creator-commissions.mjs --from 2026-11-13 --to 2026-11-30`).
+- [ ] December clean-up (code is inert after 30 Nov): delete the `blackFriday` messages, `SalePrice`/`useBlackFriday` call sites
+  and `src/lib/black-friday.ts`, or move its dates for the next campaign.
+
 ## Meta promotions Q4 2026 (built 2026-10-26, all PAUSED)
 
 Plan, ids and checklist: `docs/ads/promotions-q4-2026.md`. Five promotions × two ads (A/B on the hook only), 10 €/day each, scheduled to their windows.
