@@ -88,7 +88,7 @@ function pcm(file, from, to) {
 }
 
 /**
- * cfg = { dir, story (showcase id), music (docs/social/audio file), shots, line: { page, focus, html, t }, captions(t), sfx? }
+ * cfg = { dir, story (showcase id), music (docs/social/audio file), shots, line: { page, focus, html, t }, captions(t), sfx?, endLine? (end-card price line HTML) }
  * shot = { src, ss, t, audio?, audioFrom?: {src, ss}, vf? }  a video clip (audio: keep its VOICE; audioFrom: another clip's voice under it, an L-cut)
  *      | { page, mode: "fit"|"crop", px?, focus?, t, zoom?: [z0, z1], vf? }  a real page of the example PDF, slow push-in
  *      | { img, t, zoom?: [z0, z1], y?, vf? }  a still image already 9:16, slow push-in toward height fraction y
@@ -233,7 +233,7 @@ body{font-family:Fredoka,sans-serif;position:relative;font-kerning:none}
   const OV = [];
   for (const [html, from, to] of OVT) OV.push([await overlay(html), from, to]);
   OV.push([await overlay(`<div class="pill line">${cfg.line.html}</div>`), lineAt + 0.25, endAt]);
-  const endCard = await overlay(`<div class="end"><div class="cover"></div><div class="t1">Su cuento.<br>Con su nombre y su cara.</div><div class="t2">Libro impreso desde 34,90 € IVA incluido</div><div class="pill web">meapica.es</div></div>`);
+  const endCard = await overlay(`<div class="end"><div class="cover"></div><div class="t1">Su cuento.<br>Con su nombre y su cara.</div><div class="t2">${cfg.endLine ?? "Libro impreso desde 34,90 € IVA incluido"}</div><div class="pill web">meapica.es</div></div>`);
   await browser.close();
   ff(["-loop", "1", "-i", endCard, "-filter_complex", `color=c=#FFF8F0:s=${W}x${H}:d=${END_T}[bg];[bg][0:v]overlay=0:0:shortest=1,fps=${FPS},format=yuv420p,setsar=1[v]`,
     "-map", "[v]", "-t", String(END_T), "-an", ...enc, `${TMP}/seg-end.mp4`]);

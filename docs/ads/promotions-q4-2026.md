@@ -177,3 +177,17 @@ the beat's title. Paid generation for this batch: two Higgsfield clips for Paje 
    `com.meapica.pack-reyes-on`, 1 Nov 00:05 and 09:00) sets the campaign ACTIVE and removes itself. The other four
    are still PAUSED.
 5. Day 7 (day 4 for Black Friday and Última llamada): read-out above, move both budgets to the winner, note it here.
+
+### Black Friday −20 % ad (2026-11-13)
+- Offer live on the site 13-30 Nov (src/lib/black-friday.ts). One new ad in the consolidated Pack Reyes v2 ad set
+  `120252499122780661` (8 €/day, `preview_ready`, ends 22 Nov 23:59): `mpc_meta_black-friday-20_es_q4-26_ad_hook-b_foto-a-cuento`
+  Meta `120252562402160661`, Zernio `6af6ef9ebf59c392740c906b`, utm_campaign `black-friday-20_q4-26`.
+- Creative: hook-b «foto a cuento» re-cut by `node docs/social/ads/bf20-foto-a-pagina/build.mjs` (offer beat «Black Friday:
+  −20 % en su cuento, hasta el 30/11», end card «desde 27,92 € IVA incluido · antes 34,90 €, el precio más bajo de los últimos
+  30 días», Omnibus). 4:5 = crop 1080×1350 at y=210 of the 9:16. Files in docs/ads/creatives/promos/black-friday-20/ (untracked
+  like the other mp4s). Ad created by `node scripts/ads/black-friday-20-ad.mjs`.
+- Old hook-b `120252499234740661` (Zernio `6af212af5fda13d6fba01125`) PAUSED; hook-a `120252499235720661` stays ACTIVE.
+- Zernio status calls: `PUT /v1/ads/{zernioId}/status` with lowercase `{"status":"active"|"paused"}`; a new ad answers
+  `pending_review` until Meta approves it.
+- The ad set ends 22 Nov, so this ad stops then (owner: Meta until 22 Nov, then the ChatGPT ads test). Black Friday v2
+  (23-30 Nov, paused) still carries the old «2.º a 19,90 €» copy.
