@@ -22,6 +22,14 @@ import {
   TRANSIT_BUSINESS_DAYS,
 } from "@/lib/product-facts";
 import { getShowcaseStories } from "@/lib/showcase";
+import { spainToday } from "@/lib/shipping";
+import {
+  BLACK_FRIDAY_VALID_FROM,
+  BLACK_FRIDAY_VALID_UNTIL,
+  blackFridayPriceCents,
+  isBlackFriday,
+  lowestPrice30Days,
+} from "@/lib/black-friday";
 import { productReviewMarkup, type ReviewSummary } from "@/lib/reviews/review-content";
 import { GUIDES, guideUpdated, isGuideLocale, type GuideId } from "@/lib/guides";
 
@@ -186,6 +194,7 @@ export async function ProductJsonLd({
   locale,
   url,
   reviews,
+  blackFriday = false,
 }: {
   locale: string;
   /** Indexable page that sells the book and carries this markup (default: the home). */
@@ -197,6 +206,11 @@ export async function ProductJsonLd({
    * fabricated (Google manual action + EU/Spanish consumer law on fake reviews).
    */
   reviews?: ReviewSummary;
+  /**
+   * Black Friday prices (src/lib/black-friday.ts) inside the window: only for a page that SHOWS
+   * them (the home), since structured data must match the visible price. Guides keep list prices.
+   */
+  blackFriday?: boolean;
 }) {
   const loc = asLoc(locale);
   const localizedNames: Record<Loc, string> = {
@@ -223,21 +237,36 @@ export async function ProductJsonLd({
   // The indexable page that sells the book (/create is noindex).
   const offerUrl = url ?? `${BASE_URL}/${locale}`;
   const policy = returnPolicy(locale);
+  // Black Friday (src/lib/black-friday.ts), from the render date (ISR hourly): the sale price is the
+  // active price and the list price is marked StrikethroughPrice, with the window as validFrom /
+  // priceValidUntil (Google merchant listings). Outside the window: the list price only.
+  const sale = blackFriday && isBlackFriday(spainToday());
   const offers = (Object.keys(BOOK_FORMATS) as (keyof typeof BOOK_FORMATS)[]).map((format) => {
     const { priceCents, printed } = BOOK_FORMATS[format];
-    const price = (priceCents / 100).toFixed(2);
+    const price = ((sale ? blackFridayPriceCents(priceCents) : priceCents) / 100).toFixed(2);
+    const unitPrice = { "@type": "UnitPriceSpecification", price, priceCurrency: "EUR", valueAddedTaxIncluded: true };
     return {
       "@type": "Offer",
       name: offerNames[loc][format],
       sku: `meapica-${format.replace("_", "-")}`,
       price,
       priceCurrency: "EUR",
-      priceSpecification: {
-        "@type": "UnitPriceSpecification",
-        price,
-        priceCurrency: "EUR",
-        valueAddedTaxIncluded: true,
-      },
+      ...(sale
+        ? {
+            validFrom: BLACK_FRIDAY_VALID_FROM,
+            priceValidUntil: BLACK_FRIDAY_VALID_UNTIL,
+            priceSpecification: [
+              unitPrice,
+              {
+                "@type": "UnitPriceSpecification",
+                priceType: "https://schema.org/StrikethroughPrice",
+                price: (lowestPrice30Days(priceCents) / 100).toFixed(2),
+                priceCurrency: "EUR",
+                valueAddedTaxIncluded: true,
+              },
+            ],
+          }
+        : { priceSpecification: unitPrice }),
       availability: "https://schema.org/InStock",
       itemCondition: "https://schema.org/NewCondition",
       url: offerUrl,

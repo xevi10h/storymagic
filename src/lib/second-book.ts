@@ -15,12 +15,8 @@ export const SECOND_BOOK_PRICE_CENTS = 1990;
 // ponytail: one campaign; move this date for the next season.
 export const SECOND_BOOK_FROM = "2026-10-26";
 
-/** Black Friday week (owner 2026-10-26): no price cut, the pack is presented as the Black Friday offer. */
-export const SECOND_BOOK_BLACK_FRIDAY = { from: "2026-11-23", to: "2026-11-30" } as const;
-
-export function isBlackFridayWeek(today: string): boolean {
-  return today >= SECOND_BOOK_BLACK_FRIDAY.from && today <= SECOND_BOOK_BLACK_FRIDAY.to;
-}
+// Black Friday is no longer "the pack" (owner 2026-11-13): it is its own 20 % offer on the first
+// book (src/lib/black-friday.ts), and the pack runs alongside it unchanged. Never both on one order.
 
 const PRINTED = new Set(["softcover", "hardcover"]);
 

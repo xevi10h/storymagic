@@ -5,7 +5,8 @@ import { Link, usePathname } from "@/i18n/navigation";
 import { cx, focusRing } from "@/components/ui";
 import { CHRISTMAS_DELIVERY_PATH, earliestPrintedCutoff, giftSeason, seasonBanner } from "@/lib/shipping";
 import { formatPrice } from "@/lib/pricing";
-import { SECOND_BOOK_PRICE_CENTS, isBlackFridayWeek, secondBookIssuing } from "@/lib/second-book";
+import { SECOND_BOOK_PRICE_CENTS, secondBookIssuing } from "@/lib/second-book";
+import { BLACK_FRIDAY, isBlackFriday } from "@/lib/black-friday";
 import {
   dismissBanner,
   formatSeasonDate,
@@ -24,6 +25,8 @@ import { DISMISSED_ATTR } from "./season-scripts";
  */
 export default function SeasonalBanner({ serverToday }: { serverToday: string | null }) {
   const t = useTranslations("christmasDelivery.banner");
+  const tBf = useTranslations("blackFriday");
+  const tHero = useTranslations("hero");
   const locale = useLocale();
   const pathname = usePathname();
   const today = useSeasonToday(serverToday);
@@ -32,20 +35,22 @@ export default function SeasonalBanner({ serverToday }: { serverToday: string | 
   const state = today ? seasonBanner(today) : null;
   if (!today || !state || pathname === CHRISTMAS_DELIVERY_PATH) return null;
 
+  // Black Friday 20 % (src/lib/black-friday.ts) leads the banner inside its window.
+  const blackFriday = isBlackFriday(today);
   // New message (Christmas → Reyes → PDF, Black Friday, or a new season) shows again once.
-  const id = `${giftSeason(today).christmasYear}:${state.kind}:${state.occasion}${isBlackFridayWeek(today) ? ":bf" : ""}`;
+  const id = `${giftSeason(today).christmasYear}:${state.kind}:${state.occasion}${blackFriday ? ":bf20" : ""}`;
   if (dismissed === id) return null;
 
   const cutoffText =
     state.kind === "physical"
       ? t(`physical.${state.occasion}`, { date: formatSeasonDate(state.lastOrderDate, locale) })
       : t(`digital.${state.occasion}`);
-  // Pack Reyes while printed orders earn the 19,90 € second-book code; in Black Friday week it
-  // leads the banner (no price cut, owner 2026-10-26).
+  // Pack Reyes while printed orders earn the 19,90 € second-book code.
   const pack = state.kind === "physical" && secondBookIssuing(today, earliestPrintedCutoff(today, "reyes"));
   const price = formatPrice(SECOND_BOOK_PRICE_CENTS, locale);
-  const blackFriday = pack && isBlackFridayWeek(today);
-  const main = blackFriday ? t("blackFriday", { price }) : cutoffText;
+  // Inside the window: "Black Friday: −20 % en su cuento hasta el 30 de noviembre", then the
+  // delivery cut-off as the secondary line.
+  const main = blackFriday ? tBf("banner", { date: formatSeasonDate(BLACK_FRIDAY.to, locale) }) : cutoffText;
   const more = blackFriday
     ? cutoffText
     : state.kind !== "physical"
@@ -63,16 +68,16 @@ export default function SeasonalBanner({ serverToday }: { serverToday: string | 
         className="mx-auto -mt-2 mb-2 flex max-w-[1200px] items-center gap-1 rounded-full bg-brand-deep pr-1 text-[13px] leading-snug text-white"
       >
         <Link
-          href={CHRISTMAS_DELIVERY_PATH}
+          href={blackFriday ? "/create" : CHRISTMAS_DELIVERY_PATH}
           className={cx("group flex min-h-10 min-w-0 flex-1 items-center gap-2 rounded-full py-1.5 pl-3.5 sm:pl-4", focusRing)}
         >
-          <span aria-hidden className="material-symbols-outlined !text-lg shrink-0 text-white/85" data-icon={state.kind === "physical" ? "local_shipping" : "download"} />
+          <span aria-hidden className="material-symbols-outlined !text-lg shrink-0 text-white/85" data-icon={blackFriday ? "sell" : state.kind === "physical" ? "local_shipping" : "download"} />
           <span className="min-w-0">
             <span className="font-semibold">{main}</span>
             <span className="hidden text-white/75 md:inline"> · {more}</span>
           </span>
           <span className="ml-auto hidden shrink-0 items-center gap-0.5 pl-3 font-bold underline decoration-white/40 underline-offset-2 group-hover:decoration-white sm:inline-flex">
-            {t("link")}
+            {blackFriday ? tHero("cta") : t("link")}
             <span aria-hidden className="material-symbols-outlined !text-base transition-transform group-hover:translate-x-0.5" data-icon="arrow_forward" />
           </span>
         </Link>

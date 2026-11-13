@@ -1448,7 +1448,6 @@
       "otherCode": "Have another code?",
       "ownCodeNote": "Enter your code on the payment page.",
       "secondBookPromo": "With this book, a 2nd one in softcover is {price} VAT included (code valid until {until})",
-      "secondBookPromoBlackFriday": "Black Friday: with this book, a 2nd one in softcover is {price} VAT included (code valid until {until})",
       "insideTitle": "Inside",
       "insideOpenScene": "See scene {n}",
       "insideMore": "more scenes",
@@ -2953,8 +2952,7 @@
       "digitalMore": "it reaches your inbox the same day",
       "link": "See dates",
       "dismiss": "Dismiss notice",
-      "secondBookMore": "and a 2nd softcover book for {price} VAT included",
-      "blackFriday": "Black Friday: a 2nd softcover book for {price} VAT included"
+      "secondBookMore": "and a 2nd softcover book for {price} VAT included"
     },
     "footerLink": "Will it arrive by Three Kings' Day?",
     "seoCallout": "Will it arrive in time? See the Christmas and Three Kings order deadlines"
@@ -3196,5 +3194,20 @@
     "count": "{count, plural, one {# review} other {# reviews}}",
     "starsLabel": "{rating} out of 5 stars",
     "verified": "Verified purchase"
+  },
+  "blackFriday": {
+    "label": "Black Friday −20 %",
+    "from": "From <s>{was}</s> <b>{price}</b>",
+    "price": "<s>{was}</s> <b>{price}</b>",
+    "sticky": "The printed book · from <s>{was}</s> <b>{price}</b>",
+    "lowest30": "Lowest price in the last 30 days: {price}",
+    "panelDetail": "Black Friday: discount applied at payment, until {date}. Cannot be combined with other codes.",
+    "otherCode": "Have a gift card or another code?",
+    "ownCodeNote": "Enter your code on the payment page. The Black Friday −20 % cannot be combined with other codes.",
+    "backToOffer": "Back to −20 %",
+    "linkCodeBeaten": "The Black Friday −20 % beats your code {code} (they cannot be combined): −20 % is applied.",
+    "linkCodeBetter": "Your code {code} saves more than −20 % (they cannot be combined): your code is applied at payment.",
+    "banner": "Black Friday: −20 % on their book until {date}",
+    "untilShort": "until {date}"
   }
 }

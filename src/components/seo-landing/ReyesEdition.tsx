@@ -4,6 +4,7 @@ import { Link } from "@/i18n/navigation";
 import { Heading, buttonClass, cx } from "@/components/ui";
 import { getTemplateConfig } from "@/lib/create-store";
 import { PRICING, formatPrice } from "@/lib/pricing";
+import { SalePrice } from "@/components/seasonal/SalePrice";
 import { kicker } from "./MarketingHeader";
 
 /** STORY_TEMPLATES id of the seasonal Reyes world ("Paje Real por una Noche"). */
@@ -58,7 +59,11 @@ export default async function ReyesEdition({ locale }: { locale: string }) {
               <div key={format} className="rounded-2xl border-2 border-line bg-surface px-4 py-3">
                 <dt className="text-sm font-semibold text-ink-soft">{tp(`${format}.label`)}</dt>
                 <dd className="mt-0.5">
-                  <span className="font-display text-xl font-bold tabular-nums text-brand-deep">{formatPrice(PRICING[format].price, locale)}</span>
+                  <span className="font-display text-xl tabular-nums text-brand-deep">
+                    <SalePrice listCents={PRICING[format].price} variant="price">
+                      <span className="font-bold">{formatPrice(PRICING[format].price, locale)}</span>
+                    </SalePrice>
+                  </span>
                   <span className="block text-xs text-ink-muted">{tp("vatIncluded")}</span>
                 </dd>
               </div>

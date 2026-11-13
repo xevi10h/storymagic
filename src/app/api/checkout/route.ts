@@ -10,7 +10,12 @@ import { CONSENT_COOKIE, GA_SESSION_COOKIE, UTM_COOKIE, consentAllows, parseCons
 import { gaClientId, gaSessionId } from "@/lib/tracking/ga4-mp";
 import { buyerHasOwnCode, referralForCheckout } from "@/lib/growth/referrals";
 import { secondBookPromotionForBuyer } from "@/lib/growth/second-book";
-import { canPreApplyReferral, REFERRAL_COOKIE } from "@/lib/promo-codes";
+import { getPromotionSetup } from "@/lib/growth/stripe-promotions";
+import { canPreApplyReferral, REFERRAL_COOKIE, REFERRAL_DISCOUNT_CENTS } from "@/lib/promo-codes";
+import { SECOND_BOOK_DISCOUNT_CENTS } from "@/lib/second-book";
+import { blackFridayDiscountCents, isBlackFridayAt, orderPromoCandidates } from "@/lib/black-friday";
+import { CREATOR_AUDIENCE_PERCENT_OFF, CREATOR_CODE_METADATA_KEY } from "@/lib/creators";
+import { alertOperator } from "@/lib/fulfilment/alerts";
 import { isTemplateAvailable } from "@/lib/create-store";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -185,35 +190,57 @@ export async function POST(request: Request) {
     }
     const offer = checkoutOffer({ orders: offerOrders, userId: user.id, storyId, format, isReorder, catalog, now: Date.now() });
 
-    // /r/<code> cookie: pre-apply a friend's referral code (10 €, printed book) or a creator's
-    // audience code (10 %, any format), never the buyer's own code. Unknown / not live codes
-    // are simply ignored.
+    // Which code to pre-apply (Stripe takes ONE per session, so codes never stack). Candidates:
+    //  - /r/<code> cookie: a friend's referral code (10 €, printed book) or a creator's audience
+    //    code (10 %, any format), never the buyer's own code; unknown / not live codes are ignored.
+    //  - Pack Reyes: the buyer's own 19,90 € softcover code (15 € off).
+    //  - Black Friday (src/lib/black-friday.ts): 20 % on the book line of a FIRST book, inside the
+    //    window (checked here by instant) and only if the coupon exists on this Stripe account.
+    // The biggest saving goes first, the others are fallbacks if Stripe refuses it (used up,
+    // expired…). Nothing is pre-applied when the buyer asked to type their own code ("¿Tienes otro
+    // código?"): a pre-applied code hides Stripe's code field.
     const refCookie = request.headers
       .get("cookie")
       ?.split(/;\s*/)
       .find((c) => c.startsWith(`${REFERRAL_COOKIE}=`))
       ?.slice(REFERRAL_COOKIE.length + 1);
-    // Skipped when the buyer asked to type their own code, or holds one (gift voucher, creator
-    // credit): a pre-applied code hides Stripe's code field.
-    const referral = body.ownCode === true ? null : await referralForCheckout(createFulfilmentClient(), refCookie);
-    const referralPromotionCodeId =
-      referral &&
-      canPreApplyReferral(referral, {
-        userId: user.id,
-        email: user.email,
-        format,
-        ownCode: body.ownCode === true,
-        holdsOwnCode: await buyerHasOwnCode(createFulfilmentClient(), user.email),
-      })
-        ? referral.stripe_promotion_code_id
-        : null;
-    // Pack Reyes: the buyer's own 19,90 € softcover code beats a link code (15 € > 10 €). Not when
-    // they asked to type a code or hold a voucher/credit (a pre-applied code hides Stripe's field).
+    const ownCode = body.ownCode === true;
+    const fulfilment = createFulfilmentClient();
+    // Link codes and Pack Reyes are skipped when the buyer holds a code of their own (unredeemed
+    // gift voucher they bought, creator credit): a pre-applied code would hide Stripe's field.
+    const holdsOwnCode = ownCode ? false : await buyerHasOwnCode(fulfilment, user.email);
+    const referral = ownCode ? null : await referralForCheckout(fulfilment, refCookie);
+    const linkEligible =
+      !!referral && canPreApplyReferral(referral, { userId: user.id, email: user.email, format, ownCode, holdsOwnCode });
+    const listCents = PRICING[format].price;
     const secondBookPromo =
-      format === "softcover" && body.ownCode !== true && !(await buyerHasOwnCode(createFulfilmentClient(), user.email))
-        ? await secondBookPromotionForBuyer(createFulfilmentClient(), { userId: user.id, email: user.email })
+      format === "softcover" && !ownCode && !holdsOwnCode
+        ? await secondBookPromotionForBuyer(fulfilment, { userId: user.id, email: user.email })
         : null;
-    const preAppliedPromo = secondBookPromo ?? referralPromotionCodeId;
+    // Black Friday is the price the order screen shows, so it is pre-applied for voucher / credit
+    // holders too: they reach Stripe's code field through "¿Tienes una tarjeta regalo u otro
+    // código?", which every buyer sees during the window (PurchasePanel).
+    const blackFridayPromo =
+      !ownCode && !isReorder && !offer && isBlackFridayAt(Date.now()) ? (await getPromotionSetup()).blackFriday : null;
+    const candidates = orderPromoCandidates([
+      secondBookPromo ? { kind: "second_book", promotionCodeId: secondBookPromo, savingCents: SECOND_BOOK_DISCOUNT_CENTS } : null,
+      linkEligible && referral
+        ? {
+            kind: referral.kind,
+            promotionCodeId: referral.stripe_promotion_code_id,
+            savingCents:
+              referral.kind === "creator" ? Math.round((listCents * CREATOR_AUDIENCE_PERCENT_OFF) / 100) : REFERRAL_DISCOUNT_CENTS,
+          }
+        : null,
+      blackFridayPromo
+        ? { kind: "black_friday", promotionCodeId: blackFridayPromo, savingCents: blackFridayDiscountCents(listCents) }
+        : null,
+    ]);
+    // A creator's follower keeps counting for the creator when a bigger code (Black Friday) wins:
+    // the webhook attributes the order from this metadata (recordOrderPromotion). Only when the
+    // creator code itself was eligible (so never the creator's own purchase).
+    const creatorMetadata: Record<string, string> =
+      linkEligible && referral?.kind === "creator" ? { [CREATOR_CODE_METADATA_KEY]: referral.code } : {};
 
     const attribution = attributionMetadata(request);
     const bucket = Math.floor(Date.now() / IDEMPOTENCY_WINDOW_MS);
@@ -233,7 +260,7 @@ export async function POST(request: Request) {
     const createSession = (promo: string | null) => {
       const p = planFor(promo);
       // Ad attribution for the webhook (Meta CAPI) and UTMs: only with advertising consent.
-      p.params.metadata = { ...p.params.metadata, ...attribution };
+      p.params.metadata = { ...p.params.metadata, ...attribution, ...creatorMetadata };
       p.params.expires_at = sessionExpiresAt(bucket);
       return {
         plan: p,
@@ -248,21 +275,38 @@ export async function POST(request: Request) {
               p.offer ? `${p.offer.offer}:${p.offer.sourceOrderId}` : "",
               // Attribution and the pre-applied code are part of the key: same key + different params is a Stripe error.
               JSON.stringify(attribution),
+              JSON.stringify(creatorMetadata),
               promo ?? "",
             ], bucket),
           }),
       };
     };
-    let attempt = createSession(preAppliedPromo);
+    let attempt = createSession(candidates[0]?.promotionCodeId ?? null);
     let session;
-    try {
-      session = await attempt.request();
-    } catch (err) {
-      // The code can't be applied (used up, expired, deactivated…): same checkout without it.
-      if (!preAppliedPromo) throw err;
-      console.warn(`[checkout] Pre-applied code ${secondBookPromo ? "(second book)" : referral?.code} not applied:`, err instanceof Error ? err.message : err);
-      attempt = createSession(null);
-      session = await attempt.request();
+    for (let i = 0; ; i++) {
+      try {
+        session = await attempt.request();
+        break;
+      } catch (err) {
+        // The code can't be applied (used up, expired, deactivated…): next candidate, then none.
+        const failed = candidates[i];
+        if (!failed) throw err;
+        const reason = err instanceof Error ? err.message : String(err);
+        console.warn(`[checkout] Pre-applied ${failed.kind} code ${failed.promotionCodeId} not applied:`, reason);
+        if (failed.kind === "black_friday") {
+          // The order screen shows the Black Friday price: a refusal charges buyers more than shown.
+          await alertOperator(fulfilment, {
+            key: "checkout-black-friday-refused",
+            subject: "Black Friday code refused at checkout",
+            lines: [
+              `Stripe refused ${failed.promotionCodeId} on a ${format} checkout: ${reason}`,
+              "Check the coupon and the BLACKFRIDAY promotion code (scripts/stripe-setup-black-friday.mts).",
+            ],
+            dedupeSeconds: 6 * 3600,
+          }).catch(() => false);
+        }
+        attempt = createSession(candidates[i + 1]?.promotionCodeId ?? null);
+      }
     }
     const plan = attempt.plan;
     const { validAddons, totalCents } = plan;
@@ -306,7 +350,7 @@ export async function POST(request: Request) {
 
     const response = NextResponse.json({ url: session.url });
     // The buyer chose their own code: forget the link code for good.
-    if (body.ownCode === true) response.cookies.delete(REFERRAL_COOKIE);
+    if (ownCode) response.cookies.delete(REFERRAL_COOKIE);
     return response;
   } catch (err) {
     console.error("Checkout error:", err instanceof Error ? { message: err.message, stack: err.stack } : err);

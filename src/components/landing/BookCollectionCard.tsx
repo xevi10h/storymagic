@@ -7,6 +7,8 @@ import { Card, cx, focusRing } from "@/components/ui";
 import type { CatalogWorld } from "./BookCollectionData";
 import type { Locale } from "@/i18n/routing";
 import { showcasePath } from "@/lib/showcase-slug";
+import { SalePrice } from "@/components/seasonal/SalePrice";
+import { PRICING } from "@/lib/pricing";
 
 interface BookCollectionCardProps {
   world: CatalogWorld;
@@ -73,10 +75,13 @@ export default function BookCollectionCard({ world, fromPrice, className }: Book
         <div className="mt-auto pt-3">
           <p className="text-sm text-ink-soft tabular-nums">
             <span className="whitespace-nowrap">
-              {t.rich("priceFrom", {
-                price: fromPrice,
-                b: (chunks) => <strong className="font-bold text-brand-deep">{chunks}</strong>,
-              })}
+              {/* fromPrice is the softcover list price (the lowest printed one). */}
+              <SalePrice listCents={PRICING.softcover.price} nowClassName="font-bold text-brand-deep">
+                {t.rich("priceFrom", {
+                  price: fromPrice,
+                  b: (chunks) => <strong className="font-bold text-brand-deep">{chunks}</strong>,
+                })}
+              </SalePrice>
             </span>{" "}
             {/* Same line in the carousel; its own line in the narrow 5-column grid (xl). */}
             <span className="whitespace-nowrap text-xs text-ink-muted xl:block">

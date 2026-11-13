@@ -1450,7 +1450,6 @@
       "otherCode": "Vous avez un autre code ?",
       "ownCodeNote": "Saisissez votre code sur la page de paiement.",
       "secondBookPromo": "Avec ce livre, le 2e en couverture souple est à {price} TVA incluse (code valable jusqu'au {until})",
-      "secondBookPromoBlackFriday": "Black Friday : avec ce livre, le 2e en couverture souple est à {price} TVA incluse (code valable jusqu'au {until})",
       "insideTitle": "À l'intérieur",
       "insideOpenScene": "Voir la scène {n}",
       "insideMore": "scènes de plus",
@@ -2955,8 +2954,7 @@
       "digitalMore": "il arrive par e-mail le jour même",
       "link": "Voir les dates",
       "dismiss": "Fermer l'avis",
-      "secondBookMore": "et le 2e livre en couverture souple à {price} TVA incluse",
-      "blackFriday": "Black Friday : le 2e livre en couverture souple à {price} TVA incluse"
+      "secondBookMore": "et le 2e livre en couverture souple à {price} TVA incluse"
     },
     "footerLink": "Arrivera-t-il pour les Rois mages ?",
     "seoCallout": "Arrivera-t-il à temps ? Voir les dates limites de Noël et des Rois mages"
@@ -3198,5 +3196,20 @@
     "count": "{count, plural, one {# avis} other {# avis}}",
     "starsLabel": "{rating} étoiles sur 5",
     "verified": "Achat vérifié"
+  },
+  "blackFriday": {
+    "label": "Black Friday −20 %",
+    "from": "À partir de <s>{was}</s> <b>{price}</b>",
+    "price": "<s>{was}</s> <b>{price}</b>",
+    "sticky": "Son livre imprimé · dès <s>{was}</s> <b>{price}</b>",
+    "lowest30": "Prix le plus bas des 30 derniers jours : {price}",
+    "panelDetail": "Black Friday : remise appliquée au paiement, jusqu'au {date}. Non cumulable avec d'autres codes.",
+    "otherCode": "Vous avez une carte cadeau ou un autre code ?",
+    "ownCodeNote": "Saisissez votre code sur la page de paiement. Les −20 % du Black Friday ne se cumulent pas avec d'autres codes.",
+    "backToOffer": "Revenir aux −20 %",
+    "linkCodeBeaten": "Les −20 % du Black Friday battent votre code {code} (non cumulables) : les −20 % sont appliqués.",
+    "linkCodeBetter": "Votre code {code} fait économiser plus que −20 % (non cumulables) : votre code est appliqué au paiement.",
+    "banner": "Black Friday : −20 % sur son livre jusqu'au {date}",
+    "untilShort": "jusqu'au {date}"
   }
 }

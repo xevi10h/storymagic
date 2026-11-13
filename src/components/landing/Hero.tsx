@@ -7,6 +7,7 @@ import LiveCover from "@/components/create/LiveCover";
 import { useDeliveryLine } from "@/components/purchase/delivery";
 import { buttonClass } from "@/components/ui";
 import { PRICING, formatPrice } from "@/lib/pricing";
+import { SalePrice } from "@/components/seasonal/SalePrice";
 import { MAX_NAME_LENGTH, deName, firstName } from "@/lib/creation-flow";
 import { formatChildName } from "@/lib/child-name";
 import { createPageHref, currentCarriedParams, setHeroName, useHeroName } from "./HeroNameStore";
@@ -167,7 +168,11 @@ export default function Hero() {
 
           <div className="mt-1 flex flex-col items-center gap-1 text-sm lg:items-start">
             <p className="text-ink-soft">
-              <span className="font-bold tabular-nums text-brand-deep">{t("priceFrom", { price: priceFrom })}</span>
+              <span className="tabular-nums text-brand-deep">
+                <SalePrice listCents={PRICING.softcover.price}>
+                  <span className="font-bold">{t("priceFrom", { price: priceFrom })}</span>
+                </SalePrice>
+              </span>
               <span> · {tPricing("vatIncluded")}</span>
               <span> · {t("freeShipping")}</span>
             </p>

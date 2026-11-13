@@ -3,14 +3,14 @@
 
 import { llmsFull } from "@/lib/llms";
 
-// Quotes this season's order-by dates and the blog rows: rebuild daily.
-export const revalidate = 86400;
+// Quotes this season's order-by dates, the Black Friday offer (ends 30 Nov 23:59) and the blog rows: rebuild hourly.
+export const revalidate = 3600;
 
 export async function GET() {
   return new Response(await llmsFull(), {
     headers: {
       "Content-Type": "text/plain; charset=utf-8",
-      "Cache-Control": "public, max-age=3600, s-maxage=86400",
+      "Cache-Control": "public, max-age=3600, s-maxage=3600",
     },
   });
 }

@@ -4,6 +4,7 @@ import { Link } from "@/i18n/navigation";
 import { Heading } from "@/components/ui";
 import { FAQJsonLd } from "@/components/seo/JsonLd";
 import { PRICING, SUPPORT_EMAIL, formatPrice } from "@/lib/pricing";
+import { bookPriceToday } from "@/lib/black-friday";
 import { COPY_PARAMS } from "@/lib/product-facts";
 import { seoHubPath } from "@/lib/seo-landing";
 import { CHRISTMAS_DELIVERY_PATH, DELIVERY_PARAMS, formatDeadlines, spainToday, type SeasonOccasion } from "@/lib/shipping";
@@ -69,9 +70,10 @@ export default function FaqSection() {
       id: "price",
       question: t("priceQ"),
       answer: t("priceA", {
-        softcover: price(PRICING.softcover.price),
-        hardcover: price(PRICING.hardcover.price),
-        pdf: price(PRICING.digital_pdf.price),
+        // Prices paid today (Black Friday price inside the window, src/lib/black-friday.ts).
+        softcover: price(bookPriceToday(PRICING.softcover.price, today)),
+        hardcover: price(bookPriceToday(PRICING.hardcover.price, today)),
+        pdf: price(bookPriceToday(PRICING.digital_pdf.price, today)),
       }),
     },
     { id: "returns", question: t("returnsQ"), answer: t("returnsA") },

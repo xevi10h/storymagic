@@ -8,6 +8,8 @@ import { buttonClass } from "@/components/ui";
 import { MAX_NAME_LENGTH, deName, firstName } from "@/lib/creation-flow";
 import { formatChildName } from "@/lib/child-name";
 import { PRICING, formatPrice } from "@/lib/pricing";
+import { bookPriceToday } from "@/lib/black-friday";
+import { useToday } from "@/components/seasonal/SalePrice";
 import { createPageHref, currentCarriedParams, setHeroName, useHeroName } from "./HeroNameStore";
 
 /**
@@ -25,7 +27,8 @@ export default function FinalCta() {
 
   const trimmed = name.trim();
   const first = firstName(formatChildName(trimmed));
-  const fromPrice = formatPrice(PRICING.softcover.price, locale);
+  // The price paid today ("desde 27,92 €" during Black Friday, src/lib/black-friday.ts).
+  const fromPrice = formatPrice(bookPriceToday(PRICING.softcover.price, useToday()), locale);
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();

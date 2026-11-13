@@ -26,6 +26,7 @@ import {
   SEO_HUB_HEADING_KEY,
 } from "@/lib/seo-landing";
 import { CHRISTMAS_DELIVERY_PATH, earliestPrintedCutoff, spainToday } from "@/lib/shipping";
+import { SalePrice } from "@/components/seasonal/SalePrice";
 import { factParams } from "@/lib/product-facts";
 import { isToolLocale, toolPath } from "@/lib/tools/registry";
 import { GUIDES, GUIDE_LINK_LABELS, contextGuides } from "@/lib/guides";
@@ -62,7 +63,8 @@ export default async function SeoLandingPage({ type, slug, locale }: Props) {
   const tp = await getTranslations({ locale, namespace: "pricing" });
 
   // Every field may quote product facts ({ageMin}, {hardcover}…); unused params are ignored.
-  const facts = factParams((cents) => formatPrice(cents, locale));
+  // Prices are the ones paid on the render date (Black Friday price inside its window).
+  const facts = factParams((cents) => formatPrice(cents, locale), spainToday());
   const k = (field: string) => t(`${type}.${slug}.${field}`, facts);
   const ctaHref = seoCtaHref(type, slug);
   const ctaLabel = th("cta");
@@ -186,7 +188,11 @@ export default async function SeoLandingPage({ type, slug, locale }: Props) {
               </div>
 
               <p className="mt-3 text-center text-sm text-ink-soft sm:text-left">
-                <span className="font-bold tabular-nums text-brand-deep">{th("priceFrom", { price: fromPrice })}</span>
+                <span className="tabular-nums text-brand-deep">
+                  <SalePrice listCents={PRICING.softcover.price}>
+                    <span className="font-bold">{th("priceFrom", { price: fromPrice })}</span>
+                  </SalePrice>
+                </span>
                 <span> · {tp("vatIncluded")}</span>
                 <span> · {th("freeShipping")}</span>
               </p>

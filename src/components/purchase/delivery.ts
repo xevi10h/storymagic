@@ -4,7 +4,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useSeasonToday, formatSeasonDate } from "@/components/seasonal/season-client";
 import { arrivalPromise, deliveryWindow, earliestPrintedCutoff, seasonBanner, type SeasonBanner } from "@/lib/shipping";
 import { formatPrice, type BookFormat } from "@/lib/pricing";
-import { SECOND_BOOK_PRICE_CENTS, isBlackFridayWeek, secondBookIssuing, secondBookLastDay } from "@/lib/second-book";
+import { SECOND_BOOK_PRICE_CENTS, secondBookIssuing, secondBookLastDay } from "@/lib/second-book";
 
 /**
  * "Llega entre el 9 y el 15 de octubre" for a printed format ordered today (Spain),
@@ -44,7 +44,7 @@ export function useSecondBookPromo(): string | null {
   if (!today) return null;
   const cutoff = earliestPrintedCutoff(today, "reyes");
   if (!secondBookIssuing(today, cutoff)) return null;
-  return t(isBlackFridayWeek(today) ? "secondBookPromoBlackFriday" : "secondBookPromo", { price: formatPrice(SECOND_BOOK_PRICE_CENTS, locale), until: formatSeasonDate(secondBookLastDay(cutoff), locale) });
+  return t("secondBookPromo", { price: formatPrice(SECOND_BOOK_PRICE_CENTS, locale), until: formatSeasonDate(secondBookLastDay(cutoff), locale) });
 }
 
 /**

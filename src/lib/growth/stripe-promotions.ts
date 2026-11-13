@@ -19,6 +19,7 @@ import {
   type VoucherFormat,
 } from "@/lib/promo-codes";
 import { SECOND_BOOK_COUPON_ID, SECOND_BOOK_DISCOUNT_CENTS } from "@/lib/second-book";
+import { BLACK_FRIDAY_COUPON_ID, BLACK_FRIDAY_PERCENT_OFF, BLACK_FRIDAY_PROMO_CODE, isBlackFridayAt } from "@/lib/black-friday";
 
 export interface PromotionSetup {
   /** The 10 € referral coupon exists and is valid. */
@@ -27,6 +28,11 @@ export interface PromotionSetup {
   secondBook: boolean;
   /** Per format: the Price that sells the voucher (null = voucher not sellable). */
   voucherPrices: Record<VoucherFormat, string | null>;
+  /**
+   * Black Friday promotion code id (promo_…) to pre-apply, or null: outside the window, or the
+   * coupon / code is missing on this account (scripts/stripe-setup-black-friday.mts not run).
+   */
+  blackFriday: string | null;
 }
 
 const TTL_MS = 10 * 60_000;
@@ -50,25 +56,46 @@ async function couponOk(stripe: Stripe, id: string, check: (c: Stripe.Coupon) =>
 /** What is set up on the active Stripe account. Never throws; cached 10 min. */
 export async function getPromotionSetup(): Promise<PromotionSetup> {
   if (cached && Date.now() - cached.at < TTL_MS) return cached.value;
-  const none: PromotionSetup = { referral: false, secondBook: false, voucherPrices: { hardcover: null, softcover: null, digital_pdf: null } };
+  const none: PromotionSetup = { referral: false, secondBook: false, voucherPrices: { hardcover: null, softcover: null, digital_pdf: null }, blackFriday: null };
   try {
     const stripe = getStripe();
-    const [catalog, referral, secondBook, ...vouchers] = await Promise.all([
+    const [catalog, referral, secondBook, blackFriday, ...vouchers] = await Promise.all([
       getStripeCatalog(),
       couponOk(stripe, REFERRAL_COUPON_ID, (c) => c.amount_off === REFERRAL_DISCOUNT_CENTS && c.currency === "eur"),
       couponOk(stripe, SECOND_BOOK_COUPON_ID, (c) => c.amount_off === SECOND_BOOK_DISCOUNT_CENTS && c.currency === "eur"),
+      blackFridayPromotionCode(stripe),
       ...VOUCHER_FORMATS.map((f) => couponOk(stripe, VOUCHER_COUPON_IDS[f], (c) => c.percent_off === 100)),
     ]);
     const voucherPrices = { ...none.voucherPrices };
     VOUCHER_FORMATS.forEach((f, i) => {
       voucherPrices[f] = vouchers[i] ? (catalog.optionalPrices[VOUCHER_CATALOG_ITEMS[f]] ?? null) : null;
     });
-    const value = { referral, secondBook, voucherPrices };
+    const value = { referral, secondBook, voucherPrices, blackFriday };
     cached = { at: Date.now(), value };
     return value;
   } catch (err) {
     console.warn("[promotions] Stripe setup unreadable, referral + vouchers hidden:", err instanceof Error ? err.message : err);
     return none;
+  }
+}
+
+/**
+ * The active BLACKFRIDAY promotion code on the Black Friday coupon, only inside the window (no
+ * Stripe call, and no warning, outside it). Null when missing / expired / not on this account.
+ */
+async function blackFridayPromotionCode(stripe: Stripe): Promise<string | null> {
+  if (!isBlackFridayAt(Date.now())) return null;
+  const couponValid = await couponOk(stripe, BLACK_FRIDAY_COUPON_ID, (c) => c.percent_off === BLACK_FRIDAY_PERCENT_OFF);
+  if (!couponValid) return null;
+  try {
+    const codes = await stripe.promotionCodes.list({ code: BLACK_FRIDAY_PROMO_CODE, active: true, limit: 10 });
+    const couponOf = (p: Stripe.PromotionCode) => (typeof p.promotion.coupon === "string" ? p.promotion.coupon : p.promotion.coupon?.id);
+    const hit = codes.data.find((p) => couponOf(p) === BLACK_FRIDAY_COUPON_ID);
+    if (!hit) console.warn(`[promotions] Promotion code ${BLACK_FRIDAY_PROMO_CODE} missing — run scripts/stripe-setup-black-friday.mts`);
+    return hit?.id ?? null;
+  } catch (err) {
+    console.warn("[promotions] Black Friday code unreadable:", err instanceof Error ? err.message : err);
+    return null;
   }
 }
 

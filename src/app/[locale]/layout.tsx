@@ -8,6 +8,9 @@ import { isIndexableLocale } from "@/lib/seo-index";
 import Tracking from "@/components/tracking/Tracking";
 import VercelAnalytics from "@/components/tracking/VercelAnalytics";
 import RootDocument from "@/app/_components/RootDocument";
+import { headers } from "next/headers";
+import { parseDateOverride, SEASON_NOW_HEADER, spainToday } from "@/lib/shipping";
+import { SeasonTodayProvider } from "@/components/seasonal/SalePrice";
 
 type Props = {
   children: React.ReactNode;
@@ -108,10 +111,17 @@ export default async function LocaleLayout({ children, params }: Props) {
   // Client components get every namespace except the server-only long-form copy.
   const messages = clientMessages(await getMessages());
 
+  // Render date for date-dependent prices (Black Friday, src/components/seasonal/SalePrice.tsx).
+  // Production never reads request headers here, so pages stay static (dev: ?now= override).
+  let today = spainToday();
+  if (process.env.NODE_ENV !== "production") {
+    today = parseDateOverride((await headers()).get(SEASON_NOW_HEADER)) ?? today;
+  }
+
   return (
     <RootDocument lang={locale}>
       <NextIntlClientProvider messages={messages}>
-        {children}
+        <SeasonTodayProvider today={today}>{children}</SeasonTodayProvider>
         <VercelAnalytics />
         <Tracking />
       </NextIntlClientProvider>

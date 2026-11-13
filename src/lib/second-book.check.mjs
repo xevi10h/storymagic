@@ -1,7 +1,7 @@
 // Runnable check for the "Pack Reyes" second-book rules (no deps, no test runner):
 //   node --experimental-strip-types src/lib/second-book.check.mjs
 import assert from "node:assert/strict";
-import { SECOND_BOOK_DISCOUNT_CENTS, isBlackFridayWeek, SECOND_BOOK_PRICE_CENTS, earnsSecondBookCode, secondBookExpiresAt, secondBookIssuing, secondBookLastDay } from "./second-book.ts";
+import { SECOND_BOOK_DISCOUNT_CENTS, SECOND_BOOK_PRICE_CENTS, earnsSecondBookCode, secondBookExpiresAt, secondBookIssuing, secondBookLastDay } from "./second-book.ts";
 import { readFileSync } from "node:fs";
 import { earliestPrintedCutoff } from "./shipping.ts";
 
@@ -28,9 +28,6 @@ assert.equal(earnsSecondBookCode({ ...base, amountTotalCents: 0 }), false, "0 â‚
 assert.equal(earnsSecondBookCode({ ...base, usedSecondBookCode: true }), false, "no chaining");
 assert.equal(earnsSecondBookCode({ ...base, today: "2026-12-23" }), false, "after the cut-off");
 
-assert.equal(isBlackFridayWeek("2026-11-22"), false);
-assert.equal(isBlackFridayWeek("2026-11-27"), true);
-assert.equal(isBlackFridayWeek("2026-11-30"), true);
 assert.ok(secondBookIssuing("2026-11-30", cutoff), "Black Friday sits inside the issuing window");
 
 console.log("second-book: all checks passed");

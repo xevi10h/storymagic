@@ -11,6 +11,8 @@ import { Heading, buttonClass, cx, focusRing } from "@/components/ui";
 import { STORY_TEMPLATES } from "@/lib/create-store";
 import { PRICING, formatPrice } from "@/lib/pricing";
 import { factParams } from "@/lib/product-facts";
+import { SalePrice } from "@/components/seasonal/SalePrice";
+import { spainToday } from "@/lib/shipping";
 import {
   type SeoPageType,
   SEO_SLUGS,
@@ -56,7 +58,7 @@ export default async function HubPage({ type, locale, extraLinks = [] }: Props) 
   const art = cardArt(type, slugs);
   const fromPrice = formatPrice(Math.min(PRICING.softcover.price, PRICING.hardcover.price), locale);
 
-  const values = factParams((cents) => formatPrice(cents, locale));
+  const values = factParams((cents) => formatPrice(cents, locale), spainToday());
   const cards = slugs.map((slug) => ({
     slug,
     label: t(`nav.${type}.${slug}`),
@@ -127,7 +129,11 @@ export default async function HubPage({ type, locale, extraLinks = [] }: Props) 
                 <span aria-hidden className="material-symbols-outlined text-xl transition-transform group-hover:translate-x-1" data-icon="arrow_forward" />
               </Link>
               <p className="w-full text-center text-sm text-ink-soft sm:w-auto sm:text-left">
-                <span className="font-bold tabular-nums text-brand-deep">{th("priceFrom", { price: fromPrice })}</span>
+                <span className="tabular-nums text-brand-deep">
+                  <SalePrice listCents={PRICING.softcover.price}>
+                    <span className="font-bold">{th("priceFrom", { price: fromPrice })}</span>
+                  </SalePrice>
+                </span>
                 <span> · {tp("vatIncluded")}</span>
                 <span> · {th("freeShipping")}</span>
               </p>

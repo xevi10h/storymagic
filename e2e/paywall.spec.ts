@@ -91,9 +91,11 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
         const errors = trackErrors(page);
         const bodies = await mockApi(page, { withPlan: true });
         const c = COPY[locale];
-        await page.goto(`/${locale}/create/${STORY_ID}/preview`);
+        // List prices: the day before the Black Friday window (dev ?now=, src/lib/black-friday.ts).
+        await page.goto(`/${locale}/create/${STORY_ID}/preview?now=2026-11-12`);
         await section(page).waitFor();
         await section(page).scrollIntoViewIfNeeded();
+        await expect(page.getByTestId("black-friday")).toHaveCount(0);
 
         // Softcover pre-selected (the "desde" price of the sticky bar); delivery date next to
         // the CTA; VAT next to every price.
@@ -209,6 +211,63 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
       });
     });
   }
+}
+
+// Black Friday 2026 (src/lib/black-friday.ts): 20 % on the book line only, struck list price +
+// Omnibus line per format, "otro código" for everyone, back to list prices on 1 December.
+for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
+  test.describe(`black friday ${vpName}`, () => {
+    test.use(vp);
+
+    test(`sale prices, extra copy at full price, own code [es ${vpName}]`, async ({ page }) => {
+      const errors = trackErrors(page);
+      const bodies = await mockApi(page, { withPlan: true });
+      await page.goto(`/es/create/${STORY_ID}/preview?now=2026-11-30`);
+      await section(page).waitFor();
+      await section(page).scrollIntoViewIfNeeded();
+
+      await expect(page.getByTestId("black-friday")).toContainText(/Black Friday −20\s%/);
+      await expect(page.getByTestId("black-friday")).toContainText("hasta el 30/11");
+      await expect(page.getByTestId("code-note")).toContainText("hasta el 30 de noviembre");
+      await expect(page.getByTestId("sale-softcover")).toContainText(/34,90\s*€\s*27,92\s*€/);
+      await expect(page.getByTestId("sale-hardcover")).toContainText(/49,90\s*€\s*39,92\s*€/);
+      await expect(page.getByTestId("lowest30-softcover")).toHaveText(/Precio más bajo de los últimos 30 días: 34,90\s*€/);
+      await expect(page.getByTestId("lowest30-hardcover")).toHaveText(/Precio más bajo de los últimos 30 días: 49,90\s*€/);
+      await expect(format(page, "softcover")).toContainText(/IVA incl/);
+      await expect(mainCta(page)).toContainText(/27,92\s*€/);
+      // The extra copy is not discounted: 27,92 + 19,90.
+      await extra(page).click();
+      await expect(mainCta(page)).toContainText(/47,82\s*€/);
+      await extra(page).click();
+      await section(page).getByRole("button", { name: /Solo el PDF\? 7,92/ }).click();
+      await expect(mainCta(page)).toContainText(/7,92\s*€/);
+      await format(page, "softcover").click();
+      if (vpName === "mobile") await page.screenshot({ path: `${SHOTS}/es-${vpName}-black-friday.png`, fullPage: true });
+      else await section(page).screenshot({ path: `${SHOTS}/es-${vpName}-black-friday.png` });
+
+      // "¿Tienes una tarjeta regalo u otro código?" → no pre-applied code, list price on the button; undo works.
+      await page.getByRole("button", { name: /tarjeta regalo u otro código/ }).click();
+      await expect(page.getByTestId("code-note")).toContainText(/no se acumula/);
+      await expect(mainCta(page)).toContainText(/34,90\s*€/);
+      await page.getByRole("button", { name: /Volver al −20/ }).click();
+      await expect(mainCta(page)).toContainText(/27,92\s*€/);
+      await page.getByRole("button", { name: /tarjeta regalo u otro código/ }).click();
+      await page.locator("#withdrawal-consent input").check();
+      await mainCta(page).click();
+      await page.waitForURL("**/__stripe_mock");
+      expect(bodies[0]).toMatchObject({ format: "softcover", ownCode: true });
+      expect(errors).toEqual([]);
+    });
+
+    test(`1 December: list prices again [es ${vpName}]`, async ({ page }) => {
+      await mockApi(page, { withPlan: true });
+      await page.goto(`/es/create/${STORY_ID}/preview?now=2026-12-01`);
+      await section(page).waitFor();
+      await expect(page.getByTestId("black-friday")).toHaveCount(0);
+      await expect(page.getByTestId("sale-softcover")).toHaveCount(0);
+      await expect(mainCta(page)).toContainText(/34,90\s*€/);
+    });
+  });
 }
 
 test("server says preview_outdated → outdated notice", async ({ page }) => {

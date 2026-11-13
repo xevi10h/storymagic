@@ -7,6 +7,8 @@ import { BookMockup } from "@/components/book-mockup";
 import { deName } from "@/lib/creation-flow";
 import type { BookPage } from "./types";
 import BookPrintPage from "./BookPrintPage";
+import { SalePrice } from "@/components/seasonal/SalePrice";
+import { PRICING } from "@/lib/pricing";
 
 // Every page is laid out at BOOK_LAYOUT_PX (the desktop page size) and scaled to the size it
 // is shown at (MobileBookPage `scale`), so every screen shows the same page. The printed pages
@@ -204,7 +206,12 @@ function TeaserPage({ page, templateId, gender, favoriteColor, onOrder }: { page
             {tp("teaserOrderBody")}
           </p>
           <p className="mt-[2.5%] text-[clamp(0.7rem,3.4cqi,0.9rem)] text-create-text-dark">
-            <span className="font-bold tabular-nums">{tp("teaserOrderPrice", { price: page.priceFrom })}</span>
+            <span className="tabular-nums">
+              {/* Black Friday: "Desde ~~34,90 €~~ 27,92 €" (priceFrom is the list softcover price). */}
+              <SalePrice listCents={PRICING.softcover.price}>
+                <span className="font-bold">{tp("teaserOrderPrice", { price: page.priceFrom })}</span>
+              </SalePrice>
+            </span>
             <span className="text-create-text-sub"> · {tp("ctaNotePhysical")}</span>
           </p>
           {onOrder && (

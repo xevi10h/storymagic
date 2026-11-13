@@ -5,7 +5,9 @@
 // Stripe coupon pUqYq48o, promo code metadata {creator, kind: "audience"}, created by
 // scripts/social/create-creator-codes.sh). The creator earns 10% of what the buyer paid WITHOUT
 // VAT (amount_total - amount_tax), paid by bank transfer once a month when the balance is >= 20 €.
-// Refunded amounts are subtracted. Gift codes (kind "gift", 0 €) never count.
+// Refunded amounts are subtracted. Gift codes (kind "gift", 0 €) never count. Sessions whose
+// metadata.creator_code names a creator (follower from the creator's link who paid with the Black
+// Friday 20 % instead, non-cumulative) count for that creator too.
 //
 // Since 2026-10-23 the app keeps the ledger (creator panel + /admin/creators, tables creators /
 // creator_commissions / creator_withdrawals): this script stays as an independent cross-check
@@ -18,7 +20,7 @@
 import { readFileSync } from "node:fs";
 import Stripe from "stripe";
 // Node >= 22.18 strips the types of a .ts import (pure module, no imports of its own).
-import { commissionCents, CREATOR_PAYOUT_MIN_CENTS as PAYOUT_MIN_CENTS } from "../../src/lib/creators.ts";
+import { commissionCents, CREATOR_CODE_METADATA_KEY, CREATOR_PAYOUT_MIN_CENTS as PAYOUT_MIN_CENTS } from "../../src/lib/creators.ts";
 
 function arg(name) {
   const i = process.argv.indexOf(name);
@@ -63,26 +65,32 @@ async function main() {
   })) {
     if (s.payment_status !== "paid") continue;
     const promo = (s.discounts ?? []).map((d) => d.promotion_code).find((p) => p && typeof p === "object" && p.metadata?.kind === "audience");
-    if (!promo) continue;
-    const creator = promo.metadata.creator || promo.code;
+    // Black Friday 2026: a follower from the creator's /r link got the bigger, non-cumulative 20 %
+    // instead of the audience code; /api/checkout keeps the creator in the session metadata.
+    const linkCode = s.metadata?.[CREATOR_CODE_METADATA_KEY];
+    if (!promo && !linkCode) continue;
+    // Grouped by the code text (the same in both cases), shown with the handle when known.
+    const code = String(promo?.code ?? linkCode).toUpperCase();
+    const handle = promo?.metadata.creator;
     const charge = s.payment_intent?.latest_charge;
     const { net, commission } = commissionCents({
       amountTotal: s.amount_total,
       amountTax: s.total_details?.amount_tax,
       amountRefunded: typeof charge === "object" && charge ? charge.amount_refunded : 0,
     });
-    const row = byCreator.get(creator) ?? { code: promo.code, orders: [], net: 0, commission: 0 };
+    const row = byCreator.get(code) ?? { name: handle || code, code, orders: [], net: 0, commission: 0 };
+    if (handle) row.name = handle;
     row.orders.push({ date: new Date(s.created * 1000).toISOString().slice(0, 10), session: s.id, paid: s.amount_total, net, commission, story: s.metadata?.story_id });
     row.net += net;
     row.commission += commission;
-    byCreator.set(creator, row);
+    byCreator.set(code, row);
   }
 
   console.log(`Creator commissions ${label} (10% of paid ex-VAT, payout >= ${eur(PAYOUT_MIN_CENTS)})\n`);
   if (!byCreator.size) return console.log("No paid orders with a creator audience code.");
-  for (const [creator, r] of [...byCreator].sort((a, b) => b[1].commission - a[1].commission)) {
+  for (const r of [...byCreator.values()].sort((a, b) => b.commission - a.commission)) {
     const pay = r.commission >= PAYOUT_MIN_CENTS ? "PAY" : "carry over";
-    console.log(`@${creator.padEnd(22)} ${r.code.padEnd(16)} orders ${String(r.orders.length).padStart(3)}  net ${eur(r.net).padStart(10)}  commission ${eur(r.commission).padStart(9)}  ${pay}`);
+    console.log(`@${r.name.padEnd(22)} ${r.code.padEnd(16)} orders ${String(r.orders.length).padStart(3)}  net ${eur(r.net).padStart(10)}  commission ${eur(r.commission).padStart(9)}  ${pay}`);
     if (process.argv.includes("--orders")) for (const o of r.orders) console.log(`    ${o.date} ${o.session} paid ${eur(o.paid)} net ${eur(o.net)} → ${eur(o.commission)}`);
   }
 }

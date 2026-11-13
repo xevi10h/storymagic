@@ -37,6 +37,7 @@ import {
 } from "./product-facts";
 import { getTemplateConfig, isTemplateAvailable, templateToday } from "./create-store";
 import { THEME_TEMPLATE, seoPath } from "./seo-landing";
+import { BLACK_FRIDAY_FEED_EFFECTIVE_DATE, blackFridayPriceCents, isBlackFriday } from "./black-friday";
 
 export type FeedFormat = keyof typeof BOOK_FORMATS;
 export const FEED_FORMATS: FeedFormat[] = ["hardcover", "softcover", "digital_pdf"];
@@ -126,6 +127,11 @@ export interface FeedItem {
   imageLink: string;
   additionalImageLinks: string[];
   priceCents: number;
+  /**
+   * Black Friday price (src/lib/black-friday.ts) while the offer is on, else null. `priceCents`
+   * stays the list price (Merchant Center: submit both; the landing pages show both).
+   */
+  salePriceCents: number | null;
   googleCategory: string;
   openaiCategory: string;
   productType: string;
@@ -221,7 +227,7 @@ function shipping(printed: boolean): FeedShipping[] {
 }
 
 /** Items of one story world: one per printed format, linking to the world's own landing page. */
-function worldItems(world: FeedWorld): FeedItem[] {
+function worldItems(world: FeedWorld, sale: boolean): FeedItem[] {
   const template = getTemplateConfig(world.templateId);
   const subject = WORLD_SUBJECT[world.templateId];
   if (!template || !subject) throw new Error(`[merchant-feed] world "${world.key}" has no template or no title subject`);
@@ -239,6 +245,7 @@ function worldItems(world: FeedWorld): FeedItem[] {
       imageLink: abs(images[format]),
       additionalImageLinks: [abs(images.art)],
       priceCents,
+      salePriceCents: sale ? blackFridayPriceCents(priceCents) : null,
       googleCategory: GOOGLE_CATEGORY.printed,
       openaiCategory: OPENAI_CATEGORY.printed,
       productType: `${FORMAT_COPY[format].productType} > ${template.title}`,
@@ -254,11 +261,15 @@ function worldItems(world: FeedWorld): FeedItem[] {
  * world is on sale: the Reyes edition leaves the feed the day after its last order day.
  */
 export function buildFeedItems(today: string = templateToday()): FeedItem[] {
-  return [...formatItems(), ...FEED_WORLDS.filter((w) => isTemplateAvailable(w.templateId, today)).flatMap(worldItems)];
+  const sale = isBlackFriday(today);
+  return [
+    ...formatItems(sale),
+    ...FEED_WORLDS.filter((w) => isTemplateAvailable(w.templateId, today)).flatMap((w) => worldItems(w, sale)),
+  ];
 }
 
 /** The three formats of the generic book (any world), linking to the Spanish home page. */
-function formatItems(): FeedItem[] {
+function formatItems(sale: boolean): FeedItem[] {
   return FEED_FORMATS.map((format) => {
     const { priceCents, printed } = BOOK_FORMATS[format];
     return {
@@ -273,6 +284,7 @@ function formatItems(): FeedItem[] {
       imageLink: abs(FEED_IMAGES[format]),
       additionalImageLinks: (printed ? [FEED_IMAGES.openSpread, FEED_IMAGES.coverArt] : [FEED_IMAGES.coverArt]).map(abs),
       priceCents,
+      salePriceCents: sale ? blackFridayPriceCents(priceCents) : null,
       googleCategory: printed ? GOOGLE_CATEGORY.printed : GOOGLE_CATEGORY.digital,
       openaiCategory: printed ? OPENAI_CATEGORY.printed : OPENAI_CATEGORY.digital,
       productType: FORMAT_COPY[format].productType,
@@ -301,6 +313,10 @@ function googleItem(item: FeedItem): string {
     ...item.additionalImageLinks.map((u) => tag("additional_image_link", u)),
     tag("availability", "in_stock"),
     tag("price", feedPrice(item.priceCents)),
+    // Black Friday: the effective date bounds it even if Merchant Center fetched the feed before the end.
+    ...(item.salePriceCents !== null
+      ? [tag("sale_price", feedPrice(item.salePriceCents)), tag("sale_price_effective_date", BLACK_FRIDAY_FEED_EFFECTIVE_DATE)]
+      : []),
     tag("brand", BRAND_NAME),
     // Made to order (name, portrait, story): no GTIN/MPN exists.
     tag("identifier_exists", "no"),
@@ -362,6 +378,8 @@ export function buildOpenAiRecords(items: FeedItem[] = buildFeedItems()): Record
     image_url: item.imageLink,
     additional_image_urls: item.additionalImageLinks,
     price: feedPrice(item.priceCents),
+    // The ChatGPT spec has no sale dates: the hourly-rebuilt feed carries sale_price only while it is on.
+    ...(item.salePriceCents !== null ? { sale_price: feedPrice(item.salePriceCents) } : {}),
     availability: "in_stock",
     condition: "new",
     product_category: item.openaiCategory,

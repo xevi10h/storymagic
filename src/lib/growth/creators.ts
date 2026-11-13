@@ -18,6 +18,7 @@ import { getStripe } from "@/lib/stripe";
 import { normalizeCode, normalizeEmail, REFERRAL_COUPON_ID, sessionPromotionCodeIds } from "@/lib/promo-codes";
 import {
   AUDIENCE_CODE_KIND,
+  CREATOR_CODE_METADATA_KEY,
   CREATOR_CREDIT_MAX_CENTS,
   CREATOR_CREDIT_MIN_CENTS,
   CREATOR_CREDIT_MULTIPLIER,
@@ -53,33 +54,42 @@ export async function recordOrderPromotion(
   supabase: FulfilmentClient,
   params: {
     order: { id: string; status: string };
-    session: Pick<Stripe.Checkout.Session, "discounts" | "amount_total" | "total_details" | "payment_intent">;
+    session: Pick<Stripe.Checkout.Session, "discounts" | "amount_total" | "total_details" | "payment_intent" | "metadata">;
     buyerEmail: string | null;
   },
 ): Promise<void> {
   const { order, session } = params;
   const promoIds = sessionPromotionCodeIds(session.discounts);
-  if (promoIds.length === 0) return;
-  const expanded = (session.discounts ?? [])
-    .map((d) => d.promotion_code)
-    .find((p): p is Stripe.PromotionCode => !!p && typeof p === "object" && p.id === promoIds[0]);
+  // Follower from a creator's /r link who got a bigger, non-cumulative code (Black Friday): the
+  // creator still earns the commission (owner 2026-11-13). Set server-side by /api/checkout.
+  const linkCreatorCode = normalizeCode(session.metadata?.[CREATOR_CODE_METADATA_KEY]);
+  if (promoIds.length === 0 && !linkCreatorCode) return;
 
-  const { error: oErr } = await supabase
-    .from("orders")
-    .update({
-      promotion_code_id: promoIds[0],
-      promotion_code: expanded?.code ?? null,
-      discount_cents: session.total_details?.amount_discount ?? 0,
-    })
-    .eq("id", order.id);
-  if (oErr) throw new Error(`orders promotion attribution (order ${order.id}): ${oErr.message}`);
+  if (promoIds.length > 0) {
+    const expanded = (session.discounts ?? [])
+      .map((d) => d.promotion_code)
+      .find((p): p is Stripe.PromotionCode => !!p && typeof p === "object" && p.id === promoIds[0]);
+    const { error: oErr } = await supabase
+      .from("orders")
+      .update({
+        promotion_code_id: promoIds[0],
+        promotion_code: expanded?.code ?? null,
+        discount_cents: session.total_details?.amount_discount ?? 0,
+      })
+      .eq("id", order.id);
+    if (oErr) throw new Error(`orders promotion attribution (order ${order.id}): ${oErr.message}`);
+  }
 
-  const { data: creator, error: cErr } = await supabase
-    .from("creators")
-    .select("id, email, promo_code")
-    .in("stripe_promotion_code_id", promoIds)
-    .maybeSingle();
+  const creatorQuery = supabase.from("creators").select("id, email, promo_code");
+  const { data: byPromo, error: cErr } =
+    promoIds.length > 0 ? await creatorQuery.in("stripe_promotion_code_id", promoIds).maybeSingle() : { data: null, error: null };
   if (cErr) throw new Error(`creators lookup (order ${order.id}): ${cErr.message}`);
+  let creator = byPromo;
+  if (!creator && linkCreatorCode) {
+    const { data, error } = await supabase.from("creators").select("id, email, promo_code").eq("promo_code", linkCreatorCode).maybeSingle();
+    if (error) throw new Error(`creators lookup by link code (order ${order.id}): ${error.message}`);
+    creator = data;
+  }
   if (!creator || !LIVE.has(order.status)) return;
   if (normalizeEmail(params.buyerEmail) === creator.email) {
     console.log(`[creators] Order ${order.id} paid with ${creator.promo_code} by the creator: no commission`);

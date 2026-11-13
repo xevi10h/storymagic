@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PurchasePanel from "@/components/purchase/PurchasePanel";
 import { ReorderSheet } from "@/components/dashboard/OrdersTab";
-import { PRICING, type AddonId, type BookFormat } from "@/lib/pricing";
+import { PRICING, addonPrice, type AddonId, type BookFormat } from "@/lib/pricing";
+import { blackFridayPriceCents } from "@/lib/black-friday";
+import { useBlackFriday } from "@/components/seasonal/SalePrice";
 
 /** Fixture paywall: shows the body /api/checkout would receive instead of calling it. */
 export function PurchaseHarness() {
@@ -13,8 +15,20 @@ export function PurchaseHarness() {
   const [marketingOptOut, setMarketingOptOut] = useState(false);
   const [sent, setSent] = useState<string | null>(null);
   const [sheetStory, setSheetStory] = useState<string | null>(null);
-  // As if the visitor came through a creator link (/r/LARA10).
-  const [linkCode, setLinkCode] = useState({ code: "LARA10", replaced: false });
+  // As if the visitor came through a creator link (/r/LARA10); ?link=MEA7K3P9Q = a friend's
+  // referral code, ?link= (empty) = no link code. Dates: ?now=YYYY-MM-DD (dev).
+  const [linkCode, setLinkCode] = useState<{ code: string } | null>({ code: "LARA10" });
+  useEffect(() => {
+    const param = new URLSearchParams(window.location.search).get("link");
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- dev fixture read once from the URL after hydration
+    if (param !== null) setLinkCode(param.trim() ? { code: param.trim().toUpperCase() } : null);
+  }, []);
+  const [ownCode, setOwnCode] = useState(false);
+  // Same subtotal as the preview page: Black Friday price on the book line inside the window.
+  const blackFriday = useBlackFriday();
+  const subtotal =
+    (blackFriday && !ownCode ? blackFridayPriceCents(PRICING[format].price) : PRICING[format].price) +
+    [...addons].reduce((sum, id) => sum + addonPrice(id, format), 0);
 
   return (
     <main className="min-h-dvh bg-paper px-4 py-8">
@@ -35,18 +49,20 @@ export function PurchaseHarness() {
               return next;
             })
           }
-          subtotal={PRICING[format].price}
+          subtotal={subtotal}
           consent={consent}
           onConsentChange={setConsent}
           marketingOptOut={marketingOptOut}
           onMarketingOptOutChange={setMarketingOptOut}
           checkingOut={false}
           checkoutError={null}
-          linkCode={linkCode}
-          onUseOwnCode={() => setLinkCode({ ...linkCode, replaced: true })}
+          linkCode={linkCode ? { ...linkCode, replaced: ownCode } : null}
+          onUseOwnCode={() => setOwnCode(true)}
+          ownCode={ownCode}
+          onCancelOwnCode={() => setOwnCode(false)}
           onCheckout={() => {
             if (!consent) return setSent("blocked: withdrawal consent missing");
-            setSent(JSON.stringify({ storyId: "fixture", format, addons: [...addons], locale: "es", withdrawalConsent: true, marketingOptOut, ownCode: linkCode.replaced }));
+            setSent(JSON.stringify({ storyId: "fixture", format, addons: [...addons], locale: "es", withdrawalConsent: true, marketingOptOut, ownCode }));
           }}
         />
         {sent && (

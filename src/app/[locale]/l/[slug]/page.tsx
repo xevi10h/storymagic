@@ -11,6 +11,7 @@ import { AdCreateButton, AdDeliveryLine, AdNameForm } from "@/components/ad-land
 import { AD_LANDING_COPY, AD_LANDING_LOCALES, AD_LANDING_SLUGS, getAdLanding } from "@/lib/ad-landing";
 import { formatPrice } from "@/lib/pricing";
 import { BOOK_INNER_PAGES, BOOK_SCENES, PRINTED_FROM_CENTS } from "@/lib/product-facts";
+import { SalePrice } from "@/components/seasonal/SalePrice";
 
 // Paid Meta ad landings (lib/ad-landing.ts): one template, the ad's scene and line per slug.
 // Only es × the configured slugs exist; anything else is a 404 (no on-demand params).
@@ -93,7 +94,10 @@ export default async function AdLandingPage({ params }: Props) {
           </h1>
 
           <p className="text-center text-[15px] font-semibold text-brand-deep">
-            <span className="tabular-nums">{t("priceFrom", { price })}</span> · {tPricing("vatIncluded")} · {t("freeShipping")}
+            <span className="tabular-nums">
+              <SalePrice listCents={PRINTED_FROM_CENTS}>{t("priceFrom", { price })}</SalePrice>
+            </span>{" "}
+            · {tPricing("vatIncluded")} · {t("freeShipping")}
           </p>
 
           <AdNameForm ctaLabel={copy.cta} />

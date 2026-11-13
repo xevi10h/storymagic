@@ -64,7 +64,7 @@ export default async function Home({ params }: Props) {
     <>
       <DevResetCreateState />
       <OrganizationJsonLd locale={locale} />
-      <ProductJsonLd locale={locale} reviews={reviews} />
+      <ProductJsonLd locale={locale} reviews={reviews} blackFriday />
       <Navbar />
       <main>
         {/* Conversion order: promise → how → what the gift really is → pick a story → proof it is theirs →

@@ -18,7 +18,9 @@ import {
 import { useArrivalPromise, useDeliveryLine, useSecondBookPromo } from "./delivery";
 import { Spinner } from "@/components/ui/Spinner";
 import { MarketingOptOut } from "./MarketingOptOut";
-import { CODE_PREFIX } from "@/lib/promo-codes";
+import { CODE_PREFIX, REFERRAL_DISCOUNT_CENTS } from "@/lib/promo-codes";
+import { BLACK_FRIDAY, blackFridayDiscountCents, blackFridayPriceCents, lowestPrice30Days } from "@/lib/black-friday";
+import { useBlackFriday, useBlackFridayEnd } from "@/components/seasonal/SalePrice";
 
 /**
  * The PDF is sold as a text link under the two printed options ("¿Solo el PDF?"),
@@ -28,6 +30,8 @@ import { CODE_PREFIX } from "@/lib/promo-codes";
 const PDF_AS_LINK = true;
 
 const PRINTED_FORMATS = ["hardcover", "softcover"] as const;
+
+const CODE_BUTTON = "font-semibold text-secondary underline decoration-secondary/30 underline-offset-2 hover:text-brand-text";
 
 /** A page of the preview shown as a thumbnail in the panel (index into the viewer's pages). */
 export interface InsidePage {
@@ -69,6 +73,12 @@ interface PurchasePanelProps {
    */
   linkCode?: { code: string; replaced: boolean } | null;
   onUseOwnCode?: () => void;
+  /**
+   * Black Friday (src/lib/black-friday.ts): every buyer can choose "¿Tienes una tarjeta regalo u
+   * otro código?" (`ownCode`, nothing pre-applied so Stripe shows its code field), and undo it.
+   */
+  ownCode?: boolean;
+  onCancelOwnCode?: () => void;
   /** Cover + the illustrated preview scenes, as thumbnails that open that page in the viewer. */
   insidePages?: InsidePage[];
   /** Illustrated scenes still to come (shown as "+N" after the thumbnails). */
@@ -110,6 +120,8 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
     devTools,
     linkCode = null,
     onUseOwnCode,
+    ownCode = false,
+    onCancelOwnCode,
     insidePages = [],
     scenesToCome = 0,
     onOpenPage,
@@ -119,7 +131,13 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
   const t = useTranslations("crear.purchase");
   const tPreview = useTranslations("crear.preview");
   const tPricing = useTranslations("pricing");
+  const tBf = useTranslations("blackFriday");
   const locale = useLocale();
+  const blackFriday = useBlackFriday();
+  const blackFridayEnd = useBlackFridayEnd();
+  const blackFridayEndShort = new Intl.DateTimeFormat(locale === "en" ? "en-GB" : `${locale}-ES`, { timeZone: "UTC", day: "numeric", month: "numeric" }).format(
+    new Date(`${BLACK_FRIDAY.to}T00:00:00Z`),
+  );
   const price = (cents: number) => formatPrice(cents, locale);
   const names = { name: childName, deName: deName(childName, locale, childGender) };
 
@@ -128,13 +146,22 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
   const promise = useArrivalPromise(format);
   const secondBookPromo = useSecondBookPromo();
   const extraSelected = addons.has("extra_copy");
-  const gap = PRICING.hardcover.price - PRICING.softcover.price;
+  // What the buyer pays for each format today (Black Friday price inside the window).
+  const bookPrice = (key: BookFormat) => (blackFriday ? blackFridayPriceCents(PRICING[key].price) : PRICING[key].price);
+  const gap = bookPrice("hardcover") - bookPrice("softcover");
 
   const rows: BookFormat[] = PDF_AS_LINK
     ? [...PRINTED_FORMATS, ...(isDigital ? (["digital_pdf"] as const) : [])]
     : [...PRINTED_FORMATS, "digital_pdf"];
 
   const formatName = (key: BookFormat) => tPricing(`${key}.label`).toLowerCase();
+
+  // The /r link code the checkout pre-applies (a referral code MEA… never covers the PDF).
+  const shownLinkCode = linkCode && !(isDigital && linkCode.code.startsWith(CODE_PREFIX)) ? linkCode : null;
+  // Same rule as /api/checkout (orderPromoCandidates): a friend's 10 € referral code beats the
+  // Black Friday 20 % on printed books; a creator's 10 % never does.
+  const linkCodeWins =
+    !!shownLinkCode && shownLinkCode.code.startsWith(CODE_PREFIX) && REFERRAL_DISCOUNT_CENTS > blackFridayDiscountCents(PRICING[format].price);
 
   return (
     <div id="checkout-section" className="scroll-mt-[calc(var(--creation-header-h,56px)+12px)]">
@@ -233,7 +260,7 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
                 onClick={() => onChooseFormat("digital_pdf")}
                 className="mt-1 block text-left font-semibold text-secondary underline decoration-secondary/30 underline-offset-2 hover:text-brand-text"
               >
-                {t("promiseChoosePdf", { price: price(PRICING.digital_pdf.price) })}
+                {t("promiseChoosePdf", { price: price(bookPrice("digital_pdf")) })}
               </button>
             )}
           </span>
@@ -242,7 +269,20 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
 
       {/* Format choice */}
       <fieldset id="formats" className="mt-4 scroll-mt-[calc(var(--creation-header-h,56px)+12px)]">
-        <legend className="mb-2 text-xs font-bold uppercase tracking-wide text-create-text-sub">{t("formatsLegend")}</legend>
+        {/* Black Friday label on the legend's own row (no extra height: the desktop CTA stays above the FAQ). */}
+        <legend className="mb-2 flex w-full items-center justify-between gap-2 text-xs font-bold uppercase tracking-wide text-create-text-sub">
+          {t("formatsLegend")}
+          {blackFriday && (
+            <span
+              data-testid="black-friday"
+              className="inline-flex shrink-0 items-center gap-1 rounded-full bg-secondary px-2.5 py-0.5 normal-case tracking-normal text-white"
+            >
+              <span aria-hidden className="material-symbols-outlined text-[14px]" data-icon="sell" />
+              {tBf("label")}
+              <span className="font-normal text-white/85">· {tBf("untilShort", { date: blackFridayEndShort })}</span>
+            </span>
+          )}
+        </legend>
         <div className="space-y-2">
           {rows.map((key) => {
             const selected = format === key;
@@ -267,7 +307,14 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
                 <span className="min-w-0 flex-1">
                   <span className="flex items-baseline justify-between gap-3">
                     <span className="font-display text-base font-bold text-create-text-dark">{tPricing(`${key}.label`)}</span>
-                    <span className="whitespace-nowrap text-base font-bold tabular-nums text-secondary">{price(PRICING[key].price)}</span>
+                    {blackFriday ? (
+                      <span className="whitespace-nowrap text-base tabular-nums" data-testid={`sale-${key}`}>
+                        <s className="mr-1.5 text-[13px] text-create-text-sub decoration-1">{price(lowestPrice30Days(PRICING[key].price))}</s>
+                        <span className="font-bold text-secondary">{price(blackFridayPriceCents(PRICING[key].price))}</span>
+                      </span>
+                    ) : (
+                      <span className="whitespace-nowrap text-base font-bold tabular-nums text-secondary">{price(PRICING[key].price)}</span>
+                    )}
                   </span>
                   <span className="mt-0.5 flex items-baseline justify-between gap-3 text-xs leading-snug">
                     <span className="min-w-0 text-create-text-sub">
@@ -283,6 +330,12 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
                     </span>
                     <span className="shrink-0 text-create-text-sub">{tPricing("vatIncluded")}</span>
                   </span>
+                  {/* Omnibus (RDL 24/2021): the lowest price of the 30 days before the reduction. */}
+                  {blackFriday && (
+                    <span className="mt-0.5 block text-[11px] leading-snug text-create-text-sub" data-testid={`lowest30-${key}`}>
+                      {tBf("lowest30", { price: price(lowestPrice30Days(PRICING[key].price)) })}
+                    </span>
+                  )}
                   {!digital && (
                     <span className="mt-1 flex items-center gap-1 text-xs font-semibold text-success">
                       <span aria-hidden className="material-symbols-outlined text-[15px]" data-icon="local_shipping" />
@@ -301,7 +354,7 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
             onClick={() => onChooseFormat("digital_pdf")}
             className="mt-2 text-[13px] text-create-text-sub underline decoration-create-text-sub/40 underline-offset-2 transition-colors hover:text-brand-text"
           >
-            {t("pdfOnly", { price: price(PRICING.digital_pdf.price) })}
+            {t("pdfOnly", { price: price(bookPrice("digital_pdf")) })}
           </button>
         )}
       </fieldset>
@@ -398,20 +451,47 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
       <p className="mt-1.5 text-center text-xs text-create-text-sub">
         {isDigital ? t("ctaNoteDigital") : t("ctaNotePhysical")}
       </p>
-      {/* A referral code (MEA…) never applies to the PDF: don't announce it there. */}
-      {linkCode && !(isDigital && linkCode.code.startsWith(CODE_PREFIX)) && (
-        <p className="mt-1 text-center text-xs text-create-text-sub" data-testid="link-code">
-          {linkCode.replaced ? (
-            t("ownCodeNote")
+      {/* Black Friday: every buyer can switch to typing a code (gift voucher, school code…), since
+          the pre-applied 20 % hides Stripe's code field; one code per order, never both. */}
+      {blackFriday ? (
+        <p className="mt-1 text-center text-xs text-create-text-sub" data-testid="code-note">
+          {ownCode ? (
+            <>
+              {tBf("ownCodeNote")}{" "}
+              <button type="button" onClick={onCancelOwnCode} className={CODE_BUTTON}>
+                {tBf("backToOffer")}
+              </button>
+            </>
           ) : (
             <>
-              {t("linkCodeNote", { code: linkCode.code })}{" "}
-              <button type="button" onClick={onUseOwnCode} className="font-semibold text-secondary underline decoration-secondary/30 underline-offset-2 hover:text-brand-text">
-                {t("otherCode")}
+              <span className="block">{tBf("panelDetail", { date: blackFridayEnd })}</span>
+              {shownLinkCode && (
+                <span className="block" data-testid="link-code">
+                  {tBf(linkCodeWins ? "linkCodeBetter" : "linkCodeBeaten", { code: shownLinkCode.code })}
+                </span>
+              )}
+              <button type="button" onClick={onUseOwnCode} className={CODE_BUTTON}>
+                {tBf("otherCode")}
               </button>
             </>
           )}
         </p>
+      ) : (
+        /* A referral code (MEA…) never applies to the PDF: don't announce it there. */
+        shownLinkCode && (
+          <p className="mt-1 text-center text-xs text-create-text-sub" data-testid="link-code">
+            {shownLinkCode.replaced ? (
+              t("ownCodeNote")
+            ) : (
+              <>
+                {t("linkCodeNote", { code: shownLinkCode.code })}{" "}
+                <button type="button" onClick={onUseOwnCode} className={CODE_BUTTON}>
+                  {t("otherCode")}
+                </button>
+              </>
+            )}
+          </p>
+        )
       )}
       {checkoutError && (
         <p className="mt-2 text-center text-xs text-red-700" role="alert">

@@ -36,6 +36,8 @@ import { OfferCallout, ReorderSheet } from "@/components/dashboard/OrdersTab";
 import type { StoryUpsell } from "@/lib/upsell";
 import { trackEvent } from "@/lib/tracking/consent";
 import { normalizeCode, REFERRAL_COOKIE } from "@/lib/promo-codes";
+import { blackFridayPriceCents } from "@/lib/black-friday";
+import { SalePrice, useBlackFriday } from "@/components/seasonal/SalePrice";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -99,6 +101,12 @@ export default function PreviewPage() {
   const tPurchase = useTranslations("crear.purchase");
   const locale = useLocale();
   const price = useCallback((cents: number) => formatPrice(cents, locale), [locale]);
+  // Book line price today: the Black Friday price inside the window (src/lib/black-friday.ts).
+  const blackFriday = useBlackFriday();
+  const bookPrice = useCallback(
+    (f: BookFormat) => (blackFriday ? blackFridayPriceCents(PRICING[f].price) : PRICING[f].price),
+    [blackFriday],
+  );
   const { storyId } = useParams<{ storyId: string }>();
   const router = useRouter();
   const { user } = useAuth();
@@ -138,6 +146,8 @@ export default function PreviewPage() {
   const [marketingOptOut, setMarketingOptOut] = useState(false);
   // Code kept from a /r link (pre-applied by /api/checkout) and "¿Tienes otro código?".
   const [linkCode, setLinkCode] = useState<{ code: string; replaced: boolean } | null>(null);
+  // "¿Tienes otro código?": nothing pre-applied, Stripe shows its code field (link code or Black Friday).
+  const [ownCode, setOwnCode] = useState(false);
   useEffect(() => {
     const raw = document.cookie.split(/;\s*/).find((c) => c.startsWith(`${REFERRAL_COOKIE}=`))?.slice(REFERRAL_COOKIE.length + 1);
     const code = normalizeCode(raw ? decodeURIComponent(raw) : undefined);
@@ -264,7 +274,8 @@ export default function PreviewPage() {
   }, [selectedFormatRequiresShipping]);
 
   const subtotal =
-    PRICING[format].price +
+    // "¿Tienes otro código?" drops the pre-applied Black Friday code: the list price until their code applies.
+    (ownCode ? PRICING[format].price : bookPrice(format)) +
     Array.from(addons).reduce((sum, id) => sum + addonPrice(id, format), 0);
 
   // Title / dedication edits from the checklist sheets update the book in place.
@@ -357,9 +368,9 @@ export default function PreviewPage() {
       } catch {
         // storage unavailable: the ref still keeps it to once per page view
       }
-      trackEvent("AddToCart", { content_ids: [next], content_type: "product", value: PRICING[next].price / 100, currency: "EUR" });
+      trackEvent("AddToCart", { content_ids: [next], content_type: "product", value: bookPrice(next) / 100, currency: "EUR" });
     },
-    [storyId],
+    [storyId, bookPrice],
   );
 
   // Mobile sticky buy bar: shown while the main CTA is off-screen.
@@ -406,7 +417,7 @@ export default function PreviewPage() {
           locale,
           withdrawalConsent: true,
           marketingOptOut,
-          ownCode: linkCode?.replaced === true,
+          ownCode,
         }),
       });
 
@@ -439,7 +450,7 @@ export default function PreviewPage() {
       );
       setCheckingOut(false);
     }
-  }, [storyId, format, addons, subtotal, locale, withdrawalConsent, marketingOptOut, linkCode, checkingOut, t]);
+  }, [storyId, format, addons, subtotal, locale, withdrawalConsent, marketingOptOut, ownCode, checkingOut, t]);
 
   const acceptConsentAndPay = useCallback(() => {
     const placement = consentPrompt ?? "main";
@@ -729,8 +740,10 @@ export default function PreviewPage() {
                 insidePages={insidePages}
                 scenesToCome={Math.max(0, TOTAL_SCENE_COUNT - PREVIEW_CLEAR_SCENES)}
                 onOpenPage={openPage}
-                linkCode={linkCode}
-                onUseOwnCode={() => setLinkCode((c) => (c ? { ...c, replaced: true } : c))}
+                linkCode={linkCode ? { ...linkCode, replaced: ownCode } : null}
+                onUseOwnCode={() => setOwnCode(true)}
+                ownCode={ownCode}
+                onCancelOwnCode={() => setOwnCode(false)}
                 devTools={
                   isMockMode ? (
                     <div data-dev-tools className="mt-4 rounded-lg border border-dashed border-amber-400 bg-amber-50 p-3">
@@ -911,7 +924,9 @@ export default function PreviewPage() {
                     <span className="tabular-nums">{price(subtotal)}</span> · {tPricing(`${format}.label`)}
                   </>
                 ) : (
-                  tPurchase("stickyFrom", { price: price(PRICING.softcover.price) })
+                  <SalePrice listCents={PRICING.softcover.price} variant="sticky">
+                    {tPurchase("stickyFrom", { price: price(PRICING.softcover.price) })}
+                  </SalePrice>
                 )}
               </p>
               <p className={`mt-0.5 truncate text-[11px] ${formatChosen && isDigital ? "text-create-text-sub" : "font-semibold text-success"}`}>

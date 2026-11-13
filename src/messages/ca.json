@@ -1508,7 +1508,6 @@
       "otherCode": "Tens un altre codi?",
       "ownCodeNote": "Escriu el teu codi a la pàgina de pagament.",
       "secondBookPromo": "Amb aquest llibre, el 2n en tapa tova et surt a {price} IVA inclòs (codi vàlid fins al {until})",
-      "secondBookPromoBlackFriday": "Black Friday: amb aquest llibre, el 2n en tapa tova et surt a {price} IVA inclòs (codi vàlid fins al {until})",
       "insideTitle": "Per dins",
       "insideOpenScene": "Veure l'escena {n}",
       "insideMore": "escenes més",
@@ -3013,8 +3012,7 @@
       "digitalMore": "t'arriba per correu el mateix dia",
       "link": "Veure dates",
       "dismiss": "Tancar avís",
-      "secondBookMore": "i el 2n llibre en tapa tova a {price} IVA inclòs",
-      "blackFriday": "Black Friday: el 2n llibre en tapa tova a {price} IVA inclòs"
+      "secondBookMore": "i el 2n llibre en tapa tova a {price} IVA inclòs"
     },
     "footerLink": "Arriba a temps per Reis?",
     "seoCallout": "Arriba a temps? Consulta les dates límit de Nadal i Reis"
@@ -3670,5 +3668,20 @@
       "error": "No ho hem pogut confirmar. Torna-ho a provar o escriu-nos a <mail>{email}</mail>.",
       "back": "Anar al calendari"
     }
+  },
+  "blackFriday": {
+    "label": "Black Friday −20 %",
+    "from": "Des de <s>{was}</s> <b>{price}</b>",
+    "price": "<s>{was}</s> <b>{price}</b>",
+    "sticky": "El seu llibre imprès · des de <s>{was}</s> <b>{price}</b>",
+    "lowest30": "Preu més baix dels últims 30 dies: {price}",
+    "panelDetail": "Black Friday: descompte aplicat en pagar, fins al {date}. No acumulable amb altres codis.",
+    "otherCode": "Tens una targeta regal o un altre codi?",
+    "ownCodeNote": "Escriu el teu codi a la pàgina de pagament. El −20 % de Black Friday no s'acumula amb altres codis.",
+    "backToOffer": "Tornar al −20 %",
+    "linkCodeBeaten": "El −20 % de Black Friday millora el teu codi {code} (no s'acumulen): s'aplica el −20 %.",
+    "linkCodeBetter": "El teu codi {code} estalvia més que el −20 % (no s'acumulen): s'aplica el teu codi en pagar.",
+    "banner": "Black Friday: −20 % en el seu conte fins al {date}",
+    "untilShort": "fins al {date}"
   }
 }

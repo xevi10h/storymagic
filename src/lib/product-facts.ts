@@ -10,6 +10,7 @@ import { EVERGREEN_TEMPLATES } from "./create-store";
 import { PREVIEW_ILLUSTRATION_COUNT, PRICING, TOTAL_SCENE_COUNT } from "./pricing";
 import { DELIVERY_PARAMS, SHIPPING_REGIONS } from "./shipping";
 import { SUPPORT_EMAIL, SUPPORT_PHONE } from "./support";
+import { bookPriceToday } from "./black-friday";
 
 export const SITE_URL = "https://meapica.es";
 export const BRAND_NAME = "Meapica";
@@ -147,14 +148,20 @@ export const COPY_PARAMS = {
   defectDays: DEFECT_CLAIM_DAYS,
 };
 
-/** COPY_PARAMS plus the formatted VAT-inclusive prices ({hardcover}, {softcover}, {pdf}, {priceFrom}). */
-export function factParams(formatPrice: (cents: number) => string) {
+/**
+ * COPY_PARAMS plus the formatted VAT-inclusive prices ({hardcover}, {softcover}, {pdf}, {priceFrom}).
+ * With `today` (Spain, YYYY-MM-DD; server render date) the prices are the ones paid that day: the
+ * Black Friday price inside its window (src/lib/black-friday.ts), so FAQ copy never quotes more
+ * than checkout charges. Without it: list prices.
+ */
+export function factParams(formatPrice: (cents: number) => string, today?: string) {
+  const paid = (cents: number) => formatPrice(bookPriceToday(cents, today));
   return {
     ...COPY_PARAMS,
-    hardcover: formatPrice(BOOK_FORMATS.hardcover.priceCents),
-    softcover: formatPrice(BOOK_FORMATS.softcover.priceCents),
-    pdf: formatPrice(BOOK_FORMATS.digital_pdf.priceCents),
-    priceFrom: formatPrice(PRINTED_FROM_CENTS),
+    hardcover: paid(BOOK_FORMATS.hardcover.priceCents),
+    softcover: paid(BOOK_FORMATS.softcover.priceCents),
+    pdf: paid(BOOK_FORMATS.digital_pdf.priceCents),
+    priceFrom: paid(PRINTED_FROM_CENTS),
   };
 }
 

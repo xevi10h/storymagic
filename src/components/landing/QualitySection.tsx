@@ -2,6 +2,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { BookMockup } from "@/components/book-mockup";
 import { Heading } from "@/components/ui";
 import { PRICING, formatPrice } from "@/lib/pricing";
+import { SalePrice } from "@/components/seasonal/SalePrice";
 import { COPY_PARAMS } from "@/lib/product-facts";
 import { LANDING_EXAMPLE, landingExampleBook } from "./HowItWorksExample";
 
@@ -55,10 +56,10 @@ export default function QualitySection() {
 
           <p className="mt-4 flex flex-wrap items-baseline gap-x-4 gap-y-1 text-sm text-ink-soft">
             <span className="whitespace-nowrap">
-              {t("softcover")} <strong className="font-display text-base font-bold text-brand-deep tabular-nums">{formatPrice(PRICING.softcover.price, locale)}</strong>
+              {t("softcover")} <span className="font-display text-base text-brand-deep tabular-nums"><SalePrice listCents={PRICING.softcover.price} variant="price"><strong className="font-bold">{formatPrice(PRICING.softcover.price, locale)}</strong></SalePrice></span>
             </span>
             <span className="whitespace-nowrap">
-              {t("hardcover")} <strong className="font-display text-base font-bold text-brand-deep tabular-nums">{formatPrice(PRICING.hardcover.price, locale)}</strong>
+              {t("hardcover")} <span className="font-display text-base text-brand-deep tabular-nums"><SalePrice listCents={PRICING.hardcover.price} variant="price"><strong className="font-bold">{formatPrice(PRICING.hardcover.price, locale)}</strong></SalePrice></span>
             </span>
             <span className="whitespace-nowrap text-ink-body">{t("vatShipping")}</span>
           </p>

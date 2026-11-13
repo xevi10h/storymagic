@@ -1490,7 +1490,6 @@
       "otherCode": "¿Tienes otro código?",
       "ownCodeNote": "Escribe tu código en la página de pago.",
       "secondBookPromo": "Con este libro, el 2.º en tapa blanda te sale a {price} IVA incluido (código válido hasta el {until})",
-      "secondBookPromoBlackFriday": "Black Friday: con este libro, el 2.º en tapa blanda te sale a {price} IVA incluido (código válido hasta el {until})",
       "insideTitle": "Por dentro",
       "insideOpenScene": "Ver la escena {n}",
       "insideMore": "escenas más",
@@ -2995,8 +2994,7 @@
       "digitalMore": "te llega por correo el mismo día",
       "link": "Ver fechas",
       "dismiss": "Cerrar aviso",
-      "secondBookMore": "y el 2.º libro en tapa blanda a {price} IVA incluido",
-      "blackFriday": "Black Friday: el 2.º libro en tapa blanda a {price} IVA incluido"
+      "secondBookMore": "y el 2.º libro en tapa blanda a {price} IVA incluido"
     },
     "footerLink": "¿Llega a tiempo para Reyes?",
     "seoCallout": "¿Llega a tiempo? Consulta las fechas límite de Navidad y Reyes"
@@ -3652,5 +3650,20 @@
       "error": "No hemos podido confirmar. Vuelve a probar o escríbenos a <mail>{email}</mail>.",
       "back": "Ir al calendario"
     }
+  },
+  "blackFriday": {
+    "label": "Black Friday −20 %",
+    "from": "Desde <s>{was}</s> <b>{price}</b>",
+    "price": "<s>{was}</s> <b>{price}</b>",
+    "sticky": "Su libro impreso · desde <s>{was}</s> <b>{price}</b>",
+    "lowest30": "Precio más bajo de los últimos 30 días: {price}",
+    "panelDetail": "Black Friday: descuento aplicado al pagar, hasta el {date}. No acumulable con otros códigos.",
+    "otherCode": "¿Tienes una tarjeta regalo u otro código?",
+    "ownCodeNote": "Escribe tu código en la página de pago. El −20 % de Black Friday no se acumula con otros códigos.",
+    "backToOffer": "Volver al −20 %",
+    "linkCodeBeaten": "El −20 % de Black Friday mejora tu código {code} (no se acumulan): se aplica el −20 %.",
+    "linkCodeBetter": "Tu código {code} ahorra más que el −20 % (no se acumulan): se aplica tu código al pagar.",
+    "banner": "Black Friday: −20 % en su cuento hasta el {date}",
+    "untilShort": "hasta el {date}"
   }
 }

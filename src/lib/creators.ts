@@ -27,6 +27,15 @@ export const CREATOR_CREDIT_MAX_DISCOUNT_CENTS = 4990;
 export const CREATOR_CREDIT_MAX_CENTS = Math.floor(CREATOR_CREDIT_MAX_DISCOUNT_CENTS / CREATOR_CREDIT_MULTIPLIER);
 /** Stripe promotion code metadata.kind of an audience code (scripts/social/create-creator-codes.sh). */
 export const AUDIENCE_CODE_KIND = "audience";
+/** Follower discount of an audience code (the shared Stripe coupon, 10 % on any product). */
+export const CREATOR_AUDIENCE_PERCENT_OFF = 10;
+/**
+ * Checkout Session metadata key with the creator's audience code when the follower came from the
+ * creator's /r link but a bigger, non-cumulative code was applied instead (Black Friday 2026,
+ * src/lib/black-friday.ts). The order still earns that creator the commission
+ * (recordOrderPromotion, scripts/social/creator-commissions.mjs). Set by /api/checkout only.
+ */
+export const CREATOR_CODE_METADATA_KEY = "creator_code";
 
 // ── Commission ──────────────────────────────────────────────────────────────
 

@@ -24,6 +24,7 @@ import {
   SITE_URL,
 } from "@/lib/product-facts";
 import { CHRISTMAS_DELIVERY_PATH, earliestPrintedCutoff, giftSeason, spainToday } from "@/lib/shipping";
+import { BLACK_FRIDAY, BLACK_FRIDAY_PERCENT_OFF, blackFridayPriceCents, isBlackFriday } from "@/lib/black-friday";
 import { SEO_GIFT_SLUGS, SEO_THEME_SLUGS, seoHubPath, seoPath } from "@/lib/seo-landing";
 import { TOOLS_HUB_PATH, toolPath } from "@/lib/tools/registry";
 import { GUIDES, guideUpdated, type GuideId } from "@/lib/guides";
@@ -47,6 +48,13 @@ function longDate(date: string): string {
   );
 }
 
+/** The Black Friday offer line while it is on (src/lib/black-friday.ts), else nothing. */
+function blackFridayLine(today: string): string {
+  if (!isBlackFriday(today)) return "";
+  const sale = (cents: number) => eur(blackFridayPriceCents(cents));
+  return `- Black Friday offer until ${longDate(BLACK_FRIDAY.to)}, 23:59 Spain time: ${BLACK_FRIDAY_PERCENT_OFF} % off the book, applied automatically at checkout. Hardcover ${sale(BOOK_FORMATS.hardcover.priceCents)}, softcover ${sale(BOOK_FORMATS.softcover.priceCents)}, PDF ${sale(BOOK_FORMATS.digital_pdf.priceCents)}, IVA incluido (lowest price of the previous 30 days: the regular prices above). Not combinable with other codes; not on extra copies, gift cards or reorders.\n`;
+}
+
 /** /llms.txt: the short brief (llmstxt.org). */
 export function llmsBrief(): string {
   const today = spainToday();
@@ -67,7 +75,7 @@ export function llmsBrief(): string {
 - Hardcover: ${eur(BOOK_FORMATS.hardcover.priceCents)} IVA incluido, free shipping, PDF included
 - Softcover: ${eur(BOOK_FORMATS.softcover.priceCents)} IVA incluido, free shipping, PDF included
 - PDF only: ${eur(BOOK_FORMATS.digital_pdf.priceCents)} IVA incluido, emailed after payment (normally in under ${PDF_DELIVERY_MAX_MINUTES} minutes)
-- Creating the book and its preview is free and needs no account.
+${blackFridayLine(today)}- Creating the book and its preview is free and needs no account.
 - Payment by card through Stripe.
 
 ## The book

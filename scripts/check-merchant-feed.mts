@@ -24,6 +24,7 @@ import {
   feedPrice,
 } from "../src/lib/merchant-feed";
 import { PRICING, STRIPE_CATALOG } from "../src/lib/pricing";
+import { BLACK_FRIDAY_FEED_EFFECTIVE_DATE, blackFridayPriceCents } from "../src/lib/black-friday";
 import { DELIVERY_BUSINESS_DAYS, SITE_URL } from "../src/lib/product-facts";
 import { getTemplateConfig, isTemplateAvailable } from "../src/lib/create-store";
 import { THEME_TEMPLATE } from "../src/lib/seo-landing";
@@ -140,6 +141,23 @@ lines.forEach((line, i) => {
   assert.equal(r.availability, "in_stock");
 });
 assert.deepEqual(buildOpenAiRecords(items).map((r) => r.item_id), items.map((i) => i.id));
+
+// ── Black Friday sale price (src/lib/black-friday.ts): only inside the window, price stays the list price ──
+for (const [day, onSale] of [["2026-11-12", false], ["2026-11-13", true], ["2026-11-30", true], ["2026-12-01", false]] as const) {
+  const dayItems = buildFeedItems(day);
+  const dayXml = buildGoogleMerchantXml(dayItems).split("<item>").slice(1);
+  const dayRecords = buildOpenAiRecords(dayItems);
+  dayItems.forEach((item, i) => {
+    const sale = onSale ? blackFridayPriceCents(PRICING[item.format].price) : null;
+    assert.equal(item.salePriceCents, sale, `${day} ${item.id} salePriceCents`);
+    assert.equal(item.priceCents, PRICING[item.format].price, `${day} ${item.id} price stays the list price`);
+    const val = (f: string) => dayXml[i].match(new RegExp(`<g:${f}>([^<]*)</g:${f}>`))?.[1];
+    assert.equal(val("sale_price"), sale === null ? undefined : feedPrice(sale), `${day} xml sale_price ${item.id}`);
+    assert.equal(val("sale_price_effective_date"), sale === null ? undefined : BLACK_FRIDAY_FEED_EFFECTIVE_DATE, `${day} xml effective date`);
+    assert.equal(dayRecords[i].sale_price, sale === null ? undefined : feedPrice(sale), `${day} jsonl sale_price ${item.id}`);
+  });
+}
+assert.equal(blackFridayPriceCents(PRICING.softcover.price), 2792, "softcover 27,92 € in the feed");
 
 // ── Image files (built by scripts/build-merchant-feed-images.mts) ─────────────
 const imageFiles = [...Object.values(FEED_IMAGES), ...FEED_WORLDS.flatMap((w) => Object.values(feedWorldImages(w.key)))];
