@@ -3673,7 +3673,6 @@
     "label": "Black Friday −20 %",
     "from": "Des de <s>{was}</s> <b>{price}</b>",
     "price": "<s>{was}</s> <b>{price}</b>",
-    "sticky": "El seu llibre imprès · des de <s>{was}</s> <b>{price}</b>",
     "lowest30": "Preu més baix dels últims 30 dies: {price}",
     "panelDetail": "Black Friday: descompte aplicat en pagar, fins al {date}. No acumulable amb altres codis.",
     "otherCode": "Tens una targeta regal o un altre codi?",

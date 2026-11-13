@@ -224,6 +224,15 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
       const bodies = await mockApi(page, { withPlan: true });
       await page.goto(`/es/create/${STORY_ID}/preview?now=2026-11-30`);
       await section(page).waitFor();
+      if (vpName === "mobile") {
+        // Sticky bar "desde": struck list price + sale price, not cut off at 390 px.
+        const bar = page.getByTestId("sticky-buy");
+        await expect(bar).toBeVisible();
+        await expect(bar).toContainText(/34,90\s*€\s*27,92\s*€/);
+        const line = bar.locator("p").first();
+        expect(await line.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true);
+        await bar.screenshot({ path: `${SHOTS}/es-mobile-black-friday-sticky.png` });
+      }
       await section(page).scrollIntoViewIfNeeded();
 
       await expect(page.getByTestId("black-friday")).toContainText(/Black Friday −20\s%/);

@@ -176,13 +176,14 @@ metadata `kind: black_friday`). Created by `STRIPE_KEY=sk_… npx tsx --tsconfig
 (idempotent, creates only those two objects). **TEST: created 2026-11-13** (`promo_1UbHFaBD04FISl5uO3wrLbfW`). **LIVE: not
 created yet — run it with the live key BEFORE deploying the branch** (live dry run 2026-11-13: products resolve, no
 `BLACKFRIDAY` clash). Without it the site shows the Black Friday price but checkout charges the list price and
-`alertOperator` emails "Black Friday code refused/missing". End-to-end check against TEST (real sessions, expired at once):
+`alertOperator` emails the operator ("Black Friday code missing on this Stripe account" when the objects are absent,
+"Black Friday code refused at checkout" when Stripe rejects it; 6 h dedupe each). End-to-end check against TEST (real sessions, expired at once):
 `STRIPE_ENVIRONMENT=test STRIPE_SECRET_KEY_TEST=… npx tsx --tsconfig tsconfig.json scripts/check-black-friday-checkout.mts`
 (PDF 7,92 · softcover 27,92 · hardcover 39,92 · softcover + extra copy 47,82 · hardcover + extra copy 69,82 €, verified 2026-11-13).
 - Window: Spain dates 2026-11-13 → 2026-11-30 for rendering (`isBlackFriday(today)`), instants for checkout
   (`isBlackFridayAt(Date.now())`, never a UTC date). The [locale] layout passes its render date to client components
   (`SeasonTodayProvider` in `src/components/seasonal/SalePrice.tsx`), so the sale price is in the ISR HTML and the live client
-  date corrects it after hydration. Everything reverts on 1 Dec 00:00 Madrid without a deploy (pages hourly ISR,
+  date corrects it after hydration (the layout never reads headers; dev `?now=` is applied client-side after hydration). Everything reverts on 1 Dec 00:00 Madrid without a deploy (pages hourly ISR,
   `/llms.txt` + `/llms-full.txt` moved to hourly, feeds hourly, coupon `redeem_by`).
 - Pre-applied in `/api/checkout` (first book only: never reorders / post-purchase offers / `ownCode`) through
   `orderPromoCandidates`: the eligible code with the biggest saving on the book line goes first, the others are fallbacks

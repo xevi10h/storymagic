@@ -41,7 +41,6 @@ const was = (chunks: ReactNode) => <s className="font-normal opacity-70 decorati
  * own regular price line, untouched); inside, the struck list price + the sale price.
  *  - variant "from": "Desde ~~34,90 €~~ 27,92 €" (the "desde" teasers)
  *  - variant "price": "~~34,90 €~~ 27,92 €"
- *  - variant "sticky": the creation flow's "Su libro impreso · desde ~~34,90 €~~ 27,92 €"
  * The VAT note stays where each page already puts it ("IVA incluido").
  */
 export function SalePrice({
@@ -51,7 +50,7 @@ export function SalePrice({
   children,
 }: {
   listCents: number;
-  variant?: "from" | "price" | "sticky";
+  variant?: "from" | "price";
   nowClassName?: string;
   children: ReactNode;
 }) {

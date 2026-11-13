@@ -924,7 +924,7 @@ export default function PreviewPage() {
                     <span className="tabular-nums">{price(subtotal)}</span> · {tPricing(`${format}.label`)}
                   </>
                 ) : (
-                  <SalePrice listCents={PRICING.softcover.price} variant="sticky">
+                  <SalePrice listCents={PRICING.softcover.price} variant="from">
                     {tPurchase("stickyFrom", { price: price(PRICING.softcover.price) })}
                   </SalePrice>
                 )}

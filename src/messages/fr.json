@@ -3201,7 +3201,6 @@
     "label": "Black Friday −20 %",
     "from": "À partir de <s>{was}</s> <b>{price}</b>",
     "price": "<s>{was}</s> <b>{price}</b>",
-    "sticky": "Son livre imprimé · dès <s>{was}</s> <b>{price}</b>",
     "lowest30": "Prix le plus bas des 30 derniers jours : {price}",
     "panelDetail": "Black Friday : remise appliquée au paiement, jusqu'au {date}. Non cumulable avec d'autres codes.",
     "otherCode": "Vous avez une carte cadeau ou un autre code ?",

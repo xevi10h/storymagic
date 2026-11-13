@@ -8,8 +8,7 @@ import { isIndexableLocale } from "@/lib/seo-index";
 import Tracking from "@/components/tracking/Tracking";
 import VercelAnalytics from "@/components/tracking/VercelAnalytics";
 import RootDocument from "@/app/_components/RootDocument";
-import { headers } from "next/headers";
-import { parseDateOverride, SEASON_NOW_HEADER, spainToday } from "@/lib/shipping";
+import { spainToday } from "@/lib/shipping";
 import { SeasonTodayProvider } from "@/components/seasonal/SalePrice";
 
 type Props = {
@@ -112,11 +111,9 @@ export default async function LocaleLayout({ children, params }: Props) {
   const messages = clientMessages(await getMessages());
 
   // Render date for date-dependent prices (Black Friday, src/components/seasonal/SalePrice.tsx).
-  // Production never reads request headers here, so pages stay static (dev: ?now= override).
-  let today = spainToday();
-  if (process.env.NODE_ENV !== "production") {
-    today = parseDateOverride((await headers()).get(SEASON_NOW_HEADER)) ?? today;
-  }
+  // Never reads request headers, so pages stay static/ISR; the dev "?now=" override is applied by
+  // the client after hydration (season-client.ts).
+  const today = spainToday();
 
   return (
     <RootDocument lang={locale}>

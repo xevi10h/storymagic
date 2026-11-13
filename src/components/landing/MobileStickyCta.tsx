@@ -87,7 +87,8 @@ export default function MobileStickyCta({ label }: { label?: string } = {}) {
       <div className="mx-auto flex max-w-xl items-center justify-between gap-2 px-4 sm:gap-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] pt-3 sm:px-6">
         <p className="shrink-0 leading-tight">
           <span className="block text-sm font-bold tabular-nums text-brand-deep">
-            <SalePrice listCents={PRICING.softcover.price}>{t("priceFrom", { price: formatPrice(PRICING.softcover.price, locale) })}</SalePrice>
+            {/* Black Friday: no "Desde" here, so the CTA label keeps its width at 360 px. */}
+            <SalePrice listCents={PRICING.softcover.price} variant="price">{t("priceFrom", { price: formatPrice(PRICING.softcover.price, locale) })}</SalePrice>
           </span>
           <span className="block text-xs text-ink-muted">{tPricing("vatIncluded")}</span>
         </p>

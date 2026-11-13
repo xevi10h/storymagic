@@ -220,8 +220,17 @@ export async function POST(request: Request) {
     // Black Friday is the price the order screen shows, so it is pre-applied for voucher / credit
     // holders too: they reach Stripe's code field through "¿Tienes una tarjeta regalo u otro
     // código?", which every buyer sees during the window (PurchasePanel).
-    const blackFridayPromo =
-      !ownCode && !isReorder && !offer && isBlackFridayAt(Date.now()) ? (await getPromotionSetup()).blackFriday : null;
+    const blackFridayEligible = !ownCode && !isReorder && !offer && isBlackFridayAt(Date.now());
+    const blackFridayPromo = blackFridayEligible ? (await getPromotionSetup()).blackFriday : null;
+    if (blackFridayEligible && !blackFridayPromo) {
+      // The order screen shows the Black Friday price: without the Stripe objects buyers would pay the list price.
+      await alertOperator(fulfilment, {
+        key: "checkout-black-friday-missing",
+        subject: "Black Friday code missing on this Stripe account",
+        lines: ["Checkout ran without the 20 % (coupon or BLACKFRIDAY code missing/unreadable).", "Run scripts/stripe-setup-black-friday.mts with this account's key."],
+        dedupeSeconds: 6 * 3600,
+      }).catch(() => false);
+    }
     const candidates = orderPromoCandidates([
       secondBookPromo ? { kind: "second_book", promotionCodeId: secondBookPromo, savingCents: SECOND_BOOK_DISCOUNT_CENTS } : null,
       linkEligible && referral
