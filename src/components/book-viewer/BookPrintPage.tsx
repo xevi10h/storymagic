@@ -136,9 +136,11 @@ function LockedArt({
   top?: number;
 }) {
   const t = useTranslations("crear.preview");
-  // Box coordinates of this page's content area (a panorama half shows one page of a wider box).
-  const left = windowLeft + M;
-  const width = W - 2 * M;
+  // Box coordinates of this page (a panorama half shows one page of a wider box). The dashed
+  // frame sits 8 mm inside the trim, outside the text margin, so overlay text never crosses it.
+  const inset = BLEED + 8 * (M / 19);
+  const left = windowLeft + inset;
+  const width = W - 2 * inset;
   return (
     <div
       data-testid="locked-art"
@@ -147,7 +149,7 @@ function LockedArt({
     >
       <div
         className="absolute"
-        style={{ left: u(left), top: u(M), width: u(width), height: u(box.height - 2 * M), border: `${u(1)} dashed ${colors.ornamentColor}`, borderRadius: u(8) }}
+        style={{ left: u(left), top: u(inset), width: u(width), height: u(box.height - 2 * inset), border: `${u(1)} dashed ${colors.ornamentColor}`, borderRadius: u(8) }}
       />
       {!quiet && (
         <div
