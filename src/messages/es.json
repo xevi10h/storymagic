@@ -1257,7 +1257,20 @@
       "rotateHint": "Gira el móvil para ver la doble página",
       "zoomPage": "Ampliar",
       "templateUnavailable": "Esta edición de temporada ya no se puede pedir y no se ha hecho ningún cargo. Puedes crear un cuento nuevo en cualquiera de los otros mundos.",
-      "previewIntro": "Ya puedes leer toda la historia. {shown} de {total} escenas están pintadas; las demás las pintamos al pedir el libro."
+      "previewIntro": "Ya puedes leer toda la historia. {shown} de {total} escenas están pintadas; las demás las pintamos al pedir el libro.",
+      "feedback": {
+        "title": "¿Qué te frena para pedirlo?",
+        "hint": "Un toque y listo. Nos ayuda a mejorar.",
+        "close": "Cerrar",
+        "thanks": "¡Gracias! Lo tendremos en cuenta.",
+        "reasons": {
+          "price": "El precio",
+          "likeness": "No se parece a {name}",
+          "story": "La historia no me convence",
+          "later": "Lo pediré más adelante",
+          "browsing": "Solo estaba mirando"
+        }
+      }
     },
     "errors": {
       "saveFailed": "No hemos podido guardar tu cuento. Revisa tu conexión y vuelve a pulsar el botón: todo lo que has escrito sigue aquí.",

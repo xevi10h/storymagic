@@ -1215,7 +1215,20 @@
       "rotateHint": "Turn your phone sideways to see both pages",
       "zoomPage": "Enlarge",
       "templateUnavailable": "This seasonal edition can no longer be ordered, and you have not been charged. You can create a new book in any of the other worlds.",
-      "previewIntro": "You can read the whole story now. {shown} of {total} scenes are painted; we paint the rest when you order the book."
+      "previewIntro": "You can read the whole story now. {shown} of {total} scenes are painted; we paint the rest when you order the book.",
+      "feedback": {
+        "title": "What's holding you back?",
+        "hint": "One tap. It helps us improve.",
+        "close": "Close",
+        "thanks": "Thank you! We'll take it on board.",
+        "reasons": {
+          "price": "The price",
+          "likeness": "It doesn't look like {name}",
+          "story": "The story isn't for us",
+          "later": "I'll order later",
+          "browsing": "Just looking"
+        }
+      }
     },
     "errors": {
       "saveFailed": "We couldn't save your book. Check your connection and tap the button again: everything you've entered is still here.",

@@ -237,6 +237,18 @@ estimated delivery, second CTA, price + shipping zones line. Variants (`src/lib/
 Spanish only, noindex. Design: Claude Design canvas «Meapica · landing de anuncios» (owner-approved). Deviations for honesty:
 "Su cara en cada escena" (not "página") and "30 páginas y 12 escenas pintadas" (not "30 páginas pintadas").
 
+## "¿Qué te frena?" on the book preview (2026-11-17)
+
+Why: the funnel of 20 Oct – 16 Nov showed 154 of 162 people leave on the preview / order screen and no tool says why.
+`PreviewFeedback` (`src/components/create/PreviewFeedback.tsx`) asks one optional question, "¿Qué te frena para pedirlo?",
+after `PREVIEW_FEEDBACK_DELAY_S` (45) visible seconds on a purchasable preview without a pay click. One tap on a chip:
+`price` · `likeness` ("No se parece a {name}") · `story` · `later` · `browsing`; then "¡Gracias!" and it closes. Once per
+story and device (localStorage `meapica_feedback_<storyId>`), paused while the reveal, an edit sheet, the consent sheet or a
+checkout is on screen, cancelled by any pay click, dismissible. Phones: a card above the sticky buy bar (never over a buy
+button); desktop: bottom-left. Stored by `POST /api/stories/{id}/feedback` (owner only) in `preview_feedback` (one row per
+story, last answer wins; RLS on, service role only; no personal data beyond the owner id). Read-out:
+`select reason, count(*) from preview_feedback group by 1 order by 2 desc`. Copy: `crear.preview.feedback` (4 locales).
+
 ## Painting screen ready state + auto-open (`/create/{id}/generate`, 2026-10-28, local)
 
 Why: in prod 3 Meta ad visitors reached the painting screen, 2 got `preview_ready`, none opened `/preview`: on phones

@@ -1275,7 +1275,20 @@
       "rotateHint": "Gira el mòbil per veure la doble pàgina",
       "zoomPage": "Ampliar",
       "templateUnavailable": "Aquesta edició de temporada ja no es pot demanar i no s'ha fet cap càrrec. Pots crear un conte nou en qualsevol dels altres mons.",
-      "previewIntro": "Ja pots llegir tota la història. {shown} de {total} escenes estan pintades; les altres les pintem quan demanes el llibre."
+      "previewIntro": "Ja pots llegir tota la història. {shown} de {total} escenes estan pintades; les altres les pintem quan demanes el llibre.",
+      "feedback": {
+        "title": "Què et frena per demanar-lo?",
+        "hint": "Un toc i ja està. Ens ajuda a millorar.",
+        "close": "Tancar",
+        "thanks": "Gràcies! Ho tindrem en compte.",
+        "reasons": {
+          "price": "El preu",
+          "likeness": "No s'assembla prou",
+          "story": "La història no em convenç",
+          "later": "El demanaré més endavant",
+          "browsing": "Només estava mirant"
+        }
+      }
     },
     "errors": {
       "saveFailed": "No hem pogut desar el conte. Revisa la connexió i torna a prémer el botó: tot el que has escrit continua aquí.",

@@ -30,6 +30,15 @@ Shipped for the Christmas / Reyes 2026 campaign after the SEO audit of 2026-11-1
   feed items), "Alternativas a Hurra Héroes" section on `/compare`, birthday and 5-7 titles, descriptive `alt` on hub cards,
   Product JSON-LD only where both prices are visible.
 
+## Funnel findings (2026-11-17, report https://claude.ai/artifact/Eb3yHtqJkKCsKfXonTfUYN)
+
+- [ ] Read the "¿Qué te frena?" answers once ~30 are in (`preview_feedback`), then decide the order-screen redesign.
+- [ ] Owner: PostHog personal API key (phx_) to `~/.config/meapica/posthog_key` so session replays and `create_step` can be read.
+- [ ] Vercel Web Analytics was disabled on 2026-11-13 (cancels 2026-11-20): steps 1–2 are unmeasured until it is back.
+- [ ] Meta "pack-reyes-v2": 121 € → 102 previews → 0 sales (20 Oct – 16 Nov). Owner decision pending: pause.
+- Ideas: ask for the email on the painting screen (41 % fill "De parte de", 4 % leave an email); Apple Pay / Google Pay
+  in Checkout (nobody who abandons reaches the address form).
+
 ## Painting screen + preview follow-ups (2026-11-16)
 
 - **Decided 2026-11-16 (owner): reuse.** The final book must keep the approved preview cover + scenes 1-3 (upscaled to print size) and paint only the other 9 in the same look. Today `final-book.ts` repaints everything from new sheets, so the drawings change after purchase. Open questions: upscaler (1024² medium → 2432² / cover 2672×2912), and making scenes 4-12 match the preview sheets' style.

@@ -305,3 +305,48 @@ test("server says preview_outdated → outdated notice", async ({ page }) => {
   await mainCta(page).click();
   await expect(page.getByText(COPY.es.outdated)).toBeVisible();
 });
+
+test.describe("¿Qué te frena? (one-tap question after 45 s on the preview)", () => {
+  test.use(VIEWPORTS.mobile);
+
+  test("shows once, saves the answer, never covers the buy bar", async ({ page }) => {
+    await mockApi(page, { withPlan: true });
+    const answers: unknown[] = [];
+    await page.route(`**/api/stories/${STORY_ID}/feedback`, (route) => {
+      answers.push(route.request().postDataJSON());
+      return route.fulfill({ json: { ok: true } });
+    });
+    await page.clock.install();
+    await page.goto(`/es/create/${STORY_ID}/preview`);
+    await section(page).waitFor();
+    const box = page.getByTestId("preview-feedback");
+    await expect(box).toHaveCount(0);
+    await page.clock.runFor(46_000);
+    await expect(box).toBeVisible();
+    // The sticky buy bar stays fully usable under it.
+    const bar = await page.getByTestId("sticky-buy").boundingBox();
+    const card = await box.boundingBox();
+    expect(card!.y + card!.height).toBeLessThanOrEqual(bar!.y);
+    await page.screenshot({ path: `${SHOTS}/es-mobile-feedback.png` });
+    await box.getByRole("button", { name: "El precio" }).click();
+    await expect(box).toContainText("¡Gracias!");
+    expect(answers).toEqual([{ reason: "price", locale: "es" }]);
+    await page.clock.runFor(3_000);
+    await expect(box).toHaveCount(0);
+    // Once per story and device.
+    await page.reload();
+    await section(page).waitFor();
+    await page.clock.runFor(60_000);
+    await expect(box).toHaveCount(0);
+  });
+
+  test("a pay click cancels the question", async ({ page }) => {
+    await mockApi(page, { withPlan: true });
+    await page.clock.install();
+    await page.goto(`/es/create/${STORY_ID}/preview`);
+    await section(page).waitFor();
+    await page.getByTestId("checkout-cta").click();
+    await page.clock.runFor(60_000);
+    await expect(page.getByTestId("preview-feedback")).toHaveCount(0);
+  });
+});

@@ -1217,7 +1217,20 @@
       "rotateHint": "Tournez votre téléphone pour voir la double page",
       "zoomPage": "Agrandir",
       "templateUnavailable": "Cette édition de saison ne peut plus être commandée et aucun paiement n'a été effectué. Vous pouvez créer un nouveau livre dans n'importe quel autre univers.",
-      "previewIntro": "Vous pouvez déjà lire toute l'histoire. {shown} scènes sur {total} sont peintes ; nous peignons les autres à la commande du livre."
+      "previewIntro": "Vous pouvez déjà lire toute l'histoire. {shown} scènes sur {total} sont peintes ; nous peignons les autres à la commande du livre.",
+      "feedback": {
+        "title": "Qu'est-ce qui te retient ?",
+        "hint": "Un clic suffit. Ça nous aide à nous améliorer.",
+        "close": "Fermer",
+        "thanks": "Merci ! Nous en tiendrons compte.",
+        "reasons": {
+          "price": "Le prix",
+          "likeness": "Ça ne lui ressemble pas assez",
+          "story": "L'histoire ne me convainc pas",
+          "later": "Je commanderai plus tard",
+          "browsing": "Je regardais seulement"
+        }
+      }
     },
     "errors": {
       "saveFailed": "Nous n'avons pas pu enregistrer votre livre. Vérifiez votre connexion et appuyez à nouveau sur le bouton : tout ce que vous avez saisi est toujours là.",

@@ -285,6 +285,13 @@ export type FulfilmentDatabase = Omit<Database, "public"> & {
         Update: { day?: string; count?: number; updated_at?: string };
         Relationships: [];
       };
+      // 20261117100000_preview_feedback.sql
+      preview_feedback: {
+        Row: { story_id: string; user_id: string; reason: string; locale: string | null; created_at: string; updated_at: string };
+        Insert: { story_id: string; user_id: string; reason: string; locale?: string | null; updated_at?: string };
+        Update: { reason?: string; locale?: string | null; updated_at?: string };
+        Relationships: [];
+      };
       preview_reminders: {
         Row: PreviewReminderRow;
         Insert: Pick<PreviewReminderRow, "story_id" | "email" | "consent_version"> & Partial<PreviewReminderRow>;

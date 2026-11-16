@@ -682,6 +682,7 @@ Status 2026-10-01: Events API token set in prod (test event accepted, code 0). P
 | Version | File | When |
 |---|---|---|
 | 20261109190000 | `preview_reminder_checkout_abandoned.sql` (`preview_reminders.checkout_abandoned_at`) | **before** the deploy (additive; the webhook and the reminder cron read/write it) |
+| 20261117100000 | `preview_feedback.sql` (table `preview_feedback`, "¿Qué te frena?" answers; applied to prod 2026-11-17) | **before** the deploy (additive; `POST /api/stories/{id}/feedback` writes it) |
 
 Applied to production 2026-11-09 (Management API, version recorded in `supabase_migrations.schema_migrations`) before the deploy.
 

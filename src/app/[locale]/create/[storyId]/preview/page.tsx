@@ -23,6 +23,7 @@ import PreviewFaq from "@/components/purchase/PreviewFaq";
 import { withTeaserEnd } from "@/lib/preview-teaser";
 import { getBookColors } from "@/lib/template-colors";
 import SendPreviewEmail from "@/components/create/SendPreviewEmail";
+import PreviewFeedback from "@/components/create/PreviewFeedback";
 import { clearStoredDraft, patchStoredDraft, readStoredDraft } from "@/lib/creation-flow";
 import BookViewerSwitch from "@/components/book-viewer/BookViewerSwitch";
 import { spreadIndexOf, spreadStart } from "@/components/book-viewer/spreads";
@@ -155,6 +156,8 @@ export default function PreviewPage() {
   }, []);
   // Pay pressed with the withdrawal box unticked: the sheet asks for it (which button opened it).
   const [consentPrompt, setConsentPrompt] = useState<PayPlacement | null>(null);
+  /** A pay button was pressed this visit: the "¿Qué te frena?" question no longer applies. */
+  const [payClicked, setPayClicked] = useState(false);
   const [editPanel, setEditPanel] = useState<EditPanel | null>(null);
   const isWide = useIsWide();
   const [downloadingPdf, setDownloadingPdf] = useState(false);
@@ -392,6 +395,7 @@ export default function PreviewPage() {
   // press was already counted when the sheet opened).
   const handleCheckout = useCallback(async (placement: PayPlacement, fromSheet = false) => {
     if (checkingOut) return;
+    setPayClicked(true);
     const consented = fromSheet || withdrawalConsent;
     const payload = { placement, format, consented, value: subtotal / 100, currency: "EUR" };
     if (!fromSheet) trackEvent("pay_click", payload);
@@ -909,6 +913,15 @@ export default function PreviewPage() {
             {!isWide && sendPreviewEmail}
           </div>
         </div>
+      )}
+
+      {showBuy && (
+        <PreviewFeedback
+          storyId={storyId}
+          name={childName}
+          paused={showReveal || editPanel !== null || consentPrompt !== null || checkingOut}
+          suppressed={payClicked}
+        />
       )}
 
       {/* Mobile sticky buy bar: price from the first screen; formats first, then Stripe */}
