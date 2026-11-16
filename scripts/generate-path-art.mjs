@@ -239,6 +239,17 @@ const OPTIONS = [
   { template: "pirates", seed: "pirates-c3islandc-game", prompt: "A friendly octopus on a tropical island playfully covering its eyes with two tentacles while pointing toward a glowing lantern half-buried in the warm sand, a game of hot-and-cold among seashells and starfish." },
   // The auto-prompt ("A walking song…") made FLUX paint a lettered book page.
   { template: "reyes", seed: "reyes-c3camelsa-song", prompt: "Three gentle camels with royal saddle blankets walking in step along moonlit rooftops, a few little musical notes drifting in the night air above them, warm starry sky." },
+  // Christmas / Tió (2026-11-17): the auto-prompts painted lettering, book pages or a speech bubble.
+  { template: "christmas", seed: "christmas-c1-compass", prompt: "A red wooden sleigh parked in deep snow at the North Pole beside a large brass star-dust compass whose needle spins wildly in a swirl of golden sparkles, snowy fir trees, deep blue night." },
+  { template: "christmas", seed: "christmas-c1-glow", prompt: "A gentle reindeer standing in a snowy stable yard at night, his big antlers dark and dim with only a faint flicker of gold, a red sleigh waiting in the shadows, falling snow." },
+  { template: "christmas", seed: "christmas-c2glow-ask", prompt: "A sad reindeer lying in soft golden straw in a cosy wooden stable, wearing an empty red collar where something small used to hang, warm lantern light." },
+  { template: "christmas", seed: "christmas-c3compassb-lantern", prompt: "An old iron street lantern glowing warmly on a snowy hill at the North Pole, a small wooden sled resting beside it, snow-laden fir trees and a crescent moon in a starry sky." },
+  { template: "christmas", seed: "christmas-c3glowa-surprise", prompt: "A cosy reindeer stable at night: a huge heap of golden straw with a tiny surprised field mouse peeking out of it, a reindeer leaning in curiously, warm lantern light." },
+  { template: "christmas", seed: "christmas-c3glowc-story", prompt: "A red sleigh pulled by reindeer flying bravely through a snowy stormy night sky over dark mountains, its golden lantern shining through the swirling snowflakes." },
+  { template: "christmas", seed: "christmas-c3machineb-turns", prompt: "A long workshop conveyor belt carrying a teddy bear, a little drum and a wooden toy train past brass machinery, warm workshop light and frosted windows." },
+  { template: "tio", seed: "tio-c2fair-torro", prompt: "A wooden Christmas market stall piled high with blocks of almond nougat and golden rolled wafer biscuits under a striped awning, warm winter light. Plain stall with no signs." },
+  { template: "tio", seed: "tio-c3faira-tickle", prompt: "A white goose feather resting on a wooden market table among a row of small round logs, a basket of red apples beside them, Christmas fair stalls blurred in the background. No signs." },
+  { template: "tio", seed: "tio-c3fairc-colours", prompt: "Red, gold and green Christmas baubles neatly sorted into three little wooden boxes on a market table, beside a smooth untangled golden tinsel garland, soft winter light." },
 ];
 
 // ── auto-prompts for trees without hand-crafted entries ───────────────────────
@@ -255,6 +266,8 @@ const AUTO_PROMPT_TREES = [
   "inventor",
   "candy",
   "reyes",
+  "christmas",
+  "tio",
 ];
 
 function autoPromptOptions() {

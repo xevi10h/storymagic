@@ -2234,6 +2234,395 @@ export const STORY_TEMPLATES: StoryTemplateConfig[] = [
     ],
   },
 
+  // ── CHRISTMAS (seasonal) ────────────────────────────────────
+  // "La Nochebuena de Papá Noel". Night of 24 December; the adventure happens at the
+  // North Pole and ends back in bed on Christmas morning. Secular folk tradition only.
+  // Bump availableUntil (and availableFrom if wanted) every season.
+  {
+    id: "christmas",
+    title: "La Nochebuena de Papá Noel",
+    ageMin: 2,
+    ageMax: 8,
+    description:
+      "En Nochebuena, un reno pequeñito aterriza en el balcón con una nota de Papá Noel: la magia de la Navidad se ha estropeado y solo una idea muy buena puede arreglarla antes de la mañana.",
+    image: "/images/templates/christmas.jpg",
+    theme:
+      "Christmas Eve (24 December): a tiny reindeer called Avellana lands on the child's balcony (most Spanish homes have no chimney) with a note from Papá Noel, because something has gone wrong with the Christmas magic at the North Pole. She flies the child there; the adventure happens at the North Pole and in the polar sky (the toy workshop, the reindeer stable, the northern lights), and the book ends with the child back in their own bed on Christmas morning, presents and a filled stocking waiting. Secular folk tradition only (Papá Noel, reindeer, sleigh, elves, the North Pole workshop, stockings, letters, cookies and milk, snow): no religious scenes, no Three Kings, no Tió",
+    moral: "Even the biggest magic sometimes needs a small, kind idea",
+    relatedInterests: [],
+    tags: ["big-hearts", "dreamers", "puzzle-solvers"],
+    themeColor: "#7A1F2B",
+    themeGradient: "from-red-900 to-emerald-800",
+    previewChapterTitle: "Un reno en el balcón",
+    seasonal: true,
+    availableUntil: "2027-01-06",
+    decisions: [
+      {
+        key: "encounter",
+        question: "¿Qué aterriza en el balcón de {name} en Nochebuena?",
+        options: [
+          {
+            id: "little-reindeer",
+            title: "Un Reno Pequeñito",
+            subtitle: "Con una bufanda de rayas y mucha prisa",
+            icon: "pets",
+            narrativeContext:
+              "A tiny reindeer in a stripy scarf lands among the flowerpots on the child's balcony, out of breath, with an urgent note from Papá Noel.",
+          },
+          {
+            id: "north-pole-letter",
+            title: "Una Carta del Polo Norte",
+            subtitle: "Huele a jengibre y está fría como la nieve",
+            icon: "mail",
+            narrativeContext:
+              "A letter sealed with red wax and smelling of gingerbread slides under the balcony door: Papá Noel asks the child for help, and a tiny reindeer is waiting outside to fly them to the North Pole.",
+          },
+          {
+            id: "sleigh-lights",
+            title: "Luces de Trineo",
+            subtitle: "Cruzan el cielo y se paran en la ventana",
+            icon: "flight",
+            narrativeContext:
+              "A line of tiny golden lights zigzags across the night sky and stops right outside the child's window: it is a reindeer with a lantern, sent by Papá Noel.",
+          },
+        ],
+      },
+      {
+        key: "companion",
+        question: "¿Quién acompaña a {name} en el Polo Norte?",
+        options: [
+          {
+            id: "papa-noel",
+            title: "Papá Noel",
+            subtitle: "Risueño, despistado y con galletas en los bolsillos",
+            icon: "sentiment_very_satisfied",
+            narrativeContext:
+              "Papá Noel himself, round and jolly, a little absent-minded, who always has a cookie in his coat pocket and laughs with his whole tummy.",
+          },
+          {
+            id: "avellana",
+            title: "Avellana",
+            subtitle: "La más pequeña de los renos, y la más valiente",
+            icon: "pets",
+            narrativeContext:
+              "Avellana, the youngest and smallest reindeer, in her stripy scarf, brave, curious and a bit of a show-off at loop-the-loops.",
+          },
+          {
+            id: "toy-elf",
+            title: "Un Elfo Juguetero",
+            subtitle: "Lo arregla todo con un destornillador diminuto",
+            icon: "handyman",
+            narrativeContext:
+              "A cheerful toymaker elf from the workshop who can fix anything with a tiny screwdriver and always has a ribbon behind one ear.",
+          },
+        ],
+      },
+      {
+        key: "challenge",
+        question: "¿Qué se ha estropeado en el Polo Norte?",
+        options: [
+          {
+            id: "crazy-compass",
+            title: "La Brújula Loca",
+            subtitle: "Gira como una peonza y no encuentra las casas",
+            icon: "explore",
+            narrativeContext:
+              "The sleigh's star-dust compass, which finds every child's home, is spinning like a top and Papá Noel cannot set off.",
+          },
+          {
+            id: "dark-antlers",
+            title: "El Reno Apagado",
+            subtitle: "Farolillo ya no alumbra el camino",
+            icon: "light",
+            narrativeContext:
+              "Farolillo, the lead reindeer whose antlers light the sleigh's way, has lost his glow and the sleigh cannot see where it is flying.",
+          },
+          {
+            id: "wrapping-machine",
+            title: "La Máquina Envuelvetodo",
+            subtitle: "Pone lazos a todo, menos a los regalos",
+            icon: "precision_manufacturing",
+            narrativeContext:
+              "The workshop's great wrapping machine has gone haywire and wraps everything in sight except the presents.",
+          },
+        ],
+      },
+    ],
+    atmosphere: {
+      timeOptions: [
+        {
+          id: "christmas-eve",
+          label: "Nochebuena",
+          icon: "nights_stay",
+          iconColor: "text-indigo-500",
+          narrativeContext: "The scene takes place on Christmas Eve, the night of 24 December, cold and clear, with lit windows and trees glowing in every house",
+        },
+        {
+          id: "midnight",
+          label: "Medianoche",
+          icon: "bedtime",
+          iconColor: "text-purple-500",
+          narrativeContext: "The scene takes place at midnight, when every child is asleep and only Papá Noel, the elves and the reindeer are awake",
+        },
+        {
+          id: "christmas-morning",
+          label: "Mañana de Navidad",
+          icon: "wb_twilight",
+          iconColor: "text-amber-500",
+          narrativeContext: "The scene takes place at the very first light of 25 December, the sky turning pink over the snow as the last magic is fixed and the child flies home",
+        },
+      ],
+      settingOptions: [
+        {
+          id: "workshop",
+          label: "El Taller de Juguetes",
+          icon: "handyman",
+          bgColor: "bg-red-100",
+          iconColor: "text-red-700",
+          narrativeContext: "In Papá Noel's toy workshop at the North Pole, warm and busy, smelling of gingerbread and hot chocolate, with ribbons, half-finished toys and frosted windows",
+        },
+        {
+          id: "reindeer-stable",
+          label: "El Establo de los Renos",
+          icon: "pets",
+          bgColor: "bg-amber-100",
+          iconColor: "text-amber-700",
+          narrativeContext: "In the reindeer stable at the North Pole, cosy with straw, lanterns and woolly blankets, the sleigh shining in the corner",
+        },
+        {
+          id: "polar-sky",
+          label: "El Cielo del Polo Norte",
+          icon: "nights_stay",
+          bgColor: "bg-emerald-100",
+          iconColor: "text-emerald-700",
+          narrativeContext: "High in the polar sky, under the green and pink curtains of the northern lights, with the snowy North Pole far below",
+        },
+      ],
+    },
+    endings: [
+      {
+        id: "christmas-morning",
+        title: "Mañana de Navidad",
+        description: "Despertar en la propia cama: el calcetín lleno y solo migas en el plato de las galletas.",
+        icon: "wb_sunny",
+        iconBg: "bg-amber-100",
+        iconColor: "text-amber-600",
+        narrativeContext: "The story ends on Christmas morning with the child waking up in their own bed: the stocking is full, the presents are waiting, and on the balcony the cookie plate holds only crumbs and the glass of milk is empty.",
+      },
+      {
+        id: "snow-globe",
+        title: "La Bola de Nieve",
+        description: "Junto a la almohada aparece una bola de nieve con el Polo Norte dentro.",
+        icon: "ac_unit",
+        iconBg: "bg-sky-100",
+        iconColor: "text-sky-600",
+        narrativeContext: "The story ends with the child flown home and tucked into bed; on Christmas morning, next to the pillow, there is a little snow globe with the North Pole workshop inside, and when it is shaken a tiny reindeer seems to fly across it.",
+      },
+      {
+        id: "sleigh-reins",
+        title: "Las Riendas del Trineo",
+        description: "Papá Noel deja llevar las riendas en el vuelo de vuelta a casa.",
+        icon: "flight",
+        iconBg: "bg-red-100",
+        iconColor: "text-red-700",
+        narrativeContext: "The story ends with Papá Noel letting the child hold the sleigh's reins on the flight home over the sleeping rooftops; the child is tucked into bed just in time and wakes on Christmas morning to a full stocking and one reindeer hoofprint in the frost on the balcony.",
+      },
+    ],
+  },
+  // ── TIÓ (seasonal) ──────────────────────────────────────────
+  // "El Tió de Nadal se ha perdido". Catalan Christmas log; orderable until 6 January
+  // (Madrid) inclusive like reyes; bump availableUntil every season.
+  {
+    id: "tio",
+    title: "El Tió de Nadal se ha perdido",
+    ageMin: 2,
+    ageMax: 8,
+    description:
+      "Faltan tres días para Navidad y el Tió de la familia se ha escapado al bosque nevado, con manta y todo. Hay que encontrarlo y llevarlo a casa a tiempo para el caga tió.",
+    image: "/images/templates/tio.jpg",
+    theme:
+      "The Catalan Christmas tradition of the Tió de Nadal, in a snowy Catalan countryside like the Montseny (an old stone masia, pine woods, a mountain stream, a village Christmas market). The Tió is a friendly magic log with a painted smiling face, a red barretina cap and a red-and-white checked blanket; since 8 December the child has fed it every night (orange peels, bread, water) and kept it warm. Three days before Christmas it has wandered off, and the child must find it and bring it home in time for Christmas Eve, when children tap it gently with sticks singing the caga tió song and it 'poops' torrons, neules and small presents, ending with a salty herring or a head of garlic as a joke. Affectionate, warm humour; the poop gag only ever light and loving, never crude. Folk tradition only: no religious scenes, no nativity, no pastorets, no Christmas mass",
+    moral: "Taking care of those we love, with patience and warmth, always brings them home",
+    relatedInterests: [],
+    tags: ["big-hearts", "nature-lovers", "adventurers"],
+    themeColor: "#7A4A2A",
+    themeGradient: "from-amber-900 to-red-700",
+    previewChapterTitle: "¿Dónde está el Tió?",
+    seasonal: true,
+    availableUntil: "2027-01-06",
+    decisions: [
+      {
+        key: "encounter",
+        question: "¿Qué pista deja el Tió al escaparse?",
+        options: [
+          {
+            id: "orange-peels",
+            title: "Pieles de Naranja",
+            subtitle: "Un rastro que sube hasta el bosque",
+            icon: "nutrition",
+            narrativeContext:
+              "A trail of nibbled orange peels in the snow leads from the masia up into the pine forest: the Tió has wandered off snacking on its leftovers.",
+          },
+          {
+            id: "stick-prints",
+            title: "Huellas de Palito",
+            subtitle: "Bajan hasta el torrente helado",
+            icon: "footprint",
+            narrativeContext:
+              "Two rows of tiny round prints, made by the Tió's two little stick legs, lead down to the frozen stream: it has gone to see the snow up close.",
+          },
+          {
+            id: "cart-tracks",
+            title: "Las Rodadas del Carro",
+            subtitle: "Llevan a la feria de Navidad",
+            icon: "storefront",
+            narrativeContext:
+              "The wheel tracks of the firewood cart lead down to the village Christmas market: the Tió has hopped on secretly to see the lights.",
+          },
+        ],
+      },
+      {
+        key: "companion",
+        question: "¿Quién ayuda a {name} a buscar al Tió?",
+        options: [
+          {
+            id: "farm-dog",
+            title: "El Perro de la Masía",
+            subtitle: "Tiene el mejor olfato del valle",
+            icon: "pets",
+            narrativeContext:
+              "The old, shaggy farm dog of the masia, slow but with the best nose in the valley, who sniffs out orange peel from a mile away.",
+          },
+          {
+            id: "robin",
+            title: "El Petirrojo",
+            subtitle: "Lo ve todo desde las ramas",
+            icon: "flutter_dash",
+            narrativeContext:
+              "A cheeky little robin with a bright red breast who hops from branch to branch and sees everything from above.",
+          },
+          {
+            id: "squirrel",
+            title: "La Ardilla Roja",
+            subtitle: "Conoce cada rincón del bosque",
+            icon: "forest",
+            narrativeContext:
+              "A quick red squirrel who knows every corner of the pine forest and is a little too fond of the Tió's orange peels.",
+          },
+        ],
+      },
+      {
+        key: "challenge",
+        question: "¿Qué complica la búsqueda?",
+        options: [
+          {
+            id: "snowfall",
+            title: "La Gran Nevada",
+            subtitle: "La nieve tapa el rastro",
+            icon: "ac_unit",
+            narrativeContext: "A heavy snowfall starts and slowly covers the Tió's trail, so the child has to look for clues in other ways.",
+          },
+          {
+            id: "cold-tio",
+            title: "Un Tió con Frío",
+            subtitle: "Hay que mantenerlo calentito",
+            icon: "thermostat",
+            narrativeContext: "Away from the fireplace the Tió is getting colder and colder, and the child has to keep it warm all the way home.",
+          },
+          {
+            id: "three-days",
+            title: "Solo Tres Días",
+            subtitle: "Y en Nochebuena tiene que estar en casa",
+            icon: "event",
+            narrativeContext: "Christmas Eve is only three days away, and without the Tió at home there will be no caga tió this year.",
+          },
+        ],
+      },
+    ],
+    atmosphere: {
+      timeOptions: [
+        {
+          id: "frosty-morning",
+          label: "Mañana de Escarcha",
+          icon: "wb_sunny",
+          iconColor: "text-sky-500",
+          narrativeContext: "The scene takes place on a bright frosty morning, the meadows white with frost and the breath of every animal making little clouds",
+        },
+        {
+          id: "snowy-afternoon",
+          label: "Tarde de Nieve",
+          icon: "ac_unit",
+          iconColor: "text-slate-500",
+          narrativeContext: "The scene takes place on a quiet afternoon while big soft snowflakes fall over the pine woods",
+        },
+        {
+          id: "christmas-eve",
+          label: "Nochebuena",
+          icon: "nights_stay",
+          iconColor: "text-amber-600",
+          narrativeContext: "The scene takes place at dusk on Christmas Eve, the windows of the masia glowing and the smell of the fireplace in the air",
+        },
+      ],
+      settingOptions: [
+        {
+          id: "masia",
+          label: "La Masía",
+          icon: "cottage",
+          bgColor: "bg-amber-100",
+          iconColor: "text-amber-700",
+          narrativeContext: "At an old stone masia in the Catalan mountains, with a big fireplace, a woodpile and a snowy yard",
+        },
+        {
+          id: "pine-forest",
+          label: "El Bosque de Pinos",
+          icon: "forest",
+          bgColor: "bg-emerald-100",
+          iconColor: "text-emerald-700",
+          narrativeContext: "In a snowy pine and holm-oak forest like the Montseny, with a frozen stream, mossy rocks and animal tracks everywhere",
+        },
+        {
+          id: "village-fair",
+          label: "La Feria del Pueblo",
+          icon: "storefront",
+          bgColor: "bg-red-100",
+          iconColor: "text-red-700",
+          narrativeContext: "At the village Christmas market, wooden stalls selling tiós, moss, little fir trees, torrons and neules under strings of lights",
+        },
+      ],
+    },
+    endings: [
+      {
+        id: "caga-tio",
+        title: "¡Caga Tió!",
+        description: "En Nochebuena, bastón en mano, llega la canción y las sorpresas bajo la manta.",
+        icon: "redeem",
+        iconBg: "bg-red-100",
+        iconColor: "text-red-700",
+        narrativeContext:
+          "The story ends on Christmas Eve: the child taps the Tió gently with a stick singing the caga tió song, and from under the blanket come torrons, neules and small presents, and last of all a salty herring that makes the whole family laugh.",
+      },
+      {
+        id: "by-the-fire",
+        title: "Junto al Fuego",
+        description: "El Tió vuelve a su rincón, calentito bajo la manta y con la tripa llena.",
+        icon: "fireplace",
+        iconBg: "bg-amber-100",
+        iconColor: "text-amber-700",
+        narrativeContext:
+          "The story ends back home by the fireplace: the Tió snug under its blanket with a plate of orange peels, winking at the child, who promises to keep it warm every night until Christmas Eve.",
+      },
+      {
+        id: "forest-friends",
+        title: "Los Amigos del Bosque",
+        description: "Los animales que ayudaron vienen a la ventana a celebrar la Navidad.",
+        icon: "pets",
+        iconBg: "bg-emerald-100",
+        iconColor: "text-emerald-700",
+        narrativeContext:
+          "The story ends with the forest animals who helped peeking in at the window of the masia on Christmas Eve, and the Tió sharing a few of its sweets with them in the snow.",
+      },
+    ],
+  },
   // ── REYES (seasonal) ────────────────────────────────────────
   // "Paje Real por una noche". Orderable until 6 January (Madrid) inclusive; bump
   // availableUntil (and availableFrom if wanted) every season. Paid books keep working

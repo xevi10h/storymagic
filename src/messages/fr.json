@@ -704,7 +704,8 @@
     "sampleCta": "Feuilleter un exemple",
     "coverAlt": "Couverture à l'aquarelle d'un livre personnalisé pour enfant",
     "coverCaptionExample": "Exemple : le livre de {name}, {age} ans · 20 × 20 cm",
-    "coverCaptionWithName": "La couverture que {name} découvrira · 20 × 20 cm"
+    "coverCaptionWithName": "La couverture que {name} découvrira · 20 × 20 cm",
+    "titleSeason": "Ce Noël, le conte avec <hl>son prénom</hl>"
   },
   "howItWorks": {
     "eyebrow": "Comment ça marche",
@@ -1305,7 +1306,13 @@
       "ready": "C'est prêt ! L'aventure est tracée. Place à la peinture du livre.",
       "create": "Créer le livre",
       "chooseWorld": "Choisissez un univers pour commencer",
-      "chooseChapters": "Décidez des trois chapitres pour continuer"
+      "chooseChapters": "Décidez des trois chapitres pour continuer",
+      "seasonTitle": "Contes de Noël",
+      "seasonUntil": "Seulement jusqu'au {date}",
+      "evergreenTitle": "Toute l'année",
+      "badgeNew": "Nouveau",
+      "badgeSeason": "De saison",
+      "seasonOrderBy": "Imprimé à temps si tu commandes avant le {date}"
     },
     "dedication": {
       "default": "Pour toi, {name} : que chaque page te rappelle que le monde est plein d'aventures. On t'aime plus que tout.",
@@ -2838,6 +2845,162 @@
           "sweet-coal": {
             "title": "Le Charbon Sucré",
             "description": "Le matin, à côté des chaussures, attend la blague préférée de Gaspard."
+          }
+        }
+      },
+      "christmas": {
+        "title": "La Nuit de Noël du Père Noël",
+        "description": "La nuit de Noël, un tout petit renne atterrit sur le balcon avec un mot du Père Noël : la magie de Noël s'est détraquée, et seule une très bonne idée peut la réparer avant le matin.",
+        "previewChapterTitle": "Un renne sur le balcon",
+        "decisions": {
+          "encounter": {
+            "question": "Qu'est-ce qui atterrit sur le balcon de {name} la nuit de Noël ?",
+            "little-reindeer": {
+              "title": "Un Tout Petit Renne",
+              "subtitle": "Avec une écharpe à rayures et très pressé"
+            },
+            "north-pole-letter": {
+              "title": "Une Lettre du Pôle Nord",
+              "subtitle": "Elle sent le pain d'épices et elle est froide comme la neige"
+            },
+            "sleigh-lights": {
+              "title": "Des Lumières de Traîneau",
+              "subtitle": "Elles traversent le ciel et s'arrêtent à la fenêtre"
+            }
+          },
+          "companion": {
+            "question": "Qui accompagne {name} au pôle Nord ?",
+            "papa-noel": {
+              "title": "Le Père Noël",
+              "subtitle": "Rieur, distrait et les poches pleines de biscuits"
+            },
+            "avellana": {
+              "title": "Noisette",
+              "subtitle": "La plus petite du troupeau, et la plus courageuse"
+            },
+            "toy-elf": {
+              "title": "Un Lutin Jouetier",
+              "subtitle": "Il répare tout avec un tournevis minuscule"
+            }
+          },
+          "challenge": {
+            "question": "Qu'est-ce qui s'est détraqué au pôle Nord ?",
+            "crazy-compass": {
+              "title": "La Boussole Folle",
+              "subtitle": "Elle tourne comme une toupie et ne trouve plus les maisons"
+            },
+            "dark-antlers": {
+              "title": "Le Renne Éteint",
+              "subtitle": "Lampion n'éclaire plus la route"
+            },
+            "wrapping-machine": {
+              "title": "La Machine Emballe-Tout",
+              "subtitle": "Elle emballe tout, sauf les cadeaux"
+            }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "christmas-eve": "La Nuit de Noël",
+            "midnight": "Minuit",
+            "christmas-morning": "Le Matin de Noël"
+          },
+          "setting": {
+            "workshop": "L'Atelier des Jouets",
+            "reindeer-stable": "L'Étable des Rennes",
+            "polar-sky": "Le Ciel du Pôle Nord"
+          }
+        },
+        "endings": {
+          "christmas-morning": {
+            "title": "Le Matin de Noël",
+            "description": "Se réveiller dans son lit : la chaussette est pleine et il ne reste que des miettes dans l'assiette."
+          },
+          "snow-globe": {
+            "title": "La Boule à Neige",
+            "description": "À côté de l'oreiller, une boule à neige avec le pôle Nord à l'intérieur."
+          },
+          "sleigh-reins": {
+            "title": "Les Rênes du Traîneau",
+            "description": "Le Père Noël confie les rênes pour le vol du retour."
+          }
+        }
+      },
+      "tio": {
+        "title": "Le Tió s’est perdu",
+        "description": "Trois jours avant Noël, le Tió de la famille (la bûche magique de Noël catalane) s'est enfui dans la forêt enneigée, avec sa couverture. Il faut le retrouver et le ramener à temps pour le soir de Noël.",
+        "previewChapterTitle": "Où est le Tió ?",
+        "decisions": {
+          "encounter": {
+            "question": "Quel indice le Tió laisse-t-il derrière lui ?",
+            "orange-peels": {
+              "title": "Des Épluchures d'Orange",
+              "subtitle": "Une piste qui monte vers la forêt"
+            },
+            "stick-prints": {
+              "title": "Des Traces de Bâtonnets",
+              "subtitle": "Elles descendent jusqu'au torrent gelé"
+            },
+            "cart-tracks": {
+              "title": "Les Traces de la Charrette",
+              "subtitle": "Elles mènent au marché de Noël"
+            }
+          },
+          "companion": {
+            "question": "Qui aide {name} à chercher le Tió ?",
+            "farm-dog": {
+              "title": "Le Chien de la Ferme",
+              "subtitle": "Le meilleur flair de la vallée"
+            },
+            "robin": {
+              "title": "Le Rouge-Gorge",
+              "subtitle": "Il voit tout depuis les branches"
+            },
+            "squirrel": {
+              "title": "L'Écureuil Roux",
+              "subtitle": "Il connaît chaque recoin de la forêt"
+            }
+          },
+          "challenge": {
+            "question": "Qu'est-ce qui complique les recherches ?",
+            "snowfall": {
+              "title": "La Grosse Chute de Neige",
+              "subtitle": "La neige recouvre la piste"
+            },
+            "cold-tio": {
+              "title": "Un Tió Frileux",
+              "subtitle": "Il faut le garder bien au chaud"
+            },
+            "three-days": {
+              "title": "Plus que Trois Jours",
+              "subtitle": "Il doit être rentré pour le soir de Noël"
+            }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "frosty-morning": "Matin de Givre",
+            "snowy-afternoon": "Après-midi de Neige",
+            "christmas-eve": "Soir de Noël"
+          },
+          "setting": {
+            "masia": "La Vieille Ferme",
+            "pine-forest": "La Forêt de Pins",
+            "village-fair": "Le Marché du Village"
+          }
+        },
+        "endings": {
+          "caga-tio": {
+            "title": "Caga Tió !",
+            "description": "Le soir de Noël, bâton en main, arrivent la chanson et les surprises sous la couverture."
+          },
+          "by-the-fire": {
+            "title": "Au Coin du Feu",
+            "description": "Le Tió retrouve son coin, bien au chaud sous sa couverture, le ventre plein."
+          },
+          "forest-friends": {
+            "title": "Les Amis de la Forêt",
+            "description": "Les animaux qui ont aidé viennent à la fenêtre fêter Noël."
           }
         }
       }

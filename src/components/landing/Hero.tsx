@@ -13,6 +13,7 @@ import { formatChildName } from "@/lib/child-name";
 import { createPageHref, currentCarriedParams, setHeroName, useHeroName } from "./HeroNameStore";
 import { LANDING_EXAMPLE } from "./HowItWorksExample";
 import { trackEvent } from "@/lib/tracking/consent";
+import { HollySprig, SeasonStar } from "@/components/seasonal/HollySprig";
 
 /** Material Symbols glyph with a fixed box, so the late icon font never shifts the text. */
 function Icon({ name, className = "" }: { name: string; className?: string }) {
@@ -30,7 +31,8 @@ function Icon({ name, className = "" }: { name: string; className?: string }) {
  * front, printed-cover layout); the parent types the name, the title updates on every keystroke,
  * and the CTA opens /create with the name already filled in (?name=, read by the create-page prefill).
  */
-export default function Hero() {
+/** `season`: gift season (1 Nov – 5 Jan, server date): Christmas title line + a holly sprig on the cover. */
+export default function Hero({ season = false }: { season?: boolean }) {
   const t = useTranslations("hero");
   const tPricing = useTranslations("pricing");
   const tPurchase = useTranslations("crear.purchase");
@@ -71,7 +73,7 @@ export default function Hero() {
               {t("eyebrow")}
             </span>
             <span className="block text-[32px] leading-[1.08] min-[380px]:text-[34px] sm:text-5xl lg:text-[60px] xl:text-[64px]">
-              {t.rich("title", { hl: (chunks) => <span className="text-brand">{chunks}</span> })}
+              {t.rich(season ? "titleSeason" : "title", { hl: (chunks) => <span className="text-brand">{chunks}</span> })}
             </span>
           </h1>
           <p className="mx-auto mt-3 max-w-[34rem] text-[15px] font-medium leading-relaxed text-ink-muted sm:mt-4 sm:text-lg lg:mx-0">
@@ -104,6 +106,13 @@ export default function Hero() {
               // 640w file (~95 KB) for the LCP image. 128px picks the 384w one (~37 KB), still > 2x sharp.
               sizes="(min-width: 1280px) 480px, (min-width: 1024px) 440px, (min-width: 640px) 280px, 128px"
             />
+            {season && (
+              <>
+                <HollySprig className="pointer-events-none absolute -right-[9%] -top-[10%] w-[34%] drop-shadow-sm" />
+                <SeasonStar className="pointer-events-none absolute -left-[9%] top-[18%] hidden w-[6%] sm:block" />
+                <SeasonStar className="pointer-events-none absolute -right-[7%] bottom-[22%] hidden w-[4.5%] sm:block" />
+              </>
+            )}
           </div>
           <p className="mt-5 hidden text-center text-xs font-medium text-ink-muted lg:block">
             {first

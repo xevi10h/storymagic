@@ -9,7 +9,7 @@ import { formatChildName } from "@/lib/child-name";
 import { isTemplateAvailable } from "@/lib/create-store";
 import { ATTRIBUTION_CLICK_IDS, ATTRIBUTION_MAX, type Attribution } from "@/lib/tracking/attribution";
 
-const VALID_TEMPLATE_IDS = ["space", "forest", "superhero", "pirates", "chef", "dinosaurs", "castle", "safari", "inventor", "candy", "reyes"] as const;
+const VALID_TEMPLATE_IDS = ["space", "forest", "superhero", "pirates", "chef", "dinosaurs", "castle", "safari", "inventor", "candy", "reyes", "christmas", "tio"] as const;
 const VALID_MODES = ["solo", "juntos"] as const;
 const VALID_LOCALES = ["es", "ca", "en", "fr"] as const;
 

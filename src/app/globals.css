@@ -35,6 +35,7 @@ button, [role="button"] {
   --brand-tint: color-mix(in srgb, var(--brand) 8%, white); /* opaque tint for small orange-text chips/badges (brand-text 4.58:1) */
   --brand-deep: #5D4037;       /* wordmark, price + purchase headings, dark bands */
   --brand-deep-hover: #4E342E; /* hover of --brand-deep */
+  --season: #1F4D3F;           /* gift season only (1 Nov – 6 Jan): pine green for the season band, kickers and badges */
   --gold: #d4af37;             /* rare highlight: stars pattern, reveal sparkle */
 
   /* --- Ink (text), darkest to lightest --- */
@@ -122,6 +123,7 @@ button, [role="button"] {
   --color-brand-tint: var(--brand-tint);
   --color-brand-deep: var(--brand-deep);
   --color-brand-deep-hover: var(--brand-deep-hover);
+  --color-season: var(--season);
   --color-gold: var(--gold);
   --color-ink: var(--ink);
   --color-ink-soft: var(--ink-soft);

@@ -65,7 +65,7 @@ export default function SeasonalBanner({ serverToday }: { serverToday: string | 
       <div
         role="region"
         aria-label={main}
-        className="mx-auto -mt-2 mb-2 flex max-w-[1200px] items-center gap-1 rounded-full bg-brand-deep pr-1 text-[13px] leading-snug text-white"
+        className="mx-auto -mt-2 mb-2 flex max-w-[1200px] items-center gap-1 rounded-full bg-season pr-1 text-[13px] leading-snug text-white"
       >
         <Link
           href={blackFriday ? "/create" : CHRISTMAS_DELIVERY_PATH}

@@ -18,6 +18,11 @@ import { buttonClass } from "@/components/ui";
 import LiveCover from "./LiveCover";
 import CreationFooterNav from "./CreationFooterNav";
 import { BrandLoader } from "@/components/ui/BrandLoader";
+import { earliestPrintedCutoff, spainToday } from "@/lib/shipping";
+import { formatSeasonDate } from "@/components/seasonal/season-client";
+
+/** Seasonal worlds first shown this season: "Nuevo" instead of "De temporada". */
+const NEW_SEASONAL = new Set(["christmas", "tio"]);
 
 interface StepAdventureProps {
   character: CharacterData;
@@ -85,6 +90,65 @@ export default function StepAdventure({
     () => getRecommendedTemplates(character.age ?? 6, character.interests ?? []),
     [character.age, character.interests],
   );
+  const seasonal = worlds.filter((w) => w.seasonal);
+  const evergreen = worlds.filter((w) => !w.seasonal);
+  const today = spainToday();
+  // Every seasonal world shares one window today; the earliest end is the honest one.
+  const seasonEnd = seasonal.map((w) => w.availableUntil).filter((d): d is string => !!d).sort()[0];
+  const seasonUntil = seasonEnd ? formatSeasonDate(seasonEnd, locale) : null;
+
+  /** Printed book still arrives for its night: "Impreso a tiempo: pídelo antes del 10 de diciembre". */
+  const orderByLine = (id: string) => {
+    const cutoff = earliestPrintedCutoff(today, id === "reyes" ? "reyes" : "christmas");
+    return cutoff >= today ? t("seasonOrderBy", { date: formatSeasonDate(cutoff, locale) }) : null;
+  };
+
+  const worldCard = (w: (typeof worlds)[number], featured: boolean) => {
+    const selected = w.id === selectedTemplate;
+    const orderBy = featured ? orderByLine(w.id) : null;
+    return (
+      <button
+        key={w.id}
+        type="button"
+        role="radio"
+        aria-checked={selected}
+        onClick={() => chooseWorld(w.id)}
+        className={`group relative flex shrink-0 snap-start flex-col overflow-hidden rounded-2xl border-2 bg-white text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-create-primary sm:w-auto sm:max-w-none ${
+          featured ? "w-[64vw] max-w-[260px]" : "w-[38vw] max-w-[168px]"
+        } ${selected ? "border-create-primary" : "border-transparent hover:border-create-primary/40"}`}
+      >
+        <span className={`relative block w-full bg-create-neutral ${featured ? "aspect-[3/2]" : "aspect-square"}`}>
+          <Image src={w.image} alt="" fill sizes={featured ? "(max-width:640px) 64vw, 320px" : "(max-width:640px) 38vw, 180px"} className="object-cover" />
+          {selected && (
+            <span className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-create-primary text-white shadow">
+              <span aria-hidden className="material-symbols-outlined text-base" data-icon="check" />
+            </span>
+          )}
+          {featured ? (
+            <span className="absolute left-2 top-2 rounded-full bg-paper px-2.5 py-0.5 text-[11px] font-bold text-season shadow-sm">
+              {NEW_SEASONAL.has(w.id) ? t("badgeNew") : t("badgeSeason")}
+            </span>
+          ) : (
+            w.isRecommended && (
+              <span className="absolute left-1.5 top-1.5 rounded-full bg-white px-2 py-0.5 text-[10px] font-bold text-brand-text shadow-sm">
+                {t("recommended")}
+              </span>
+            )
+          )}
+        </span>
+        <span className={`flex flex-col gap-0.5 ${featured ? "px-3 pb-3 pt-2.5" : "px-2.5 py-2"}`}>
+          <span
+            className={`font-display font-semibold leading-tight ${featured ? "text-[15px] sm:text-base" : "text-[13px]"} ${
+              selected ? "text-brand-text" : "text-create-text-dark"
+            }`}
+          >
+            {td(`templates.${w.id}.title`)}
+          </span>
+          {orderBy && <span className="text-[11px] font-semibold leading-snug text-create-text sm:text-xs">{orderBy}</span>}
+        </span>
+      </button>
+    );
+  };
 
   // The selected world's tree, loaded as its own chunk. Results are keyed by
   // template so a stale load never shows under another world.
@@ -202,43 +266,37 @@ export default function StepAdventure({
             <h2 id="adv-world" className="mb-3 font-display text-lg font-bold text-create-text-dark sm:text-xl">
               {t("worldQuestion", { name })}
             </h2>
+            {/* Gift season: the seasonal worlds get their own row, bigger, with their order-by
+                date; the all-year worlds follow. Outside the season `seasonal` is empty. */}
+            {seasonal.length > 0 && (
+              <>
+                <p id="adv-world-season" className="mb-2.5 flex flex-wrap items-baseline gap-x-2.5 gap-y-0.5">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-season">
+                    <svg aria-hidden width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 2l2.4 5.6L20 8.2l-4.3 3.9 1.3 5.9L12 15l-5 3 1.3-5.9L4 8.2l5.6-.6z" />
+                    </svg>
+                    {t("seasonTitle")}
+                  </span>
+                  {seasonUntil && <span className="text-xs text-create-text-sub">{t("seasonUntil", { date: seasonUntil })}</span>}
+                </p>
+                <div
+                  role="radiogroup"
+                  aria-labelledby="adv-world adv-world-season"
+                  className="no-scrollbar -mx-4 mb-6 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible sm:px-0"
+                >
+                  {seasonal.map((w) => worldCard(w, true))}
+                </div>
+                <p id="adv-world-all" className="mb-2.5 text-xs font-bold uppercase tracking-wide text-create-text">
+                  {t("evergreenTitle")}
+                </p>
+              </>
+            )}
             <div
               role="radiogroup"
-              aria-labelledby="adv-world"
+              aria-labelledby={seasonal.length > 0 ? "adv-world adv-world-all" : "adv-world"}
               className="no-scrollbar -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 xl:grid-cols-5"
             >
-              {worlds.map((w) => {
-                const selected = w.id === selectedTemplate;
-                return (
-                  <button
-                    key={w.id}
-                    type="button"
-                    role="radio"
-                    aria-checked={selected}
-                    onClick={() => chooseWorld(w.id)}
-                    className={`group relative flex w-[38vw] max-w-[168px] shrink-0 snap-start flex-col overflow-hidden rounded-2xl border-2 bg-white text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-create-primary sm:w-auto sm:max-w-none ${
-                      selected ? "border-create-primary" : "border-transparent hover:border-create-primary/40"
-                    }`}
-                  >
-                    <span className="relative block aspect-square w-full bg-create-neutral">
-                      <Image src={w.image} alt="" fill sizes="(max-width:640px) 38vw, 180px" className="object-cover" />
-                      {selected && (
-                        <span className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-create-primary text-white shadow">
-                          <span aria-hidden className="material-symbols-outlined text-base" data-icon="check" />
-                        </span>
-                      )}
-                      {w.isRecommended && (
-                        <span className="absolute left-1.5 top-1.5 rounded-full bg-white px-2 py-0.5 text-[10px] font-bold text-brand-text shadow-sm">
-                          {t("recommended")}
-                        </span>
-                      )}
-                    </span>
-                    <span className={`px-2.5 py-2 font-display text-[13px] font-semibold leading-tight ${selected ? "text-brand-text" : "text-create-text-dark"}`}>
-                      {td(`templates.${w.id}.title`)}
-                    </span>
-                  </button>
-                );
-              })}
+              {evergreen.map((w) => worldCard(w, false))}
             </div>
           </section>
 

@@ -16,6 +16,12 @@ Shipped for the Christmas / Reyes 2026 campaign after the SEO audit of 2026-11-1
 - [ ] **From 7 January 2027: remove the home Christmas / Reyes block.** Delete the `HomeSeasonBlock` import and its line in
   `src/app/[locale]/page.tsx`, the file `src/components/seasonal/HomeSeasonBlock.tsx` and `seo.home.season` in the 4 message files.
   (It already renders nothing after 5 January, so this is clean-up, not an emergency.)
+- [ ] **From 7 January 2027: Christmas look of the site (added 2026-11-17).** It switches itself off with the season banner (the hero
+  title `hero.titleSeason`, the holly sprig and the "Cuentos de Navidad" row of the world picker only render inside `seasonBanner(today)`
+  or while a seasonal world is available). Clean-up only: `Hero` `season` prop, `src/components/seasonal/HollySprig.tsx`, the
+  `--season` token if nothing else uses it.
+- [ ] Before the next season (October 2027): bump `availableUntil` of the `christmas` and `tio` worlds too (both added 2026-11-17).
+  Open for them: Merchant feed items and a Christmas edition block on `/gifts/christmas` like the Reyes one (`ReyesEdition`).
 - [ ] Before the next season (October 2027): bump `availableUntil` of the Reyes world in `src/lib/create-store.ts`; the Reyes block on
   `/gifts/three-kings` and its two Merchant feed items come back by themselves.
 - [ ] After the deploy of 2026-11-10 (owner / browser-session): Merchant Center › fetch the feed again and check the 14 new items are

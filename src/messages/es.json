@@ -744,7 +744,8 @@
     "sampleCta": "Ver un cuento por dentro",
     "coverAlt": "Portada de un cuento personalizado para niños, pintada en acuarela",
     "coverCaptionExample": "Ejemplo: el cuento de {name}, {age} años · 20 × 20 cm",
-    "coverCaptionWithName": "Así verá {name} su nombre por primera vez · 20 × 20 cm"
+    "coverCaptionWithName": "Así verá {name} su nombre por primera vez · 20 × 20 cm",
+    "titleSeason": "Esta Navidad, el cuento con <hl>su nombre</hl>"
   },
   "howItWorks": {
     "eyebrow": "Cómo funciona",
@@ -1345,7 +1346,13 @@
       "ready": "¡Listo! La aventura ya está trazada. Ahora, a pintar su libro.",
       "create": "Crear su libro",
       "chooseWorld": "Elige un mundo para empezar",
-      "chooseChapters": "Decide los tres capítulos para continuar"
+      "chooseChapters": "Decide los tres capítulos para continuar",
+      "seasonTitle": "Cuentos de Navidad",
+      "seasonUntil": "Solo hasta el {date}",
+      "evergreenTitle": "Todo el año",
+      "badgeNew": "Nuevo",
+      "badgeSeason": "De temporada",
+      "seasonOrderBy": "Impreso a tiempo si lo pides antes del {date}"
     },
     "dedication": {
       "default": "Para ti, {name}: que cada página te recuerde que el mundo está lleno de aventuras. Te queremos muchísimo.",
@@ -2878,6 +2885,162 @@
           "sweet-coal": {
             "title": "Carbón Dulce",
             "description": "Por la mañana, junto a los zapatos, aparece la broma favorita de Gaspar."
+          }
+        }
+      },
+      "christmas": {
+        "title": "La Nochebuena de Papá Noel",
+        "description": "En Nochebuena, un reno pequeñito aterriza en el balcón con una nota de Papá Noel: la magia de la Navidad se ha estropeado y solo una idea muy buena puede arreglarla antes de la mañana.",
+        "previewChapterTitle": "Un reno en el balcón",
+        "decisions": {
+          "encounter": {
+            "question": "¿Qué aterriza en el balcón de {name} en Nochebuena?",
+            "little-reindeer": {
+              "title": "Un Reno Pequeñito",
+              "subtitle": "Con una bufanda de rayas y mucha prisa"
+            },
+            "north-pole-letter": {
+              "title": "Una Carta del Polo Norte",
+              "subtitle": "Huele a jengibre y está fría como la nieve"
+            },
+            "sleigh-lights": {
+              "title": "Luces de Trineo",
+              "subtitle": "Cruzan el cielo y se paran en la ventana"
+            }
+          },
+          "companion": {
+            "question": "¿Quién acompaña a {name} en el Polo Norte?",
+            "papa-noel": {
+              "title": "Papá Noel",
+              "subtitle": "Risueño, despistado y con galletas en los bolsillos"
+            },
+            "avellana": {
+              "title": "Avellana",
+              "subtitle": "La más pequeña de los renos, y la más valiente"
+            },
+            "toy-elf": {
+              "title": "Un Elfo Juguetero",
+              "subtitle": "Lo arregla todo con un destornillador diminuto"
+            }
+          },
+          "challenge": {
+            "question": "¿Qué se ha estropeado en el Polo Norte?",
+            "crazy-compass": {
+              "title": "La Brújula Loca",
+              "subtitle": "Gira como una peonza y no encuentra las casas"
+            },
+            "dark-antlers": {
+              "title": "El Reno Apagado",
+              "subtitle": "Farolillo ya no alumbra el camino"
+            },
+            "wrapping-machine": {
+              "title": "La Máquina Envuelvetodo",
+              "subtitle": "Pone lazos a todo, menos a los regalos"
+            }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "christmas-eve": "Nochebuena",
+            "midnight": "Medianoche",
+            "christmas-morning": "Mañana de Navidad"
+          },
+          "setting": {
+            "workshop": "El Taller de Juguetes",
+            "reindeer-stable": "El Establo de los Renos",
+            "polar-sky": "El Cielo del Polo Norte"
+          }
+        },
+        "endings": {
+          "christmas-morning": {
+            "title": "Mañana de Navidad",
+            "description": "Despertar en la propia cama: el calcetín lleno y solo migas en el plato de las galletas."
+          },
+          "snow-globe": {
+            "title": "La Bola de Nieve",
+            "description": "Junto a la almohada aparece una bola de nieve con el Polo Norte dentro."
+          },
+          "sleigh-reins": {
+            "title": "Las Riendas del Trineo",
+            "description": "Papá Noel deja llevar las riendas en el vuelo de vuelta a casa."
+          }
+        }
+      },
+      "tio": {
+        "title": "El Tió de Nadal se ha perdido",
+        "description": "Faltan tres días para Navidad y el Tió de la familia se ha escapado al bosque nevado, con manta y todo. Hay que encontrarlo y llevarlo a casa a tiempo para el caga tió.",
+        "previewChapterTitle": "¿Dónde está el Tió?",
+        "decisions": {
+          "encounter": {
+            "question": "¿Qué pista deja el Tió al escaparse?",
+            "orange-peels": {
+              "title": "Pieles de Naranja",
+              "subtitle": "Un rastro que sube hasta el bosque"
+            },
+            "stick-prints": {
+              "title": "Huellas de Palito",
+              "subtitle": "Bajan hasta el torrente helado"
+            },
+            "cart-tracks": {
+              "title": "Las Rodadas del Carro",
+              "subtitle": "Llevan a la feria de Navidad"
+            }
+          },
+          "companion": {
+            "question": "¿Quién ayuda a {name} a buscar al Tió?",
+            "farm-dog": {
+              "title": "El Perro de la Masía",
+              "subtitle": "Tiene el mejor olfato del valle"
+            },
+            "robin": {
+              "title": "El Petirrojo",
+              "subtitle": "Lo ve todo desde las ramas"
+            },
+            "squirrel": {
+              "title": "La Ardilla Roja",
+              "subtitle": "Conoce cada rincón del bosque"
+            }
+          },
+          "challenge": {
+            "question": "¿Qué complica la búsqueda?",
+            "snowfall": {
+              "title": "La Gran Nevada",
+              "subtitle": "La nieve tapa el rastro"
+            },
+            "cold-tio": {
+              "title": "Un Tió con Frío",
+              "subtitle": "Hay que mantenerlo calentito"
+            },
+            "three-days": {
+              "title": "Solo Tres Días",
+              "subtitle": "Y en Nochebuena tiene que estar en casa"
+            }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "frosty-morning": "Mañana de Escarcha",
+            "snowy-afternoon": "Tarde de Nieve",
+            "christmas-eve": "Nochebuena"
+          },
+          "setting": {
+            "masia": "La Masía",
+            "pine-forest": "El Bosque de Pinos",
+            "village-fair": "La Feria del Pueblo"
+          }
+        },
+        "endings": {
+          "caga-tio": {
+            "title": "¡Caga Tió!",
+            "description": "En Nochebuena, bastón en mano, llega la canción y las sorpresas bajo la manta."
+          },
+          "by-the-fire": {
+            "title": "Junto al Fuego",
+            "description": "El Tió vuelve a su rincón, calentito bajo la manta y con la tripa llena."
+          },
+          "forest-friends": {
+            "title": "Los Amigos del Bosque",
+            "description": "Los animales que ayudaron vienen a la ventana a celebrar la Navidad."
           }
         }
       }

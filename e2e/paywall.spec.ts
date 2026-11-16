@@ -142,6 +142,18 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
         expect(errors).toEqual([]);
       });
 
+      test(`fresh book: the reveal shows the printed book with its title [${locale} ${vpName}]`, async ({ page }) => {
+        await mockApi(page, { withPlan: true });
+        await page.addInitScript((id) => sessionStorage.setItem("meapica_fresh_book", id), STORY_ID);
+        await page.goto(`/${locale}/create/${STORY_ID}/preview`);
+        const reveal = page.locator("button.fixed.inset-0");
+        await expect(reveal).toBeVisible();
+        await expect(reveal.locator("[data-format=hardcover]")).toBeVisible();
+        await page.waitForTimeout(1200);
+        await page.screenshot({ path: `${SHOTS}/${locale}-${vpName}-reveal.png` });
+        await expect(reveal).toHaveCount(0, { timeout: 8_000 });
+      });
+
       test(`preview shows every scene's text, then the art still to paint + printed book [${locale} ${vpName}]`, async ({ page }) => {
         await mockApi(page, { withPlan: true });
         await page.goto(`/${locale}/create/${STORY_ID}/preview`);

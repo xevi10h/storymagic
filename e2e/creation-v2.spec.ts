@@ -1007,3 +1007,36 @@ test.describe("painting screen: preview vs bought book", () => {
     await expect(page.locator("[data-slot=more]")).toHaveCount(0);
   });
 });
+
+test.describe("Christmas worlds (seasonal, until 6 January)", () => {
+  test.use(VIEWPORTS.mobile);
+  for (const [locale, world, firstChapter] of [
+    ["es", /Nochebuena de Papá Noel/, /Polo Norte|balcón/],
+    ["ca", /El Tió s'ha perdut/, /Tió/],
+  ] as const) {
+    test(`${String(world)} leads the list and opens its own painted path [${locale}]`, async ({ page }) => {
+      test.skip(PHOTO_FLAG, "flag-off suite");
+      test.setTimeout(120_000);
+      const errors = trackConsole(page);
+      await installMocks(page);
+      await freshStart(page, locale);
+      await fillName(page);
+      await pickBasics(page);
+      await next(page, locale);
+      await next(page, locale);
+      // The three seasonal worlds come first, before every all-year world
+      const first3 = page.locator('[role=radiogroup] [role=radio]').filter({ hasText: /Paje Real|Patge Reial|Papá Noel|Pare Noel|Tió/ });
+      await expect(first3).toHaveCount(3);
+      const names = await page.locator('[role=radiogroup] [role=radio]').evaluateAll((els) => els.slice(0, 3).map((e) => e.textContent ?? ""));
+      expect(names.every((n) => /Paje Real|Patge Reial|Papá Noel|Pare Noel|Tió/.test(n))).toBe(true);
+      await page.getByRole("radio", { name: world }).first().click();
+      const chapter1 = page.locator('section[aria-labelledby="adv-ch-1"]');
+      await expect(chapter1).toContainText(firstChapter, { timeout: 15_000 });
+      // Every chapter-1 option shows its painted path art (not the gradient fallback)
+      const arts = chapter1.locator('[role=radio] img[src*="/images/path/"], [role=radio] img[src*="%2Fimages%2Fpath%2F"]');
+      await expect(arts).toHaveCount(3);
+      await shot(page, `xmas-${locale}-chapter1`);
+      expect(errors).toEqual([]);
+    });
+  }
+});

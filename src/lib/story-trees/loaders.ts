@@ -20,6 +20,8 @@ const LOADERS: Record<string, () => Promise<StoryTree>> = {
   inventor: () => import("./inventor").then((m) => m.inventorTree),
   candy: () => import("./candy").then((m) => m.candyTree),
   reyes: () => import("./reyes").then((m) => m.reyesTree),
+  christmas: () => import("./christmas").then((m) => m.christmasTree),
+  tio: () => import("./tio").then((m) => m.tioTree),
 };
 
 /** Whether a template has a branching tree (no tree data loaded). */

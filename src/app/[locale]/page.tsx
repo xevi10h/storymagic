@@ -22,6 +22,7 @@ import CustomerReviews from "@/components/reviews/CustomerReviews";
 // Christmas / Reyes 2026 block: remove this import and its line below in January 2027.
 import HomeSeasonBlock from "@/components/seasonal/HomeSeasonBlock";
 import { ADDON_ENABLED } from "@/lib/pricing";
+import { seasonBanner, spainToday } from "@/lib/shipping";
 import { getReviewSummary } from "@/lib/reviews/published";
 import { SITE_URL } from "@/lib/product-facts";
 
@@ -70,7 +71,8 @@ export default async function Home({ params }: Props) {
         {/* Conversion order: promise → how → what the gift really is → pick a story → proof it is theirs →
             the physical book → what a personalised story is (the head term, server-rendered) →
             objections (FAQ) → close with their name. */}
-        <Hero />
+        {/* CHRISTMAS 2026: seasonal title + sprig while the season banner runs (revalidate hourly) */}
+        <Hero season={!!seasonBanner(spainToday())} />
         <HowItWorks />
         <HomeSeasonBlock locale={locale} />
         <Moments />

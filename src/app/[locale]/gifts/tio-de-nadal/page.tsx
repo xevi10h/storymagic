@@ -20,6 +20,7 @@ import { TIO_GUIDE_COPY } from "@/lib/guide-copy/tio";
 import { guideFacts } from "@/lib/guide-copy/facts";
 import { seoHubPath, seoPath } from "@/lib/seo-landing";
 import { CHRISTMAS_DELIVERY_PATH, spainToday } from "@/lib/shipping";
+import { isTemplateAvailable } from "@/lib/create-store";
 import { getShowcaseStories, type ShowcaseStory } from "@/lib/showcase";
 import { showcasePath } from "@/lib/showcase-slug";
 import { toolPath } from "@/lib/tools/registry";
@@ -95,7 +96,7 @@ export default async function Page({ params }: PageProps) {
           eyebrow={copy.eyebrow}
           h1={copy.h1}
           lead={copy.lead}
-          cta={{ href: "/create", label: copy.cta }}
+          cta={{ href: isTemplateAvailable("tio") ? "/create?template=tio&from=seo" : "/create", label: copy.cta }}
           secondary={{ href: "/examples", label: th("sampleCta") }}
           trust={copy.trust}
           aside={

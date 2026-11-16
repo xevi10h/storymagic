@@ -656,6 +656,8 @@ export default function PreviewPage() {
         <BookRevealOverlay
           coverUrl={story.cover_image_url}
           childName={story.characters.name}
+          title={currentTitle}
+          spineColor={spineColor}
           onDone={() => setShowReveal(false)}
         />
       )}

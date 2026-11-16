@@ -762,7 +762,8 @@
     "sampleCta": "Veure un conte per dins",
     "coverAlt": "Portada d'un conte personalitzat per a nens, pintada a l'aquarel·la",
     "coverCaptionExample": "Exemple: el conte de la {name}, {age} anys · 20 × 20 cm",
-    "coverCaptionWithName": "Així veurà {name} el seu nom per primer cop · 20 × 20 cm"
+    "coverCaptionWithName": "Així veurà {name} el seu nom per primer cop · 20 × 20 cm",
+    "titleSeason": "Aquest Nadal, el conte amb <hl>el seu nom</hl>"
   },
   "howItWorks": {
     "eyebrow": "Com funciona",
@@ -1363,7 +1364,13 @@
       "ready": "Llest! L'aventura ja està traçada. Ara, a pintar el seu llibre.",
       "create": "Crear el seu llibre",
       "chooseWorld": "Tria un món per començar",
-      "chooseChapters": "Decideix els tres capítols per continuar"
+      "chooseChapters": "Decideix els tres capítols per continuar",
+      "seasonTitle": "Contes de Nadal",
+      "seasonUntil": "Només fins al {date}",
+      "evergreenTitle": "Tot l'any",
+      "badgeNew": "Nou",
+      "badgeSeason": "De temporada",
+      "seasonOrderBy": "Imprès a temps si el demanes abans del {date}"
     },
     "dedication": {
       "default": "Per a tu, {name}: que cada pàgina et recordi que el món és ple d'aventures. T'estimem moltíssim.",
@@ -2896,6 +2903,162 @@
           "sweet-coal": {
             "title": "Carbó Dolç",
             "description": "Al matí, al costat de les sabates, apareix la broma preferida d'en Gaspar."
+          }
+        }
+      },
+      "christmas": {
+        "title": "La Nit de Nadal del Pare Noel",
+        "description": "La Nit de Nadal, un ren petitet aterra al balcó amb una nota del Pare Noel: la màgia del Nadal s'ha espatllat i només una idea molt bona la pot arreglar abans del matí.",
+        "previewChapterTitle": "Un ren al balcó",
+        "decisions": {
+          "encounter": {
+            "question": "Què aterra al balcó de {name} la Nit de Nadal?",
+            "little-reindeer": {
+              "title": "Un Ren Petitet",
+              "subtitle": "Amb una bufanda de ratlles i molta pressa"
+            },
+            "north-pole-letter": {
+              "title": "Una Carta del Pol Nord",
+              "subtitle": "Fa olor de gingebre i és freda com la neu"
+            },
+            "sleigh-lights": {
+              "title": "Llums de Trineu",
+              "subtitle": "Travessen el cel i s'aturen a la finestra"
+            }
+          },
+          "companion": {
+            "question": "Qui acompanya {name} al Pol Nord?",
+            "papa-noel": {
+              "title": "El Pare Noel",
+              "subtitle": "Rialler, despistat i amb galetes a les butxaques"
+            },
+            "avellana": {
+              "title": "L'Avellana",
+              "subtitle": "La més petita dels rens, i la més valenta"
+            },
+            "toy-elf": {
+              "title": "Un Follet Joguiner",
+              "subtitle": "Ho arregla tot amb un tornavís petitíssim"
+            }
+          },
+          "challenge": {
+            "question": "Què s'ha espatllat al Pol Nord?",
+            "crazy-compass": {
+              "title": "La Brúixola Boja",
+              "subtitle": "Gira com una baldufa i no troba les cases"
+            },
+            "dark-antlers": {
+              "title": "El Ren Apagat",
+              "subtitle": "En Fanalet ja no il·lumina el camí"
+            },
+            "wrapping-machine": {
+              "title": "La Màquina Embolicatot",
+              "subtitle": "Posa llaços a tot, menys als regals"
+            }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "christmas-eve": "Nit de Nadal",
+            "midnight": "Mitjanit",
+            "christmas-morning": "Matí de Nadal"
+          },
+          "setting": {
+            "workshop": "El Taller de Joguines",
+            "reindeer-stable": "L'Estable dels Rens",
+            "polar-sky": "El Cel del Pol Nord"
+          }
+        },
+        "endings": {
+          "christmas-morning": {
+            "title": "Matí de Nadal",
+            "description": "Despertar-se al propi llit: el mitjó ple i només engrunes al plat de les galetes."
+          },
+          "snow-globe": {
+            "title": "La Bola de Neu",
+            "description": "Al costat del coixí apareix una bola de neu amb el Pol Nord a dins."
+          },
+          "sleigh-reins": {
+            "title": "Les Regnes del Trineu",
+            "description": "El Pare Noel deixa portar les regnes en el vol de tornada a casa."
+          }
+        }
+      },
+      "tio": {
+        "title": "El Tió s'ha perdut",
+        "description": "Falten tres dies per Nadal i el Tió de casa s'ha escapat al bosc nevat, amb manta i tot. Cal trobar-lo i portar-lo a casa a temps per fer-lo cagar la nit de Nadal.",
+        "previewChapterTitle": "On és el Tió?",
+        "decisions": {
+          "encounter": {
+            "question": "Quina pista deixa el Tió quan s'escapa?",
+            "orange-peels": {
+              "title": "Pells de Taronja",
+              "subtitle": "Un rastre que puja fins al bosc"
+            },
+            "stick-prints": {
+              "title": "Petjades de Pal",
+              "subtitle": "Baixen fins al torrent glaçat"
+            },
+            "cart-tracks": {
+              "title": "Les Roderes del Carro",
+              "subtitle": "Porten a la fira de Nadal"
+            }
+          },
+          "companion": {
+            "question": "Qui ajuda {name} a buscar el Tió?",
+            "farm-dog": {
+              "title": "El Gos de la Masia",
+              "subtitle": "Té el millor nas de la vall"
+            },
+            "robin": {
+              "title": "El Pit-roig",
+              "subtitle": "Ho veu tot des de les branques"
+            },
+            "squirrel": {
+              "title": "L'Esquirol Vermell",
+              "subtitle": "Coneix cada racó del bosc"
+            }
+          },
+          "challenge": {
+            "question": "Què complica la recerca?",
+            "snowfall": {
+              "title": "La Gran Nevada",
+              "subtitle": "La neu tapa el rastre"
+            },
+            "cold-tio": {
+              "title": "Un Tió amb Fred",
+              "subtitle": "Cal tenir-lo ben calentó"
+            },
+            "three-days": {
+              "title": "Només Tres Dies",
+              "subtitle": "I la nit de Nadal ha de ser a casa"
+            }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "frosty-morning": "Matí de Gebre",
+            "snowy-afternoon": "Tarda de Neu",
+            "christmas-eve": "Nit de Nadal"
+          },
+          "setting": {
+            "masia": "La Masia",
+            "pine-forest": "El Bosc de Pins",
+            "village-fair": "La Fira del Poble"
+          }
+        },
+        "endings": {
+          "caga-tio": {
+            "title": "Caga Tió!",
+            "description": "La nit de Nadal, bastó en mà, arriba la cançó i les sorpreses sota la manta."
+          },
+          "by-the-fire": {
+            "title": "Vora el Foc",
+            "description": "El Tió torna al seu racó, ben calentó sota la manta i amb la panxa plena."
+          },
+          "forest-friends": {
+            "title": "Els Amics del Bosc",
+            "description": "Els animals que l'han ajudat venen a la finestra a celebrar el Nadal."
           }
         }
       }

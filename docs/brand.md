@@ -83,6 +83,7 @@ Semantic tokens (Tailwind utilities in parentheses). **Use only these in new wor
 | `--brand-hover` | `#d15a2b` | Hover/pressed of brand |
 | `--brand-deep` (`text-brand-deep`) | `#5D4037` | Wordmark, prices, purchase headings, dark bands/footer |
 | `--brand-deep-hover` | `#4E342E` | Hover of brand-deep |
+| `--season` (`bg-season`, `text-season`) | `#1F4D3F` | Gift season only (1 Nov – 6 Jan): the season banner fill, seasonal kickers ("Cuentos de Navidad") and seasonal badges. Pine green, 9:1 on paper. Never a CTA. The only Christmas ornament is `HollySprig` (one per screen at most) plus the small gold `SeasonStar` |
 | `--gold` | `#d4af37` | Rare highlight (star pattern, reveal). Never for text |
 | `--ink` (`text-ink`) | `#1b120e` | Headings, the child's name, key values |
 | `--ink-soft` (`text-ink-soft`) | `#4a3b32` | Default UI text, labels, list items |

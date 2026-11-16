@@ -702,7 +702,8 @@
     "sampleCta": "Look inside a book",
     "coverAlt": "Watercolour cover of a personalised children's book",
     "coverCaptionExample": "Example: {name}'s book, age {age} · 20 × 20 cm",
-    "coverCaptionWithName": "How {name} will see their name for the first time · 20 × 20 cm"
+    "coverCaptionWithName": "How {name} will see their name for the first time · 20 × 20 cm",
+    "titleSeason": "This Christmas, the story with <hl>their name</hl>"
   },
   "howItWorks": {
     "eyebrow": "How it works",
@@ -1303,7 +1304,13 @@
       "ready": "Done! The adventure is set. Now let's paint the book.",
       "create": "Create the book",
       "chooseWorld": "Pick a world to start",
-      "chooseChapters": "Decide the three chapters to continue"
+      "chooseChapters": "Decide the three chapters to continue",
+      "seasonTitle": "Christmas stories",
+      "seasonUntil": "Only until {date}",
+      "evergreenTitle": "All year round",
+      "badgeNew": "New",
+      "badgeSeason": "Seasonal",
+      "seasonOrderBy": "Printed in time if you order by {date}"
     },
     "dedication": {
       "default": "For you, {name}: may every page remind you that the world is full of adventures. We love you more than words can say.",
@@ -2836,6 +2843,162 @@
           "sweet-coal": {
             "title": "Sweet Coal",
             "description": "In the morning, next to the shoes, Caspar's favourite joke is waiting."
+          }
+        }
+      },
+      "christmas": {
+        "title": "Father Christmas's Christmas Eve",
+        "description": "On Christmas Eve a tiny reindeer lands on the balcony with a note from Father Christmas: the Christmas magic has gone wrong, and only a very good idea can fix it before morning.",
+        "previewChapterTitle": "A Reindeer on the Balcony",
+        "decisions": {
+          "encounter": {
+            "question": "What lands on {name}'s balcony on Christmas Eve?",
+            "little-reindeer": {
+              "title": "A Tiny Reindeer",
+              "subtitle": "In a stripy scarf, and in a hurry"
+            },
+            "north-pole-letter": {
+              "title": "A Letter from the North Pole",
+              "subtitle": "It smells of gingerbread and is cold as snow"
+            },
+            "sleigh-lights": {
+              "title": "Sleigh Lights",
+              "subtitle": "They cross the sky and stop at the window"
+            }
+          },
+          "companion": {
+            "question": "Who keeps {name} company at the North Pole?",
+            "papa-noel": {
+              "title": "Father Christmas",
+              "subtitle": "Jolly, absent-minded, pockets full of cookies"
+            },
+            "avellana": {
+              "title": "Hazel",
+              "subtitle": "The smallest reindeer, and the bravest"
+            },
+            "toy-elf": {
+              "title": "A Toymaker Elf",
+              "subtitle": "Fixes anything with a tiny screwdriver"
+            }
+          },
+          "challenge": {
+            "question": "What has gone wrong at the North Pole?",
+            "crazy-compass": {
+              "title": "The Giddy Compass",
+              "subtitle": "Spinning like a top and finding no homes"
+            },
+            "dark-antlers": {
+              "title": "The Reindeer Who Lost His Glow",
+              "subtitle": "Lantern can't light the way any more"
+            },
+            "wrapping-machine": {
+              "title": "The Wrap-It-All Machine",
+              "subtitle": "Wrapping everything except the presents"
+            }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "christmas-eve": "Christmas Eve",
+            "midnight": "Midnight",
+            "christmas-morning": "Christmas Morning"
+          },
+          "setting": {
+            "workshop": "The Toy Workshop",
+            "reindeer-stable": "The Reindeer Stable",
+            "polar-sky": "The North Pole Sky"
+          }
+        },
+        "endings": {
+          "christmas-morning": {
+            "title": "Christmas Morning",
+            "description": "Waking up in bed: a full stocking and only crumbs on the cookie plate."
+          },
+          "snow-globe": {
+            "title": "The Snow Globe",
+            "description": "Beside the pillow there is a snow globe with the North Pole inside."
+          },
+          "sleigh-reins": {
+            "title": "The Sleigh's Reins",
+            "description": "Father Christmas hands over the reins for the flight home."
+          }
+        }
+      },
+      "tio": {
+        "title": "The Tió Is Lost",
+        "description": "Three days before Christmas, the family's Tió (Catalonia's magic Christmas log) has run off into the snowy forest, blanket and all. Find him and bring him home in time for Christmas Eve.",
+        "previewChapterTitle": "Where Is the Tió?",
+        "decisions": {
+          "encounter": {
+            "question": "What clue does the Tió leave behind?",
+            "orange-peels": {
+              "title": "Orange Peels",
+              "subtitle": "A trail climbing up to the forest"
+            },
+            "stick-prints": {
+              "title": "Stick-Leg Prints",
+              "subtitle": "Leading down to the frozen stream"
+            },
+            "cart-tracks": {
+              "title": "The Cart Tracks",
+              "subtitle": "Heading to the Christmas market"
+            }
+          },
+          "companion": {
+            "question": "Who helps {name} look for the Tió?",
+            "farm-dog": {
+              "title": "The Farm Dog",
+              "subtitle": "The best nose in the valley"
+            },
+            "robin": {
+              "title": "The Robin",
+              "subtitle": "Sees everything from the branches"
+            },
+            "squirrel": {
+              "title": "The Red Squirrel",
+              "subtitle": "Knows every corner of the forest"
+            }
+          },
+          "challenge": {
+            "question": "What makes the search harder?",
+            "snowfall": {
+              "title": "The Big Snowfall",
+              "subtitle": "The snow is covering the trail"
+            },
+            "cold-tio": {
+              "title": "A Chilly Tió",
+              "subtitle": "He must be kept nice and warm"
+            },
+            "three-days": {
+              "title": "Only Three Days",
+              "subtitle": "He must be home by Christmas Eve"
+            }
+          }
+        },
+        "atmosphere": {
+          "time": {
+            "frosty-morning": "Frosty Morning",
+            "snowy-afternoon": "Snowy Afternoon",
+            "christmas-eve": "Christmas Eve"
+          },
+          "setting": {
+            "masia": "The Old Farmhouse",
+            "pine-forest": "The Pine Forest",
+            "village-fair": "The Village Market"
+          }
+        },
+        "endings": {
+          "caga-tio": {
+            "title": "Caga Tió!",
+            "description": "On Christmas Eve, sticks in hand, comes the song and the surprises under the blanket."
+          },
+          "by-the-fire": {
+            "title": "By the Fire",
+            "description": "The Tió is back in his corner, snug under his blanket with a full tummy."
+          },
+          "forest-friends": {
+            "title": "Forest Friends",
+            "description": "The animals who helped come to the window to celebrate Christmas."
           }
         }
       }

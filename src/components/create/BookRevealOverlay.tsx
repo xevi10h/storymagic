@@ -2,10 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import { BookMockup } from "@/components/book-mockup";
 
 interface BookRevealOverlayProps {
   coverUrl: string | null;
   childName: string;
+  /** The book's title, set on the cover exactly as printed */
+  title: string;
+  /** Board / spine colour (getBookColors(...).gradientStart) */
+  spineColor: string;
   onDone: () => void;
 }
 
@@ -19,7 +24,7 @@ const SPARKLES: ReadonlyArray<readonly [number, number, number, number]> = [
  * finishes and the user lands on the preview. Tap anywhere (or wait) to enter
  * the normal preview.
  */
-export default function BookRevealOverlay({ coverUrl, childName, onDone }: BookRevealOverlayProps) {
+export default function BookRevealOverlay({ coverUrl, childName, title, spineColor, onDone }: BookRevealOverlayProps) {
   const t = useTranslations("crear.preview");
   const [leaving, setLeaving] = useState(false);
 
@@ -59,15 +64,27 @@ export default function BookRevealOverlay({ coverUrl, childName, onDone }: BookR
         ))}
       </svg>
 
-      {/* cover */}
-      <span className="book-reveal-cover relative mb-8 block w-56 max-w-[60vw] overflow-hidden rounded-xl shadow-[0_32px_70px_-28px_rgba(44,24,16,.55)] sm:w-64">
-        <span className="absolute -inset-6 -z-10 rounded-full bg-create-primary/15 blur-3xl" />
-        {coverUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element -- one-shot reveal; the cover is already optimized for the flipbook
-          <img src={coverUrl} alt="" className="block aspect-square w-full object-cover" />
-        ) : (
-          <span className="block aspect-square w-full bg-gradient-to-br from-amber-400 to-orange-600" />
-        )}
+      {/* The printed book, same cover as the painting screen and the buy panel. Its 5:4 stage
+          leaves wide margins around the book: widened and cropped so the book reads large. */}
+      <span className="book-reveal-cover relative mb-6 block w-64 max-w-[68vw] sm:w-80">
+        <span aria-hidden className="absolute inset-[6%] -z-10 rounded-full bg-create-primary/20 blur-3xl" />
+        <span className="block overflow-hidden">
+          <span className="-mx-[25%] -mb-[16%] -mt-[9%] block">
+            <BookMockup
+              coverUrl={coverUrl}
+              title={title}
+              childName={childName}
+              subtitle={t("personalizedStory")}
+              format="hardcover"
+              spineColor={spineColor}
+              showScale={false}
+              interactive={false}
+              priority
+              alt=""
+              className="[&>div:first-child]:hidden"
+            />
+          </span>
+        </span>
       </span>
 
       <h2 className="book-reveal-title mb-2 text-center font-display text-2xl font-bold text-create-text sm:text-3xl">

@@ -29,8 +29,11 @@ export interface FixedCastMember {
 
 export interface TemplateFixedCast {
   members: FixedCastMember[];
-  /** A single cast entry standing for the whole group ("the Three Kings"): gets every member's look. */
-  group: { match: RegExp; label: string };
+  /**
+   * A single cast entry standing for the whole group ("the Three Kings"): gets every member's look.
+   * Only for worlds whose fixed characters travel together.
+   */
+  group?: { match: RegExp; label: string; /** Opening line of the group look */ lead: string; gender: PlanCastMember["gender"] };
   /** One line for the author: how often they appear. */
   note: string;
 }
@@ -69,8 +72,46 @@ export const TEMPLATE_FIXED_CAST: Record<string, TemplateFixedCast> = {
           "A younger king, a tall slender Black man with deep brown skin, a short neat black beard, close-cropped black hair and warm dark-brown eyes; he wears a golden crown with blue sapphires over a deep-purple turban, a royal-blue robe with gold embroidery and a long deep-purple cape.",
       },
     ],
-    group: { match: /\b(kings?|reyes|reis|rois|magi|mages|wise men|reyes magos|reis mags|reis d orient)\b/, label: "the Three Kings" },
-    note: "The Three Kings recur through most of the book: each is his own cast entry and appears in at least two scenes.",
+    group: {
+      match: /\b(kings?|reyes|reis|rois|magi|mages|wise men|reyes magos|reis mags|reis d orient)\b/,
+      label: "the Three Kings",
+      lead: "3 kings who always appear together.",
+      gender: "male",
+    },
+    note: "The Three Kings recur through most of the book: each is his own cast entry (never one entry for the group) and appears in at least two scenes. Skin is only ever the natural skin given here (never make-up or paint).",
+  },
+  christmas: {
+    members: [
+      {
+        id: "papa_noel",
+        label: "Father Christmas",
+        names: { es: "Papá Noel", ca: "Pare Noel", en: "Father Christmas", fr: "Père Noël" },
+        // Never "claus" alone (Mrs Claus) and never an elf/reindeer "of" Papá Noel.
+        match: /^(?!.*\b(elf|elves|elfo|elfos|elfs|follet|follets|lutin|lutins|mrs|mama|mare|mere|senora|madame|reindeer|reno|renos|ren|rens|renne|rennes)\b).*\b(papa noel|pare noel|pere noel|father christmas|santa claus|santa|saint nicholas|st nicholas)\b/,
+        kind: "character",
+        gender: "male",
+        visual:
+          "A jolly, round, elderly man, short and plump with a big round tummy, fair skin with rosy red cheeks and a rosy nose, a full fluffy snow-white beard down to his chest, a curly white moustache, white hair, bushy white eyebrows and kind twinkling blue eyes behind small round gold-rimmed glasses; he wears a long bright-red coat with thick white fur trim at the collar, cuffs, front and hem, a wide black leather belt with a square gold buckle, red trousers, shiny black boots, white gloves and a red stocking cap with white fur trim and a white pompom.",
+      },
+    ],
+    note: "Papá Noel recurs through most of the book: one cast entry, in at least three scenes; every other character (elves, reindeer, animals) is the author's own.",
+  },
+  tio: {
+    members: [
+      {
+        id: "tio",
+        label: "the Tió (magic Christmas log)",
+        names: { es: "el Tió", ca: "el Tió", en: "the Tió", fr: "le Tió" },
+        // key() strips accents, so "tio" also matches Spanish "tío" (uncle): only used
+        // together with the kind gate below (members match only cast entries of their own kind).
+        match: /\b(tio|tio de nadal|caga tio|christmas log|magic log)\b/,
+        kind: "creature",
+        gender: "none",
+        visual:
+          "A small magic Christmas log about the size of a loaf of bread: a short, round, chunky log with rough grey-brown bark and a pale cut end at the front where a friendly face is painted (two round black eyes, rosy pink cheeks, a small round nose and a wide happy smile); it stands on two short straight wooden stick legs at the front end; it wears a floppy red barretina cap (a soft red Catalan stocking cap whose long tip flops forward) and a red-and-white checked blanket draped over its back. No arms, no other clothes; it always has its cap and its blanket.",
+      },
+    ],
+    note: "The Tió is the heart of the book: one cast entry with exactly this id and look, in at least four scenes (the empty spot by the fireplace does not count). It never loses its barretina or its blanket.",
   },
 };
 
@@ -86,16 +127,15 @@ function key(s: string | undefined): string {
 function memberFor(fixed: TemplateFixedCast, c: Pick<PlanCastMember, "id" | "name" | "label" | "kind">): FixedCastMember | undefined {
   const byId = fixed.members.find((m) => m.id === c.id);
   if (byId) return byId;
-  // Name matching only for people: "Melchior's camel" is a creature and keeps its own look.
-  if (c.kind !== "character") return undefined;
+  // Name matching only within the same kind: "Melchior's camel" is a creature and keeps its own look.
   const text = `${key(c.id)} ${key(c.name)} ${key(c.label)}`;
-  const hits = fixed.members.filter((m) => m.match.test(text));
+  const hits = fixed.members.filter((m) => m.kind === c.kind && m.match.test(text));
   return hits.length === 1 ? hits[0] : undefined;
 }
 
 /** The group's look: every member, in order, so a "the Three Kings" entry still draws the right three people. */
-function groupVisual(fixed: TemplateFixedCast): string {
-  return `${fixed.members.length} kings who always appear together. ${fixed.members.map((m) => `${m.label}: ${m.visual}`).join(" ")}`;
+function groupVisual(fixed: TemplateFixedCast, lead: string): string {
+  return `${lead} ${fixed.members.map((m) => `${m.label}: ${m.visual}`).join(" ")}`;
 }
 
 /**
@@ -111,8 +151,9 @@ export function applyFixedCast<T extends PlanCastMember>(templateId: string | un
     const m = memberFor(fixed, c);
     if (m) return { ...c, label: m.label, kind: m.kind, gender: m.gender, visual: m.visual };
     const text = `${key(c.id)} ${key(c.name)} ${key(c.label)}`;
-    if (!hasMember && c.kind === "character" && fixed.group.match.test(text)) {
-      return { ...c, label: fixed.group.label, kind: "character", gender: "male", visual: groupVisual(fixed) };
+    const group = fixed.group;
+    if (group && !hasMember && c.kind === "character" && group.match.test(text)) {
+      return { ...c, label: group.label, kind: "character", gender: group.gender, visual: groupVisual(fixed, group.lead) };
     }
     return c;
   });
@@ -126,5 +167,5 @@ export function fixedCastPrompt(templateId: string | undefined, locale: string):
   const lines = fixed.members.map(
     (m) => `- id "${m.id}" · name in the text: ${m.names[lang]} · label "${m.label}" · ${m.kind}, ${m.gender} · visual: ${m.visual}`,
   );
-  return `FIXED CAST (canonical, identical in every book of this world)\n${fixed.note} Use exactly these ids, names, labels and visuals in \`cast\`, one entry per character (never one entry for the group); the text must never contradict these looks, and skin is only ever the natural skin given here (never make-up or paint).\n${lines.join("\n")}`;
+  return `FIXED CAST (canonical, identical in every book of this world)\n${fixed.note} Use exactly these ids, names, labels and visuals in \`cast\`; the text must never contradict these looks.\n${lines.join("\n")}`;
 }

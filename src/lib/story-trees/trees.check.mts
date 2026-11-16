@@ -9,6 +9,14 @@ import type { PlanCastMember } from "../ai/book-plan";
 
 const LOCALES = ["es", "ca", "en", "fr"] as const;
 
+// Seasonal worlds get the strict content checks. desc.en becomes the path-art prompt:
+// it must never show the child or the world's people (they are drawn from sheets, not here).
+const SEASONAL_PEOPLE: Record<string, RegExp> = {
+  reyes: /\{name\}|\bchild\b|\bkings?\b|melchior|caspar|balthazar|\bpage\b/i,
+  christmas: /\{name\}|\bchild\b|santa|father christmas|\bclaus\b|\bnoel\b|\belf\b|\belves\b|\bman\b|\bwoman\b|\bboy\b|\bgirl\b/i,
+  tio: /\{name\}|\bchild\b|\bman\b|\bwoman\b|\bboy\b|\bgirl\b|\bfarmer\b|\bpeople\b|\bperson\b/i,
+};
+
 // ── Every template has a registered tree (server registry + client loader) ──
 for (const t of STORY_TEMPLATES) {
   assert.ok(STORY_TREES[t.id], `${t.id}: no tree in STORY_TREES`);
@@ -30,25 +38,25 @@ for (const [id, tree] of Object.entries(STORY_TREES)) {
   let options = 0;
   for (const node of Object.values(tree.nodes)) {
     if (node.id === tree.ending) continue;
-    if (id === "reyes") full(node.question, `${node.id}.question`);
+    const strict = SEASONAL_PEOPLE[id];
+    if (strict) full(node.question, `${node.id}.question`);
     for (const o of node.options) {
       options++;
       assert.ok(!seeds.has(o.imageSeed), `${id}: duplicate imageSeed ${o.imageSeed}`);
       seeds.add(o.imageSeed);
-      if (id === "reyes") {
+      if (strict) {
         full(o.title, `${node.id}.${o.id}.title`);
         full(o.desc, `${node.id}.${o.id}.desc`);
         full(o.narrative, `${node.id}.${o.id}.narrative`);
-        assert.ok(o.imageSeed.startsWith("reyes-"), `reyes: seed ${o.imageSeed} must start with reyes-`);
-        // desc.en becomes the path-art prompt: never the child, never a King.
-        assert.ok(!/\{name\}|\bchild\b|\bkings?\b|melchior|caspar|balthazar|\bpage\b/i.test(o.desc.en ?? ""), `reyes ${o.imageSeed}: desc.en shows a person: ${o.desc.en}`);
-        assert.ok(!/[{}]/.test(o.title.en ?? "") && !/[{}]/.test(o.desc.en ?? ""), `reyes ${o.imageSeed}: braces break the path-art parser`);
+        assert.ok(o.imageSeed.startsWith(`${id}-`), `${id}: seed ${o.imageSeed} must start with ${id}-`);
+        assert.ok(!strict.test(o.desc.en ?? ""), `${id} ${o.imageSeed}: desc.en shows a person: ${o.desc.en}`);
+        assert.ok(!/[{}]/.test(o.title.en ?? "") && !/[{}]/.test(o.desc.en ?? ""), `${id} ${o.imageSeed}: braces break the path-art parser`);
         // Quoted words and onomatopoeia get painted as lettering by the image model.
-        assert.ok(!/[“”«»"]|\b(pom|quack|tee-hee)\b/i.test(o.desc.en ?? ""), `reyes ${o.imageSeed}: desc.en invites lettering: ${o.desc.en}`);
+        assert.ok(!/[“”«»"]|\b(pom|quack|tee-hee)\b/i.test(o.desc.en ?? ""), `${id} ${o.imageSeed}: desc.en invites lettering: ${o.desc.en}`);
       }
     }
   }
-  if (id === "reyes") assert.equal(options, 39, "reyes: 39 options (3 + 9 + 27)");
+  if (SEASONAL_PEOPLE[id]) assert.equal(options, 39, `${id}: 39 options (3 + 9 + 27)`);
 }
 
 // ── Availability window (Europe/Madrid, inclusive) ───────────────────────────
@@ -59,6 +67,13 @@ assert.equal(isTemplateAvailable("reyes", "2027-01-06"), true, "orderable on 6 J
 assert.equal(isTemplateAvailable("reyes", "2027-01-07"), false, "gone on 7 January");
 assert.equal(isTemplateAvailable({ ...reyes!, availableFrom: "2026-11-01" }, "2026-10-31"), false, "availableFrom respected");
 assert.equal(isTemplateAvailable({ ...reyes!, availableFrom: "2026-11-01" }, "2026-11-01"), true);
+for (const id of ["christmas", "tio"]) {
+  assert.ok(getTemplateConfig(id)?.seasonal, `${id} is seasonal`);
+  assert.equal(isTemplateAvailable(id, "2026-11-17"), true, `${id} orderable now`);
+  assert.equal(isTemplateAvailable(id, "2027-01-06"), true, `${id} orderable on 6 January`);
+  assert.equal(isTemplateAvailable(id, "2027-01-07"), false, `${id} gone on 7 January`);
+}
+assert.ok(STORY_TEMPLATES.filter((t) => t.seasonal).every((t) => SEASONAL_PEOPLE[t.id]), "every seasonal world has strict checks");
 assert.equal(isTemplateAvailable("castle", "2030-01-07"), true, "evergreen always available");
 assert.equal(isTemplateAvailable("nope", "2026-10-26"), false, "unknown id");
 
@@ -98,4 +113,21 @@ assert.deepEqual(applyFixedCast("castle", [cm({ id: "melchor", name: "Melchor" }
 assert.ok(fixedCastPrompt("reyes", "ca")?.includes("Melcior"));
 assert.equal(fixedCastPrompt("castle", "es"), null);
 
-console.log(`trees.check: ${Object.keys(STORY_TREES).length} trees valid, reyes gated + Kings fixed — OK`);
+// ── Papá Noel and the Tió keep their look; look-alikes stay the author's own ──
+const santa = applyFixedCast("christmas", [
+  cm({ id: "pare_noel", name: "el Pare Noel" }),
+  cm({ id: "mrs_claus", name: "Mamá Noel", label: "Mrs Claus", gender: "female" }),
+  cm({ id: "elf", name: "el elfo de Papá Noel", label: "Santa's elf" }),
+]);
+assert.equal(santa[0].visual, TEMPLATE_FIXED_CAST.christmas.members[0].visual, "Papá Noel matched by name");
+assert.equal(santa[1].visual, "a man with a painted face", "Mrs Claus is not Papá Noel");
+assert.equal(santa[2].visual, "a man with a painted face", "an elf is not Papá Noel");
+const tio = applyFixedCast("tio", [
+  cm({ id: "tio_de_nadal", name: "el Tió", kind: "creature", visual: "a log" }),
+  cm({ id: "tio_pepe", name: "el tío Pepe" }),
+]);
+assert.equal(tio[0].visual, TEMPLATE_FIXED_CAST.tio.members[0].visual, "the Tió matched by name as a creature");
+assert.equal(tio[1].visual, "a man with a painted face", "uncle Pepe is a person, not the Tió");
+assert.ok(!fixedCastPrompt("tio", "ca")?.includes("never make-up or paint"), "Reyes-only rules stay in the reyes note");
+
+console.log(`trees.check: ${Object.keys(STORY_TREES).length} trees valid, seasonal worlds gated + fixed casts — OK`);

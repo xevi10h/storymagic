@@ -111,6 +111,16 @@ const TEMPLATES = [
     ageGroup: "mid",
     prompt: `A cosy night scene for the Night of the Three Kings: three friendly camels (exactly three) walking in a line across the terracotta rooftops of a small whitewashed Spanish town, each wearing an empty golden saddle with red tassels, a big round moon and a deep blue sky full of tiny stars; in the foreground a balcony with a pair of small shoes and a present with a red bow beside a warmly lit window. Riderless camels. No human characters, no people, no riders. ${AGE_STYLES.mid}`,
   },
+  {
+    id: "christmas",
+    ageGroup: "mid",
+    prompt: `A cosy Christmas Eve night at the North Pole: a red wooden sleigh piled with wrapped presents tied with ribbons, parked in deep soft snow in front of a small timber toy workshop with warmly lit frosted windows and a smoking chimney; one small friendly reindeer wearing a red-and-white striped scarf standing beside the sleigh, a little golden lantern hanging from the sleigh, snow-laden fir trees, and green and pink northern lights rippling across a deep blue starry sky. Empty sleigh, no driver. No human characters, no people, no Santa, no elves, no text, no lettering. ${AGE_STYLES.mid}`,
+  },
+  {
+    id: "tio",
+    ageGroup: "mid",
+    prompt: `Close-up of the main character, large in the centre and filling half of the picture: a friendly magic Christmas log, a short thick round wooden log lying horizontally on two little stick legs, a big smiling face painted on its round front end, a floppy red barretina cap and a red-and-white checked blanket over its back, standing in fresh snow at the edge of a snowy pine forest in the Catalan mountains; behind it a winding trail of orange peels in the fresh snow leads back down the hill to an old stone farmhouse with a smoking chimney and warm golden windows; a red squirrel watches from a branch, soft snowflakes falling, gentle winter dusk light. Exactly one log character, clearly visible. No human characters, no people, no figures, no text. ${AGE_STYLES.mid}`,
+  },
 ];
 
 async function generateImage(template) {

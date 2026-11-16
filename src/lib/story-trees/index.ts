@@ -10,6 +10,8 @@ import { safariTree } from "./safari";
 import { inventorTree } from "./inventor";
 import { candyTree } from "./candy";
 import { reyesTree } from "./reyes";
+import { christmasTree } from "./christmas";
+import { tioTree } from "./tio";
 
 export { tx } from "./types";
 export type { StoryTree, TreeNode, TreeOption, LocalizedText, Locale } from "./types";
@@ -28,6 +30,8 @@ export const STORY_TREES: Record<string, StoryTree> = {
   inventor: inventorTree,
   candy: candyTree,
   reyes: reyesTree,
+  christmas: christmasTree,
+  tio: tioTree,
 };
 
 export function getStoryTree(templateId: string): StoryTree | null {
