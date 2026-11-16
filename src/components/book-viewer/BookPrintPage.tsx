@@ -12,6 +12,7 @@
  */
 
 import { useState, type CSSProperties, type ReactNode } from "react";
+import { useTranslations } from "next-intl";
 import { QRCodeSVG } from "qrcode.react";
 import BrandLogo from "@/components/BrandLogo";
 import type { BookColors } from "@/lib/template-colors";
@@ -83,14 +84,12 @@ function PlacedImage({
   box,
   windowLeft = 0,
   focusY = 0.5,
-  blur = false,
 }: {
   src: string | null;
   alt?: string;
   box: { left?: number; top?: number; width: number; height: number };
   windowLeft?: number;
   focusY?: number;
-  blur?: boolean;
 }) {
   const style: CSSProperties = {
     position: "absolute",
@@ -109,10 +108,64 @@ function PlacedImage({
           src={src}
           alt={alt}
           draggable={false}
-          className={`absolute inset-0 h-full w-full object-cover ${blur ? "scale-105 blur-lg" : ""}`}
+          className="absolute inset-0 h-full w-full object-cover"
           style={{ objectPosition: `50% ${focusY * 100}%` }}
         />
       ) : null}
+    </div>
+  );
+}
+
+/**
+ * Pre-purchase preview: the art of a scene that is painted after ordering. Fills the image
+ * box (in the same bleed coordinates as PlacedImage) with the book's paper and, unless
+ * `quiet`, a centred note; the page's text stays readable beside or over it.
+ * `top` = the note's vertical centre as a share of the visible box (clears overlay text).
+ */
+function LockedArt({
+  box,
+  windowLeft = 0,
+  colors,
+  quiet = false,
+  top = 0.5,
+}: {
+  box: { width: number; height: number };
+  windowLeft?: number;
+  colors: BookColors;
+  quiet?: boolean;
+  top?: number;
+}) {
+  const t = useTranslations("crear.preview");
+  // Box coordinates of this page's content area (a panorama half shows one page of a wider box).
+  const left = windowLeft + M;
+  const width = W - 2 * M;
+  return (
+    <div
+      data-testid="locked-art"
+      className="absolute overflow-hidden"
+      style={{ left: at(-windowLeft), top: at(0), width: u(box.width), height: u(box.height), backgroundColor: COLORS.cream }}
+    >
+      <div
+        className="absolute"
+        style={{ left: u(left), top: u(M), width: u(width), height: u(box.height - 2 * M), border: `${u(1)} dashed ${colors.ornamentColor}`, borderRadius: u(8) }}
+      />
+      {!quiet && (
+        <div
+          className="absolute flex flex-col items-center text-center"
+          style={{ left: u(left), width: u(width), top: `${top * 100}%`, transform: "translateY(-50%)", paddingLeft: u(18), paddingRight: u(18) }}
+        >
+          <span
+            className="flex items-center justify-center rounded-full bg-white"
+            style={{ width: u(46), height: u(46), border: `${u(1.5)} solid ${colors.ornamentColor}` }}
+          >
+            <span aria-hidden className="material-symbols-outlined" data-icon="lock" style={{ fontSize: u(22), color: colors.accent }} />
+          </span>
+          <p style={{ margin: `${u(12)} 0 0`, fontFamily: DISPLAY, fontWeight: 600, fontSize: u(22), lineHeight: 1.2, color: colors.titleColor }}>
+            {t("lockedArtTitle")}
+          </p>
+          <p style={{ margin: `${u(6)} 0 0`, fontFamily: BODY, fontSize: u(16), lineHeight: 1.35, color: COLORS.textMedium }}>{t("lockedArtBody")}</p>
+        </div>
+      )}
     </div>
   );
 }
@@ -193,10 +246,10 @@ function Paragraphs({ text, style, balance, prefix = "", suffix = "" }: { text: 
 type Props = { page: BookPage; colors: BookColors };
 type PageOf<T extends BookPage["type"]> = Extract<BookPage, { type: T }>;
 
-function OverlayTitle({ text, t }: { text: string; t: FittedType }) {
+function OverlayTitle({ text, t, color = "#ffffff" }: { text: string; t: FittedType; color?: string }) {
   return (
     <div className="absolute" style={{ bottom: at(M + 6), left: at(M), width: u(GEOMETRY.overlayTextWidth) }}>
-      <p style={{ margin: 0, fontFamily: DISPLAY, fontWeight: 600, color: "#ffffff", ...type(t) }}>{text}</p>
+      <p style={{ margin: 0, fontFamily: DISPLAY, fontWeight: 600, color, ...type(t) }}>{text}</p>
     </div>
   );
 }
@@ -204,15 +257,22 @@ function OverlayTitle({ text, t }: { text: string; t: FittedType }) {
 function ScenePage({ page, colors }: { page: PageOf<"scene">; colors: BookColors }) {
   const p = page.print;
   const title = sanitizePrintText(page.scene.title);
-  const blur = page.locked;
+  // Locked (pre-purchase preview): the art is a "painted when you order" placeholder on the
+  // book's paper, so text printed over the art turns to ink and loses its dark scrim.
+  const locked = page.locked;
+  const overInk = locked ? COLORS.textDark : "#ffffff";
 
   if (p.kind === "illustration") {
     return (
       <Page>
-        <PlacedImage src={page.imageUrl} alt={title} box={{ width: p.image.boxWidth, height: p.image.boxHeight }} blur={blur} />
-        {p.title && <BottomGradient stops={TITLE_OVERLAY_STOPS} height={H * 0.5} />}
-        {p.title && <OverlayTitle text={title} t={p.title} />}
-        <PageNumber num={p.pageNumber} variant="art" />
+        {locked ? (
+          <LockedArt box={{ width: p.image.boxWidth, height: p.image.boxHeight }} colors={colors} top={p.title ? 0.42 : 0.5} />
+        ) : (
+          <PlacedImage src={page.imageUrl} alt={title} box={{ width: p.image.boxWidth, height: p.image.boxHeight }} />
+        )}
+        {p.title && !locked && <BottomGradient stops={TITLE_OVERLAY_STOPS} height={H * 0.5} />}
+        {p.title && <OverlayTitle text={title} t={p.title} color={overInk} />}
+        <PageNumber num={p.pageNumber} variant={locked ? undefined : "art"} />
       </Page>
     );
   }
@@ -221,13 +281,24 @@ function ScenePage({ page, colors }: { page: PageOf<"scene">; colors: BookColors
     const { overlay } = p;
     return (
       <Page>
-        <PlacedImage src={page.imageUrl} alt={title} box={{ width: p.image.boxWidth, height: p.image.boxHeight }} windowLeft={p.image.windowLeft} blur={blur} />
-        <BottomGradient stops={TEXT_OVERLAY_STOPS} height={page.spreadGradient ?? H * 0.5} />
+        {locked ? (
+          // The note sits on the left half (above the title); the right half carries the text.
+          <LockedArt
+            box={{ width: p.image.boxWidth, height: p.image.boxHeight }}
+            windowLeft={p.image.windowLeft}
+            colors={colors}
+            quiet={p.half === "right"}
+            top={0.4}
+          />
+        ) : (
+          <PlacedImage src={page.imageUrl} alt={title} box={{ width: p.image.boxWidth, height: p.image.boxHeight }} windowLeft={p.image.windowLeft} />
+        )}
+        {!locked && <BottomGradient stops={TEXT_OVERLAY_STOPS} height={page.spreadGradient ?? H * 0.5} />}
         {overlay.role === "title" ? (
-          <OverlayTitle text={overlay.text} t={overlay.type} />
+          <OverlayTitle text={overlay.text} t={overlay.type} color={overInk} />
         ) : overlay.mode === "gradient" ? (
           <div className="absolute" style={{ bottom: at(M + 6), left: at(M), width: u(GEOMETRY.overlayTextWidth) }}>
-            <Paragraphs text={overlay.text} style={{ fontFamily: BODY, color: "#ffffff", ...type(overlay.type) }} />
+            <Paragraphs text={overlay.text} style={{ fontFamily: BODY, color: overInk, ...type(overlay.type) }} />
           </div>
         ) : (
           <div
@@ -245,7 +316,11 @@ function ScenePage({ page, colors }: { page: PageOf<"scene">; colors: BookColors
   if (p.kind === "illustration-text") {
     return (
       <Page background={COLORS.cream}>
-        <PlacedImage src={page.imageUrl} alt={title} box={{ width: p.image.boxWidth, height: p.image.boxHeight }} blur={blur} />
+        {locked ? (
+          <LockedArt box={{ width: p.image.boxWidth, height: p.image.boxHeight }} colors={colors} />
+        ) : (
+          <PlacedImage src={page.imageUrl} alt={title} box={{ width: p.image.boxWidth, height: p.image.boxHeight }} />
+        )}
         <div
           className="absolute flex flex-col items-center justify-center"
           style={{ top: at(p.image.boxHeight + 8), bottom: at(M), left: at((W - ILL_TEXT_WIDTH) / 2), width: u(ILL_TEXT_WIDTH) }}
@@ -269,7 +344,7 @@ function ScenePage({ page, colors }: { page: PageOf<"scene">; colors: BookColors
   const bodyStyle: CSSProperties = { fontFamily: BODY, color: COLORS.textDark, ...type(p.bodyType) };
   const titleStyle: CSSProperties = { margin: 0, fontFamily: DISPLAY, fontWeight: 600, color: colors.titleColor, ...type(p.titleType) };
   const column: CSSProperties = { position: "absolute", top: at(M), bottom: at(M), left: at((W - colW) / 2), width: u(colW), display: "flex", flexDirection: "column", justifyContent: "center", paddingBottom: u(p.lift) };
-  const content = (node: ReactNode) => <div className={blur ? "select-none blur-md" : undefined}>{node}</div>;
+  const content = (node: ReactNode) => <div>{node}</div>;
 
   switch (p.variant) {
     case "puente":

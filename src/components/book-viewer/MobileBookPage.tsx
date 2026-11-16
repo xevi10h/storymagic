@@ -74,27 +74,13 @@ const MobileBookPage = React.forwardRef<HTMLDivElement, MobileBookPageProps>(
             "--bk-grad-end": colors.gradientEnd,
           } as React.CSSProperties}
         >
-          {page.type === "teaser_chapters" || page.type === "teaser_order" ? (
+          {page.type === "teaser_paint" || page.type === "teaser_order" ? (
             <TeaserPage page={page} templateId={templateId} gender={gender} favoriteColor={favoriteColor} onOrder={onOrder} />
           ) : (
             <BookPrintPage page={page} colors={colors} />
           )}
           {onEdit && (page.type === "cover" || page.type === "title_dedication") && (
             <EditPill onClick={() => onEdit(page.type === "cover" ? "cover" : "dedication")} target={page.type === "cover" ? "cover" : "dedication"} />
-          )}
-          {/* Locked overlay */}
-          {page.type === "scene" && page.locked && (
-            <button
-              type="button"
-              onClick={() => {
-                const el = document.getElementById("checkout-section");
-                if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-              }}
-              className="absolute inset-0 flex flex-col items-center justify-center bg-white/60 backdrop-blur-md z-10 cursor-pointer transition-colors hover:bg-white/50 group"
-            >
-              <span className="material-symbols-outlined text-[clamp(1.5rem,8cqi,2.5rem)] text-create-primary/60 mb-1 group-hover:text-brand-text transition-colors" data-icon="lock" aria-hidden />
-              <LockedText />
-            </button>
           )}
         </div>
       </div>
@@ -123,34 +109,14 @@ function EditPill({ onClick, target }: { onClick: () => void; target: "cover" | 
   );
 }
 
-// ── Locked text ───────────────────────────────────────────────────────────────
-
-function LockedText() {
-  const t = useTranslations("crear.preview");
-  return (
-    <div className="flex flex-col items-center gap-2 px-4 max-w-[90%]">
-      <p className="font-display text-[clamp(0.75rem,3cqi,1.1rem)] font-bold text-center leading-tight" style={{ color: "var(--bk-title)" }}>
-        {t("lockedTitle")}
-      </p>
-      <p className="text-[clamp(0.6rem,2.5cqi,0.875rem)] text-text-muted text-center leading-snug">
-        {t("lockedDescription")}
-      </p>
-      <span className="mt-1 inline-flex items-center gap-1 rounded-full border-2 border-brand bg-brand-tint px-3 py-1.5 text-[clamp(0.6rem,2.2cqi,0.75rem)] font-bold text-brand-text group-hover:bg-surface transition-colors">
-        <span className="material-symbols-outlined text-[clamp(0.7rem,2.5cqi,0.875rem)]" data-icon="shopping_bag" aria-hidden />
-        {t("lockedCta")}
-      </span>
-    </div>
-  );
-}
-
 // ── Preview teaser pages (viewer-only, not printed) ──────────────────────────
 
-function TeaserPage({ page, templateId, gender, favoriteColor, onOrder }: { page: Extract<BookPage, { type: "teaser_chapters" | "teaser_order" }>; templateId: string; gender?: string; favoriteColor?: string; onOrder?: () => void }) {
+function TeaserPage({ page, templateId, gender, favoriteColor, onOrder }: { page: Extract<BookPage, { type: "teaser_paint" | "teaser_order" }>; templateId: string; gender?: string; favoriteColor?: string; onOrder?: () => void }) {
   const t = useTranslations("crear.preview");
   const tp = useTranslations("crear.purchase");
   const locale = useLocale();
   switch (page.type) {
-    case "teaser_chapters": {
+    case "teaser_paint": {
       return (
         <div className="absolute inset-0 overflow-hidden bg-cream">
           {page.imageUrl && (
@@ -160,16 +126,19 @@ function TeaserPage({ page, templateId, gender, favoriteColor, onOrder }: { page
           <div className="absolute inset-0 bg-cream/80" />
           <div className="relative flex h-full flex-col justify-center px-[9%] py-[8%]">
             <p className="font-display text-[clamp(0.95rem,5.2cqi,1.4rem)] font-bold leading-tight" style={{ color: "var(--bk-title)" }}>
-              {tp("teaserComingTitle")}
+              {tp("teaserPaintTitle", { count: page.chapters.length })}
+            </p>
+            <p className="mt-[1.5%] text-[clamp(0.65rem,3.1cqi,0.85rem)] leading-snug text-create-text-sub">
+              {tp("teaserPaintBody", { name: page.characterName, deName: deName(page.characterName, locale, gender) })}
             </p>
             <div className="mt-[3%] mb-[4%] h-px w-12" style={{ backgroundColor: "var(--bk-ornament)" }} />
             <ol className="space-y-[1.6cqi]">
-              {page.chapters.map((chapter, i) => (
-                <li key={i} className="flex items-baseline gap-[2.5cqi] text-[clamp(0.7rem,3.5cqi,0.95rem)] leading-snug text-create-text-dark">
+              {page.chapters.map((chapter) => (
+                <li key={chapter.sceneNumber} className="flex items-baseline gap-[2.5cqi] text-[clamp(0.7rem,3.5cqi,0.95rem)] leading-snug text-create-text-dark">
                   <span className="w-[5cqi] shrink-0 text-right font-display font-bold tabular-nums" style={{ color: "var(--bk-accent)" }}>
-                    {page.firstChapter + i}
+                    {chapter.sceneNumber}
                   </span>
-                  <span className="min-w-0 truncate">{chapter}</span>
+                  <span className="min-w-0 truncate">{chapter.title}</span>
                 </li>
               ))}
             </ol>

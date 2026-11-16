@@ -100,7 +100,7 @@ A seasonal world lives in `STORY_TEMPLATES` with `seasonal: true` and an optiona
 | `skin_tone` | string | Yes | Skin tone |
 | `eye_color` | string | Yes | Eye color |
 | `interests` | string[] (up to 4) | No | Legacy field: the current create flow does not ask for it (always `[]`). Public copy must not claim the story uses interests, dreams, pets or favourite food (claims sweep 2026-10-02). |
-| `city` | string | No | Legacy field: not asked by the current create flow. |
+| `city` | string | No | Optional "¿Dónde vive?" on screen 1 (2026-11-16, max 40 chars, trimmed). Only two readers: the Book Plan brief (the story opens there; empty → the child's home and street, no invented or named town) and the printed hero card (p27 "5 años · Sabadell", as before). Never sent to prepare, analytics or email. |
 | `favorite_color` | string | No | Favourite colour (hex of `FAVORITE_COLORS`, asked on screen 2, optional). Leads the whole book palette — accents, titles, ornaments, tinted text pages, endpapers, cover/spine deep tone — in print and web (`src/lib/template-colors.ts`), plus the Character Bible jacket. Null → neutral warm palette. |
 | `favorite_companion` | string | No | Legacy field: not asked by the current create flow (`future_dream` likewise). |
 | `sender_name` | string | No | Gift sender's name (if it's a gift) |

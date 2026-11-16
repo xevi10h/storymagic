@@ -2,13 +2,16 @@
 // the preview UI (book-pages.ts slices the same scenes), the preview generator
 // (pricing.ts PREVIEW_ILLUSTRATION_COUNT) and every API that returns book content.
 //
-// Unpaid story → the free preview only:
+// Unpaid story → the whole story to read, the illustrations of the free preview only
+// (2026-11-16, owner decision: the parent reads every page before ordering):
 //   - cover, title, title options, synopsis (printed back cover in the buy panel),
-//     dedication, and every chapter TITLE (the "what's still to come" teaser page);
-//   - the first FREE_PREVIEW_SCENES scenes in full (text + their illustrations);
-//   - every other scene keeps its slot (same array length and numbering, so the UI
-//     renders its locked state unchanged) with empty text, no image, no prompt;
-//   - no final message, no image prompts, no Book Plan / image plan internals.
+//     dedication, and the title and TEXT of every scene;
+//   - the illustrations (main + secondary) of the first FREE_PREVIEW_SCENES scenes;
+//   - every other scene keeps its text but no image, no image prompt, no secondary
+//     illustration (the UI shows its locked art placeholder: painted after ordering);
+//   - no final message (the closing whisper of the printed "The End" page: the preview
+//     never renders that page, so it stays a reveal of the printed book), no image
+//     prompts, no Book Plan / image plan internals.
 // Purchased (a live paid order) or showcase → the row as stored.
 //
 // Pure and dependency-free (type-only imports), so it runs in the browser, on the
@@ -17,7 +20,7 @@
 
 import type { GeneratedScene } from "@/lib/ai/story-generator";
 
-/** Scenes shown in full in the free preview (also the scenes the preview illustrates). */
+/** Scenes whose illustrations the free preview shows (also the scenes the preview illustrates). */
 export const FREE_PREVIEW_SCENES = 3;
 
 /** Secondary illustrations are stored as scene_number + 12 (book-pages.ts, fulfilment). */
@@ -29,8 +32,8 @@ export const PAID_ORDER_STATUSES = ["paid", "producing", "shipped", "delivered"]
 type SceneLike = Pick<GeneratedScene, "sceneNumber"> & Partial<GeneratedScene>;
 
 /**
- * scene_number values whose content is free: the first FREE_PREVIEW_SCENES scenes in
- * book order (the same slice toPreviewPages shows) and their secondary illustrations.
+ * scene_number values whose illustrations are free: the first FREE_PREVIEW_SCENES scenes
+ * in book order (the scenes toPreviewPages leaves unlocked) and their secondary illustrations.
  */
 export function freeSceneNumbers(scenes: readonly SceneLike[] | null | undefined): Set<number> {
   const free = new Set<number>();
@@ -58,11 +61,12 @@ export function redactGeneratedStory(generated: unknown): Record<string, unknown
     ...(g.dedicationSource !== undefined ? { dedicationSource: g.dedicationSource } : {}),
     coverImagePrompt: "",
     finalMessage: "",
-    scenes: scenes.map((s, i) => ({
+    scenes: scenes.map((s) => ({
       sceneNumber: s.sceneNumber,
       type: s.type ?? "scene",
       title: s.title ?? "",
-      text: i < FREE_PREVIEW_SCENES ? (s.text ?? "") : "",
+      // Every scene's text is free; only its illustration is locked (see header).
+      text: s.text ?? "",
       imagePrompt: "",
     })),
     // Presence only: the preview page tells previews of removed engines (no frozen

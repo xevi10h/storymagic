@@ -95,14 +95,14 @@ const CONTENT: Record<Locale, ReminderStrings> = {
         subject: (p) => `El cuento ${p.deName} sigue aquí`,
         heading: (p) => `El cuento ${p.deName} te espera`,
         paragraphs: () => [
-          "Lo hemos guardado tal como lo dejaste, con su portada y sus primeras páginas. Puedes volver a verlo cuando quieras y enseñárselo a quien quieras.",
+          "Lo hemos guardado tal como lo dejaste, con su portada y la historia entera. Puedes volver a leerlo cuando quieras y enseñárselo a quien quieras.",
         ],
       },
       2: {
-        subject: (p) => `¿Cómo acaba el cuento ${p.deName}?`,
-        heading: (p) => `¿Cómo acaba el cuento ${p.deName}?`,
+        subject: (p) => `Las ilustraciones que faltan en el cuento ${p.deName}`,
+        heading: (p) => `El cuento ${p.deName}, con todas sus ilustraciones`,
         paragraphs: (p) => [
-          "En la vista previa has visto el principio. El cuento completo sigue la aventura hasta el final, con todas sus ilustraciones.",
+          "En la vista previa ya puedes leer toda la historia y ver sus tres primeras ilustraciones. Las otras nueve las pintamos cuando lo pides, para el libro impreso y el PDF.",
           `Lo tienes en PDF por ${p.pdf} IVA incluido, y también impreso: tapa blanda por ${p.softcover} o tapa dura por ${p.hardcover}, IVA y envío incluidos.`,
         ],
       },
@@ -142,14 +142,14 @@ const CONTENT: Record<Locale, ReminderStrings> = {
         subject: (p) => `El conte ${p.deName} continua aquí`,
         heading: (p) => `El conte ${p.deName} t'espera`,
         paragraphs: () => [
-          "L'hem desat tal com el vas deixar, amb la portada i les primeres pàgines. El pots tornar a mirar quan vulguis i ensenyar-lo a qui vulguis.",
+          "L'hem desat tal com el vas deixar, amb la portada i tota la història. El pots tornar a llegir quan vulguis i ensenyar-lo a qui vulguis.",
         ],
       },
       2: {
-        subject: (p) => `Com acaba el conte ${p.deName}?`,
-        heading: (p) => `Com acaba el conte ${p.deName}?`,
+        subject: (p) => `Les il·lustracions que falten al conte ${p.deName}`,
+        heading: (p) => `El conte ${p.deName}, amb totes les il·lustracions`,
         paragraphs: (p) => [
-          "A la vista prèvia n'has vist el començament. El conte complet segueix l'aventura fins al final, amb totes les il·lustracions.",
+          "A la vista prèvia ja pots llegir tota la història i veure'n les tres primeres il·lustracions. Les altres nou les pintem quan el demanes, per al llibre imprès i el PDF.",
           `El tens en PDF per ${p.pdf} IVA inclòs, i també imprès: tapa tova per ${p.softcover} o tapa dura per ${p.hardcover}, IVA i enviament inclosos.`,
         ],
       },
@@ -189,14 +189,14 @@ const CONTENT: Record<Locale, ReminderStrings> = {
         subject: (p) => `${p.name}'s story is still here`,
         heading: (p) => `${p.name}'s story is waiting for you`,
         paragraphs: () => [
-          "We've kept it just as you left it, with its cover and first pages. You can come back to it whenever you like and show it to anyone you like.",
+          "We've kept it just as you left it, with its cover and the whole story. You can come back and read it whenever you like and show it to anyone you like.",
         ],
       },
       2: {
-        subject: (p) => `How does ${p.name}'s story end?`,
-        heading: (p) => `How does ${p.name}'s story end?`,
+        subject: (p) => `The illustrations still to come in ${p.name}'s story`,
+        heading: (p) => `${p.name}'s story, with every illustration`,
         paragraphs: (p) => [
-          "The preview shows the beginning. The full story follows the adventure to the end, with all its illustrations.",
+          "In the preview you can already read the whole story and see its first three illustrations. We paint the other nine when you order, for the printed book and the PDF.",
           `You can have it as a PDF for ${p.pdf} VAT included, or printed: softcover for ${p.softcover} or hardcover for ${p.hardcover}, VAT and delivery included.`,
         ],
       },
@@ -236,14 +236,14 @@ const CONTENT: Record<Locale, ReminderStrings> = {
         subject: (p) => `L'histoire ${p.deName} est toujours là`,
         heading: (p) => `L'histoire ${p.deName} vous attend`,
         paragraphs: () => [
-          "Nous l'avons gardée telle que vous l'avez laissée, avec sa couverture et ses premières pages. Vous pouvez y revenir quand vous voulez et la montrer à qui vous voulez.",
+          "Nous l'avons gardée telle que vous l'avez laissée, avec sa couverture et toute l'histoire. Vous pouvez la relire quand vous voulez et la montrer à qui vous voulez.",
         ],
       },
       2: {
-        subject: (p) => `Comment finit l'histoire ${p.deName} ?`,
-        heading: (p) => `Comment finit l'histoire ${p.deName} ?`,
+        subject: (p) => `Les illustrations qui manquent à l'histoire ${p.deName}`,
+        heading: (p) => `L'histoire ${p.deName}, avec toutes ses illustrations`,
         paragraphs: (p) => [
-          "L'aperçu montre le début. L'histoire complète suit l'aventure jusqu'à la fin, avec toutes ses illustrations.",
+          "Dans l'aperçu, vous pouvez déjà lire toute l'histoire et voir ses trois premières illustrations. Nous peignons les neuf autres quand vous la commandez, pour le livre imprimé et le PDF.",
           `Elle est disponible en PDF pour ${p.pdf} TVA incluse, et aussi imprimée : couverture souple à ${p.softcover} ou couverture rigide à ${p.hardcover}, TVA et livraison incluses.`,
         ],
       },

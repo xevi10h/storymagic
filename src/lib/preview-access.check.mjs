@@ -15,7 +15,7 @@ const SECRET = "SECRET-LOCKED";
 const scenes = Array.from({ length: 12 }, (_, i) => ({
   sceneNumber: i + 1,
   title: `Chapter ${i + 1}`,
-  text: i < 3 ? `free text ${i + 1}` : `${SECRET} text ${i + 1}`,
+  text: `story text ${i + 1}`,
   imagePrompt: `${SECRET} prompt ${i + 1}`,
   type: i === 5 ? "bridge" : "scene",
 }));
@@ -64,23 +64,22 @@ assert.equal(freeSceneNumbers(null).size, 0);
 // ── Purchased: the row as stored (same object, nothing removed) ────────────────
 assert.equal(redactStoryForViewer(row, true), row);
 
-// ── Unpaid: free preview only ──────────────────────────────────────────────────
+// ── Unpaid: every scene's text, the free scenes' illustrations only ──────────
 const red = redactStoryForViewer(row, false);
 assert.equal(JSON.stringify(row), snapshot, "input must not be mutated");
 
-// No locked text, prompt, plan or locked image ref anywhere in the response
+// No prompt, plan, final message or locked image ref anywhere in the response
 const out = JSON.stringify(red);
 assert.ok(!out.includes(SECRET), `locked content leaked: ${out.match(new RegExp(`${SECRET}[^"]*`))?.[0]}`);
 for (const n of [4, 5, 6, 7, 8, 9, 10, 11, 12, 16]) assert.ok(!out.includes(ref(n)), `locked image ${n} leaked`);
 
-// Page model preserved: same scene count, numbering, types and every chapter title
+// Page model preserved: same scene count, numbering, types, every chapter title and every text
 const g = red.generated_text;
 assert.equal(g.scenes.length, 12);
 assert.deepEqual(g.scenes.map((s) => s.sceneNumber), scenes.map((s) => s.sceneNumber));
 assert.deepEqual(g.scenes.map((s) => s.type), scenes.map((s) => s.type));
 assert.deepEqual(g.scenes.map((s) => s.title), scenes.map((s) => s.title));
-assert.deepEqual(g.scenes.slice(0, 3).map((s) => s.text), ["free text 1", "free text 2", "free text 3"]);
-assert.ok(g.scenes.slice(3).every((s) => s.text === "" && s.imagePrompt === ""));
+assert.deepEqual(g.scenes.map((s) => s.text), scenes.map((s) => s.text), "the whole story is readable before ordering");
 assert.ok(g.scenes.every((s) => s.imagePrompt === ""));
 // What the preview UI needs is kept
 assert.equal(g.bookTitle, generated.bookTitle);

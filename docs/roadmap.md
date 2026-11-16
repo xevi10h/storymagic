@@ -53,6 +53,17 @@ Code, docs, Resend, Supabase allow-list and GSC property done (see `docs/stack.m
     (Facebook page website and Merchant Center contact moved to `.es` on 2026-10-23.)
   - Renew `.shop` yearly (keep forever: printed QR codes).
 
+## Preview shows the whole story (2026-11-16, branch `feat/preview-full-story`)
+
+Audit: 189 previews → 2 sales in 30 days; the 3 free scenes showed only the real-world opening and a one-line threshold, never
+the parent's choices, the companion or the fantasy world. Built (not deployed): beat map front-loaded (story path step 1 by slot 2,
+docs/generation-pipeline.md › Book Plan), the text of all 12 scenes readable before ordering with a locked art placeholder for
+scenes 4–12 (docs/user-experience.md › Su libro), optional "¿Dónde vive?" on screen 1 (no city → home and street, no invented town).
+- [ ] After deploy: read the funnel 7 and 14 days later (`preview_shown` → `checkout_started` → paid) against the 189 → 2 baseline.
+- [ ] Copy sweep beyond the purchase flow: landing / SEO / FAQ lines still say "ves la portada y las primeras escenas" (true, but
+  undersells "lees toda la historia"); `docs/ads/creatives/static-preview-*` headline can now say the whole story is readable.
+- [ ] Consider measuring whether parents reach the last scene of the preview (a `preview_read_to` event on the page index).
+
 ## Order step conversion (2026-11-09)
 
 Shipped: "llega a tiempo" card per format, "Por dentro" thumbnails, consent sheet instead of a blocking box, honest guarantees,
@@ -86,7 +97,7 @@ State measured 2026-10-03: 14 of 132 sitemap URLs indexed, 1 impression, 0 organ
   - Hourly inbox check: `scripts/social/inbox.mjs` lists unanswered comments and unread DMs (0 today). The hourly routine runs since 2026-10-06 (each item pushed once plus a daily summary since 2026-10-12); `scripts/social/reply.mjs` answers DMs and comments (2026-10-12, used for the first replies).
   - Funnel review 2026-10-12 (28 days): 0 paid orders. GA4 15 users / 24 sessions (consent-gated); GSC 2 clicks, ~200 impressions, 29 of 92 sitemap URLs indexed; ~4,500 social views in the first week. Only two strangers reached a preview (both 2026-10-09) and one started checkout (TikTok in-app browser, Android, softcover 34,90 €) and left on the Stripe page. Open: no cookieless visitor count (true traffic unknown); checkout is card-only (`payment_method_types: ["card"]` in `src/lib/checkout/session.ts`); a guest who leaves has no email, so the abandoned-preview reminders have never sent one (`preview_reminders` is empty); `growth-funnel.mjs` counts ~20 internal QA guest stories of 27-30 Sep as real.
   - Idea (2026-10-12): sibling book with two protagonists. Two creators with two children asked for it in one week (@familiabellugueta explicitly); today we give one code per child. Needs two face anchors and Book Plan changes in the generation pipeline: scope before committing.
-  - `docs/ads/creatives/static-preview-{es,ca}.png` say "Míralo entero antes de pagar" but the free preview shows the cover, the portrait and the first 3 scenes: fix the headline before using them again.
+  - `docs/ads/creatives/static-preview-{es,ca}.png` say "Míralo entero antes de pagar": since 2026-11-16 the preview shows the whole story's text but only 3 of 12 illustrations, so the headline should say "Léelo entero antes de pagar" before using them again.
 - [ ] **First external links / citations:** pitch the free Reyes letter tool and `/compare` to parenting sites and gift guides; open a Trustpilot or Google profile. Nothing off-site exists for search or AI engines to cite.
 - [ ] **Lead with Catalan in SEO** (only query set with no commercial competitor): link in-catalan from Sant Jordi + Catalan posts, pitch Catalan parenting media.
 - [ ] Re-add en/fr to the sitemap (`SITEMAP_LOCALES`) once es/ca are indexed.

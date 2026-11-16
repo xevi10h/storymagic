@@ -23,6 +23,7 @@ export type BookPage =
       scene: GeneratedScene;
       /** Art drawn on this page (primary, panorama or secondary illustration); null on text pages */
       imageUrl: string | null;
+      /** Pre-purchase preview: the text is shown, the art is a "painted when you order" placeholder. */
       locked: boolean;
       print: ScenePrint;
       /** Panorama halves: bottom gradient height (pt) shared by both halves (spreadGradientHeight) */
@@ -43,8 +44,8 @@ export type BookPage =
   /** Adventure map spread (pp. 28–29); the search-and-find panel sits on the right half. */
   | { type: "map"; half: "left" | "right"; imageUrl: string; panel: MapPanel | null }
   | { type: "colophon"; text: string }
-  /** Preview end, left: the chapters still to come over blurred art from the book. */
-  | { type: "teaser_chapters"; chapters: string[]; firstChapter: number; characterName: string; imageUrl: string | null }
+  /** Preview end, left: the chapters whose illustration is painted after ordering, over blurred art from the book. */
+  | { type: "teaser_paint"; chapters: { sceneNumber: number; title: string }[]; characterName: string; imageUrl: string | null }
   /** Preview end, right: the printed book (mockup of the real cover) with price and CTA. */
   | {
       type: "teaser_order";

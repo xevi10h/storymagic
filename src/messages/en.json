@@ -1142,9 +1142,9 @@
       "createdFor": "A story created especially for",
       "end": "The End",
       "previewBadge": "Preview",
-      "lockedTitle": "The adventure continues...",
-      "lockedDescription": "Unlock the complete story to discover what happens next.",
-      "lockedCta": "Unlock story",
+      "lockedArtTitle": "Illustration to come",
+      "lockedArtBody": "We paint it when you order the book",
+      "lockedCta": "Order the book",
       "expandPage": "View fullscreen",
       "freshTitle": "{name}'s story is ready!",
       "freshSubtitle": "Turn the pages and see how their adventure begins…",
@@ -1384,7 +1384,7 @@
       }
     },
     "purchase": {
-      "scenesShown": "{shown} of {total} scenes",
+      "scenesShown": "Read the whole story · {shown} of {total} illustrations",
       "editTitle": "Change the title",
       "editPage": "Edit",
       "editLinks": "Change the <title>title</title>, <dedication>dedication</dedication> or <look>look</look>",
@@ -1412,7 +1412,8 @@
       "trustMadeIn": "Made in Barcelona, printed in Europe",
       "trustReprint": "Arrived damaged or with a printing defect? We replace it free of charge",
       "help": "Questions? Write to",
-      "teaserComingTitle": "Still to come in the story",
+      "teaserPaintTitle": "{count, plural, one {# illustration to paint} other {# illustrations to paint}}",
+      "teaserPaintBody": "The whole story is already written. We paint these scenes when you order the book.",
       "teaserComingMore": "…and the ending: {name}'s hero card and a map of their world, with a seek-and-find game",
       "teaserOrderTitle": "{name}'s complete book",
       "teaserOrderBody": "12 illustrated scenes, printed and delivered to your door",
@@ -1438,7 +1439,7 @@
         },
         "changes": {
           "q": "Can I change anything?",
-          "a": "Yes, before ordering: the title, the dedication and the look. We print it exactly as you see it here."
+          "a": "Yes, before ordering: the title, the dedication and the look. You can read the whole story here; we paint the 9 remaining illustrations when you order, in the same style and with the same character."
         },
         "returns": {
           "q": "What if something is wrong with it?",
@@ -1463,7 +1464,7 @@
       "secondBookPromo": "With this book, a 2nd one in softcover is {price} VAT included (code valid until {until})",
       "insideTitle": "Inside",
       "insideOpenScene": "See scene {n}",
-      "insideMore": "more scenes",
+      "insideMore": "more illustrations",
       "trustMethods": "Card, Bizum, Apple Pay or Google Pay",
       "promiseChoosePdf": "The PDF will: it reaches your inbox ({price} VAT included)",
       "promise": {
@@ -2991,14 +2992,14 @@
     "view": {
       "metaTitle": "{name}'s book · Preview",
       "badge": "Shared preview",
-      "intro": "A sneak peek at {name}'s personalised story: the first pages. The rest is a surprise.",
-      "restTitle": "The rest of the story is a surprise",
+      "intro": "A sneak peek at {name}'s personalised story: the whole story and its first illustrations.",
+      "restTitle": "The remaining illustrations are painted for the book",
       "restBody": "Someone who loves {name} very much is making this book. Would you like one like it for another child? With their name, their look and their own adventure, ready in a few minutes.",
       "createCta": "Create yours",
       "ownerHint": "Is this your story?",
       "ownerLogin": "Log in to finish it",
       "readOnly": "Read only",
-      "lockedDescription": "The rest of the story is a surprise for {name}."
+      "lockedArtBody": "Painted when the book is ordered"
     },
     "notFound": {
       "title": "This link no longer works",

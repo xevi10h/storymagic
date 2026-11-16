@@ -13,8 +13,8 @@ const VIEWPORTS = {
 } as const;
 
 const COPY = {
-  es: { pdfOnly: /Solo el PDF/, accept: "Acepto y voy al pago", back: "Volver", outdated: /ya no se puede comprar/, recreate: /Crear de nuevo/, delivery: /Llega entre el/, teaser: /Lo que viene en la historia/ },
-  ca: { pdfOnly: /Només el PDF/, accept: "Accepto i vaig al pagament", back: "Tornar", outdated: /ja no es pot comprar/, recreate: /Crear de nou/, delivery: /Arriba entre el/, teaser: /El que ve a la història/ },
+  es: { pdfOnly: /Solo el PDF/, accept: "Acepto y voy al pago", back: "Volver", outdated: /ya no se puede comprar/, recreate: /Crear de nuevo/, delivery: /Llega entre el/, teaser: /Faltan 9 ilustraciones/, readAll: /Lee toda la historia/ },
+  ca: { pdfOnly: /Només el PDF/, accept: "Accepto i vaig al pagament", back: "Tornar", outdated: /ja no es pot comprar/, recreate: /Crear de nou/, delivery: /Arriba entre el/, teaser: /Falten 9 il·lustracions/, readAll: /Llegeix tota la història/ },
 } as const;
 type Locale = keyof typeof COPY;
 
@@ -142,7 +142,7 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
         expect(errors).toEqual([]);
       });
 
-      test(`preview ends on the chapters + printed book, not a padlock [${locale} ${vpName}]`, async ({ page }) => {
+      test(`preview shows every scene's text, then the art still to paint + printed book [${locale} ${vpName}]`, async ({ page }) => {
         await mockApi(page, { withPlan: true });
         await page.goto(`/${locale}/create/${STORY_ID}/preview`);
         await section(page).waitFor();
@@ -150,7 +150,10 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
         await expect(page.getByTestId("preview-intro")).toContainText(locale === "es" ? /Solo el comienzo: 3 de 12 escenas/ : /Només l'inici: 3 de 12 escenes/);
         await page.screenshot({ path: `${SHOTS}/${locale}-${vpName}-preview-top.png` });
         await expect(page.getByText(COPY[locale].teaser)).toHaveCount(1);
-        // The old blank padlock page ("Desbloquear cuento") is gone; the printed book closes the preview.
+        await expect(page.getByText(COPY[locale].readAll)).toHaveCount(1);
+        // Locked scenes keep their text next to a "painted when you order" placeholder.
+        await expect(page.getByText("Texto de la escena 12.", { exact: true })).toHaveCount(1);
+        await expect(page.getByTestId("locked-art").first()).toBeAttached();
         await expect(page.getByText(/Desbloquear cuento|Desbloquejar conte/)).toHaveCount(0);
         await expect(page.getByTestId("checkout-cta")).toHaveCount(1);
       });

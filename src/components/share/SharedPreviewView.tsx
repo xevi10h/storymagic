@@ -32,8 +32,9 @@ export default function SharedPreviewView({ storyId, title, childName, templateI
   const [currentPage, setCurrentPage] = useState(0);
   const total = pages.length;
 
-  // The viewer's locked teaser speaks to the owner ("Desbloquear cuento"): for a visitor
-  // it becomes "Crea el tuyo" (and scrolls to that block) — same component, other copy.
+  // The viewer's locked art speaks to the owner ("La pintamos cuando pides el libro", "Pedir el
+  // libro"): for a visitor it becomes "Se pinta cuando se pide el libro" / "Crea el tuyo"
+  // (which scrolls to that block) — same component, other copy.
   const messages = useMessages();
   const timeZone = useTimeZone();
   const viewerMessages = useMemo(() => {
@@ -41,9 +42,9 @@ export default function SharedPreviewView({ storyId, title, childName, templateI
     const preview = (crear.preview ?? {}) as Record<string, unknown>;
     return {
       ...messages,
-      crear: { ...crear, preview: { ...preview, lockedDescription: t("lockedDescription", { name: childName }), lockedCta: t("createCta") } },
+      crear: { ...crear, preview: { ...preview, lockedArtBody: t("lockedArtBody"), lockedCta: t("createCta") } },
     };
-  }, [messages, t, childName]);
+  }, [messages, t]);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {

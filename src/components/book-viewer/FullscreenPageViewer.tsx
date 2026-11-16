@@ -207,21 +207,24 @@ export default function FullscreenPageViewer({
               {shown.length === 2 && <div aria-hidden className="book-gutter" />}
             </div>
           )}
-          {isLocked && (
-            <button
-              type="button"
-              onClick={goToCheckout}
-              className="absolute bottom-5 left-1/2 inline-flex min-h-12 -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-full bg-create-primary px-6 py-2.5 text-[19px] font-bold leading-tight text-white shadow-lg transition-colors hover:bg-create-primary-hover"
-            >
-              <span aria-hidden className="material-symbols-outlined text-xl" data-icon="shopping_bag" />
-              {t("lockedCta")}
-            </button>
-          )}
         </div>
         <div className="flex w-16 shrink-0 flex-col items-center justify-between py-3 pr-[env(safe-area-inset-right)]">
           {closeButton}
           {navButton(1)}
-          <span />
+          {/* Locked pages: the order CTA sits in the rail, never over the (now readable) text. */}
+          {isLocked ? (
+            <button
+              type="button"
+              onClick={goToCheckout}
+              aria-label={t("lockedCta")}
+              title={t("lockedCta")}
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-create-primary text-white shadow-lg transition-colors hover:bg-create-primary-hover"
+            >
+              <span aria-hidden className="material-symbols-outlined text-xl" data-icon="shopping_bag" />
+            </button>
+          ) : (
+            <span />
+          )}
         </div>
       </div>
     );

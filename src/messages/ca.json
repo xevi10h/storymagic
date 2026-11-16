@@ -1202,9 +1202,9 @@
       "createdFor": "Una història creada especialment per a",
       "end": "Fi",
       "previewBadge": "Vista prèvia",
-      "lockedTitle": "L'aventura continua...",
-      "lockedDescription": "Desbloqueja el conte complet per descobrir com segueix la història.",
-      "lockedCta": "Desbloquejar conte",
+      "lockedArtTitle": "Il·lustració per pintar",
+      "lockedArtBody": "La pintem quan demanes el llibre",
+      "lockedCta": "Demanar el llibre",
       "expandPage": "Veure a pantalla completa",
       "freshTitle": "El conte de {name} ja està llest!",
       "freshSubtitle": "Passa les pàgines i descobreix com comença la seva aventura…",
@@ -1444,7 +1444,7 @@
       }
     },
     "purchase": {
-      "scenesShown": "{shown} de {total} escenes",
+      "scenesShown": "Llegeix tota la història · {shown} de {total} il·lustracions",
       "editTitle": "Canviar el títol",
       "editPage": "Editar",
       "editLinks": "Canviar <title>títol</title>, <dedication>dedicatòria</dedication> o <look>aspecte</look>",
@@ -1472,7 +1472,8 @@
       "trustMadeIn": "Fet a Barcelona, imprès a Europa",
       "trustReprint": "Arriba malmès o amb un defecte d'impressió? Te'l reposem sense cost",
       "help": "Dubtes? Escriu-nos a",
-      "teaserComingTitle": "El que ve a la història",
+      "teaserPaintTitle": "{count, plural, one {Falta # il·lustració} other {Falten # il·lustracions}}",
+      "teaserPaintBody": "Tota la història ja està escrita. Aquestes escenes les pintem quan demanes el llibre.",
       "teaserComingMore": "…i el final: la fitxa d'heroi {deName} i el mapa del seu món, amb un joc de busca i troba",
       "teaserOrderTitle": "El llibre {deName}, complet",
       "teaserOrderBody": "12 escenes il·lustrades, imprès i a casa teva",
@@ -1498,7 +1499,7 @@
         },
         "changes": {
           "q": "Puc canviar alguna cosa?",
-          "a": "Sí, abans de demanar-lo: el títol, la dedicatòria i el seu aspecte. L'imprimim tal com el veus aquí."
+          "a": "Sí, abans de demanar-lo: el títol, la dedicatòria i el seu aspecte. Aquí pots llegir tota la història; les 9 il·lustracions que falten les pintem quan el demanes, amb el mateix estil i el mateix personatge."
         },
         "returns": {
           "q": "I si arriba amb algun problema?",
@@ -1523,7 +1524,7 @@
       "secondBookPromo": "Amb aquest llibre, el 2n en tapa tova et surt a {price} IVA inclòs (codi vàlid fins al {until})",
       "insideTitle": "Per dins",
       "insideOpenScene": "Veure l'escena {n}",
-      "insideMore": "escenes més",
+      "insideMore": "il·lustracions més",
       "trustMethods": "Targeta, Bizum, Apple Pay o Google Pay",
       "promiseChoosePdf": "El PDF sí: t'arriba per correu ({price} IVA inclòs)",
       "promise": {
@@ -3051,14 +3052,14 @@
     "view": {
       "metaTitle": "El llibre {deName} · Vista prèvia",
       "badge": "Vista prèvia compartida",
-      "intro": "Un tast del conte personalitzat {deName}: les primeres pàgines. La resta és sorpresa.",
-      "restTitle": "La resta del conte és sorpresa",
+      "intro": "Un tast del conte personalitzat {deName}: tota la història i les primeres il·lustracions.",
+      "restTitle": "Les il·lustracions que falten es pinten per al llibre",
       "restBody": "Algú que estima molt {name} està preparant aquest llibre. En vols un així per a un altre nen o nena? Amb el seu nom, el seu aspecte i la seva aventura, a punt en uns minuts.",
       "createCta": "Crea el teu",
       "ownerHint": "És el teu conte?",
       "ownerLogin": "Inicia sessió per acabar-lo",
       "readOnly": "Només lectura",
-      "lockedDescription": "La resta del conte és una sorpresa per a {name}."
+      "lockedArtBody": "Es pinta quan es demana el llibre"
     },
     "notFound": {
       "title": "Aquest enllaç ja no funciona",

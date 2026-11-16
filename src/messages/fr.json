@@ -1144,9 +1144,9 @@
       "createdFor": "Une histoire créée spécialement pour",
       "end": "Fin",
       "previewBadge": "Aperçu",
-      "lockedTitle": "L'aventure continue...",
-      "lockedDescription": "Débloquez l'histoire complète pour découvrir la suite.",
-      "lockedCta": "Débloquer l'histoire",
+      "lockedArtTitle": "Illustration à peindre",
+      "lockedArtBody": "Nous la peignons quand vous commandez le livre",
+      "lockedCta": "Commander le livre",
       "expandPage": "Voir en plein écran",
       "freshTitle": "L'histoire de {name} est prête !",
       "freshSubtitle": "Tourne les pages et découvre comment commence son aventure…",
@@ -1386,7 +1386,7 @@
       }
     },
     "purchase": {
-      "scenesShown": "{shown} scènes sur {total}",
+      "scenesShown": "Lisez toute l'histoire · {shown} illustrations sur {total}",
       "editTitle": "Changer le titre",
       "editPage": "Modifier",
       "editLinks": "Changer le <title>titre</title>, la <dedication>dédicace</dedication> ou l’<look>apparence</look>",
@@ -1414,7 +1414,8 @@
       "trustMadeIn": "Fait à Barcelone, imprimé en Europe",
       "trustReprint": "Arrivé abîmé ou avec un défaut d'impression ? Nous le remplaçons sans frais",
       "help": "Des questions ? Écrivez-nous à",
-      "teaserComingTitle": "La suite de l'histoire",
+      "teaserPaintTitle": "{count, plural, one {# illustration à peindre} other {# illustrations à peindre}}",
+      "teaserPaintBody": "Toute l'histoire est déjà écrite. Nous peignons ces scènes quand vous commandez le livre.",
       "teaserComingMore": "…et la fin : la fiche de héros {deName} et la carte de son monde, avec un jeu de cherche et trouve",
       "teaserOrderTitle": "Le livre {deName}, complet",
       "teaserOrderBody": "12 scènes illustrées, imprimé et livré chez vous",
@@ -1440,7 +1441,7 @@
         },
         "changes": {
           "q": "Puis-je changer quelque chose ?",
-          "a": "Oui, avant de commander : le titre, la dédicace et l'apparence. Nous l'imprimons tel que vous le voyez ici."
+          "a": "Oui, avant de commander : le titre, la dédicace et l'apparence. Ici, vous pouvez lire toute l'histoire ; nous peignons les 9 illustrations restantes à la commande, dans le même style et avec le même personnage."
         },
         "returns": {
           "q": "Et s'il arrive avec un problème ?",
@@ -1465,7 +1466,7 @@
       "secondBookPromo": "Avec ce livre, le 2e en couverture souple est à {price} TVA incluse (code valable jusqu'au {until})",
       "insideTitle": "À l'intérieur",
       "insideOpenScene": "Voir la scène {n}",
-      "insideMore": "scènes de plus",
+      "insideMore": "illustrations de plus",
       "trustMethods": "Carte, Bizum, Apple Pay ou Google Pay",
       "promiseChoosePdf": "Le PDF, si : il arrive par e-mail ({price} TVA incluse)",
       "promise": {
@@ -2993,14 +2994,14 @@
     "view": {
       "metaTitle": "Le livre {deName} · Aperçu",
       "badge": "Aperçu partagé",
-      "intro": "Un avant-goût de l'histoire personnalisée {deName} : les premières pages. La suite est une surprise.",
-      "restTitle": "La suite de l'histoire est une surprise",
+      "intro": "Un avant-goût de l'histoire personnalisée {deName} : toute l'histoire et ses premières illustrations.",
+      "restTitle": "Les illustrations restantes sont peintes pour le livre",
       "restBody": "Quelqu'un qui aime beaucoup {name} prépare ce livre. Vous en voulez un pour un autre enfant ? Avec son prénom, son apparence et sa propre aventure, prêt en quelques minutes.",
       "createCta": "Créez le vôtre",
       "ownerHint": "C'est votre histoire ?",
       "ownerLogin": "Connectez-vous pour la terminer",
       "readOnly": "Lecture seule",
-      "lockedDescription": "La suite de l'histoire est une surprise pour {name}."
+      "lockedArtBody": "Peinte à la commande du livre"
     },
     "notFound": {
       "title": "Ce lien ne fonctionne plus",

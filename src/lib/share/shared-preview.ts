@@ -5,11 +5,12 @@
 //  - the service role reads only whitelisted columns (never user_id/email/account data
 //    reach the client — user_id is only compared server-side to detect the owner);
 //  - whatever the story status (preview or paid), only the PREVIEW slice is built
-//    (toPreviewPages + withTeaserEnd: cover + dedication + 3 scenes + the remaining chapter titles), so paid
-//    content never leaves the server; scene image prompts are stripped;
+//    (toPreviewPages + withTeaserEnd: cover + dedication + the text of every scene, the art
+//    of the first 3 only, then the chapters still to paint), so no other illustration of a
+//    paid book is ever signed; scene image prompts are stripped;
 //  - images are signed for that story's folder only, with the 1-hour UI TTL.
 
-import type { BookPage, ScenePrint } from "@/components/book-viewer/types";
+import type { BookPage } from "@/components/book-viewer/types";
 import type { GeneratedStory } from "@/lib/ai/story-generator";
 import { buildBookPages, toPreviewPages } from "@/lib/book-pages";
 import { planBook } from "@/lib/book/book-plan.server";
@@ -112,35 +113,20 @@ export async function loadSharedPreview(token: string): Promise<SharedPreviewRes
       templateId: row.template_id,
       gender: character.gender,
       favoriteColor: character.favorite_color,
-      // Ends on the remaining chapter titles (signed art only), not on a blank padlock page.
+      // Ends on the chapters whose art is still to paint (signed art only).
       pages: withTeaserEnd(
         pages.map((p) =>
           p.type === "cover" ? { ...p, imageUrl: sign(p.imageUrl) } : p.type === "scene" ? { ...p, imageUrl: sign(p.imageUrl) } : p,
         ),
-        { scenes: generated.scenes.map((s) => ({ sceneNumber: s.sceneNumber, title: s.title })), characterName: character.name },
+        { characterName: character.name },
       ),
     },
   };
 }
 
-/** Keep only what the viewer renders: no image prompts; a locked page carries no text at all. */
+/** Keep only what the viewer renders: no image prompts (a locked page keeps its text, toPreviewPages nulled its art). */
 function stripPage(page: BookPage): BookPage {
   if (page.type !== "scene") return page;
   const { sceneNumber, type, title, text } = page.scene;
-  if (!page.locked) return { ...page, scene: { sceneNumber, type, title, text, imagePrompt: "" } };
-  return { ...page, scene: { sceneNumber, type, title: "", text: "", imagePrompt: "" }, print: redactPrint(page.print) };
-}
-
-/** A locked page's print data without its words (body, overlay, drop cap). */
-function redactPrint(print: ScenePrint): ScenePrint {
-  switch (print.kind) {
-    case "text":
-      return { ...print, body: "", dropCap: null };
-    case "illustration-text":
-      return { ...print, body: "" };
-    case "spread":
-      return { ...print, overlay: { ...print.overlay, text: "" } };
-    default:
-      return print;
-  }
+  return { ...page, imageUrl: page.locked ? null : page.imageUrl, scene: { sceneNumber, type, title, text, imagePrompt: "" } };
 }

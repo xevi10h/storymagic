@@ -90,7 +90,7 @@ function useIsWide(): boolean {
   );
 }
 
-// In preview mode: show first N scenes fully (illustration + text) then 1 locked teaser page
+// In preview mode: every scene's text, the first N scenes illustrated (lib/book-pages toPreviewPages)
 
 // ── Page Component ─────────────────────────────────────────────────────────
 
@@ -224,11 +224,10 @@ export default function PreviewPage() {
   // Same preview slice as the read-only share view (lib/book-pages).
   const visiblePages = isPreviewMode ? toPreviewPages(pages) : pages;
 
-  // The preview ends on "what's still to come" + the printed book, not on a blank padlock page.
+  // The preview ends on the chapters still to paint + the printed book.
   const bookPages =
     isPreviewMode && story
       ? withTeaserEnd(visiblePages, {
-          scenes: story.generated_text.scenes,
           characterName: story.characters.name,
           order: isOutdatedPreview
             ? undefined

@@ -6,7 +6,7 @@
 
 import type { BookPage, ScenePrint } from "@/components/book-viewer/types";
 import type { GeneratedStory } from "@/lib/ai/story-generator";
-import { FREE_PREVIEW_SCENES } from "@/lib/preview-access";
+import { FREE_PREVIEW_SCENES, freeSceneNumbers } from "@/lib/preview-access";
 import { estimateBookPlan, printedStory, type BookPlan } from "@/lib/book/book-plan";
 import { PAGES_BEFORE_INTERIOR } from "@/lib/book/sequence";
 import { spreadGradientHeight } from "@/lib/book/print-spec";
@@ -42,12 +42,10 @@ export interface BookPageSource {
 }
 
 /**
- * Preview stage: the first N scenes are shown in full, then one locked teaser page.
- * Same constant the APIs redact to (lib/preview-access.ts): the server never sends more.
+ * Preview stage: every scene's text is readable, only the first N scenes are illustrated.
+ * Same constant the APIs redact to (lib/preview-access.ts): the server never sends more art.
  */
 export const PREVIEW_CLEAR_SCENES = FREE_PREVIEW_SCENES;
-/** Cover + endpaper + p1 + clear scenes × 2 pages + 1 locked teaser = 10. */
-export const PREVIEW_PAGE_COUNT = PAGES_BEFORE_INTERIOR + 1 + PREVIEW_CLEAR_SCENES * 2 + 1;
 
 /**
  * The 34 pages of the book, exactly as printed (src/lib/book/sequence.ts). With no server
@@ -156,9 +154,26 @@ export function buildBookPages(story: BookPageSource, _synopsisFallback: string,
   return pages;
 }
 
-/** The preview-stage slice of a book: header + clear scenes + the last page forced into a locked teaser. */
+/**
+ * The preview-stage slice of a book: cover, endpaper, title page and every scene page in
+ * print order (the text of the whole story), ending on the last scene; the closing pages
+ * (final, hero card, map, colophon, back) are left to the printed book. Every scene page
+ * outside the free scenes is locked by POSITION, whatever its illustration's state, so a
+ * paid story read through a share link still shows only the free art.
+ */
 export function toPreviewPages(pages: BookPage[]): BookPage[] {
-  return pages.slice(0, PREVIEW_PAGE_COUNT).map((page, i) =>
-    i === PREVIEW_PAGE_COUNT - 1 && page.type === "scene" ? { ...page, locked: true, imageUrl: null } : page,
+  const order: { sceneNumber: number }[] = [];
+  for (const p of pages) {
+    if (p.type === "scene" && !order.some((s) => s.sceneNumber === p.scene.sceneNumber)) order.push({ sceneNumber: p.scene.sceneNumber });
+  }
+  const free = freeSceneNumbers(order);
+  let end = -1;
+  pages.forEach((p, i) => {
+    if (p.type === "scene") end = i;
+  });
+  // No scene at all (malformed story): the header pages only.
+  const slice = end >= 0 ? pages.slice(0, end + 1) : pages.slice(0, PAGES_BEFORE_INTERIOR + 1);
+  return slice.map((page) =>
+    page.type === "scene" && !free.has(page.scene.sceneNumber) ? { ...page, locked: true, imageUrl: null } : page,
   );
 }
