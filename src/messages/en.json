@@ -1475,6 +1475,13 @@
         "title": "Before you pay",
         "accept": "I agree, go to payment",
         "cancel": "Back"
+      },
+      "atHome": {
+        "title": "How it looks at home",
+        "caption": "AI-recreated images of a sample hardcover book, using its real cover and pages.",
+        "altTable": "Sample hardcover book on a table next to the shipping box and a mug",
+        "altOpen": "Sample book lying open on a sofa, showing two illustrated pages",
+        "altGift": "Sample hardcover book on tissue paper next to a Christmas tree"
       }
     }
   },

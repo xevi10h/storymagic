@@ -1477,6 +1477,13 @@
         "title": "Avant de payer",
         "accept": "J'accepte et je passe au paiement",
         "cancel": "Retour"
+      },
+      "atHome": {
+        "title": "Chez vous, il ressemble à ça",
+        "caption": "Images recréées par IA à partir d'un livre d'exemple à couverture rigide, avec sa vraie couverture et ses vraies pages.",
+        "altTable": "Livre d'exemple à couverture rigide sur une table, à côté du carton d'envoi et d'une tasse",
+        "altOpen": "Livre d'exemple ouvert sur un canapé, montrant deux pages illustrées",
+        "altGift": "Livre d'exemple à couverture rigide sur du papier de soie, à côté d'un sapin de Noël"
       }
     }
   },

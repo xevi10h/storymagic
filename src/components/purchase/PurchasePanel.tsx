@@ -18,6 +18,7 @@ import {
 import { useArrivalPromise, useDeliveryLine, useSecondBookPromo } from "./delivery";
 import { Spinner } from "@/components/ui/Spinner";
 import { MarketingOptOut } from "./MarketingOptOut";
+import { BookAtHomePhotos } from "./BookAtHomePhotos";
 import { CODE_PREFIX, REFERRAL_DISCOUNT_CENTS } from "@/lib/promo-codes";
 import { BLACK_FRIDAY, blackFridayDiscountCents, blackFridayPriceCents, lowestPrice30Days } from "@/lib/black-friday";
 import { useBlackFriday, useBlackFridayEnd } from "@/components/seasonal/SalePrice";
@@ -513,6 +514,8 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
         )}
         <TrustLine icon="home_pin">{t("trustMadeIn")}</TrustLine>
       </ul>
+
+      {!isDigital && <BookAtHomePhotos className="mt-4 border-t border-create-neutral pt-4" />}
     </div>
   );
 });

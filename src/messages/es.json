@@ -1517,6 +1517,13 @@
         "title": "Antes de pagar",
         "accept": "Acepto y voy al pago",
         "cancel": "Volver"
+      },
+      "atHome": {
+        "title": "Así queda en casa",
+        "caption": "Imágenes recreadas con IA a partir de un libro de ejemplo en tapa dura, con su portada y sus páginas reales.",
+        "altTable": "Libro de ejemplo en tapa dura sobre una mesa, junto a la caja de envío y una taza",
+        "altOpen": "Libro de ejemplo abierto sobre un sofá, con dos páginas ilustradas",
+        "altGift": "Libro de ejemplo en tapa dura sobre papel de seda, junto a un árbol de Navidad"
       }
     }
   },
