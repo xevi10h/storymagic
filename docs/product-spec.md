@@ -302,6 +302,9 @@ Wonderbly, Librio and Hurra Héroes (none shows a Reyes date in the flow; all ch
   (hardcover) on a table, open on a sofa and as a gift, under the guarantees. They are AI-recreated (gpt-image-2.5-sunburst from the
   real cover mock-up and real inside pages, not a real delivery), so the caption saying so is always visible (`crear.purchase.atHome`).
   Swap for real photos when printed samples exist. Files: `public/images/purchase/home-*.webp`.
+  On the table and gift scenes the buyer's OWN cover (`CoverFace`) and spine title are laid over the sample's with a CSS
+  `matrix3d` homography (`src/lib/perspective.ts`, self-check `scripts/check-perspective.mts`; quads measured by hand in
+  `BookAtHomePhotos.tsx`, 720 × 960 px). The open-book scene keeps the sample pages (curved gutter); caption `captionOwn` says so.
 - **"¿Lo pides más tarde?"** (send me the preview + remind me) moved below the buy panel on mobile (it sat between the book and the
   price since d9bccf6); on desktop it stays under the book in the left column.
 - Prices unchanged; "IVA incluido" next to every price as before.

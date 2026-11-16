@@ -36,7 +36,7 @@ export function PurchaseHarness() {
         <PurchasePanel
           childName="Teo"
           title="Teo y el dragón de la biblioteca"
-          coverUrl={null}
+          coverUrl="/images/feed/meapica-dinosaurs-art.jpg"
           spineColor="#5D4037"
           format={format}
           onChooseFormat={setFormat}

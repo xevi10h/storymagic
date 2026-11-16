@@ -1541,7 +1541,8 @@
         "caption": "Imatges recreades amb IA a partir d'un llibre d'exemple en tapa dura, amb la seva portada i les seves pàgines reals.",
         "altTable": "Llibre d'exemple en tapa dura sobre una taula, al costat de la caixa d'enviament i una tassa",
         "altOpen": "Llibre d'exemple obert sobre un sofà, amb dues pàgines il·lustrades",
-        "altGift": "Llibre d'exemple en tapa dura sobre paper de seda, al costat d'un arbre de Nadal"
+        "altGift": "Llibre d'exemple en tapa dura sobre paper de seda, al costat d'un arbre de Nadal",
+        "captionOwn": "La seva portada sobre escenes recreades amb IA d'un llibre d'exemple en tapa dura. El llibre obert mostra pàgines d'exemple."
       }
     }
   },

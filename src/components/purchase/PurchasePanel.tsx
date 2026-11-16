@@ -515,7 +515,12 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
         <TrustLine icon="home_pin">{t("trustMadeIn")}</TrustLine>
       </ul>
 
-      {!isDigital && <BookAtHomePhotos className="mt-4 border-t border-create-neutral pt-4" />}
+      {!isDigital && (
+        <BookAtHomePhotos
+          cover={{ coverUrl, title, childName, subtitle: tPreview("personalizedStory"), spineColor }}
+          className="mt-4 border-t border-create-neutral pt-4"
+        />
+      )}
     </div>
   );
 });

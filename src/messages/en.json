@@ -1481,7 +1481,8 @@
         "caption": "AI-recreated images of a sample hardcover book, using its real cover and pages.",
         "altTable": "Sample hardcover book on a table next to the shipping box and a mug",
         "altOpen": "Sample book lying open on a sofa, showing two illustrated pages",
-        "altGift": "Sample hardcover book on tissue paper next to a Christmas tree"
+        "altGift": "Sample hardcover book on tissue paper next to a Christmas tree",
+        "captionOwn": "Their cover on AI-recreated scenes of a sample hardcover book. The open book shows sample pages."
       }
     }
   },
