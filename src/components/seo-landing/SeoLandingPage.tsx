@@ -31,7 +31,7 @@ import { factParams } from "@/lib/product-facts";
 import { isToolLocale, toolPath } from "@/lib/tools/registry";
 import { GUIDES, GUIDE_LINK_LABELS, contextGuides } from "@/lib/guides";
 import { Breadcrumbs, PageHero, kicker, marketingH1, marketingLead } from "./MarketingHeader";
-import ReyesEdition, { REYES_TEMPLATE_ID } from "./ReyesEdition";
+import SeasonalEdition, { REYES_TEMPLATE_ID } from "./SeasonalEdition";
 
 const BASE_URL = "https://meapica.es";
 
@@ -40,6 +40,12 @@ const FALLBACK_FAQ_ORDER = [2, 3, 1, 4] as const;
 // Each page carries its own questions: seo.{type}.{slug}.faq.q1/a1 … q4/a4.
 const PAGE_FAQ_SLOTS = [1, 2, 3, 4] as const;
 const INTL_LOCALE: Record<string, string> = { es: "es-ES", ca: "ca-ES", en: "en-GB", fr: "fr-FR" };
+
+/** Seasonal editions on the Christmas gift page, in this order (copy: seo.gifts.christmas.<copyKey>). */
+const CHRISTMAS_EDITIONS = [
+  { templateId: "christmas", copyKey: "edition" },
+  { templateId: "tio", copyKey: "editionTio" },
+] as const;
 
 // Gift pages that link to the Christmas / Reyes delivery deadlines.
 const SEASONAL_GIFT_SLUGS = new Set(["christmas", "three-kings"]);
@@ -74,8 +80,14 @@ export default async function SeoLandingPage({ type, slug, locale }: Props) {
   // Reyes gift page, while the seasonal Reyes edition can be ordered: that story leads the page
   // (hero cover, its own product block, first card). Same card count as the other gift pages.
   const reyesOnSale = type === "gifts" && slug === "three-kings" && isTemplateAvailable(REYES_TEMPLATE_ID, today);
+  // Christmas gift page: the Papá Noel and Tió editions while on sale (same rule, two stories).
+  const christmasEditions =
+    type === "gifts" && slug === "christmas"
+      ? CHRISTMAS_EDITIONS.filter((e) => isTemplateAvailable(e.templateId, today))
+      : [];
+  const seasonIds = reyesOnSale ? [REYES_TEMPLATE_ID] : christmasEditions.map((e) => e.templateId);
   const evergreenIds = featuredTemplateIds(type, slug);
-  const featured = (reyesOnSale ? [REYES_TEMPLATE_ID, ...evergreenIds.slice(0, -1)] : evergreenIds)
+  const featured = [...seasonIds, ...evergreenIds.slice(0, Math.max(0, evergreenIds.length - seasonIds.length))]
     .map((id) => STORY_TEMPLATES.find((tpl) => tpl.id === id))
     .filter((tpl): tpl is (typeof STORY_TEMPLATES)[number] => Boolean(tpl));
 
@@ -234,7 +246,10 @@ export default async function SeoLandingPage({ type, slug, locale }: Props) {
           </div>
         </PageHero>
 
-        {reyesOnSale && <ReyesEdition locale={locale} />}
+        {reyesOnSale && <SeasonalEdition locale={locale} templateId={REYES_TEMPLATE_ID} gift="three-kings" />}
+        {christmasEditions.map((e, i) => (
+          <SeasonalEdition key={e.templateId} locale={locale} templateId={e.templateId} gift="christmas" copyKey={e.copyKey} tinted={i % 2 === 0} />
+        ))}
 
         {/* Body copy + what makes it special */}
         <section aria-labelledby="seo-body-title" className="border-y border-line bg-surface px-4 py-16 sm:px-6 sm:py-24">

@@ -14,23 +14,36 @@ const INTL_LOCALE: Record<string, string> = { es: "es-ES", ca: "ca-ES", en: "en-
 const PRINTED_FORMATS = ["hardcover", "softcover"] as const;
 
 /**
- * The seasonal Reyes edition as a product on the Reyes gift page: the story, who it is
- * for, until when it can be ordered and the price of each printed format (VAT included).
+ * A seasonal edition (Reyes, Papá Noel, Tió) as a product on its gift page: the story, who it
+ * is for, until when it can be ordered and the price of each printed format (VAT included).
  * Every fact comes from the catalogue (STORY_TEMPLATES, PRICING); the copy is
- * seo.gifts.three-kings.edition. The caller renders it only while the world is on sale
+ * `seo.gifts.<gift>.<copyKey>`. The caller renders it only while the world is on sale
  * (isTemplateAvailable), so it disappears by itself the day after `availableUntil`.
- * It is also the landing page of the Reyes items in the Merchant feed (lib/merchant-feed.ts):
- * keep the story title and both printed prices visible here.
+ * It is also the landing page of the edition's items in the Merchant feed (lib/merchant-feed.ts,
+ * SEASONAL_FEED_WORLDS): keep the story title and both printed prices visible here.
  */
-export default async function ReyesEdition({ locale }: { locale: string }) {
-  const template = getTemplateConfig(REYES_TEMPLATE_ID);
+export default async function SeasonalEdition({
+  locale,
+  templateId,
+  gift,
+  copyKey = "edition",
+  tinted = false,
+}: {
+  locale: string;
+  templateId: string;
+  gift: string;
+  copyKey?: string;
+  /** White band with the art on the right, to alternate with a paper edition on the same page. */
+  tinted?: boolean;
+}) {
+  const template = getTemplateConfig(templateId);
   if (!template) return null;
-  const t = await getTranslations({ locale, namespace: "seo.gifts.three-kings.edition" });
+  const t = await getTranslations({ locale, namespace: `seo.gifts.${gift}.${copyKey}` });
   const td = await getTranslations({ locale, namespace: "data" });
   const tp = await getTranslations({ locale, namespace: "pricing" });
   const th = await getTranslations({ locale, namespace: "hero" });
 
-  const title = td(`templates.${REYES_TEMPLATE_ID}.title`);
+  const title = td(`templates.${templateId}.title`);
   const until = template.availableUntil
     ? new Intl.DateTimeFormat(INTL_LOCALE[locale] ?? "es-ES", { timeZone: "UTC", day: "numeric", month: "long" }).format(
         new Date(`${template.availableUntil}T00:00:00Z`),
@@ -38,9 +51,23 @@ export default async function ReyesEdition({ locale }: { locale: string }) {
     : null;
 
   return (
-    <section id="reyes-edition" aria-labelledby="reyes-edition-title" className="border-t border-line bg-paper px-4 py-16 sm:px-6 sm:py-24">
-      <div className="mx-auto grid max-w-[1200px] items-center gap-8 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-12 lg:gap-16">
-        <div className="relative mx-auto aspect-square w-full max-w-[300px] overflow-hidden rounded-2xl border-2 border-line bg-line md:max-w-none">
+    <section
+      id={`${templateId}-edition`}
+      aria-labelledby={`${templateId}-edition-title`}
+      className={cx("border-t border-line px-4 py-16 sm:px-6 sm:py-24", tinted ? "bg-surface" : "bg-paper")}
+    >
+      <div
+        className={cx(
+          "mx-auto grid max-w-[1200px] items-center gap-8 md:gap-12 lg:gap-16",
+          tinted ? "md:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]" : "md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]",
+        )}
+      >
+        <div
+          className={cx(
+            "relative mx-auto aspect-square w-full max-w-[300px] overflow-hidden rounded-2xl border-2 border-line bg-line md:max-w-none",
+            tinted && "md:order-last",
+          )}
+        >
           <Image src={template.image} alt={t("imageAlt", { title })} fill sizes="(max-width: 768px) 300px, 480px" className="object-cover" />
           <span className="absolute left-2.5 top-2.5 rounded-full bg-white/95 px-2.5 py-1 text-xs font-bold text-ink-soft shadow-sm tabular-nums">
             {td("ageRange", { min: template.ageMin, max: template.ageMax })}
@@ -49,7 +76,7 @@ export default async function ReyesEdition({ locale }: { locale: string }) {
 
         <div>
           <p className={kicker}>{t("kicker")}</p>
-          <Heading id="reyes-edition-title" as="h2" size="page" className="mt-2 text-balance">
+          <Heading id={`${templateId}-edition-title`} as="h2" size="page" className="mt-2 text-balance">
             {t("heading", { title })}
           </Heading>
           <p className="mt-4 max-w-prose text-base leading-relaxed text-ink-body sm:text-lg sm:leading-[1.75]">{t("text")}</p>
@@ -80,7 +107,7 @@ export default async function ReyesEdition({ locale }: { locale: string }) {
           </ul>
 
           <Link
-            href={`/create?template=${REYES_TEMPLATE_ID}&from=seo`}
+            href={`/create?template=${templateId}&from=seo`}
             className={cx(buttonClass({ className: "mt-7 min-h-14 w-full sm:w-auto sm:px-8" }))}
           >
             {t("cta")}

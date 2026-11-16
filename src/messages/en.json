@@ -192,6 +192,22 @@
           "a3": "Not yet. We ship to mainland Spain and the Balearic Islands. For the Canary Islands, Ceuta or Melilla, the PDF works anywhere.",
           "q4": "Hardcover or softcover?",
           "a4": "Hardcover ({hardcover} VAT included) is the most durable for a book that comes back every December. Softcover ({softcover} VAT included) is lighter. Both include the PDF and free shipping."
+        },
+        "edition": {
+          "kicker": "Christmas edition",
+          "heading": "“{title}”: the Christmas story with their name",
+          "text": "This season there is a story written for Christmas Eve. A tiny reindeer lands on the balcony with a note from Father Christmas: the Christmas magic has gone wrong and their idea is the one that can fix it. You choose what lands on the balcony, who keeps them company at the North Pole and what has broken: a giddy compass, a reindeer who lost his glow or a machine that wraps everything.",
+          "until": "Can be ordered until {date}",
+          "cta": "Create their Christmas story",
+          "imageAlt": "Illustration of the personalised Christmas story “{title}”"
+        },
+        "editionTio": {
+          "kicker": "Tió edition",
+          "heading": "“{title}”: the Tió story with their name",
+          "text": "For homes where the Catalan Christmas log, the Tió, brings the presents. Three days before Christmas Eve the family's Tió has wandered off into the snowy forest, blanket and all. You choose the trail they follow: orange peels up to the pine wood, little stick prints by the stream or the cart tracks down to the Christmas fair.",
+          "until": "Can be ordered until {date}",
+          "cta": "Create their Tió story",
+          "imageAlt": "Illustration of the personalised Tió de Nadal story “{title}”"
         }
       },
       "baptism": {

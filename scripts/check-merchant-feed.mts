@@ -15,7 +15,7 @@ import {
   FEED_IMAGES,
   FEED_WORLDS,
   FEED_WORLD_FORMATS,
-  REYES_FEED_WORLD,
+  SEASONAL_FEED_WORLDS,
   feedWorldImages,
   buildFeedItems,
   buildGoogleMerchantXml,
@@ -40,8 +40,12 @@ assert.equal(new Set(items.map((i) => i.id)).size, items.length, "unique ids");
 assert.equal(new Set(items.map((i) => i.title)).size, items.length, "unique titles");
 
 // ── Story worlds: only what can be bought, each on a page that shows it and its prices ──
-assert.deepEqual(FEED_WORLDS.map((w) => w.key), [...Object.keys(THEME_TEMPLATE), REYES_FEED_WORLD.key], "worlds = theme pages + Reyes");
-const seoCopy = es.seo as unknown as { themes: Record<string, unknown>; gifts: Record<string, { edition?: unknown }> };
+assert.deepEqual(
+  FEED_WORLDS.map((w) => w.key),
+  [...Object.keys(THEME_TEMPLATE), ...SEASONAL_FEED_WORLDS.map((w) => w.key)],
+  "worlds = theme pages + seasonal editions",
+);
+const seoCopy = es.seo as unknown as { themes: Record<string, unknown>; gifts: Record<string, Record<string, unknown>> };
 for (const world of worldsOnSale) {
   const where = `[world ${world.key}]`;
   const template = getTemplateConfig(world.templateId);
@@ -54,22 +58,24 @@ for (const world of worldsOnSale) {
     assert.ok(item.description.includes(template.title), `${where} description names the story`);
     assert.ok(!/para niños con su nombre/.test(item.title), `${where} title names the world`);
   }
-  if (world === REYES_FEED_WORLD) {
-    // ReyesEdition (components/seo-landing) renders the story title and both printed prices.
-    assert.ok(seoCopy.gifts["three-kings"].edition, `${where} the Reyes page has its edition block copy`);
+  if (world.edition) {
+    // SeasonalEdition (components/seo-landing) renders the story title and both printed prices.
+    assert.ok(seoCopy.gifts[world.edition.gift]?.[world.edition.key], `${where} its gift page has the edition block copy`);
   } else {
     // Theme pages quote both printed prices in their copy ({hardcover} / {softcover} facts).
     const copy = JSON.stringify(seoCopy.themes[world.key] ?? {});
     for (const f of FEED_WORLD_FORMATS) assert.ok(copy.includes(`{${f}}`), `${where} landing page copy quotes the ${f} price`);
   }
 }
-// Out of its window the seasonal edition is not for sale, so it is not in the feed.
-const reyes = getTemplateConfig(REYES_FEED_WORLD.templateId);
-assert.ok(reyes?.availableUntil, "Reyes has an end date");
-const dayAfter = new Date(`${reyes.availableUntil}T00:00:00Z`);
-dayAfter.setUTCDate(dayAfter.getUTCDate() + 1);
-assert.ok(buildFeedItems(reyes.availableUntil).some((i) => i.world === REYES_FEED_WORLD.key), "Reyes listed on its last order day");
-assert.ok(!buildFeedItems(dayAfter.toISOString().slice(0, 10)).some((i) => i.world === REYES_FEED_WORLD.key), "Reyes gone the day after");
+// Out of its window a seasonal edition is not for sale, so it is not in the feed.
+for (const world of SEASONAL_FEED_WORLDS) {
+  const template = getTemplateConfig(world.templateId);
+  assert.ok(template?.availableUntil, `${world.key} has an end date`);
+  const dayAfter = new Date(`${template.availableUntil}T00:00:00Z`);
+  dayAfter.setUTCDate(dayAfter.getUTCDate() + 1);
+  assert.ok(buildFeedItems(template.availableUntil).some((i) => i.world === world.key), `${world.key} listed on its last order day`);
+  assert.ok(!buildFeedItems(dayAfter.toISOString().slice(0, 10)).some((i) => i.world === world.key), `${world.key} gone the day after`);
+}
 
 for (const item of items) {
   const where = `[${item.id}]`;

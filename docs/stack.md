@@ -808,14 +808,14 @@ after the end. The linked landing pages show both prices (home hero/quality/FAQ,
   free, ES postcodes 01000-34999, 36000-37999, 39000-50999 (no Canarias/Ceuta/Melilla), handling 2-4 + transit 5-6 business days
   (= the 7-10 day promise; the split is an estimate). Because the feed sends a shipping price, Merchant Center ignores account
   shipping settings for these items.
-- **Story-world items (2026-11-10): 17 items in season, 15 out of it.** On top of the 3 format items, one item per world with
+- **Story-world items (2026-11-10; Papá Noel and Tió editions added 2026-11-17): 21 items in season, 15 out of it.** On top of the 3 format items, one item per world with
   its own landing page and printed format: `FEED_WORLDS` = every slug of `THEME_TEMPLATE` (dinosaurs, space, pirates,
-  superheroes, magic-forest, safari → `/es/themes/<slug>`) + the seasonal Reyes edition (`/es/gifts/three-kings`, block
-  `ReyesEdition`). Ids `meapica-<world>-<hardcover|softcover>`, title "Cuento personalizado de dinosaurios con su nombre ·
+  superheroes, magic-forest, safari → `/es/themes/<slug>`) + `SEASONAL_FEED_WORLDS` (Papá Noel `christmas` and Tió `tio`, both on `/es/gifts/christmas`; Reyes on `/es/gifts/three-kings`;
+  block `SeasonalEdition`, copy `seo.gifts.<gift>.<edition|editionTio>`). Ids `meapica-<world>-<hardcover|softcover>`, title "Cuento personalizado de dinosaurios con su nombre ·
   Tapa dura 20 × 20 cm (incluye PDF)", description opens with the story title and synopsis, ages from the template. Same price,
   shipping and attributes as the format items. Rules kept by `check-merchant-feed.mts`: an item exists only if its landing page
-  names the world and quotes both printed prices (`{hardcover}` / `{softcover}` in its copy), and the Reyes items are listed
-  only while `isTemplateAvailable("reyes")` (last order day 6 Jan; gone on the 7th without a deploy). Chef, castle, inventor
+  names the world and quotes both printed prices (`{hardcover}` / `{softcover}` in its copy), and each seasonal edition is listed
+  only while `isTemplateAvailable(<id>)` (last order day 6 Jan; gone on the 7th without a deploy). Chef, castle, inventor
   and candy have no theme page yet, so no item: adding a slug to `THEME_TEMPLATE` (+ its `WORLD_SUBJECT` title fragment and
   images) adds its two items. No `item_group_id`: hardcover / softcover is not one of Google's variant attributes.
 - **Images:** `public/images/feed/*.jpg` 1500 × 1500, the Noa showcase book in the site's own mockup + its cover art, with the IPTC

@@ -205,6 +205,22 @@
           "a3": "Sí. Pones la dirección de envío al pagar, en cualquier punto de España peninsular o Baleares. Si viven en Canarias, Ceuta o Melilla, el cuento en PDF te llega a ti por correo y se lo puedes reenviar.",
           "q4": "¿Qué formato elijo para Navidad?",
           "a4": "La tapa dura ({hardcover} IVA incluido) aguanta años de relecturas. La tapa blanda ({softcover} IVA incluido) es más ligera. Las dos incluyen el envío y el PDF."
+        },
+        "edition": {
+          "kicker": "Edición de Navidad",
+          "heading": "«{title}»: el cuento de Navidad con su nombre",
+          "text": "Esta campaña hay una historia escrita para Nochebuena. Un reno pequeñito aterriza en el balcón con una nota de Papá Noel: la magia de la Navidad se ha estropeado y su idea es la que puede arreglarla. Tú eliges qué aterriza en el balcón, quién le acompaña en el Polo Norte y qué se ha estropeado: una brújula loca, un reno que ya no brilla o una máquina que lo envuelve todo.",
+          "until": "Se puede pedir hasta el {date}",
+          "cta": "Crear su cuento de Navidad",
+          "imageAlt": "Ilustración del cuento personalizado de Navidad «{title}»"
+        },
+        "editionTio": {
+          "kicker": "Edición del Tió",
+          "heading": "«{title}»: el cuento del Tió con su nombre",
+          "text": "Para las casas donde en Navidad se hace cagar el tió. Faltan tres días para Nochebuena y el Tió de la familia se ha escapado al bosque nevado, con manta y todo. Tú eliges la pista que sigue: las pieles de naranja que suben al pinar, unas huellas de palito junto al torrente o las rodadas del carro hasta la feria de Navidad.",
+          "until": "Se puede pedir hasta el {date}",
+          "cta": "Crear su cuento del Tió",
+          "imageAlt": "Ilustración del cuento personalizado del Tió de Nadal «{title}»"
         }
       },
       "baptism": {

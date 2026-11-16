@@ -214,6 +214,22 @@
           "a3": "Hi ha històries per a infants de {ageMin} a {ageMax} anys, i cada món té la seva franja: el bosc màgic o el país dels dolços per als més petits, l'espai o els pirates de 5 a 8 anys, i la fàbrica d'invents fins als 12.",
           "q4": "Envieu a Canàries?",
           "a4": "De moment enviem a l'Espanya peninsular i a les Balears, no a Canàries, Ceuta ni Melilla. Per a aquests llocs, el conte en PDF arriba igual per correu."
+        },
+        "edition": {
+          "kicker": "Edició de Nadal",
+          "heading": "«{title}»: el conte de Nadal amb el seu nom",
+          "text": "Aquesta campanya hi ha una història escrita per a la Nit de Nadal. Un ren petitet aterra al balcó amb una nota del Pare Noel: la màgia del Nadal s'ha espatllat i la seva idea és la que la pot arreglar. Tu tries què aterra al balcó, qui l'acompanya al Pol Nord i què s'ha espatllat: una brúixola boja, un ren que ja no brilla o una màquina que ho embolica tot.",
+          "until": "Es pot demanar fins al {date}",
+          "cta": "Crear el seu conte de Nadal",
+          "imageAlt": "Il·lustració del conte personalitzat de Nadal «{title}»"
+        },
+        "editionTio": {
+          "kicker": "Edició del Tió",
+          "heading": "«{title}»: el conte del Tió amb el seu nom",
+          "text": "Per a les cases on per Nadal es fa cagar el tió. Falten tres dies per Nadal i el Tió de la família s'ha escapat al bosc nevat, amb manta i tot. Tu tries la pista que segueix: les pells de taronja que pugen a la pineda, unes petjades de bastonet al costat del torrent o les roderes del carro fins a la fira de Nadal.",
+          "until": "Es pot demanar fins al {date}",
+          "cta": "Crear el seu conte del Tió",
+          "imageAlt": "Il·lustració del conte personalitzat del Tió de Nadal «{title}»"
         }
       },
       "baptism": {

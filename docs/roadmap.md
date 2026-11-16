@@ -21,7 +21,6 @@ Shipped for the Christmas / Reyes 2026 campaign after the SEO audit of 2026-11-1
   or while a seasonal world is available). Clean-up only: `Hero` `season` prop, `src/components/seasonal/HollySprig.tsx`, the
   `--season` token if nothing else uses it.
 - [ ] Before the next season (October 2027): bump `availableUntil` of the `christmas` and `tio` worlds too (both added 2026-11-17).
-  Open for them: Merchant feed items and a Christmas edition block on `/gifts/christmas` like the Reyes one (`ReyesEdition`).
 - [ ] Before the next season (October 2027): bump `availableUntil` of the Reyes world in `src/lib/create-store.ts`; the Reyes block on
   `/gifts/three-kings` and its two Merchant feed items come back by themselves.
 - [ ] After the deploy of 2026-11-10 (owner / browser-session): Merchant Center › fetch the feed again and check the 14 new items are

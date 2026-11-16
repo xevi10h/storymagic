@@ -76,6 +76,8 @@ const WORLD_SUBJECT: Record<string, string> = {
   forest: "del bosque mágico",
   safari: "de safari",
   reyes: "de Reyes Magos",
+  christmas: "de Navidad con Papá Noel",
+  tio: "del Tió de Nadal",
 };
 
 export interface FeedWorld {
@@ -85,15 +87,32 @@ export interface FeedWorld {
   templateId: string;
   /** Landing page (no locale prefix) that shows this world and both printed prices. */
   path: string;
+  /**
+   * Seasonal editions only: the gift page (seo.gifts.<gift>) and its copy key (<key>) of the
+   * SeasonalEdition block that shows this story with both printed prices.
+   */
+  edition?: { gift: string; key: string };
 }
 
 /** Seasonal Reyes edition ("Paje Real por una Noche"): shown on the Reyes gift page. */
-export const REYES_FEED_WORLD: FeedWorld = { key: "reyes", templateId: "reyes", path: seoPath("gifts", "three-kings") };
+export const REYES_FEED_WORLD: FeedWorld = {
+  key: "reyes",
+  templateId: "reyes",
+  path: seoPath("gifts", "three-kings"),
+  edition: { gift: "three-kings", key: "edition" },
+};
+
+/** Seasonal editions, in calendar order. Papá Noel and the Tió are both shown on the Christmas gift page. */
+export const SEASONAL_FEED_WORLDS: FeedWorld[] = [
+  { key: "christmas", templateId: "christmas", path: seoPath("gifts", "christmas"), edition: { gift: "christmas", key: "edition" } },
+  { key: "tio", templateId: "tio", path: seoPath("gifts", "christmas"), edition: { gift: "christmas", key: "editionTio" } },
+  REYES_FEED_WORLD,
+];
 
 /** Every world that can have feed items (images are built for all of them, in or out of season). */
 export const FEED_WORLDS: FeedWorld[] = [
   ...Object.entries(THEME_TEMPLATE).map(([slug, templateId]) => ({ key: slug, templateId, path: seoPath("themes", slug) })),
-  REYES_FEED_WORLD,
+  ...SEASONAL_FEED_WORLDS,
 ];
 
 /** Public paths of a world's feed images (built by scripts/build-merchant-feed-images.mts). */

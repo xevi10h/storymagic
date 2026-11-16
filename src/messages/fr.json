@@ -182,6 +182,22 @@
           "a3": "Quelques minutes : son prénom, son apparence, le monde et les trois chapitres. Vous voyez la couverture et les premières scènes avant de payer.",
           "q4": "Quel format choisir pour un cadeau de Noël ?",
           "a4": "La couverture rigide ({hardcover} TVA incluse) est la plus résistante pour les lectures répétées. La souple ({softcover} TVA incluse) est plus légère. Les deux incluent le PDF et la livraison offerte."
+        },
+        "edition": {
+          "kicker": "Édition de Noël",
+          "heading": "« {title} » : le conte de Noël avec son prénom",
+          "text": "Cette saison, une histoire est écrite pour la nuit de Noël. Un tout petit renne atterrit sur le balcon avec un mot du Père Noël : la magie de Noël s'est détraquée et c'est son idée qui peut la réparer. Tu choisis ce qui atterrit sur le balcon, qui l'accompagne au pôle Nord et ce qui s'est détraqué : une boussole folle, un renne éteint ou une machine qui emballe tout.",
+          "until": "À commander jusqu'au {date}",
+          "cta": "Créer son conte de Noël",
+          "imageAlt": "Illustration du conte de Noël personnalisé « {title} »"
+        },
+        "editionTio": {
+          "kicker": "Édition du Tió",
+          "heading": "« {title} » : le conte du Tió avec son prénom",
+          "text": "Pour les familles où la bûche catalane, le Tió, apporte les cadeaux. Trois jours avant Noël, le Tió de la famille s'est échappé dans la forêt enneigée, avec sa couverture. Tu choisis la piste à suivre : des pelures d'orange vers la pinède, de petites traces de bâtonnets près du torrent ou les ornières de la charrette jusqu'au marché de Noël.",
+          "until": "À commander jusqu'au {date}",
+          "cta": "Créer son conte du Tió",
+          "imageAlt": "Illustration du conte personnalisé du Tió de Nadal « {title} »"
         }
       },
       "baptism": {
