@@ -1232,7 +1232,11 @@
       "nameRequired": "Écrivez son prénom pour continuer",
       "ageHint": "Nous adaptons l'histoire et la taille du texte à son âge.",
       "ageRequired": "Choisissez son âge pour continuer.",
-      "genderRequired": "Choisissez une option pour continuer."
+      "genderRequired": "Choisissez une option pour continuer.",
+      "cityLabel": "Où vit l'enfant ?",
+      "cityOptional": "Facultatif",
+      "cityPlaceholder": "Ex. : Toulouse",
+      "cityHint": "L'aventure commence dans sa ville. Si vous laissez ce champ vide, elle commence à la maison et dans son quartier."
     },
     "protagonist": {
       "title": "À quoi ressemble {name} ?",

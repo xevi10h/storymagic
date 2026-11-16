@@ -1230,7 +1230,11 @@
       "nameRequired": "Type their name to continue",
       "ageHint": "We adapt the story and the type size to their age.",
       "ageRequired": "Choose their age to continue.",
-      "genderRequired": "Choose an option to continue."
+      "genderRequired": "Choose an option to continue.",
+      "cityLabel": "Where do they live?",
+      "cityOptional": "Optional",
+      "cityPlaceholder": "E.g. Barcelona",
+      "cityHint": "The adventure starts in their town. Leave it blank and it starts at their home and in their neighbourhood."
     },
     "protagonist": {
       "title": "What does {name} look like?",

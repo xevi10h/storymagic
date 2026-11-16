@@ -33,6 +33,8 @@ export const ADVENTURE_CHAPTERS = 3;
 
 /** API limits (mirrors the zod schemas in /api/stories). */
 export const MAX_NAME_LENGTH = 50;
+/** Optional "¿Dónde vive?" (screen 1): only the Book Plan brief and the printed hero card read it. */
+export const MAX_CITY_LENGTH = 40;
 export const MAX_DEDICATION_LENGTH = 500;
 export const MAX_SENDER_LENGTH = 100;
 
@@ -94,6 +96,7 @@ export function migrateCreateState(raw: unknown): CreateBookState {
     ...base.character,
     ...(rawChar as Partial<CharacterData>),
     name: str(rawChar.name, "").slice(0, MAX_NAME_LENGTH),
+    city: str(rawChar.city, "").slice(0, MAX_CITY_LENGTH),
     // UI offers 2–12 (older drafts could hold 1)
     age: typeof rawChar.age === "number" ? Math.min(12, Math.max(2, Math.round(rawChar.age))) : base.character.age,
     // The photo-mode neutral marker never belongs to the builder's own choices.
@@ -297,7 +300,7 @@ export function storyCharacterBody(state: ProtagonistState) {
     character: {
       ...characterLookPayload(c),
       name: formatChildName(c.name),
-      city: c.city,
+      city: c.city.trim() || undefined,
       interests: c.interests,
       favoriteCompanion: c.favoriteCompanion,
       futureDream: c.futureDream,
@@ -331,6 +334,8 @@ export function storyInputSnapshot(state: CreateBookState, locale: string): stri
   return JSON.stringify({
     locale,
     name: state.character.name.trim(),
+    // Only when given, so drafts saved before the city field keep matching their story.
+    ...(state.character.city.trim() ? { city: state.character.city.trim() } : {}),
     protagonist: protagonistSnapshot(state),
     template: state.selectedTemplate,
     treePath: state.decisions.treePath ?? [],

@@ -1272,7 +1272,11 @@
       "nameRequired": "Escribe su nombre para continuar",
       "ageHint": "Adaptamos la historia y el tamaño de la letra a su edad.",
       "ageRequired": "Elige su edad para continuar.",
-      "genderRequired": "Elige una opción para continuar."
+      "genderRequired": "Elige una opción para continuar.",
+      "cityLabel": "¿Dónde vive?",
+      "cityOptional": "Opcional",
+      "cityPlaceholder": "Ej.: Sabadell",
+      "cityHint": "La aventura empieza en su ciudad. Si lo dejas en blanco, empieza en su casa y su barrio."
     },
     "protagonist": {
       "title": "¿Cómo es {name}?",

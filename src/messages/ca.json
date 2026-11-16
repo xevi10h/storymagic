@@ -1290,7 +1290,11 @@
       "nameRequired": "Escriu el seu nom per continuar",
       "ageHint": "Adaptem la història i la mida de la lletra a la seva edat.",
       "ageRequired": "Tria la seva edat per continuar.",
-      "genderRequired": "Tria una opció per continuar."
+      "genderRequired": "Tria una opció per continuar.",
+      "cityLabel": "On viu?",
+      "cityOptional": "Opcional",
+      "cityPlaceholder": "Ex.: Sabadell",
+      "cityHint": "L'aventura comença a la seva ciutat. Si ho deixes en blanc, comença a casa seva i al seu barri."
     },
     "protagonist": {
       "title": "Com és {name}?",

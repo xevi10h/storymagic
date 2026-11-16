@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import type { CharacterData, Gender } from "@/lib/create-store";
-import { MAX_NAME_LENGTH } from "@/lib/creation-flow";
+import { MAX_CITY_LENGTH, MAX_NAME_LENGTH } from "@/lib/creation-flow";
 import { formatChildName } from "@/lib/child-name";
 import LiveCover from "./LiveCover";
 import CreationFooterNav from "./CreationFooterNav";
@@ -210,6 +210,32 @@ export default function StepName({
               <p id="gender-hint" className="text-xs text-create-text-sub">{t("genderHint")}</p>
             )}
           </fieldset>
+          {/* Optional: where the story opens (Book Plan brief; printed on the hero card). Neutral id,
+              no autocomplete and outside any address heuristics, so ad pixels' automatic matching never reads it. */}
+          <div className="flex flex-col gap-2">
+            <label htmlFor="story-place" className="flex items-baseline gap-2 text-xs font-bold uppercase tracking-wide text-create-text">
+              {t("cityLabel")}
+              <span className="text-[11px] font-semibold normal-case tracking-normal text-create-text-sub">{t("cityOptional")}</span>
+            </label>
+            <input
+              id="story-place"
+              type="text"
+              value={character.city}
+              onChange={(e) => onUpdateCharacter({ city: e.target.value })}
+              onBlur={(e) => {
+                const city = e.target.value.trim();
+                if (city !== e.target.value) onUpdateCharacter({ city });
+              }}
+              placeholder={t("cityPlaceholder")}
+              maxLength={MAX_CITY_LENGTH}
+              autoComplete="off"
+              autoCapitalize="words"
+              enterKeyHint="done"
+              aria-describedby="story-place-hint"
+              className="h-12 w-full rounded-2xl border-2 border-create-neutral bg-white px-4 text-base font-semibold text-create-text-dark outline-none transition-colors placeholder:font-normal placeholder:text-create-text-sub/45 focus:border-create-primary"
+            />
+            <p id="story-place-hint" className="text-xs text-create-text-sub">{t("cityHint")}</p>
+          </div>
           {/* Enter in the name field submits the form */}
           <button type="submit" hidden aria-hidden tabIndex={-1} />
         </form>

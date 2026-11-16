@@ -35,7 +35,8 @@ const storyInputSchema = z.object({
     // Display form ("xavi" → "Xavi"): every surface (book, emails, LLM title) spells it the same
     name: z.string().max(50).transform(formatChildName).pipe(z.string().min(1)),
     interests: z.array(z.string().max(50)).max(4).optional(),
-    city: z.string().max(100).optional(),
+    // Optional (screen 1, max 40 in the UI); only the Book Plan brief and the printed hero card use it.
+    city: z.string().trim().max(100).optional(),
     favoriteCompanion: z.string().max(100).optional(),
     futureDream: z.string().max(150).optional(),
   }),
