@@ -298,6 +298,10 @@ Wonderbly, Librio and Hurra Héroes (none shows a Reyes date in the flow; all ch
 - **Guarantees, honest only** (no reviews exist yet, none invented): Stripe secure payment + the methods actually enabled on the live
   account ("Tarjeta, Bizum, Apple Pay o Google Pay"), free shipping to península + Baleares, free reprint if it arrives damaged or
   with a print defect, made in Barcelona / printed in Europe.
+- **"Así queda en casa"** (printed formats only, 2026-11-16, `BookAtHomePhotos`): 3 photos of the sample book "Noa y la llave de flor"
+  (hardcover) on a table, open on a sofa and as a gift, under the guarantees. They are AI-recreated (gpt-image-2.5-sunburst from the
+  real cover mock-up and real inside pages, not a real delivery), so the caption saying so is always visible (`crear.purchase.atHome`).
+  Swap for real photos when printed samples exist. Files: `public/images/purchase/home-*.webp`.
 - **"¿Lo pides más tarde?"** (send me the preview + remind me) moved below the buy panel on mobile (it sat between the book and the
   price since d9bccf6); on desktop it stays under the book in the left column.
 - Prices unchanged; "IVA incluido" next to every price as before.
