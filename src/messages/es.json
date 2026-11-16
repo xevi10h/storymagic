@@ -1149,7 +1149,7 @@
       "statusCoverReady": "Portada lista. Ahora, las primeras páginas…",
       "statusScenes": "Portada lista · {done} de {total} ilustraciones",
       "statusScenesNoCover": "{done} de {total} ilustraciones · la portada, en camino",
-      "statusReady": "Te enseñamos el comienzo: la portada y {shown} de sus {total} escenas.",
+      "statusReady": "Ya puedes leer toda la historia, con la portada y {shown} de sus {total} escenas pintadas.",
       "paintingCover": "Pintando la portada",
       "progressLabel": "Progreso de la vista previa",
       "scenesLabel": "Ilustraciones de la vista previa",
@@ -1170,8 +1170,8 @@
       "placeholderTitleNoName": "Su aventura",
       "moreScenesShort": "en el libro",
       "moreScenesLabel": "{n} escenas más en el libro completo",
-      "introLead": "Esto es solo el principio.",
-      "introNote": "El libro completo sigue la aventura hasta el final: {total} escenas, la ficha de héroe y el mapa de su mundo, todo pintado en alta calidad para imprimir.",
+      "introLead": "Son las primeras ilustraciones.",
+      "introNote": "La historia completa ya está escrita y puedes leerla entera. El libro impreso lleva {total} escenas pintadas, la ficha de héroe y el mapa de su mundo, todo en alta calidad para imprimir.",
       "readyTitleFull": "¡El libro {deName} está listo!",
       "statusReadyFull": "Ya puedes abrirlo."
     },
@@ -1189,7 +1189,7 @@
       "lockedCta": "Pedir el libro",
       "expandPage": "Ver a pantalla completa",
       "freshTitle": "¡El cuento de {name} está listo!",
-      "freshSubtitle": "Pasa las páginas y descubre cómo empieza su aventura…",
+      "freshSubtitle": "Pasa las páginas y lee toda su aventura…",
       "freshSkip": "Continuar a la vista previa",
       "downloadPdf": "Descargar PDF completo",
       "generatingPdf": "Generando PDF...",
@@ -1240,7 +1240,7 @@
       "rotateHint": "Gira el móvil para ver la doble página",
       "zoomPage": "Ampliar",
       "templateUnavailable": "Esta edición de temporada ya no se puede pedir y no se ha hecho ningún cargo. Puedes crear un cuento nuevo en cualquiera de los otros mundos.",
-      "previewIntro": "Solo el comienzo: {shown} de {total} escenas. El libro completo llega hasta el final."
+      "previewIntro": "Ya puedes leer toda la historia. {shown} de {total} escenas están pintadas; las demás las pintamos al pedir el libro."
     },
     "errors": {
       "saveFailed": "No hemos podido guardar tu cuento. Revisa tu conexión y vuelve a pulsar el botón: todo lo que has escrito sigue aquí.",
@@ -1426,7 +1426,6 @@
       }
     },
     "purchase": {
-      "scenesShown": "Lee toda la historia · {shown} de {total} ilustraciones",
       "editTitle": "Cambiar el título",
       "editPage": "Editar",
       "editLinks": "Cambiar <title>título</title>, <dedication>dedicatoria</dedication> o <look>aspecto</look>",

@@ -994,8 +994,8 @@ test.describe("painting screen: preview vs bought book", () => {
   test("a preview says it is only the beginning; the real title is on the printed cover", async ({ page }) => {
     await openWithStatus(page, "preview");
     await expect(page.getByRole("heading", { name: "¡Ya puedes abrir el cuento de Noa!" })).toBeVisible();
-    await expect(page.getByTestId("progress-status")).toHaveText("Te enseñamos el comienzo: la portada y 3 de sus 12 escenas.");
-    await expect(page.getByTestId("intro-note")).toContainText("Esto es solo el principio.");
+    await expect(page.getByTestId("progress-status")).toHaveText("Ya puedes leer toda la historia, con la portada y 3 de sus 12 escenas pintadas.");
+    await expect(page.getByTestId("intro-note")).toContainText("Son las primeras ilustraciones.");
     await expect(page.locator("[data-slot=more]")).toContainText("+9");
     await expect(page.getByTestId("progress-cover")).toContainText("y la noche de los Reyes");
   });

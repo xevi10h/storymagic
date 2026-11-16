@@ -13,8 +13,8 @@ const VIEWPORTS = {
 } as const;
 
 const COPY = {
-  es: { pdfOnly: /Solo el PDF/, accept: "Acepto y voy al pago", back: "Volver", outdated: /ya no se puede comprar/, recreate: /Crear de nuevo/, delivery: /Llega entre el/, teaser: /Faltan 9 ilustraciones/, readAll: /Lee toda la historia/ },
-  ca: { pdfOnly: /Només el PDF/, accept: "Accepto i vaig al pagament", back: "Tornar", outdated: /ja no es pot comprar/, recreate: /Crear de nou/, delivery: /Arriba entre el/, teaser: /Falten 9 il·lustracions/, readAll: /Llegeix tota la història/ },
+  es: { pdfOnly: /Solo el PDF/, accept: "Acepto y voy al pago", back: "Volver", outdated: /ya no se puede comprar/, recreate: /Crear de nuevo/, delivery: /Llega entre el/, teaser: /Faltan 9 ilustraciones/, readAll: /Ya puedes leer toda la historia/ },
+  ca: { pdfOnly: /Només el PDF/, accept: "Accepto i vaig al pagament", back: "Tornar", outdated: /ja no es pot comprar/, recreate: /Crear de nou/, delivery: /Arriba entre el/, teaser: /Falten 9 il·lustracions/, readAll: /Ja pots llegir tota la història/ },
 } as const;
 type Locale = keyof typeof COPY;
 
@@ -147,7 +147,7 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
         await page.goto(`/${locale}/create/${STORY_ID}/preview`);
         await section(page).waitFor();
         // Said up front, not only on the last page: this is the beginning of a longer book.
-        await expect(page.getByTestId("preview-intro")).toContainText(locale === "es" ? /Solo el comienzo: 3 de 12 escenas/ : /Només l'inici: 3 de 12 escenes/);
+        await expect(page.getByTestId("preview-intro")).toContainText(locale === "es" ? /Ya puedes leer toda la historia\. 3 de 12 escenas están pintadas/ : /Ja pots llegir tota la història\. 3 de 12 escenes estan pintades/);
         await page.screenshot({ path: `${SHOTS}/${locale}-${vpName}-preview-top.png` });
         await expect(page.getByText(COPY[locale].teaser)).toHaveCount(1);
         await expect(page.getByText(COPY[locale].readAll)).toHaveCount(1);

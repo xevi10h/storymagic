@@ -1107,7 +1107,7 @@
       "statusCoverReady": "Cover done. Now the first pages…",
       "statusScenes": "Cover done · {done} of {total} illustrations",
       "statusScenesNoCover": "{done} of {total} illustrations · the cover is on its way",
-      "statusReady": "Here's how it begins: the cover and {shown} of its {total} scenes.",
+      "statusReady": "You can read the whole story now, with the cover and {shown} of its {total} scenes painted.",
       "paintingCover": "Painting the cover",
       "progressLabel": "Preview progress",
       "scenesLabel": "Preview illustrations",
@@ -1128,8 +1128,8 @@
       "placeholderTitleNoName": "Their adventure",
       "moreScenesShort": "in the book",
       "moreScenesLabel": "{n} more scenes in the full book",
-      "introLead": "This is just the beginning.",
-      "introNote": "The full book follows the adventure to the end: {total} scenes, the hero card and a map of their world, all painted in high quality for print.",
+      "introLead": "These are the first illustrations.",
+      "introNote": "The whole story is already written and you can read all of it. The printed book has {total} painted scenes, the hero card and a map of their world, all in high quality for print.",
       "readyTitleFull": "{name}'s book is ready!",
       "statusReadyFull": "You can open it now."
     },
@@ -1147,7 +1147,7 @@
       "lockedCta": "Order the book",
       "expandPage": "View fullscreen",
       "freshTitle": "{name}'s story is ready!",
-      "freshSubtitle": "Turn the pages and see how their adventure begins…",
+      "freshSubtitle": "Turn the pages and read their whole adventure…",
       "freshSkip": "Continue to preview",
       "downloadPdf": "Download full PDF",
       "generatingPdf": "Generating PDF...",
@@ -1198,7 +1198,7 @@
       "rotateHint": "Turn your phone sideways to see both pages",
       "zoomPage": "Enlarge",
       "templateUnavailable": "This seasonal edition can no longer be ordered, and you have not been charged. You can create a new book in any of the other worlds.",
-      "previewIntro": "Just the beginning: {shown} of {total} scenes. The full book goes all the way to the end."
+      "previewIntro": "You can read the whole story now. {shown} of {total} scenes are painted; we paint the rest when you order the book."
     },
     "errors": {
       "saveFailed": "We couldn't save your book. Check your connection and tap the button again: everything you've entered is still here.",
@@ -1384,7 +1384,6 @@
       }
     },
     "purchase": {
-      "scenesShown": "Read the whole story · {shown} of {total} illustrations",
       "editTitle": "Change the title",
       "editPage": "Edit",
       "editLinks": "Change the <title>title</title>, <dedication>dedication</dedication> or <look>look</look>",
