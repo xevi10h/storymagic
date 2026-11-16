@@ -1520,11 +1520,10 @@
       },
       "atHome": {
         "title": "Así queda en casa",
-        "caption": "Imágenes recreadas con IA a partir de un libro de ejemplo en tapa dura, con su portada y sus páginas reales.",
+        "caption": "Su portada sobre escenas recreadas con IA de un libro de ejemplo en tapa dura. El libro abierto muestra páginas de ejemplo.",
         "altTable": "Libro de ejemplo en tapa dura sobre una mesa, junto a la caja de envío y una taza",
         "altOpen": "Libro de ejemplo abierto sobre un sofá, con dos páginas ilustradas",
-        "altGift": "Libro de ejemplo en tapa dura sobre papel de seda, junto a un árbol de Navidad",
-        "captionOwn": "Su portada sobre escenas recreadas con IA de un libro de ejemplo en tapa dura. El libro abierto muestra páginas de ejemplo."
+        "altGift": "Libro de ejemplo en tapa dura sobre papel de seda, junto a un árbol de Navidad"
       }
     }
   },
