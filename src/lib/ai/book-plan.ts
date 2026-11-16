@@ -353,13 +353,19 @@ const MODE_CRAFT: Record<PlanMode, string> = {
     "LITERARY STORY (ages 10–12). Close third person with real interiority: doubt, contradiction, growth. Dialogue with subtext. One precise image beats three vague ones. A genuine dark moment before an earned resolution. The moral is never stated, by anyone.",
 };
 
+// The free preview shows the first FREE_PREVIEW_SCENES (3) scenes illustrated, so the
+// story path's first step, the companion and the fantasy world must all be on stage by
+// slot 3 (2026-11-16, owner decision): slot 1 = real world + the impossible appears,
+// slot 2 = the crossing + story path step 1, slot 3 = the child with whatever step 1
+// brought, facing the wide new world (panoramic). Only the beats moved: slot types,
+// panoramic slots and word budgets are the printed layout and never change here.
 const BEATS: Record<PlanMode, string[]> = {
   refrain: [
-    "At home in the real city: who the child is, through play and routine. The refrain is born here.",
-    "The child notices something small and wonderful nearby.",
-    "One warm line: the magic beckons.",
-    "Into the magical place; a friendly first encounter.",
-    "Friendship or a special object; joy.",
+    "At home in the child's real world: who the child is, through play and routine. Then something small and magical appears or calls. The refrain is born here.",
+    "A gentle, explicit magical crossing into the magical place; a friendly first encounter.",
+    "One warm line: the child and the new friend (or the object they found) together, the wide magical place ahead.",
+    "Friendship grows; playing together; joy.",
+    "Exploring together: one wonder of the magical place, shared.",
     "One line: a small, gentle problem appears.",
     "First try — it does not quite work, and that is fine.",
     "Try again with kindness or a new idea — it works.",
@@ -369,42 +375,42 @@ const BEATS: Record<PlanMode, string[]> = {
     "The softest closing line (the refrain, one last time).",
   ],
   picture: [
-    "The child in the real city: personality, what they love.",
-    "A wish, a goal or someone to help: clear motivation.",
-    "One line: the adventure opens.",
-    "Stepping into the new world: excitement and a little nervousness.",
-    "A new friend or ally; why they make a good team.",
+    "The child in their real world: personality, what they love, a wish. Then something impossible appears or beckons. Plant the setup detail.",
+    "Stepping into the new world through an explicit magical crossing: excitement and a little nervousness; the first encounter.",
+    "One line: the child and the new friend (or the object they found) together, the wide new world ahead.",
+    "Getting to know the new friend or ally; why they make a good team.",
+    "Exploring together: a wonder of the new world, and a clear goal or someone who needs help.",
     "A clear problem arises because of something specific.",
     "First attempt: partial progress, something still wrong; the child worries.",
-    "A quiet moment; a small idea sparks.",
+    "A quiet moment under the wide sky of the new world; a small idea sparks.",
     "One line: hope arrives.",
     "The new approach works — show the consequence.",
     "Celebration and gratitude; the lesson named gently once.",
     "Home again, happy and changed; circular closure.",
   ],
   chapter: [
-    "The child in the real city: routine and inner world; plant the setup detail.",
-    "First hint that today is different: curiosity with a little fear.",
-    "One atmospheric line: the threshold.",
-    "The adventure world opens; its rules are different.",
-    "Meeting the key ally through a shared moment, not a speech.",
+    "The child in their real world: routine and inner world; plant the setup detail. Then the first sign that today is different: something impossible appears, curiosity with a little fear.",
+    "Crossing into the adventure world through an explicit magical passage; its rules are different; the first encounter.",
+    "One atmospheric line: the child and whoever (or whatever) they have just met, facing the wide new world.",
+    "Bonding with the key ally (the one just met, or a new one) through a shared moment, not a speech.",
     "Wonders and strangeness; the child's interests become real traits here.",
+    "A goal takes shape; a first hint of what could go wrong.",
     "A first real test reveals a strength or a weakness.",
-    "A quiet, intimate moment; the child reflects.",
+    "A quiet, intimate moment under the wide sky of the new world; the child reflects.",
     "One line: the calm breaks.",
     "The great challenge; real stakes; the child doubts.",
     "Breakthrough through the child's own choice; the setup pays off.",
     "Home, transformed; the setup detail carries new meaning.",
   ],
   literary: [
-    "The ordinary world in the real city: personality, routine, inner life; plant the setup detail.",
-    "A crack in the ordinary: something impossible to ignore.",
-    "Crossing into the unknown despite doubt; it costs something small.",
-    "First unexpected encounter; assumptions challenged.",
-    "Meeting the ally, bonding through vulnerability.",
+    "The ordinary real world: personality, routine, inner life; plant the setup detail. Then a crack in the ordinary: something impossible to ignore.",
+    "Crossing into the unknown despite doubt, at a small cost; a first unexpected encounter challenges assumptions.",
+    "The child and whoever (or whatever) the first encounter brought, facing the wide new world for the first time: awe and unease.",
+    "Bonding with the ally through vulnerability.",
     "The new world's wonders and rules; the child's traits matter in unexpected ways.",
     "A test that reveals a hidden strength or exposes a flaw.",
-    "The calm before the storm: a conversation, a memory, doubt.",
+    "The stakes come into focus: what could be lost, and the child's part in it.",
+    "The calm before the storm under the wide sky of the new world: a conversation, a memory, doubt.",
     "The main obstacle; real stakes; the setup detail returns.",
     "The darkest moment; the child considers giving up. Let it breathe.",
     "Breakthrough through a costly choice.",
@@ -412,8 +418,8 @@ const BEATS: Record<PlanMode, string[]> = {
   ],
 };
 
-/** Slot by which each tree step (chapter 1, 2, 3) must have happened. */
-const TREE_ANCHORS = [4, 7, 10];
+/** Slot by which each tree step (chapter 1, 2, 3) must have happened: step 1 inside the free preview. */
+const TREE_ANCHORS = [2, 7, 10];
 
 // ── Prompt ───────────────────────────────────────────────────────────────────
 
@@ -425,7 +431,7 @@ THE MANUSCRIPT
 - Follow the story path the parent chose, in order, at the slots indicated. Connect the beats with cause and effect; add no unrelated plot turns. Characters named in the path keep those names.
 - Plant the setup detail early and pay it off at the climax, as declared in setupPayoff.
 - The protagonist is the child described. Use the child's name naturally, not in every sentence. Personal details (interests, colour, pet, dream) are character colour: each appears once or twice in the whole book, where it fits, never as a checklist.
-- The real world comes first: opening pages happen in the child's real city and are plausible there. The fantasy world is entered through an explicit magical transition, and the story comes home at the end.
+- The real world comes first: opening pages happen in the child's real world (their city when given, otherwise their home and neighbourhood) and are plausible there. The fantasy world is entered through an explicit magical transition, and the story comes home at the end.
 - The text sits beside its illustration: it narrates the illustrated moment but does not inventory the picture; it carries what a picture cannot — thoughts, sounds, dialogue, what happens next.
 - Each slot has a word and paragraph budget: it is the space on the printed page, where every paragraph or line of dialogue starts a new line. Stay inside it; keep short exchanges of dialogue inside fuller paragraphs.
 - Every adjective, participle and pronoun that refers to the protagonist agrees with the protagonist's grammatical gender given in the brief.
@@ -506,7 +512,7 @@ export function buildPlanUserPrompt(input: StoryInput, spec: PlanSpec): string {
     `Name: ${input.childName}`,
     `Age: ${input.age}`,
     `Grammatical gender: ${genderGrammar(input)}`,
-    `City: ${input.city || "(not given — use an unnamed, ordinary town)"}`,
+    `City: ${input.city?.trim() || "(not given: open at the child's home and street; do not invent or name a town)"}`,
     input.interests.length ? `Interests: ${input.interests.join(", ")}` : null,
     colorName(input.favoriteColor) ? `Favourite colour: ${colorName(input.favoriteColor)}` : null,
     input.favoriteCompanion
