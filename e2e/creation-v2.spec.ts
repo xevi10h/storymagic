@@ -30,8 +30,8 @@ const VIEWPORTS = {
 } as const;
 
 const COPY = {
-  es: { next: /Siguiente/, create: /Crear su libro/, back: "Atrás", world: /Espacial/i, painting: /Pintando el libro de Lucía/, see: /Ver su libro/ },
-  ca: { next: /Següent/, create: /Crear el seu llibre/, back: "Enrere", world: /Espacial/i, painting: /Pintant el llibre de la Lucía/, see: /Veure el llibre/ },
+  es: { next: /Siguiente/, create: /Crear su libro/, back: "Atrás", world: /Espacial/i, painting: /Pintando el comienzo del cuento de Lucía/, see: /Ver su libro/ },
+  ca: { next: /Següent/, create: /Crear el seu llibre/, back: "Enrere", world: /Espacial/i, painting: /Pintant l.inici del conte de la Lucía/, see: /Veure el llibre/ },
 } as const;
 type Locale = keyof typeof COPY;
 
@@ -969,5 +969,41 @@ test.describe("auto-open when the preview is ready", () => {
     await expect(notice).toHaveCount(0);
     expect(page.url()).toMatch(/\/generate$/);
     expect(errors).toEqual([]);
+  });
+});
+
+test.describe("painting screen: preview vs bought book", () => {
+  test.use(VIEWPORTS.desktop);
+  const ID = "22222222-3333-4444-8555-777777777777";
+  const art = (f: string) => `/images/landing/noa/${f}.webp`;
+
+  async function openWithStatus(page: Page, status: "preview" | "ready") {
+    const progress = { coverUrl: art("cover"), coverKey: "c", scenes: [1, 2, 3].map((i) => ({ index: i, url: art(`scene-${i + 2}`), key: `s${i}` })), total: 3 };
+    await page.route(`**/api/stories/${ID}**`, (route) => {
+      const light = route.request().url().includes("light=true");
+      return route.fulfill({
+        json: light
+          ? { id: ID, status, title: "Noa y la noche de los Reyes", preview_progress: progress }
+          : { id: ID, status, title: "Noa y la noche de los Reyes", template_id: "reyes", cover_image_url: art("cover"), dedication_text: "Para ti, Noa.", sender_name: "", characters: { name: "Noa", gender: "girl", favorite_color: null } },
+      });
+    });
+    await page.goto(`/es/create/${ID}/generate`);
+    await expect(page.getByTestId("ready-action")).toBeVisible({ timeout: 15_000 });
+  }
+
+  test("a preview says it is only the beginning; the real title is on the printed cover", async ({ page }) => {
+    await openWithStatus(page, "preview");
+    await expect(page.getByRole("heading", { name: "¡Ya puedes abrir el cuento de Noa!" })).toBeVisible();
+    await expect(page.getByTestId("progress-status")).toHaveText("Te enseñamos el comienzo: la portada y 3 de sus 12 escenas.");
+    await expect(page.getByTestId("intro-note")).toContainText("Esto es solo el principio.");
+    await expect(page.locator("[data-slot=more]")).toContainText("+9");
+    await expect(page.getByTestId("progress-cover")).toContainText("y la noche de los Reyes");
+  });
+
+  test("a bought book never says it is only the beginning", async ({ page }) => {
+    await openWithStatus(page, "ready");
+    await expect(page.getByRole("heading", { name: "¡El libro de Noa está listo!" })).toBeVisible();
+    await expect(page.getByTestId("intro-note")).toHaveCount(0);
+    await expect(page.locator("[data-slot=more]")).toHaveCount(0);
   });
 });

@@ -146,6 +146,9 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
         await mockApi(page, { withPlan: true });
         await page.goto(`/${locale}/create/${STORY_ID}/preview`);
         await section(page).waitFor();
+        // Said up front, not only on the last page: this is the beginning of a longer book.
+        await expect(page.getByTestId("preview-intro")).toContainText(locale === "es" ? /Solo el comienzo: 3 de 12 escenas/ : /Només l'inici: 3 de 12 escenes/);
+        await page.screenshot({ path: `${SHOTS}/${locale}-${vpName}-preview-top.png` });
         await expect(page.getByText(COPY[locale].teaser)).toHaveCount(1);
         // The old blank padlock page ("Desbloquear cuento") is gone; the printed book closes the preview.
         await expect(page.getByText(/Desbloquear cuento|Desbloquejar conte/)).toHaveCount(0);

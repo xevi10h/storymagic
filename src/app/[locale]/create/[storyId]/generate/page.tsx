@@ -6,17 +6,22 @@ import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import CreationHeader from "@/components/create/CreationHeader";
 import CreationFooterNav from "@/components/create/CreationFooterNav";
-import LiveCover from "@/components/create/LiveCover";
+import { BookMockup } from "@/components/book-mockup";
 import DedicationEditor from "@/components/create/DedicationEditor";
 import { useDedicationAutosave } from "@/hooks/useDedicationAutosave";
-import { deName, patchStoredDraft, type NameGender } from "@/lib/creation-flow";
+import { DEFAULT_COVER_TEMPLATE, deName, patchStoredDraft, type NameGender } from "@/lib/creation-flow";
+import { getBookColors } from "@/lib/template-colors";
+import { TOTAL_SCENE_COUNT } from "@/lib/pricing";
+import { FREE_PREVIEW_SCENES } from "@/lib/preview-access";
 import { Spinner } from "@/components/ui/Spinner";
 import { trackEvent } from "@/lib/tracking/consent";
 import SendPreviewEmail from "@/components/create/SendPreviewEmail";
 import { useAuth } from "@/hooks/useAuth";
 
 // Screen 4 — "Mientras se pinta": real preview progress (cover first, then
-// scenes as they are painted) while the parent writes the dedication.
+// scenes as they are painted) while the parent writes the dedication. The hero is
+// the printed book itself (BookMockup = the print cover layout): a plain board
+// until the first painted image lands, a placeholder title until the real one exists.
 
 const POLL_INTERVAL_MS = 3000;
 // A real backend failure reverts status to "draft" (handled immediately), so
@@ -111,6 +116,7 @@ function formatElapsed(ms: number): string {
 
 export default function GenerarPage() {
   const t = useTranslations("crear.generar");
+  const tPreview = useTranslations("crear.preview");
   const locale = useLocale();
   const { storyId } = useParams<{ storyId: string }>();
   const router = useRouter();
@@ -125,6 +131,9 @@ export default function GenerarPage() {
   const [childGender, setChildGender] = useState<NameGender>(null);
   const [templateId, setTemplateId] = useState<string | null>(null);
   const [finalCover, setFinalCover] = useState<string | null>(null);
+  const [bookTitle, setBookTitle] = useState<string | null>(null);
+  const [storyStatus, setStoryStatus] = useState<string | null>(null);
+  const [favoriteColor, setFavoriteColor] = useState<string | null>(null);
   const [leaving, setLeaving] = useState(false);
   const [autoOpenStage, setAutoOpenStage] = useState<AutoOpenStage>("off");
   const [autoOpenLeft, setAutoOpenLeft] = useState(AUTO_OPEN_SECONDS);
@@ -157,7 +166,12 @@ export default function GenerarPage() {
       setChildName(data.characters?.name ?? "");
       setChildGender(data.characters?.gender ?? null);
       setTemplateId(data.template_id ?? null);
-      if (data.cover_image_url && DONE_STATUSES.has(data.status)) setFinalCover(data.cover_image_url);
+      setFavoriteColor(data.characters?.favorite_color ?? null);
+      setStoryStatus(data.status ?? null);
+      if (DONE_STATUSES.has(data.status)) {
+        if (data.cover_image_url) setFinalCover(data.cover_image_url);
+        setBookTitle(data.title ?? data.generated_text?.bookTitle ?? null);
+      }
       initDedication({ dedication: data.dedication_text ?? "", senderName: data.sender_name ?? "" });
     } catch {
       // the screen still works without it (name-less copy)
@@ -456,6 +470,16 @@ export default function GenerarPage() {
   const name = childName;
   const { user } = useAuth();
   const nameArgs = { name, deName: deName(name, locale, childGender) };
+  // The printed book: real title once saved (status preview), a placeholder until then;
+  // a plain board in the book's colour until the first painted image lands.
+  const shownTitle = bookTitle ?? (name ? t("placeholderTitle", nameArgs) : t("placeholderTitleNoName"));
+  const spineColor = getBookColors(templateId ?? DEFAULT_COVER_TEMPLATE, childGender ?? undefined, favoriteColor).gradientStart;
+  const previewScenes = total || FREE_PREVIEW_SCENES;
+  // A bought book (ready/ordered/shipped: the back button of its viewer lands here) has
+  // every scene: no "only the beginning" copy, no "+9" slot.
+  const fullBook = done && storyStatus != null && storyStatus !== "preview";
+  const moreScenes = Math.max(0, TOTAL_SCENE_COUNT - previewScenes);
+  const showMore = moreScenes > 0 && !fullBook;
 
   // ── Error state ─────────────────────────────────────────────────────────────
 
@@ -525,7 +549,9 @@ export default function GenerarPage() {
   // ── Painting + dedication ─────────────────────────────────────────────────
 
   const statusLine = done
-    ? t("statusReady")
+    ? fullBook
+      ? t("statusReadyFull")
+      : t("statusReady", { shown: previewScenes, total: TOTAL_SCENE_COUNT })
     : coverUrl
       ? known
         ? t("statusScenes", { done: Math.min(scenesDone, total), total })
@@ -544,100 +570,49 @@ export default function GenerarPage() {
       />
 
       <main className="step-in mx-auto grid w-full max-w-[1120px] flex-1 gap-6 px-4 pb-10 pt-4 sm:px-6 lg:grid-cols-2 lg:gap-14 lg:pt-8">
-        {/* Real progress */}
-        <section aria-labelledby="painting-title" className="flex flex-col gap-4">
-          <div className="flex items-center gap-4 lg:flex-col lg:items-stretch lg:gap-5">
-            <div className="relative w-[112px] shrink-0 sm:w-[150px] lg:mx-auto lg:w-[340px]" data-testid="progress-cover">
-              <LiveCover name={name} gender={childGender} templateId={templateId} imageUrl={heroUrl} sizes="(max-width:1024px) 150px, 340px" />
+        {/* Real progress: the printed book + the preview's illustrations as they land */}
+        <section aria-labelledby="painting-title" className="flex flex-col gap-4 lg:gap-5">
+          <div className="relative mx-auto w-[min(62vw,240px)] sm:w-[300px] lg:w-full lg:max-w-[420px]" data-testid="progress-cover">
+            <div
+              aria-hidden
+              className={`absolute inset-[6%] rounded-full bg-create-primary/25 blur-3xl transition-opacity duration-1000 ${done ? "opacity-100" : "opacity-0"}`}
+            />
+            {/* The mockup's 5:4 stage leaves wide margins around the book: widen it by half and
+                crop the empty top/bottom so the book fills the column. Clipped, so the stage
+                never covers the header or the dedication column. */}
+            <div className="relative overflow-hidden">
+              <div className="-mx-[25%] -mb-[16%] -mt-[9%]">
+                <BookMockup
+                  coverUrl={heroUrl}
+                  title={shownTitle}
+                  childName={name}
+                  subtitle={tPreview("personalizedStory")}
+                  format="hardcover"
+                  spineColor={spineColor}
+                  showScale={false}
+                  priority
+                  alt={shownTitle}
+                  className="[&>div:first-child]:hidden"
+                />
+              </div>
               {!coverUrl && (
-                // Over template art the title sits on top (badge at the bottom); over a painted
-                // first scene the title sits at the bottom (badge at the top).
-                <span className={`absolute inset-x-2 ${heroUrl ? "top-2" : "bottom-2"} flex items-center justify-center gap-1 rounded-full bg-white/90 px-2 py-1 text-[10px] font-bold text-create-text shadow-sm lg:inset-x-auto lg:left-1/2 lg:-translate-x-1/2 lg:px-3 lg:text-xs`}>
+                <span className="absolute bottom-2 left-1/2 flex -translate-x-1/2 items-center gap-1.5 whitespace-nowrap rounded-full bg-white/95 px-3 py-1.5 text-xs font-bold text-create-text shadow-[0_4px_14px_-4px_rgba(58,36,24,.35)]">
                   <Spinner className="shrink-0 text-xs text-brand-text" />
-                  <span className="truncate">{t("paintingCover")}</span>
+                  {t("paintingCover")}
                 </span>
               )}
             </div>
-            <div className="min-w-0 lg:text-center">
-              <h1 id="painting-title" className="font-display text-xl font-bold leading-tight text-create-text-dark sm:text-2xl lg:text-3xl">
-                {done ? t("readyTitle", nameArgs) : name ? t("paintingTitle", nameArgs) : t("paintingTitleNoName")}
-              </h1>
-              <p className="mt-1 text-sm text-create-text-sub" aria-live="polite" data-testid="progress-status">
-                {statusLine}
-              </p>
-            </div>
           </div>
 
-          {!done && (
-            <div className="rounded-2xl bg-white p-4 shadow-[0_1px_3px_rgba(58,36,24,.08)]">
-              {known ? (
-                <div
-                  role="progressbar"
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                  aria-valuenow={pct ?? 0}
-                  aria-label={t("progressLabel")}
-                  className="h-2 w-full overflow-hidden rounded-full bg-create-neutral"
-                >
-                  <div className="h-full rounded-full bg-create-primary transition-[width] duration-700" style={{ width: `${pct}%` }} />
-                </div>
-              ) : (
-                <div role="progressbar" aria-label={t("progressLabel")} aria-valuetext={t("statusStarting")} className="h-2 w-full overflow-hidden rounded-full bg-create-neutral">
-                  <div className="progress-indeterminate h-full w-1/3 rounded-full bg-create-primary/70" />
-                </div>
-              )}
-              <div className="mt-2 flex items-center justify-between text-xs tabular-nums text-create-text-sub">
-                <span>{isSlow ? t("slowMessage") : t("waitMessage")}</span>
-                <span>{formatElapsed(elapsedMs)}</span>
-              </div>
+          <div className="text-center">
+            <h1 id="painting-title" className="font-display text-2xl font-bold leading-tight text-create-text-dark [text-wrap:balance] lg:text-3xl">
+              {done ? t(fullBook ? "readyTitleFull" : "readyTitle", nameArgs) : name ? t("paintingTitle", nameArgs) : t("paintingTitleNoName")}
+            </h1>
+            <p className="mt-1.5 text-sm text-create-text-sub" aria-live="polite" data-testid="progress-status">
+              {statusLine}
+            </p>
+          </div>
 
-              {known && (
-                <ol
-                  className="mt-3 grid gap-2"
-                  style={{ gridTemplateColumns: `repeat(${total + 1}, minmax(0, 1fr))` }}
-                  aria-label={t("scenesLabel")}
-                  data-testid="progress-scenes"
-                >
-                  {/* Cover first (it is a step of the bar too), then scene slots */}
-                  <li className="relative aspect-square overflow-hidden rounded-lg bg-create-neutral" data-slot="cover">
-                    {coverUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img key={progress?.coverKey ?? coverUrl} src={coverUrl} alt={t("coverThumbAlt")} className="cover-art-in absolute inset-0 h-full w-full object-cover" />
-                    ) : (
-                      <span aria-hidden className="material-symbols-outlined absolute inset-0 flex items-center justify-center text-base text-create-text-sub/50" data-icon="auto_stories" />
-                    )}
-                  </li>
-                  {Array.from({ length: total }, (_, i) => {
-                    // Slot = scene number (scenes can land out of order)
-                    const scene = progress?.scenes.find((s) => s.index === i + 1);
-                    return (
-                      <li key={i} className="relative aspect-square overflow-hidden rounded-lg bg-create-neutral" data-slot="scene">
-                        {scene ? (
-                          // Signed URL of the private bucket: plain <img>, never the optimizer.
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img key={scene.key} src={scene.url} alt={t("sceneAlt", { n: i + 1 })} className="cover-art-in absolute inset-0 h-full w-full object-cover" />
-                        ) : (
-                          <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-create-text-sub/50">{i + 1}</span>
-                        )}
-                      </li>
-                    );
-                  })}
-                </ol>
-              )}
-            </div>
-          )}
-          {/* Optional, never a gate: the minute of painting is when they have a hand free. */}
-          {(!done || emailTouched) && name && (
-            <div ref={emailBoxRef} onFocusCapture={() => setEmailTouched(true)} className="[&>form]:mt-0 [&>p]:mt-0">
-              <SendPreviewEmail
-                storyId={storyId}
-                childName={name}
-                defaultEmail={!user || user.is_anonymous ? null : user.email}
-                ready={done}
-                onQueued={() => setEmailTouched(true)}
-              />
-            </div>
-          )}
           {done && (
             // Phones too: right under the ready title, above the dedication (the footer
             // button alone went unnoticed while the editor filled the screen).
@@ -672,6 +647,94 @@ export default function GenerarPage() {
                   </button>
                 </div>
               )}
+            </div>
+          )}
+
+          <div className="rounded-2xl bg-white p-4 shadow-[0_1px_3px_rgba(58,36,24,.08)]">
+            {!done && (
+              <>
+                {known ? (
+                  <div
+                    role="progressbar"
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={pct ?? 0}
+                    aria-label={t("progressLabel")}
+                    className="h-2 w-full overflow-hidden rounded-full bg-create-neutral"
+                  >
+                    <div className="h-full rounded-full bg-create-primary transition-[width] duration-700" style={{ width: `${pct}%` }} />
+                  </div>
+                ) : (
+                  <div role="progressbar" aria-label={t("progressLabel")} aria-valuetext={t("statusStarting")} className="h-2 w-full overflow-hidden rounded-full bg-create-neutral">
+                    <div className="progress-indeterminate h-full w-1/3 rounded-full bg-create-primary/70" />
+                  </div>
+                )}
+                <div className="mt-2 flex items-center justify-between text-xs tabular-nums text-create-text-sub">
+                  <span>{isSlow ? t("slowMessage") : t("waitMessage")}</span>
+                  <span>{formatElapsed(elapsedMs)}</span>
+                </div>
+              </>
+            )}
+
+            {/* Cover + the preview scenes (slot = scene number: they can land out of order),
+                then what only the full book has. A slot still being painted shimmers. */}
+            <ol
+              className={`grid gap-2 ${done ? "" : "mt-3"}`}
+              style={{ gridTemplateColumns: `repeat(${previewScenes + (showMore ? 2 : 1)}, minmax(0, 1fr))` }}
+              aria-label={t("scenesLabel")}
+              data-testid="progress-scenes"
+            >
+              <li className="relative aspect-square overflow-hidden rounded-lg bg-create-neutral" data-slot="cover">
+                {coverUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img key={progress?.coverKey ?? coverUrl} src={coverUrl} alt={t("coverThumbAlt")} className="cover-art-in absolute inset-0 h-full w-full object-cover" />
+                ) : (
+                  <span aria-hidden className="paint-pending absolute inset-0 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-base text-create-text-sub/60" data-icon="auto_stories" />
+                  </span>
+                )}
+              </li>
+              {Array.from({ length: previewScenes }, (_, i) => {
+                const scene = progress?.scenes.find((s) => s.index === i + 1);
+                return (
+                  <li key={i} className="relative aspect-square overflow-hidden rounded-lg bg-create-neutral" data-slot="scene">
+                    {scene ? (
+                      // Signed URL of the private bucket: plain <img>, never the optimizer.
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img key={scene.key} src={scene.url} alt={t("sceneAlt", { n: i + 1 })} className="cover-art-in absolute inset-0 h-full w-full object-cover" />
+                    ) : (
+                      <span className="paint-pending absolute inset-0 flex items-center justify-center text-xs font-bold text-create-text-sub/60">{i + 1}</span>
+                    )}
+                  </li>
+                );
+              })}
+              {showMore && (
+                <li
+                  className="flex aspect-square flex-col items-center justify-center rounded-lg border-2 border-dashed border-create-primary/30 bg-create-primary/[0.04] text-center"
+                  data-slot="more"
+                  aria-label={t("moreScenesLabel", { n: moreScenes })}
+                >
+                  <span aria-hidden className="font-display text-lg font-bold leading-none text-brand-text sm:text-xl">+{moreScenes}</span>
+                  <span aria-hidden className="mt-0.5 text-[10px] font-semibold leading-tight text-create-text-sub sm:text-[11px]">{t("moreScenesShort")}</span>
+                </li>
+              )}
+            </ol>
+            {!fullBook && (
+              <p className="mt-3 text-[13px] leading-snug text-create-text-sub" data-testid="intro-note">
+                <strong className="font-semibold text-create-text-dark">{t("introLead")}</strong> {t("introNote", { total: TOTAL_SCENE_COUNT })}
+              </p>
+            )}
+          </div>
+          {/* Optional, never a gate: the minute of painting is when they have a hand free. */}
+          {(!done || emailTouched) && name && (
+            <div ref={emailBoxRef} onFocusCapture={() => setEmailTouched(true)} className="[&>form]:mt-0 [&>p]:mt-0">
+              <SendPreviewEmail
+                storyId={storyId}
+                childName={name}
+                defaultEmail={!user || user.is_anonymous ? null : user.email}
+                ready={done}
+                onQueued={() => setEmailTouched(true)}
+              />
             </div>
           )}
         </section>

@@ -25,6 +25,12 @@ Shipped for the Christmas / Reyes 2026 campaign after the SEO audit of 2026-11-1
   feed items), "Alternativas a Hurra Héroes" section on `/compare`, birthday and 5-7 titles, descriptive `alt` on hub cards,
   Product JSON-LD only where both prices are visible.
 
+## Painting screen + preview follow-ups (2026-11-16)
+
+- **Decided 2026-11-16 (owner): reuse.** The final book must keep the approved preview cover + scenes 1-3 (upscaled to print size) and paint only the other 9 in the same look. Today `final-book.ts` repaints everything from new sheets, so the drawings change after purchase. Open questions: upscaler (1024² medium → 2432² / cover 2672×2912), and making scenes 4-12 match the preview sheets' style.
+- `BookRevealOverlay` still shows the bare cover art (no title): make it the same printed-book mockup as the painting screen.
+- Cover cross-fade in `CoverFace` when the painted art replaces the plain board.
+
 ## Domain move meapica.shop → meapica.es (2026-10-23)
 
 Code, docs, Resend, Supabase allow-list and GSC property done (see `docs/stack.md` › Domains). Remaining:

@@ -636,8 +636,9 @@ export default function PreviewPage() {
         )}
       </h1>
       {isPreviewMode && (
-        <p className="mt-0.5 text-xs text-create-text-sub">
-          {t("previewBadge")} · {tPurchase("scenesShown", { shown: PREVIEW_CLEAR_SCENES, total: TOTAL_SCENE_COUNT })}
+        <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] leading-snug text-create-text-sub" data-testid="preview-intro">
+          <span className="rounded-full bg-create-primary/10 px-2.5 py-0.5 text-xs font-bold text-brand-text">{t("previewBadge")}</span>
+          <span>{t("previewIntro", { shown: PREVIEW_CLEAR_SCENES, total: TOTAL_SCENE_COUNT })}</span>
         </p>
       )}
     </div>
