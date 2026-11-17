@@ -1046,7 +1046,7 @@
       "section4Title": "4. Preus i pagaments",
       "section4Text": "Tots els preus són finals, amb l'IVA inclòs, i es mostren en euros. En els llibres impresos, l'enviament a Espanya està inclòs en el preu. El pagament es processa de forma segura a través de Stripe.",
       "section5Title": "5. Enviaments i devolucions",
-      "section5Text": "Els llibres s'imprimeixen sota demanda a Europa i, de moment, només fem enviaments a adreces d'Espanya. Espanya peninsular: {minDays}-{maxDays} dies laborables. Balears: {minDays}-{maxDays} dies laborables. De moment no enviem a Canàries, Ceuta ni Melilla. En ser productes personalitzats, els llibres estan exclosos del dret de desistiment (art. 103 c) del text refós de la Llei general per a la defensa dels consumidors i usuaris) i no admeten devolucions. Si un llibre arriba amb qualsevol defecte d'impressió o de fabricació, o es malmet durant l'enviament, escriu-nos en els 30 dies següents a rebre'l, amb una foto del llibre i de l'embalatge, i t'enviem un altre de nou sense cost. Això no limita els drets de garantia que et reconeix la llei.",
+      "section5Text": "Els llibres s'imprimeixen sota demanda a Europa i, de moment, només fem enviaments a adreces d'Espanya. Espanya peninsular: {minDays}-{maxDays} dies laborables. Balears: {minDays}-{maxDays} dies laborables. De moment no enviem a Canàries, Ceuta ni Melilla. En ser productes personalitzats, els llibres estan exclosos del dret de desistiment (art. 103 c) del text refós de la Llei general per a la defensa dels consumidors i usuaris) i no admeten devolucions. Si un llibre arriba amb qualsevol defecte d'impressió o de fabricació, o es malmet durant l'enviament, escriu-nos en els 30 dies següents a rebre'l, amb una foto del llibre i de l'embalatge, i t'enviem un altre de nou sense cost. Això no limita els drets de garantia que et reconeix la llei. A més, Meapica ofereix una garantia comercial voluntària: si el conte no us encanta, escriu-nos a hola@meapica.es en els 30 dies següents a rebre'l i et tornem l'import íntegre pel mateix mitjà de pagament, sense haver de tornar el llibre. S'aplica una vegada per client.",
       "section6Title": "6. Limitació de responsabilitat",
       "section6Text": "Meapica no garanteix la disponibilitat ininterrompuda del servei. Les il·lustracions poden variar i no es garanteix un resultat específic.",
       "section7Title": "7. Targetes regal",
@@ -1288,6 +1288,15 @@
           "later": "El demanaré més endavant",
           "browsing": "Només estava mirant"
         }
+      },
+      "whatsapp": {
+        "title": "Ho decidiu entre dos?",
+        "body": "Envia el conte {deName} per WhatsApp. Qui el rebi el veurà tal qual i el podrà demanar.",
+        "partner": "Ensenyar-lo a la meva parella",
+        "grandparents": "Demanar-lo als avis",
+        "partnerText": "Mira el conte que he fet per a {name}. Surt als dibuixos i porta el seu nom a la portada. L'hi demanem?",
+        "grandparentsText": "Mireu el conte que he fet per a {name}: surt als dibuixos i porta el seu nom a la portada. Li faria molta il·lusió.",
+        "error": "No s'ha pogut crear l'enllaç. Torna-ho a provar."
       }
     },
     "errors": {
@@ -1451,8 +1460,8 @@
       "invalid": "Revisa el correu.",
       "rateLimited": "Ja te l'hem enviada diverses vegades. Prova-ho més tard.",
       "error": "No s'ha pogut enviar. Torna-ho a provar.",
-      "titleWaiting": "Te'l guardem?",
-      "hintWaiting": "Deixa'ns el teu email i t'enviarem l'enllaç al seu llibre tan bon punt estigui llest.",
+      "titleWaiting": "A quin correu et guardem el conte?",
+      "hintWaiting": "T'enviem l'enllaç tan bon punt estigui a punt, per veure'l quan vulguis i ensenyar-lo a qui tu vulguis.",
       "queued": "T'ho enviarem a {email} tan bon punt estigui llest.",
       "queuedReminder": "T'ho enviarem a {email} tan bon punt estigui llest, i t'ho recordarem com a màxim 3 vegades."
     },
@@ -1538,7 +1547,7 @@
         },
         "returns": {
           "q": "I si arriba amb algun problema?",
-          "a": "Com que és un llibre fet a mida no admet desistiment, però si arriba amb un defecte d'impressió o malmès per l'enviament, t'enviem un altre de nou sense cost. Només cal que ens escriguis en els 30 dies següents a rebre'l, amb una foto del llibre i de l'embalatge."
+          "a": "Com que és un llibre fet a mida no admet desistiment, però si arriba amb un defecte d'impressió o malmès per l'enviament, t'enviem un altre de nou sense cost. Només cal que ens escriguis en els 30 dies següents a rebre'l, amb una foto del llibre i de l'embalatge. I si simplement no us encanta, escriu-nos en aquests mateixos 30 dies i et tornem els diners, sense tornar el llibre."
         }
       },
       "softcoverNote": "Coberta flexible, més lleugera",
@@ -1591,7 +1600,13 @@
         "altTable": "Llibre d'exemple en tapa dura sobre una taula, al costat de la caixa d'enviament i una tassa",
         "altOpen": "Llibre d'exemple obert sobre un sofà, amb dues pàgines il·lustrades",
         "altGift": "Llibre d'exemple en tapa dura sobre paper de seda, al costat d'un arbre de Nadal"
-      }
+      },
+      "pdfFirstStep": "Comença pel PDF",
+      "pdfCredit": "Si després demanes el llibre imprès, et surt a {softcover} en tapa tova o {hardcover} en tapa dura",
+      "guaranteeTitle": "Si no us encanta, et tornem els diners",
+      "guaranteeBody": "Escriu-nos a {email} en els {days} dies següents a rebre'l. No cal tornar el llibre.",
+      "payWith": "Paga com prefereixis:",
+      "payCard": "Targeta"
     }
   },
   "checkout": {

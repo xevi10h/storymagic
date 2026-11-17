@@ -43,7 +43,7 @@ function prefersNativeShare(): boolean {
  */
 const linkRequests = new Map<string, Promise<string>>();
 
-function requestShareUrl(storyId: string, locale: string): Promise<string> {
+export function requestShareUrl(storyId: string, locale: string): Promise<string> {
   const key = `${storyId}:${locale}`;
   let pending = linkRequests.get(key);
   if (!pending) {

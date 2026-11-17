@@ -84,6 +84,12 @@ export { SUPPORT_EMAIL } from "./support";
  * manufacturing defects and transit damage (terms section 5 + landing FAQ say the same).
  */
 export const SHOW_REPRINT_GUARANTEE = true;
+/**
+ * Money-back promise (owner decision 2026-11-17): a full refund when the buyer writes to
+ * SUPPORT_EMAIL within this many days of receiving the book, without sending it back.
+ * Shown on the order panel and stated in the terms (legal › guarantee). Review in January 2027.
+ */
+export const MONEY_BACK_DAYS = 30;
 
 /** Seller identity printed on Stripe invoices and on the order-confirmation receipt. */
 export const SELLER_IDENTITY = "Xavier Huix Trenco (Meapica) · NIF 41649433K · Carrer Aribau 140, 5º, 08036 Barcelona";

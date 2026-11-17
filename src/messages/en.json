@@ -986,7 +986,7 @@
       "section4Title": "4. Prices and payments",
       "section4Text": "All prices are final, VAT included, and shown in euros. For printed books, shipping within Spain is included in the price. Payment is processed securely through Stripe.",
       "section5Title": "5. Shipping and returns",
-      "section5Text": "Books are printed on demand in Europe, and for now we only ship to addresses in Spain. Mainland Spain: {minDays}-{maxDays} business days. Balearic Islands: {minDays}-{maxDays} business days. We don't ship to the Canary Islands, Ceuta or Melilla yet. As personalized products, books are excluded from the right of withdrawal (Art. 103(c) of the Spanish consolidated consumer protection law, TRLGDCU) and cannot be returned. If a book arrives with any printing or manufacturing defect, or is damaged in transit, write to us within 30 days of receiving it, with a photo of the book and the packaging, and we will send you a new one free of charge. This does not limit your statutory warranty rights.",
+      "section5Text": "Books are printed on demand in Europe, and for now we only ship to addresses in Spain. Mainland Spain: {minDays}-{maxDays} business days. Balearic Islands: {minDays}-{maxDays} business days. We don't ship to the Canary Islands, Ceuta or Melilla yet. As personalized products, books are excluded from the right of withdrawal (Art. 103(c) of the Spanish consolidated consumer protection law, TRLGDCU) and cannot be returned. If a book arrives with any printing or manufacturing defect, or is damaged in transit, write to us within 30 days of receiving it, with a photo of the book and the packaging, and we will send you a new one free of charge. This does not limit your statutory warranty rights. In addition, Meapica offers a voluntary commercial guarantee: if you don't love the book, write to hola@meapica.es within 30 days of receiving it and we will refund the full amount to the same payment method, with no need to send the book back. It applies once per customer.",
       "section6Title": "6. Limitation of liability",
       "section6Text": "Meapica does not guarantee uninterrupted service availability. Illustrations may vary and a specific result is not guaranteed.",
       "section7Title": "7. Gift vouchers",
@@ -1228,6 +1228,15 @@
           "later": "I'll order later",
           "browsing": "Just looking"
         }
+      },
+      "whatsapp": {
+        "title": "Deciding together?",
+        "body": "Send {name}'s story by WhatsApp. Whoever gets it sees it just as it is and can order it.",
+        "partner": "Show my partner",
+        "grandparents": "Ask the grandparents",
+        "partnerText": "Look at the story I made for {name}. They're in the drawings and their name is on the cover. Shall we order it?",
+        "grandparentsText": "Look at the story I made for {name}: they're in the drawings and their name is on the cover. They would love it.",
+        "error": "We couldn't create the link. Please try again."
       }
     },
     "errors": {
@@ -1391,8 +1400,8 @@
       "invalid": "Check the email address.",
       "rateLimited": "We've already sent it several times. Try again later.",
       "error": "We couldn't send it. Please try again.",
-      "titleWaiting": "Shall we save it for you?",
-      "hintWaiting": "Leave your email and we'll send you the link to the book as soon as it's ready.",
+      "titleWaiting": "Which email should we save the story to?",
+      "hintWaiting": "We'll send the link the moment it's ready, to open whenever you like and show to whoever you like.",
       "queued": "We'll send it to {email} as soon as it's ready.",
       "queuedReminder": "We'll send it to {email} as soon as it's ready, and remind you at most 3 times."
     },
@@ -1478,7 +1487,7 @@
         },
         "returns": {
           "q": "What if something is wrong with it?",
-          "a": "As a made-to-order book it has no right of withdrawal, but if it arrives with a printing defect or damaged in transit, we'll send you a new one free of charge. Just write to us within 30 days of receiving it, with a photo of the book and the packaging."
+          "a": "As a made-to-order book it has no right of withdrawal, but if it arrives with a printing defect or damaged in transit, we'll send you a new one free of charge. Just write to us within 30 days of receiving it, with a photo of the book and the packaging. And if you simply don't love it, write to us within those same 30 days and we'll refund you, without sending the book back."
         }
       },
       "softcoverNote": "Flexible cover, lighter",
@@ -1531,7 +1540,13 @@
         "altTable": "Sample hardcover book on a table next to the shipping box and a mug",
         "altOpen": "Sample book lying open on a sofa, showing two illustrated pages",
         "altGift": "Sample hardcover book on tissue paper next to a Christmas tree"
-      }
+      },
+      "pdfFirstStep": "Start with the PDF",
+      "pdfCredit": "If you order the printed book later, it costs {softcover} in softcover or {hardcover} in hardcover",
+      "guaranteeTitle": "If you don't love it, we refund you",
+      "guaranteeBody": "Write to {email} within {days} days of receiving it. No need to send the book back.",
+      "payWith": "Pay your way:",
+      "payCard": "Card"
     }
   },
   "checkout": {

@@ -31,6 +31,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import type { GeneratedStory } from "@/lib/ai/story-generator";
 import { PREVIEW_CLEAR_SCENES, buildBookPages, toPreviewPages } from "@/lib/book-pages";
 import SharePreviewButton from "@/components/share/SharePreviewButton";
+import ShareWhatsApp from "@/components/share/ShareWhatsApp";
 import { BrandLoader } from "@/components/ui/BrandLoader";
 import { Spinner } from "@/components/ui/Spinner";
 import { OfferCallout, ReorderSheet } from "@/components/dashboard/OrdersTab";
@@ -715,6 +716,7 @@ export default function PreviewPage() {
                 })}
               </p>
             )}
+            {showBuy && <ShareWhatsApp storyId={storyId} childName={childName} childGender={story.characters.gender} />}
             {showBuy && isWide && sendPreviewEmail}
           </section>
         </div>

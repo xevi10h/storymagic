@@ -1028,7 +1028,7 @@
       "section4Title": "4. Precios y pagos",
       "section4Text": "Todos los precios son finales, con el IVA incluido, y se muestran en euros. En los libros impresos, el envío a España está incluido en el precio. El pago se procesa de forma segura a través de Stripe.",
       "section5Title": "5. Envíos y devoluciones",
-      "section5Text": "Los libros se imprimen bajo demanda en Europa y, por ahora, solo realizamos envíos a direcciones de España. España peninsular: {minDays}-{maxDays} días laborables. Baleares: {minDays}-{maxDays} días laborables. De momento no enviamos a Canarias, Ceuta ni Melilla. Al ser productos personalizados, los libros están excluidos del derecho de desistimiento (art. 103 c) del texto refundido de la Ley General para la Defensa de los Consumidores y Usuarios) y no admiten devoluciones. Si un libro llega con cualquier defecto de impresión o fabricación, o se daña durante el envío, escríbenos en los 30 días siguientes a recibirlo, con una foto del libro y del embalaje, y te enviamos otro nuevo sin coste. Esto no limita los derechos de garantía que te reconoce la ley.",
+      "section5Text": "Los libros se imprimen bajo demanda en Europa y, por ahora, solo realizamos envíos a direcciones de España. España peninsular: {minDays}-{maxDays} días laborables. Baleares: {minDays}-{maxDays} días laborables. De momento no enviamos a Canarias, Ceuta ni Melilla. Al ser productos personalizados, los libros están excluidos del derecho de desistimiento (art. 103 c) del texto refundido de la Ley General para la Defensa de los Consumidores y Usuarios) y no admiten devoluciones. Si un libro llega con cualquier defecto de impresión o fabricación, o se daña durante el envío, escríbenos en los 30 días siguientes a recibirlo, con una foto del libro y del embalaje, y te enviamos otro nuevo sin coste. Esto no limita los derechos de garantía que te reconoce la ley. Además, Meapica ofrece una garantía comercial voluntaria: si el cuento no os encanta, escríbenos a hola@meapica.es en los 30 días siguientes a recibirlo y te devolvemos el importe íntegro por el mismo medio de pago, sin necesidad de devolver el libro. Se aplica una vez por cliente.",
       "section6Title": "6. Limitación de responsabilidad",
       "section6Text": "Meapica no garantiza la disponibilidad ininterrumpida del servicio. Las ilustraciones pueden variar y no se garantiza un resultado específico.",
       "section7Title": "7. Tarjetas regalo",
@@ -1270,6 +1270,15 @@
           "later": "Lo pediré más adelante",
           "browsing": "Solo estaba mirando"
         }
+      },
+      "whatsapp": {
+        "title": "¿Lo decidís entre dos?",
+        "body": "Envía el cuento {deName} por WhatsApp. Quien lo reciba lo verá tal cual y podrá pedirlo.",
+        "partner": "Enseñárselo a mi pareja",
+        "grandparents": "Pedírselo a los abuelos",
+        "partnerText": "Mira el cuento que he hecho para {name}. Sale en los dibujos y lleva su nombre en la portada. ¿Se lo pedimos?",
+        "grandparentsText": "Mirad el cuento que he hecho para {name}: sale en los dibujos y lleva su nombre en la portada. Le haría mucha ilusión.",
+        "error": "No se ha podido crear el enlace. Inténtalo de nuevo."
       }
     },
     "errors": {
@@ -1433,8 +1442,8 @@
       "invalid": "Revisa el email.",
       "rateLimited": "Ya te la hemos enviado varias veces. Prueba más tarde.",
       "error": "No se ha podido enviar. Inténtalo de nuevo.",
-      "titleWaiting": "¿Te lo guardamos?",
-      "hintWaiting": "Déjanos tu email y te enviamos el enlace a su libro en cuanto esté listo.",
+      "titleWaiting": "¿A qué correo te guardamos el cuento?",
+      "hintWaiting": "Te enviamos el enlace en cuanto esté listo, para verlo cuando quieras y enseñárselo a quien tú quieras.",
       "queued": "Te lo enviaremos a {email} en cuanto esté listo.",
       "queuedReminder": "Te lo enviaremos a {email} en cuanto esté listo, y te lo recordaremos como mucho 3 veces."
     },
@@ -1520,7 +1529,7 @@
         },
         "returns": {
           "q": "¿Y si llega con algún problema?",
-          "a": "Al ser un libro hecho a medida no admite desistimiento, pero si llega con un defecto de impresión o dañado por el envío, te enviamos otro nuevo sin coste. Solo tienes que escribirnos en los 30 días siguientes a recibirlo, con una foto del libro y del embalaje."
+          "a": "Al ser un libro hecho a medida no admite desistimiento, pero si llega con un defecto de impresión o dañado por el envío, te enviamos otro nuevo sin coste. Solo tienes que escribirnos en los 30 días siguientes a recibirlo, con una foto del libro y del embalaje. Y si simplemente no os encanta, escríbenos en esos mismos 30 días y te devolvemos el dinero, sin devolver el libro."
         }
       },
       "softcoverNote": "Portada flexible, más ligera",
@@ -1573,7 +1582,13 @@
         "altTable": "Libro de ejemplo en tapa dura sobre una mesa, junto a la caja de envío y una taza",
         "altOpen": "Libro de ejemplo abierto sobre un sofá, con dos páginas ilustradas",
         "altGift": "Libro de ejemplo en tapa dura sobre papel de seda, junto a un árbol de Navidad"
-      }
+      },
+      "pdfFirstStep": "Empieza por el PDF",
+      "pdfCredit": "Si luego pides el libro impreso, te sale a {softcover} en tapa blanda o {hardcover} en tapa dura",
+      "guaranteeTitle": "Si no os encanta, te devolvemos el dinero",
+      "guaranteeBody": "Escríbenos a {email} en los {days} días siguientes a recibirlo. No hace falta devolver el libro.",
+      "payWith": "Paga como prefieras:",
+      "payCard": "Tarjeta"
     }
   },
   "checkout": {

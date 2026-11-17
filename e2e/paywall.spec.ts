@@ -102,6 +102,13 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
         await expect(format(page, "softcover").locator("input")).toBeChecked();
         await expect(mainCta(page)).toContainText(/34,90\s*€/);
         await expect(section(page).getByTestId("delivery-line")).toContainText(c.delivery);
+        // Under the pay button: the money-back promise and the ways to pay (2026-11-17).
+        await expect(page.getByTestId("money-back")).toContainText(locale === "es" ? /te devolvemos el dinero[\s\S]*hola@meapica\.es[\s\S]*30 días/ : /et tornem els diners[\s\S]*hola@meapica\.es[\s\S]*30 dies/);
+        await expect(page.getByTestId("pay-methods")).toContainText(/Bizum[\s\S]*Apple Pay[\s\S]*Google Pay/);
+        // Second decider: both WhatsApp buttons carry the message and the share link.
+        const wa = page.getByTestId("whatsapp-partner");
+        await expect(wa).toHaveAttribute("href", /^https:\/\/wa\.me\/\?text=.*preview%2Ftoken/);
+        await expect(page.getByTestId("whatsapp-grandparents")).toHaveAttribute("href", /^https:\/\/wa\.me\/\?text=/);
         await expect(format(page, "hardcover")).toContainText(/49,90\s*€/);
         await expect(format(page, "hardcover")).toContainText(/IVA incl/);
 
@@ -115,8 +122,9 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
         await expect(mainCta(page)).toContainText(/54,80\s*€/); // 34,90 + 19,90
         await format(page, "hardcover").click();
         await expect(mainCta(page)).toContainText(/79,80\s*€/);
-        // PDF only via the text link: no add-ons, back to printed keeps working.
-        await section(page).getByRole("button", { name: c.pdfOnly }).click();
+        // PDF as the visible third row, with the price of the printed book afterwards.
+        await expect(page.getByTestId("pdf-credit")).toContainText(/25,00\s*€.*40,00\s*€/);
+        await format(page, "digital_pdf").click();
         await expect(format(page, "digital_pdf").locator("input")).toBeChecked();
         await expect(extra(page)).toHaveCount(0);
         await expect(mainCta(page)).toContainText(/9,90\s*€/);
@@ -266,7 +274,7 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
       await extra(page).click();
       await expect(mainCta(page)).toContainText(/47,82\s*€/);
       await extra(page).click();
-      await section(page).getByRole("button", { name: /Solo el PDF\? 7,92/ }).click();
+      await format(page, "digital_pdf").click();
       await expect(mainCta(page)).toContainText(/7,92\s*€/);
       await format(page, "softcover").click();
       if (vpName === "mobile") await page.screenshot({ path: `${SHOTS}/es-${vpName}-black-friday.png`, fullPage: true });

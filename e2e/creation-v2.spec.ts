@@ -892,7 +892,7 @@ test.describe("auto-open when the preview is ready", () => {
     const mock = await installMocks(page);
     await toPainting(page);
     const box = page.getByTestId("send-preview");
-    await expect(box).toContainText("¿Te lo guardamos?");
+    await expect(box).toContainText("¿A qué correo te guardamos el cuento?");
     await page.screenshot({ path: `${SHOTS}/painting-email-form-mobile.png` });
     await box.locator("input[type=email]").fill("familia@example.com");
     await page.getByTestId("send-preview-remind").click();

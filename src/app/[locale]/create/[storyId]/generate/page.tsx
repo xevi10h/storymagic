@@ -725,18 +725,6 @@ export default function GenerarPage() {
               </p>
             )}
           </div>
-          {/* Optional, never a gate: the minute of painting is when they have a hand free. */}
-          {(!done || emailTouched) && name && (
-            <div ref={emailBoxRef} onFocusCapture={() => setEmailTouched(true)} className="[&>form]:mt-0 [&>p]:mt-0">
-              <SendPreviewEmail
-                storyId={storyId}
-                childName={name}
-                defaultEmail={!user || user.is_anonymous ? null : user.email}
-                ready={done}
-                onQueued={() => setEmailTouched(true)}
-              />
-            </div>
-          )}
         </section>
 
         {/* Dedication */}
@@ -757,6 +745,19 @@ export default function GenerarPage() {
             />
           ) : (
             <div className="h-64 animate-pulse rounded-2xl border-2 border-line bg-surface" aria-hidden />
+          )}
+          {/* Optional, never a gate. Third field after the dedication and "De parte de" (2026-11-17):
+              41 % fill the sender, 4 % left an email when the box sat under the progress card. */}
+          {(!done || emailTouched) && name && (
+            <div ref={emailBoxRef} onFocusCapture={() => setEmailTouched(true)} className="[&>form]:mt-0 [&>p]:mt-0">
+              <SendPreviewEmail
+                storyId={storyId}
+                childName={name}
+                defaultEmail={!user || user.is_anonymous ? null : user.email}
+                ready={done}
+                onQueued={() => setEmailTouched(true)}
+              />
+            </div>
           )}
         </section>
       </main>

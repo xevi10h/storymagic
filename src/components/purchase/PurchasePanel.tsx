@@ -10,6 +10,9 @@ import {
   PRICING,
   ENABLED_ADDON_IDS,
   SHOW_REPRINT_GUARANTEE,
+  MONEY_BACK_DAYS,
+  STRIPE_CATALOG,
+  SUPPORT_EMAIL,
   addonPrice,
   formatPrice,
   type AddonId,
@@ -24,11 +27,14 @@ import { BLACK_FRIDAY, blackFridayDiscountCents, blackFridayPriceCents, lowestPr
 import { useBlackFriday, useBlackFridayEnd } from "@/components/seasonal/SalePrice";
 
 /**
- * The PDF is sold as a text link under the two printed options ("¿Solo el PDF?"),
- * so the 9,90 € card no longer anchors the hardcover as expensive (audit P1-7).
- * false = three radio rows again.
+ * false (owner decision 2026-11-17): the PDF is a visible third row, "Empieza por el PDF", with
+ * the price of the printed book afterwards. It was a text link from audit P1-7 (the 9,90 € card
+ * anchored the hardcover as expensive); the funnel showed 0 phone purchases, so the small first
+ * step is being tried. true = text link again (restore the button under the fieldset).
  */
-const PDF_AS_LINK = true;
+const PDF_AS_LINK = false;
+/** Shown under the pay button. Keep in step with the methods switched on in Stripe (Dashboard › Payment methods). */
+const PAY_METHODS = ["Bizum", "Apple Pay", "Google Pay", "card", "Klarna"] as const;
 
 const PRINTED_FORMATS = ["hardcover", "softcover"] as const;
 
@@ -293,7 +299,11 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
                 key={key}
                 data-testid={`format-${key}`}
                 className={`flex cursor-pointer items-start gap-3 rounded-2xl border-2 px-3.5 py-3 transition-colors ${
-                  selected ? "border-create-primary bg-create-primary/[0.04]" : "border-create-neutral bg-white hover:border-create-primary/40"
+                  selected
+                    ? "border-create-primary bg-create-primary/[0.04]"
+                    : digital
+                      ? "border-dashed border-line-warm bg-create-bg hover:border-create-primary/40"
+                      : "border-create-neutral bg-white hover:border-create-primary/40"
                 }`}
               >
                 <input
@@ -307,7 +317,7 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
                 />
                 <span className="min-w-0 flex-1">
                   <span className="flex items-baseline justify-between gap-3">
-                    <span className="font-display text-base font-bold text-create-text-dark">{tPricing(`${key}.label`)}</span>
+                    <span className="font-display text-base font-bold text-create-text-dark">{digital ? t("pdfFirstStep") : tPricing(`${key}.label`)}</span>
                     {blackFriday ? (
                       <span className="whitespace-nowrap text-base tabular-nums" data-testid={`sale-${key}`}>
                         <s className="mr-1.5 text-[13px] text-create-text-sub decoration-1">{price(lowestPrice30Days(PRICING[key].price))}</s>
@@ -337,6 +347,13 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
                       {tBf("lowest30", { price: price(lowestPrice30Days(PRICING[key].price)) })}
                     </span>
                   )}
+                  {/* True by construction: the pdf_upgrade offer (lib/upsell.ts) sells the first printed copy
+                      at these fixed prices (list price minus the PDF), no time limit, whatever sale is on. */}
+                  {digital && (
+                    <span className="mt-1 block text-xs font-semibold text-success" data-testid="pdf-credit">
+                      {t("pdfCredit", { softcover: price(STRIPE_CATALOG.upgrade_softcover.amount), hardcover: price(STRIPE_CATALOG.upgrade_hardcover.amount) })}
+                    </span>
+                  )}
                   {!digital && (
                     <span className="mt-1 flex items-center gap-1 text-xs font-semibold text-success">
                       <span aria-hidden className="material-symbols-outlined text-[15px]" data-icon="local_shipping" />
@@ -349,15 +366,6 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
             );
           })}
         </div>
-        {PDF_AS_LINK && !isDigital && (
-          <button
-            type="button"
-            onClick={() => onChooseFormat("digital_pdf")}
-            className="mt-2 text-[13px] text-create-text-sub underline decoration-create-text-sub/40 underline-offset-2 transition-colors hover:text-brand-text"
-          >
-            {t("pdfOnly", { price: price(bookPrice("digital_pdf")) })}
-          </button>
-        )}
       </fieldset>
 
       {/* Extra copy: one line */}
@@ -500,11 +508,30 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
         </p>
       )}
 
+      {/* Money-back promise (owner decision 2026-11-17; terms: legal › guarantee) and the ways to pay,
+          right under the button: the two doubts of a phone buyer who does not know the brand. */}
+      <div className="mt-3 flex items-start gap-3 rounded-2xl bg-success/[0.08] px-3.5 py-3" data-testid="money-back">
+        <span aria-hidden className="material-symbols-outlined mt-px text-[22px] text-success" data-icon="verified" />
+        <span className="min-w-0">
+          <span className="block font-display text-[15px] font-bold leading-tight text-create-text-dark">{t("guaranteeTitle")}</span>
+          <span className="mt-0.5 block text-[12.5px] leading-snug text-create-text">{t("guaranteeBody", { days: MONEY_BACK_DAYS, email: SUPPORT_EMAIL })}</span>
+        </span>
+      </div>
+      <div className="mt-3" data-testid="pay-methods">
+        <p className="text-xs text-create-text-sub">{t("payWith")}</p>
+        <ul className="mt-1.5 flex flex-wrap gap-1.5">
+          {PAY_METHODS.map((m) => (
+            <li key={m} className="rounded-lg border border-create-neutral bg-white px-2.5 py-1 text-xs font-bold text-create-text-dark">
+              {m === "card" ? t("payCard") : m}
+            </li>
+          ))}
+        </ul>
+      </div>
+
       {/* Verifiable guarantees only (no ratings, no counts): payment, shipping, reprint, origin */}
       <ul className="mt-4 space-y-2 border-t border-create-neutral pt-4 text-[13px] leading-snug text-create-text">
         <TrustLine icon="lock">
           {t("trustPayment")}
-          <span className="block text-xs text-create-text-sub">{t("trustMethods")}</span>
         </TrustLine>
         {!isDigital && <TrustLine icon="local_shipping">{t("deliveryArea")}</TrustLine>}
         {SHOW_REPRINT_GUARANTEE && !isDigital && (

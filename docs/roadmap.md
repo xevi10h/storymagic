@@ -32,6 +32,11 @@ Shipped for the Christmas / Reyes 2026 campaign after the SEO audit of 2026-11-1
 
 ## Funnel findings (2026-11-17, report https://claude.ai/artifact/Eb3yHtqJkKCsKfXonTfUYN)
 
+- [ ] Mobile conversion changes of 2026-11-17 (money-back promise, PDF row, email as third field, WhatsApp): compare the
+  preview → checkout and checkout → paid rates of the 3 weeks after against 20 Oct – 16 Nov; review the money-back promise
+  in January 2027 (refund requests vs sales).
+- [ ] Stripe Dashboard › Payment methods: switch off Bancontact, EPS, MB WAY and Satispay (irrelevant in Spain, they lengthen
+  the phone checkout). The CLI key cannot write that setting.
 - [ ] Read the "¿Qué te frena?" answers once ~30 are in (`preview_feedback`), then decide the order-screen redesign.
 - [ ] Owner: PostHog personal API key (phx_) to `~/.config/meapica/posthog_key` so session replays and `create_step` can be read.
 - [ ] Vercel Web Analytics was disabled on 2026-11-13 (cancels 2026-11-20): steps 1–2 are unmeasured until it is back.

@@ -237,6 +237,24 @@ estimated delivery, second CTA, price + shipping zones line. Variants (`src/lib/
 Spanish only, noindex. Design: Claude Design canvas «Meapica · landing de anuncios» (owner-approved). Deviations for honesty:
 "Su cara en cada escena" (not "página") and "30 páginas y 12 escenas pintadas" (not "30 páginas pintadas").
 
+## Mobile conversion changes (2026-11-17, design https://claude.ai/artifact/8iw9UuFJSCxqYejQ4rKqEB)
+
+From the funnel of 20 Oct – 16 Nov (phones: 66 previews → 3 checkouts → 0 purchases; nobody returns). Owner-approved:
+
+- **Money-back promise** under the pay button (`money-back`): "Si no os encanta, te devolvemos el dinero. Escríbenos a
+  hola@meapica.es en los 30 días siguientes a recibirlo. No hace falta devolver el libro." `MONEY_BACK_DAYS` (pricing.ts).
+  A voluntary commercial guarantee on top of the legal position (personalised goods have no withdrawal right): stated in
+  `legal.terms.section5Text` (once per customer) and in the returns FAQ. Refunds are done by hand in Stripe. Review in January 2027.
+- **Ways to pay** as text chips under it (`PAY_METHODS`: Bizum, Apple Pay, Google Pay, card, Klarna). Must match the methods
+  switched on in Stripe (all on in the default payment method configuration, checked 2026-11-17).
+- **PDF as a visible third row** ("Empieza por el PDF", dashed), with the price of the printed book afterwards (25,00 € /
+  40,00 € = `STRIPE_CATALOG.upgrade_*`, the existing `pdf_upgrade` offer: no time limit, not affected by sales).
+  `PDF_AS_LINK = false`; the old "¿Solo el PDF?" text link (audit P1-7) is gone.
+- **Email as the third field of the waiting screen**: the `SendPreviewEmail` box moved from under the progress card to right
+  after "De parte de", titled "¿A qué correo te guardamos el cuento?". Same consent mechanics (the button is the consent).
+- **WhatsApp** (`ShareWhatsApp`, under the book on the preview): "¿Lo decidís entre dos?" with "Enseñárselo a mi pareja" /
+  "Pedírselo a los abuelos", real `wa.me` links with a ready message + the read-only share link. Event `preview_share_whatsapp` {target}.
+
 ## "¿Qué te frena?" on the book preview (2026-11-17)
 
 Why: the funnel of 20 Oct – 16 Nov showed 154 of 162 people leave on the preview / order screen and no tool says why.
