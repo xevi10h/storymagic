@@ -13,7 +13,7 @@ import { trackEvent } from "@/lib/tracking/consent";
 import type { AdventOffer } from "@/lib/advent/email";
 import type { AdventLocale } from "@/lib/advent/render";
 import type { AdventChild } from "./child-store";
-import { createHref } from "./links";
+import { createHandOff, createHref } from "./links";
 
 export function AdventBookBand({
   child,
@@ -49,7 +49,10 @@ export function AdventBookBand({
   const cta = (
     <Link
       href={createHref(child)}
-      onClick={() => trackEvent("advent_cta_click", { placement: variant })}
+      onClick={(e) => {
+        createHandOff(child)(e);
+        trackEvent("advent_cta_click", { placement: variant });
+      }}
       className={cx(
         "inline-flex min-h-[52px] items-center justify-center rounded-[14px] bg-brand px-6 text-center text-[19px] font-bold text-white transition-colors hover:bg-brand-hover",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white",

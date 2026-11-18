@@ -34,9 +34,9 @@ async function withConsent(context: BrowserContext, value: string | null) {
 const tiktokEvents = (hits: Hit[]) =>
   hits.filter((h) => /analytics\.tiktok\.com\/api\/v2\/pixel$/.test(h.url)).map((h) => JSON.parse(h.body).event as string);
 
-/** Our code's channels (page URL, referrer, our events). AutoClick's button text is excluded on purpose (see top). */
+/** Our code's channels (page URL, referrer, our events). Only AutoClick's button text is blanked (see top). */
 const nameLeaks = (hits: Hit[]) =>
-  hits.filter((h) => !/\/pixel\/act$/.test(h.url) && (h.url + h.body).includes(CHILD));
+  hits.filter((h) => (h.url + h.body.replace(/"inner_text":"(?:[^"\\]|\\.)*"/g, '"inner_text":""')).includes(CHILD));
 
 async function settle(page: Page) {
   await page.waitForLoadState("networkidle");
@@ -131,4 +131,44 @@ test("choosing a world sends ViewContent with the world as content_id", async ({
     .find((b) => b?.event === "ViewContent");
   expect(viewContent.properties.contents[0].content_id).toBeTruthy();
   expect(nameLeaks(hits)).toEqual([]);
+});
+
+test.describe("phone, paid-ad landing", () => {
+  test.use({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+
+  test("ad name form: prefilled /create, no name in tracked URLs", async ({ context, page }) => {
+    await withConsent(context, "granted");
+    const hits = await recordTrackers(context);
+    await page.goto(`${BASE}/es/l/noa?utm_source=meta&utm_medium=paid`);
+    await settle(page);
+    await page.locator("#ad-name").fill(CHILD);
+    await page.locator("#hero-cta").click();
+    await page.waitForURL(/\/es\/create/);
+    await expect(page.locator("#child-name")).toHaveValue(CHILD);
+    expect(page.url()).toContain("utm_source=meta");
+    await settle(page);
+    expect(nameLeaks(hits)).toEqual([]);
+  });
+
+  // On /l/{slug} the closing CTA is already on screen once the hero CTA scrolls out, so the sticky
+  // bar stays hidden there by design; the home page has room for it.
+  test("sticky CTA (home): hands the typed name over too", async ({ context, page }) => {
+    await withConsent(context, "granted");
+    const hits = await recordTrackers(context);
+    await page.goto(`${BASE}/es`);
+    await settle(page);
+    await page.locator("#hero-name").fill(CHILD);
+    await page.locator("#hero-name").blur();
+    await page.evaluate(() => {
+      const cta = document.getElementById("hero-cta")!;
+      window.scrollTo(0, cta.getBoundingClientRect().bottom + window.scrollY + 40);
+    });
+    const sticky = page.getByTestId("mobile-sticky-cta");
+    await expect(sticky).toHaveAttribute("data-visible", "true");
+    await sticky.getByRole("link").click();
+    await page.waitForURL(/\/es\/create/);
+    await expect(page.locator("#child-name")).toHaveValue(CHILD);
+    await settle(page);
+    expect(nameLeaks(hits)).toEqual([]);
+  });
 });

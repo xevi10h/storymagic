@@ -15,7 +15,7 @@ import type { AdventLocale, RenderedStory } from "@/lib/advent/render";
 import type { AdventChild } from "./child-store";
 import { ChildPortrait, DoorArt, formatDoorDate, type AdventDoorData } from "./shared";
 import { AdventBookBand } from "./AdventBookBand";
-import { createHref } from "./links";
+import { createHandOff, createHref } from "./links";
 
 export default function DoorReader({
   locale,
@@ -126,7 +126,10 @@ export default function DoorReader({
               <strong className="text-ink">{t("reyes.lead")}</strong> {t("reyes.text", { name: nameIn, date: reyesUntil })}{" "}
               <Link
                 href={createHref(child, "reyes")}
-                onClick={() => trackEvent("advent_cta_click", { placement: "reyes" })}
+                onClick={(e) => {
+                  createHandOff(child)(e);
+                  trackEvent("advent_cta_click", { placement: "reyes" });
+                }}
                 className="font-bold text-brand-text underline-offset-2 hover:underline"
               >
                 {t("reyes.link")}

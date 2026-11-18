@@ -457,7 +457,7 @@ Nochebuena (door 24) he goes back to Oriente with the child's letter, leading to
   The email carries the book offer, so it is labelled "Oferta", names the seller, has an unsubscribe link (advent-only
   stop by token) + RFC 8058 one-click, and skips addresses in `email_suppressions`. Privacy policy §4 lists it
   (consent basis), updated 2026-10-27 in 4 locales.
-- **Book CTA everywhere** (page band, door view, email): "Crear el libro de {name}" → `/create?name=…` (+ `characterId`),
+- **Book CTA everywhere** (page band, door view, email): "Crear el libro de {name}" → `/create` (name handed over in memory; email links keep `?name=`, trackers wait until it is stripped) (+ `characterId`),
   prices from `adventOffer()` with "IVA incluido": "desde 34,90 €", the Pack Reyes 19,90 € line while codes are issued,
   "Para Reyes, pide hasta el 22 de diciembre" while the printed cut-off is open, then the instant PDF price.
 - **Entry point:** a nav link "Adviento" (es/ca, 15 Nov – 24 Dec); the seasonal banner is untouched.
