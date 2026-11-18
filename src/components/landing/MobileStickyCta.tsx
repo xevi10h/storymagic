@@ -6,8 +6,9 @@ import { Link } from "@/i18n/navigation";
 import { buttonClass } from "@/components/ui";
 import { PRICING, formatPrice } from "@/lib/pricing";
 import { SalePrice } from "@/components/seasonal/SalePrice";
-import { useCreatePageHref, useHeroName } from "./HeroNameStore";
+import { handOffOnClick, useCreatePageHref, useHeroName } from "./HeroNameStore";
 import { trackEvent } from "@/lib/tracking/consent";
+import { formatChildName } from "@/lib/child-name";
 
 /**
  * Bottom "Crear su libro" bar for phones and tablets (< lg). It appears once the
@@ -20,7 +21,8 @@ export default function MobileStickyCta({ label }: { label?: string } = {}) {
   const tPricing = useTranslations("pricing");
   const locale = useLocale();
   const name = useHeroName();
-  const createHref = useCreatePageHref(name);
+  const createHref = useCreatePageHref();
+  const handOff = handOffOnClick(formatChildName(name));
   const [heroPassed, setHeroPassed] = useState(false);
   const [endVisible, setEndVisible] = useState(false);
 
@@ -71,7 +73,7 @@ export default function MobileStickyCta({ label }: { label?: string } = {}) {
   }, []);
 
   const visible = heroPassed && !endVisible;
-  // ponytail: fixed short label; "Crear el libro de {name}" truncates at 19px on phones. The link still carries the name.
+  // ponytail: fixed short label; "Crear el libro de {name}" truncates at 19px on phones. The click still hands the name over.
   const ctaLabel = label ?? t("cta");
 
   return (
@@ -94,7 +96,10 @@ export default function MobileStickyCta({ label }: { label?: string } = {}) {
         </p>
         <Link
           href={createHref}
-          onClick={() => trackEvent("cta_click", { placement: "sticky" })}
+          onClick={(e) => {
+            handOff(e);
+            trackEvent("cta_click", { placement: "sticky" });
+          }}
           // 19px bold label (AA on --brand); tight gaps so "Crear el seu llibre" fits at 360px
           className={buttonClass({ className: "h-12 min-w-0 flex-1 gap-1.5! px-4! sm:flex-none sm:px-8!" })}
         >

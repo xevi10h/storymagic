@@ -72,6 +72,25 @@ const subscribe = (onChange: () => void) => {
 const readConsent = (): Consent | "unset" => getConsent() ?? "unset";
 const serverConsent = (): "ssr" => "ssr";
 
+// A child's name in the address bar (a hard load of /create?name=…: the no-JS hero form, old links)
+// must not reach the pixels, GA4 or PostHog, which all report the page URL and later the referrer.
+// Every tracker waits until /create has removed it (router.replace, no event to listen to: poll).
+// Our own links never put it there (components/landing/HeroNameStore.ts).
+const urlHasChildName = () => new URLSearchParams(window.location.search).has("name");
+const subscribeUrl = (onChange: () => void) => {
+  const id = window.setInterval(() => {
+    if (urlHasChildName()) return;
+    window.clearInterval(id);
+    onChange();
+  }, 250);
+  window.addEventListener("popstate", onChange);
+  return () => {
+    window.clearInterval(id);
+    window.removeEventListener("popstate", onChange);
+  };
+};
+const serverUrlHasChildName = () => true;
+
 export default function Tracking() {
   const t = useTranslations("cookieConsent");
   const consent = useSyncExternalStore(subscribe, readConsent, serverConsent);
@@ -82,8 +101,9 @@ export default function Tracking() {
   const pathname = usePathname();
   const open = ADS_TRACKING_ENABLED && (consent === "unset" || reopened);
   const stored: Consent | null = consent === "ssr" || consent === "unset" ? null : consent;
-  const analyticsAllowed = consentAllows(stored, "analytics");
-  const adsAllowed = consentAllows(stored, "ads");
+  const childNameInUrl = useSyncExternalStore(subscribeUrl, urlHasChildName, serverUrlHasChildName);
+  const analyticsAllowed = consentAllows(stored, "analytics") && !childNameInUrl;
+  const adsAllowed = consentAllows(stored, "ads") && !childNameInUrl;
 
   const bannerRef = useRef<HTMLDivElement>(null);
   // Phones: the first layer is a full-width bar over the bottom edge, exactly where the "next" and
@@ -131,6 +151,7 @@ export default function Tracking() {
 
   useEffect(() => {
     if (consent === "ssr" || consent === "unset") return; // no choice yet: nothing loaded, nothing to stop
+    if (childNameInUrl) return; // held, not withdrawn: nothing loaded yet, nothing to stop
     if (adsAllowed) captureUtm(location.search);
     // Revoked after a pixel already loaded in this tab: stop it sending.
     const w = window as unknown as { fbq?: Fbq; ttq?: TtqConsent; gtag?: Gtag };
@@ -141,7 +162,7 @@ export default function Tracking() {
       if (analyticsAllowed) startPosthog();
       else stopPosthog();
     }
-  }, [consent, adsAllowed, analyticsAllowed]);
+  }, [consent, adsAllowed, analyticsAllowed, childNameInUrl]);
 
   useEffect(() => {
     if (POSTHOG_KEY && analyticsAllowed) syncPosthogPath(pathname);

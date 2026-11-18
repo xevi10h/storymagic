@@ -330,7 +330,7 @@ Meta Pixel + Conversions API behind an AEPD cookie banner. Off until the env var
 `NEXT_PUBLIC_META_PIXEL_ID` (build-time, redeploy after setting), `META_CAPI_TOKEN`, optional `META_CAPI_TEST_EVENT_CODE`
 (Stripe test-mode purchases → Events Manager › Test events). External: Meta Business portfolio, ad account (EUR, Europe/Madrid),
 dataset "Meapica web", `meapica.shop` domain verification (DNS TXT). Owner setup + first campaign: `docs/ads/setup-guide.md`.
-Code map: `docs/technical-architecture.md` › Ads tracking. No TikTok Pixel (TikTok is organic only).
+Code map: `docs/technical-architecture.md` › Ads tracking. TikTok Pixel + Events API: see "Ads tracking — TikTok" below.
 
 ## Domains (meapica.es primary since 2026-10-23)
 
@@ -387,6 +387,15 @@ TikTok Ads account (advertiser id 7691596144782180404, under review 2026-10-01) 
 consent banner. Env (Vercel production): `NEXT_PUBLIC_TIKTOK_PIXEL_ID` (build-time), `TIKTOK_EVENTS_TOKEN` (Events Manager › pixel ›
 Settings › Generate access token; token file `~/.config/meapica/tiktok_events_token`), optional `TIKTOK_TEST_EVENT_CODE`.
 Status 2026-10-01: Events API token set in prod (test event accepted, code 0). Plan: 3-day paid test (~20 €/day ad group) created in the Ads Manager UI (the campaign API needs an approved developer app).
+Re-checked 2026-11-18: pixel config (`events.js?sdkid=DAV0N7JC77U88MSOEFPG`) = name "Meapica", advertiser `7691596144782180404`;
+prod loads the pixel only with ads consent (none / analytics-only → no TikTok request), sends Pageview on load and on client
+navigations (the pixel's own HistoryObserver); token still valid (test event code 0; a bad token answers 40105); paid Stripe
+sessions carry `ads_consent=1` + `_ttp` → webhook Purchase. Headless: `ads.tiktok.com` and `business.tiktok.com/manage/*` now
+both answer 403 (Events Manager not reachable from Claude).
+**Child data:** the pixel's server-side config has AutoClick/AutoConfig ON, which posts the clicked button's text to
+`/api/v2/pixel/act` ("Crear el libro de Zoraida"). No documented code switch exists: turn off automatic event setup / automatic
+click capture in Events Manager › pixel › Settings (owner). Our URLs never carry the name since 2026-11-18 (hand-off in memory,
+`HeroNameStore.ts`; trackers held on a hard load of `/create?name=`, `Tracking.tsx`). Check: `e2e/tracking-consent.spec.ts`.
 
 ## Search & analytics measurement (2026-10-01)
 

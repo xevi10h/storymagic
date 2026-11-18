@@ -10,13 +10,13 @@ import { formatChildName } from "@/lib/child-name";
 import { PRICING, formatPrice } from "@/lib/pricing";
 import { bookPriceToday } from "@/lib/black-friday";
 import { useToday } from "@/components/seasonal/SalePrice";
-import { createPageHref, currentCarriedParams, setHeroName, useHeroName } from "./HeroNameStore";
+import { createPageHref, currentCarriedParams, handOffHeroName, setHeroName, useHeroName } from "./HeroNameStore";
 
 /**
  * Last section of the landing: one emotional line + "¿Cómo se llama?". It shares the
  * hero's name (HeroNameStore): a name typed at the top is already here, so this is the
  * same field at the close, not a second form. The name renders the real cover live and
- * deep-links to /create?name=… (step 1 pre-filled).
+ * opens /create with step 1 pre-filled (name handed over in memory).
  * Works without JS too: the form is a plain GET to the localized /create.
  */
 export default function FinalCta() {
@@ -34,7 +34,8 @@ export default function FinalCta() {
     e.preventDefault();
     const formatted = formatChildName(trimmed);
     setHeroName(formatted);
-    router.push(createPageHref(formatted, currentCarriedParams()));
+    handOffHeroName(formatted);
+    router.push(createPageHref(currentCarriedParams()));
   }
 
   return (

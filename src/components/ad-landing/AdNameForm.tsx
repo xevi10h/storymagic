@@ -10,6 +10,7 @@ import { useDeliveryLine } from "@/components/purchase/delivery";
 import {
   createPageHref,
   currentCarriedParams,
+  handOffHeroName,
   setHeroName,
   useHeroName,
 } from "@/components/landing/HeroNameStore";
@@ -25,7 +26,7 @@ function ArrowIcon() {
   );
 }
 
-/** Same hand-off as the landing hero: format the name, keep it in HeroNameStore, open /create?name=… (+ the ad's UTMs). */
+/** Same hand-off as the landing hero: format the name, hand it over in HeroNameStore, open /create (+ the ad's UTMs). */
 function useGoToCreate(placement: string) {
   const router = useRouter();
   const name = useHeroName();
@@ -33,7 +34,8 @@ function useGoToCreate(placement: string) {
     trackEvent("cta_click", { placement });
     const formatted = formatChildName(name);
     setHeroName(formatted);
-    router.push(createPageHref(formatted, currentCarriedParams()));
+    handOffHeroName(formatted);
+    router.push(createPageHref(currentCarriedParams()));
   };
 }
 

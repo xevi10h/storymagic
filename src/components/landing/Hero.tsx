@@ -10,7 +10,7 @@ import { PRICING, formatPrice } from "@/lib/pricing";
 import { SalePrice } from "@/components/seasonal/SalePrice";
 import { MAX_NAME_LENGTH, deName, firstName } from "@/lib/creation-flow";
 import { formatChildName } from "@/lib/child-name";
-import { createPageHref, currentCarriedParams, setHeroName, useHeroName } from "./HeroNameStore";
+import { createPageHref, currentCarriedParams, handOffHeroName, setHeroName, useHeroName } from "./HeroNameStore";
 import { LANDING_EXAMPLE } from "./HowItWorksExample";
 import { trackEvent } from "@/lib/tracking/consent";
 import { HollySprig, SeasonStar } from "@/components/seasonal/HollySprig";
@@ -29,7 +29,7 @@ function Icon({ name, className = "" }: { name: string; className?: string }) {
 /**
  * Landing hero: the child is the protagonist. The cover is a real example book (Noa's painted
  * front, printed-cover layout); the parent types the name, the title updates on every keystroke,
- * and the CTA opens /create with the name already filled in (?name=, read by the create-page prefill).
+ * and the CTA opens /create with the name already filled in (handed over in memory, see HeroNameStore).
  */
 /** `season`: gift season (1 Nov – 5 Jan, server date): Christmas title line + a holly sprig on the cover. */
 export default function Hero({ season = false }: { season?: boolean }) {
@@ -53,7 +53,8 @@ export default function Hero({ season = false }: { season?: boolean }) {
     trackEvent("cta_click", { placement: "hero" });
     const formatted = formatChildName(name);
     setHeroName(formatted);
-    router.push(createPageHref(formatted, currentCarriedParams()));
+    handOffHeroName(formatted);
+    router.push(createPageHref(currentCarriedParams()));
   }
 
   return (

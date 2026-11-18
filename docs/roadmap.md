@@ -30,6 +30,19 @@ Shipped for the Christmas / Reyes 2026 campaign after the SEO audit of 2026-11-1
   feed items), "Alternativas a Hurra Héroes" section on `/compare`, birthday and 5-7 titles, descriptive `alt` on hub cards,
   Product JSON-LD only where both prices are visible.
 
+## TikTok test campaign (2026-11-18)
+
+- [ ] **Owner, before 25-11:** claim the TikTok For Business offer "spend $200, get $200" (mail 18-11 at admin@casmar.tech). Terms:
+  spend $200 on eligible campaigns within 30 days of claiming; the $200 credit arrives 1-7 days later and expires 30 days after
+  the claim; once per advertiser. Check it is for advertiser `7691596144782180404` (owner of pixel `DAV0N7JC77U88MSOEFPG`;
+  the mail does not name it). Claiming 23-25 Nov and spending the first $200 by ~5 Dec leaves the credit for the Reyes push.
+- [ ] **Owner, before any paid TikTok traffic:** Events Manager › pixel "Meapica" › Settings: turn off automatic event setup /
+  automatic click capture. Today it posts button text such as "Crear el libro de Zoraida" (the child's name) to TikTok.
+- [ ] Optimise the campaign on Purchase (browser + Events API, same `purchase_<session>` id); InitiateCheckout as fallback while
+  Purchase has too few events. Christmas printed cut-off 10-12, Reyes 22-12 (`src/lib/shipping.ts`), so the $400 should run
+  23-11 → 20-12 at the latest.
+- [ ] Creatives: 9:16 videos with the real printed book (Noa/Leo samples still to re-order) and creator UGC with ad permission.
+
 ## Funnel findings (2026-11-17, report https://claude.ai/artifact/Eb3yHtqJkKCsKfXonTfUYN)
 
 - [ ] Mobile conversion changes of 2026-11-17 (money-back promise, PDF row, email as third field, WhatsApp): compare the
@@ -503,7 +516,7 @@ Replaced Recraft V3 with **FLUX.2 [flex]** + a whole-world consistency system. D
 - [ ] **Owner:** create IG/FB/Meta Business/ad account/dataset + TikTok business account (`docs/ads/setup-guide.md` §1), hand over pixel id + CAPI token; then Claude sets env, verifies dedup with a test purchase
 - [ ] Produce the first creatives (V1, V2 + A1/A2 static in ES and CA) from `docs/ads/creative-pack.md`; native CA review of the copy
 - [ ] Launch marketing campaign: Meta Sales campaign, 2 ad sets (cat_ca / es_es) ≈ 8 €/day; organic IG + TikTok from 2026-10-05 (`docs/ads/organic-calendar.md`)
-- [ ] Later: TikTok Pixel + Events API only if TikTok Ads budget (≥ 50 €/day) is ever approved; UTMs/consent as order columns if Stripe metadata stops being enough
+- [x] TikTok Pixel + Events API live since 2026-10-01 (re-verified 2026-11-18, see "TikTok test campaign" above). UTMs/consent as order columns only if Stripe metadata stops being enough
 - [ ] Contact 10 parenting micro-influencers
 - [ ] Low-CAC GTM sprint: 20-50 beta families, reaction content, referral codes, local partner outreach, and first SEO gift pages
 - [ ] Build a post-purchase referral loop with rewards for both buyer and referred family
