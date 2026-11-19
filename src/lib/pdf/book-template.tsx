@@ -63,7 +63,7 @@ import {
 import { BottomGradient, CornerDot, FrameBorder, PageNumber, Paragraphs, PlacedImage, rootBoxHeight } from "./primitives";
 import { BackCoverDesign, FrontCoverDesign, fitCoverTexts, type CoverTexts, type PanelFrame } from "./cover-art";
 import { joinName, printQuotes, sanitizePrintText } from "./text";
-import { colorName, interestLabel, mapPanelStrings, pdfForName, pdfT } from "@/lib/book/print-text";
+import { capsFor, colorName, interestLabel, mapPanelStrings, pdfForName, pdfT, titleForName, type Caps } from "@/lib/book/print-text";
 import { CREAM_FADE_RGB, spreadGradientHeight, type DropCapPlan } from "@/lib/book/print-spec";
 
 // ── Input types ────────────────────────────────────────────────────────────
@@ -125,6 +125,8 @@ export interface BookRenderContext {
   creamFade: string;
   /** Page box being drawn — set by the renderer (renderBookPdf / renderInteriorPdf); "print" as prepared */
   edition: BookEdition;
+  /** Fixed copy + the child's name in capitals for early-reader books (print-text capsFor), identity otherwise */
+  up: Caps;
 }
 
 /** Loads fonts, probes images and plans every page. Shared by all renderers + the validator. */
@@ -132,6 +134,7 @@ export async function prepareBookRender(input: BookPdfInput): Promise<BookRender
   await ensurePdfFontsLoaded();
   const theme = getTheme(input.templateId, input.characterGender, input.favoriteColor ?? undefined);
   const images = await buildImageRegistry(input);
+  const up = capsFor(input.story, input.locale);
   const plan = planInteriorPages({
     story: input.story,
     characterAge: input.characterAge,
@@ -142,15 +145,15 @@ export async function prepareBookRender(input: BookPdfInput): Promise<BookRender
       images.map?.dims && input.mapGame
         ? {
             game: input.mapGame,
-            strings: mapPanelStrings(input.locale, input.mapGame.band, input.mapGame.items.length),
+            strings: mapPanelStrings(input.locale, input.mapGame.band, input.mapGame.items.length, up),
           }
         : null,
   });
   const { texts: coverTexts } = fitCoverTexts({
     title: input.story.bookTitle,
-    subtitle: pdfForName(input.locale, "personalizedStory", input.characterName, input.characterGender),
-    name: input.characterName,
-    synopsis: input.story.synopsis || pdfT(input.locale, "defaultSynopsis").replace("{name}", input.characterName),
+    subtitle: up(pdfForName(input.locale, "personalizedStory", input.characterName, input.characterGender)),
+    name: up(input.characterName),
+    synopsis: input.story.synopsis || up(pdfT(input.locale, "defaultSynopsis").replace("{name}", input.characterName)),
     locale: input.locale,
     visibleWidth: BOOK.trimWidth,
     safe: DIGITAL_COVER_SAFE,
@@ -164,7 +167,7 @@ export async function prepareBookRender(input: BookPdfInput): Promise<BookRender
     getGradientPng(COVER_OVERLAY_STOPS),
     getGradientPng(CREAM_FADE_STOPS, CREAM_FADE_RGB),
   ]);
-  return { input, theme, plan, images, coverTexts, qrDataUrl, logoWhite, logoOrnament, textGradient, titleGradient, coverGradient, creamFade, edition: "print" };
+  return { input, theme, plan, images, coverTexts, qrDataUrl, logoWhite, logoOrnament, textGradient, titleGradient, coverGradient, creamFade, edition: "print", up };
 }
 
 const W = BOOK.pageWidth;
@@ -410,6 +413,7 @@ function TextPage({ page, ctx }: { page: PageOf<"text">; ctx: BookRenderContext 
 function TitleDedicationPage({ page, ctx }: { page: PageOf<"title-dedication">; ctx: BookRenderContext }) {
   const { theme, input } = ctx;
   const [quoteOpen, quoteClose] = printQuotes(input.locale);
+  const forName = titleForName(input.locale, "personalizedAdventure", input.characterName, input.characterGender, ctx.up);
   // Sizes + gaps scale with the book's body type (layout.ts planTitlePage)
   const { scale: k, kicker, display, sender, logo } = page.front;
   return (
@@ -426,9 +430,9 @@ function TitleDedicationPage({ page, ctx }: { page: PageOf<"title-dedication">; 
           <OrnamentalDivider color={theme.ornamentColor} width={60 * k} />
         </View>
 
-        <Text style={{ fontFamily: FONTS.body, fontSize: kicker, lineHeight: 1.3, color: COLORS.textMedium, textAlign: "center", maxWidth: GEOMETRY.textColumnWidth }}>{pdfForName(input.locale, "personalizedAdventure", input.characterName, input.characterGender)}</Text>
+        <Text style={{ fontFamily: FONTS.body, fontSize: kicker, lineHeight: 1.3, color: COLORS.textMedium, textAlign: "center", maxWidth: GEOMETRY.textColumnWidth }}>{forName.kicker}</Text>
         <Text style={{ fontFamily: FONTS.display, fontSize: display, lineHeight: 1.3, fontWeight: 600, color: theme.accent, marginTop: 4 * k, textAlign: "center", maxWidth: GEOMETRY.textColumnWidth }}>
-          {sanitizePrintText(input.characterName)}
+          {forName.name}
         </Text>
 
         {page.dedication ? (
@@ -656,9 +660,9 @@ function FinalPage({ page, ctx }: { page: PageOf<"final">; ctx: BookRenderContex
             <WavyDots color={theme.ornamentColor} size={4 * k} />
           </View>
           <Text style={{ fontFamily: FONTS.body, fontSize: kicker, lineHeight: 1.3, color: COLORS.textMuted, marginTop: 28 * k, textAlign: "center" }}>
-            {joinName(pdfForName(input.locale, "createdFor", input.characterName, input.characterGender), sanitizePrintText(input.characterName))}
+            {ctx.up(joinName(pdfForName(input.locale, "createdFor", input.characterName, input.characterGender), sanitizePrintText(input.characterName)))}
           </Text>
-          <Text style={{ fontFamily: FONTS.display, fontSize: display, lineHeight: 1.2, fontWeight: 600, color: theme.accent, marginTop: 8 * k }}>{pdfT(input.locale, "end")}</Text>
+          <Text style={{ fontFamily: FONTS.display, fontSize: display, lineHeight: 1.2, fontWeight: 600, color: theme.accent, marginTop: 8 * k }}>{ctx.up(pdfT(input.locale, "end"))}</Text>
         </View>
       </View>
       <PageNumber num={page.pageNumber} />
@@ -693,15 +697,16 @@ function AboutReaderPage({ ctx }: { ctx: BookRenderContext }) {
   const { characterAge, characterCity, characterInterests, favoriteColor, favoriteCompanion, futureDream, characterGender } = input;
   const heroLabel = characterGender === "girl" ? pdfT(input.locale, "heroine") : pdfT(input.locale, "hero");
   const locale = input.locale ?? "es";
+  const { up } = ctx;
 
   const traits: { label: string; icon: "pets" | "palette" | "color"; color?: string }[] = [];
   if (favoriteColor) {
     const colorId = FAVORITE_COLORS.find((c) => c.color === favoriteColor)?.id;
     const label = colorId ? colorName(locale, colorId) : null;
-    if (label) traits.push({ label, icon: "color", color: favoriteColor });
+    if (label) traits.push({ label: up(label), icon: "color", color: favoriteColor });
   }
-  if (favoriteCompanion) traits.push({ label: sanitizePrintText(favoriteCompanion), icon: "pets" });
-  if (futureDream) traits.push({ label: sanitizePrintText(futureDream), icon: "palette" });
+  if (favoriteCompanion) traits.push({ label: up(sanitizePrintText(favoriteCompanion)), icon: "pets" });
+  if (futureDream) traits.push({ label: up(sanitizePrintText(futureDream)), icon: "palette" });
 
   return (
     <BookPage edition={ctx.edition} background="#ffffff">
@@ -721,12 +726,11 @@ function AboutReaderPage({ ctx }: { ctx: BookRenderContext }) {
 
       <View style={{ position: "absolute", bottom: M, left: M, right: M }}>
         <Text style={{ fontFamily: FONTS.display, fontSize: 28, fontWeight: 600, color: theme.titleColor, lineHeight: 1.15 }}>
-          {sanitizePrintText(input.characterName)}
+          {up(sanitizePrintText(input.characterName))}
         </Text>
         <View style={{ width: 32, height: 2.5, borderRadius: 1.25, backgroundColor: theme.accent, marginTop: 6, opacity: 0.8 }} />
         <Text style={{ fontFamily: FONTS.body, fontSize: 9, color: COLORS.textMedium, marginTop: 8, letterSpacing: 0.3 }}>
-          {characterAge} {pdfT(input.locale, "years")}
-          {characterCity ? `  ·  ${sanitizePrintText(characterCity)}` : ""}
+          {up(`${characterAge} ${pdfT(input.locale, "years")}${characterCity ? `  ·  ${sanitizePrintText(characterCity)}` : ""}`)}
         </Text>
 
         {traits.length > 0 && (
@@ -753,7 +757,7 @@ function AboutReaderPage({ ctx }: { ctx: BookRenderContext }) {
           <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 5, marginTop: 12 }}>
             {characterInterests.slice(0, 8).map((interest) => (
               <View key={interest} style={{ backgroundColor: theme.accentLight, borderRadius: 10, paddingHorizontal: 10, paddingVertical: 4 }}>
-                <Text style={{ fontFamily: FONTS.body, fontSize: 7, fontWeight: 600, color: theme.accent, letterSpacing: 0.3 }}>{sanitizePrintText(interestLabel(locale, interest))}</Text>
+                <Text style={{ fontFamily: FONTS.body, fontSize: 7, fontWeight: 600, color: theme.accent, letterSpacing: 0.3 }}>{up(sanitizePrintText(interestLabel(locale, interest)))}</Text>
               </View>
             ))}
           </View>
@@ -769,15 +773,15 @@ function ColophonPage({ ctx }: { ctx: BookRenderContext }) {
     <BookPage edition={ctx.edition} background={COLORS.cream}>
       <View style={{ position: "absolute", top: M, bottom: M, left: M, right: M, justifyContent: "center", alignItems: "center" }}>
         <View style={{ alignItems: "center", maxWidth: BOOK.trimWidth * 0.65 }}>
-          <Paragraphs text={pdfT(input.locale, "colophonText")} style={{ fontFamily: FONTS.body, fontSize: 10, color: COLORS.textMuted, textAlign: "center", lineHeight: 1.8 }} />
+          <Paragraphs text={ctx.up(pdfT(input.locale, "colophonText"))} style={{ fontFamily: FONTS.body, fontSize: 10, color: COLORS.textMuted, textAlign: "center", lineHeight: 1.8 }} />
           {qrDataUrl && input.referral ? (
             // Referral: QR (25 mm, scannable at arm's length) + the code typed out, inside the safe area.
             <View style={{ marginTop: 22, alignItems: "center" }}>
               <Text style={{ fontFamily: FONTS.display, fontSize: 12, fontWeight: 600, color: COLORS.textMedium, textAlign: "center" }}>
-                {pdfT(input.locale, "referralTitle")}
+                {ctx.up(pdfT(input.locale, "referralTitle"))}
               </Text>
               <Text style={{ fontFamily: FONTS.body, fontSize: 8.5, lineHeight: 1.4, color: COLORS.textMuted, textAlign: "center", marginTop: 4 }}>
-                {pdfT(input.locale, "referralLine")}
+                {ctx.up(pdfT(input.locale, "referralLine"))}
               </Text>
               <Image src={qrDataUrl} style={{ width: 72, height: 72, marginTop: 10 }} />
               <Text style={{ fontFamily: FONTS.body, fontSize: 11, fontWeight: 700, color: COLORS.textMedium, letterSpacing: 1.5, marginTop: 7 }}>

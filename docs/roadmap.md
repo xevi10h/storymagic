@@ -6,6 +6,11 @@ The roadmap is divided into 6 phases, from foundation to scale. Each phase has c
 
 ---
 
+## Early-reader option on the creation page (2026-11-19)
+
+- Offer «primers lectors / primeros lectores» in the creation flow (age 4-6): the Book Plan writes the manuscript in capitals with ≤ 15 words per page and sets `generated_text.earlyReader`, so no manual adaptation is needed. Today the flag exists (viewer + PDFs) but only support sets it on a copied book.
+- Then: map-game labels in capitals straight from `buildMapGame` when the flag is on.
+
 ## January 2027: undo the Christmas 2026 temporary changes (dated 2026-11-10)
 
 Shipped for the Christmas / Reyes 2026 campaign after the SEO audit of 2026-11-10. Both are temporary by owner decision:

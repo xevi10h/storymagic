@@ -59,6 +59,7 @@ export function redactGeneratedStory(generated: unknown): Record<string, unknown
     synopsis: g.synopsis ?? "",
     dedication: g.dedication ?? "",
     ...(g.dedicationSource !== undefined ? { dedicationSource: g.dedicationSource } : {}),
+    ...(g.earlyReader === true ? { earlyReader: true } : {}),
     coverImagePrompt: "",
     finalMessage: "",
     scenes: scenes.map((s) => ({

@@ -58,6 +58,10 @@ Atmospheric transitions between narrative blocks. One evocative sentence (max 25
 
 For ages 2-4, bridges also serve as parent reading pauses.
 
+### Early-reader books ("primers lectors", 2026-11-19)
+
+Per-book flag `generated_text.earlyReader = true` for children learning to read. The story text is stored in capitals with very short sentences (max ~15 words per page, title included); with the flag, **every fixed string of the book also prints in capitals** (title page "for …" line and name, final page "created especially for …" + "The End", hero card label/name/age/colour/interests, map panel headings, colophon + referral lines, cover subtitle/name, default synopsis), in all 4 locales, in the web viewer (owner preview, share link) and in the print/digital PDFs. The Catalan personal article moves to the name line ("UNA AVENTURA PERSONALITZADA PER A" / "L'ARAN") so "l'" never ends a line alone. Helpers: `capsFor` + `titleForName` in `src/lib/book/print-text.ts`; check `npx tsx --tsconfig tsconfig.json src/lib/book/early-reader.check.mts`. No creation-flow option yet: support sets it on a copy of the customer's book (first case: Gemma / Aran, story 9a5f85aa, adapted from 47283b82 via `story_decisions.adaptedFrom`). The map game labels come from `imageAssets.mapGame`; seed them in capitals before purchase (the pipeline reuses a stored game).
+
 ## Story Templates (10 templates)
 
 Each template is identified by an English slug and is backed by a branching story-tree in `src/lib/story-trees/` (14 nodes / 39 options / 4 locales each). The template is chosen as the first fork ("world" beat) of the adventure path.

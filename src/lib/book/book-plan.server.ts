@@ -8,7 +8,7 @@ import { ensurePdfFontsLoaded } from "@/lib/pdf/fonts";
 import { planInteriorPages, type PlannedPage } from "@/lib/pdf/layout";
 import { fitCoverTexts } from "@/lib/pdf/cover-art";
 import { BOOK } from "./print-spec";
-import { mapPanelStrings, pdfForName, pdfT } from "./print-text";
+import { capsFor, mapPanelStrings, pdfForName, pdfT } from "./print-text";
 import {
   availableImagesOf,
   estimateBookPlan,
@@ -38,6 +38,7 @@ export async function planBook(src: BookPlanSource, images: { hero: string | nul
     await ensurePdfFontsLoaded();
     const story = printedStory(src);
     const locale = src.locale ?? "es";
+    const up = capsFor(story, locale);
     const game = planAssetsOf(story).mapGame ?? null;
     const hasMap = !!(images.map && game);
     const plan = planInteriorPages({
@@ -46,13 +47,13 @@ export async function planBook(src: BookPlanSource, images: { hero: string | nul
       dedicationText: src.dedication_text,
       senderName: src.sender_name,
       availableImages: availableImagesOf(src),
-      map: hasMap && game ? { game, strings: mapPanelStrings(locale, game.band, game.items.length) } : null,
+      map: hasMap && game ? { game, strings: mapPanelStrings(locale, game.band, game.items.length, up) } : null,
     });
     const { texts } = fitCoverTexts({
       title: story.bookTitle,
-      subtitle: pdfForName(locale, "personalizedStory", src.characters.name, src.characters.gender),
-      name: src.characters.name,
-      synopsis: story.synopsis || pdfT(locale, "defaultSynopsis").replace("{name}", src.characters.name),
+      subtitle: up(pdfForName(locale, "personalizedStory", src.characters.name, src.characters.gender)),
+      name: up(src.characters.name),
+      synopsis: story.synopsis || up(pdfT(locale, "defaultSynopsis").replace("{name}", src.characters.name)),
       locale,
       visibleWidth: BOOK.trimWidth,
       safe: BOOK.safeMargin,

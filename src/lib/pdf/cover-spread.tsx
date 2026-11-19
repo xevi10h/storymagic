@@ -87,9 +87,9 @@ export function planCoverSpread(ctx: BookRenderContext, geometry: CoverGeometry)
 
   const { texts, overflow } = fitCoverTexts({
     title: ctx.input.story.bookTitle,
-    subtitle: pdfForName(ctx.input.locale, "personalizedStory", ctx.input.characterName, ctx.input.characterGender),
-    name: ctx.input.characterName,
-    synopsis: ctx.input.story.synopsis || pdfT(ctx.input.locale, "defaultSynopsis").replace("{name}", ctx.input.characterName),
+    subtitle: ctx.up(pdfForName(ctx.input.locale, "personalizedStory", ctx.input.characterName, ctx.input.characterGender)),
+    name: ctx.up(ctx.input.characterName),
+    synopsis: ctx.input.story.synopsis || ctx.up(pdfT(ctx.input.locale, "defaultSynopsis").replace("{name}", ctx.input.characterName)),
     locale: ctx.input.locale,
     visibleWidth: Math.min(frontVisible.width, backVisible.width),
     safe,

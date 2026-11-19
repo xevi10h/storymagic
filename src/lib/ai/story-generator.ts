@@ -52,6 +52,8 @@ export interface GeneratedStory {
   synopsis: string;
   /** The plan text and images were derived from (absent on legacy stories). */
   bookPlan?: BookPlan;
+  /** Early-reader book: the text is in capitals and the fixed copy prints in capitals too (print-text capsFor). */
+  earlyReader?: boolean;
 }
 
 /** Legacy per-scene skeleton consumed by visual-assets / scene-screenplay. */

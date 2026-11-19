@@ -26,7 +26,7 @@ import {
   type MapPanel,
 } from "./print-spec";
 import { SECONDARY_SCENE_OFFSET, sequenceInterior } from "./sequence";
-import { mapPanelStrings, pdfForName, pdfT, printQuotes, sanitizePrintText, tieLastWords } from "./print-text";
+import { capsFor, mapPanelStrings, pdfForName, pdfT, printQuotes, sanitizePrintText, tieLastWords } from "./print-text";
 
 /** A planned inner page on the wire: the scene is referenced by number (its text is on the page). */
 type Wire<P> = P extends { scene: GeneratedScene } ? Omit<P, "scene"> & { sceneNumber: number } : P;
@@ -168,7 +168,7 @@ export function estimateBookPlan(src: BookPlanSource, images: { hero: string | n
         };
       case "map": {
         if (p.half === "left" || !game) return { ...base, kind: "map", half: p.half, panel: null };
-        const strings = mapPanelStrings(locale, game.band, game.items.length);
+        const strings = mapPanelStrings(locale, game.band, game.items.length, capsFor(story, locale));
         const panel: MapPanel = {
           band: game.band,
           kicker: strings.kicker,
@@ -201,6 +201,7 @@ export function estimateBookPlan(src: BookPlanSource, images: { hero: string | n
 function estimateCover(src: BookPlanSource, story: GeneratedStory, locale: string): CoverPlan {
   const title = sanitizePrintText(story.bookTitle);
   const name = sanitizePrintText(src.characters.name);
+  const up = capsFor(story, locale);
   const split = splitTitleOnName(title, name);
   const rest = { fontSize: 22, leading: 1.15 };
   const titleLockup: CoverTitleLockup = split
@@ -217,9 +218,9 @@ function estimateCover(src: BookPlanSource, story: GeneratedStory, locale: strin
   return {
     title,
     titleLockup,
-    subtitle: sanitizePrintText(pdfForName(locale, "personalizedStory", name, src.characters.gender)),
-    name,
-    synopsis: sanitizePrintText(story.synopsis || pdfT(locale, "defaultSynopsis").replace("{name}", name)),
+    subtitle: up(sanitizePrintText(pdfForName(locale, "personalizedStory", name, src.characters.gender))),
+    name: up(name),
+    synopsis: sanitizePrintText(story.synopsis || up(pdfT(locale, "defaultSynopsis").replace("{name}", name))),
     synopsisQuotes: printQuotes(locale),
     back: { titleType: { fontSize: 16, leading: 1.2 }, synopsisType: { fontSize: 11.5, leading: 1.5 }, measure: Math.min((BOOK.trimWidth - 2 * BOOK.safeMargin) * 0.82, 132 * (72 / 25.4)), vignette: 150 },
   };

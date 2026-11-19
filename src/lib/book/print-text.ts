@@ -193,15 +193,40 @@ export function colorName(locale: string | undefined, colorId: string): string {
 }
 
 /** The adventure-map panel's copy for a game (pp. 28–29), in the book's language. */
-export function mapPanelStrings(locale: string | undefined, band: "little" | "middle" | "big", itemCount: number) {
+export function mapPanelStrings(locale: string | undefined, band: "little" | "middle" | "big", itemCount: number, up: Caps = keepCase) {
   return {
-    kicker: pdfT(locale, "mapKicker"),
-    title: pdfT(locale, band === "little" ? "mapWhereIs" : "mapSeekFind"),
-    howTo: pdfT(locale, band === "little" ? "mapHowToLittle" : "mapHowTo").replace("{count}", String(itemCount)),
-    trail: pdfT(locale, "mapTrail"),
-    questions: pdfT(locale, "mapQuestions"),
-    answers: pdfT(locale, "mapAnswers"),
+    kicker: up(pdfT(locale, "mapKicker")),
+    title: up(pdfT(locale, band === "little" ? "mapWhereIs" : "mapSeekFind")),
+    howTo: up(pdfT(locale, band === "little" ? "mapHowToLittle" : "mapHowTo").replace("{count}", String(itemCount))),
+    trail: up(pdfT(locale, "mapTrail")),
+    questions: up(pdfT(locale, "mapQuestions")),
+    answers: up(pdfT(locale, "mapAnswers")),
   };
+}
+
+// ── Early-reader books (GeneratedStory.earlyReader) ───────────────────────
+// Beginning readers read capitals ("lletra de pal"): the story text is stored in capitals,
+// and these helpers put the book's fixed copy and the child's name in capitals too.
+
+export type Caps = (text: string) => string;
+const keepCase: Caps = (text) => text;
+
+/** Identity for ordinary books; locale-aware upper case for early-reader books. */
+export function capsFor(story: { earlyReader?: boolean } | null | undefined, locale: string | undefined): Caps {
+  return story?.earlyReader ? (text) => text.toLocaleUpperCase(locale || "es") : keepCase;
+}
+
+/**
+ * Title page "for …" kicker + the name line under it. Early-reader books move the Catalan
+ * personal article to the name line ("PER A" / "L'ARAN"), so "l'" never ends a line alone.
+ */
+export function titleForName(locale: string | undefined, key: string, name: string, gender: string | undefined, up: Caps): { kicker: string; name: string } {
+  const phrase = pdfForName(locale, key, name, gender);
+  const clean = sanitizePrintText(name);
+  if (up === keepCase) return { kicker: phrase, name: clean };
+  const base = pdfT(locale, key);
+  const article = phrase.slice(base.length).trim();
+  return { kicker: up(base), name: up(article ? joinName(article, clean) : clean) };
 }
 
 /** Interest ids (create-store) as printed on the hero page — same labels as messages data.interests. */

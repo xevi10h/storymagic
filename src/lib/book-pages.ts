@@ -10,7 +10,7 @@ import { FREE_PREVIEW_SCENES, freeSceneNumbers } from "@/lib/preview-access";
 import { estimateBookPlan, printedStory, type BookPlan } from "@/lib/book/book-plan";
 import { PAGES_BEFORE_INTERIOR } from "@/lib/book/sequence";
 import { spreadGradientHeight } from "@/lib/book/print-spec";
-import { colorName, interestLabel, joinName, pdfForName, pdfT, printQuotes, sanitizePrintText } from "@/lib/book/print-text";
+import { capsFor, colorName, interestLabel, joinName, pdfForName, pdfT, printQuotes, sanitizePrintText, titleForName } from "@/lib/book/print-text";
 import { FAVORITE_COLORS } from "@/lib/create-store";
 
 export interface BookPageSource {
@@ -56,6 +56,7 @@ export const PREVIEW_CLEAR_SCENES = FREE_PREVIEW_SCENES;
 export function buildBookPages(story: BookPageSource, _synopsisFallback: string, opts: { preview: boolean }): BookPage[] {
   const printed = printedStory(story);
   const locale = story.locale ?? "es";
+  const up = capsFor(printed, locale);
   // No server plan: the estimate has no usable hero/map URLs (stored refs are private paths).
   const plan = story.book_plan ?? estimateBookPlan({ ...story, locale }, { hero: null, map: null });
   const c = story.characters;
@@ -73,16 +74,18 @@ export function buildBookPages(story: BookPageSource, _synopsisFallback: string,
 
   for (const p of plan.interior) {
     switch (p.kind) {
-      case "title-dedication":
+      case "title-dedication": {
+        const forName = titleForName(locale, "personalizedAdventure", name, c.gender, up);
         pages.push({
           type: "title_dedication",
           title,
           print: p,
-          characterName: sanitizePrintText(name),
-          kicker: pdfForName(locale, "personalizedAdventure", name, c.gender),
+          characterName: forName.name,
+          kicker: forName.kicker,
           quotes: printQuotes(locale),
         });
         break;
+      }
       case "illustration":
       case "spread":
       case "text":
@@ -104,23 +107,23 @@ export function buildBookPages(story: BookPageSource, _synopsisFallback: string,
         pages.push({
           type: "final",
           print: p,
-          kicker: joinName(pdfForName(locale, "createdFor", name, c.gender), sanitizePrintText(name)),
-          end: pdfT(locale, "end"),
+          kicker: up(joinName(pdfForName(locale, "createdFor", name, c.gender), sanitizePrintText(name))),
+          end: up(pdfT(locale, "end")),
         });
         break;
       case "about-reader": {
         const colorId = c.favorite_color ? FAVORITE_COLORS.find((f) => f.color === c.favorite_color)?.id : undefined;
         const traits: Extract<BookPage, { type: "hero_card" }>["traits"] = [];
-        if (colorId && c.favorite_color) traits.push({ label: colorName(locale, colorId), icon: "color", color: c.favorite_color });
-        if (c.favorite_companion) traits.push({ label: sanitizePrintText(c.favorite_companion), icon: "pets" });
-        if (c.future_dream) traits.push({ label: sanitizePrintText(c.future_dream), icon: "palette" });
+        if (colorId && c.favorite_color) traits.push({ label: up(colorName(locale, colorId)), icon: "color", color: c.favorite_color });
+        if (c.favorite_companion) traits.push({ label: up(sanitizePrintText(c.favorite_companion)), icon: "pets" });
+        if (c.future_dream) traits.push({ label: up(sanitizePrintText(c.future_dream)), icon: "palette" });
         pages.push({
           type: "hero_card",
-          characterName: sanitizePrintText(name),
-          heroLabel: pdfT(locale, c.gender === "girl" ? "heroine" : "hero"),
-          ageLine: `${c.age} ${pdfT(locale, "years")}${c.city ? `  ·  ${sanitizePrintText(c.city)}` : ""}`,
+          characterName: up(sanitizePrintText(name)),
+          heroLabel: up(pdfT(locale, c.gender === "girl" ? "heroine" : "hero")),
+          ageLine: up(`${c.age} ${pdfT(locale, "years")}${c.city ? `  ·  ${sanitizePrintText(c.city)}` : ""}`),
           traits,
-          interests: (c.interests ?? []).slice(0, 8).map((i) => sanitizePrintText(interestLabel(locale, i))),
+          interests: (c.interests ?? []).slice(0, 8).map((i) => up(sanitizePrintText(interestLabel(locale, i)))),
           // p27: the print-size hero render, else the cover art (never the small avatar)
           portraitUrl: plan.images.hero ?? story.cover_image_url ?? null,
         });
@@ -134,7 +137,7 @@ export function buildBookPages(story: BookPageSource, _synopsisFallback: string,
         pages.push({ type: "endpaper", templateId: story.template_id, offset: p.side === "left" ? "left" : "right" });
         break;
       case "colophon":
-        pages.push({ type: "colophon", text: pdfT(locale, "colophonText") });
+        pages.push({ type: "colophon", text: up(pdfT(locale, "colophonText")) });
         break;
     }
   }
