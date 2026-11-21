@@ -195,6 +195,24 @@ export function nextPhysicalCutoff(today: string): NextCutoff | null {
   return null;
 }
 
+/**
+ * "Llega a tiempo o te devolvemos el dinero" (owner decision 2026-11-21, terms section 5): a printed
+ * book ordered by an occasion's cut-off (earliest across formats and regions, so it holds for every
+ * order to península / Baleares) that does not arrive in time is refunded. Returns the cut-offs
+ * to advertise today: those still open, from 1 November (same window as the seasonal banner);
+ * `{}` = no on-time promise (before November, or after the Reyes cut-off). The terms state the
+ * standing policy with `earliestPrintedCutoff`.
+ */
+export function openGuaranteeCutoffs(today: string): Partial<Record<SeasonOccasion, string>> {
+  const open: Partial<Record<SeasonOccasion, string>> = {};
+  if (today < giftSeason(today).bannerFrom) return open;
+  for (const occasion of SEASON_OCCASIONS) {
+    const cutoff = earliestPrintedCutoff(today, occasion);
+    if (cutoff >= today) open[occasion] = cutoff;
+  }
+  return open;
+}
+
 export type SeasonBanner =
   | { kind: "physical"; occasion: SeasonOccasion; lastOrderDate: string; daysLeft: number }
   | { kind: "digital"; occasion: SeasonOccasion }

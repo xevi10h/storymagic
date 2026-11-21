@@ -8,7 +8,7 @@
 
 import { EVERGREEN_TEMPLATES } from "./create-store";
 import { PREVIEW_ILLUSTRATION_COUNT, PRICING, TOTAL_SCENE_COUNT } from "./pricing";
-import { DELIVERY_PARAMS, SHIPPING_REGIONS } from "./shipping";
+import { DELIVERY_PARAMS, SHIPPING_REGIONS, earliestPrintedCutoff, spainToday } from "./shipping";
 import { SUPPORT_EMAIL, SUPPORT_PHONE } from "./support";
 import { bookPriceToday } from "./black-friday";
 
@@ -130,6 +130,12 @@ export const SHIPPING_POSTCODE_RANGES = [
 export const RETURNS_ACCEPTED = false;
 /** Days after delivery to report a print defect or transit damage (free reprint). */
 export const DEFECT_CLAIM_DAYS = 30;
+/**
+ * On-time delivery guarantee (owner decision 2026-11-21, replaces the 2026-11-17 "si no os encanta"
+ * refund): days after 24 December / 5 January to ask for the refund of a late printed book.
+ * Cut-offs: src/lib/shipping.ts (openGuaranteeCutoffs / earliestPrintedCutoff).
+ */
+export const DELIVERY_GUARANTEE_CLAIM_DAYS = 30;
 
 /**
  * ICU params for messages that quote product facts ("{minDays}-{maxDays} días laborables",
@@ -146,7 +152,25 @@ export const COPY_PARAMS = {
   size: BOOK_SIZE_CM,
   paper: BOOK_PAPER_GSM,
   defectDays: DEFECT_CLAIM_DAYS,
+  guaranteeDays: DELIVERY_GUARANTEE_CLAIM_DAYS,
 };
+
+const INTL_LOCALE: Record<string, string> = { es: "es-ES", ca: "ca-ES", en: "en-GB", fr: "fr-FR" };
+
+/** "10 de diciembre" / "10 December" for a YYYY-MM-DD date. */
+export function dayMonth(date: string, locale: string): string {
+  return new Intl.DateTimeFormat(INTL_LOCALE[locale] ?? "es-ES", { timeZone: "UTC", day: "numeric", month: "long" }).format(
+    new Date(`${date}T00:00:00Z`),
+  );
+}
+
+/** {christmasDate} / {reyesDate}: this season's printed cut-offs (earliest across formats and regions). */
+export function cutoffDateParams(locale: string, today: string = spainToday()) {
+  return {
+    christmasDate: dayMonth(earliestPrintedCutoff(today, "christmas"), locale),
+    reyesDate: dayMonth(earliestPrintedCutoff(today, "reyes"), locale),
+  };
+}
 
 /**
  * COPY_PARAMS plus the formatted VAT-inclusive prices ({hardcover}, {softcover}, {pdf}, {priceFrom}).

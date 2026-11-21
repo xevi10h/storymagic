@@ -14,6 +14,7 @@ import { createPageHref, currentCarriedParams, handOffHeroName, setHeroName, use
 import { LANDING_EXAMPLE } from "./HowItWorksExample";
 import { trackEvent } from "@/lib/tracking/consent";
 import { HollySprig, SeasonStar } from "@/components/seasonal/HollySprig";
+import GuaranteeLine from "@/components/seasonal/GuaranteeLine";
 
 /** Material Symbols glyph with a fixed box, so the late icon font never shifts the text. */
 function Icon({ name, className = "" }: { name: string; className?: string }) {
@@ -186,6 +187,7 @@ export default function Hero({ season = false }: { season?: boolean }) {
               <span> · {tPricing("vatIncluded")}</span>
               <span> · {t("freeShipping")}</span>
             </p>
+            <GuaranteeLine className="text-balance text-center text-[13px] font-semibold leading-5 text-success min-[380px]:text-sm lg:text-left" />
             {/* Reserved box: the date needs the browser's clock (appears after hydration). Phones
                 reserve two lines, since long months ("noviembre") wrap there; icon stays inline. */}
             <p className="flex min-h-10 items-center text-balance text-center text-[13px] leading-5 text-ink-muted min-[380px]:text-sm sm:min-h-6 lg:text-left">

@@ -1,14 +1,23 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { SUPPORT_EMAIL } from "@/lib/pricing";
 import { COPY_PARAMS } from "@/lib/product-facts";
+import { useToday } from "@/components/seasonal/SalePrice";
+import { guaranteeCopy } from "@/components/seasonal/guarantee";
 
 const ITEMS = ["delivery", "canarias", "quality", "changes", "returns"] as const;
 
 /** Five short answers under the buy panel (delivery, Canarias, quality, changes, returns) + help inbox. */
 export default function PreviewFaq() {
   const t = useTranslations("crear.purchase");
+  const tg = useTranslations("guarantee");
+  const locale = useLocale();
+  const today = useToday();
+  // "returns" also states the on-time guarantee while a printed cut-off is open.
+  const guarantee = today ? guaranteeCopy(today, locale, tg) : null;
+  const answer = (id: (typeof ITEMS)[number]) =>
+    id === "returns" && guarantee ? `${t(`faq.${id}.a`, COPY_PARAMS)} ${guarantee.promise}` : t(`faq.${id}.a`, COPY_PARAMS);
   return (
     <section aria-labelledby="preview-faq-title">
       <h2 id="preview-faq-title" className="font-display text-xl font-bold text-secondary">
@@ -21,7 +30,7 @@ export default function PreviewFaq() {
               {t(`faq.${id}.q`)}
               <span aria-hidden className="material-symbols-outlined text-xl text-create-text-sub transition-transform group-open:rotate-180" data-icon="expand_more" />
             </summary>
-            <p className="-mt-1 px-5 pb-4 pr-12 text-sm leading-relaxed text-create-text-body sm:px-6 sm:pr-14">{t(`faq.${id}.a`, COPY_PARAMS)}</p>
+            <p className="-mt-1 px-5 pb-4 pr-12 text-sm leading-relaxed text-create-text-body sm:px-6 sm:pr-14">{answer(id)}</p>
           </details>
         ))}
       </div>

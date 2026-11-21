@@ -58,7 +58,7 @@ const ca = (f: GuideFacts, previewScenes: number): TioGuideCopy => ({
     {
       heading: "Quan demanar-lo perquè arribi abans de la Nit de Nadal",
       paragraphs: [
-        `L'imprimim per encàrrec i arriba en ${f.minDays}-${f.maxDays} dies laborables, amb l'enviament inclòs, a la Península i les Balears. Perquè sigui a casa el 24 de desembre, demana'l com a tard el ${f.christmasDate}. És una data estimada, calculada amb marge pels festius i pel volum de paquets del desembre; no és una garantia.`,
+        `L'imprimim per encàrrec i arriba en ${f.minDays}-${f.maxDays} dies laborables, amb l'enviament inclòs, a la Península i les Balears. Perquè sigui a casa el 24 de desembre, demana'l com a tard el ${f.christmasDate}. La data ja porta marge pels festius i pel volum de paquets del desembre i, si el demanes fins aquell dia i no arriba a temps, et tornem els diners.`,
         "Si el feu cagar el dia de Nadal a casa dels avis, compta-hi igualment la Nit de Nadal: val més que el llibre s'esperi uns dies dins d'un armari que no pas que faci tard.",
         `Se t'ha passat la data? El conte en PDF (${f.pdf} IVA inclòs) t'arriba per correu després de pagar, normalment en menys d'una hora, i el pots imprimir a casa i embolicar-lo.`,
       ],

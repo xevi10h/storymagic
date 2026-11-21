@@ -909,7 +909,7 @@
     "priceQ": "How much is it and what's included?",
     "priceA": "Softcover, {softcover}. Hardcover, {hardcover}. PDF only, {pdf}. All prices include VAT. The printed book includes shipping and the PDF of the full story.",
     "returnsQ": "Can I return it?",
-    "returnsA": "As a made-to-order book with their name and portrait, it can't be returned, which is why, before paying, you see the cover, their portrait and the first scenes of their story. But if it arrives with any printing defect or gets damaged in transit, we'll send you a new one free of charge. Just write to us within 30 days of receiving it, with a photo of the book and the packaging.",
+    "returnsA": "As a made-to-order book with their name and portrait, it can't be returned, which is why, before paying, you see the cover, their portrait and the first scenes of their story. But if it arrives with any printing defect or gets damaged in transit, we'll send you a new one free of charge. Just write to us within {defectDays} days of receiving it, with a photo of the book and the packaging.",
     "agesQ": "What ages are the books for?",
     "agesA": "For children aged {ageMin} to {ageMax}. Each of the ten worlds has its own age range, and the text is written for your child's age: short sentences and big type for the youngest, longer chapters with real challenges from 8.",
     "agesLink": "See books by age",
@@ -985,8 +985,8 @@
       "section3Text": "Illustrations are created specifically for each book. The buyer receives a personal, non-commercial use license for the purchased book.",
       "section4Title": "4. Prices and payments",
       "section4Text": "All prices are final, VAT included, and shown in euros. For printed books, shipping within Spain is included in the price. Payment is processed securely through Stripe.",
-      "section5Title": "5. Shipping and returns",
-      "section5Text": "Books are printed on demand in Europe, and for now we only ship to addresses in Spain. Mainland Spain: {minDays}-{maxDays} business days. Balearic Islands: {minDays}-{maxDays} business days. We don't ship to the Canary Islands, Ceuta or Melilla yet. As personalized products, books are excluded from the right of withdrawal (Art. 103(c) of the Spanish consolidated consumer protection law, TRLGDCU) and cannot be returned. If a book arrives with any printing or manufacturing defect, or is damaged in transit, write to us within 30 days of receiving it, with a photo of the book and the packaging, and we will send you a new one free of charge. This does not limit your statutory warranty rights. In addition, Meapica offers a voluntary commercial guarantee: if you don't love the book, write to hola@meapica.es within 30 days of receiving it and we will refund the full amount to the same payment method, with no need to send the book back. It applies once per customer.",
+      "section5Title": "5. Shipping, returns and delivery guarantee",
+      "section5Text": "Books are printed on demand in Europe, and for now we only ship to addresses in Spain. Mainland Spain: {minDays}-{maxDays} business days. Balearic Islands: {minDays}-{maxDays} business days. We don't ship to the Canary Islands, Ceuta or Melilla yet. As personalized products, books are excluded from the right of withdrawal (Art. 103(c) of the Spanish consolidated consumer protection law, TRLGDCU) and cannot be returned. If a book arrives with any printing or manufacturing defect, or is damaged in transit, write to us within {defectDays} days of receiving it, with a photo of the book and the packaging, and we will send you a new one free of charge. In addition, Meapica offers a voluntary on-time delivery guarantee for Christmas and Three Kings' Day: if you order a printed book (hardcover or softcover) shipped to mainland Spain or the Balearic Islands by {christmasDate} inclusive and it has not arrived by 24 December, or by {reyesDate} inclusive and it has not arrived by 5 January, we refund the amount you paid for that order to the same payment method, with no need to send the book back. To claim it, write to hola@meapica.es with your order reference within {guaranteeDays} days of that date. It does not apply when the delay is caused by an incomplete or wrong address, or when the carrier attempted delivery in time and nobody could receive it. These guarantees do not limit your statutory warranty rights.",
       "section6Title": "6. Limitation of liability",
       "section6Text": "Meapica does not guarantee uninterrupted service availability. Illustrations may vary and a specific result is not guaranteed.",
       "section7Title": "7. Gift vouchers",
@@ -1486,8 +1486,8 @@
           "a": "Yes, before ordering: the title, the dedication and the look. You can read the whole story here; we paint the 9 remaining illustrations when you order, in the same style and with the same character."
         },
         "returns": {
-          "q": "What if something is wrong with it?",
-          "a": "As a made-to-order book it has no right of withdrawal, but if it arrives with a printing defect or damaged in transit, we'll send you a new one free of charge. Just write to us within 30 days of receiving it, with a photo of the book and the packaging. And if you simply don't love it, write to us within those same 30 days and we'll refund you, without sending the book back."
+          "q": "What if it's late or something is wrong with it?",
+          "a": "As a made-to-order book it has no right of withdrawal, but if it arrives with a printing defect or damaged in transit, we'll send you a new one free of charge. Just write to us within {defectDays} days of receiving it, with a photo of the book and the packaging."
         }
       },
       "softcoverNote": "Flexible cover, lighter",
@@ -1543,8 +1543,6 @@
       },
       "pdfFirstStep": "Start with the PDF",
       "pdfCredit": "If you order the printed book later, it costs {softcover} in softcover or {hardcover} in hardcover",
-      "guaranteeTitle": "If you don't love it, we refund you",
-      "guaranteeBody": "Write to {email} within {days} days of receiving it. No need to send the book back.",
       "payWith": "Pay your way:",
       "payCard": "Card"
     }
@@ -3150,7 +3148,7 @@
       "Every book is printed on demand in Europe, and our delivery promise is {promisedMin}-{promisedMax} business days. These dates start from the carrier's real current time: {min}-{max} calendar days from the printer to your door.",
       "In December we add {buffer} days of margin for carrier backlogs and the 8 December, Christmas and New Year holidays.",
       "The clock starts when you complete payment, not when you start creating the story.",
-      "These are estimates based on current carrier times, not a guarantee. If they change, we update this page."
+      "The cut-off dates already include that margin. If you order a printed book by its cut-off and it doesn't arrive in time in mainland Spain or the Balearic Islands, we refund you. If carrier times change, we update this page."
     ],
     "lateHeading": "Missed the date?",
     "lateText": "The PDF story is the same book: the same illustrations and their name on every page. It reaches your inbox after payment, so it arrives in time for Christmas Eve and Three Kings' Day even if you order on the day. Print it at home or at a print shop, or read it together on a tablet.",
@@ -3447,5 +3445,16 @@
     "errorTitle": "We couldn't open the book",
     "errorBody": "The connection failed. Please try again in a moment.",
     "retry": "Try again"
+  },
+  "guarantee": {
+    "title": "On time or your money back",
+    "promise": {
+      "both": "Order the printed book by {christmasDate} and it arrives for Christmas Eve; by {reyesDate}, for Three Kings' Day. Shipping to mainland Spain or the Balearic Islands. If it doesn't arrive in time, we refund you.",
+      "reyes": "Order the printed book by {reyesDate} and it arrives for Three Kings' Day, in mainland Spain or the Balearic Islands. If it doesn't arrive in time, we refund you."
+    },
+    "short": {
+      "christmas": "Arrives for Christmas Eve or your money back · order by {date}",
+      "reyes": "Arrives for Three Kings' Day or your money back · order by {date}"
+    }
   }
 }

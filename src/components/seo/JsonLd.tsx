@@ -12,6 +12,7 @@ import {
   CONTACT_EMAIL,
   CONTACT_PHONE,
   DEFECT_CLAIM_DAYS,
+  cutoffDateParams,
   DELIVERY_BUSINESS_DAYS,
   FOUNDER,
   HANDLING_BUSINESS_DAYS,
@@ -52,13 +53,17 @@ function founderPerson(locale: string) {
 type Loc = "es" | "ca" | "en" | "fr";
 const asLoc = (locale: string): Loc => (locale === "ca" || locale === "en" || locale === "fr" ? locale : "es");
 
-/** Merchant return policy (legal.terms.section5): personalised goods, defects reprinted free. */
+/**
+ * Merchant return policy (legal.terms.section5): personalised goods, defects reprinted free, and
+ * the Christmas / Reyes on-time guarantee (refund, the book is kept: still no return).
+ */
 function returnPolicy(locale: string) {
+  const { christmasDate, reyesDate } = cutoffDateParams(asLoc(locale));
   const description: Record<Loc, string> = {
-    es: `Libro personalizado: excluido del derecho de desistimiento (art. 103 c LGDCU), no admite devoluciones. Si llega con un defecto de impresión o dañado en el envío, avísanos en los ${DEFECT_CLAIM_DAYS} días siguientes y te enviamos otro sin coste.`,
-    ca: `Llibre personalitzat: exclòs del dret de desistiment (art. 103 c LGDCU), no admet devolucions. Si arriba amb un defecte d'impressió o malmès en l'enviament, avisa'ns en els ${DEFECT_CLAIM_DAYS} dies següents i te n'enviem un altre sense cost.`,
-    en: `Personalised book: exempt from the right of withdrawal (art. 103 c LGDCU), no returns. If it arrives with a print defect or damaged in transit, tell us within ${DEFECT_CLAIM_DAYS} days and we send a new one free of charge.`,
-    fr: `Livre personnalisé : exclu du droit de rétractation (art. 103 c LGDCU), pas de retours. S'il arrive avec un défaut d'impression ou abîmé pendant le transport, prévenez-nous dans les ${DEFECT_CLAIM_DAYS} jours et nous en envoyons un nouveau sans frais.`,
+    es: `Libro personalizado: excluido del derecho de desistimiento (art. 103 c LGDCU), no admite devoluciones. Si llega con un defecto de impresión o dañado en el envío, avísanos en los ${DEFECT_CLAIM_DAYS} días siguientes y te enviamos otro sin coste. Garantía de entrega: un libro impreso pedido hasta el ${christmasDate} (Nochebuena) o el ${reyesDate} (Reyes) con envío a la península o Baleares que no llega a tiempo se reembolsa.`,
+    ca: `Llibre personalitzat: exclòs del dret de desistiment (art. 103 c LGDCU), no admet devolucions. Si arriba amb un defecte d'impressió o malmès en l'enviament, avisa'ns en els ${DEFECT_CLAIM_DAYS} dies següents i te n'enviem un altre sense cost. Garantia d'entrega: un llibre imprès demanat fins al ${christmasDate} (nit de Nadal) o el ${reyesDate} (Reis) amb enviament a la Península o les Balears que no arriba a temps es reemborsa.`,
+    en: `Personalised book: exempt from the right of withdrawal (art. 103 c LGDCU), no returns. If it arrives with a print defect or damaged in transit, tell us within ${DEFECT_CLAIM_DAYS} days and we send a new one free of charge. Delivery guarantee: a printed book ordered by ${christmasDate} (Christmas Eve) or ${reyesDate} (Three Kings' Day) to mainland Spain or the Balearic Islands that does not arrive in time is refunded.`,
+    fr: `Livre personnalisé : exclu du droit de rétractation (art. 103 c LGDCU), pas de retours. S'il arrive avec un défaut d'impression ou abîmé pendant le transport, prévenez-nous dans les ${DEFECT_CLAIM_DAYS} jours et nous en envoyons un nouveau sans frais. Garantie de livraison : un livre imprimé commandé jusqu'au ${christmasDate} (réveillon de Noël) ou au ${reyesDate} (Rois mages), livré en Espagne péninsulaire ou aux Baléares, qui n'arrive pas à temps est remboursé.`,
   };
   return {
     "@type": "MerchantReturnPolicy",

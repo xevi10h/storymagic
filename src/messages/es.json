@@ -951,7 +951,7 @@
     "priceQ": "¿Cuánto cuesta y qué incluye?",
     "priceA": "Tapa blanda, {softcover}. Tapa dura, {hardcover}. Solo el PDF, {pdf}. Todos los precios llevan el IVA incluido. El libro impreso incluye el envío y el PDF del cuento completo.",
     "returnsQ": "¿Puedo devolverlo?",
-    "returnsA": "Al ser un libro hecho a medida, con su nombre y su retrato, no admite devoluciones; por eso, antes de pagar, ves su portada, su retrato y las primeras escenas de su cuento. Pero si llega con cualquier defecto de impresión o se daña en el envío, te enviamos otro nuevo sin coste. Solo tienes que escribirnos en los 30 días siguientes a recibirlo, con una foto del libro y del embalaje.",
+    "returnsA": "Al ser un libro hecho a medida, con su nombre y su retrato, no admite devoluciones; por eso, antes de pagar, ves su portada, su retrato y las primeras escenas de su cuento. Pero si llega con cualquier defecto de impresión o se daña en el envío, te enviamos otro nuevo sin coste. Solo tienes que escribirnos en los {defectDays} días siguientes a recibirlo, con una foto del libro y del embalaje.",
     "agesQ": "¿Para qué edades son los cuentos personalizados?",
     "agesA": "Para niños de {ageMin} a {ageMax} años. Cada uno de los diez mundos tiene su franja de edad, y el texto se escribe para la edad de tu hijo: frases cortas y letra grande para los más pequeños, capítulos con más texto y retos de verdad a partir de los 8.",
     "agesLink": "Ver cuentos por edad",
@@ -1027,8 +1027,8 @@
       "section3Text": "Las ilustraciones son creadas específicamente para cada libro. El comprador recibe una licencia de uso personal no comercial del libro adquirido.",
       "section4Title": "4. Precios y pagos",
       "section4Text": "Todos los precios son finales, con el IVA incluido, y se muestran en euros. En los libros impresos, el envío a España está incluido en el precio. El pago se procesa de forma segura a través de Stripe.",
-      "section5Title": "5. Envíos y devoluciones",
-      "section5Text": "Los libros se imprimen bajo demanda en Europa y, por ahora, solo realizamos envíos a direcciones de España. España peninsular: {minDays}-{maxDays} días laborables. Baleares: {minDays}-{maxDays} días laborables. De momento no enviamos a Canarias, Ceuta ni Melilla. Al ser productos personalizados, los libros están excluidos del derecho de desistimiento (art. 103 c) del texto refundido de la Ley General para la Defensa de los Consumidores y Usuarios) y no admiten devoluciones. Si un libro llega con cualquier defecto de impresión o fabricación, o se daña durante el envío, escríbenos en los 30 días siguientes a recibirlo, con una foto del libro y del embalaje, y te enviamos otro nuevo sin coste. Esto no limita los derechos de garantía que te reconoce la ley. Además, Meapica ofrece una garantía comercial voluntaria: si el cuento no os encanta, escríbenos a hola@meapica.es en los 30 días siguientes a recibirlo y te devolvemos el importe íntegro por el mismo medio de pago, sin necesidad de devolver el libro. Se aplica una vez por cliente.",
+      "section5Title": "5. Envíos, devoluciones y garantía de entrega",
+      "section5Text": "Los libros se imprimen bajo demanda en Europa y, por ahora, solo realizamos envíos a direcciones de España. España peninsular: {minDays}-{maxDays} días laborables. Baleares: {minDays}-{maxDays} días laborables. De momento no enviamos a Canarias, Ceuta ni Melilla. Al ser productos personalizados, los libros están excluidos del derecho de desistimiento (art. 103 c) del texto refundido de la Ley General para la Defensa de los Consumidores y Usuarios) y no admiten devoluciones. Si un libro llega con cualquier defecto de impresión o fabricación, o se daña durante el envío, escríbenos en los {defectDays} días siguientes a recibirlo, con una foto del libro y del embalaje, y te enviamos otro nuevo sin coste. Además, Meapica ofrece una garantía comercial de entrega a tiempo para Navidad y Reyes: si pides un libro impreso (tapa dura o tapa blanda) con envío a España peninsular o Baleares hasta el {christmasDate} incluido y no llega como muy tarde el 24 de diciembre, o hasta el {reyesDate} incluido y no llega como muy tarde el 5 de enero, te devolvemos el importe que pagaste por ese pedido, por el mismo medio de pago y sin necesidad de devolver el libro. Para pedirlo, escríbenos a hola@meapica.es con la referencia del pedido en los {guaranteeDays} días siguientes a esa fecha. No se aplica cuando el retraso se debe a una dirección incompleta o incorrecta, ni cuando el transportista intentó la entrega a tiempo y nadie pudo recibirlo. Estas garantías no limitan los derechos de garantía que te reconoce la ley.",
       "section6Title": "6. Limitación de responsabilidad",
       "section6Text": "Meapica no garantiza la disponibilidad ininterrumpida del servicio. Las ilustraciones pueden variar y no se garantiza un resultado específico.",
       "section7Title": "7. Tarjetas regalo",
@@ -1528,8 +1528,8 @@
           "a": "Sí, antes de pedirlo: el título, la dedicatoria y su aspecto. Aquí puedes leer toda la historia; las 9 ilustraciones que faltan las pintamos al pedirlo, con el mismo estilo y el mismo personaje."
         },
         "returns": {
-          "q": "¿Y si llega con algún problema?",
-          "a": "Al ser un libro hecho a medida no admite desistimiento, pero si llega con un defecto de impresión o dañado por el envío, te enviamos otro nuevo sin coste. Solo tienes que escribirnos en los 30 días siguientes a recibirlo, con una foto del libro y del embalaje. Y si simplemente no os encanta, escríbenos en esos mismos 30 días y te devolvemos el dinero, sin devolver el libro."
+          "q": "¿Y si llega tarde o con algún problema?",
+          "a": "Al ser un libro hecho a medida no admite desistimiento, pero si llega con un defecto de impresión o dañado por el envío, te enviamos otro nuevo sin coste. Solo tienes que escribirnos en los {defectDays} días siguientes a recibirlo, con una foto del libro y del embalaje."
         }
       },
       "softcoverNote": "Portada flexible, más ligera",
@@ -1585,8 +1585,6 @@
       },
       "pdfFirstStep": "Empieza por el PDF",
       "pdfCredit": "Si luego pides el libro impreso, te sale a {softcover} en tapa blanda o {hardcover} en tapa dura",
-      "guaranteeTitle": "Si no os encanta, te devolvemos el dinero",
-      "guaranteeBody": "Escríbenos a {email} en los {days} días siguientes a recibirlo. No hace falta devolver el libro.",
       "payWith": "Paga como prefieras:",
       "payCard": "Tarjeta"
     }
@@ -3192,7 +3190,7 @@
       "Imprimimos cada libro bajo demanda en Europa y te prometemos la entrega en {promisedMin}-{promisedMax} días laborables. Para estas fechas partimos del plazo real del transportista, que hoy es de {min}-{max} días naturales de la imprenta a tu casa.",
       "En diciembre sumamos {buffer} días de margen por la saturación de la paquetería y los festivos del 8 de diciembre, Navidad y Año Nuevo.",
       "El plazo empieza cuando completas el pago, no cuando empiezas a crear el cuento.",
-      "Son estimaciones basadas en los plazos actuales del transportista, no una garantía. Si cambian, actualizamos esta página."
+      "Las fechas límite ya llevan ese margen. Si pides un libro impreso hasta su fecha límite y no llega a tiempo a la península o Baleares, te devolvemos el dinero. Si los plazos del transportista cambian, actualizamos esta página."
     ],
     "lateHeading": "¿Se te ha pasado la fecha?",
     "lateText": "El cuento en PDF es el mismo libro: las mismas ilustraciones y su nombre en cada página. Te llega por correo tras el pago, así que llega a tiempo para Nochebuena y para Reyes aunque lo pidas ese mismo día. Puedes imprimirlo en casa o en una copistería, o leerlo juntos en la tableta.",
@@ -3903,5 +3901,16 @@
     "errorTitle": "No hemos podido abrir su libro",
     "errorBody": "Ha fallado la conexión. Vuelve a intentarlo en un momento.",
     "retry": "Volver a intentarlo"
+  },
+  "guarantee": {
+    "title": "Llega a tiempo o te devolvemos el dinero",
+    "promise": {
+      "both": "Pide el libro impreso hasta el {christmasDate} y llega para Nochebuena; hasta el {reyesDate}, para Reyes. Envío a la península o Baleares. Si no llega a tiempo, te devolvemos el dinero.",
+      "reyes": "Pide el libro impreso hasta el {reyesDate} y llega para Reyes, a la península o Baleares. Si no llega a tiempo, te devolvemos el dinero."
+    },
+    "short": {
+      "christmas": "Llega para Nochebuena o te devolvemos el dinero · pide hasta el {date}",
+      "reyes": "Llega para Reyes o te devolvemos el dinero · pide hasta el {date}"
+    }
   }
 }

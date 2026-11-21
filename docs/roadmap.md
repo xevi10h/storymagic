@@ -50,9 +50,10 @@ Shipped for the Christmas / Reyes 2026 campaign after the SEO audit of 2026-11-1
 
 ## Funnel findings (2026-11-17, report https://claude.ai/artifact/Eb3yHtqJkKCsKfXonTfUYN)
 
-- [ ] Mobile conversion changes of 2026-11-17 (money-back promise, PDF row, email as third field, WhatsApp): compare the
-  preview → checkout and checkout → paid rates of the 3 weeks after against 20 Oct – 16 Nov; review the money-back promise
-  in January 2027 (refund requests vs sales).
+- [ ] Mobile conversion changes of 2026-11-17 (PDF row, email as third field, WhatsApp) + the on-time guarantee of 2026-11-21
+  (replaced the money-back promise): compare the preview → checkout and checkout → paid rates of the 3 weeks after against
+  20 Oct – 16 Nov; in January 2027 count late-delivery refund claims vs printed orders before the cut-offs and decide whether
+  the guarantee extends to the regular 7-10 business-day promise outside the season.
 - [ ] Stripe Dashboard › Payment methods: switch off Bancontact, EPS, MB WAY and Satispay (irrelevant in Spain, they lengthen
   the phone checkout). The CLI key cannot write that setting.
 - [ ] Read the "¿Qué te frena?" answers once ~30 are in (`preview_feedback`), then decide the order-screen redesign.

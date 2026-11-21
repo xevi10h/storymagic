@@ -10,7 +10,7 @@
 | Interior | Full colour, 170 g coated paper |
 | Print partner | Gelato (print-on-demand; we ship Spain península + Baleares)
 | Print location claim | "Impreso en Europa" / "imprès a Europa" / "printed in Europe" / "imprimé en Europe" everywhere (decision 2026-09-30: Gelato prints >85 % of orders in the destination country but may route to other hubs, some outside the EU — never "en la UE" nor "en España"). "Hecho en Barcelona" stays. Shipping destination is still Spain only |
-| Returns / defects | Personalised goods: no right of withdrawal (art. 103 c TRLGDCU), no returns. Free reprint of any book that arrives with a printing/manufacturing defect or damaged in transit (customer writes in with a photo). Shown in the paywall right under the pay button for printed formats (`trustReprint`, `SHOW_REPRINT_GUARANTEE = true`, 2026-10-03), landing FAQ `landingFaq.returnsA`, purchase FAQ, terms section 5, shipping page (2026-09-30) |
+| Returns / defects | Personalised goods: no right of withdrawal (art. 103 c TRLGDCU), no returns. Free reprint of any book that arrives with a printing/manufacturing defect or damaged in transit (customer writes in with a photo). Shown in the paywall right under the pay button for printed formats (`trustReprint`, `SHOW_REPRINT_GUARANTEE = true`, 2026-10-03), landing FAQ `landingFaq.returnsA`, purchase FAQ, terms section 5, shipping page (2026-09-30). **On-time guarantee (2026-11-21)**: printed book ordered by the Christmas cut-off (10 Dec, home by 24 Dec) or the Reyes cut-off (22 Dec, home by 5 Jan) to península/Baleares that arrives late → refund of that order (book kept, claim within `DELIVERY_GUARANTEE_CLAIM_DAYS` = 30 days of 24 Dec / 5 Jan by email; not for wrong addresses or failed delivery attempts). Replaced the "si no os encanta" refund of 2026-11-17 |
 
 ## Book Layout (30 inner pages — implemented, `src/lib/pdf/layout.ts`)
 
@@ -245,10 +245,13 @@ Spanish only, noindex. Design: Claude Design canvas «Meapica · landing de anun
 
 From the funnel of 20 Oct – 16 Nov (phones: 66 previews → 3 checkouts → 0 purchases; nobody returns). Owner-approved:
 
-- **Money-back promise** under the pay button (`money-back`): "Si no os encanta, te devolvemos el dinero. Escríbenos a
-  hola@meapica.es en los 30 días siguientes a recibirlo. No hace falta devolver el libro." `MONEY_BACK_DAYS` (pricing.ts).
-  A voluntary commercial guarantee on top of the legal position (personalised goods have no withdrawal right): stated in
-  `legal.terms.section5Text` (once per customer) and in the returns FAQ. Refunds are done by hand in Stripe. Review in January 2027.
+- ~~Money-back promise "Si no os encanta…"~~ replaced 2026-11-21 by ONE guarantee everywhere: **"Llega a tiempo o te devolvemos
+  el dinero"** (`guarantee` box under the pay button, printed formats only; one line under the price in the home hero and the ad
+  landings `/l/*`; appended to both returns FAQs; terms section 5 with the conditions; JSON-LD return policy; llms.txt; about
+  page; /christmas-delivery method note). Dates = `openGuaranteeCutoffs()` in `src/lib/shipping.ts` (earliest printed cut-off per
+  occasion, shown from 1 Nov while open; after the Reyes cut-off every promise disappears and only the free reprint remains).
+  Copy in `guarantee.*` + `src/components/seasonal/guarantee.ts`. The Merchant feed text is unchanged on purpose (no
+  promotional claims in Shopping descriptions; it already says no returns + free reprint). Refunds are done by hand in Stripe.
 - **Ways to pay** as text chips under it (`PAY_METHODS`: Bizum, Apple Pay, Google Pay, card, Klarna). Must match the methods
   switched on in Stripe (all on in the default payment method configuration, checked 2026-11-17).
 - **PDF as a visible third row** ("Empieza por el PDF", dashed), with the price of the printed book afterwards (25,00 € /

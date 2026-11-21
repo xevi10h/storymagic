@@ -6,6 +6,7 @@ import {
   formatDeadlines,
   giftSeason,
   nextPhysicalCutoff,
+  openGuaranteeCutoffs,
   parseDateOverride,
   seasonBanner,
   spainToday,
@@ -51,6 +52,16 @@ assert.equal(seasonBanner("2027-01-06"), null);
 assert.deepEqual(giftSeason("2027-01-06").deliverBy, { christmas: "2027-12-24", reyes: "2028-01-05" });
 assert.deepEqual(nextPhysicalCutoff("2027-01-06"), { occasion: "christmas", lastOrderDate: "2027-12-10", daysLeft: 338 });
 assert.equal(formatDeadlines("2027-01-06", "hardcover", "reyes")[0].lastOrderDate, "2027-12-22");
+
+// ── On-time guarantee: advertised from 1 Nov while a cut-off is open, never for a past date ──
+assert.deepEqual(openGuaranteeCutoffs("2026-10-31"), {}, "not before November");
+assert.deepEqual(openGuaranteeCutoffs("2026-11-01"), { christmas: "2026-12-10", reyes: "2026-12-22" });
+assert.deepEqual(openGuaranteeCutoffs("2026-12-10"), { christmas: "2026-12-10", reyes: "2026-12-22" }, "the cut-off day itself counts");
+assert.deepEqual(openGuaranteeCutoffs("2026-12-11"), { reyes: "2026-12-22" });
+assert.deepEqual(openGuaranteeCutoffs("2026-12-22"), { reyes: "2026-12-22" });
+assert.deepEqual(openGuaranteeCutoffs("2026-12-23"), {}, "after the Reyes cut-off: no promise");
+assert.deepEqual(openGuaranteeCutoffs("2027-01-05"), {});
+assert.deepEqual(openGuaranteeCutoffs("2027-03-01"), {}, "next season starts in November");
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 // 23:30 UTC on 10 Dec is already 11 Dec in Madrid (CET = UTC+1)

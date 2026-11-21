@@ -18,6 +18,7 @@ import {
   CONTACT_PHONE,
   DEFECT_CLAIM_DAYS,
   DELIVERY_BUSINESS_DAYS,
+  DELIVERY_GUARANTEE_CLAIM_DAYS,
   FOUNDER,
   PDF_DELIVERY_MAX_MINUTES,
   PREVIEW_SCENES,
@@ -93,6 +94,7 @@ ${blackFridayLine(today)}- Creating the book and its preview is free and needs n
 ## Returns
 - Personalised goods are excluded from the EU right of withdrawal (Spain, art. 103 c LGDCU): no returns.
 - A book with a print defect or damaged in transit is reprinted free if reported within ${DEFECT_CLAIM_DAYS} days of delivery.
+- On-time guarantee: a printed book ordered by ${longDate(christmasCutoff)} (home by 24 December) or by ${longDate(reyesCutoff)} (home by 5 January), shipped to mainland Spain or the Balearic Islands, that does not arrive in time is refunded (claim within ${DELIVERY_GUARANTEE_CLAIM_DAYS} days of that date; the book is kept). There is no "if you don't love it" refund.
 
 ## Key pages
 - What Meapica is (facts sheet): ${es(GUIDES.about.path)}

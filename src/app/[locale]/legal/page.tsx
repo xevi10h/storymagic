@@ -4,7 +4,7 @@ import { FAQJsonLd } from "@/components/seo/JsonLd";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { hreflangAlternates } from "@/lib/seo-index";
-import { COPY_PARAMS } from "@/lib/product-facts";
+import { COPY_PARAMS, cutoffDateParams } from "@/lib/product-facts";
 import { isPhotoUploadEnabled } from "@/lib/privacy/child-photo-policy";
 
 /**
@@ -54,10 +54,13 @@ function LegalSection({
   t,
   sectionKey,
   sectionCount,
+  values,
 }: {
   t: (key: string, values?: Record<string, string | number>) => string;
   sectionKey: string;
   sectionCount: number;
+  /** COPY_PARAMS + this season's cut-off dates (terms section 5, delivery guarantee). */
+  values: Record<string, string | number>;
 }) {
   const noPhoto = sectionKey === "privacy" && !isPhotoUploadEnabled();
   return (
@@ -71,7 +74,7 @@ function LegalSection({
           <p className="text-text-soft leading-relaxed">
             {t(
               `${sectionKey}.section${i + 1}${noPhoto && PHOTO_PRIVACY_SECTIONS.has(i + 1) ? "TextNoPhoto" : "Text"}`,
-              COPY_PARAMS,
+              values,
             )}
           </p>
         </div>
@@ -84,6 +87,7 @@ export default async function LegalPage({ params }: PageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "legal" });
+  const values = { ...COPY_PARAMS, ...cutoffDateParams(locale) };
 
   // The legal notice comes first: its title is the page's <title>, so it is also the <h1>.
   const pages = [
@@ -125,7 +129,7 @@ export default async function LegalPage({ params }: PageProps) {
               <p className="text-xs text-text-muted mb-8">
                 {t("lastUpdated", { date: "2026-11-21" })}
               </p>
-              <LegalSection t={t} sectionKey={id} sectionCount={sectionCount} />
+              <LegalSection t={t} sectionKey={id} sectionCount={sectionCount} values={values} />
             </article>
             );
           })}

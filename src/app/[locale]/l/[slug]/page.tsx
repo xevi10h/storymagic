@@ -12,6 +12,7 @@ import { AD_LANDING_COPY, AD_LANDING_LOCALES, AD_LANDING_SLUGS, getAdLanding } f
 import { formatPrice } from "@/lib/pricing";
 import { BOOK_INNER_PAGES, BOOK_SCENES, PRINTED_FROM_CENTS } from "@/lib/product-facts";
 import { SalePrice } from "@/components/seasonal/SalePrice";
+import GuaranteeLine from "@/components/seasonal/GuaranteeLine";
 
 // Paid Meta ad landings (lib/ad-landing.ts): one template, the ad's scene and line per slug.
 // Only es × the configured slugs exist; anything else is a 404 (no on-demand params).
@@ -99,6 +100,7 @@ export default async function AdLandingPage({ params }: Props) {
             </span>{" "}
             · {tPricing("vatIncluded")} · {t("freeShipping")}
           </p>
+          <GuaranteeLine className="-mt-2 text-balance text-center text-[13px] font-semibold leading-5 text-success" />
 
           <AdNameForm ctaLabel={copy.cta} />
 

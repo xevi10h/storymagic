@@ -911,7 +911,7 @@
     "priceQ": "Combien ça coûte et qu'est-ce qui est inclus ?",
     "priceA": "Couverture souple, {softcover}. Couverture rigide, {hardcover}. PDF seul, {pdf}. Tous les prix sont TVA incluse. Le livre imprimé inclut la livraison et le PDF de l'histoire complète.",
     "returnsQ": "Puis-je le retourner ?",
-    "returnsA": "Livre fait sur mesure, avec son prénom et son portrait, il n'est ni repris ni échangé : c'est pour cela que, avant de payer, vous voyez la couverture, son portrait et les premières scènes de son histoire. Mais s'il arrive avec le moindre défaut d'impression ou abîmé pendant la livraison, nous vous en envoyons un nouveau sans frais. Il suffit de nous écrire dans les 30 jours suivant sa réception, avec une photo du livre et de l'emballage.",
+    "returnsA": "Livre fait sur mesure, avec son prénom et son portrait, il n'est ni repris ni échangé : c'est pour cela que, avant de payer, vous voyez la couverture, son portrait et les premières scènes de son histoire. Mais s'il arrive avec le moindre défaut d'impression ou abîmé pendant la livraison, nous vous en envoyons un nouveau sans frais. Il suffit de nous écrire dans les {defectDays} jours suivant sa réception, avec une photo du livre et de l'emballage.",
     "agesQ": "Pour quel âge sont les livres ?",
     "agesA": "Pour les enfants de {ageMin} à {ageMax} ans. Chacun des dix univers a sa tranche d'âge, et le texte est écrit pour l'âge de votre enfant : des phrases courtes et de gros caractères pour les plus petits, des chapitres plus longs et de vrais défis dès 8 ans.",
     "agesLink": "Voir les livres par âge",
@@ -987,8 +987,8 @@
       "section3Text": "Les illustrations sont créées spécifiquement pour chaque livre. L'acheteur reçoit une licence d'utilisation personnelle non commerciale du livre acheté.",
       "section4Title": "4. Prix et paiements",
       "section4Text": "Tous les prix sont définitifs, TVA incluse, et affichés en euros. Pour les livres imprimés, la livraison en Espagne est incluse dans le prix. Le paiement est traité de manière sécurisée via Stripe.",
-      "section5Title": "5. Livraison et retours",
-      "section5Text": "Les livres sont imprimés à la demande en Europe et, pour l'instant, nous livrons uniquement en Espagne. Espagne péninsulaire : {minDays} à {maxDays} jours ouvrés. Baléares : {minDays} à {maxDays} jours ouvrés. Pas encore de livraison aux Canaries, à Ceuta ni à Melilla. S'agissant de produits personnalisés, les livres sont exclus du droit de rétractation (art. 103 c) du texte refondu de la loi espagnole de protection des consommateurs, TRLGDCU) et ne sont pas repris. Si un livre arrive avec un défaut d'impression ou de fabrication, ou s'il est abîmé pendant la livraison, écrivez-nous dans les 30 jours suivant sa réception, avec une photo du livre et de l'emballage, et nous vous en envoyons un nouveau sans frais. Cela ne limite pas vos droits de garantie légale. En outre, Meapica offre une garantie commerciale volontaire : si le livre ne vous plaît pas, écrivez-nous à hola@meapica.es dans les 30 jours suivant sa réception et nous vous remboursons le montant intégral par le même moyen de paiement, sans avoir à renvoyer le livre. Elle s'applique une fois par client.",
+      "section5Title": "5. Livraison, retours et garantie de livraison",
+      "section5Text": "Les livres sont imprimés à la demande en Europe et, pour l'instant, nous livrons uniquement en Espagne. Espagne péninsulaire : {minDays} à {maxDays} jours ouvrés. Baléares : {minDays} à {maxDays} jours ouvrés. Pas encore de livraison aux Canaries, à Ceuta ni à Melilla. S'agissant de produits personnalisés, les livres sont exclus du droit de rétractation (art. 103 c) du texte refondu de la loi espagnole de protection des consommateurs, TRLGDCU) et ne sont pas repris. Si un livre arrive avec un défaut d'impression ou de fabrication, ou s'il est abîmé pendant la livraison, écrivez-nous dans les {defectDays} jours suivant sa réception, avec une photo du livre et de l'emballage, et nous vous en envoyons un nouveau sans frais. En outre, Meapica offre une garantie commerciale de livraison à temps pour Noël et les Rois mages : si vous commandez un livre imprimé (couverture rigide ou souple) livré en Espagne péninsulaire ou aux Baléares jusqu'au {christmasDate} inclus et qu'il n'est pas arrivé le 24 décembre au plus tard, ou jusqu'au {reyesDate} inclus et qu'il n'est pas arrivé le 5 janvier au plus tard, nous vous remboursons le montant payé pour cette commande, par le même moyen de paiement et sans avoir à renvoyer le livre. Pour la demander, écrivez-nous à hola@meapica.es avec la référence de la commande dans les {guaranteeDays} jours suivant cette date. Elle ne s'applique pas lorsque le retard est dû à une adresse incomplète ou erronée, ni lorsque le transporteur a tenté la livraison à temps et que personne n'a pu la recevoir. Ces garanties ne limitent pas vos droits de garantie légale.",
       "section6Title": "6. Limitation de responsabilité",
       "section6Text": "Meapica ne garantit pas la disponibilité ininterrompue du service. Les illustrations peuvent varier et un résultat spécifique n'est pas garanti.",
       "section7Title": "7. Cartes cadeaux",
@@ -1488,8 +1488,8 @@
           "a": "Oui, avant de commander : le titre, la dédicace et l'apparence. Ici, vous pouvez lire toute l'histoire ; nous peignons les 9 illustrations restantes à la commande, dans le même style et avec le même personnage."
         },
         "returns": {
-          "q": "Et s'il arrive avec un problème ?",
-          "a": "Livre fait sur mesure, il n'a pas de droit de rétractation, mais s'il arrive avec un défaut d'impression ou abîmé pendant la livraison, nous vous en envoyons un nouveau sans frais. Il suffit de nous écrire dans les 30 jours suivant sa réception, avec une photo du livre et de l'emballage. Et s'il ne vous plaît tout simplement pas, écrivez-nous dans ces mêmes 30 jours et nous vous remboursons, sans renvoyer le livre."
+          "q": "Et s'il arrive en retard ou avec un problème ?",
+          "a": "Livre fait sur mesure, il n'a pas de droit de rétractation, mais s'il arrive avec un défaut d'impression ou abîmé pendant la livraison, nous vous en envoyons un nouveau sans frais. Il suffit de nous écrire dans les {defectDays} jours suivant sa réception, avec une photo du livre et de l'emballage."
         }
       },
       "softcoverNote": "Couverture souple, plus légère",
@@ -1545,8 +1545,6 @@
       },
       "pdfFirstStep": "Commence par le PDF",
       "pdfCredit": "Si tu commandes ensuite le livre imprimé, il te revient à {softcover} en couverture souple ou {hardcover} en couverture rigide",
-      "guaranteeTitle": "S'il ne vous plaît pas, vous êtes remboursés",
-      "guaranteeBody": "Écris-nous à {email} dans les {days} jours suivant sa réception. Inutile de renvoyer le livre.",
       "payWith": "Paie comme tu préfères :",
       "payCard": "Carte"
     }
@@ -3152,7 +3150,7 @@
       "Chaque livre est imprimé à la demande en Europe et nous promettons une livraison en {promisedMin} à {promisedMax} jours ouvrés. Ces dates partent du délai réel actuel du transporteur : {min} à {max} jours calendaires de l'imprimerie à votre porte.",
       "En décembre, nous ajoutons {buffer} jours de marge pour la saturation des transporteurs et les jours fériés du 8 décembre, de Noël et du Nouvel An.",
       "Le délai commence quand vous finalisez le paiement, pas quand vous commencez à créer le conte.",
-      "Ce sont des estimations basées sur les délais actuels du transporteur, pas une garantie. S'ils changent, nous mettons cette page à jour."
+      "Les dates limites incluent déjà cette marge. Si vous commandez un livre imprimé avant sa date limite et qu'il n'arrive pas à temps en Espagne péninsulaire ou aux Baléares, nous vous remboursons. Si les délais du transporteur changent, nous mettons cette page à jour."
     ],
     "lateHeading": "La date est passée ?",
     "lateText": "Le conte en PDF, c'est le même livre : les mêmes illustrations et son prénom à chaque page. Il arrive par e-mail après le paiement, donc à temps pour le réveillon et pour les Rois mages même si vous le commandez le jour même. Imprimez-le chez vous ou chez un imprimeur, ou lisez-le ensemble sur une tablette.",
@@ -3449,5 +3447,16 @@
     "errorTitle": "Nous n'avons pas pu ouvrir le livre",
     "errorBody": "La connexion a échoué. Réessayez dans un instant.",
     "retry": "Réessayer"
+  },
+  "guarantee": {
+    "title": "Livré à temps ou remboursé",
+    "promise": {
+      "both": "Commandez le livre imprimé jusqu'au {christmasDate} et il arrive pour le réveillon de Noël ; jusqu'au {reyesDate}, pour les Rois mages. Livraison en Espagne péninsulaire ou aux Baléares. S'il n'arrive pas à temps, nous vous remboursons.",
+      "reyes": "Commandez le livre imprimé jusqu'au {reyesDate} et il arrive pour les Rois mages, en Espagne péninsulaire ou aux Baléares. S'il n'arrive pas à temps, nous vous remboursons."
+    },
+    "short": {
+      "christmas": "Livré pour le réveillon ou remboursé · commandez jusqu'au {date}",
+      "reyes": "Livré pour les Rois mages ou remboursé · commandez jusqu'au {date}"
+    }
   }
 }

@@ -10,9 +10,7 @@ import {
   PRICING,
   ENABLED_ADDON_IDS,
   SHOW_REPRINT_GUARANTEE,
-  MONEY_BACK_DAYS,
   STRIPE_CATALOG,
-  SUPPORT_EMAIL,
   addonPrice,
   formatPrice,
   type AddonId,
@@ -24,7 +22,8 @@ import { MarketingOptOut } from "./MarketingOptOut";
 import { BookAtHomePhotos } from "./BookAtHomePhotos";
 import { CODE_PREFIX, REFERRAL_DISCOUNT_CENTS } from "@/lib/promo-codes";
 import { BLACK_FRIDAY, blackFridayDiscountCents, blackFridayPriceCents, lowestPrice30Days } from "@/lib/black-friday";
-import { useBlackFriday, useBlackFridayEnd } from "@/components/seasonal/SalePrice";
+import { useBlackFriday, useBlackFridayEnd, useToday } from "@/components/seasonal/SalePrice";
+import { guaranteeCopy } from "@/components/seasonal/guarantee";
 
 /**
  * false (owner decision 2026-11-17): the PDF is a visible third row, "Empieza por el PDF", with
@@ -141,6 +140,8 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
   const tBf = useTranslations("blackFriday");
   const locale = useLocale();
   const blackFriday = useBlackFriday();
+  const tGuarantee = useTranslations("guarantee");
+  const today = useToday();
   const blackFridayEnd = useBlackFridayEnd();
   const blackFridayEndShort = new Intl.DateTimeFormat(locale === "en" ? "en-GB" : `${locale}-ES`, { timeZone: "UTC", day: "numeric", month: "numeric" }).format(
     new Date(`${BLACK_FRIDAY.to}T00:00:00Z`),
@@ -149,6 +150,7 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
   const names = { name: childName, deName: deName(childName, locale, childGender) };
 
   const isDigital = format === "digital_pdf";
+  const guarantee = !isDigital && today ? guaranteeCopy(today, locale, tGuarantee) : null;
   const delivery = useDeliveryLine(format);
   const promise = useArrivalPromise(format);
   const secondBookPromo = useSecondBookPromo();
@@ -508,15 +510,18 @@ const PurchasePanel = forwardRef<HTMLButtonElement, PurchasePanelProps>(function
         </p>
       )}
 
-      {/* Money-back promise (owner decision 2026-11-17; terms: legal › guarantee) and the ways to pay,
-          right under the button: the two doubts of a phone buyer who does not know the brand. */}
-      <div className="mt-3 flex items-start gap-3 rounded-2xl bg-success/[0.08] px-3.5 py-3" data-testid="money-back">
-        <span aria-hidden className="material-symbols-outlined mt-px text-[22px] text-success" data-icon="verified" />
-        <span className="min-w-0">
-          <span className="block font-display text-[15px] font-bold leading-tight text-create-text-dark">{t("guaranteeTitle")}</span>
-          <span className="mt-0.5 block text-[12.5px] leading-snug text-create-text">{t("guaranteeBody", { days: MONEY_BACK_DAYS, email: SUPPORT_EMAIL })}</span>
-        </span>
-      </div>
+      {/* On-time guarantee for printed books (owner decision 2026-11-21; terms section 5; dates from
+          src/lib/shipping.ts, hidden once no cut-off is open) and the ways to pay, right under the
+          button: the two doubts of a phone buyer who does not know the brand. */}
+      {guarantee && (
+        <div className="mt-3 flex items-start gap-3 rounded-2xl bg-success/[0.08] px-3.5 py-3" data-testid="guarantee">
+          <span aria-hidden className="material-symbols-outlined mt-px text-[22px] text-success" data-icon="verified" />
+          <span className="min-w-0">
+            <span className="block font-display text-[15px] font-bold leading-tight text-create-text-dark">{guarantee.title}</span>
+            <span className="mt-0.5 block text-[12.5px] leading-snug text-create-text">{guarantee.promise}</span>
+          </span>
+        </div>
+      )}
       <div className="mt-3" data-testid="pay-methods">
         <p className="text-xs text-create-text-sub">{t("payWith")}</p>
         <ul className="mt-1.5 flex flex-wrap gap-1.5">

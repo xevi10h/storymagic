@@ -969,7 +969,7 @@
     "priceQ": "Quant costa i què inclou?",
     "priceA": "Tapa tova, {softcover}. Tapa dura, {hardcover}. Només el PDF, {pdf}. Tots els preus porten l'IVA inclòs. El llibre imprès inclou l'enviament i el PDF del conte complet.",
     "returnsQ": "El puc retornar?",
-    "returnsA": "Com que és un llibre fet a mida, amb el seu nom i el seu retrat, no admet devolucions; per això, abans de pagar, veus la portada, el seu retrat i les primeres escenes del conte. Però si arriba amb qualsevol defecte d'impressió o es malmet durant l'enviament, t'enviem un altre de nou sense cost. Només cal que ens escriguis en els 30 dies següents a rebre'l, amb una foto del llibre i de l'embalatge.",
+    "returnsA": "Com que és un llibre fet a mida, amb el seu nom i el seu retrat, no admet devolucions; per això, abans de pagar, veus la portada, el seu retrat i les primeres escenes del conte. Però si arriba amb qualsevol defecte d'impressió o es malmet durant l'enviament, t'enviem un altre de nou sense cost. Només cal que ens escriguis en els {defectDays} dies següents a rebre'l, amb una foto del llibre i de l'embalatge.",
     "agesQ": "Per a quines edats són els contes personalitzats?",
     "agesA": "Per a nens de {ageMin} a {ageMax} anys. Cada un dels deu mons té la seva franja d'edat, i el text s'escriu per a l'edat del teu fill: frases curtes i lletra grossa per als més petits, capítols amb més text i reptes de debò a partir dels 8.",
     "agesLink": "Veure contes per edat",
@@ -1045,8 +1045,8 @@
       "section3Text": "Les il·lustracions es creen específicament per a cada llibre. El comprador rep una llicència d'ús personal no comercial del llibre adquirit.",
       "section4Title": "4. Preus i pagaments",
       "section4Text": "Tots els preus són finals, amb l'IVA inclòs, i es mostren en euros. En els llibres impresos, l'enviament a Espanya està inclòs en el preu. El pagament es processa de forma segura a través de Stripe.",
-      "section5Title": "5. Enviaments i devolucions",
-      "section5Text": "Els llibres s'imprimeixen sota demanda a Europa i, de moment, només fem enviaments a adreces d'Espanya. Espanya peninsular: {minDays}-{maxDays} dies laborables. Balears: {minDays}-{maxDays} dies laborables. De moment no enviem a Canàries, Ceuta ni Melilla. En ser productes personalitzats, els llibres estan exclosos del dret de desistiment (art. 103 c) del text refós de la Llei general per a la defensa dels consumidors i usuaris) i no admeten devolucions. Si un llibre arriba amb qualsevol defecte d'impressió o de fabricació, o es malmet durant l'enviament, escriu-nos en els 30 dies següents a rebre'l, amb una foto del llibre i de l'embalatge, i t'enviem un altre de nou sense cost. Això no limita els drets de garantia que et reconeix la llei. A més, Meapica ofereix una garantia comercial voluntària: si el conte no us encanta, escriu-nos a hola@meapica.es en els 30 dies següents a rebre'l i et tornem l'import íntegre pel mateix mitjà de pagament, sense haver de tornar el llibre. S'aplica una vegada per client.",
+      "section5Title": "5. Enviaments, devolucions i garantia d'entrega",
+      "section5Text": "Els llibres s'imprimeixen sota demanda a Europa i, de moment, només fem enviaments a adreces d'Espanya. Espanya peninsular: {minDays}-{maxDays} dies laborables. Balears: {minDays}-{maxDays} dies laborables. De moment no enviem a Canàries, Ceuta ni Melilla. En ser productes personalitzats, els llibres estan exclosos del dret de desistiment (art. 103 c) del text refós de la Llei general per a la defensa dels consumidors i usuaris) i no admeten devolucions. Si un llibre arriba amb qualsevol defecte d'impressió o de fabricació, o es malmet durant l'enviament, escriu-nos en els {defectDays} dies següents a rebre'l, amb una foto del llibre i de l'embalatge, i t'enviem un altre de nou sense cost. A més, Meapica ofereix una garantia comercial d'entrega a temps per Nadal i Reis: si demanes un llibre imprès (tapa dura o tapa tova) amb enviament a l'Espanya peninsular o les Balears fins al {christmasDate} inclòs i no arriba com a molt tard el 24 de desembre, o fins al {reyesDate} inclòs i no arriba com a molt tard el 5 de gener, et tornem l'import que vas pagar per aquella comanda, pel mateix mitjà de pagament i sense haver de tornar el llibre. Per demanar-ho, escriu-nos a hola@meapica.es amb la referència de la comanda en els {guaranteeDays} dies següents a aquella data. No s'aplica quan el retard es deu a una adreça incompleta o incorrecta, ni quan el transportista va intentar l'entrega a temps i ningú no la va poder rebre. Aquestes garanties no limiten els drets de garantia que et reconeix la llei.",
       "section6Title": "6. Limitació de responsabilitat",
       "section6Text": "Meapica no garanteix la disponibilitat ininterrompuda del servei. Les il·lustracions poden variar i no es garanteix un resultat específic.",
       "section7Title": "7. Targetes regal",
@@ -1546,8 +1546,8 @@
           "a": "Sí, abans de demanar-lo: el títol, la dedicatòria i el seu aspecte. Aquí pots llegir tota la història; les 9 il·lustracions que falten les pintem quan el demanes, amb el mateix estil i el mateix personatge."
         },
         "returns": {
-          "q": "I si arriba amb algun problema?",
-          "a": "Com que és un llibre fet a mida no admet desistiment, però si arriba amb un defecte d'impressió o malmès per l'enviament, t'enviem un altre de nou sense cost. Només cal que ens escriguis en els 30 dies següents a rebre'l, amb una foto del llibre i de l'embalatge. I si simplement no us encanta, escriu-nos en aquests mateixos 30 dies i et tornem els diners, sense tornar el llibre."
+          "q": "I si arriba tard o amb algun problema?",
+          "a": "Com que és un llibre fet a mida no admet desistiment, però si arriba amb un defecte d'impressió o malmès per l'enviament, t'enviem un altre de nou sense cost. Només cal que ens escriguis en els {defectDays} dies següents a rebre'l, amb una foto del llibre i de l'embalatge."
         }
       },
       "softcoverNote": "Coberta flexible, més lleugera",
@@ -1603,8 +1603,6 @@
       },
       "pdfFirstStep": "Comença pel PDF",
       "pdfCredit": "Si després demanes el llibre imprès, et surt a {softcover} en tapa tova o {hardcover} en tapa dura",
-      "guaranteeTitle": "Si no us encanta, et tornem els diners",
-      "guaranteeBody": "Escriu-nos a {email} en els {days} dies següents a rebre'l. No cal tornar el llibre.",
       "payWith": "Paga com prefereixis:",
       "payCard": "Targeta"
     }
@@ -3210,7 +3208,7 @@
       "Imprimim cada llibre sota demanda a Europa i et prometem l'entrega en {promisedMin}-{promisedMax} dies laborables. Per a aquestes dates partim del termini real del transportista, que avui és de {min}-{max} dies naturals de la impremta a casa teva.",
       "Al desembre hi sumem {buffer} dies de marge per la saturació de la paqueteria i els festius del 8 de desembre, Nadal i Cap d'Any.",
       "El termini comença quan completes el pagament, no quan comences a crear el conte.",
-      "Són estimacions basades en els terminis actuals del transportista, no una garantia. Si canvien, actualitzem aquesta pàgina."
+      "Les dates límit ja porten aquest marge. Si demanes un llibre imprès fins a la seva data límit i no arriba a temps a la Península o les Balears, et tornem els diners. Si els terminis del transportista canvien, actualitzem aquesta pàgina."
     ],
     "lateHeading": "Se t'ha passat la data?",
     "lateText": "El conte en PDF és el mateix llibre: les mateixes il·lustracions i el seu nom a cada pàgina. T'arriba per correu després del pagament, així que arriba a temps per Nadal i per Reis encara que el demanis el mateix dia. Pots imprimir-lo a casa o en una copisteria, o llegir-lo junts a la tauleta.",
@@ -3921,5 +3919,16 @@
     "errorTitle": "No hem pogut obrir el seu llibre",
     "errorBody": "Ha fallat la connexió. Torna-ho a provar d'aquí a un moment.",
     "retry": "Torna-ho a provar"
+  },
+  "guarantee": {
+    "title": "Arriba a temps o et tornem els diners",
+    "promise": {
+      "both": "Demana el llibre imprès fins al {christmasDate} i arriba per a la nit de Nadal; fins al {reyesDate}, per a Reis. Enviament a la Península o les Balears. Si no arriba a temps, et tornem els diners.",
+      "reyes": "Demana el llibre imprès fins al {reyesDate} i arriba per a Reis, a la Península o les Balears. Si no arriba a temps, et tornem els diners."
+    },
+    "short": {
+      "christmas": "Arriba per a la nit de Nadal o et tornem els diners · demana'l fins al {date}",
+      "reyes": "Arriba per a Reis o et tornem els diners · demana'l fins al {date}"
+    }
   }
 }

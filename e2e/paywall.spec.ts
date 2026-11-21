@@ -102,8 +102,12 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
         await expect(format(page, "softcover").locator("input")).toBeChecked();
         await expect(mainCta(page)).toContainText(/34,90\s*€/);
         await expect(section(page).getByTestId("delivery-line")).toContainText(c.delivery);
-        // Under the pay button: the money-back promise and the ways to pay (2026-11-17).
-        await expect(page.getByTestId("money-back")).toContainText(locale === "es" ? /te devolvemos el dinero[\s\S]*hola@meapica\.es[\s\S]*30 días/ : /et tornem els diners[\s\S]*hola@meapica\.es[\s\S]*30 dies/);
+        // Under the pay button: the on-time guarantee (2026-11-21, both cut-offs open on 12 Nov) and the ways to pay.
+        await expect(page.getByTestId("guarantee")).toContainText(
+          locale === "es"
+            ? /Llega a tiempo o te devolvemos el dinero[\s\S]*10 de diciembre[\s\S]*Nochebuena[\s\S]*22 de diciembre[\s\S]*Reyes/
+            : /Arriba a temps o et tornem els diners[\s\S]*10 de desembre[\s\S]*nit de Nadal[\s\S]*22 de desembre[\s\S]*Reis/,
+        );
         await expect(page.getByTestId("pay-methods")).toContainText(/Bizum[\s\S]*Apple Pay[\s\S]*Google Pay/);
         // Second decider: both WhatsApp buttons carry the message and the share link.
         const wa = page.getByTestId("whatsapp-partner");
@@ -304,6 +308,38 @@ for (const [vpName, vp] of Object.entries(VIEWPORTS)) {
     });
   });
 }
+
+// On-time guarantee (2026-11-21, src/lib/shipping.ts openGuaranteeCutoffs): printed formats only,
+// never a promise for a cut-off already gone.
+test("guarantee follows the open cut-offs and the format", async ({ page }) => {
+  await mockApi(page, { withPlan: true });
+  await page.goto(`/es/create/${STORY_ID}/preview?now=2026-12-15`);
+  await section(page).waitFor();
+  const box = page.getByTestId("guarantee");
+  await expect(box).toContainText(/Pide el libro impreso hasta el 22 de diciembre y llega para Reyes/);
+  await expect(box).not.toContainText("Nochebuena");
+  await format(page, "digital_pdf").click();
+  await expect(box).toHaveCount(0);
+  await page.locator("summary", { hasText: "¿Y si llega tarde o con algún problema?" }).click();
+  await expect(page.getByText(/30 días siguientes a recibirlo[\s\S]*hasta el 22 de diciembre/)).toBeVisible();
+
+  await page.goto(`/es/create/${STORY_ID}/preview?now=2026-12-23`);
+  await section(page).waitFor();
+  await expect(page.getByTestId("guarantee")).toHaveCount(0);
+  await expect(page.getByTestId("reprint-guarantee")).toBeVisible();
+});
+
+test("hero and ad landing: one guarantee line near the price while a cut-off is open", async ({ page }) => {
+  await page.goto("/es?now=2026-11-20");
+  await expect(page.getByTestId("guarantee-line").first()).toHaveText(/Llega para Nochebuena o te devolvemos el dinero · pide hasta el 10 de diciembre/);
+  await page.goto("/ca?now=2026-12-20");
+  await expect(page.getByTestId("guarantee-line").first()).toHaveText(/Arriba per a Reis o et tornem els diners · demana'l fins al 22 de desembre/);
+  await page.goto("/es/l/soy-yo?now=2026-11-20");
+  await expect(page.getByTestId("guarantee-line")).toHaveText(/Llega para Nochebuena o te devolvemos el dinero/);
+  await page.goto("/es?now=2026-12-23");
+  await expect(page.locator("h1").first()).toBeVisible();
+  await expect(page.getByTestId("guarantee-line")).toHaveCount(0);
+});
 
 test("server says preview_outdated → outdated notice", async ({ page }) => {
   await mockApi(page, { withPlan: true, checkoutError: "preview_outdated" });

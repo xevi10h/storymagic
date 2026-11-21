@@ -8,6 +8,7 @@ import { bookPriceToday } from "@/lib/black-friday";
 import { COPY_PARAMS } from "@/lib/product-facts";
 import { seoHubPath } from "@/lib/seo-landing";
 import { CHRISTMAS_DELIVERY_PATH, DELIVERY_PARAMS, formatDeadlines, spainToday, type SeasonOccasion } from "@/lib/shipping";
+import { guaranteeCopy } from "@/components/seasonal/guarantee";
 import FaqItem from "./FaqItem";
 
 const INTL_LOCALE: Record<string, string> = { es: "es-ES", ca: "ca-ES", en: "en-GB", fr: "fr-FR" };
@@ -31,6 +32,7 @@ function openCutoff(today: string, occasion: SeasonOccasion): string | null {
 export default function FaqSection() {
   const t = useTranslations("landingFaq");
   const tl = useTranslations("legal");
+  const tg = useTranslations("guarantee");
   const locale = useLocale();
 
   const date = (d: string) =>
@@ -76,7 +78,12 @@ export default function FaqSection() {
         pdf: price(bookPriceToday(PRICING.digital_pdf.price, today)),
       }),
     },
-    { id: "returns", question: t("returnsQ"), answer: t("returnsA") },
+    {
+      id: "returns",
+      question: t("returnsQ"),
+      // + the on-time guarantee while a printed cut-off is open (src/lib/shipping.ts).
+      answer: [t("returnsA", COPY_PARAMS), guaranteeCopy(today, locale, tg)?.promise].filter(Boolean).join(" "),
+    },
     {
       id: "ages",
       question: t("agesQ"),
