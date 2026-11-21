@@ -42,7 +42,7 @@ export interface PreviewReminderContext {
   /** Already reduced to letters (mailSafeName): it goes to an address the user typed. */
   childName: string;
   childGender?: NameGender;
-  /** Read-only share link of the preview (the owner is redirected to the full preview). */
+  /** The owner's "continue your book" link (src/lib/share/story-claim-token.ts): opens the preview ready to buy in any browser. */
   previewUrl: string;
   /** Cover image for the email (null = no picture). */
   coverUrl: string | null;
@@ -95,7 +95,7 @@ const CONTENT: Record<Locale, ReminderStrings> = {
         subject: (p) => `El cuento ${p.deName} sigue aquí`,
         heading: (p) => `El cuento ${p.deName} te espera`,
         paragraphs: () => [
-          "Lo hemos guardado tal como lo dejaste, con su portada y la historia entera. Puedes volver a leerlo cuando quieras y enseñárselo a quien quieras.",
+          "Lo hemos guardado tal como lo dejaste, con su portada y la historia entera. Puedes volver a leerlo y pedirlo cuando quieras, desde cualquier móvil u ordenador.",
         ],
       },
       2: {
@@ -142,7 +142,7 @@ const CONTENT: Record<Locale, ReminderStrings> = {
         subject: (p) => `El conte ${p.deName} continua aquí`,
         heading: (p) => `El conte ${p.deName} t'espera`,
         paragraphs: () => [
-          "L'hem desat tal com el vas deixar, amb la portada i tota la història. El pots tornar a llegir quan vulguis i ensenyar-lo a qui vulguis.",
+          "L'hem desat tal com el vas deixar, amb la portada i tota la història. El pots tornar a llegir i demanar-lo quan vulguis, des de qualsevol mòbil o ordinador.",
         ],
       },
       2: {
@@ -189,7 +189,7 @@ const CONTENT: Record<Locale, ReminderStrings> = {
         subject: (p) => `${p.name}'s story is still here`,
         heading: (p) => `${p.name}'s story is waiting for you`,
         paragraphs: () => [
-          "We've kept it just as you left it, with its cover and the whole story. You can come back and read it whenever you like and show it to anyone you like.",
+          "We've kept it just as you left it, with its cover and the whole story. You can come back to read it and order it whenever you like, from any phone or computer.",
         ],
       },
       2: {
@@ -236,7 +236,7 @@ const CONTENT: Record<Locale, ReminderStrings> = {
         subject: (p) => `L'histoire ${p.deName} est toujours là`,
         heading: (p) => `L'histoire ${p.deName} vous attend`,
         paragraphs: () => [
-          "Nous l'avons gardée telle que vous l'avez laissée, avec sa couverture et toute l'histoire. Vous pouvez la relire quand vous voulez et la montrer à qui vous voulez.",
+          "Nous l'avons gardée telle que vous l'avez laissée, avec sa couverture et toute l'histoire. Vous pouvez la relire et la commander quand vous voulez, depuis n'importe quel téléphone ou ordinateur.",
         ],
       },
       2: {

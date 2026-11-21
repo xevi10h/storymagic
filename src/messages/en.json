@@ -1388,7 +1388,7 @@
     },
     "sendPreview": {
       "title": "Ordering later?",
-      "hint": "We'll email you the link to the book so you can look at it calmly.",
+      "hint": "We'll email you the link to the book so you can look at it calmly and order it from any phone or computer.",
       "placeholder": "you@email.com",
       "remind": "Email it and remind me",
       "sendOnly": "Just send the link, no reminders",
@@ -1401,7 +1401,7 @@
       "rateLimited": "We've already sent it several times. Try again later.",
       "error": "We couldn't send it. Please try again.",
       "titleWaiting": "Which email should we save the story to?",
-      "hintWaiting": "We'll send the link the moment it's ready, to open whenever you like and show to whoever you like.",
+      "hintWaiting": "We'll send the link the moment it's ready, so you can open it and order it whenever you like, from any phone or computer.",
       "queued": "We'll send it to {email} as soon as it's ready.",
       "queuedReminder": "We'll send it to {email} as soon as it's ready, and remind you at most 3 times."
     },
@@ -3435,5 +3435,17 @@
     "linkCodeBetter": "Your code {code} saves more than −20 % (they cannot be combined): your code is applied at payment.",
     "banner": "Black Friday: −20 % on their book until {date}",
     "untilShort": "until {date}"
+  },
+  "claimStory": {
+    "metaTitle": "Your story · Meapica",
+    "opening": "Opening the book…",
+    "invalidTitle": "This link no longer works",
+    "invalidBody": "It may have expired or be incomplete. If you made the story with your account, log in and you'll find it in your library. If not, making a new one only takes a few minutes.",
+    "login": "Log in",
+    "createCta": "Create a new story",
+    "home": "Go to Meapica",
+    "errorTitle": "We couldn't open the book",
+    "errorBody": "The connection failed. Please try again in a moment.",
+    "retry": "Try again"
   }
 }

@@ -33,7 +33,7 @@ type FunnelValue = string | number | boolean;
 /** Query parameters that survive; everything else (session_id, token, name, email…) is dropped. */
 const KEPT_QUERY = ["utm_source", "utm_campaign", "utm_content"] as const;
 /** Capability URLs: the token in the path grants access, so the page is not measured. Locale prefix optional. */
-const NO_TRACK_PATH = /^(\/(es|ca|en|fr))?\/(preview|gift-voucher\/card)\//;
+const NO_TRACK_PATH = /^(\/(es|ca|en|fr))?\/(preview|continue|gift-voucher\/card)\//;
 const UUID = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi;
 const REFERRAL_PATH = /^((\/(es|ca|en|fr))?\/r\/)[^/]+/;
 

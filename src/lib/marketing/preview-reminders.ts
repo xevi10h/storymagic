@@ -16,7 +16,8 @@ import type { FulfilmentClient, PreviewReminderRow } from "@/lib/fulfilment/db";
 import { sendEmail, getSiteUrl } from "@/lib/email/send";
 import { mailSafeName } from "@/lib/email/mail-safe-name";
 import { buildPreviewReminderEmail, reminderDeadline, type ReminderDeadline } from "@/lib/email/preview-reminder";
-import { createPreviewShareToken, previewShareUrl } from "@/lib/share/preview-share-token";
+import { createPreviewShareToken } from "@/lib/share/preview-share-token";
+import { issueStoryClaimLink } from "@/lib/share/story-claim-link";
 import { giftSeason, nextPhysicalCutoff, spainToday } from "@/lib/shipping";
 import { isSuppressed, suppressedAmong, unsubscribeLinks } from "./suppression";
 import {
@@ -262,7 +263,7 @@ export async function runPreviewReminders(
         await stop(row, "unsubscribed");
         continue;
       }
-      ok = await sendReminder(row, story, decision.stage, { site, deadline, checkout: decision.checkout === true });
+      ok = await sendReminder(supabase, row, story, decision.stage, { site, deadline, checkout: decision.checkout === true });
     } catch (err) {
       console.error(`[preview-reminders] ${row.id} failed: ${err instanceof Error ? err.message : "unknown"}`);
     }
@@ -284,6 +285,7 @@ export async function runPreviewReminders(
 }
 
 async function sendReminder(
+  supabase: FulfilmentClient,
   row: ReminderScanRow,
   story: StoryFacts,
   stage: ReminderStage,
@@ -291,13 +293,15 @@ async function sendReminder(
 ): Promise<boolean> {
   const links = unsubscribeLinks(row.email, row.locale);
   if (!links) return false; // no unsubscribe link, no commercial email
+  // The cover goes through the read-only share token (image proxies fetch it); the button
+  // is the owner's "continue your book" link.
   const { token } = createPreviewShareToken(row.story_id);
   const built = buildPreviewReminderEmail({
     locale: row.locale,
     stage,
     childName: story.childName,
     childGender: story.childGender,
-    previewUrl: previewShareUrl(ctx.site, row.locale, token),
+    previewUrl: await issueStoryClaimLink(supabase, { storyId: row.story_id, email: row.email, locale: row.locale, siteUrl: ctx.site }),
     coverUrl: story.cover ? previewCoverImageUrl(ctx.site, token) : null,
     deadline: ctx.deadline,
     unsubscribeUrl: links.pageUrl,

@@ -1390,7 +1390,7 @@
     },
     "sendPreview": {
       "title": "Vous commanderez plus tard ?",
-      "hint": "Nous vous envoyons le lien vers son livre pour le regarder tranquillement.",
+      "hint": "Nous vous envoyons le lien vers son livre pour le regarder tranquillement et le commander depuis n'importe quel téléphone ou ordinateur.",
       "placeholder": "vous@email.com",
       "remind": "Envoyez-le et rappelez-le-moi",
       "sendOnly": "Envoyer seulement le lien, sans rappels",
@@ -1403,7 +1403,7 @@
       "rateLimited": "Nous l'avons déjà envoyé plusieurs fois. Réessayez plus tard.",
       "error": "L'envoi a échoué. Veuillez réessayer.",
       "titleWaiting": "À quel e-mail gardons-nous le conte ?",
-      "hintWaiting": "Nous t'envoyons le lien dès qu'il est prêt, pour le voir quand tu veux et le montrer à qui tu veux.",
+      "hintWaiting": "Nous vous envoyons le lien dès qu'il est prêt, pour le voir et le commander quand vous voulez, depuis n'importe quel téléphone ou ordinateur.",
       "queued": "Nous l'enverrons à {email} dès qu'il sera prêt.",
       "queuedReminder": "Nous l'enverrons à {email} dès qu'il sera prêt, et vous le rappellerons au maximum 3 fois."
     },
@@ -3437,5 +3437,17 @@
     "linkCodeBetter": "Votre code {code} fait économiser plus que −20 % (non cumulables) : votre code est appliqué au paiement.",
     "banner": "Black Friday : −20 % sur son livre jusqu'au {date}",
     "untilShort": "jusqu'au {date}"
+  },
+  "claimStory": {
+    "metaTitle": "Votre histoire · Meapica",
+    "opening": "Ouverture du livre…",
+    "invalidTitle": "Ce lien ne fonctionne plus",
+    "invalidBody": "Il a peut-être expiré ou il est incomplet. Si vous avez créé l'histoire avec votre compte, connectez-vous et vous la retrouverez dans votre bibliothèque. Sinon, en créer une nouvelle ne prend que quelques minutes.",
+    "login": "Se connecter",
+    "createCta": "Créer une nouvelle histoire",
+    "home": "Aller sur Meapica",
+    "errorTitle": "Nous n'avons pas pu ouvrir le livre",
+    "errorBody": "La connexion a échoué. Réessayez dans un instant.",
+    "retry": "Réessayer"
   }
 }

@@ -128,12 +128,14 @@ export async function middleware(request: NextRequest) {
         : pathname;
 
       // Only allow root page (waitlist itself) and read-only preview share links
-      // (/preview/[token]: sent to family who never passed the waitlist) and the unsubscribe
+      // (/preview/[token]: sent to family who never passed the waitlist), the owner's
+      // "continue your book" links (/continue/[token], emailed) and the unsubscribe
       // page (a legal right, LSSI 22.1: it must always work) and the review page (signed
       // link in the review-request email to buyers) — block everything else
       if (
         pathWithoutLocale !== "/" &&
         !pathWithoutLocale.startsWith("/preview/") &&
+        !pathWithoutLocale.startsWith("/continue/") &&
         pathWithoutLocale !== "/unsubscribe" &&
         pathWithoutLocale !== "/advent/unsubscribe" &&
         pathWithoutLocale !== "/advent/confirm" &&
@@ -205,6 +207,7 @@ export async function middleware(request: NextRequest) {
   // Share links carry a private token: never index them, never let a shared cache keep them.
   if (
     pathWithoutLocale.startsWith("/preview/") ||
+    pathWithoutLocale.startsWith("/continue/") ||
     pathWithoutLocale === "/unsubscribe" ||
     pathWithoutLocale === "/advent/unsubscribe" ||
     pathWithoutLocale === "/advent/confirm" ||

@@ -76,7 +76,11 @@ const serverConsent = (): "ssr" => "ssr";
 // must not reach the pixels, GA4 or PostHog, which all report the page URL and later the referrer.
 // Every tracker waits until /create has removed it (router.replace, no event to listen to: poll).
 // Our own links never put it there (components/landing/HeroNameStore.ts).
-const urlHasChildName = () => new URLSearchParams(window.location.search).has("name");
+// Same hold on /continue/<token> (the owner's emailed claim link): trackers start on the
+// preview it redirects to, so the token never reaches a third party.
+const CLAIM_PATH = /^(\/(es|ca|en|fr))?\/continue\//;
+const urlHasChildName = () =>
+  new URLSearchParams(window.location.search).has("name") || CLAIM_PATH.test(window.location.pathname);
 const subscribeUrl = (onChange: () => void) => {
   const id = window.setInterval(() => {
     if (urlHasChildName()) return;

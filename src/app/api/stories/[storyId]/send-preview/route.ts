@@ -5,7 +5,8 @@ import { checkMemoryRateLimit, checkRateLimit, rateLimitSubject } from "@/lib/ra
 import { sendEmail, getSiteUrl } from "@/lib/email/send";
 import { escapeHtml, renderEmailLayout } from "@/lib/email/layout";
 import { mailSafeName } from "@/lib/email/mail-safe-name";
-import { SHAREABLE_STORY_STATUSES, createPreviewShareToken, previewShareUrl } from "@/lib/share/preview-share-token";
+import { SHAREABLE_STORY_STATUSES } from "@/lib/share/preview-share-token";
+import { issueStoryClaimLink } from "@/lib/share/story-claim-link";
 import { createFulfilmentClient } from "@/lib/fulfilment/db";
 import { recordPreviewReminderConsent } from "@/lib/marketing/preview-reminders";
 import { isSuppressed, unsubscribeLinks } from "@/lib/marketing/suppression";
@@ -23,7 +24,7 @@ const COPY = {
   es: {
     subject: (n: string) => `La vista previa del libro de ${n}`,
     heading: (n: string) => `El libro de ${n} te espera`,
-    body: "Aquí tienes el enlace a la vista previa de su libro para verlo con calma. Funciona en cualquier móvil u ordenador, y puedes reenviarlo a quien quieras. Caduca en 30 días.",
+    body: "Aquí tienes el enlace a su libro para verlo con calma y pedirlo cuando quieras, desde cualquier móvil u ordenador. Es tu enlace personal: abre el cuento para terminarlo, así que no lo reenvíes. Para enseñárselo a la familia, usa «Compartir» en la vista previa. Caduca en 30 días.",
     cta: "Ver su libro",
     signoff: "Un abrazo,\nMeapica",
     reminderNote: (unsubscribe: string) =>
@@ -33,7 +34,7 @@ const COPY = {
   ca: {
     subject: (n: string) => `La vista prèvia del llibre de ${n}`,
     heading: (n: string) => `El llibre de ${n} t'espera`,
-    body: "Aquí tens l'enllaç a la vista prèvia del seu llibre per mirar-lo amb calma. Funciona a qualsevol mòbil o ordinador, i el pots reenviar a qui vulguis. Caduca d'aquí a 30 dies.",
+    body: "Aquí tens l'enllaç al seu llibre per mirar-lo amb calma i demanar-lo quan vulguis, des de qualsevol mòbil o ordinador. És el teu enllaç personal: obre el conte per acabar-lo, així que no el reenviïs. Per ensenyar-lo a la família, fes servir «Compartir» a la vista prèvia. Caduca d'aquí a 30 dies.",
     cta: "Veure el seu llibre",
     signoff: "Una abraçada,\nMeapica",
     reminderNote: (unsubscribe: string) =>
@@ -43,7 +44,7 @@ const COPY = {
   en: {
     subject: (n: string) => `${n}'s book preview`,
     heading: (n: string) => `${n}'s book is waiting for you`,
-    body: "Here is the link to the book preview so you can look at it calmly. It works on any phone or computer, and you can forward it to anyone you like. It expires in 30 days.",
+    body: "Here is the link to the book so you can look at it calmly and order it whenever you like, from any phone or computer. It is your personal link: it opens the story so you can finish it, so please don't forward it. To show it to family, use \"Share\" on the preview. It expires in 30 days.",
     cta: "See the book",
     signoff: "Warmly,\nMeapica",
     reminderNote: (unsubscribe: string) =>
@@ -53,7 +54,7 @@ const COPY = {
   fr: {
     subject: (n: string) => `L'aperçu du livre de ${n}`,
     heading: (n: string) => `Le livre de ${n} vous attend`,
-    body: "Voici le lien vers l'aperçu du livre, pour le regarder tranquillement. Il fonctionne sur n'importe quel téléphone ou ordinateur, et vous pouvez le transférer à qui vous voulez. Il expire dans 30 jours.",
+    body: "Voici le lien vers le livre, pour le regarder tranquillement et le commander quand vous voulez, depuis n'importe quel téléphone ou ordinateur. C'est votre lien personnel : il ouvre l'histoire pour la terminer, alors ne le transférez pas. Pour la montrer à la famille, utilisez « Partager » sur l'aperçu. Il expire dans 30 jours.",
     cta: "Voir le livre",
     signoff: "Bien à vous,\nMeapica",
     reminderNote: (unsubscribe: string) =>
@@ -64,9 +65,10 @@ const COPY = {
 
 /**
  * "Envíame la vista previa" — optional, offered only after the parent has seen the
- * book (never a gate). Sends the preview link to the given address. The link is the
- * read-only share link (/[locale]/preview/[token]): it opens in any browser, incl.
- * mail apps' in-app ones.
+ * book (never a gate). Sends the owner's "continue your book" link to the given address
+ * (/[locale]/continue/[token], src/lib/share/story-claim-token.ts): opened in any browser
+ * (Gmail, Safari, another phone) it moves the story there, ready to buy. The read-only
+ * family link stays the "Compartir" button.
  *
  * The address is stored only when the parent pressed "Envíamelo y recuérdamelo" (`remind`):
  * that express consent (LSSI 21.1 / RGPD 6.1.a) is recorded in preview_reminders and
@@ -151,7 +153,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ sto
 
   const name = escapeHtml(rawName);
   const copy = COPY[locale];
-  const url = previewShareUrl(getSiteUrl(), locale, createPreviewShareToken(story.id).token);
+  const db = createFulfilmentClient();
+  const url = await issueStoryClaimLink(db, { storyId: story.id, email, locale, siteUrl: getSiteUrl() });
 
   // Reminders: only for a preview that can still be bought, with a working unsubscribe
   // link, to an address that has not unsubscribed. Any doubt = no reminders (the preview
@@ -160,7 +163,6 @@ export async function POST(request: Request, { params }: { params: Promise<{ sto
   let reminder = false;
   if (links) {
     try {
-      const db = createFulfilmentClient();
       reminder = !(await isSuppressed(db, email)) && (await recordPreviewReminderConsent(db, { storyId: story.id, email, locale }));
     } catch (err) {
       console.error(`[send-preview] Reminder consent not recorded for story ${story.id}: ${err instanceof Error ? err.message : "unknown"}`);

@@ -1430,7 +1430,7 @@
     },
     "sendPreview": {
       "title": "¿Lo pides más tarde?",
-      "hint": "Te enviamos el enlace a su libro para verlo con calma.",
+      "hint": "Te enviamos el enlace a su libro para verlo con calma y pedirlo desde cualquier móvil u ordenador.",
       "placeholder": "tu@email.com",
       "remind": "Envíamelo y recuérdamelo",
       "sendOnly": "Enviar solo el enlace, sin avisos",
@@ -1443,7 +1443,7 @@
       "rateLimited": "Ya te la hemos enviado varias veces. Prueba más tarde.",
       "error": "No se ha podido enviar. Inténtalo de nuevo.",
       "titleWaiting": "¿A qué correo te guardamos el cuento?",
-      "hintWaiting": "Te enviamos el enlace en cuanto esté listo, para verlo cuando quieras y enseñárselo a quien tú quieras.",
+      "hintWaiting": "Te enviamos el enlace en cuanto esté listo, para verlo y pedirlo cuando quieras desde cualquier móvil u ordenador.",
       "queued": "Te lo enviaremos a {email} en cuanto esté listo.",
       "queuedReminder": "Te lo enviaremos a {email} en cuanto esté listo, y te lo recordaremos como mucho 3 veces."
     },
@@ -3891,5 +3891,17 @@
     "linkCodeBetter": "Tu código {code} ahorra más que el −20 % (no se acumulan): se aplica tu código al pagar.",
     "banner": "Black Friday: −20 % en su cuento hasta el {date}",
     "untilShort": "hasta el {date}"
+  },
+  "claimStory": {
+    "metaTitle": "Tu cuento · Meapica",
+    "opening": "Abriendo su libro…",
+    "invalidTitle": "Este enlace ya no funciona",
+    "invalidBody": "Puede que haya caducado o que no esté completo. Si has creado el cuento con tu cuenta, inicia sesión y lo encontrarás en tu biblioteca. Si no, crear uno nuevo es cuestión de minutos.",
+    "login": "Iniciar sesión",
+    "createCta": "Crear un cuento nuevo",
+    "home": "Ir a Meapica",
+    "errorTitle": "No hemos podido abrir su libro",
+    "errorBody": "Ha fallado la conexión. Vuelve a intentarlo en un momento.",
+    "retry": "Volver a intentarlo"
   }
 }

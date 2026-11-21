@@ -1448,7 +1448,7 @@
     },
     "sendPreview": {
       "title": "El demanes més tard?",
-      "hint": "T'enviem l'enllaç al seu llibre per mirar-lo amb calma.",
+      "hint": "T'enviem l'enllaç al seu llibre per mirar-lo amb calma i demanar-lo des de qualsevol mòbil o ordinador.",
       "placeholder": "el.teu@email.com",
       "remind": "Envia-me'l i recorda-m'ho",
       "sendOnly": "Envia només l'enllaç, sense avisos",
@@ -1461,7 +1461,7 @@
       "rateLimited": "Ja te l'hem enviada diverses vegades. Prova-ho més tard.",
       "error": "No s'ha pogut enviar. Torna-ho a provar.",
       "titleWaiting": "A quin correu et guardem el conte?",
-      "hintWaiting": "T'enviem l'enllaç tan bon punt estigui a punt, per veure'l quan vulguis i ensenyar-lo a qui tu vulguis.",
+      "hintWaiting": "T'enviem l'enllaç tan bon punt estigui a punt, per veure'l i demanar-lo quan vulguis des de qualsevol mòbil o ordinador.",
       "queued": "T'ho enviarem a {email} tan bon punt estigui llest.",
       "queuedReminder": "T'ho enviarem a {email} tan bon punt estigui llest, i t'ho recordarem com a màxim 3 vegades."
     },
@@ -3909,5 +3909,17 @@
     "linkCodeBetter": "El teu codi {code} estalvia més que el −20 % (no s'acumulen): s'aplica el teu codi en pagar.",
     "banner": "Black Friday: −20 % en el seu conte fins al {date}",
     "untilShort": "fins al {date}"
+  },
+  "claimStory": {
+    "metaTitle": "El teu conte · Meapica",
+    "opening": "Obrint el seu llibre…",
+    "invalidTitle": "Aquest enllaç ja no funciona",
+    "invalidBody": "Potser ha caducat o no és complet. Si vas crear el conte amb el teu compte, inicia la sessió i el trobaràs a la teva biblioteca. Si no, crear-ne un de nou és qüestió de minuts.",
+    "login": "Inicia la sessió",
+    "createCta": "Crea un conte nou",
+    "home": "Ves a Meapica",
+    "errorTitle": "No hem pogut obrir el seu llibre",
+    "errorBody": "Ha fallat la connexió. Torna-ho a provar d'aquí a un moment.",
+    "retry": "Torna-ho a provar"
   }
 }

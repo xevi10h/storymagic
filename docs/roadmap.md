@@ -299,8 +299,8 @@ crawl demand on a zero-authority domain, no technical blocker. Head terms are ou
 ## Next steps from funnel + preview reminders (2026-10-03)
 
 - Owner: apply migration `20261003200655_funnel_and_preview_reminders.sql` to prod, deploy, then `?dry_run=1` the cron.
-- Guest previews: the reminder link opens the full preview only in the same browser (guest session). Link the guest to the
-  given address (magic link "guarda tu libro") so the reminder CTA works on any device.
+- ~~Guest previews: the reminder link opens the full preview only in the same browser~~ DONE 2026-11-21: signed "continue your
+  book" link (`/continue/<token>`, docs/product-spec.md). Measure: claims (`[stories/claim]` logs) → orders of reminded stories.
 - Weekly growth report: email `scripts/growth-funnel.mjs --json` next to the SEO report (Monday launchd job) with week-over-week deltas.
 - Meta: optimise campaigns on `preview_ready` (custom conversion) while purchase volume is below ~50/week.
 - Measure reminder impact: orders whose story has a `preview_reminders` row with stage ≥ 1 vs. those without (funnel script column).
@@ -720,7 +720,7 @@ Replaced the old "mode → template → 3 decision knobs" with a single vertical
 ## Next (from 2026-09-27 overhaul)
 - [x] **Phase 2 — creation flow UI (6 screens), 2026-09-27:** Nombre + live cover → Protagonista (trait grid + sticky portrait, photo tab behind flag, background character prep) → Aventura (world + 3 tree chapters on one screen) → Dedicatoria while the preview is painted (real `preview_progress`) → Su libro (checklist chips, in-place sheets) → Formato + pago (VAT next to prices, optional "Envíame la preview"). See `creation-flow-v2.md`.
 - Integrated 2026-09-28 (`feat/creation-flow-v2`): real `WatercolorAvatar` (vector fallback until the matrix is rendered), `glasses`/`freckles`/`characterPrepId`/`avatarAssetPath` persisted by `POST /api/stories`, signed `preview_progress`, first image shown as soon as it lands. Pending: see "Creation flow v2 — after the integration" above.
-- "Envíame la preview" works on the same browser only (anonymous session per device): convert the guest to an email identity (magic link) so the link opens anywhere.
+- ~~"Envíame la preview" works on the same browser only~~ DONE 2026-11-21 (claim link, see product-spec › "Continue your book" link).
 - Arrow-key navigation inside the trait/world/chapter radiogroups (today: Tab + Enter/Space).
 - Print QA follow-ups (full-book review 2026-09-28): ~~back-cover synopsis runs over the child's face~~ (done 2026-09-29: paper back cover with arch vignette); scene titles printed twice on 8/12 spreads (art + text page); keepsake colophon (title, child, date, "Impreso en Europa"); paragraph spacing inconsistent (blank line vs single break from the LLM); PDF declared 1.3 while using transparency; legibility of long white text over bright panorama art (age 10-12).
 - Print polish: "about the reader" page design, panorama upscale to 300 dpi. (Illustrated adventure map + search-and-find game on pp. 28–29 shipped 2026-09-28.)

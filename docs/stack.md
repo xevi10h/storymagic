@@ -266,6 +266,9 @@ the only Cloudflare dependency (and 0 of ~55 Meta ad visitors passed the old ste
   day: headless Instagram-UA run logged `[botid] guest_session|prepare|email_otp bot (monitor: allowed)`, all 200.
   **Review 2026-10-30:** share of `bot` vs `human` lines on real ad traffic → switch to enforce (remove the var + redeploy)
   only if real visitors read `human`. `NEXT_PUBLIC_TURNSTILE_SITE_KEY` still set in Vercel (unused), remove later.
+- **Claim links** (2026-11-21, `/continue/<token>` → `POST /api/stories/claim`): no BotID call of their own; the browser first
+  gets a guest session through the BotID-checked route below, and the claim needs a valid HMAC token + 30/h per IP + 10/h per user.
+  No new env var (key derived from `SUPABASE_SERVICE_ROLE_KEY`). Needs migration `20261121120000` in prod first.
 - **Guest sessions** only via `POST /api/auth/guest-session` (`src/lib/guest-session.ts`, 20 s deadline): BotID, then
   anonymous sign-up with the service role. **Email sign-in** code/link only via `POST /api/auth/email-otp`
   (`EmailSignIn.tsx`): BotID, 10/h per IP + 5/h per recipient (`email_otp_ip`, `email_otp_recipient`), then Supabase `/otp`

@@ -361,10 +361,25 @@ Wonderbly, Librio and Hurra Héroes (none shows a Reyes date in the flow; all ch
 - Not changed on purpose: Stripe keeps phone (carrier on a failed delivery; Checkout can only require it or drop it) and the
   optional NIF field (a collapsed "comprar como empresa" box, no friction for consumers).
 
+## "Continue your book" link (2026-11-21)
+
+Guest books live in one browser (anonymous session). Parents create the book in Instagram's or TikTok's in-app browser and open
+the email in Gmail or Safari, where the old read-only share link had no buy button (11 reminder opt-ins, 0 orders). Now every email
+to the OWNER (send-preview + the 3 reminders) carries a personal link `/<locale>/continue/<token>`:
+- Opened in any browser: a guest session is created the usual way if there is none (BotID), the story moves to that browser (or to
+  the signed-in account) with its unpaid draft order, and the parent lands on `/create/<id>/preview` with the buy panel.
+- Moves only a story that is still a **preview** owned by a **guest**. A registered account's story or a book with a paid order is never
+  moved: the preview page offers the login (which claims paid orders by email). Bad, tampered, expired or deleted link → "Este enlace
+  ya no funciona" with "Crear un cuento nuevo" + login, no hint of which part failed.
+- Valid 30 days from the send (each reminder sends a fresh link). Every send and every claim counts as activity for the guest purge,
+  so a story is never deleted while one of its links works.
+- The email says the link is personal (do not forward it) and points to "Compartir" for family. The read-only share link
+  (`/preview/<token>`, "Compartir", WhatsApp buttons) is unchanged. Nothing new is stored (privacy policy unchanged).
+
 ## Abandoned-preview reminders (2026-10-03)
 
 Where the parent previews the book (`/create/<id>/preview`), the "¿Lo decides más tarde?" › "Recíbelo por email" option sends
-the preview link (transactional, nothing stored) and offers an **unticked** box "Recuérdamelo por email: como mucho 3 avisos sobre
+the owner's "continue your book" link (transactional, nothing stored) and offers an **unticked** box "Recuérdamelo por email: como mucho 3 avisos sobre
 este cuento en 3 días…" with a link to the privacy policy. The account email is prefilled for signed-in parents.
 
 - **Legal basis:** express consent (LSSI art. 21.1 + RGPD art. 6.1.a). Before this, an address given at preview was not stored and
@@ -372,7 +387,7 @@ este cuento en 3 días…" with a link to the privacy policy. The account email 
   prior purchase). Proof of consent in `preview_reminders` (date, locale, text version `PREVIEW_REMINDER_CONSENT_VERSION`, source).
   Privacy policy §4 + §5 updated (4 locales, "Última actualización" 2026-10-03).
 - **Sequence:** 1 h, 24 h, 72 h after the consent (reminder 1 "sigue aquí", 2 "¿cómo acaba?" with prices IVA incluido, 3 "último
-  aviso"), each with the cover, the share link and the nearest printed-book cut-off from `src/lib/shipping.ts` (only within 75 days
+  aviso"), each with the cover, the "continue your book" link (2026-11-21, above) and the nearest printed-book cut-off from `src/lib/shipping.ts` (only within 75 days
   of it; after the last cut-off and before Reyes: "el PDF sí llega"). Never 22:00-08:00 Spain time; an overtaken reminder is skipped
   (one email per run); nothing after consent + 120 h.
 - **Stops:** paid order / story past preview (`purchased`), address in `email_suppressions` (`unsubscribed`: one-click
