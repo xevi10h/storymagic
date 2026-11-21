@@ -96,7 +96,7 @@ Code, docs, Resend, Supabase allow-list and GSC property done (see `docs/stack.m
   `/es/gift-voucher`, `/es/themes/dinosaurs` and `/es/tools/letter-to-the-three-kings` are "URL is unknown to Google", and for
   `/es/personalized-books/in-catalan` Google keeps the `.shop` URL as canonical. Two domain flips in five days (.es → .shop on 19-10,
   .shop → .es on 23-10) slowed the consolidation. Impressions: `.shop` 82 + `.es` 48 in the first 4 days of week 47, average position 33-37.
-  - [x] Old-URL sitemap `src/app/sitemap-shop-legacy.xml/route.ts` (2026-11-21, local, not deployed): the live sitemap with the host
+  - [x] Old-URL sitemap `src/app/sitemap-shop-legacy.xml/route.ts` (deployed to production 2026-11-21): the live sitemap with the host
     swapped to `meapica.shop` (96 URLs, es + ca). All 96 checked: 308 → same path on `.es` → 200, self-canonical, no noindex.
     Google's site-move guide asks for this sitemap so the old URLs get recrawled and their redirect seen. Not in robots.txt nor the index.
   - [ ] After deploy (owner or a session with GSC write access): submit `https://meapica.shop/sitemap-shop-legacy.xml` in the
