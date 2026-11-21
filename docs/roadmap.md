@@ -90,6 +90,19 @@ Code, docs, Resend, Supabase allow-list and GSC property done (see `docs/stack.m
   - Owner, in the Instagram app: @meapica_books website `meapica.shop/es` → `meapica.es/es`. TikTok bio link: owner (headless blocked).
     (Facebook page website and Merchant Center contact moved to `.es` on 2026-10-23.)
   - Renew `.shop` yearly (keep forever: printed QR codes).
+- **SEO reading 2026-11-21 (GSC API + curl as Googlebot): the move is only half done in Google's index.** No technical error on
+  `.es` (canonical, hreflang, robots and internal links correct; every sitemap URL 200 and self-canonical). But Google has not
+  recrawled most `.shop` URLs since mid-October: `meapica.shop/es/gifts` had 246 impressions in 90 days while `meapica.es/es/gifts`,
+  `/es/gift-voucher`, `/es/themes/dinosaurs` and `/es/tools/letter-to-the-three-kings` are "URL is unknown to Google", and for
+  `/es/personalized-books/in-catalan` Google keeps the `.shop` URL as canonical. Two domain flips in five days (.es → .shop on 19-10,
+  .shop → .es on 23-10) slowed the consolidation. Impressions: `.shop` 82 + `.es` 48 in the first 4 days of week 47, average position 33-37.
+  - [x] Old-URL sitemap `src/app/sitemap-shop-legacy.xml/route.ts` (2026-11-21, local, not deployed): the live sitemap with the host
+    swapped to `meapica.shop` (96 URLs, es + ca). All 96 checked: 308 → same path on `.es` → 200, self-canonical, no noindex.
+    Google's site-move guide asks for this sitemap so the old URLs get recrawled and their redirect seen. Not in robots.txt nor the index.
+  - [ ] After deploy (owner or a session with GSC write access): submit `https://meapica.shop/sitemap-shop-legacy.xml` in the
+    `sc-domain:meapica.shop` property. Keep the Change of Address on. Remove the route after 2027-03-31 or once `.shop` has no indexed pages.
+  - [ ] **Measure 2026-12-08:** URL Inspection of `meapica.es/es/gifts`, `/es/gift-voucher`, `/es/personalized-books/in-catalan` (Google canonical
+    must be `.es`), weekly impressions of both properties (`.shop` should fall, `.es` rise).
 
 ## Preview shows the whole story (2026-11-16, branch `feat/preview-full-story`)
 
