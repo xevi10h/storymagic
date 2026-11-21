@@ -116,13 +116,16 @@ for (const item of items) {
 assert.ok(xml.startsWith('<?xml version="1.0" encoding="UTF-8"?>'), "xml declaration");
 assert.ok(xml.includes('<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">'), "rss + g namespace");
 const xmlItems = xml.split("<item>").slice(1);
-assert.equal(xmlItems.length, items.length, "xml item count");
+// Google Shopping ads reject digital books (ebooks_policy_violation): printed items only, no PDF in their copy.
+const googleItems = items.filter((i) => i.printed);
+assert.equal(xmlItems.length, googleItems.length, "xml item count = printed items");
+assert.ok(!/PDF/i.test(xml), "google feed never mentions the PDF");
 const REQUIRED = ["id", "title", "description", "link", "image_link", "availability", "price", "brand", "identifier_exists", "condition", "google_product_category", "is_bundle", "age_group", "shipping"];
 xmlItems.forEach((block, i) => {
   for (const f of REQUIRED) assert.ok(block.includes(`<g:${f}>`), `xml item ${i}: g:${f}`);
   const val = (f: string) => block.match(new RegExp(`<g:${f}>([^<]*)</g:${f}>`))?.[1];
-  assert.equal(val("id"), items[i].id);
-  assert.equal(val("price"), feedPrice(PRICING[items[i].format].price), `xml price ${items[i].id}`);
+  assert.equal(val("id"), googleItems[i].id);
+  assert.equal(val("price"), feedPrice(PRICING[googleItems[i].format].price), `xml price ${googleItems[i].id}`);
   assert.equal(val("availability"), "in_stock");
   assert.equal(val("condition"), "new");
   assert.equal(val("identifier_exists"), "no");
@@ -153,13 +156,18 @@ for (const [day, onSale] of [["2026-11-12", false], ["2026-11-13", true], ["2026
   const dayItems = buildFeedItems(day);
   const dayXml = buildGoogleMerchantXml(dayItems).split("<item>").slice(1);
   const dayRecords = buildOpenAiRecords(dayItems);
+  const xmlIndex = new Map(dayItems.filter((d) => d.printed).map((d, j) => [d.id, j]));
   dayItems.forEach((item, i) => {
     const sale = onSale ? blackFridayPriceCents(PRICING[item.format].price) : null;
     assert.equal(item.salePriceCents, sale, `${day} ${item.id} salePriceCents`);
     assert.equal(item.priceCents, PRICING[item.format].price, `${day} ${item.id} price stays the list price`);
-    const val = (f: string) => dayXml[i].match(new RegExp(`<g:${f}>([^<]*)</g:${f}>`))?.[1];
-    assert.equal(val("sale_price"), sale === null ? undefined : feedPrice(sale), `${day} xml sale_price ${item.id}`);
-    assert.equal(val("sale_price_effective_date"), sale === null ? undefined : BLACK_FRIDAY_FEED_EFFECTIVE_DATE, `${day} xml effective date`);
+    const x = xmlIndex.get(item.id);
+    assert.equal(x === undefined, !item.printed, `${day} ${item.id} in the google xml only if printed`);
+    if (x !== undefined) {
+      const val = (f: string) => dayXml[x].match(new RegExp(`<g:${f}>([^<]*)</g:${f}>`))?.[1];
+      assert.equal(val("sale_price"), sale === null ? undefined : feedPrice(sale), `${day} xml sale_price ${item.id}`);
+      assert.equal(val("sale_price_effective_date"), sale === null ? undefined : BLACK_FRIDAY_FEED_EFFECTIVE_DATE, `${day} xml effective date`);
+    }
     assert.equal(dayRecords[i].sale_price, sale === null ? undefined : feedPrice(sale), `${day} jsonl sale_price ${item.id}`);
   });
 }

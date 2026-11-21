@@ -806,6 +806,10 @@ stale fetch); `price` stays the list price. ChatGPT has no date field: `sale_pri
 after the end. The linked landing pages show both prices (home hero/quality/FAQ, `/es/themes/*` "desde" + FAQ prices,
 `/es/gifts/three-kings` format prices). Checked by `scripts/check-merchant-feed.mts`.
 
+- **Google feed = printed items only (2026-11-21).** Merchant disapproved all 21 items for Shopping ads with
+  `ebooks_policy_violation` ("Digital books not supported"): the PDF item and the "(incluye PDF)" in printed titles. Now
+  `buildGoogleMerchantXml` drops non-printed items and printed copy never names the PDF (checked: the XML has no "PDF").
+  The ChatGPT feed keeps the PDF item.
 - **URLs (static, re-rendered at most hourly since 2026-11-10, `revalidate = 3600`):** `https://meapica.shop/feeds/google-merchant.xml` (RSS 2.0 + `g:` namespace) and
   `https://meapica.shop/feeds/openai-products.jsonl` (ChatGPT product feed spec, same data). Not in the sitemap, `X-Robots-Tag: noindex`,
   allowed by robots, outside the locale middleware (matcher skips `.xml` / `.jsonl`).
@@ -822,7 +826,7 @@ after the end. The linked landing pages show both prices (home hero/quality/FAQ,
   its own landing page and printed format: `FEED_WORLDS` = every slug of `THEME_TEMPLATE` (dinosaurs, space, pirates,
   superheroes, magic-forest, safari → `/es/themes/<slug>`) + `SEASONAL_FEED_WORLDS` (Papá Noel `christmas` and Tió `tio`, both on `/es/gifts/christmas`; Reyes on `/es/gifts/three-kings`;
   block `SeasonalEdition`, copy `seo.gifts.<gift>.<edition|editionTio>`). Ids `meapica-<world>-<hardcover|softcover>`, title "Cuento personalizado de dinosaurios con su nombre ·
-  Tapa dura 20 × 20 cm (incluye PDF)", description opens with the story title and synopsis, ages from the template. Same price,
+  Tapa dura 20 × 20 cm", description opens with the story title and synopsis, ages from the template. Same price,
   shipping and attributes as the format items. Rules kept by `check-merchant-feed.mts`: an item exists only if its landing page
   names the world and quotes both printed prices (`{hardcover}` / `{softcover}` in its copy), and each seasonal edition is listed
   only while `isTemplateAvailable(<id>)` (last order day 6 Jan; gone on the 7th without a deploy). Chef, castle, inventor

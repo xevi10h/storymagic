@@ -168,14 +168,14 @@ const abs = (p: string) => `${SITE_URL}${p}`;
 
 const FORMAT_COPY: Record<FeedFormat, { title: string; productType: string; lead: string }> = {
   hardcover: {
-    title: `Cuento personalizado para niños con su nombre · Tapa dura ${BOOK_SIZE_CM} × ${BOOK_SIZE_CM} cm (incluye PDF)`,
+    title: `Cuento personalizado para niños con su nombre · Tapa dura ${BOOK_SIZE_CM} × ${BOOK_SIZE_CM} cm`,
     productType: "Libros > Cuentos infantiles personalizados > Tapa dura",
-    lead: "Libro de tapa dura impreso y su versión en PDF.",
+    lead: "Libro de tapa dura impreso.",
   },
   softcover: {
-    title: `Cuento personalizado para niños con su nombre · Tapa blanda ${BOOK_SIZE_CM} × ${BOOK_SIZE_CM} cm (incluye PDF)`,
+    title: `Cuento personalizado para niños con su nombre · Tapa blanda ${BOOK_SIZE_CM} × ${BOOK_SIZE_CM} cm`,
     productType: "Libros > Cuentos infantiles personalizados > Tapa blanda",
-    lead: "Libro de tapa blanda impreso y su versión en PDF.",
+    lead: "Libro de tapa blanda impreso.",
   },
   digital_pdf: {
     title: "Cuento personalizado para niños con su nombre · PDF digital",
@@ -195,7 +195,7 @@ function description(format: FeedFormat, printed: boolean, story?: FeedStory): s
   const book = `Cuento infantil personalizado de ${story?.ageMin ?? AGE_MIN} a ${story?.ageMax ?? AGE_MAX} años: el nombre del niño o la niña en la portada y en la historia, su retrato a acuarela y ${story ? "los tres capítulos que eliges tú" : "la aventura que eliges entre varios mundos"}. ${BOOK_INNER_PAGES} páginas con ${BOOK_SCENES} escenas ilustradas, formato cuadrado de ${BOOK_SIZE_CM} × ${BOOK_SIZE_CM} cm.`;
   const preview = "Antes de pagar ves la portada, el retrato y las primeras escenas de su cuento.";
   const delivery = printed
-    ? `Papel de ${BOOK_PAPER_GSM} g. Impreso bajo demanda en Europa. Envío gratis a España peninsular y Baleares en ${DELIVERY_BUSINESS_DAYS.min}-${DELIVERY_BUSINESS_DAYS.max} días laborables; el PDF llega por correo normalmente en ${PDF_DELIVERY}.`
+    ? `Papel de ${BOOK_PAPER_GSM} g. Impreso bajo demanda en Europa. Envío gratis a España peninsular y Baleares en ${DELIVERY_BUSINESS_DAYS.min}-${DELIVERY_BUSINESS_DAYS.max} días laborables.`
     : `Se entrega por correo normalmente en ${PDF_DELIVERY} tras el pago.`;
   const returns = printed
     ? `Al ser un libro hecho a medida no admite devoluciones; si llega con un defecto de impresión o dañado en el envío, avísanos en los ${DEFECT_CLAIM_DAYS} días siguientes y te enviamos otro sin coste.`
@@ -371,14 +371,18 @@ function googleItem(item: FeedItem): string {
   return `    <item>\n${lines.join("\n")}\n    </item>`;
 }
 
+// Google Shopping ads reject digital books (ebooks_policy_violation, "Digital books not
+// supported", 2026-11-21), also on printed items whose copy mentions the bundled PDF: the
+// Google feed lists printed books only and their copy never mentions the PDF.
 export function buildGoogleMerchantXml(items: FeedItem[] = buildFeedItems()): string {
+  const printed = items.filter((i) => i.printed);
   return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
   <channel>
     <title>${xml(BRAND_NAME)}</title>
     <link>${xml(FEED_LANDING_URL)}</link>
     <description>${xml("Cuentos infantiles personalizados de Meapica")}</description>
-${items.map(googleItem).join("\n")}
+${printed.map(googleItem).join("\n")}
   </channel>
 </rss>
 `;
