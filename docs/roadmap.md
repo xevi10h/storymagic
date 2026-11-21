@@ -92,7 +92,7 @@ Code, docs, Resend, Supabase allow-list and GSC property done (see `docs/stack.m
   - Renew `.shop` yearly (keep forever: printed QR codes).
 - **SEO reading 2026-11-21 (GSC API + curl as Googlebot): the move is only half done in Google's index.** No technical error on
   `.es` (canonical, hreflang, robots and internal links correct; every sitemap URL 200 and self-canonical). But Google has not
-  recrawled most `.shop` URLs since mid-October: `meapica.shop/es/gifts` had 246 impressions in 90 days while `meapica.es/es/gifts`,
+  recrawled most `.shop` URLs since mid-October: `meapica.shop/es/gifts` had 246 impressions in 28 days while `meapica.es/es/gifts`,
   `/es/gift-voucher`, `/es/themes/dinosaurs` and `/es/tools/letter-to-the-three-kings` are "URL is unknown to Google", and for
   `/es/personalized-books/in-catalan` Google keeps the `.shop` URL as canonical. Two domain flips in five days (.es → .shop on 19-10,
   .shop → .es on 23-10) slowed the consolidation. Impressions: `.shop` 82 + `.es` 48 in the first 4 days of week 47, average position 33-37.

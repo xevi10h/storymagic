@@ -6,7 +6,7 @@ import sitemap from "../sitemap";
  *
  * meapica.es became the primary domain on 2026-10-23 and meapica.shop 308s to it (a Vercel domain
  * redirect, so nothing in this app answers on .shop). On 2026-11-21 Google still held .shop pages
- * it had not recrawled since mid-October: meapica.shop/es/gifts had 246 impressions in 90 days
+ * it had not recrawled since mid-October: meapica.shop/es/gifts had 246 impressions in 28 days
  * while meapica.es/es/gifts was "URL is unknown to Google", and for /es/personalized-books/in-catalan
  * Google chose the .shop URL as canonical over the .es one. Google's site-move guide asks for a
  * sitemap of the old URLs next to the new one for exactly this.
