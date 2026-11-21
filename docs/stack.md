@@ -180,6 +180,13 @@ created yet — run it with the live key BEFORE deploying the branch** (live dry
 "Black Friday code refused at checkout" when Stripe rejects it; 6 h dedupe each). End-to-end check against TEST (real sessions, expired at once):
 `STRIPE_ENVIRONMENT=test STRIPE_SECRET_KEY_TEST=… npx tsx --tsconfig tsconfig.json scripts/check-black-friday-checkout.mts`
 (PDF 7,92 · softcover 27,92 · hardcover 39,92 · softcover + extra copy 47,82 · hardcover + extra copy 69,82 €, verified 2026-11-13).
+**Gift vouchers (2026-11-21):** the same script also creates coupon `meapica_black_friday_2026_vouchers` (20 %, same `redeem_by`,
+applies_to = the three voucher Products, lookup keys `meapica_voucher_*`), applied directly (`discounts: [{ coupon }]`) by
+`/api/gift-voucher/checkout` inside the window (`getPromotionSetup().blackFridayVoucherCoupon`); missing → full price +
+`alertOperator` "Black Friday voucher coupon missing", refused → retried at full price + "…refused". **TEST: created 2026-11-21**;
+the check script now also buys the 3 vouchers (7,92 / 27,92 / 39,92 €), redeems a softcover card for a 0 € softcover book and
+confirms Stripe refuses card + BLACKFRIDAY on one session (verified 2026-11-21). **LIVE: not created yet** (dry run 2026-11-21
+clean): run `STRIPE_KEY=<live key> npx tsx --tsconfig tsconfig.json scripts/stripe-setup-black-friday.mts` BEFORE deploying.
 - Window: Spain dates 2026-11-13 → 2026-11-30 for rendering (`isBlackFriday(today)`), instants for checkout
   (`isBlackFridayAt(Date.now())`, never a UTC date). The [locale] layout passes its render date to client components
   (`SeasonTodayProvider` in `src/components/seasonal/SalePrice.tsx`), so the sale price is in the ISR HTML and the live client

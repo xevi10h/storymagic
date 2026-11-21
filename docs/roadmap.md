@@ -214,6 +214,8 @@ test = 10 € for 38,107 people reached, 166 clicks, 1.56 s average watch, at mo
 
 - [ ] Owner, BEFORE the deploy: `STRIPE_KEY=<live key> npx tsx --tsconfig tsconfig.json scripts/stripe-setup-black-friday.mts`
   (creates the 20 % coupon + `BLACKFRIDAY` on live; dry run already clean). Then deploy and buy-check one PDF in live (7,92 €).
+- [ ] Gift vouchers −20 % (branch `feat/conversion-fixes`, 2026-11-21): run the setup script on LIVE (creates
+  `meapica_black_friday_2026_vouchers`) BEFORE that deploy, then buy-check one PDF card in live (7,92 €) and refund it.
 - [ ] Meta: the paused `black-friday` campaign copy («el 2.º a 19,90 €», "never a struck-through price") no longer matches the
   offer: new ads needed (20 % + 2.º a 19,90 €) before activating it. See `docs/ads/promotions-q4-2026.md` § 2.
 - [ ] 1 Dec: confirm the revert in production (banner, `/es` prices, JSON-LD, `/feeds/google-merchant.xml` without

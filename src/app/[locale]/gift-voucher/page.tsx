@@ -9,9 +9,9 @@ import { BreadcrumbJsonLd, FAQJsonLd } from "@/components/seo/JsonLd";
 import { Heading, buttonClass, cx } from "@/components/ui";
 import { Breadcrumbs, PageHero, kicker, marketingH1, marketingLead } from "@/components/seo-landing/MarketingHeader";
 import GiftVoucherForm, { type VoucherFormatOption } from "@/components/gift-voucher/GiftVoucherForm";
-import { PRICING, formatPrice } from "@/lib/pricing";
+import { PRICING, STRIPE_CATALOG, formatPrice } from "@/lib/pricing";
 import { CHRISTMAS_DELIVERY_PATH, nextPhysicalCutoff, spainToday } from "@/lib/shipping";
-import { GIFT_VOUCHER_PATH, VOUCHER_FORMATS } from "@/lib/promo-codes";
+import { GIFT_VOUCHER_PATH, VOUCHER_CATALOG_ITEMS, VOUCHER_FORMATS } from "@/lib/promo-codes";
 import { getPromotionSetup } from "@/lib/growth/stripe-promotions";
 
 const BASE_URL = "https://meapica.es";
@@ -49,7 +49,8 @@ export default async function Page({ params }: PageProps) {
     id: f,
     label: t(`formats.${f}.label`),
     note: t(`formats.${f}.note`),
-    price: formatPrice(PRICING[f].price, locale),
+    // List price of the voucher Price (VAT-inclusive); the form shows the Black Friday price inside the window.
+    cents: STRIPE_CATALOG[VOUCHER_CATALOG_ITEMS[f]].amount,
     shipping: PRICING[f].requiresShipping,
   }));
 

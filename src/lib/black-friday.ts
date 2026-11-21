@@ -1,7 +1,10 @@
 // Black Friday 2026 (owner decision 2026-11-13): 20 % off the FIRST book, the book format line
 // only (PDF 9,90 → 7,92 €, softcover 34,90 → 27,92 €, hardcover 49,90 → 39,92 €, IVA incluido).
-// Not on extra copies, PDF → printed upgrades, post-purchase offers, reorders, gift vouchers or
-// the 19,90 € Pack Reyes second book. Non-cumulative with any other code.
+// Gift vouchers too (owner decision 2026-11-21): same 20 %, same window, own coupon on the
+// voucher Products. A voucher still redeems for its whole format (100 % coupon on that format),
+// so a card bought at −20 % is worth the full book. Not on extra copies, PDF → printed upgrades,
+// post-purchase offers, reorders or the 19,90 € Pack Reyes second book. Non-cumulative with any
+// other code (Stripe takes one discount per session).
 //
 // THE single source of truth for the window: UI (price lines, banner, sticky bars), /api/checkout
 // (server-side instant check), the Merchant/OpenAI feeds, the Product JSON-LD, llms.txt and the
@@ -22,6 +25,8 @@ export const BLACK_FRIDAY_ENDS_AT = new Date("2026-11-30T22:59:59Z");
 /** Stripe objects (scripts/stripe-setup-black-friday.mts): 20 %, applies_to = the 3 book format Products. */
 export const BLACK_FRIDAY_COUPON_ID = "meapica_black_friday_2026";
 export const BLACK_FRIDAY_PROMO_CODE = "BLACKFRIDAY";
+/** Same 20 % and redeem_by, applies_to = the 3 voucher Products; applied directly by /api/gift-voucher/checkout. */
+export const BLACK_FRIDAY_VOUCHER_COUPON_ID = "meapica_black_friday_2026_vouchers";
 
 /** Book formats whose base line gets the discount (= the coupon's applies_to). */
 export const BLACK_FRIDAY_FORMATS = ["digital_pdf", "softcover", "hardcover"] as const;
@@ -48,7 +53,7 @@ export function blackFridayPriceCents(cents: number): number {
 
 /**
  * Price of a format's book line today: the Black Friday price inside the window, the list price
- * otherwise. Only for a FIRST book (never reorders / offers / vouchers / extra copies).
+ * otherwise. For a FIRST book or a gift voucher (never reorders / offers / extra copies).
  */
 export function bookPriceToday(listCents: number, today: string | null | undefined): number {
   return isBlackFriday(today) ? blackFridayPriceCents(listCents) : listCents;

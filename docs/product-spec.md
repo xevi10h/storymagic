@@ -425,7 +425,12 @@ este cuento en 3 días…" with a link to the privacy policy. The account email 
 
 - **Offer:** 20 % off the book format line of a first book from deploy (13 Nov) to **30 Nov 23:59 Madrid**: PDF 9,90 → 7,92 €,
   softcover 34,90 → 27,92 €, hardcover 49,90 → 39,92 € (IVA incluido). Not on extra copies (19,90 / 29,90 € stay), PDF →
-  print upgrades, post-purchase offers, reorders, gift vouchers or the 19,90 € Pack Reyes. One code per order.
+  print upgrades, post-purchase offers, reorders or the 19,90 € Pack Reyes. One code per order.
+- **Gift vouchers too (owner 2026-11-21):** same −20 % and window on `/gift-voucher` (PDF 7,92 · softcover 27,92 · hardcover
+  39,92 €, IVA incluido): struck list price + sale price per format, "Black Friday −20 % hasta el 30 de noviembre · Precio más
+  bajo de los últimos 30 días", pay button at the sale price; Stripe applies coupon `meapica_black_friday_2026_vouchers`. The card
+  still redeems for its whole format (100 % coupon on that format), so a card bought at −20 % pays the full book; it cannot be
+  stacked with the 20 % on the book (one discount per Stripe session). Reverts on 1 Dec by itself.
   Rules + window: `src/lib/black-friday.ts` (+ `black-friday.check.mjs`); Stripe objects in docs/stack.md.
 - **Shown:** order screen (struck list price + sale price per format, "IVA incluido", Omnibus line «Precio más bajo de los
   últimos 30 días: 34,90 €», a "Black Friday −20 % · hasta el 30/11" label, the end date and "no acumulable" under the pay

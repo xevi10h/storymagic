@@ -5,6 +5,9 @@ import { checkRateLimit, rateLimitSubject } from "@/lib/rate-limit";
 import { getPromotionSetup } from "@/lib/growth/stripe-promotions";
 import { buildVoucherCheckoutParams } from "@/lib/growth/gift-vouchers";
 import { VOUCHER_MESSAGE_MAX, VOUCHER_RECIPIENT_MAX, cleanVoucherText, isVoucherFormat } from "@/lib/promo-codes";
+import { isBlackFridayAt } from "@/lib/black-friday";
+import { alertOperator } from "@/lib/fulfilment/alerts";
+import { createFulfilmentClient } from "@/lib/fulfilment/db";
 
 /**
  * Gift voucher purchase → Stripe Checkout URL. No account needed (Checkout collects the
@@ -34,6 +37,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "rate_limited" }, { status: 429, headers: { "Retry-After": String(limit.retryAfterSeconds ?? 3600) } });
     }
 
+    // Black Friday: the page shows the −20 % price (src/lib/black-friday.ts), so it is applied here.
+    const blackFriday = isBlackFridayAt(Date.now());
+    if (blackFriday && !setup.blackFridayVoucherCoupon) {
+      await alertOperator(createFulfilmentClient(), {
+        key: "voucher-black-friday-missing",
+        subject: "Black Friday voucher coupon missing on this Stripe account",
+        lines: ["A gift voucher checkout ran at full price (voucher coupon missing/unreadable).", "Run scripts/stripe-setup-black-friday.mts with this account's key."],
+        dedupeSeconds: 6 * 3600,
+      }).catch(() => false);
+    }
+
     const catalog = await getStripeCatalog();
     const params = buildVoucherCheckoutParams({
       priceId,
@@ -43,8 +57,22 @@ export async function POST(request: Request) {
       message: cleanVoucherText(body.message, VOUCHER_MESSAGE_MAX, true),
       sellerTaxId: catalog.sellerTaxId,
       origin: new URL(request.url).origin,
+      discountCoupon: blackFriday ? setup.blackFridayVoucherCoupon : null,
     });
-    const session = await getStripe().checkout.sessions.create(params);
+    let session;
+    try {
+      session = await getStripe().checkout.sessions.create(params);
+    } catch (err) {
+      if (!params.discounts) throw err;
+      // Coupon refused (expired at the last second, deleted…): sell at full price, tell the operator.
+      await alertOperator(createFulfilmentClient(), {
+        key: "voucher-black-friday-refused",
+        subject: "Black Friday voucher coupon refused at checkout",
+        lines: [`Stripe: ${err instanceof Error ? err.message : "unknown"}`, "The voucher was offered at full price."],
+        dedupeSeconds: 6 * 3600,
+      }).catch(() => false);
+      session = await getStripe().checkout.sessions.create({ ...params, discounts: undefined });
+    }
     if (!session.url) return NextResponse.json({ error: "checkout_failed" }, { status: 500 });
     return NextResponse.json({ url: session.url });
   } catch (err) {

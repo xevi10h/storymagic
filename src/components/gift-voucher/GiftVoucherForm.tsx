@@ -1,15 +1,19 @@
 "use client";
 
 import { useId, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button, cx } from "@/components/ui";
+import { formatPrice } from "@/lib/pricing";
+import { bookPriceToday, lowestPrice30Days } from "@/lib/black-friday";
+import { SalePrice, useBlackFriday, useBlackFridayEnd, useToday } from "@/components/seasonal/SalePrice";
 import { VOUCHER_MESSAGE_MAX, VOUCHER_RECIPIENT_MAX, type VoucherFormat } from "@/lib/promo-codes";
 
 export interface VoucherFormatOption {
   id: VoucherFormat;
   label: string;
   note: string;
-  /** Formatted, VAT-inclusive price ("49,90 €"). */
-  price: string;
+  /** List price of the voucher, VAT-inclusive cents (Black Friday −20 % applied here and at checkout). */
+  cents: number;
   /** Shipping included (printed formats). */
   shipping: boolean;
 }
@@ -55,6 +59,11 @@ export default function GiftVoucherForm({
   const counterId = useId();
   const selected = options.find((o) => o.id === format) ?? options[0];
   const messageLength = Array.from(message).length;
+  const tBf = useTranslations("blackFriday");
+  const blackFriday = useBlackFriday();
+  const blackFridayEnd = useBlackFridayEnd();
+  const today = useToday();
+  const price = (cents: number) => formatPrice(cents, locale);
 
   async function pay() {
     if (loading) return;
@@ -109,7 +118,11 @@ export default function GiftVoucherForm({
                 <span className="min-w-0 flex-1">
                   <span className="flex items-baseline justify-between gap-3">
                     <span className="font-display text-base font-bold text-ink">{o.label}</span>
-                    <span className="whitespace-nowrap text-base font-bold tabular-nums text-brand-deep">{o.price}</span>
+                    <span className="whitespace-nowrap text-base tabular-nums text-brand-deep" data-testid={`voucher-price-${o.id}`}>
+                      <SalePrice listCents={o.cents} variant="price">
+                        <span className="font-bold">{price(o.cents)}</span>
+                      </SalePrice>
+                    </span>
                   </span>
                   <span className="mt-0.5 flex items-baseline justify-between gap-3 text-xs leading-snug">
                     <span className="min-w-0 text-ink-soft">{o.note}</span>
@@ -120,6 +133,12 @@ export default function GiftVoucherForm({
             );
           })}
         </div>
+        {blackFriday && selected && (
+          <p className="mt-2 text-xs leading-snug text-ink-soft" data-testid="voucher-black-friday">
+            <span className="font-bold text-brand-deep">{tBf("label")}</span> {tBf("untilShort", { date: blackFridayEnd })} ·{" "}
+            {tBf("lowest30", { price: price(lowestPrice30Days(selected.cents)) })}
+          </p>
+        )}
       </fieldset>
 
       <div>
@@ -160,7 +179,7 @@ export default function GiftVoucherForm({
 
       <div>
         <Button type="submit" size="lg" block loading={loading} trailingIcon="arrow_forward" data-testid="voucher-buy">
-          {copy.buy.replace("{price}", selected?.price ?? "")}
+          {copy.buy.replace("{price}", selected ? price(bookPriceToday(selected.cents, today)) : "")}
         </Button>
         {error && (
           <p role="alert" className="mt-3 text-sm font-semibold text-error">

@@ -53,12 +53,15 @@ export function buildVoucherCheckoutParams(input: {
   message: string | null;
   sellerTaxId: string | null;
   origin: string;
+  /** Black Friday voucher coupon to apply (inside the window only; the coupon's redeem_by ends it too). */
+  discountCoupon?: string | null;
 }): Stripe.Checkout.SessionCreateParams {
   const { locale, origin } = input;
   return {
     mode: "payment",
     // Dashboard-managed payment methods, as for books (checkout/session.ts).
     line_items: [{ price: input.priceId, quantity: 1 }],
+    ...(input.discountCoupon ? { discounts: [{ coupon: input.discountCoupon }] } : {}),
     locale: CHECKOUT_LOCALE[locale],
     automatic_tax: { enabled: true },
     tax_id_collection: { enabled: true },

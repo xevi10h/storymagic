@@ -1,8 +1,9 @@
 // Idempotent Stripe setup for the Black Friday 2026 offer (src/lib/black-friday.ts) on ONE
 // account/mode (the one behind the key): the 20 % coupon restricted to the three book format
 // Products (PDF, softcover, hardcover, resolved by their STRIPE_CATALOG lookup keys, so never the
-// extra copies, upgrades or gift vouchers), redeemable until the window's last second, and the
-// BLACKFRIDAY promotion code that /api/checkout pre-applies. Creates only these two objects.
+// extra copies or upgrades), redeemable until the window's last second, the BLACKFRIDAY promotion
+// code that /api/checkout pre-applies, and (2026-11-21) a second 20 % coupon on the three gift
+// voucher Products that /api/gift-voucher/checkout applies. Creates only these three objects.
 //
 //   STRIPE_KEY=sk_test_... npx tsx --tsconfig tsconfig.json scripts/stripe-setup-black-friday.mts [--dry-run]
 //
@@ -12,13 +13,15 @@
 // is reported; delete it in the Dashboard and re-run.
 
 import Stripe from "stripe";
-import { STRIPE_CATALOG } from "../src/lib/pricing";
+import { STRIPE_CATALOG, type CatalogItemId } from "../src/lib/pricing";
+import { VOUCHER_CATALOG_ITEMS } from "../src/lib/promo-codes";
 import {
   BLACK_FRIDAY_COUPON_ID,
   BLACK_FRIDAY_ENDS_AT,
   BLACK_FRIDAY_FORMATS,
   BLACK_FRIDAY_PERCENT_OFF,
   BLACK_FRIDAY_PROMO_CODE,
+  BLACK_FRIDAY_VOUCHER_COUPON_ID,
 } from "../src/lib/black-friday";
 
 const key = process.env.STRIPE_KEY?.trim();
@@ -33,52 +36,63 @@ if (redeemBy <= Math.floor(Date.now() / 1000)) throw new Error(`The window ended
 const account = await stripe.accounts.retrieve();
 log(`account ${account.id} · ${account.settings?.dashboard?.display_name}${dryRun ? " · DRY RUN" : ""}`);
 
-// ── The three book format Products ───────────────────────────────────────────
-const products: string[] = [];
-for (const format of BLACK_FRIDAY_FORMATS) {
-  const price = (await stripe.prices.list({ lookup_keys: [STRIPE_CATALOG[format].lookupKey], active: true, limit: 1 })).data[0];
-  if (!price) throw new Error(`No active Price for ${STRIPE_CATALOG[format].lookupKey}: run scripts/stripe-setup-catalog.mts first`);
-  if (price.unit_amount !== STRIPE_CATALOG[format].amount) {
-    throw new Error(`${format}: Stripe price ${price.unit_amount} ≠ STRIPE_CATALOG ${STRIPE_CATALOG[format].amount} (re-run stripe-setup-catalog.mts)`);
+// ── Products: the three book formats, and the three gift vouchers ───────────────
+async function productsOf(items: readonly CatalogItemId[]): Promise<string[]> {
+  const out: string[] = [];
+  for (const item of items) {
+    const price = (await stripe.prices.list({ lookup_keys: [STRIPE_CATALOG[item].lookupKey], active: true, limit: 1 })).data[0];
+    if (!price) throw new Error(`No active Price for ${STRIPE_CATALOG[item].lookupKey}: run scripts/stripe-setup-catalog.mts first`);
+    if (price.unit_amount !== STRIPE_CATALOG[item].amount) {
+      throw new Error(`${item}: Stripe price ${price.unit_amount} ≠ STRIPE_CATALOG ${STRIPE_CATALOG[item].amount} (re-run stripe-setup-catalog.mts)`);
+    }
+    out.push(typeof price.product === "string" ? price.product : price.product.id);
+    log(`${item}: product ${out.at(-1)} (${price.unit_amount} cents)`);
   }
-  products.push(typeof price.product === "string" ? price.product : price.product.id);
-  log(`${format}: product ${products.at(-1)} (${price.unit_amount} cents)`);
+  return out.sort();
 }
-const wanted = [...products].sort();
 
-// ── Coupon ───────────────────────────────────────────────────────────────────
-const existing = await stripe.coupons.retrieve(BLACK_FRIDAY_COUPON_ID, { expand: ["applies_to"] }).catch((err: { code?: string }) => {
-  if (err.code === "resource_missing") return null;
-  throw err;
-});
-if (existing) {
-  const got = [...(existing.applies_to?.products ?? [])].sort();
-  const ok =
-    existing.valid &&
-    existing.percent_off === BLACK_FRIDAY_PERCENT_OFF &&
-    existing.redeem_by === redeemBy &&
-    JSON.stringify(got) === JSON.stringify(wanted);
-  if (!ok) {
-    throw new Error(
-      `coupon ${BLACK_FRIDAY_COUPON_ID} differs (valid=${existing.valid}, percent_off=${existing.percent_off}, redeem_by=${existing.redeem_by} vs ${redeemBy}, products ${got.join(",")} vs ${wanted.join(",")}): delete it in the Dashboard and re-run`,
-    );
-  }
-  log(`coupon ${BLACK_FRIDAY_COUPON_ID} ✓ (redeem_by ${BLACK_FRIDAY_ENDS_AT.toISOString()})`);
-} else if (dryRun) {
-  log(`would create coupon ${BLACK_FRIDAY_COUPON_ID} (${BLACK_FRIDAY_PERCENT_OFF} %, ${wanted.join(", ")}, redeem_by ${BLACK_FRIDAY_ENDS_AT.toISOString()})`);
-} else {
-  await stripe.coupons.create({
-    id: BLACK_FRIDAY_COUPON_ID,
-    // Customer-facing in Checkout and on the invoice (max 40 characters).
-    name: `Black Friday −${BLACK_FRIDAY_PERCENT_OFF} %`,
-    percent_off: BLACK_FRIDAY_PERCENT_OFF,
-    duration: "once",
-    applies_to: { products: wanted },
-    redeem_by: redeemBy,
-    metadata: { meapica: "black-friday-2026" },
+// ── Coupons (20 %, redeem_by = end of the window) ──────────────────────────────
+async function ensureCoupon(id: string, name: string, wanted: string[], metadata: Record<string, string>) {
+  const existing = await stripe.coupons.retrieve(id, { expand: ["applies_to"] }).catch((err: { code?: string }) => {
+    if (err.code === "resource_missing") return null;
+    throw err;
   });
-  log(`created coupon ${BLACK_FRIDAY_COUPON_ID}`);
+  if (existing) {
+    const got = [...(existing.applies_to?.products ?? [])].sort();
+    const ok =
+      existing.valid &&
+      existing.percent_off === BLACK_FRIDAY_PERCENT_OFF &&
+      existing.redeem_by === redeemBy &&
+      JSON.stringify(got) === JSON.stringify(wanted);
+    if (!ok) {
+      throw new Error(
+        `coupon ${id} differs (valid=${existing.valid}, percent_off=${existing.percent_off}, redeem_by=${existing.redeem_by} vs ${redeemBy}, products ${got.join(",")} vs ${wanted.join(",")}): delete it in the Dashboard and re-run`,
+      );
+    }
+    log(`coupon ${id} ✓ (redeem_by ${BLACK_FRIDAY_ENDS_AT.toISOString()})`);
+  } else if (dryRun) {
+    log(`would create coupon ${id} (${BLACK_FRIDAY_PERCENT_OFF} %, ${wanted.join(", ")}, redeem_by ${BLACK_FRIDAY_ENDS_AT.toISOString()})`);
+  } else {
+    await stripe.coupons.create({
+      id,
+      // Customer-facing in Checkout and on the invoice (max 40 characters).
+      name,
+      percent_off: BLACK_FRIDAY_PERCENT_OFF,
+      duration: "once",
+      applies_to: { products: wanted },
+      redeem_by: redeemBy,
+      metadata,
+    });
+    log(`created coupon ${id}`);
+  }
 }
+
+const name = `Black Friday −${BLACK_FRIDAY_PERCENT_OFF} %`;
+await ensureCoupon(BLACK_FRIDAY_COUPON_ID, name, await productsOf(BLACK_FRIDAY_FORMATS), { meapica: "black-friday-2026" });
+// Gift vouchers (2026-11-21): applied directly by /api/gift-voucher/checkout (no promotion code).
+await ensureCoupon(BLACK_FRIDAY_VOUCHER_COUPON_ID, name, await productsOf(Object.values(VOUCHER_CATALOG_ITEMS)), {
+  meapica: "black-friday-2026-vouchers",
+});
 
 // ── Promotion code ───────────────────────────────────────────────────────────
 const couponOf = (p: Stripe.PromotionCode) => (typeof p.promotion.coupon === "string" ? p.promotion.coupon : p.promotion.coupon?.id);

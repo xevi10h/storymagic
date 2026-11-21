@@ -53,7 +53,7 @@ function longDate(date: string): string {
 function blackFridayLine(today: string): string {
   if (!isBlackFriday(today)) return "";
   const sale = (cents: number) => eur(blackFridayPriceCents(cents));
-  return `- Black Friday offer until ${longDate(BLACK_FRIDAY.to)}, 23:59 Spain time: ${BLACK_FRIDAY_PERCENT_OFF} % off the book, applied automatically at checkout. Hardcover ${sale(BOOK_FORMATS.hardcover.priceCents)}, softcover ${sale(BOOK_FORMATS.softcover.priceCents)}, PDF ${sale(BOOK_FORMATS.digital_pdf.priceCents)}, IVA incluido (lowest price of the previous 30 days: the regular prices above). Not combinable with other codes; not on extra copies, gift cards or reorders.\n`;
+  return `- Black Friday offer until ${longDate(BLACK_FRIDAY.to)}, 23:59 Spain time: ${BLACK_FRIDAY_PERCENT_OFF} % off the book, applied automatically at checkout. Hardcover ${sale(BOOK_FORMATS.hardcover.priceCents)}, softcover ${sale(BOOK_FORMATS.softcover.priceCents)}, PDF ${sale(BOOK_FORMATS.digital_pdf.priceCents)}, IVA incluido (lowest price of the previous 30 days: the regular prices above). Also on gift cards (a card bought at −20 % still redeems for the whole book of its format). Not combinable with other codes; not on extra copies or reorders.\n`;
 }
 
 /** /llms.txt: the short brief (llmstxt.org). */

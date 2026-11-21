@@ -19,7 +19,13 @@ import {
   type VoucherFormat,
 } from "@/lib/promo-codes";
 import { SECOND_BOOK_COUPON_ID, SECOND_BOOK_DISCOUNT_CENTS } from "@/lib/second-book";
-import { BLACK_FRIDAY_COUPON_ID, BLACK_FRIDAY_PERCENT_OFF, BLACK_FRIDAY_PROMO_CODE, isBlackFridayAt } from "@/lib/black-friday";
+import {
+  BLACK_FRIDAY_COUPON_ID,
+  BLACK_FRIDAY_PERCENT_OFF,
+  BLACK_FRIDAY_PROMO_CODE,
+  BLACK_FRIDAY_VOUCHER_COUPON_ID,
+  isBlackFridayAt,
+} from "@/lib/black-friday";
 
 export interface PromotionSetup {
   /** The 10 € referral coupon exists and is valid. */
@@ -33,6 +39,8 @@ export interface PromotionSetup {
    * coupon / code is missing on this account (scripts/stripe-setup-black-friday.mts not run).
    */
   blackFriday: string | null;
+  /** Black Friday coupon id for gift vouchers, or null (outside the window / not on this account). */
+  blackFridayVoucherCoupon: string | null;
 }
 
 const TTL_MS = 10 * 60_000;
@@ -56,21 +64,30 @@ async function couponOk(stripe: Stripe, id: string, check: (c: Stripe.Coupon) =>
 /** What is set up on the active Stripe account. Never throws; cached 10 min. */
 export async function getPromotionSetup(): Promise<PromotionSetup> {
   if (cached && Date.now() - cached.at < TTL_MS) return cached.value;
-  const none: PromotionSetup = { referral: false, secondBook: false, voucherPrices: { hardcover: null, softcover: null, digital_pdf: null }, blackFriday: null };
+  const none: PromotionSetup = {
+    referral: false,
+    secondBook: false,
+    voucherPrices: { hardcover: null, softcover: null, digital_pdf: null },
+    blackFriday: null,
+    blackFridayVoucherCoupon: null,
+  };
   try {
     const stripe = getStripe();
-    const [catalog, referral, secondBook, blackFriday, ...vouchers] = await Promise.all([
+    const [catalog, referral, secondBook, blackFriday, blackFridayVoucher, ...vouchers] = await Promise.all([
       getStripeCatalog(),
       couponOk(stripe, REFERRAL_COUPON_ID, (c) => c.amount_off === REFERRAL_DISCOUNT_CENTS && c.currency === "eur"),
       couponOk(stripe, SECOND_BOOK_COUPON_ID, (c) => c.amount_off === SECOND_BOOK_DISCOUNT_CENTS && c.currency === "eur"),
       blackFridayPromotionCode(stripe),
+      isBlackFridayAt(Date.now())
+        ? couponOk(stripe, BLACK_FRIDAY_VOUCHER_COUPON_ID, (c) => c.percent_off === BLACK_FRIDAY_PERCENT_OFF)
+        : Promise.resolve(false),
       ...VOUCHER_FORMATS.map((f) => couponOk(stripe, VOUCHER_COUPON_IDS[f], (c) => c.percent_off === 100)),
     ]);
     const voucherPrices = { ...none.voucherPrices };
     VOUCHER_FORMATS.forEach((f, i) => {
       voucherPrices[f] = vouchers[i] ? (catalog.optionalPrices[VOUCHER_CATALOG_ITEMS[f]] ?? null) : null;
     });
-    const value = { referral, secondBook, voucherPrices, blackFriday };
+    const value = { referral, secondBook, voucherPrices, blackFriday, blackFridayVoucherCoupon: blackFridayVoucher ? BLACK_FRIDAY_VOUCHER_COUPON_ID : null };
     cached = { at: Date.now(), value };
     return value;
   } catch (err) {
