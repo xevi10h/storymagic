@@ -211,6 +211,7 @@ flags as (
          ${attrExpr}->>'utm_campaign' as utm_campaign,
          ${attrExpr}->>'click_id' as click_id,
          ${attrExpr}->>'referrer_host' as referrer_host,
+         ${attrExpr}->>'browser' as browser,
          ${startedExpr} as started,
          ${previewExpr} as preview,
          coalesce(so.order_created, false) as ordered,
@@ -220,7 +221,7 @@ flags as (
          coalesce(so.paid_orders, 0) as paid_orders
   from cohort s left join story_orders so on so.story_id = s.id
 )
-select day::text, locale, excluded, attributed, utm_source, utm_medium, utm_campaign, click_id, referrer_host,
+select day::text, locale, excluded, attributed, utm_source, utm_medium, utm_campaign, click_id, referrer_host, browser,
        count(*)::int as created,
        count(*) filter (where started)::int as started,
        count(*) filter (where preview)::int as preview,
@@ -230,7 +231,7 @@ select day::text, locale, excluded, attributed, utm_source, utm_medium, utm_camp
        sum(paid_orders)::int as paid_orders,
        sum(revenue)::numeric(12,2)::text as revenue
 from flags
-group by 1, 2, 3, 4, 5, 6, 7, 8, 9
+group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
 order by 1, 2`;
 
 const rows = await sql(QUERY, [from, to, PATTERNS, PREVIEW_STATUSES, PAID_STATUSES]);
@@ -277,6 +278,8 @@ for (let d = from; d <= to; d = addDays(d, 1)) byDay.set(d, empty());
 const byLocale = new Map();
 const bySource = new Map();
 const byCampaign = new Map();
+// Browser family (stories.attribution.browser, recorded since 2026-11-21; older stories = "(unknown)").
+const byBrowser = new Map();
 const totals = empty();
 const excluded = empty();
 for (const r of rows) {
@@ -290,6 +293,8 @@ for (const r of rows) {
   add(bySource.get(source) ?? bySource.set(source, empty()).get(source), r);
   const campaign = campaignOf(r);
   if (campaign) add(byCampaign.get(campaign) ?? byCampaign.set(campaign, empty()).get(campaign), r);
+  const browser = r.browser ?? "(unknown)";
+  add(byBrowser.get(browser) ?? byBrowser.set(browser, empty()).get(browser), r);
   add(totals, r);
 }
 const pct = (a, b) => (b ? Math.round((a / b) * 1000) / 10 : null);
@@ -319,6 +324,7 @@ const report = {
   totals: { ...totals, conversion: conversion(totals) },
   by_locale: Object.fromEntries([...byLocale].sort((a, b) => b[1].created - a[1].created).map(([k, v]) => [k, { ...v, conversion: conversion(v) }])),
   by_source: Object.fromEntries([...bySource].sort((a, b) => b[1].created - a[1].created).map(([k, v]) => [k, { ...v, conversion: conversion(v) }])),
+  by_browser: Object.fromEntries([...byBrowser].sort((a, b) => b[1].created - a[1].created).map(([k, v]) => [k, { ...v, conversion: conversion(v) }])),
   by_campaign: Object.fromEntries([...byCampaign].sort((a, b) => b[1].created - a[1].created).map(([k, v]) => [k, { ...v, conversion: conversion(v) }])),
   by_day: [...byDay].map(([day, v]) => ({ day, ...v })),
   excluded: { stories: excluded.created, paid_stories: excluded.paid, revenue: excluded.revenue, patterns: PATTERNS },
@@ -374,5 +380,6 @@ const printGroup = (title, group, limit = 15) => {
   if (entries.length > limit) console.log(`  … ${entries.length - limit} more (--json for all)`);
 };
 printGroup("by source (first touch)", report.by_source);
+printGroup("by browser (in-app vs web)", report.by_browser);
 printGroup("by campaign (source / medium / campaign)", report.by_campaign, 10);
 console.log(`\nexcluded as test/e2e/admin: ${excluded.created} stories (${excluded.paid} paid, ${eur(excluded.revenue)})`);

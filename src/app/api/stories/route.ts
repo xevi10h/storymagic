@@ -7,7 +7,7 @@ import { ownedPortraitPath } from "@/lib/storage/illustration-urls";
 import { avatarAssetPathSchema, characterLookShape } from "@/lib/character-look";
 import { formatChildName } from "@/lib/child-name";
 import { isTemplateAvailable } from "@/lib/create-store";
-import { ATTRIBUTION_CLICK_IDS, ATTRIBUTION_MAX, type Attribution } from "@/lib/tracking/attribution";
+import { ATTRIBUTION_CLICK_IDS, ATTRIBUTION_MAX, browserOf, type Attribution } from "@/lib/tracking/attribution";
 
 const VALID_TEMPLATE_IDS = ["space", "forest", "superhero", "pirates", "chef", "dinosaurs", "castle", "safari", "inventor", "candy", "reyes", "christmas", "tio"] as const;
 const VALID_MODES = ["solo", "juntos"] as const;
@@ -248,7 +248,11 @@ export async function POST(request: Request) {
     status: "draft",
   };
   // First touch, written once at creation (a reused draft keeps its own).
-  const firstTouch = attribution && Object.values(attribution).some(Boolean) ? (attribution as Attribution as Json) : null;
+  // Plus the browser family from the request (only the family, never the raw User-Agent).
+  const firstTouch =
+    attribution && Object.values(attribution).some(Boolean)
+      ? ({ ...(attribution as Attribution), browser: browserOf(request.headers.get("user-agent")) } as Json)
+      : null;
   const insertStory = async (row: typeof draft) => {
     const res = await admin.from("stories").insert({ ...row, attribution: firstTouch }).select("id").single();
     // PGRST204 = stories.attribution not in this database yet (code deployed before migration

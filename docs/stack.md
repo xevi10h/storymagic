@@ -877,3 +877,10 @@ enabled in GCP `casmar-analytics` and registered (`developerRegistration:registe
 ### ChatGPT (OpenAI) — OWNER
 Merchant onboarding is by application (chatgpt.com/merchants). When accepted, give them the JSONL URL above (or their SFTP upload);
 `is_eligible_checkout` is false (no Instant Checkout integration).
+
+## Google Ads (2026-11-20)
+- Account **Meapica 558-793-9439** (ES, Europe/Madrid, EUR), owner admin@casmar.tech, payments profile 8696-9457-2742 (NIF ES41649433K, Revolut ••4037). Linked: Merchant Center 5865149718, GA4 556936860. Manager link: MCC "claude" 875-254-9388, so the API works with `~/.config/google-ads/licita-ia.yaml` (`login_customer_id` = MCC, `customer_id` 5587939439).
+- Conversion: GA4 import "Meapica (web) purchase" ENABLED + primary (paid orders only since 2026-11-09). "begin_checkout" import stays hidden.
+- Campaign "Meapica Shopping Navidad 2026" (24522769578): Standard Shopping, all products, 10 €/day, Maximize clicks with a 0,50 € CPC ceiling, Google Search only, Spain without Canarias/Ceuta/Melilla, 24-11 → 20-12-2026. Created PAUSED, ENABLED 2026-11-20 with owner OK. Kill rule: pause when spend hits 100 € with 0 sales.
+- 2026-11-21: Campaign "Meapica Search Català Nadal 2026" (24535386637): Search, 5 €/day, Maximize clicks with a 0,60 € CPC ceiling, Catalonia only, languages ca+es, 10 Catalan phrase keywords, 1 RSA (no prices: Black Friday ends 30-11) to `/ca/personalized-books/in-catalan?utm_source=google&utm_medium=cpc&utm_campaign=search-ca_q4-26`, 22-11 → 20-12. Created PAUSED, ENABLED 2026-11-21 with owner OK.
+- 2026-11-21: Meta campaign `mpc_meta_pack-reyes-v2_es_q4-26` (120252322795360661) PAUSED via Graph and TikTok ad 1882381688260737 PAUSED via Zernio (owner decision: in-app social traffic, 1 sale for ~170 € Meta lifetime).

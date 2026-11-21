@@ -27,7 +27,23 @@ export type Attribution = {
   referrer_host?: string;
   /** Path of the first page seen in this page load, without query string or hash. */
   landing_path?: string;
+  /** Browser family, set by the server from the User-Agent header (never the raw string). */
+  browser?: AttributionBrowser;
 };
+
+/** In-app browsers of social apps (own cookies, no saved wallets) vs a normal browser. */
+export type AttributionBrowser = "instagram" | "facebook" | "tiktok" | "in_app_other" | "web";
+
+/** Pure: the browser family of a User-Agent. Order matters: Instagram's UA can also carry FB tokens. */
+export function browserOf(userAgent: string | null | undefined): AttributionBrowser {
+  const ua = userAgent ?? "";
+  if (/Instagram/i.test(ua)) return "instagram";
+  if (/FBAN\/|FBAV\/|FB_IAB\/|FBIOS|\[FB/.test(ua)) return "facebook";
+  if (/musical_ly|BytedanceWebview|TikTok|trill_/i.test(ua)) return "tiktok";
+  // Android WebView marker "; wv)" and other apps that open links inside themselves.
+  if (/; wv\)|\bLine\/|Snapchat|Pinterest|Twitter|LinkedInApp/.test(ua)) return "in_app_other";
+  return "web";
+}
 
 const clean = (value: string | null, max: number): string | undefined => {
   const v = value?.trim();
